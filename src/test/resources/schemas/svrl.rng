@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  
+        (c) International Organization for Standardization 2005. 
+        Permission to copy in any form is granted for use with conforming 
+        SGML systems and applications as defined in ISO 8879, 
+        provided this notice is included in all copies.
+  
+-->
+<grammar ns="http://purl.oclc.org/dsdl/svrl" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="schematron-output">
+    <element name="schematron-output">
+      <optional>
+        <attribute name="title"/>
+      </optional>
+      <optional>
+        <attribute name="phase">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="schemaVersion"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="human-text"/>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="ns-prefix-in-attribute-values"/>
+      </zeroOrMore>
+      <oneOrMore>
+        <ref name="active-pattern"/>
+        <zeroOrMore>
+          <group>
+            <ref name="fired-rule"/>
+            <zeroOrMore>
+              <choice>
+                <ref name="failed-assert"/>
+                <ref name="successful-report"/>
+              </choice>
+            </zeroOrMore>
+          </group>
+          <!--
+            [ph] 2013/03/21
+            the following "+" was changed to "*" to conform to real documents      
+          -->
+        </zeroOrMore>
+      </oneOrMore>
+    </element>
+  </define>
+  <!-- only namespaces from sch:ns need to be reported -->
+  <define name="ns-prefix-in-attribute-values">
+    <element name="ns-prefix-in-attribute-values">
+      <attribute name="prefix">
+        <data type="NMTOKEN"/>
+      </attribute>
+      <attribute name="uri"/>
+      <empty/>
+    </element>
+  </define>
+  <!-- only active patterns are reported -->
+  <define name="active-pattern">
+    <element name="active-pattern">
+      <optional>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="name"/>
+      </optional>
+      <optional>
+        <attribute name="role">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
+        <!--
+          [ph] 2010/01/26 
+            added the attribute document to comply to the 
+            created SVRL documents from the ISO Schematron XSLT 	 
+        -->
+        <attribute name="document"/>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+  <!-- only rules that are fired are reported, -->
+  <define name="fired-rule">
+    <element name="fired-rule">
+      <optional>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+      </optional>
+      <attribute name="context"/>
+      <optional>
+        <attribute name="role">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="flag">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+  <!-- only references are reported, not the diagnostic -->
+  <define name="diagnostic-reference">
+    <element name="diagnostic-reference">
+      <attribute name="diagnostic">
+        <data type="NMTOKEN"/>
+      </attribute>
+      <ref name="human-text"/>
+    </element>
+  </define>
+  <!-- only failed assertions are reported -->
+  <define name="failed-assert">
+    <element name="failed-assert">
+      <ref name="attlist.assert-and-report"/>
+      <zeroOrMore>
+        <ref name="diagnostic-reference"/>
+      </zeroOrMore>
+      <ref name="human-text"/>
+    </element>
+  </define>
+  <!-- only successful asserts are reported -->
+  <define name="successful-report">
+    <element name="successful-report">
+      <ref name="attlist.assert-and-report"/>
+      <zeroOrMore>
+        <ref name="diagnostic-reference"/>
+      </zeroOrMore>
+      <ref name="human-text"/>
+    </element>
+  </define>
+  <define name="human-text">
+    <element name="text">
+      <text/>
+    </element>
+  </define>
+  <define name="attlist.assert-and-report">
+    <optional>
+      <attribute name="id">
+        <data type="ID"/>
+      </attribute>
+    </optional>
+    <attribute name="location"/>
+    <attribute name="test"/>
+    <optional>
+      <attribute name="role">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="flag">
+        <data type="NMTOKEN"/>
+      </attribute>
+    </optional>
+  </define>
+  <start>
+    <ref name="schematron-output"/>
+  </start>
+</grammar>

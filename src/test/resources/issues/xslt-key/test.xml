@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Plan>
+    <DataSets>
+        <DataSet Name="Books">
+            <Property Name="Textbook" Value="1111">
+                <Property Name="Title" Value="Hello"/>
+                <Property Name="Pages" Value="10"/>
+            </Property>
+            <Property Name="Textbook" Value="1112">
+                <Property Name="Title" Value="World"/>
+                <Property Name="Pages" Value="20"/>
+            </Property>
+            <Property Name="Textbook" Value="2223">
+                <Property Name="Title" Value="This"/>
+                <Property Name="Pages" Value="30"/>
+            </Property>
+            <Property Name="Textbook" Value="4444">
+                <Property Name="Title" Value="Is"/>
+                <Property Name="Pages" Value="40"/>
+            </Property>
+            <Property Name="Magazine" Value="55555">
+                <Property Name="Title" Value="Example"/>
+                <Property Name="Pages" Value="50"/>
+            </Property>
+        </DataSet>
+    </DataSets>
+</Plan>

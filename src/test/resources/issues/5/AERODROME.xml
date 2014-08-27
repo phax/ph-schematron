@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<adrmsg:ADRMessage gml:id="ID_6_1391437306643_1"
+    xmlns:adrmsg="http://www.eurocontrol.int/cfmu/b2b/ADRMessage"
+    xmlns:adr="http://www.aixm.aero/schema/5.1/extensions/ADR"
+    xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:aixm="http://www.aixm.aero/schema/5.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <adrmsg:hasMember>
+        <aixm:AirportHeliport>
+            <aixm:timeSlice>
+                <aixm:AirportHeliportTimeSlice gml:id="ID_6_1391437306643_3">
+                    <aixm:interpretation>BASELINE</aixm:interpretation>
+                </aixm:AirportHeliportTimeSlice>
+            </aixm:timeSlice>
+        </aixm:AirportHeliport>
+    </adrmsg:hasMember>
+</adrmsg:ADRMessage>

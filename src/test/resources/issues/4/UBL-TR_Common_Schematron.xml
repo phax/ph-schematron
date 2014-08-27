@@ -1,0 +1,348 @@
+<sch:schema xmlns="http://purl.oclc.org/dsdl/schematron" 
+			xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+
+	<sch:pattern name="AbstractRules" id="abstracts">
+		<sch:p>Pattern for storing abstract rules</sch:p>
+		
+		<!-- Rule to validate StandardBusinessDocument -->
+		<sch:rule abstract="true" id="DocumentCheck">
+			<sch:assert test="sh:StandardBusinessDocumentHeader">sh:StandardBusinessDocumentHeader zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="ef:Package">ef:Package zorunlu bir elemandır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rules to validate StandardBusinessDocumentHeader -->
+		<sch:rule abstract="true" id="HeaderCheck">
+			<sch:assert test="sh:HeaderVersion = '1.0'">Geçersiz sh:HeaderVersion elemanı değeri. sh:HeaderVersion elemanı '1.0' değerine eşit olmalıdır.</sch:assert>
+			<sch:assert test="count(sh:Sender) = 1">sh:Sender zorunlu bir elemandır.</sch:assert> 
+			<sch:assert test="count(sh:Receiver) = 1">sh:Receiver zorunlu bir elemandır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate given value empty or not -->
+		<sch:rule abstract="true" id="EmptyCheck">
+			<sch:assert test="string-length(normalize-space(string(.))) != 0">Geçersiz <sch:name/> elemanı değeri. Boş olmayan bir değer içermelidir.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate ContactInformation -->
+		<sch:rule abstract="true" id="ContactInformationCheck">
+			<sch:assert test="count(sh:ContactInformation) &gt; 0">En az bir sh:ContactInformation elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="count(sh:ContactInformation[sh:ContactTypeIdentifier = 'VKN_TCKN']) = 1 ">sh:ContactTypeIdentifier elemanı değeri 'VKN_TCKN' ye eşit olan bir tane sh:ContactInformation elemanı bulunmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate Contact -->
+		<sch:rule abstract="true" id="ContactCheck">
+			<sch:assert test="sh:ContactTypeIdentifier">sh:ContactTypeIdentifier zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not(sh:ContactTypeIdentifier) or contains($ContactTypeIdentifierType, concat(',',sh:ContactTypeIdentifier,','))">Geçersiz sh:ContactTypeIdentifier değeri : '<sch:value-of select="sh:ContactTypeIdentifier"/>'. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(sh:ContactTypeIdentifier) or not(sh:ContactTypeIdentifier = 'VKN_TCKN') or string-length(sh:Contact) = 11 or string-length(sh:Contact) = 10">sh:ContactTypeIdentifier elemanın değeri 'VKN_TCKN' olması durumunda sh:Contact elemanına 10 haneli vergi kimlik numarası ve ya 11 haneli TC kimlik numarası yazılmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate DocumentIdentification.TypeVersion -->
+		<sch:rule abstract="true" id="TypeVersionCheck">
+			<sch:assert test="sh:TypeVersion = '1.0'">Geçersiz sh:TypeVersion elemanı değeri. sh:TypeVersion '1.0' değerine eşit olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate DocumentIdentification.Type -->
+		<sch:rule abstract="true" id="EnvelopeTypeCheck">
+			<sch:assert test="contains($EnvelopeType, concat(',',sh:Type,','))">Geçersiz zarf türü : '<sch:value-of select="sh:Type"/>'. Geçerli değerler için kod listesine bakınız.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate EnvelopeType with given ElementType-->
+		<sch:rule abstract="true" id="EnvelopeTypeElementTypeCheck">
+			<sch:assert test="not(sh:Type = 'SENDERENVELOPE') or not(//ElementType != 'INVOICE')">SENDERENVELOPE türündeki zarf Invoice şemasında göre oluşturulmuş belge taşımalıdır.</sch:assert>
+			<sch:assert test="not(sh:Type = 'POSTBOXENVELOPE') or not(//ElementType != 'APPLICATIONRESPONSE')">POSTBOXENVELOPE türündeki zarf ApplicationResponse şemasında göre oluşturulmuş belge taşımalıdır.</sch:assert>
+			<sch:assert test="not(sh:Type = 'SYSTEMENVELOPE') or not(//ElementType != 'APPLICATIONRESPONSE')">SYSTEMENVELOPE türündeki zarf ApplicationResponse şemasına göre oluşturulmuş belge taşımalıdır.</sch:assert>
+			<sch:assert test="not(sh:Type = 'USERENVELOPE') or (//ElementType = 'PROCESSUSERACCOUNT' or //ElementType = 'CANCELUSERACCOUNT')">USERENVELOPE türündeki zarf ProcessUserAccount ve ya CancelUserAccount şemasına göre oluşturulmuş belge taşımalıdır.</sch:assert>
+			<sch:assert test="not(sh:Type = 'USERENVELOPE') or ($receiverId = '3900383669' and $receiverAlias = 'GIB')">USERENVELOPE türündeki zarfı yalnızca 3900383669 vergi kimlik numaralı ve GIB etiketli kullanıcıya gönderebilirsiniz.</sch:assert>
+			<sch:assert test="not(sh:Type = 'USERENVELOPE') or ($senderAlias = 'usergb' or $senderAlias = 'archive')">USERENVELOPE türündeki zarfı yalnızca 'usergb' ve ya 'archive' etiketine sahip kullanıcı gönderebilir.</sch:assert>
+		</sch:rule>		
+		
+		<!-- Rules to validate Package -->
+		<sch:rule abstract="true" id="ElementsGroupCountCheck">
+			<sch:assert test="count(Elements) &lt; 11">ef:Package elemanı içerisinde en fazla 10 tane Elements elemanı olabilir.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="ElementTypeCheck">
+			<sch:assert test="contains($ElementType, concat(',',ElementType,','))">Geçersiz  ElementType değeri : '<sch:value-of select="ElementType"/>'. Geçerli ElementType değerleri için kod listesine bakınız.</sch:assert>
+		</sch:rule>		
+		
+		<sch:rule abstract="true" id="ElementCountCheck">
+			<sch:assert test="ElementCount &lt; 1001">ElementCount elemanın değeri en fazla 1000 olabilir..</sch:assert>
+		</sch:rule>		
+		
+		<sch:rule abstract="true" id="ElementListCountCheck">
+			<sch:assert test="count(ElementList/*) = ElementCount ">ElementList elemanı içersinde bulunan eleman sayısı ElementCount elemanı değerine eşit olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="ElementNameCheck">
+			<sch:assert test="not(ElementType='INVOICE') or count(ElementList/inv:Invoice)=ElementCount">ElementList elemanı içerisinde bulunan inv:Invoice elemanı sayısı ElementCount elemanı değerine eşit olmalıdır.</sch:assert>
+			<sch:assert test="not(ElementType='APPLICATIONRESPONSE') or count(ElementList/apr:ApplicationResponse)=ElementCount">ElementList elemanı içerisinde bulunan apr:ApplicationResponse elemanı sayısı ElementCount elemanı değerine eşit olmalıdır.</sch:assert>
+			<sch:assert test="not(ElementType='PROCESSUSERACCOUNT') or count(ElementList/hr:ProcessUserAccount)=ElementCount">ElementList elemanı içerisinde bulunan hr:ProcessUserAccount elemanı sayısı ElementCount elemanı değerine eşit olmalıdır.</sch:assert>
+			<sch:assert test="not(ElementType='CANCELUSERACCOUNT') or count(ElementList/hr:CancelUserAccount)=ElementCount">ElementList elemanı içerisinde bulunan hr:CancelUserAccount elemanı sayısı ElementCount elemanı değerine eşit olmalıdır.</sch:assert>
+		</sch:rule>		
+
+		<!-- Rule to validate XadesSignatureCheck -->
+		<sch:rule abstract="true" id="XadesSignatureCheck">
+			<assert test="ds:SignedInfo/ds:Reference/ds:Transforms">ds:SignedInfo/ds:Reference/ds:Transforms elemanı zorunlu bir elemandır.</assert>
+			<assert test="ds:KeyInfo">ds:KeyInfo elemanı zorunlu bir elemandır.</assert>
+			<assert test="not(ds:KeyInfo) or ds:KeyInfo/ds:X509Data">ds:KeyInfo elemanı içerisindeki ds:X509Data elemanı zorunlu bir elemandır.</assert>			
+			<assert test="ds:Object">ds:Object elemanı zorunlu bir elemandır.</assert>
+			<assert test="not(ds:Object) or ds:Object/xades:QualifyingProperties/xades:SignedProperties/xades:SignedSignatureProperties/xades:SigningTime">xades:SigningTime elemanı zorunlu bir elemandır.</assert>
+			<assert test="not(ds:Object) or ds:Object/xades:QualifyingProperties/xades:SignedProperties/xades:SignedSignatureProperties/xades:SigningCertificate">xades:SigningCertificate elemanı zorunlu bir elemandır</assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="XadesSignatureCheckForInvoice">
+			<assert test="ds:SignedInfo/ds:Reference/ds:Transforms">ds:SignedInfo/ds:Reference/ds:Transforms elemanı zorunlu bir elemandır.</assert>
+			<assert test="ds:KeyInfo">ds:KeyInfo elemanı zorunlu bir elemandır.</assert>
+			<assert test="not(ds:KeyInfo) or ds:KeyInfo/ds:X509Data">ds:KeyInfo elemanı içerisindeki ds:X509Data elemanı zorunlu bir elemandır.</assert>			
+			<assert test="ds:Object">ds:Object elemanı zorunlu bir elemandır.</assert>
+			<assert test="not(ds:Object) or ds:Object/xades:QualifyingProperties/xades:SignedProperties/xades:SignedSignatureProperties/xades:SigningTime">xades:SigningTime elemanı zorunlu bir elemandır.</assert>
+			<assert test="not(ds:Object) or ds:Object/xades:QualifyingProperties/xades:SignedProperties/xades:SignedSignatureProperties/xades:SigningCertificate">xades:SigningCertificate elemanı zorunlu bir elemandır</assert>
+			<assert test="count(ds:SignedInfo/ds:Reference[@URI = '']) = 1 ">ds:SignedInfo elamanı içerisinde URI niteliği boşluğa("") eşit olan sadece bir tane ds:Reference elemanı bulunmaldır.</assert>
+		</sch:rule>
+		
+		
+		<rule abstract="true" id="X509DataCheck">
+			<assert test="ds:X509Certificate">ds:X509Data elemanı içerisindeki ds:X509Certificate elemanı zorunlu bir elemandır.</assert>
+		</rule>
+		<rule abstract="true" id="X509SubjectNameCheck">
+			<assert test="string-length(normalize-space(.)) != 0 "> ds:X509SubjectName elemanının değeri boşluk olmamalıdır.</assert>
+		</rule>
+		<!--  <rule abstract="true" id="SignatureIDCheck">
+			<assert test="@Id">ds:Signature elemanı Id niteliğine sahip olmalıdır.</assert>
+		</rule>
+		<rule abstract="true" id="URI2IDCheck">
+			<assert test="not(ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature/@Id) or not(cac:Signature/cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI) or ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature/@Id = substring(cac:Signature/cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI,2)">cbc:URI(<sch:value-of select="cac:Signature/cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI"/>) elemanı ds:Signature elemanının Id(<sch:value-of select="ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature/@Id"/>) niteliğini referans vermelidir.</assert>
+		</rule> -->
+		
+		<!-- Rule to validate UBLVersionID -->
+		<sch:rule abstract="true" id="UBLVersionIDCheck">
+			<sch:assert test="cbc:UBLVersionID = '2.0'">Geçersiz cbc:UBLVersionID elemanı değeri : '<sch:value-of select="cbc:UBLVersionID"/>'. cbc:UBLVersionID değeri '2.0' olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate CustomizationID -->
+		<sch:rule abstract="true" id="CustomizationIDCheck">
+			<sch:assert test="cbc:CustomizationID = 'TR1.0'">Geçersiz cbc:CustomizationID elemanı değeri : '<sch:value-of select="cbc:CustomizationID"/>' cbc:CustomizationID elemanı değeri 'TR1.0' olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate ProfileID -->
+		<sch:rule abstract="true" id="ProfileIDCheck">
+			<sch:assert test="contains($ProfileIDType, concat(',',cbc:ProfileID,','))">Geçersiz cbc:ProfileID elemanı değeri : '<sch:value-of select="cbc:ProfileID"/>'. Geçerli cbc:ProfileID değerleri için kod listesine bakınız.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate Invoice ID -->
+		<sch:rule abstract="true" id="InvoiceIDCheck">
+			<sch:assert test="matches(cbc:ID,'^[A-Za-z0-9]{3}20[0-9]{2}[0-9]{9}$')">Geçersiz cbc:ID elemanı değeri. cbc:ID elemanı 'ABC2009123456789' formatında olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate CopyIndicator -->
+		<sch:rule abstract="true" id="CopyIndicatorCheck">
+			<sch:assert test="cbc:CopyIndicator = 'false'">Geçersiz cbc:CopyIndicator elemanı değeri. cbc:CopyIndicator elemanı 'false' değerine eşit olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate issue date -->
+		<sch:rule abstract="true" id="TimeCheck">
+			<sch:assert test="xs:date(cbc:IssueDate) le xs:date(current-date())">İleri tarihe ait fatura duzenlenemez.</sch:assert>
+		</sch:rule>
+
+		<!-- Rule to validate InvoiceTypeCode -->
+		<sch:rule abstract="true" id="InvoiceTypeCodeCheck">
+			<sch:assert test="contains($InvoiceTypeCodeList, concat(',',cbc:InvoiceTypeCode,','))">Geçersiz cbc:InvoiceTypeCode elemanı değeri : '<sch:value-of select="cbc:InvoiceTypeCode"/>'. Geçerli cbc:InvoiceTypeCode değerleri için kod listesine bakınız.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate currency code -->
+		<sch:rule abstract="true" id="CurrencyCodeCheck">
+			<sch:assert test="contains($CurrencyCodeList, concat(',',cbc:DocumentCurrencyCode,','))">Geçersiz cbc:DocumentCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(cbc:TaxCurrencyCode) or contains($CurrencyCodeList, concat(',',cbc:TaxCurrencyCode,','))">Geçersiz cbc:TaxCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(cbc:PricingCurrencyCode) or contains($CurrencyCodeList, concat(',',cbc:PricingCurrencyCode,','))">Geçersiz cbc:PricingCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(cbc:PaymentCurrencyCode) or contains($CurrencyCodeList, concat(',',cbc:PaymentCurrencyCode,','))">Geçersiz cbc:PaymentCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(cbc:PaymentAlternativeCurrencyCode) or contains($CurrencyCodeList, concat(',',cbc:PaymentAlternativeCurrencyCode,','))">Geçersiz cbc:PaymentAlternativeCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(//cbc:SourceCurrencyCode) or contains($CurrencyCodeList,concat(',',//cbc:SourceCurrencyCode,','))">Geçersiz cbc:SourceCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(//cbc:TargetCurrencyCode) or contains($CurrencyCodeList,concat(',',//cbc:TargetCurrencyCode,','))">Geçersiz cbc:TargetCurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+			<sch:assert test="not(//cbc:CurrencyCode) or contains($CurrencyCodeList,concat(',',//cbc:CurrencyCode,','))">Geçersiz cbc:CurrencyCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+		</sch:rule>	
+		
+		<!-- Rule to validate country code -->		
+		<sch:rule abstract="true" id="CountryCodeCheck">
+			<sch:assert test="not(//cbc:IdentificationCode) or contains($CountryCodeList,concat(',',//cbc:IdentificationCode,','))">Geçersiz cbc:IdentificationCode elemanı değeri. Geçerli değerler için kod listesine bakınız.</sch:assert>
+		</sch:rule>			
+				
+		<!-- Rule to validate UUID -->
+		<sch:rule abstract="true" id="UUIDCheck">
+			<sch:assert test="matches(.,'^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$')">Geçersiz <sch:name/> elemanı değeri. <sch:name/> elemanı UUID formatında olmalıdır.</sch:assert>
+		</sch:rule>
+		<!-- Rule to validate Decimal -->
+		<sch:rule abstract="true" id="decimalCheck">
+			<sch:assert test="matches(.,'^(\s)*?[0-9][0-9]{0,16}(,[0-9]{3})*(\.[0-9]{1,2}(\s)*?)?(\s)*?$')">Geçersiz <sch:name/> elemanı değeri. <sch:name/> elemanı noktadan önce en fazla 15 , noktadan sonra(kuruş) en fazla 2 haneli olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="SignatureCountCheck">
+			<sch:assert test="count(cac:Signature) &lt;= 1">En fazla bir tane cac:Signature elemanı bulunmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate Signature. -->
+		<sch:rule abstract="true" id="SignatureCheck">
+			<sch:assert test="cbc:ID/@schemeID='VKN_TCKN'">cac:Signature elemanı içerisindeki cbc:ID elemanının schemeID niteliği değeri 'VKN_TCKN' olmalıdır.</sch:assert>
+			<sch:assert test="not(cbc:ID/@schemeID='VKN_TCKN') or string-length(cbc:ID) = 11 or string-length(cbc:ID) = 10">schemeID niteliği 'VKN_TCKN' ye eşit olan elemanın uzunluğu vergi kimlik numarası için 10 karakter TC kimlik numrası için 11 karakter olmalıdır.</sch:assert>
+			<!-- <sch:assert test="cac:DigitalSignatureAttachment/cac:ExternalReference">cac:DigitalSignatureAttachment elemanı içerisinde cac:ExternalReference elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not(cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI) or substring(cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI,1,1) = '#'">cbc:URI elemanı # işareti ile başlamalıdır.</sch:assert> -->
+		</sch:rule>	
+
+		<!-- Rule to validate PartyIdentificationID-->
+		<sch:rule abstract="true" id="PartyIdentificationSchemeIDCheck">
+			<sch:assert test="contains($PartyIdentificationIDType, concat(',',@schemeID,','))">Geçersiz schemeID niteliği : '<sch:value-of select="@schemeID"/>'. Geçerli değerler için kod listesine bakınız.</sch:assert>
+		</sch:rule>
+	
+		<!-- Rule to validate PartyIdentificationID-->
+		<sch:rule abstract="true" id="PartyIdentificationTCKNVKNCheck">
+			<sch:assert test="not(cbc:ID/@schemeID='VKN') or string-length(cbc:ID)=10">cbc:ID elemanının schemeID niteliği değeri 'VKN' olması durumunda cbc:ID elemanına 10 haneli vergi kimlik numarası yazılmalıdır.</sch:assert>
+			<sch:assert test="not(cbc:ID/@schemeID='TCKN') or string-length(cbc:ID)=11">cbc:ID elemanının schemeID niteliği değeri 'TCKN' olması durumunda cbc:ID elemanına 11 haneli TC kimlik numarası yazılmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="InvoiceSenderCheck">
+			<sch:assert test="not(cbc:ID/@schemeID='VKN') or not(string-length(cbc:ID)=10) or not($senderId) or $senderId = cbc:ID">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile faturayı düzenleyen kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not(cbc:ID/@schemeID='TCKN') or not(string-length(cbc:ID)=11) or not($senderId) or $senderId = cbc:ID">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile faturayı düzenleyen kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="InvoiceReceiverCheck">
+			<sch:assert test="not(cbc:ID/@schemeID='VKN') or not(string-length(cbc:ID)=10) or not($receiverId) or $receiverId = cbc:ID">Zarfı alan kullanıcı(<sch:value-of select="$receiverId"/>) ile faturayı alan kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not(cbc:ID/@schemeID='TCKN') or not(string-length(cbc:ID)=11) or not($receiverId) or $receiverId = cbc:ID">Zarfı alan kullanıcı(<sch:value-of select="$receiverId"/>) ile faturayı alan kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+		</sch:rule>		
+		
+		<sch:rule abstract="true" id="PartyIdentificationPartyNamePersonCheck">
+			<sch:assert test="count(cac:PartyIdentification/cbc:ID[@schemeID='TCKN'])=1 or count(cac:PartyIdentification/cbc:ID[@schemeID='VKN'])=1">schemeID niteliği değeri 'VKN' ve ya 'TCKN' olan bir tane cbc:ID elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not(count(cac:PartyIdentification/cbc:ID[@schemeID='TCKN'])=1 and count(cac:PartyIdentification/cbc:ID[@schemeID='VKN'])=1)">schemeID niteliği değeri hem 'VKN' hem de 'TCKN' olan cbc:ID elemanları bulunmamalıdır.</sch:assert>
+			<sch:assert test="not(cac:PartyIdentification/cbc:ID/@schemeID='VKN') or cac:PartyName">schemeID niteliği değeri 'VKN' olması durumunda cac:PartyName elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not(cac:PartyIdentification/cbc:ID/@schemeID='VKN') or not(cac:PartyName) or string-length(normalize-space(string(cac:PartyName/cbc:Name))) != 0">cac:PartyName elemanı geçerli ve boş değer içermeyen cbc:Name elemanı içermelidir.</sch:assert>
+			<sch:assert test="not(cac:PartyIdentification/cbc:ID/@schemeID='TCKN') or cac:Person">schemeID niteliği değeri 'TCKN' olması durumunda cac:Person elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not(cac:PartyIdentification/cbc:ID/@schemeID='TCKN') or not(cac:Person) or (string-length(normalize-space(string(cac:Person/cbc:FirstName))) != 0   and string-length(normalize-space(string(cac:Person/cbc:FamilyName))) != 0)">cac:Person elemanı geçerli ve boş değer içermeyen cbc:FirstName ve cbc:FamilyName elemanlarına sahip olmalıdır.</sch:assert>
+		</sch:rule>			
+
+		<!-- Rule to validate TaxType -->
+		<sch:rule abstract="true" id="TaxTypeCheck">
+			<sch:assert test="contains($TaxType, concat(',',.,','))">Geçersiz  cbc:TaxTypeCode değeri : '<sch:value-of select="."/>'. Geçerli değerler için kod listesine bakınız.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="TaxExemptionReasonCheck">
+			<sch:assert test="not(cbc:TaxAmount = 0) or not(cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode = '0015') or string-length(normalize-space(cac:TaxCategory/cbc:TaxExemptionReason)) > 0 ">Vergi miktarı 0 olan 0015 vergi kodlu KDV için cbc:TaxExemptionReason(vergi istisna muhafiyet sebebi) elemanı bulunmalıdır ve boş değer içermemelidir.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate Application Response profileID -->
+		<sch:rule abstract="true" id="ApplicationResponseProfileIDCheck">
+			<sch:assert test="not($responseCode = 'S_APR') or cbc:ProfileID = 'UBL-TR-PROFILE-1'">Sistem yanıtı için cbc:ProfileID  elemanı değeri 'UBL-TR-PROFILE-1' olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or cbc:ProfileID = 'TICARIFATURA'">Uygulama yanıtı için cbc:ProfileID  elemanı değeri 'TICARIFATURA' olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<!-- Rule to validate ID -->
+		<sch:rule abstract="true" id="IDCheck">
+			<sch:assert test="string-length(normalize-space(string(cbc:ID))) != 0">Geçersiz cbc:ID elemanı değeri. cbc:ID elemanı boş olamaz.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="ARSignatureCheck">
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or cac:Signature">Uygulama yanıtı için cac:Signature elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or ext:UBLExtensions">Uygulama yanıtı için imza bilgisinin konulduğu ext:UBLExtensions elemanı bulunmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="DocumentResponseCountCheck">
+			<sch:assert test="count(cac:DocumentResponse) = 1">cac:DocumentResponse elemanından bir tane olmalıdır.</sch:assert>
+		</sch:rule>
+
+		<sch:rule abstract="true" id="ARSenderCheck">
+			<sch:assert test="not($responseCode = 'S_APR') or not(cbc:ID/@schemeID='VKN') or not(string-length(cbc:ID)=10) or not($senderId) or $senderId = cbc:ID">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile sistem yanıtınını düzenleyen kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'S_APR') or not(cbc:ID/@schemeID='TCKN') or not(string-length(cbc:ID)=11) or not($senderId) or $senderId = cbc:ID">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile sistem yanıtınını düzenleyen kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cbc:ID/@schemeID='VKN') or not(string-length(cbc:ID)=10) or not($senderId) or $senderId = cbc:ID">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile uygulama yanıtınını düzenleyen kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cbc:ID/@schemeID='TCKN') or not(string-length(cbc:ID)=11) or not($senderId) or $senderId = cbc:ID">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile uygulama yanıtınını düzenleyen kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="ARReceiverCheck">
+			<sch:assert test="not($responseCode = 'S_APR') or not(cbc:ID/@schemeID='VKN') or not(string-length(cbc:ID)=10) or not($receiverId) or $receiverId = cbc:ID">Zarfı alan kullanıcı(<sch:value-of select="$receiverId"/>) ile sistem yanıtınını alan kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'S_APR') or not(cbc:ID/@schemeID='TCKN') or not(string-length(cbc:ID)=11) or not($receiverId) or $receiverId = cbc:ID">Zarfı alan kullanıcı(<sch:value-of select="$receiverId"/>) ile sistem yanıtınını alan kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cbc:ID/@schemeID='VKN') or not(string-length(cbc:ID)=10) or not($receiverId) or $receiverId = cbc:ID">Zarfı alan kullanıcı(<sch:value-of select="$receiverId"/>) ile uygulama yanıtınını alan kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cbc:ID/@schemeID='TCKN') or not(string-length(cbc:ID)=11) or not($receiverId) or $receiverId = cbc:ID">Zarfı alan kullanıcı(<sch:value-of select="$receiverId"/>) ile uygulama yanıtınını alan kullanıcı(<sch:value-of select="cbc:ID"/>) aynı olmalıdır.</sch:assert>
+			
+		</sch:rule>			
+		
+		<sch:rule abstract="true" id="ARPartyIdentificationPartyNamePersonCheck">
+			<sch:assert test="count(cac:PartyIdentification/cbc:ID[@schemeID='TCKN'])=1 or count(cac:PartyIdentification/cbc:ID[@schemeID='VKN'])=1">schemeID niteliği değeri 'VKN' ve ya 'TCKN' olan bir tane cbc:ID elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not(count(cac:PartyIdentification/cbc:ID[@schemeID='TCKN'])=1 and count(cac:PartyIdentification/cbc:ID[@schemeID='VKN'])=1)">schemeID niteliği değeri hem 'VKN' hem de 'TCKN' olan cbc:ID elemanları bulunmamalıdır.</sch:assert>		
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cac:PartyIdentification/cbc:ID/@schemeID='VKN') or cac:PartyName">schemeID niteliği değeri 'VKN' olması durumunda cac:PartyName elemanı bulunmalıdır</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cac:PartyIdentification/cbc:ID/@schemeID='VKN') or not(cac:PartyName) or string-length(normalize-space(string(cac:PartyName/cbc:Name))) != 0">cac:PartyName elemanı geçerli ve boş değer içermeyen cbc:Name elemanı içermelidir.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cac:PartyIdentification/cbc:ID/@schemeID='TCKN') or cac:Person">schemeID niteliği değeri 'TCKN' olması durumunda cac:Person elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'KABUL' or $responseCode = 'RED' or $responseCode = 'IADE') or not(cac:PartyIdentification/cbc:ID/@schemeID='TCKN') or not(cac:Person) or (string-length(normalize-space(string(cac:Person/cbc:FirstName))) != 0   and string-length(normalize-space(string(cac:Person/cbc:FamilyName))) != 0)">cac:Person elemanı geçerli ve boş değer içermeyen cbc:FirstName ve cbc:FamilyName elemanlarına sahip olmalıdır.</sch:assert>
+		</sch:rule>			
+		
+		<sch:rule abstract="true" id="DocumentResponseCheck">
+			<sch:assert test="not($responseCode = 'S_APR') or count(cac:LineResponse) = 1">Sistem yanıtı belgesi için cac:LineResponse elemanı zorunludur ve bir tane olmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'S_APR') or not(count(cac:LineResponse) = 1) or count(cac:LineResponse/cac:Response) = 1">cac:LineResponse elemanı içerisinde bir tane cac:Response elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="not($responseCode = 'S_APR') or not(count(cac:LineResponse) = 1) or not(count(cac:LineResponse/cac:Response) = 1) or cac:LineResponse/cac:Response/cbc:ResponseCode">cac:Response elemanı içerisinde cbc:ResponseCode elemanı bulunmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="DescriptionCountCheck">
+			<sch:assert test="count(cbc:Description) = 1">cac:Response elemanı içerisinde bir tane cbc:Description elemanı bulunmalıdır.</sch:assert>
+		</sch:rule>
+				
+		<!-- Rule to validate DocumentResponse.ResponseCode -->
+		<sch:rule abstract="true" id="ResponseCodeCheck">
+			<sch:assert test="cbc:ResponseCode">cbc:ResponseCode zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not(cbc:ResponseCode) or contains($ResponseCodeType, concat(',',cbc:ResponseCode,','))">Geçersiz cbc:ResponseCode elemanı değeri '<sch:value-of select="cbc:ResponseCode"/>'. Geçerli değerler için kod listesine bakınız.</sch:assert>
+		</sch:rule>	
+		
+		<!-- HRXML -->
+		<sch:rule abstract="true" id="ApplicationAreaCheck">
+			<sch:assert test="count(oa:Sender) = 1 ">Bir tane oa:Sender elemanı bulunmalıdır.</sch:assert>
+			<sch:assert test="count(oa:Signature) = 1 ">oa:Signature zorunlu bir elemandır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="OASenderCheck">
+			<sch:assert test="oa:LogicalID">oa:LogicalID zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not(oa:LogicalID) or (string-length(normalize-space(oa:LogicalID)) = 10 or string-length(normalize-space(oa:LogicalID)) = 11)">oa:LogicalID elemanı 10 haneli VKN ve ya 11 haneli TCKN olmalıdır.</sch:assert>
+			<sch:assert test="not(oa:LogicalID) or not(string-length(normalize-space(oa:LogicalID)) = 10 or string-length(normalize-space(oa:LogicalID)) = 11) or not($senderId) or oa:LogicalID = $senderId">Zarfı gönderen kullanıcı(<sch:value-of select="$senderId"/>) ile kullanıcı işlemi yapacak özel entegratör(<sch:value-of select="oa:LogicalID"/>) aynı olmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="OASignatureCheck">
+			<sch:assert test="count(ds:Signature) = 1">oa:Signature elemanı içerisinde ds:Signature elemanı zorunludur.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="CounterSignatureCheck">
+			<sch:assert test="count(ds:Signature) = 1">xades:CounterSignature elemanı içerisinde ds:Signature elemanı zorunludur.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="UserAccountCountCheck">
+			<sch:assert test="not($senderAlias = 'archive') or count(hr:UserAccount) = 1 ">Fatura saklama hizmeti için oluşturulan belgelerde yalnızca bir tane hr:UserAccount elemanı bulunmalıdır.</sch:assert>
+		</sch:rule>
+		
+		<sch:rule abstract="true" id="UserAccountCheck">
+			<sch:assert test="count(hr:UserID) = 1">hr:UserAccount elemanı içersinde hr:UserID zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="count(hr:PersonName) = 1">hr:UserAccount elemanı içersinde hr:PersonName zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not($senderAlias = 'usergb') or count(hr:UserRole) = 1">hr:UserAccount elemanı içersinde hr:UserRole zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not($senderAlias = 'archive') or count(hr:UserRole) = 0">Fatura saklama hizmeti verecekler için hr:UserAccount elemanı içersinde hr:UserRole elemanı girilmemelidir.</sch:assert>
+			<sch:assert test="not($senderAlias = 'usergb') or count(hr:AuthorizedWorkScope) = 1">hr:UserAccount elemanı içersinde hr:AuthorizedWorkScope zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not($senderAlias = 'archive') or count(hr:AuthorizedWorkScope) = 0">Fatura saklama hizmeti verecekler için hr:UserAccount elemanı içersinde hr:AuthorizedWorkScope elemanı girilmemelidir.</sch:assert>
+			<sch:assert test="count(hr:AccountConfiguration) = 1">hr:UserAccount elemanı içersinde hr:AccountConfiguration zorunlu bir elemandır.</sch:assert>
+			
+			<sch:assert test="not(hr:UserID) or (string-length(normalize-space(hr:UserID)) = 10 or string-length(normalize-space(hr:UserID)) = 11)">hr:UserID elemanına 10 haneli VKN ve ya 11 haneli TCKN yazılmalıdır.</sch:assert>
+			
+			<sch:assert test="not(hr:UserID) or not(string-length(normalize-space(hr:UserID)) = 10) or not(hr:PersonName) or string-length(hr:PersonName/hr:FormattedName) > 0 ">Vergi kimlik numarasına sahip kullanıcılar için unvan bilgisi hr:FormattedName elemanına yazılmaldır.</sch:assert>
+			<sch:assert test="not(hr:UserID) or not(string-length(normalize-space(hr:UserID)) = 11) or not(hr:PersonName) or (string-length(hr:PersonName/oa:GivenName) > 0 and string-length(hr:PersonName/hr:FamilyName) > 0 )">TC kimlik numarasına sahip kullanıcı için ad bilgisi oa:GivenName elemanına ve soyad bilgisi hr:FamilyName elemanına yazılmaldır.</sch:assert>
+			
+			<sch:assert test="not(count(hr:UserRole) = 1) or hr:UserRole/hr:RoleCode ">hr:RoleCode zorunlu bir elemandır.</sch:assert>
+			<sch:assert test="not(count(hr:UserRole) = 1) or not(hr:UserRole/hr:RoleCode) or (normalize-space(hr:UserRole/hr:RoleCode) = 'GB' or normalize-space(hr:UserRole/hr:RoleCode) = 'PK')">hr:RoleCode elemanı değeri 'GB' ve ya 'PK' olabilir.</sch:assert>
+			
+			<sch:assert test="not(count(hr:AuthorizedWorkScope) = 1) or string-length(normalize-space(hr:AuthorizedWorkScope/hr:WorkScopeCode)) > 0 ">hr:WorkScopeCode(etiket) zorunlu bir elemandır ve boş bırakılmamalıdır.</sch:assert>
+			<sch:assert test="not(count(hr:AuthorizedWorkScope) = 1) or string-length(normalize-space(hr:AuthorizedWorkScope/hr:WorkScopeCode)) &lt;= 250 ">hr:WorkScopeCode(etiket) zorunlu bir elemandır ve 250 karakterden fazla olmamalıdır.</sch:assert>
+			<sch:assert test="not(count(hr:AuthorizedWorkScope) = 1) or not(contains($ReservedAliases, concat(',',normalize-space(hr:AuthorizedWorkScope/hr:WorkScopeCode),','))) ">hr:WorkScopeCode(etiket) elemanında yasaklı bir etiket kullanmaktasınız.</sch:assert>
+			<sch:assert test="not(count(hr:AuthorizedWorkScope) = 1) or matches(normalize-space(hr:AuthorizedWorkScope/hr:WorkScopeCode),'^urn:[A-Za-z0-9][A-Za-z0-9-]{0,31}:([A-Za-z0-9()+,-.:=@;$_!*]|%[0-9A-Fa-f]{2})+$')">Geçersiz hr:WorkScopeCode(etiket) değeri : <sch:value-of select="hr:AuthorizedWorkScope/hr:WorkScopeCode"/>. hr:WorkScopeCode(etiket) zorunlu bir elemandır ve urn formatında olmalıdır.</sch:assert>
+			
+			<sch:assert test="not($senderAlias = 'usergb') or not(count(hr:AccountConfiguration) = 1) or contains(',1,2,', concat(',',hr:AccountConfiguration/hr:UserOptionCode,',')) ">hr:UserOptionCode zorunlu bir elemandır ve değeri 1 ve ya 2 olabilir.</sch:assert>
+			<sch:assert test="not($senderAlias = 'archive') or not(count(hr:AccountConfiguration) = 1) or contains(',11,12,', concat(',',hr:AccountConfiguration/hr:UserOptionCode,',')) ">hr:UserOptionCode zorunlu bir elemandır ve değeri 11 ve ya 12 olabilir.</sch:assert>
+			
+			<sch:assert test="not(hr:UserID) or not(following-sibling::hr:UserAccount) or  normalize-space(hr:UserID) = following-sibling::node()/normalize-space(hr:UserID)">ProcessUserAccount ve CancelUserAccount belgesinde aynı hr:UserID'ye ait işlem yapılmalıdır. Farklı iki hr:UserID(<sch:value-of select="hr:UserID"/>, <sch:value-of select="following::node()/hr:UserID"/>) bulundu. </sch:assert>
+			
+			<sch:assert test="not(hr:PersonName) or not(hr:PersonName/hr:FormattedName) or not(following-sibling::hr:UserAccount) or  hr:PersonName/normalize-space(hr:FormattedName) = following::node()/hr:PersonName/normalize-space(hr:FormattedName)">ProcessUserAccount ve CancelUserAccount belgesinde aynı hr:FormattedName'e ait işlem yapılmalıdır. Farklı iki hr:FormattedName(<sch:value-of select="hr:PersonName/hr:FormattedName"/>, <sch:value-of select="following-sibling::node()/hr:PersonName/hr:FormattedName"/>) bulundu.</sch:assert>
+			<sch:assert test="not(hr:PersonName) or not(hr:PersonName/oa:GivenName)     or not(following-sibling::hr:UserAccount) or  hr:PersonName/normalize-space(oa:GivenName)     = following::node()/hr:PersonName/normalize-space(oa:GivenName)">ProcessUserAccount ve CancelUserAccount belgesinde aynı oa:GivenName'e ait işlem yapılmalıdır. Farklı iki oa:GivenName(<sch:value-of select="hr:PersonName/oa:GivenName"/>, <sch:value-of select="following::node()/hr:PersonName/oa:GivenName"/>) bulundu.</sch:assert>
+			<sch:assert test="not(hr:PersonName) or not(hr:PersonName/hr:MiddleName)    or not(following-sibling::hr:UserAccount) or  hr:PersonName/normalize-space(hr:MiddleName)    = following::node()/hr:PersonName/normalize-space(hr:MiddleName)">ProcessUserAccount ve CancelUserAccount belgesinde aynı hr:MiddleName'e ait işlem yapılmalıdır. Farklı iki hr:MiddleName(<sch:value-of select="hr:PersonName/hr:MiddleName"/>, <sch:value-of select="following::node()/hr:PersonName/hr:MiddleName"/>) bulundu.</sch:assert>
+			<sch:assert test="not(hr:PersonName) or not(hr:PersonName/hr:FamilyName)    or not(following-sibling::hr:UserAccount) or  hr:PersonName/normalize-space(hr:FamilyName)    = following::node()/hr:PersonName/normalize-space(hr:FamilyName)">ProcessUserAccount ve CancelUserAccount belgesinde aynı hr:FamilyName'e ait işlem yapılmalıdır. Farklı iki hr:FamilyName(<sch:value-of select="hr:PersonName/hr:FamilyName"/>, <sch:value-of select="following::node()/hr:PersonName/hr:FamilyName"/>) bulundu.</sch:assert>
+			
+			<sch:assert test="not(hr:AccountConfiguration) or not(hr:AccountConfiguration/hr:UserOptionCode) or not(following-sibling::hr:UserAccount) or  hr:AccountConfiguration/normalize-space(hr:UserOptionCode) = following::node()/hr:AccountConfiguration/normalize-space(hr:UserOptionCode)">ProcessUserAccount ve CancelUserAccount belgesinde aynı hr:UserOptionCode'e ait işlem yapılmalıdır. Farklı iki hr:UserOptionCode(<sch:value-of select="hr:AccountConfiguration/hr:UserOptionCode"/>, <sch:value-of select="following::node()/hr:AccountConfiguration/hr:UserOptionCode"/>) bulundu.</sch:assert>
+		</sch:rule>
+						
+	</sch:pattern>
+</sch:schema>

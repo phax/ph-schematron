@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<v3:POLB_IN124200CA xmlns:ex="urn:hl7-org/v3-example" xmlns:v3="urn:hl7-org:v3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ITSVersion="XML_1.0">
+  <v3:subject typeCode="SUBJ" contextControlCode="AN" contextConductionInd="false">
+  </v3:subject>
+</v3:POLB_IN124200CA>

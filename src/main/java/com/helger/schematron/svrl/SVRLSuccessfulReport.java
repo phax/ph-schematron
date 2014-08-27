@@ -1,0 +1,43 @@
+/**
+ * Copyright (C) 2014 phloc systems (www.phloc.com)
+ * Copyright (C) 2014 Philip Helger (www.helger.com)
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.helger.schematron.svrl;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
+import org.oclc.purl.dsdl.svrl.FailedAssert;
+import org.oclc.purl.dsdl.svrl.SuccessfulReport;
+
+/**
+ * A wrapper around {@link FailedAssert} with easier error level handling.
+ * 
+ * @author PEPPOL.AT, BRZ, Philip Helger
+ */
+@Immutable
+public final class SVRLSuccessfulReport extends AbstractSVRLMessage
+{
+  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  {
+    super (aSuccessfulReport.getDiagnosticReference (),
+           aSuccessfulReport.getText (),
+           getBeautifiedLocation (aSuccessfulReport.getLocation ()),
+           aSuccessfulReport.getTest (),
+           aSuccessfulReport.getRole (),
+           SVRLUtils.getErrorLevelFromSuccessfulReport (aSuccessfulReport));
+  }
+}

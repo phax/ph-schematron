@@ -1,0 +1,80 @@
+#
+#       (c) International Organization for Standardization 2005. 
+#       Permission to copy in any form is granted for use with conforming 
+#       SGML systems and applications as defined in ISO 8879, 
+#       provided this notice is included in all copies.
+# 
+default namespace = "http://purl.oclc.org/dsdl/svrl"
+
+schematron-output   = element schematron-output {
+  	attribute title { text }?,
+  	attribute phase { xsd:NMTOKEN }?,
+  	attribute schemaVersion { text }?,
+    human-text*,
+    ns-prefix-in-attribute-values*,
+    (active-pattern,
+     (fired-rule, 
+      (failed-assert | successful-report)*
+# [ph] 2013/03/21
+# the following "+" was changed to "*" to conform to real documents      
+     )*
+    )+
+  }
+  
+# only namespaces from sch:ns need to be reported
+ns-prefix-in-attribute-values =  element ns-prefix-in-attribute-values { 
+    attribute prefix { xsd:NMTOKEN },
+    attribute uri { text }, 
+    empty
+  }
+    
+# only active patterns are reported
+active-pattern  = element active-pattern { 
+  	attribute id { xsd:ID }?,
+ 	attribute name { text }?,
+ 	attribute role { xsd:NMTOKEN }?,
+# [ph] 2010/01/26 
+#   added the attribute document to comply to the 
+#   created SVRL documents from the ISO Schematron XSLT 	 
+  attribute document { text }?,
+  	empty 
+  }
+    
+# only rules that are fired are reported, 
+fired-rule = 
+  element fired-rule { 
+  	attribute id { xsd:ID }?,
+  	attribute context { text },
+  	attribute role { xsd:NMTOKEN }?,
+  	attribute flag { xsd:NMTOKEN }?, 
+	empty 
+  }
+
+# only references are reported, not the diagnostic
+diagnostic-reference =  element diagnostic-reference { 
+  	attribute diagnostic { xsd:NMTOKEN }, 
+  	human-text 
+  }
+# only failed assertions are reported
+failed-assert =  element failed-assert {
+    attlist.assert-and-report, 
+    diagnostic-reference*, 
+    human-text
+  }
+
+# only successful asserts are reported
+successful-report =  element successful-report {
+    attlist.assert-and-report, 
+    diagnostic-reference*, 
+    human-text
+  }
+  
+human-text = element text { text }
+
+attlist.assert-and-report =  attribute id { xsd:ID }?,
+  attribute location { text },
+  attribute test { text },
+  attribute role { xsd:NMTOKEN }?,
+  attribute flag { xsd:NMTOKEN }?
+  
+start = schematron-output
