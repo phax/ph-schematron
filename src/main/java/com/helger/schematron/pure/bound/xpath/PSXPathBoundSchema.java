@@ -317,7 +317,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   public PSXPathBoundSchema (@Nonnull final IPSQueryBinding aQueryBinding,
                              @Nonnull final PSSchema aOrigSchema,
                              @Nullable final String sPhase,
-                             @Nullable final IPSErrorHandler aCustomErrorListener) throws SchematronBindException
+                             @Nullable final IPSErrorHandler aCustomErrorListener,
+                             @Nullable final XPathVariableResolver aXPathVariableResolver,
+                             @Nullable final XPathFunctionResolver aXPathFunctionResolver) throws SchematronBindException
   {
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener);
 
@@ -336,7 +338,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           warn (aSchema, "Duplicate let with name '" +
                          aEntry.getKey () +
                          "' in <phase> with name '" +
-                         sPhase +
+                         getPhaseID () +
                          "' - second definition is ignored");
 
     // The XPath object used to compile the expressions
@@ -350,8 +352,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       throw new SchematronBindException ("Failed to create XPathFactory", ex);
     }
     final XPath aXPath = XPathHelper.createNewXPath (aXPathFactory,
-                                                     (XPathVariableResolver) null,
-                                                     (XPathFunctionResolver) null,
+                                                     aXPathVariableResolver,
+                                                     aXPathFunctionResolver,
                                                      getNamespaceContext ());
 
     // Pre-compile all diagnostics first

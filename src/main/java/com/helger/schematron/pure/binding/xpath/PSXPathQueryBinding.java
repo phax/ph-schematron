@@ -23,6 +23,8 @@ import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,6 +137,9 @@ public class PSXPathQueryBinding implements IPSQueryBinding
       aSchemaToUse = aPreprocessor.getForcedPreprocessedSchema (aSchema);
     }
 
-    return new PSXPathBoundSchema (this, aSchemaToUse, sPhase, aCustomErrorListener);
+    // TODO
+    final XPathVariableResolver aXPVR = null;
+    final XPathFunctionResolver aXPFR = null;
+    return new PSXPathBoundSchema (this, aSchemaToUse, sPhase, aCustomErrorListener, aXPVR, aXPFR);
   }
 }
