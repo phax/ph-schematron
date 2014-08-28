@@ -18,10 +18,11 @@
 package com.helger.schematron.resolve;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
@@ -38,18 +39,24 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
 {
   private final String m_sBaseHref;
 
+  @Nullable
+  private static String _getBaseHref (@Nonnull final IReadableResource aResource)
+  {
+    final URL aURL = aResource.getAsURL ();
+    return aURL == null ? null : aURL.toExternalForm ();
+  }
+
   public DefaultSchematronIncludeResolver (@Nonnull final IReadableResource aResource)
   {
-    this (aResource.getAsURL ().toExternalForm ());
+    this (_getBaseHref (aResource));
   }
 
-  public DefaultSchematronIncludeResolver (@Nonnull @Nonempty final String sBaseHref)
+  public DefaultSchematronIncludeResolver (@Nullable final String sBaseHref)
   {
-    m_sBaseHref = ValueEnforcer.notEmpty (sBaseHref, "BaseHref");
+    m_sBaseHref = sBaseHref;
   }
 
-  @Nonnull
-  @Nonempty
+  @Nullable
   public String getBaseHref ()
   {
     return m_sBaseHref;

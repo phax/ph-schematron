@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.string.StringHelper;
@@ -56,11 +57,22 @@ public final class SchematronUtils
   private SchematronUtils ()
   {}
 
+  /**
+   * Convert the passed transform source into a DOM node. Currently on
+   * {@link DOMSource} and {@link StreamSource} can be handled.
+   *
+   * @param aSource
+   *        The transform source to use. May not be <code>null</code>.
+   * @return The DOM node and never <code>null</code>.
+   * @throws SAXException
+   *         In case XML parsing fails
+   * @throws IllegalArgumentException
+   *         in case an unsupported {@link Source} implementation is provided.
+   */
   @Nullable
   public static Node getNodeOfSource (@Nonnull final Source aSource) throws SAXException
   {
-    if (aSource == null)
-      throw new NullPointerException ("Source");
+    ValueEnforcer.notNull (aSource, "Source");
 
     if (aSource instanceof DOMSource)
     {
