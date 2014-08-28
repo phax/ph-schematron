@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.streams.StringInputStream;
 import com.helger.schematrontest.SchematronTestHelper;
 
 /**
@@ -66,6 +67,8 @@ public final class SchematronResourcePureTest
                          + "\r\n"
                          + "</iso:schema>";
     assertTrue (SchematronResourcePure.fromByteArray (sTest.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ))
+                                      .isValidSchematron ());
+    assertTrue (SchematronResourcePure.fromInputStream (new StringInputStream (sTest, CCharset.CHARSET_ISO_8859_1_OBJ))
                                       .isValidSchematron ());
   }
 }

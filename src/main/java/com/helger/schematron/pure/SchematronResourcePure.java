@@ -63,87 +63,11 @@ import com.helger.schematron.svrl.SVRLWriter;
 @Immutable
 public class SchematronResourcePure extends AbstractSchematronResource
 {
-  private static class ReadableResourceInputStream implements IReadableResource
-  {
-    private final InputStream m_aIS;
-
-    public ReadableResourceInputStream (@Nonnull final InputStream aIS)
-    {
-      m_aIS = ValueEnforcer.notNull (aIS, "InputStream");
-    }
-
-    @Nonnull
-    public String getResourceID ()
-    {
-      return "input-stream";
-    }
-
-    @Nonnull
-    public String getPath ()
-    {
-      return "";
-    }
-
-    @Nullable
-    public URL getAsURL ()
-    {
-      return null;
-    }
-
-    @Nullable
-    public File getAsFile ()
-    {
-      return null;
-    }
-
-    public boolean exists ()
-    {
-      return true;
-    }
-
-    @Nullable
-    public InputStream getInputStream ()
-    {
-      return m_aIS;
-    }
-
-    @Nullable
-    public Reader getReader (@Nonnull final Charset aCharset)
-    {
-      return StreamUtils.createReader (m_aIS, aCharset);
-    }
-
-    @Nullable
-    @Deprecated
-    public Reader getReader (@Nonnull final String sCharset)
-    {
-      return StreamUtils.createReader (m_aIS, sCharset);
-    }
-
-    @Nonnull
-    @UnsupportedOperation
-    public IReadableResource getReadableCloneForPath (@Nonnull final String sPath)
-    {
-      throw new UnsupportedOperationException ();
-    }
-  }
-
   // TODO move to ph-commons
-  private static class ReadableResourceByteArray implements IReadableResource
+  private static abstract class AbstractMemoryReadableResource implements IReadableResource
   {
-    private final byte [] m_aSchematron;
-
-    public ReadableResourceByteArray (@Nonnull final byte [] aSchematron)
-    {
-      // Create a copy to avoid outside modifications
-      m_aSchematron = ArrayHelper.getCopy (ValueEnforcer.notNull (aSchematron, "Schematron"));
-    }
-
-    @Nonnull
-    public String getResourceID ()
-    {
-      return "byte[]";
-    }
+    public AbstractMemoryReadableResource ()
+    {}
 
     @Nonnull
     public String getPath ()
@@ -166,12 +90,6 @@ public class SchematronResourcePure extends AbstractSchematronResource
     public boolean exists ()
     {
       return true;
-    }
-
-    @Nullable
-    public InputStream getInputStream ()
-    {
-      return new NonBlockingByteArrayInputStream (m_aSchematron);
     }
 
     @Nullable
@@ -192,6 +110,51 @@ public class SchematronResourcePure extends AbstractSchematronResource
     public IReadableResource getReadableCloneForPath (@Nonnull final String sPath)
     {
       throw new UnsupportedOperationException ();
+    }
+  }
+
+  private static class ReadableResourceInputStream extends AbstractMemoryReadableResource
+  {
+    private final InputStream m_aIS;
+
+    public ReadableResourceInputStream (@Nonnull final InputStream aIS)
+    {
+      m_aIS = ValueEnforcer.notNull (aIS, "InputStream");
+    }
+
+    @Nonnull
+    public String getResourceID ()
+    {
+      return "input-stream";
+    }
+
+    @Nullable
+    public InputStream getInputStream ()
+    {
+      return m_aIS;
+    }
+  }
+
+  private static class ReadableResourceByteArray extends AbstractMemoryReadableResource
+  {
+    private final byte [] m_aSchematron;
+
+    public ReadableResourceByteArray (@Nonnull final byte [] aSchematron)
+    {
+      // Create a copy to avoid outside modifications
+      m_aSchematron = ArrayHelper.getCopy (ValueEnforcer.notNull (aSchematron, "Schematron"));
+    }
+
+    @Nonnull
+    public String getResourceID ()
+    {
+      return "byte[]";
+    }
+
+    @Nullable
+    public InputStream getInputStream ()
+    {
+      return new NonBlockingByteArrayInputStream (m_aSchematron);
     }
   }
 
