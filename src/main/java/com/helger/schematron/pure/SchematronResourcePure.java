@@ -19,10 +19,8 @@ package com.helger.schematron.pure;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,14 +33,10 @@ import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.UnsupportedOperation;
-import com.helger.commons.collections.ArrayHelper;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.URLResource;
-import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.xml.serialize.DOMReader;
 import com.helger.schematron.AbstractSchematronResource;
@@ -63,101 +57,6 @@ import com.helger.schematron.svrl.SVRLWriter;
 @Immutable
 public class SchematronResourcePure extends AbstractSchematronResource
 {
-  // TODO move to ph-commons
-  private static abstract class AbstractMemoryReadableResource implements IReadableResource
-  {
-    public AbstractMemoryReadableResource ()
-    {}
-
-    @Nonnull
-    public String getPath ()
-    {
-      return "";
-    }
-
-    @Nullable
-    public URL getAsURL ()
-    {
-      return null;
-    }
-
-    @Nullable
-    public File getAsFile ()
-    {
-      return null;
-    }
-
-    public boolean exists ()
-    {
-      return true;
-    }
-
-    @Nullable
-    public Reader getReader (@Nonnull final Charset aCharset)
-    {
-      return StreamUtils.createReader (getInputStream (), aCharset);
-    }
-
-    @Nullable
-    @Deprecated
-    public Reader getReader (@Nonnull final String sCharset)
-    {
-      return StreamUtils.createReader (getInputStream (), sCharset);
-    }
-
-    @Nonnull
-    @UnsupportedOperation
-    public IReadableResource getReadableCloneForPath (@Nonnull final String sPath)
-    {
-      throw new UnsupportedOperationException ();
-    }
-  }
-
-  private static class ReadableResourceInputStream extends AbstractMemoryReadableResource
-  {
-    private final InputStream m_aIS;
-
-    public ReadableResourceInputStream (@Nonnull final InputStream aIS)
-    {
-      m_aIS = ValueEnforcer.notNull (aIS, "InputStream");
-    }
-
-    @Nonnull
-    public String getResourceID ()
-    {
-      return "input-stream";
-    }
-
-    @Nullable
-    public InputStream getInputStream ()
-    {
-      return m_aIS;
-    }
-  }
-
-  private static class ReadableResourceByteArray extends AbstractMemoryReadableResource
-  {
-    private final byte [] m_aSchematron;
-
-    public ReadableResourceByteArray (@Nonnull final byte [] aSchematron)
-    {
-      // Create a copy to avoid outside modifications
-      m_aSchematron = ArrayHelper.getCopy (ValueEnforcer.notNull (aSchematron, "Schematron"));
-    }
-
-    @Nonnull
-    public String getResourceID ()
-    {
-      return "byte[]";
-    }
-
-    @Nullable
-    public InputStream getInputStream ()
-    {
-      return new NonBlockingByteArrayInputStream (m_aSchematron);
-    }
-  }
-
   private final PSBoundSchemaCacheKey m_aCacheKey;
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource)
@@ -188,7 +87,15 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   public boolean isValidSchematron ()
   {
-    return getBoundSchema ().getOriginalSchema ().isValid ();
+    try
+    {
+      return getBoundSchema ().getOriginalSchema ().isValid ();
+    }
+    catch (final RuntimeException ex)
+    {
+      // Happens e.g. in case of XPath errors
+      return false;
+    }
   }
 
   /**

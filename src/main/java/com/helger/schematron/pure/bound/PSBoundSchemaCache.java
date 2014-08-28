@@ -75,8 +75,8 @@ public class PSBoundSchemaCache extends AbstractNotifyingCache <PSBoundSchemaCac
     }
     catch (final SchematronException ex)
     {
-      // Convert to an uncheck exception :(
-      throw new RuntimeException (ex);
+      // Convert to an unchecked exception :(
+      throw new IllegalArgumentException (ex);
     }
   }
 }
