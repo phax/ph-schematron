@@ -21,10 +21,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
@@ -33,6 +34,7 @@ import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.charset.CharsetManager;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -50,14 +52,19 @@ import com.helger.schematron.svrl.SVRLWriter;
 
 /**
  * A Schematron resource that is not XSLT based but using the pure (native Java)
- * implementation.
+ * implementation. This class itself is not thread safe, but the underlying
+ * cache is thread safe. So once you configured this object fully (with all the
+ * setter), it can be considered thread safe.<br>
+ * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no
+ * XSLT functions in Schematron asserts and reports!
  *
  * @author Philip Helger
  */
-@Immutable
+@NotThreadSafe
 public class SchematronResourcePure extends AbstractSchematronResource
 {
-  private final PSBoundSchemaCacheKey m_aCacheKey;
+  private String m_sPhase;
+  private IPSErrorHandler m_aErrorHandler;
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource)
   {
@@ -68,21 +75,81 @@ public class SchematronResourcePure extends AbstractSchematronResource
                                  @Nullable final String sPhase,
                                  @Nullable final IPSErrorHandler aErrorHandler)
   {
-    this (aResource, new PSBoundSchemaCacheKey (aResource, sPhase, aErrorHandler));
+    super (aResource);
+    setPhase (sPhase);
+    setErrorHandler (aErrorHandler);
   }
 
-  public SchematronResourcePure (@Nonnull final IReadableResource aResource,
-                                 @Nonnull final PSBoundSchemaCacheKey aCacheKey)
+  /**
+   * @return The phase to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public String getPhase ()
   {
-    super (aResource);
-    m_aCacheKey = ValueEnforcer.notNull (aCacheKey, "CacheKey");
+    return m_sPhase;
+  }
+
+  /**
+   * Set the Schematron phase to be evaluated. Changing the phase will result in
+   * a newly bound schema!
+   *
+   * @param sPhase
+   *        The name of the phase to use. May be <code>null</code> which means
+   *        all phases.
+   * @return this
+   */
+  @Nonnull
+  public SchematronResourcePure setPhase (@Nullable final String sPhase)
+  {
+    m_sPhase = sPhase;
+    return this;
+  }
+
+  /**
+   * @return The error handler to be used to bind the schema. May be
+   *         <code>null</code>.
+   */
+  @Nullable
+  public IPSErrorHandler getErrorHandler ()
+  {
+    return m_aErrorHandler;
+  }
+
+  /**
+   * Set the error handler to be used during binding.
+   *
+   * @param aErrorHandler
+   *        The error handler. May be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
+  {
+    m_aErrorHandler = aErrorHandler;
+    return this;
   }
 
   @Nonnull
   protected IPSBoundSchema getBoundSchema ()
   {
     // Resolve from cache - inside the cacheKey the reading and binding happens
-    return PSBoundSchemaCache.getInstance ().getFromCache (m_aCacheKey);
+    final IReadableResource aResource = getResource ();
+    final IPSErrorHandler aErrorHandler = getErrorHandler ();
+    final PSBoundSchemaCacheKey aCacheKey = new PSBoundSchemaCacheKey (aResource, getPhase (), aErrorHandler);
+    if (aResource instanceof AbstractMemoryReadableResource)
+    {
+      // No need to cache anything for memory resources
+      try
+      {
+        return aCacheKey.createBoundSchema ();
+      }
+      catch (final SchematronException ex)
+      {
+        // Convert to runtime exception
+        throw new IllegalStateException ("Failed to bind Schematron", ex);
+      }
+    }
+    return PSBoundSchemaCache.getInstance ().getFromCache (aCacheKey);
   }
 
   public boolean isValidSchematron ()
@@ -290,5 +357,23 @@ public class SchematronResourcePure extends AbstractSchematronResource
   public static SchematronResourcePure fromByteArray (@Nonnull final byte [] aSchematron)
   {
     return new SchematronResourcePure (new ReadableResourceByteArray (aSchematron));
+  }
+
+  /**
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided
+   * by an arbitrary String.<br>
+   * <b>Important:</b> in this case, no include resolution will be performed!!
+   *
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>
+   *        .
+   * @param aCharset
+   *        The charset to be used to convert the String to a byte array.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourcePure fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  {
+    return fromByteArray (CharsetManager.getAsBytes (sSchematron, aCharset));
   }
 }

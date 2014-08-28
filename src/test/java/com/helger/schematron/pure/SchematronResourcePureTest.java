@@ -17,6 +17,7 @@
  */
 package com.helger.schematron.pure;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -25,6 +26,7 @@ import org.junit.Test;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.streams.StringInputStream;
+import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematrontest.SchematronTestHelper;
 
 /**
@@ -95,7 +97,13 @@ public final class SchematronResourcePureTest
                          + "  </iso:pattern>\r\n"
                          + "\r\n"
                          + "</iso:schema>";
+    final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
     assertFalse (SchematronResourcePure.fromByteArray (sTest.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ))
+                                       .setErrorHandler (aErrorHandler)
                                        .isValidSchematron ());
+    assertEquals ("Expected only one error: " + aErrorHandler.getResourceErrors ().toString (),
+                  1,
+                  aErrorHandler.getResourceErrors ().size ());
+    System.out.println (aErrorHandler.getResourceErrors ().toString ());
   }
 }
