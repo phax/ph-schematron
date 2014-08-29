@@ -20,6 +20,7 @@
 -->
 <changelog xmlns="http://www.phloc.com/ns/changelog/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.phloc.com/ns/changelog/1.0 schemas/changelog-1.0.xsd" version="1.0" component="ph-schematron">
+  <release date="2014-08-29" version="2.8.1" />
   <entry date="2014-08-28" category="api" action="change">
     <change>
       <text locale="en">Made SchematronResourcePure more flexible to set phase and error handler on demand</text>
