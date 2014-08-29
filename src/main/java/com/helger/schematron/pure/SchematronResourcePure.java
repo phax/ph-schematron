@@ -332,15 +332,15 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * by an arbitrary {@link InputStream}.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
-   * @param aIS
+   * @param aSchematronIS
    *        The {@link InputStream} to read the Schematron rules from. May not
    *        be <code>null</code>.
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourcePure fromInputStream (@Nonnull final InputStream aIS)
+  public static SchematronResourcePure fromInputStream (@Nonnull final InputStream aSchematronIS)
   {
-    return new SchematronResourcePure (new ReadableResourceInputStream (aIS));
+    return new SchematronResourcePure (new ReadableResourceInputStream (aSchematronIS));
   }
 
   /**
