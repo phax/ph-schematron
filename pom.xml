@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2014 phloc systems (www.phloc.com)
     Copyright (C) 2014 Philip Helger (www.helger.com)
     philip[at]helger[dot]com
 
@@ -31,6 +30,7 @@
   <name>ph-schematron</name>
   <description>Library for validating XML documents with Schematron</description>
   <url>https://github.com/phax/ph-schematron</url>
+  <inceptionYear>2014</inceptionYear>
 
   <licenses>
     <license>

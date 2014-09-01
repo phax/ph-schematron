@@ -1,5 +1,4 @@
 /**
- * Copyright (C) 2014 phloc systems (www.phloc.com)
  * Copyright (C) 2014 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
@@ -33,13 +32,12 @@ import org.oclc.purl.dsdl.svrl.FiredRule;
 import org.oclc.purl.dsdl.svrl.NsPrefixInAttributeValues;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.state.EContinue;
-import com.helger.commons.xml.ChildElementIterator;
+import com.helger.commons.xml.XMLHelper;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundElement;
@@ -64,7 +62,7 @@ import com.helger.schematron.pure.validation.SchematronValidationException;
  * A special validation handler that creates an SVRL document. This class only
  * works for the XPath binding, as the special {@link PSXPathBoundAssertReport}
  * class is referenced!
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
@@ -76,7 +74,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
 
   /**
    * Constructor
-   * 
+   *
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
    */
@@ -169,7 +167,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
 
   /**
    * Get the error text from an assert or report element.
-   * 
+   *
    * @param aBoundContentElements
    *        The list of bound elements to be evaluated.
    * @param aSourceNode
@@ -248,7 +246,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
 
   /**
    * Handle the diagnostic references of a single assert/report element
-   * 
+   *
    * @param aSrcDiagnostics
    *        The list of diagnostic reference IDs in the source assert/report
    *        element. May be <code>null</code> if no diagnostic references are
@@ -293,63 +291,6 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     }
   }
 
-  // FIXME replace with XMLHelper.getPathToNode2 in phloc-commons > 4.3.3
-  @Nonnull
-  private static String _getPathToNode (@Nonnull final Node aRuleMatchingNode)
-  {
-    ValueEnforcer.notNull (aRuleMatchingNode, "Node");
-
-    final StringBuilder aRet = new StringBuilder ();
-    Node aCurNode = aRuleMatchingNode;
-    while (aCurNode != null)
-    {
-      if (aCurNode.getNodeType () == Node.DOCUMENT_NODE && aRet.length () > 0)
-      {
-        // Add leading slash
-        aRet.insert (0, '/');
-        break;
-      }
-
-      final StringBuilder aName = new StringBuilder (aCurNode.getNodeName ());
-
-      if (aCurNode.getNodeType () == Node.ELEMENT_NODE &&
-          aCurNode.getParentNode () != null &&
-          aCurNode.getParentNode ().getNodeType () == Node.ELEMENT_NODE)
-      {
-        // get index of current element in parent element
-        final Element aCurElement = (Element) aCurNode;
-        int nIndex = 0;
-        int nMatchingIndex = -1;
-        for (final Element x : new ChildElementIterator (aCurNode.getParentNode ()))
-        {
-          if (x == aCurNode)// NOPMD
-            nMatchingIndex = nIndex;
-
-          if (x.getTagName ().equals (aCurElement.getTagName ()))
-            ++nIndex;
-        }
-        if (nMatchingIndex < 0)
-          throw new IllegalStateException ("Failed to find Node at parent");
-        if (nIndex > 1)
-        {
-          // Append index only, if more than one element is present
-          aName.append ('[').append (nMatchingIndex).append (']');
-        }
-      }
-
-      if (aRet.length () > 0)
-      {
-        // Avoid trailing slash
-        aRet.insert (0, '/');
-      }
-      aRet.insert (0, aName);
-
-      // goto parent
-      aCurNode = aCurNode.getParentNode ();
-    }
-    return aRet.toString ();
-  }
-
   @Override
   @Nonnull
   public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
@@ -365,7 +306,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     final FailedAssert aFailedAssert = new FailedAssert ();
     aFailedAssert.setFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
-    aFailedAssert.setLocation (_getPathToNode (aRuleMatchingNode));
+    aFailedAssert.setLocation (XMLHelper.getPathToNode2 (aRuleMatchingNode));
     // TODO role
     aFailedAssert.setTest (sTestExpression);
     aFailedAssert.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
@@ -392,7 +333,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     final SuccessfulReport aSuccessfulReport = new SuccessfulReport ();
     aSuccessfulReport.setFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());
-    aSuccessfulReport.setLocation (_getPathToNode (aRuleMatchingNode));
+    aSuccessfulReport.setLocation (XMLHelper.getPathToNode2 (aRuleMatchingNode));
     // TODO role
     aSuccessfulReport.setTest (sTestExpression);
     aSuccessfulReport.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));

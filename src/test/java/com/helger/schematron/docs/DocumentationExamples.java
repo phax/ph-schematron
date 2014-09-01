@@ -1,5 +1,4 @@
 /**
- * Copyright (C) 2014 phloc systems (www.phloc.com)
  * Copyright (C) 2014 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
@@ -97,7 +96,7 @@ public class DocumentationExamples
   {
     final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
     final PSTitle aTitle = new PSTitle ();
-    aTitle.addText ("Created by phloc-schematron");
+    aTitle.addText ("Created by ph-schematron");
     aSchema.setTitle (aTitle);
     return MicroWriter.writeToFile (aSchema.getAsMicroElement (), aSchematronFile).isSuccess ();
   }

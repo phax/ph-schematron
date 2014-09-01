@@ -1,5 +1,4 @@
 /**
- * Copyright (C) 2014 phloc systems (www.phloc.com)
  * Copyright (C) 2014 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
@@ -158,7 +157,7 @@ public final class SchematronResourcePureTest
     final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
     aFunctionResolver.addUniqueFunction ("http://helger.com/schematron/test", "my-count", 1, new XPathFunction ()
     {
-      public Object evaluate (final List args) throws XPathFunctionException
+      public Object evaluate (@SuppressWarnings ("rawtypes") final List args) throws XPathFunctionException
       {
         final List <?> aArg = (List <?>) args.get (0);
         return Integer.valueOf (aArg.size ());
