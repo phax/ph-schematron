@@ -231,16 +231,16 @@ public class SchematronResourcePure extends AbstractSchematronResource
   /**
    * The main method to convert a node to an SVRL document.
    *
-   * @param aNode
+   * @param aXMLNode
    *        The source node to be validated. May not be <code>null</code>.
    * @return The SVRL document. Never <code>null</code>.
    * @throws SchematronException
    *         in case of a sever error validating the schema
    */
   @Nonnull
-  public SchematronOutputType applySchematronValidation (@Nonnull final Node aNode) throws SchematronException
+  public SchematronOutputType applySchematronValidation (@Nonnull final Node aXMLNode) throws SchematronException
   {
-    return getOrCreateBoundSchema ().validateComplete (aNode);
+    return getOrCreateBoundSchema ().validateComplete (aXMLNode);
   }
 
   @Nonnull
@@ -262,6 +262,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     if (!isValidSchematron ())
       return EValidity.INVALID;
 
+    // Convert Source to Node
     final Node aNode = SchematronUtils.getNodeOfSource (aXMLSource);
     if (aNode == null)
       return EValidity.INVALID;
