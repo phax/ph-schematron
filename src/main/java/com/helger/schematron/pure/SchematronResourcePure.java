@@ -27,6 +27,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
@@ -65,6 +67,10 @@ public class SchematronResourcePure extends AbstractSchematronResource
 {
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
+  private XPathVariableResolver m_aVariableResolver;
+  private XPathFunctionResolver m_aFunctionResolver;
+  // Status var
+  private IPSBoundSchema m_aBoundSchema;
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource)
   {
@@ -101,6 +107,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nonnull
   public SchematronResourcePure setPhase (@Nullable final String sPhase)
   {
+    if (m_aBoundSchema != null)
+      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
     m_sPhase = sPhase;
     return this;
   }
@@ -125,17 +133,58 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nonnull
   public SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
   {
+    if (m_aBoundSchema != null)
+      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
     m_aErrorHandler = aErrorHandler;
     return this;
   }
 
-  @Nonnull
-  protected IPSBoundSchema getBoundSchema ()
+  /**
+   * @return The variable resolver to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public XPathVariableResolver getVariableResolver ()
   {
-    // Resolve from cache - inside the cacheKey the reading and binding happens
+    return m_aVariableResolver;
+  }
+
+  @Nonnull
+  public SchematronResourcePure setVariableResolver (@Nullable final XPathVariableResolver aVariableResolver)
+  {
+    if (m_aBoundSchema != null)
+      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
+    m_aVariableResolver = aVariableResolver;
+    return this;
+  }
+
+  /**
+   * @return The function resolver to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public XPathFunctionResolver getFunctionResolver ()
+  {
+    return m_aFunctionResolver;
+  }
+
+  @Nonnull
+  public SchematronResourcePure setFunctionResolver (@Nullable final XPathFunctionResolver aFunctionResolver)
+  {
+    if (m_aBoundSchema != null)
+      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
+    m_aFunctionResolver = aFunctionResolver;
+    return this;
+  }
+
+  @Nonnull
+  protected IPSBoundSchema createBoundSchema ()
+  {
     final IReadableResource aResource = getResource ();
     final IPSErrorHandler aErrorHandler = getErrorHandler ();
-    final PSBoundSchemaCacheKey aCacheKey = new PSBoundSchemaCacheKey (aResource, getPhase (), aErrorHandler);
+    final PSBoundSchemaCacheKey aCacheKey = new PSBoundSchemaCacheKey (aResource,
+                                                                       getPhase (),
+                                                                       aErrorHandler,
+                                                                       getVariableResolver (),
+                                                                       getFunctionResolver ());
     if (aResource instanceof AbstractMemoryReadableResource)
     {
       // No need to cache anything for memory resources
@@ -149,14 +198,25 @@ public class SchematronResourcePure extends AbstractSchematronResource
         throw new IllegalStateException ("Failed to bind Schematron", ex);
       }
     }
+
+    // Resolve from cache - inside the cacheKey the reading and binding
+    // happens
     return PSBoundSchemaCache.getInstance ().getFromCache (aCacheKey);
+  }
+
+  @Nonnull
+  protected IPSBoundSchema getOrCreateBoundSchema ()
+  {
+    if (m_aBoundSchema == null)
+      m_aBoundSchema = createBoundSchema ();
+    return m_aBoundSchema;
   }
 
   public boolean isValidSchematron ()
   {
     try
     {
-      return getBoundSchema ().getOriginalSchema ().isValid ();
+      return getOrCreateBoundSchema ().getOriginalSchema ().isValid ();
     }
     catch (final RuntimeException ex)
     {
@@ -177,7 +237,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nonnull
   public SchematronOutputType applySchematronValidation (@Nonnull final Node aNode) throws SchematronException
   {
-    return getBoundSchema ().validateComplete (aNode);
+    return getOrCreateBoundSchema ().validateComplete (aNode);
   }
 
   @Nonnull
@@ -190,7 +250,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
-    return getBoundSchema ().validatePartially (aDoc);
+    return getOrCreateBoundSchema ().validatePartially (aDoc);
   }
 
   @Nonnull
@@ -203,7 +263,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     if (aNode == null)
       return EValidity.INVALID;
 
-    return getBoundSchema ().validatePartially (aNode);
+    return getOrCreateBoundSchema ().validatePartially (aNode);
   }
 
   @Nullable

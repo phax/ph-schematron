@@ -115,6 +115,16 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                               @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener) throws SchematronException
   {
+    return bind (aSchema, sPhase, aCustomErrorListener, null, null);
+  }
+
+  @Nonnull
+  public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
+                              @Nullable final String sPhase,
+                              @Nullable final IPSErrorHandler aCustomErrorListener,
+                              @Nullable final XPathVariableResolver aVariableResolver,
+                              @Nullable final XPathFunctionResolver aFunctionResolver) throws SchematronException
+  {
     ValueEnforcer.notNull (aSchema, "Schema");
     final InMemoryLogger aLogger = new InMemoryLogger ();
     if (!aSchema.isValid (aLogger))
@@ -137,9 +147,11 @@ public class PSXPathQueryBinding implements IPSQueryBinding
       aSchemaToUse = aPreprocessor.getForcedPreprocessedSchema (aSchema);
     }
 
-    // TODO
-    final XPathVariableResolver aXPVR = null;
-    final XPathFunctionResolver aXPFR = null;
-    return new PSXPathBoundSchema (this, aSchemaToUse, sPhase, aCustomErrorListener, aXPVR, aXPFR);
+    return new PSXPathBoundSchema (this,
+                                   aSchemaToUse,
+                                   sPhase,
+                                   aCustomErrorListener,
+                                   aVariableResolver,
+                                   aFunctionResolver);
   }
 }

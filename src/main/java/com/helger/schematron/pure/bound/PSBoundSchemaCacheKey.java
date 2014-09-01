@@ -20,6 +20,8 @@ package com.helger.schematron.pure.bound;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.OverrideOnDemand;
@@ -49,16 +51,22 @@ public class PSBoundSchemaCacheKey
   private final IReadableResource m_aResource;
   private final String m_sPhase;
   private final IPSErrorHandler m_aErrorHandler;
+  private final XPathVariableResolver m_aVariableResolver;
+  private final XPathFunctionResolver m_aFunctionResolver;
 
   public PSBoundSchemaCacheKey (@Nonnull final IReadableResource aResource,
                                 @Nullable final String sPhase,
-                                @Nullable final IPSErrorHandler aErrorHandler)
+                                @Nullable final IPSErrorHandler aErrorHandler,
+                                @Nullable final XPathVariableResolver aVariableResolver,
+                                @Nullable final XPathFunctionResolver aFunctionResolver)
   {
     ValueEnforcer.notNull (aResource, "Resource");
 
     m_aResource = aResource;
     m_sPhase = sPhase;
     m_aErrorHandler = aErrorHandler;
+    m_aVariableResolver = aVariableResolver;
+    m_aFunctionResolver = aFunctionResolver;
   }
 
   /**
@@ -87,6 +95,24 @@ public class PSBoundSchemaCacheKey
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
+  }
+
+  /**
+   * @return The variable resolver to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public final XPathVariableResolver getVariableResolver ()
+  {
+    return m_aVariableResolver;
+  }
+
+  /**
+   * @return The function resolver to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public final XPathFunctionResolver getFunctionResolver ()
+  {
+    return m_aFunctionResolver;
   }
 
   /**
@@ -175,7 +201,8 @@ public class PSBoundSchemaCacheKey
    * <li>pre-process the schema -
    * {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}</li>
    * <li>and finally bind it -
-   * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler)}</li>
+   * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler, javax.xml.xpath.XPathVariableResolver, javax.xml.xpath.XPathFunctionResolver)}
+   * </li>
    * </ol>
    *
    * @return The bound schema. Never <code>null</code>.
@@ -195,7 +222,11 @@ public class PSBoundSchemaCacheKey
     final PSSchema aPreprocessedSchema = createPreprocessedSchema (aSchema, aQueryBinding);
 
     // And finally bind the pre-processed schema
-    return aQueryBinding.bind (aPreprocessedSchema, getPhase (), getErrorHandler ());
+    return aQueryBinding.bind (aPreprocessedSchema,
+                               getPhase (),
+                               getErrorHandler (),
+                               getVariableResolver (),
+                               getFunctionResolver ());
   }
 
   @Override
@@ -206,18 +237,30 @@ public class PSBoundSchemaCacheKey
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final PSBoundSchemaCacheKey rhs = (PSBoundSchemaCacheKey) o;
-    return m_aResource.equals (rhs.m_aResource) && EqualsUtils.equals (m_sPhase, rhs.m_sPhase);
+    return m_aResource.equals (rhs.m_aResource) &&
+           EqualsUtils.equals (m_sPhase, rhs.m_sPhase) &&
+           EqualsUtils.equals (m_aVariableResolver, rhs.m_aVariableResolver) &&
+           EqualsUtils.equals (m_aFunctionResolver, rhs.m_aFunctionResolver);
   }
 
   @Override
   public int hashCode ()
   {
-    return new HashCodeGenerator (this).append (m_aResource).append (m_sPhase).getHashCode ();
+    return new HashCodeGenerator (this).append (m_aResource)
+                                       .append (m_sPhase)
+                                       .append (m_aVariableResolver)
+                                       .append (m_aFunctionResolver)
+                                       .getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("resource", m_aResource).append ("phase", m_sPhase).toString ();
+    return new ToStringGenerator (this).append ("resource", m_aResource)
+                                       .append ("phase", m_sPhase)
+                                       .appendIfNotNull ("errorHandler", m_aErrorHandler)
+                                       .appendIfNotNull ("variableResolver", m_aVariableResolver)
+                                       .appendIfNotNull ("functionResolver", m_aFunctionResolver)
+                                       .toString ();
   }
 }

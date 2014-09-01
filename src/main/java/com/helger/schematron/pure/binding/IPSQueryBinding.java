@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.xpath.XPathFunctionResolver;
+import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.schematron.SchematronException;
@@ -36,7 +38,7 @@ import com.helger.schematron.pure.model.PSValueOf;
 
 /**
  * Base interface for a single query binding.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSQueryBinding extends Serializable
@@ -46,7 +48,7 @@ public interface IPSQueryBinding extends Serializable
   /**
    * Negate the passed test statement. This is required in the creation of a
    * minified Schematron, when report elements are converted to assert elements.
-   * 
+   *
    * @param sTest
    *        The test expression.
    * @return The negated test expression
@@ -59,7 +61,7 @@ public interface IPSQueryBinding extends Serializable
    * patterns. The default query binding e.g. adds a "$" in front of each
    * parameter name. The so created map is used to resolve abstract rule and
    * pattern data to real values.
-   * 
+   *
    * @param aParams
    *        Source list. May not be <code>null</code>.
    * @return Non-<code>null</code> String replacement map.
@@ -80,7 +82,7 @@ public interface IPSQueryBinding extends Serializable
    * </ul>
    * As an experimental option in line 244 the replacement is also applied to
    * all text nodes. This is currently not supported!
-   * 
+   *
    * @param sText
    *        The original text. May be <code>null</code>.
    * @param aStringReplacements
@@ -95,7 +97,7 @@ public interface IPSQueryBinding extends Serializable
 
   /**
    * Create a bound schema, which is like a precompiled schema.
-   * 
+   *
    * @param aSchema
    *        The schema to be bound. May not be <code>null</code>.
    * @param sPhase
@@ -110,5 +112,33 @@ public interface IPSQueryBinding extends Serializable
    *         In case of a binding error
    */
   @Nonnull
+  @Deprecated
   IPSBoundSchema bind (@Nonnull PSSchema aSchema, @Nullable String sPhase, @Nullable IPSErrorHandler aCustomErrorHandler) throws SchematronException;
+
+  /**
+   * Create a bound schema, which is like a precompiled schema.
+   *
+   * @param aSchema
+   *        The schema to be bound. May not be <code>null</code>.
+   * @param sPhase
+   *        The phase to use. May be <code>null</code>. If it is
+   *        <code>null</code> than the defaultPhase is used that is defined in
+   *        the schema. If no defaultPhase is present, than all patterns are
+   *        evaluated.
+   * @param aCustomErrorHandler
+   *        An optional custom error handler to use. May be <code>null</code>.
+   * @param aVariableResolver
+   *        Custom variable resolver. May be <code>null</code>.
+   * @param aFunctionResolver
+   *        Custom function resolver. May be <code>null</code>.
+   * @return The precompiled, bound schema. Never <code>null</code>.
+   * @throws SchematronException
+   *         In case of a binding error
+   */
+  @Nonnull
+  IPSBoundSchema bind (@Nonnull PSSchema aSchema,
+                       @Nullable String sPhase,
+                       @Nullable IPSErrorHandler aCustomErrorHandler,
+                       @Nullable XPathVariableResolver aVariableResolver,
+                       @Nullable XPathFunctionResolver aFunctionResolver) throws SchematronException;
 }

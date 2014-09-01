@@ -19,13 +19,22 @@ package com.helger.schematron.pure;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionResolver;
+
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.streams.StringInputStream;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.xpath.MapBasedXPathVariableResolver;
+import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematrontest.SchematronTestHelper;
 
@@ -105,5 +114,44 @@ public final class SchematronResourcePureTest
                   1,
                   aErrorHandler.getResourceErrors ().size ());
     System.out.println (aErrorHandler.getResourceErrors ().toString ());
+  }
+
+  @Test
+  public void testResolveVariables () throws SchematronException, SAXException
+  {
+    final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n"
+                         + "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \r\n"
+                         + "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \r\n"
+                         + "         xmlns:sch=\"http://www.ascc.net/xml/schematron\"\r\n"
+                         + "         queryBinding='xslt2'\r\n"
+                         + "         schemaVersion=\"ISO19757-3\">\r\n"
+                         + "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\r\n"
+                         + "  <iso:ns prefix=\"dp\" uri=\"http://www.dpawson.co.uk/ns#\" />\r\n"
+                         + "  <iso:pattern >\r\n"
+                         + "    <iso:title>A very simple pattern with a title</iso:title>\r\n"
+                         + "    <iso:rule context=\"chapter\">\r\n"
+                         + "      <iso:assert test=\"$title-element\">Chapter should have a title</iso:assert>\r\n"
+                         + "      <iso:report test=\"dp:count(para)\">\r\n"
+                         + "      <iso:value-of select=\"count(para)\"/> paragraphs</iso:report>\r\n"
+                         + "    </iso:rule>\r\n"
+                         + "  </iso:pattern>\r\n"
+                         + "\r\n"
+                         + "</iso:schema>";
+    assertFalse (SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ).isValidSchematron ());
+    final MapBasedXPathVariableResolver aVarResolver = new MapBasedXPathVariableResolver ();
+    aVarResolver.addUniqueVariable ("title-element", "title");
+
+    final XPathFunctionResolver aFunctionResolver = new XPathFunctionResolver ()
+    {
+      public XPathFunction resolveFunction (final QName functionName, final int arity)
+      {
+        System.out.println (functionName.getNamespaceURI () + "::" + functionName.getLocalPart () + " " + arity);
+        return null;
+      }
+    };
+    assertNotNull (SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ)
+                                         .setVariableResolver (aVarResolver)
+                                         .setFunctionResolver (aFunctionResolver)
+                                         .applySchematronValidation (DOMReader.readXMLDOM ("<?xml version='1.0'?><chapter><title /></chapter>")));
   }
 }

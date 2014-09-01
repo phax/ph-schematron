@@ -84,7 +84,7 @@ public class DocumentationExamples
     aPreprocessor.setKeepTitles (true);
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     // Bind the pre-processed schema
-    final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema, null, null);
+    final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema, null, null, null, null);
     // Read the XML file
     final Document aXMLNode = DOMReader.readXMLDOM (aXMLFile);
     if (aXMLNode == null)
