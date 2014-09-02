@@ -52,6 +52,8 @@ public class PSBoundSchemaCacheKey
   private final IPSErrorHandler m_aErrorHandler;
   private final XPathVariableResolver m_aVariableResolver;
   private final XPathFunctionResolver m_aFunctionResolver;
+  // Ssatus vars
+  private Integer m_aHashCode;
 
   public PSBoundSchemaCacheKey (@Nonnull final IReadableResource aResource,
                                 @Nullable final String sPhase,
@@ -245,11 +247,13 @@ public class PSBoundSchemaCacheKey
   @Override
   public int hashCode ()
   {
-    return new HashCodeGenerator (this).append (m_aResource)
-                                       .append (m_sPhase)
-                                       .append (m_aVariableResolver)
-                                       .append (m_aFunctionResolver)
-                                       .getHashCode ();
+    if (m_aHashCode == null)
+      m_aHashCode = new HashCodeGenerator (this).append (m_aResource)
+                                                .append (m_sPhase)
+                                                .append (m_aVariableResolver)
+                                                .append (m_aFunctionResolver)
+                                                .getHashCodeObj ();
+    return m_aHashCode.intValue ();
   }
 
   @Override

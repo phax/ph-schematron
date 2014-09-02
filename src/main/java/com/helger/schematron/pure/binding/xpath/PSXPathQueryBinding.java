@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.compare.ComparatorStringLongestFirst;
 import com.helger.commons.log.InMemoryLogger;
@@ -109,7 +110,9 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     return getWithParamTextsReplacedStatic (sText, aStringReplacements);
   }
 
+  @SuppressWarnings ("deprecation")
   @Nonnull
+  @DevelopersNote ("Its only deprecated in the interface!")
   public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
                               @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener) throws SchematronException
