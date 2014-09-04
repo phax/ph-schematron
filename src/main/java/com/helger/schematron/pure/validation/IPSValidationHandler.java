@@ -31,7 +31,7 @@ import com.helger.schematron.pure.model.PSSchema;
 /**
  * Base interface for a Schematron validation callback handler. It is only
  * invoked when validating an XML against a Schematron file.
- * 
+ *
  * @see com.helger.schematron.pure.bound.IPSBoundSchema#validate(Node,
  *      IPSValidationHandler)
  * @author Philip Helger
@@ -40,39 +40,45 @@ public interface IPSValidationHandler
 {
   /**
    * This is the first method called.
-   * 
+   *
    * @param aSchema
    *        The Schematron to be validated. Never <code>null</code>.
    * @param aActivePhase
    *        The selected phase, if any special phase was selected. May be
    *        <code>null</code>.
    * @see #onEnd(PSSchema, PSPhase)
+   * @throws SchematronValidationException
+   *         In case of validation errors
    */
   void onStart (@Nonnull PSSchema aSchema, @Nullable PSPhase aActivePhase) throws SchematronValidationException;
 
   /**
    * This method is called for every pattern inside the schema.
-   * 
+   *
    * @param aPattern
    *        The current pattern. Never <code>null</code>.
+   * @throws SchematronValidationException
+   *         In case of validation errors
    */
   void onPattern (@Nonnull PSPattern aPattern) throws SchematronValidationException;
 
   /**
    * This method is called for every rule inside the current pattern.
-   * 
+   *
    * @param aRule
    *        The current rule. Never <code>null</code>.
    * @param sContext
    *        The real context to be used in validation. May differ from the
    *        result of {@link PSRule#getContext()} because of replaced variables
    *        from &lt;let&gt; elements.
+   * @throws SchematronValidationException
+   *         In case of validation errors
    */
   void onRule (@Nonnull PSRule aRule, @Nonnull String sContext) throws SchematronValidationException;
 
   /**
    * This method is called for every failed assert.
-   * 
+   *
    * @param aAssertReport
    *        The current assert element. Never <code>null</code>.
    * @param sTestExpression
@@ -90,6 +96,8 @@ public interface IPSValidationHandler
    *        {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport}
    *        object.
    * @return {@link EContinue#BREAK} to stop validating immediately.
+   * @throws SchematronValidationException
+   *         In case of validation errors
    */
   @Nonnull
   EContinue onFailedAssert (@Nonnull PSAssertReport aAssertReport,
@@ -100,7 +108,7 @@ public interface IPSValidationHandler
 
   /**
    * This method is called for every failed assert.
-   * 
+   *
    * @param aAssertReport
    *        The current assert element. Never <code>null</code>.
    * @param sTestExpression
@@ -118,6 +126,8 @@ public interface IPSValidationHandler
    *        {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport}
    *        object.
    * @return {@link EContinue#BREAK} to stop validating immediately.
+   * @throws SchematronValidationException
+   *         In case of validation errors
    */
   @Nonnull
   EContinue onSuccessfulReport (@Nonnull PSAssertReport aAssertReport,
@@ -129,13 +139,15 @@ public interface IPSValidationHandler
   /**
    * This is the last method called. It indicates that the validation for the
    * current scheme ended.
-   * 
+   *
    * @param aSchema
    *        The Schematron that was be validated. Never <code>null</code>.
    * @param aActivePhase
    *        The selected phase, if any special phase was selected. May be
    *        <code>null</code>.
    * @see #onStart(PSSchema, PSPhase)
+   * @throws SchematronValidationException
+   *         In case of validation errors
    */
   void onEnd (@Nonnull PSSchema aSchema, @Nullable PSPhase aActivePhase) throws SchematronValidationException;
 }

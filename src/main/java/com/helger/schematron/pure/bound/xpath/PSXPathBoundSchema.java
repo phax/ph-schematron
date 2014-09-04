@@ -310,6 +310,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *        which case a
    *        {@link com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler}
    *        is used internally.
+   * @param aXPathVariableResolver
+   *        Custom XPath variable resolver. May be <code>null</code>.
+   * @param aXPathFunctionResolver
+   *        Custom XPath function resolver. May be <code>null</code>.
    * @throws SchematronBindException
    *         In case XPath expressions are incorrect and pre-compilation fails
    */

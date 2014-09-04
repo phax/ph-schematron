@@ -31,7 +31,7 @@ import com.helger.commons.state.ESuccess;
  * This is the XML writer for Schematron SVRL documents. It reads
  * {@link SchematronOutputType} elements and converts them to W3C nodes. The
  * writing itself is done with JAXB.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -46,9 +46,11 @@ public final class SVRLWriter
 
   /**
    * Convert the passed schematron output element into an W3C Document node.
-   * 
+   *
    * @param aSchematronOutput
    *        The schematron output to be converted. May not be <code>null</code>.
+   * @param aResult
+   *        The result object to write to.
    * @return {@link ESuccess}
    */
   @Nonnull
@@ -59,7 +61,7 @@ public final class SVRLWriter
 
   /**
    * Convert the passed schematron output element into an W3C Document node.
-   * 
+   *
    * @param aSchematronOutput
    *        The schematron output to be converted. May not be <code>null</code>.
    * @return <code>null</code> if conversion failed.
@@ -73,7 +75,7 @@ public final class SVRLWriter
   /**
    * Utility method to directly convert the passed SVRL domain object to an XML
    * string.
-   * 
+   *
    * @param aSchematronOutput
    *        The SVRL domain object to be converted. May not be null.
    * @return <code>null</code> if the passed domain object could not be

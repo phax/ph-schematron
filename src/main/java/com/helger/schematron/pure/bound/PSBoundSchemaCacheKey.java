@@ -210,6 +210,7 @@ public class PSBoundSchemaCacheKey
    * @throws SchematronException
    *         In case reading or binding fails.
    */
+  @SuppressWarnings ("javadoc")
   @Nonnull
   public IPSBoundSchema createBoundSchema () throws SchematronException
   {
