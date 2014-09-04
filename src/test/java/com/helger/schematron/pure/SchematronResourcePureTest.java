@@ -29,6 +29,7 @@ import javax.xml.xpath.XPathFunctionException;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.charset.CCharset;
@@ -173,5 +174,83 @@ public final class SchematronResourcePureTest
     assertEquals (1, SVRLUtils.getAllSuccesssfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
     assertEquals ("\n      2 paragraphs found", SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
+  }
+
+  @Test
+  public void testResolveFunctions () throws SchematronException, SAXException
+  {
+    final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n"
+                         + "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n"
+                         + "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \n"
+                         + "         xmlns:sch=\"http://www.ascc.net/xml/schematron\"\n"
+                         + "         queryBinding='xslt2'\n"
+                         + "         schemaVersion=\"ISO19757-3\">\n"
+                         + "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n"
+                         + "  <iso:ns prefix=\"dp\" uri=\"http://www.dpawson.co.uk/ns#\" />\n"
+                         + "  <iso:ns prefix=\"java\" uri=\"http://helger.com/schematron/test\" />\n"
+                         + "  <iso:pattern >\n"
+                         + "    <iso:title>A very simple pattern with a title</iso:title>\n"
+                         + "    <iso:rule context=\"chapter\">\n"
+                         + "      <iso:assert test=\"title\">Chapter should have a title</iso:assert>\n"
+                         + "      <iso:report test=\"count(para) = 2\">\n"
+                         // Custom function
+                         + "      Node details: <iso:value-of select=\"java:get-nodelist-details(para)\"/> - end</iso:report>\n"
+                         + "    </iso:rule>\n"
+                         + "  </iso:pattern>\n"
+                         + "\n"
+                         + "</iso:schema>";
+
+    // Test with variable and function resolver
+    final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
+    aFunctionResolver.addUniqueFunction ("http://helger.com/schematron/test",
+                                         "get-nodelist-details",
+                                         1,
+                                         new XPathFunction ()
+                                         {
+                                           public Object evaluate (@SuppressWarnings ("rawtypes") final List args) throws XPathFunctionException
+                                           {
+                                             // We expect exactly one argument
+                                             assertEquals (1, args.size ());
+                                             // The type of the first argument
+                                             // itself is also a list
+                                             final List <?> aFirstArg = (List <?>) args.get (0);
+                                             // Ensure that the first argument
+                                             // only contains Nodes
+                                             final StringBuilder ret = new StringBuilder ();
+                                             boolean bFirst = true;
+                                             for (final Object aFirstArgItem : aFirstArg)
+                                             {
+                                               assertTrue (aFirstArgItem instanceof Node);
+                                               final Node aNode = (Node) aFirstArgItem;
+
+                                               if (bFirst)
+                                                 bFirst = false;
+                                               else
+                                                 ret.append (", ");
+
+                                               ret.append (aNode.getNodeName ())
+                                                  .append ("[")
+                                                  .append (aNode.getTextContent ())
+                                                  .append ("]");
+                                             }
+
+                                             return ret;
+                                           }
+                                         });
+    final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>"
+                                                    + "<chapter>"
+                                                    + "<title />"
+                                                    + "<para>First para</para>"
+                                                    + "<para>Second para</para>"
+                                                    + "</chapter>");
+    final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ)
+                                                           .setFunctionResolver (aFunctionResolver)
+                                                           .applySchematronValidation (aTestDoc);
+    assertNotNull (aOT);
+    assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
+    assertEquals (1, SVRLUtils.getAllSuccesssfulReports (aOT).size ());
+    // Note: the text contains all whitespaces!
+    assertEquals ("\n      Node details: para[First para], para[Second para] - end",
+                  SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
   }
 }
