@@ -370,7 +370,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         // Enable XPath 2.0
         aSaxonXPath.setXPathLanguageLevel ("2.0");
       }
-      aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
+      if (false)
+      {
+        // Enable this to debug Saxon function resolving
+        aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
+      }
     }
 
     // Pre-compile all diagnostics first
