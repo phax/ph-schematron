@@ -32,6 +32,9 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import net.sf.saxon.lib.FeatureKeys;
+import net.sf.saxon.xpath.XPathEvaluator;
+
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -358,6 +361,17 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                      aXPathVariableResolver,
                                                      aXPathFunctionResolver,
                                                      getNamespaceContext ());
+
+    if (aXPath instanceof XPathEvaluator)
+    {
+      final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPath;
+      if (false)
+      {
+        // Enable XPath 2.0
+        aSaxonXPath.setXPathLanguageLevel ("2.0");
+      }
+      aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
+    }
 
     // Pre-compile all diagnostics first
     final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPath, aVariables);
