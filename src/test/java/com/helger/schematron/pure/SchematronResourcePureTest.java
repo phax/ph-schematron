@@ -30,6 +30,8 @@ import javax.xml.xpath.XPathFunctionException;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
+import net.sf.saxon.expr.JPConverter;
+import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.functions.ExecutableFunctionLibrary;
 import net.sf.saxon.functions.FunctionLibrary;
@@ -38,9 +40,7 @@ import net.sf.saxon.om.Sequence;
 import net.sf.saxon.query.QueryModule;
 import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
-import net.sf.saxon.trans.XPathException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
@@ -273,7 +273,6 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  @Ignore ("Does not work right now")
   public void testResolveXQueryFunctions () throws Exception
   {
     final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n"
@@ -291,7 +290,7 @@ public final class SchematronResourcePureTest
                          + "      <iso:assert test='title'>Chapter should have a title</iso:assert>\n"
                          + "      <iso:report test='count(para) = 2'>\n"
                          // Custom function
-                         + "      Node details: <iso:value-of select='functx:node-kind(para)'/> - end</iso:report>\n"
+                         + "      Node kind: <iso:value-of select='functx:node-kind(para)'/> - end</iso:report>\n"
                          + "    </iso:rule>\n"
                          + "  </iso:pattern>\n"
                          + "\n"
@@ -504,26 +503,21 @@ public final class SchematronResourcePureTest
         {
           public Object evaluate (@SuppressWarnings ("rawtypes") final List args) throws XPathFunctionException
           {
-            final Sequence [] aValues = new Sequence [args.size ()];
-            int i = 0;
-            for (final Object arg : args)
-            {
-              if (arg instanceof ArrayList)
-              {
-                // ????
-              }
-              else
-              {
-                System.out.println (arg.getClass ());
-                aValues[i] = (Sequence) arg;
-              }
-              ++i;
-            }
             try
             {
+              // This is surely not correct, but it works :)
+              final XPathContextMajor aXPathContext = aXQController.newXPathContext ();
+              final Sequence [] aValues = new Sequence [args.size ()];
+              int i = 0;
+              for (final Object arg : args)
+              {
+                final JPConverter converter = JPConverter.allocate (arg.getClass (), C);
+                aValues[i] = converter.convert (arg, aXPathContext);
+                ++i;
+              }
               return aUF.call (aValues, aXQController);
             }
-            catch (final XPathException ex)
+            catch (final Exception ex)
             {
               throw new XPathFunctionException (ex);
             }
@@ -546,7 +540,6 @@ public final class SchematronResourcePureTest
     assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLUtils.getAllSuccesssfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node details: para[First para], para[Second para] - end",
-                  SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      Node kind: element - end", SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
   }
 }
