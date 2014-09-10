@@ -21,24 +21,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
-
-import net.sf.saxon.Configuration;
-import net.sf.saxon.Controller;
-import net.sf.saxon.expr.JPConverter;
-import net.sf.saxon.expr.XPathContextMajor;
-import net.sf.saxon.expr.instruct.UserFunction;
-import net.sf.saxon.functions.ExecutableFunctionLibrary;
-import net.sf.saxon.functions.FunctionLibrary;
-import net.sf.saxon.functions.FunctionLibraryList;
-import net.sf.saxon.om.Sequence;
-import net.sf.saxon.query.StaticQueryContext;
-import net.sf.saxon.query.XQueryExpression;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
@@ -47,7 +33,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.streams.StringInputStream;
@@ -57,6 +42,7 @@ import com.helger.commons.xml.xpath.MapBasedXPathVariableResolver;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.schematrontest.SchematronTestHelper;
 
 /**
@@ -66,46 +52,6 @@ import com.helger.schematrontest.SchematronTestHelper;
  */
 public final class SchematronResourcePureTest
 {
-  static final class XPathFunctionFromUserFunction implements XPathFunction
-  {
-    private final Configuration m_aConfiguration;
-    private final Controller m_aXQController;
-    private final UserFunction m_aUserFunc;
-    private final XPathContextMajor m_aXPathContext;
-
-    public XPathFunctionFromUserFunction (@Nonnull final Configuration aConfiguration,
-                                          @Nonnull final Controller aXQController,
-                                          @Nonnull final UserFunction aUserFunc)
-    {
-      m_aConfiguration = aConfiguration;
-      m_aUserFunc = aUserFunc;
-      m_aXQController = aXQController;
-      // This is surely not correct, but it works :)
-      m_aXPathContext = aXQController.newXPathContext ();
-    }
-
-    public Object evaluate (@SuppressWarnings ("rawtypes") final List args) throws XPathFunctionException
-    {
-      try
-      {
-        // Convert the parameters
-        final Sequence [] aValues = new Sequence [args.size ()];
-        int i = 0;
-        for (final Object arg : args)
-        {
-          final JPConverter converter = JPConverter.allocate (arg.getClass (), m_aConfiguration);
-          aValues[i] = converter.convert (arg, m_aXPathContext);
-          ++i;
-        }
-        return m_aUserFunc.call (aValues, m_aXQController);
-      }
-      catch (final Exception ex)
-      {
-        throw new XPathFunctionException (ex);
-      }
-    }
-  }
-
   @Test
   public void testBasic () throws Exception
   {
@@ -335,35 +281,7 @@ public final class SchematronResourcePureTest
                          + "\n"
                          + "</iso:schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
-
-    // create a Configuration object
-    final Configuration aConfiguration = new Configuration ();
-    final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
-    aStaticQueryCtx.setBaseURI (new File ("").toURI ().toURL ().toExternalForm ());
-    final XQueryExpression exp = aStaticQueryCtx.compileQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"),
-                                                               null);
-    final Controller aXQController = exp.newController ();
-
-    // find all loaded methods and convert them to XPath functions
-    {
-      final FunctionLibraryList aFuncLibList = exp.getExecutable ().getFunctionLibrary ();
-      for (final FunctionLibrary aFuncLib : aFuncLibList.getLibraryList ())
-        if (aFuncLib instanceof FunctionLibraryList)
-        {
-          final FunctionLibraryList aRealFuncLib = (FunctionLibraryList) aFuncLib;
-          // Assumption works with Saxon HE 9.5.1-6 :)
-          for (final UserFunction aUserFunc : ContainerHelper.newList (((ExecutableFunctionLibrary) aRealFuncLib.get (0)).iterateFunctions ()))
-          {
-            aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
-                                                 aUserFunc.getFunctionName ().getLocalPart (),
-                                                 aUserFunc.getNumberOfArguments (),
-                                                 new XPathFunctionFromUserFunction (aConfiguration,
-                                                                                    aXQController,
-                                                                                    aUserFunc));
-          }
-        }
-    }
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
 
     // Test with variable and function resolver
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>"

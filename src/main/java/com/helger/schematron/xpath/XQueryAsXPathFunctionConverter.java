@@ -1,0 +1,128 @@
+/**
+ * Copyright (C) 2014 Philip Helger (www.helger.com)
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.helger.schematron.xpath;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+
+import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
+
+import net.sf.saxon.Configuration;
+import net.sf.saxon.Controller;
+import net.sf.saxon.expr.instruct.UserFunction;
+import net.sf.saxon.functions.ExecutableFunctionLibrary;
+import net.sf.saxon.functions.FunctionLibrary;
+import net.sf.saxon.functions.FunctionLibraryList;
+import net.sf.saxon.query.StaticQueryContext;
+import net.sf.saxon.query.XQueryExpression;
+import net.sf.saxon.trans.XPathException;
+
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
+
+public class XQueryAsXPathFunctionConverter
+{
+  private final String m_sBaseURL;
+
+  /**
+   * Default ctor using the current working directory as the base URL for the
+   * XQuery resource resolver.
+   *
+   * @throws MalformedURLException
+   *         In case the conversion to URL failed
+   */
+  public XQueryAsXPathFunctionConverter () throws MalformedURLException
+  {
+    this (new File (""));
+  }
+
+  public XQueryAsXPathFunctionConverter (@Nonnull final File aBasePath) throws MalformedURLException
+  {
+    this (aBasePath.toURI ().toURL ().toExternalForm ());
+  }
+
+  public XQueryAsXPathFunctionConverter (@Nonnull @Nonempty final String sBaseURL)
+  {
+    m_sBaseURL = ValueEnforcer.notEmpty (sBaseURL, "BaseURL");
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getBaseURL ()
+  {
+    return m_sBaseURL;
+  }
+
+  @Nonnull
+  public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException,
+                                                                                                   IOException
+  {
+    ValueEnforcer.notNull (aXQueryIS, "XQueryIS");
+
+    try
+    {
+      final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
+
+      // create a Configuration object
+      final Configuration aConfiguration = new Configuration ();
+      final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
+      // The base URI required for resolving within the XQuery
+      aStaticQueryCtx.setBaseURI (m_sBaseURL);
+      final XQueryExpression exp = aStaticQueryCtx.compileQuery (aXQueryIS, null);
+      final Controller aXQController = exp.newController ();
+
+      // find all loaded methods and convert them to XPath functions
+      final FunctionLibraryList aFuncLibList = exp.getExecutable ().getFunctionLibrary ();
+      for (final FunctionLibrary aFuncLib : aFuncLibList.getLibraryList ())
+      {
+        // Ignore all Vendor, System etc. internal libraries
+        if (aFuncLib instanceof FunctionLibraryList)
+        {
+          // This is the custom function library list
+          final FunctionLibraryList aRealFuncLib = (FunctionLibraryList) aFuncLib;
+          // Assumption works with Saxon HE 9.5.1-6 :)
+          for (final FunctionLibrary aNestedFuncLib : aRealFuncLib.getLibraryList ())
+          {
+            // Currently the user functions are in ExecutableFunctionLibrary
+            if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
+              for (final UserFunction aUserFunc : ContainerHelper.newList (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
+              {
+                aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
+                                                     aUserFunc.getFunctionName ().getLocalPart (),
+                                                     aUserFunc.getNumberOfArguments (),
+                                                     new XPathFunctionFromUserFunction (aConfiguration,
+                                                                                        aXQController,
+                                                                                        aUserFunc));
+              }
+          }
+        }
+      }
+
+      return aFunctionResolver;
+    }
+    finally
+    {
+      StreamUtils.close (aXQueryIS);
+    }
+  }
+}

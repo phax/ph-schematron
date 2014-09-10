@@ -24,6 +24,8 @@
 
  : @version 1.0
  : @see     http://www.xqueryfunctions.com
+ :
+ : Changes by Philip Helger: change from XQuery library to module
  :) 
 declare namespace  functx = "http://www.functx.com" ;
  
@@ -1408,5 +1410,5 @@ declare function functx:yearMonthDuration
     (xs:yearMonthDuration('P1Y') * functx:if-empty($years,0))
  } ;
 
+(: Dummy call so that this is not a libary... :)
 functx:words-to-camel-case("bla")
- 
