@@ -19,6 +19,7 @@ package com.helger.schematron.xpath;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 
@@ -29,6 +30,12 @@ import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.om.Sequence;
 
+/**
+ * A wrapper for an {@link XPathFunction} that is implemented as Saxon
+ * {@link UserFunction}.
+ *
+ * @author Philip Helger
+ */
 public final class XPathFunctionFromUserFunction implements XPathFunction
 {
   private final Configuration m_aConfiguration;
@@ -47,6 +54,7 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
     m_aXPathContext = aXQController.newXPathContext ();
   }
 
+  @Nullable
   public Object evaluate (@SuppressWarnings ("rawtypes") final List args) throws XPathFunctionException
   {
     try

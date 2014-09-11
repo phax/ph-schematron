@@ -56,6 +56,16 @@ public class XQueryAsXPathFunctionConverter
     this (new File (""));
   }
 
+  /**
+   * Constructor using the passed file as a working directory as the base URL
+   * for the XQuery resource resolver.
+   *
+   * @param aBasePath
+   *        Base path for XQuery resource resolving. May not be
+   *        <code>null</code>.
+   * @throws MalformedURLException
+   *         In case the conversion to URL failed
+   */
   public XQueryAsXPathFunctionConverter (@Nonnull final File aBasePath) throws MalformedURLException
   {
     this (aBasePath.toURI ().toURL ().toExternalForm ());
