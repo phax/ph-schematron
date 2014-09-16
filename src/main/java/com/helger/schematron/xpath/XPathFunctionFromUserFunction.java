@@ -30,8 +30,10 @@ import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.om.Sequence;
 
+import com.helger.commons.ValueEnforcer;
+
 /**
- * A wrapper for an {@link XPathFunction} that is implemented as Saxon
+ * A proxy for an {@link XPathFunction} that is implemented as Saxon
  * {@link UserFunction}.
  *
  * @author Philip Helger
@@ -47,9 +49,9 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
                                         @Nonnull final Controller aXQController,
                                         @Nonnull final UserFunction aUserFunc)
   {
-    m_aConfiguration = aConfiguration;
-    m_aUserFunc = aUserFunc;
-    m_aXQController = aXQController;
+    m_aConfiguration = ValueEnforcer.notNull (aConfiguration, "Configuration");
+    m_aUserFunc = ValueEnforcer.notNull (aUserFunc, "UserFunc");
+    m_aXQController = ValueEnforcer.notNull (aXQController, "XQController");
     // This is surely not correct, but it works :)
     m_aXPathContext = aXQController.newXPathContext ();
   }
@@ -64,14 +66,17 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
       int i = 0;
       for (final Object arg : args)
       {
+        // Ripped from Saxon itself
         final JPConverter converter = JPConverter.allocate (arg.getClass (), m_aConfiguration);
         aValues[i] = converter.convert (arg, m_aXPathContext);
         ++i;
       }
+      // Invoke function
       return m_aUserFunc.call (aValues, m_aXQController);
     }
     catch (final Exception ex)
     {
+      // Wrap all exceptions
       throw new XPathFunctionException (ex);
     }
   }

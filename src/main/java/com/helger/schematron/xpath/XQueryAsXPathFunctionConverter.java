@@ -40,6 +40,11 @@ import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 
+/**
+ * This class loads XQuery modules and provides a list of XPath functions.
+ *
+ * @author Philip Helger
+ */
 public class XQueryAsXPathFunctionConverter
 {
   private final String m_sBaseURL;
@@ -71,11 +76,23 @@ public class XQueryAsXPathFunctionConverter
     this (aBasePath.toURI ().toURL ().toExternalForm ());
   }
 
+  /**
+   * Constructor using the passed URL as a working directory as the base URL for
+   * the XQuery resource resolver.
+   *
+   * @param sBaseURL
+   *        Base URL for XQuery resource resolving. May neither be
+   *        <code>null</code> nor empty.
+   */
   public XQueryAsXPathFunctionConverter (@Nonnull @Nonempty final String sBaseURL)
   {
     m_sBaseURL = ValueEnforcer.notEmpty (sBaseURL, "BaseURL");
   }
 
+  /**
+   * @return The base URL provided in the constructor. Neither <code>null</code>
+   *         nor empty.
+   */
   @Nonnull
   @Nonempty
   public String getBaseURL ()
@@ -83,6 +100,23 @@ public class XQueryAsXPathFunctionConverter
     return m_sBaseURL;
   }
 
+  /**
+   * Load XQuery functions from an input stream. As this function is supposed to
+   * work with Saxon HE, this method allows only for loading full XQuery modules
+   * and not for XQuery libraries.
+   *
+   * @param aXQueryIS
+   *        The Input Stream to read from. May not be <code>null</code>. Will be
+   *        closed automatically in this method.
+   * @return A non-<code>null</code> {@link MapBasedXPathFunctionResolver}
+   *         containing all loaded functions.
+   * @throws XPathException
+   *         if the syntax of the expression is wrong, or if it references
+   *         namespaces, variables, or functions that have not been declared, or
+   *         any other static error is reported.
+   * @throws IOException
+   *         if a failure occurs reading the supplied input.
+   */
   @Nonnull
   public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException,
                                                                                                    IOException
