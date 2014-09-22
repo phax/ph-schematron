@@ -108,6 +108,9 @@ public final class SchematronResourcePureTest
                          // This line contains the XPath error (Node xor number
                          // is invalid)
                          + "      <iso:assert test=\"title xor 55\">Chapter should have a title</iso:assert>\n"
+                         // This line contains the second XPath error (Node xor
+                         // number is still invalid)
+                         + "      <iso:assert test=\"title xor 33\">Chapter should have a title</iso:assert>\n"
                          + "      <iso:report test=\"count(para)\">\n"
                          + "      <iso:value-of select=\"count(para)\"/> paragraphs</iso:report>\n"
                          + "    </iso:rule>\n"
@@ -121,7 +124,8 @@ public final class SchematronResourcePureTest
     assertEquals ("Expected only one error: " + aErrorHandler.getResourceErrors ().toString (),
                   1,
                   aErrorHandler.getResourceErrors ().size ());
-    System.out.println (aErrorHandler.getResourceErrors ().toString ());
+    if (false)
+      System.out.println (aErrorHandler.getResourceErrors ().toString ());
   }
 
   @Test
