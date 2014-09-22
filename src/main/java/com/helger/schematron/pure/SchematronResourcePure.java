@@ -51,6 +51,7 @@ import com.helger.schematron.SchematronUtils;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.bound.PSBoundSchemaCache;
 import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
+import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.svrl.SVRLWriter;
 
@@ -218,7 +219,10 @@ public class SchematronResourcePure extends AbstractSchematronResource
   {
     try
     {
-      return getOrCreateBoundSchema ().getOriginalSchema ().isValid ();
+      // Use the provided error handler (if any)
+      final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler
+                                                                   : DoNothingPSErrorHandler.getInstance ();
+      return getOrCreateBoundSchema ().getOriginalSchema ().isValid (aErrorHandler);
     }
     catch (final RuntimeException ex)
     {
