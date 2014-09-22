@@ -299,4 +299,40 @@ public final class SchematronResourcePureTest
     // Note: the text contains all whitespaces!
     assertEquals ("\n      Node kind: element - end", SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
   }
+
+  @Test
+  public void testResolveFunctXAreDistinctValuesQueryFunctions () throws Exception
+  {
+    final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n"
+                         + "<iso:schema xmlns='http://purl.oclc.org/dsdl/schematron' \n"
+                         + "         xmlns:iso='http://purl.oclc.org/dsdl/schematron' \n"
+                         + "         xmlns:sch='http://www.ascc.net/xml/schematron'\n"
+                         + "         queryBinding='xslt2'\n"
+                         + "         schemaVersion='ISO19757-3'>\n"
+                         + "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n"
+                         + "  <iso:ns prefix='dp' uri='http://www.dpawson.co.uk/ns#' />\n"
+                         + "  <iso:ns prefix='functx' uri='http://www.functx.com' />\n"
+                         + "    <iso:pattern >\n"
+                         + "    <iso:title>A very simple pattern with a title</iso:title>\n"
+                         + "    <iso:rule context='chapter'>\n"
+                         + "      <iso:assert test='functx:are-distinct-values(para/text()[0])'>Should have distinct values</iso:assert>\n"
+                         + "      </iso:rule>\n"
+                         + "  </iso:pattern>\n"
+                         + "</iso:schema>";
+
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+
+    // Test with variable and function resolver
+    final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>"
+                                                    + "<chapter>"
+                                                    + "<title />"
+                                                    + "<para>100</para>"
+                                                    + "<para>200</para>"
+                                                    + "</chapter>");
+    final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ)
+                                                           .setFunctionResolver (aFunctionResolver)
+                                                           .applySchematronValidation (aTestDoc);
+    assertNotNull (aOT);
+    assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
+  }
 }
