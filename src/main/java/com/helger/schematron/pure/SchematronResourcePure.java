@@ -226,8 +226,23 @@ public class SchematronResourcePure extends AbstractSchematronResource
     }
     catch (final RuntimeException ex)
     {
-      // Happens e.g. in case of XPath errors
+      // May happen when XPath errors are contained
       return false;
+    }
+  }
+
+  public void validateCompletely ()
+  {
+    try
+    {
+      // Use the provided error handler (if any)
+      final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler
+                                                                   : DoNothingPSErrorHandler.getInstance ();
+      getOrCreateBoundSchema ().getOriginalSchema ().validateCompletely (aErrorHandler);
+    }
+    catch (final RuntimeException ex)
+    {
+      // May happen when XPath errors are contained
     }
   }
 

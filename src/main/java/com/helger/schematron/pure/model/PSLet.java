@@ -74,6 +74,14 @@ public class PSLet implements IPSClonableElement <PSLet>
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sName))
+      aErrorHandler.error (this, "<let> has no 'name'");
+    if (StringHelper.hasNoText (m_sValue))
+      aErrorHandler.error (this, "<let> has no 'value'");
+  }
+
   public boolean isMinimal ()
   {
     return true;

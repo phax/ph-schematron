@@ -31,6 +31,9 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 public interface IPSElement extends Serializable
 {
   /**
+   * Check if this element is specified completely. This method stops at the
+   * first encountered error.
+   * 
    * @param aErrorHandler
    *        The error handler where the error details are stored. May not be
    *        <code>null</code>.
@@ -38,6 +41,16 @@ public interface IPSElement extends Serializable
    *         is valid, <code>false</code> otherwise.
    */
   boolean isValid (@Nonnull IPSErrorHandler aErrorHandler);
+
+  /**
+   * Check if this element is specified completely. This method performs all
+   * validations independent of the number of encountered error.
+   * 
+   * @param aErrorHandler
+   *        The error handler where the error details are stored. May not be
+   *        <code>null</code>.
+   */
+  void validateCompletely (@Nonnull IPSErrorHandler aErrorHandler);
 
   /**
    * @return <code>true</code> if this element conforms to the Schematron

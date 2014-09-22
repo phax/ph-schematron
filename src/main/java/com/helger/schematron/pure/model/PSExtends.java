@@ -61,6 +61,12 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sRule))
+      aErrorHandler.error (this, "<extends> has no 'rule'");
+  }
+
   public boolean isMinimal ()
   {
     return false;

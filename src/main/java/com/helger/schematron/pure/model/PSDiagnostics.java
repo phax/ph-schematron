@@ -65,6 +65,14 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    for (final PSInclude aInclude : m_aIncludes)
+      aInclude.validateCompletely (aErrorHandler);
+    for (final PSDiagnostic aDiagnostic : m_aDiagnostics)
+      aDiagnostic.validateCompletely (aErrorHandler);
+  }
+
   public boolean isMinimal ()
   {
     return false;

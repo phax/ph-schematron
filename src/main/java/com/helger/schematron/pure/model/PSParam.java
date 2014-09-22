@@ -60,6 +60,14 @@ public class PSParam implements IPSElement
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sName))
+      aErrorHandler.error (this, "<param> has no 'name'");
+    if (StringHelper.hasNoText (m_sValue))
+      aErrorHandler.error (this, "<param> has no 'value'");
+  }
+
   public boolean isMinimal ()
   {
     return false;

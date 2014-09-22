@@ -71,6 +71,14 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sClass))
+      aErrorHandler.error (this, "<span> has no 'class'");
+    if (m_aContent.isEmpty ())
+      aErrorHandler.error (this, "<span> has no content");
+  }
+
   public boolean isMinimal ()
   {
     return true;

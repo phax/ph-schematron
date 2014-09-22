@@ -35,6 +35,7 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematrontest.SchematronTestHelper;
@@ -96,7 +97,7 @@ public final class PSPreprocessorTest
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     assertNotNull (aPreprocessedSchema);
-    assertTrue (aPreprocessedSchema.isValid ());
+    assertTrue (aPreprocessedSchema.isValid (DoNothingPSErrorHandler.getInstance ()));
     // Because titles are not in minimal mode
     assertFalse (aPreprocessedSchema.isMinimal ());
   }

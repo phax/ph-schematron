@@ -212,6 +212,41 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    // If abstract, an ID must be present
+    if (m_bAbstract && StringHelper.hasNoText (m_sID))
+      aErrorHandler.error (this, "abstract <pattern> does not have an 'id'");
+    // is-a may not be present for abstract rules
+    if (m_bAbstract && StringHelper.hasText (m_sIsA))
+      aErrorHandler.error (this, "abstract <pattern> may not have an 'is-a'");
+    if (StringHelper.hasNoText (m_sIsA))
+    {
+      // param only if is-a is set
+      for (final IPSElement aContent : m_aContent)
+        if (aContent instanceof PSParam)
+          aErrorHandler.error (this, "<pattern> without 'is-a' may not contain <param>s");
+    }
+    else
+    {
+      // rule and let only if is-a is not set
+      for (final IPSElement aContent : m_aContent)
+      {
+        if (aContent instanceof PSRule)
+          aErrorHandler.error (this, "<pattern> with 'is-a' may not contain <rule>s");
+        if (aContent instanceof PSLet)
+          aErrorHandler.error (this, "<pattern> with 'is-a' may not contain <let>s");
+      }
+    }
+
+    for (final PSInclude aInclude : m_aIncludes)
+      aInclude.validateCompletely (aErrorHandler);
+    if (m_aTitle != null)
+      m_aTitle.validateCompletely (aErrorHandler);
+    for (final IPSElement aContent : m_aContent)
+      aContent.validateCompletely (aErrorHandler);
+  }
+
   public boolean isMinimal ()
   {
     if (m_bAbstract)

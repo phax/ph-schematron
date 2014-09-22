@@ -85,6 +85,16 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    for (final PSInclude aInclude : m_aIncludes)
+      aInclude.validateCompletely (aErrorHandler);
+    for (final IPSElement aContent : m_aContent)
+      aContent.validateCompletely (aErrorHandler);
+    if (StringHelper.hasNoText (m_sID))
+      aErrorHandler.error (this, "<phase> has no 'id'");
+  }
+
   public boolean isMinimal ()
   {
     for (final PSInclude aInclude : m_aIncludes)

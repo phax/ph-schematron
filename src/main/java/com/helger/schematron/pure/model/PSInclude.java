@@ -55,6 +55,12 @@ public class PSInclude implements IPSElement
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sHref))
+      aErrorHandler.error (this, "<include> has no 'href'");
+  }
+
   public boolean isMinimal ()
   {
     return false;

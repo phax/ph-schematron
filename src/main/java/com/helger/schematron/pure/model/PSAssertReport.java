@@ -90,6 +90,15 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+    if (StringHelper.hasNoText (m_sTest))
+      aErrorHandler.error (this, (m_bIsAssert ? "<assert>" : "<report>") + " has no 'test'");
+  }
+
   public boolean isMinimal ()
   {
     if (!m_bIsAssert)

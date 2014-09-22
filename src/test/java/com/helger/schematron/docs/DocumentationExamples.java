@@ -32,6 +32,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
+import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSTitle;
@@ -74,7 +75,7 @@ public class DocumentationExamples
   {
     // Read the schematron from file
     final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
-    if (!aSchema.isValid ())
+    if (!aSchema.isValid (DoNothingPSErrorHandler.getInstance ()))
       throw new IllegalArgumentException ("Invalid Schematron!");
     // Resolve the query binding to use
     final IPSQueryBinding aQueryBinding = PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());

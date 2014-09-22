@@ -65,6 +65,12 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sSelect))
+      aErrorHandler.error (this, "<value-of> has no 'select'");
+  }
+
   public boolean isMinimal ()
   {
     return true;

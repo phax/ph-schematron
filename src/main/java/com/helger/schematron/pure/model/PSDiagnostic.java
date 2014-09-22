@@ -76,6 +76,15 @@ public class PSDiagnostic implements IPSClonableElement <PSDiagnostic>, IPSOptio
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+    if (StringHelper.hasNoText (m_sID))
+      aErrorHandler.error (this, "<diagnostic> has no 'id'");
+  }
+
   public boolean isMinimal ()
   {
     return false;

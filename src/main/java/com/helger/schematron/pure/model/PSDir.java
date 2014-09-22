@@ -95,6 +95,12 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (m_aContent.isEmpty ())
+      aErrorHandler.error (this, "<dir> has no content");
+  }
+
   public boolean isMinimal ()
   {
     return true;

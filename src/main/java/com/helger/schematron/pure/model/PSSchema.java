@@ -37,7 +37,6 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
-import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
@@ -107,19 +106,6 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
     return m_aResource;
   }
 
-  /**
-   * Check if this schema is valid, meaning checking if all required fields are
-   * set, and all mandatory constraints are fulfilled.
-   *
-   * @return <code>true</code> if the schema is valid, <code>false</code> if
-   *         not.
-   */
-  public boolean isValid ()
-  {
-    // Ignore all details - just get a true or a false
-    return isValid (DoNothingPSErrorHandler.getInstance ());
-  }
-
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (m_aPatterns.isEmpty ())
@@ -153,6 +139,30 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
     if (m_aDiagnostics != null && !m_aDiagnostics.isValid (aErrorHandler))
       return false;
     return true;
+  }
+
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (m_aPatterns.isEmpty ())
+      aErrorHandler.error (this, "<schema> has no <pattern>s");
+    if (m_aTitle != null)
+      m_aTitle.validateCompletely (aErrorHandler);
+    for (final PSInclude aInclude : m_aIncludes)
+      aInclude.validateCompletely (aErrorHandler);
+    for (final PSNS aNS : m_aNSs)
+      aNS.validateCompletely (aErrorHandler);
+    for (final PSP aP : m_aStartPs)
+      aP.validateCompletely (aErrorHandler);
+    for (final PSLet aLet : m_aLets)
+      aLet.validateCompletely (aErrorHandler);
+    for (final PSPhase aPhase : m_aPhases)
+      aPhase.validateCompletely (aErrorHandler);
+    for (final PSPattern aPattern : m_aPatterns)
+      aPattern.validateCompletely (aErrorHandler);
+    for (final PSP aP : m_aEndPs)
+      aP.validateCompletely (aErrorHandler);
+    if (m_aDiagnostics != null)
+      m_aDiagnostics.validateCompletely (aErrorHandler);
   }
 
   /**

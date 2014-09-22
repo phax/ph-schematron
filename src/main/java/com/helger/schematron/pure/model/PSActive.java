@@ -70,6 +70,15 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+    if (StringHelper.hasNoText (m_sPattern))
+      aErrorHandler.error (this, "<active> has no 'pattern'");
+  }
+
   public boolean isMinimal ()
   {
     for (final Object aContent : m_aContent)

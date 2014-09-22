@@ -118,14 +118,22 @@ public final class SchematronResourcePureTest
                          + "\n"
                          + "</iso:schema>";
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
-    assertFalse (SchematronResourcePure.fromByteArray (sTest.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ))
-                                       .setErrorHandler (aErrorHandler)
-                                       .isValidSchematron ());
+    final SchematronResourcePure aSch = SchematronResourcePure.fromByteArray (sTest.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ))
+                                                              .setErrorHandler (aErrorHandler);
+    // Perform quick validation
+    assertFalse (aSch.isValidSchematron ());
     assertEquals ("Expected only one error: " + aErrorHandler.getResourceErrors ().toString (),
                   1,
                   aErrorHandler.getResourceErrors ().size ());
     if (false)
       System.out.println (aErrorHandler.getResourceErrors ().toString ());
+
+    // Perform complete validation
+    aErrorHandler.clearResourceErrors ();
+    aSch.validateCompletely ();
+    assertEquals ("Expected two error2: " + aErrorHandler.getResourceErrors ().toString (),
+                  2,
+                  aErrorHandler.getResourceErrors ().size ());
   }
 
   @Test

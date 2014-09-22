@@ -60,6 +60,12 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (m_aContent.isEmpty ())
+      aErrorHandler.error (this, "<emph> has no content");
+  }
+
   public boolean isMinimal ()
   {
     return true;

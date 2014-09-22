@@ -74,6 +74,14 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    if (StringHelper.hasNoText (m_sUri))
+      aErrorHandler.error (this, "<ns> has no 'uri'");
+    if (StringHelper.hasNoText (m_sPrefix))
+      aErrorHandler.error (this, "<ns> has no 'prefix'");
+  }
+
   public boolean isMinimal ()
   {
     return true;

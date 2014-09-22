@@ -58,6 +58,13 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+  }
+
   public boolean isMinimal ()
   {
     return false;

@@ -116,6 +116,28 @@ public class PSRule implements IPSElement, IPSHasID, IPSHasFlag, IPSHasForeignEl
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    // abstract rules need an ID
+    if (m_bAbstract && StringHelper.hasNoText (m_sID))
+      aErrorHandler.error (this, "abstract <rule> has no 'id'");
+    // abstract rules may not have a context
+    if (m_bAbstract && StringHelper.hasText (m_sContext))
+      aErrorHandler.error (this, "abstract <rule> may not have a 'context'");
+    // Non-abstract rules need a context
+    if (!m_bAbstract && StringHelper.hasNoText (m_sContext))
+      aErrorHandler.error (this, "<rule> must have a 'context'");
+    // At least one assert, report or extends must be present
+    if (m_aContent.isEmpty ())
+      aErrorHandler.error (this, "<rule> has no content");
+    for (final PSInclude aInclude : m_aIncludes)
+      aInclude.validateCompletely (aErrorHandler);
+    for (final PSLet aLet : m_aLets)
+      aLet.validateCompletely (aErrorHandler);
+    for (final IPSElement aContent : m_aContent)
+      aContent.validateCompletely (aErrorHandler);
+  }
+
   public boolean isMinimal ()
   {
     for (final PSInclude aInclude : m_aIncludes)

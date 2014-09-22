@@ -58,6 +58,11 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     return true;
   }
 
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    // Nothing to do
+  }
+
   public boolean isMinimal ()
   {
     return true;

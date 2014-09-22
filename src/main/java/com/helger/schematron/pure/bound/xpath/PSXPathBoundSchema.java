@@ -386,7 +386,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     // rules, asserts/reports and the content elements
     m_aBoundPatterns = _createBoundPatterns (aXPath, aBoundDiagnostics, aVariables);
     if (m_aBoundPatterns == null)
-      throw new SchematronBindException ("Failed to precompile the supplied schema. Check the log for XPath errors!");
+      throw new SchematronBindException ("Failed to precompile the supplied schema.");
   }
 
   @Nonnull
