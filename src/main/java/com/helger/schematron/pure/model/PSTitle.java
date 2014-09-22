@@ -26,12 +26,12 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron title-element.<br>
@@ -49,11 +49,11 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   public PSTitle ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aLogger))
+        if (!((IPSElement) aContent).isValid (aErrorHandler))
           return false;
     return true;
   }

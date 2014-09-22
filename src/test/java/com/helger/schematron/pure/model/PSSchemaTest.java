@@ -23,15 +23,15 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.helger.commons.io.IReadableResource;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.serialize.MicroWriter;
+import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematrontest.SchematronTestHelper;
 
 /**
  * Test class for class {@link PSSchema} and {@link PSReader}.
- * 
+ *
  * @author Philip Helger
  */
 public final class PSSchemaTest
@@ -46,7 +46,7 @@ public final class PSSchemaTest
       // Parse the schema
       final PSSchema aSchema1 = aReader.readSchema ();
       assertNotNull (aSchema1);
-      final InMemoryLogger aLogger = new InMemoryLogger ();
+      final CollectingPSErrorHandler aLogger = new CollectingPSErrorHandler ();
       assertTrue (aRes.getPath (), aSchema1.isValid (aLogger));
       assertTrue (aLogger.isEmpty ());
 

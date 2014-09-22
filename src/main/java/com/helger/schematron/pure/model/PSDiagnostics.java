@@ -28,13 +28,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron diagnostics-element.<br>
@@ -54,13 +54,13 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   public PSDiagnostics ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aLogger))
+      if (!aInclude.isValid (aErrorHandler))
         return false;
     for (final PSDiagnostic aDiagnostic : m_aDiagnostics)
-      if (!aDiagnostic.isValid (aLogger))
+      if (!aDiagnostic.isValid (aErrorHandler))
         return false;
     return true;
   }

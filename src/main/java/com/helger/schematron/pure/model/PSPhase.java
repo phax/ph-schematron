@@ -28,13 +28,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron phase-element.<br>
@@ -69,17 +69,17 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public PSPhase ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aLogger))
+      if (!aInclude.isValid (aErrorHandler))
         return false;
     for (final IPSElement aContent : m_aContent)
-      if (!aContent.isValid (aLogger))
+      if (!aContent.isValid (aErrorHandler))
         return false;
     if (StringHelper.hasNoText (m_sID))
     {
-      aLogger.error ("<phase> has no 'id'");
+      aErrorHandler.error (this, "<phase> has no 'id'");
       return false;
     }
     return true;

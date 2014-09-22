@@ -32,13 +32,13 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.compare.ComparatorStringLongestFirst;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema;
+import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.PSParam;
 import com.helger.schematron.pure.model.PSSchema;
@@ -128,10 +128,15 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                               @Nullable final XPathFunctionResolver aFunctionResolver) throws SchematronException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
-    final InMemoryLogger aLogger = new InMemoryLogger ();
-    if (!aSchema.isValid (aLogger))
-      throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound: " +
-                                         aLogger.getAllMessages ());
+
+    final IPSErrorHandler aErrorHandler = aCustomErrorListener != null ? aCustomErrorListener
+                                                                      : new CollectingPSErrorHandler ();
+    if (!aSchema.isValid (aErrorHandler))
+      throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
+                                         (aErrorHandler == aCustomErrorListener ? ""
+                                                                               : ": " +
+                                                                                 ((CollectingPSErrorHandler) aErrorHandler).getResourceErrors ()
+                                                                                                                           .toString ()));
 
     PSSchema aSchemaToUse = aSchema;
     if (!aSchemaToUse.isPreprocessed ())

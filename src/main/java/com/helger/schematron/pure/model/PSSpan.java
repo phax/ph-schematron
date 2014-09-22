@@ -29,13 +29,13 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron span-element.<br>
@@ -56,16 +56,16 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   public PSSpan ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.hasNoText (m_sClass))
     {
-      aLogger.error ("<span> has no 'class'");
+      aErrorHandler.error (this, "<span> has no 'class'");
       return false;
     }
     if (m_aContent.isEmpty ())
     {
-      aLogger.error ("<span> has no content");
+      aErrorHandler.error (this, "<span> has no content");
       return false;
     }
     return true;

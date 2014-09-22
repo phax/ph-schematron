@@ -29,13 +29,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron pattern-element.<br>
@@ -159,18 +159,18 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   public PSPattern ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     // If abstract, an ID must be present
     if (m_bAbstract && StringHelper.hasNoText (m_sID))
     {
-      aLogger.error ("abstract <pattern> does not have an 'id'");
+      aErrorHandler.error (this, "abstract <pattern> does not have an 'id'");
       return false;
     }
     // is-a may not be present for abstract rules
     if (m_bAbstract && StringHelper.hasText (m_sIsA))
     {
-      aLogger.error ("abstract <pattern> may not have an 'is-a'");
+      aErrorHandler.error (this, "abstract <pattern> may not have an 'is-a'");
       return false;
     }
     if (StringHelper.hasNoText (m_sIsA))
@@ -179,7 +179,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
       for (final IPSElement aContent : m_aContent)
         if (aContent instanceof PSParam)
         {
-          aLogger.error ("<pattern> without 'is-a' may not contain <param>s");
+          aErrorHandler.error (this, "<pattern> without 'is-a' may not contain <param>s");
           return false;
         }
     }
@@ -190,24 +190,24 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
       {
         if (aContent instanceof PSRule)
         {
-          aLogger.error ("<pattern> with 'is-a' may not contain <rule>s");
+          aErrorHandler.error (this, "<pattern> with 'is-a' may not contain <rule>s");
           return false;
         }
         if (aContent instanceof PSLet)
         {
-          aLogger.error ("<pattern> with 'is-a' may not contain <let>s");
+          aErrorHandler.error (this, "<pattern> with 'is-a' may not contain <let>s");
           return false;
         }
       }
     }
 
     for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aLogger))
+      if (!aInclude.isValid (aErrorHandler))
         return false;
-    if (m_aTitle != null && !m_aTitle.isValid (aLogger))
+    if (m_aTitle != null && !m_aTitle.isValid (aErrorHandler))
       return false;
     for (final IPSElement aContent : m_aContent)
-      if (!aContent.isValid (aLogger))
+      if (!aContent.isValid (aErrorHandler))
         return false;
     return true;
   }

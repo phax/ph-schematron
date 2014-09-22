@@ -26,13 +26,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron value-of-element.<br>
@@ -55,11 +55,11 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
   public PSValueOf ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.hasNoText (m_sSelect))
     {
-      aLogger.error ("<value-of> has no 'select'");
+      aErrorHandler.error (this, "<value-of> has no 'select'");
       return false;
     }
     return true;

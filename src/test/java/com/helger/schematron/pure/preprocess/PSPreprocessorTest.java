@@ -28,20 +28,20 @@ import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.serialize.MicroWriter;
 import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
+import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematrontest.SchematronTestHelper;
 
 /**
  * Test class for class {@link PSPreprocessor}.
- * 
+ *
  * @author Philip Helger
  */
 public final class PSPreprocessorTest
@@ -62,9 +62,9 @@ public final class PSPreprocessorTest
       assertNotNull (aSchema);
 
       // Ensure the schema is valid
-      final InMemoryLogger aLogger = new InMemoryLogger ();
-      assertTrue (aRes.getPath (), aSchema.isValid (aLogger));
-      assertTrue (aLogger.isEmpty ());
+      final CollectingPSErrorHandler aErrHdl = new CollectingPSErrorHandler ();
+      assertTrue (aRes.getPath (), aSchema.isValid (aErrHdl));
+      assertTrue (aErrHdl.isEmpty ());
 
       // Convert to minified schema if not-yet minimal
       final PSSchema aPreprocessedSchema = aPreprocessor.getAsMinimalSchema (aSchema);
@@ -80,7 +80,7 @@ public final class PSPreprocessorTest
       }
 
       // Ensure it is still valid and minimal
-      assertTrue (aRes.getPath (), aPreprocessedSchema.isValid (aLogger));
+      assertTrue (aRes.getPath (), aPreprocessedSchema.isValid (aErrHdl));
       assertTrue (aRes.getPath (), aPreprocessedSchema.isMinimal ());
     }
   }
@@ -96,7 +96,7 @@ public final class PSPreprocessorTest
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     assertNotNull (aPreprocessedSchema);
-    assertTrue (aPreprocessedSchema.isValid (new InMemoryLogger ()));
+    assertTrue (aPreprocessedSchema.isValid ());
     // Because titles are not in minimal mode
     assertFalse (aPreprocessedSchema.isMinimal ());
   }

@@ -20,24 +20,24 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * Base interface for a single Pure Schematron element
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSElement extends Serializable
 {
   /**
-   * @param aLogger
-   *        The logger where the error details are stored. May not be
+   * @param aErrorHandler
+   *        The error handler where the error details are stored. May not be
    *        <code>null</code>.
    * @return <code>true</code> if all mandatory fields are set and the element
    *         is valid, <code>false</code> otherwise.
    */
-  boolean isValid (@Nonnull InMemoryLogger aLogger);
+  boolean isValid (@Nonnull IPSErrorHandler aErrorHandler);
 
   /**
    * @return <code>true</code> if this element conforms to the Schematron

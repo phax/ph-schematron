@@ -26,7 +26,7 @@ import com.helger.schematron.pure.model.IPSElement;
 
 /**
  * Abstract implementation of {@link IPSErrorHandler}.
- * 
+ *
  * @author Philip Helger
  */
 public abstract class AbstractPSErrorHandler implements IPSErrorHandler
@@ -65,6 +65,11 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
     final IPSErrorHandler aNestedErrorHandler = getNestedErrorHandler ();
     if (aNestedErrorHandler != null)
       aNestedErrorHandler.warn (aRes, aSourceElement, sMessage);
+  }
+
+  public final void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMessage)
+  {
+    error ((IReadableResource) null, aSourceElement, sMessage, (Throwable) null);
   }
 
   public final void error (@Nullable final IReadableResource aRes,

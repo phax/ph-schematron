@@ -26,13 +26,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron ns-element.<br>
@@ -59,16 +59,16 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   public PSNS ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.hasNoText (m_sUri))
     {
-      aLogger.error ("<ns> has no 'uri'");
+      aErrorHandler.error (this, "<ns> has no 'uri'");
       return false;
     }
     if (StringHelper.hasNoText (m_sPrefix))
     {
-      aLogger.error ("<ns> has no 'prefix'");
+      aErrorHandler.error (this, "<ns> has no 'prefix'");
       return false;
     }
     return true;

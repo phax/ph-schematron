@@ -18,7 +18,6 @@ package com.helger.schematron.pure.bound.xpath;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.xml.sax.SAXException;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.mock.DebugModeTestRule;
 import com.helger.commons.mock.PHTestUtils;
@@ -110,7 +108,7 @@ public final class PSXPathBoundSchemaTest
       assertNotNull (aSchema);
       PHTestUtils.testToStringImplementation (aSchema);
 
-      final InMemoryLogger aLogger = new InMemoryLogger ();
+      final CollectingPSErrorHandler aLogger = new CollectingPSErrorHandler ();
       assertTrue (aRes.getPath (), aSchema.isValid (aLogger));
       assertTrue (aLogger.isEmpty ());
 
@@ -135,8 +133,7 @@ public final class PSXPathBoundSchemaTest
         final CollectingPSErrorHandler aCEH = new CollectingPSErrorHandler ();
         PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH);
         // Either an ERROR was collected or an exception was thrown
-        if (aCEH.getResourceErrors ().getMostSevereErrorLevel ().isLessSevereThan (EErrorLevel.ERROR))
-          fail ();
+        assertTrue (aCEH.getResourceErrors ().getMostSevereErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.ERROR));
       }
       catch (final SchematronException ex)
       {

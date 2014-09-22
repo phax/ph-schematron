@@ -35,7 +35,7 @@ import com.helger.schematron.pure.model.IPSHasID;
 /**
  * An implementation if {@link IPSErrorHandler} that collects all error
  * messages.
- * 
+ *
  * @author Philip Helger
  */
 public class CollectingPSErrorHandler extends AbstractPSErrorHandler
@@ -75,13 +75,22 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
 
   /**
    * Clear all currently stored errors.
-   * 
+   *
    * @return {@link EChange#CHANGED} if at least one item was cleared.
    */
   @Nonnull
   public EChange clearResourceErrors ()
   {
     return m_aErrors.clear ();
+  }
+
+  /**
+   * @return <code>true</code> if no error is contained, <code>false</code> if
+   *         at least one error is contained.
+   */
+  public boolean isEmpty ()
+  {
+    return m_aErrors.isEmpty ();
   }
 
   @Override

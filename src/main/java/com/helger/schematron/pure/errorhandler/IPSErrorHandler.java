@@ -24,14 +24,14 @@ import com.helger.schematron.pure.model.IPSElement;
 
 /**
  * Base interface for a Pure Schematron error handler.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSErrorHandler
 {
   /**
    * Emit a warning
-   * 
+   *
    * @param aRes
    *        The resource in which the error occurred. May be <code>null</code>.
    * @param aSourceElement
@@ -43,10 +43,24 @@ public interface IPSErrorHandler
   void warn (@Nullable IReadableResource aRes, @Nonnull IPSElement aSourceElement, @Nonnull String sMessage);
 
   /**
+   * Emit an error. Shortcut for
+   * {@link #error(IReadableResource, IPSElement, String, Throwable)} with
+   * <code>null</code> {@link IReadableResource} and <code>null</code>
+   * {@link Throwable}.
+   *
+   * @param aSourceElement
+   *        The source element where the warning is encountered. Never
+   *        <code>null</code>.
+   * @param sMessage
+   *        The main warning message. Never <code>null</code>.
+   */
+  void error (@Nonnull IPSElement aSourceElement, @Nonnull String sMessage);
+
+  /**
    * Emit an error
-   * 
+   *
    * @param aRes
-   *        The resource in which the error occurred. MAy be <code>null</code>.
+   *        The resource in which the error occurred. May be <code>null</code>.
    * @param aSourceElement
    *        The source element where the warning is encountered. Never
    *        <code>null</code>.

@@ -20,13 +20,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron include-element.<br>
@@ -34,7 +34,7 @@ import com.helger.schematron.CSchematronXML;
  * whose document element is a Schematron element of a type which is allowed by
  * the grammar for Schematron at the current position in the schema. The
  * external document is inserted in place of the include element.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
@@ -45,11 +45,11 @@ public class PSInclude implements IPSElement
   public PSInclude ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.hasNoText (m_sHref))
     {
-      aLogger.error ("<include> has no 'href'");
+      aErrorHandler.error (this, "<include> has no 'href'");
       return false;
     }
     return true;

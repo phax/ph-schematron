@@ -29,13 +29,13 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron rule-element.<br>
@@ -78,40 +78,40 @@ public class PSRule implements IPSElement, IPSHasID, IPSHasFlag, IPSHasForeignEl
   public PSRule ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     // abstract rules need an ID
     if (m_bAbstract && StringHelper.hasNoText (m_sID))
     {
-      aLogger.error ("abstract <rule> has no 'id'");
+      aErrorHandler.error (this, "abstract <rule> has no 'id'");
       return false;
     }
     // abstract rules may not have a context
     if (m_bAbstract && StringHelper.hasText (m_sContext))
     {
-      aLogger.error ("abstract <rule> may not have a 'context'");
+      aErrorHandler.error (this, "abstract <rule> may not have a 'context'");
       return false;
     }
     // Non-abstract rules need a context
     if (!m_bAbstract && StringHelper.hasNoText (m_sContext))
     {
-      aLogger.error ("<rule> must have a 'context'");
+      aErrorHandler.error (this, "<rule> must have a 'context'");
       return false;
     }
     // At least one assert, report or extends must be present
     if (m_aContent.isEmpty ())
     {
-      aLogger.error ("<rule> has no content");
+      aErrorHandler.error (this, "<rule> has no content");
       return false;
     }
     for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aLogger))
+      if (!aInclude.isValid (aErrorHandler))
         return false;
     for (final PSLet aLet : m_aLets)
-      if (!aLet.isValid (aLogger))
+      if (!aLet.isValid (aErrorHandler))
         return false;
     for (final IPSElement aContent : m_aContent)
-      if (!aContent.isValid (aLogger))
+      if (!aContent.isValid (aErrorHandler))
         return false;
     return true;
   }

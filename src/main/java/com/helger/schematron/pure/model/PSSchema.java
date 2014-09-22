@@ -30,7 +30,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.IReadableResource;
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
@@ -38,6 +37,8 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron schema-element.<br>
@@ -115,40 +116,40 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
    */
   public boolean isValid ()
   {
-    return isValid (new InMemoryLogger ());
+    return isValid (new CollectingPSErrorHandler ());
   }
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (m_aPatterns.isEmpty ())
     {
-      aLogger.error ("<schema> has no <pattern>s");
+      aErrorHandler.error (this, "<schema> has no <pattern>s");
       return false;
     }
-    if (m_aTitle != null && !m_aTitle.isValid (aLogger))
+    if (m_aTitle != null && !m_aTitle.isValid (aErrorHandler))
       return false;
     for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aLogger))
+      if (!aInclude.isValid (aErrorHandler))
         return false;
     for (final PSNS aNS : m_aNSs)
-      if (!aNS.isValid (aLogger))
+      if (!aNS.isValid (aErrorHandler))
         return false;
     for (final PSP aP : m_aStartPs)
-      if (!aP.isValid (aLogger))
+      if (!aP.isValid (aErrorHandler))
         return false;
     for (final PSLet aLet : m_aLets)
-      if (!aLet.isValid (aLogger))
+      if (!aLet.isValid (aErrorHandler))
         return false;
     for (final PSPhase aPhase : m_aPhases)
-      if (!aPhase.isValid (aLogger))
+      if (!aPhase.isValid (aErrorHandler))
         return false;
     for (final PSPattern aPattern : m_aPatterns)
-      if (!aPattern.isValid (aLogger))
+      if (!aPattern.isValid (aErrorHandler))
         return false;
     for (final PSP aP : m_aEndPs)
-      if (!aP.isValid (aLogger))
+      if (!aP.isValid (aErrorHandler))
         return false;
-    if (m_aDiagnostics != null && !m_aDiagnostics.isValid (aLogger))
+    if (m_aDiagnostics != null && !m_aDiagnostics.isValid (aErrorHandler))
       return false;
     return true;
   }

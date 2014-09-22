@@ -20,13 +20,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron let-element.<br>
@@ -47,7 +47,7 @@ import com.helger.schematron.CSchematronXML;
  * variables specified by let elements under the schema element. For example, an
  * implementation may allow top-level variables to be supplied on the command
  * line. The values provided are strings or data objects, not expressions.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
@@ -59,16 +59,16 @@ public class PSLet implements IPSClonableElement <PSLet>
   public PSLet ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.hasNoText (m_sName))
     {
-      aLogger.error ("<let> has no 'name'");
+      aErrorHandler.error (this, "<let> has no 'name'");
       return false;
     }
     if (StringHelper.hasNoText (m_sValue))
     {
-      aLogger.error ("<let> has no 'value'");
+      aErrorHandler.error (this, "<let> has no 'value'");
       return false;
     }
     return true;

@@ -20,13 +20,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.helger.commons.log.InMemoryLogger;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
  * A single Schematron param-element.<br>
@@ -45,16 +45,16 @@ public class PSParam implements IPSElement
   public PSParam ()
   {}
 
-  public boolean isValid (@Nonnull final InMemoryLogger aLogger)
+  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.hasNoText (m_sName))
     {
-      aLogger.error ("<param> has no 'name'");
+      aErrorHandler.error (this, "<param> has no 'name'");
       return false;
     }
     if (StringHelper.hasNoText (m_sValue))
     {
-      aLogger.error ("<param> has no 'value'");
+      aErrorHandler.error (this, "<param> has no 'value'");
       return false;
     }
     return true;
