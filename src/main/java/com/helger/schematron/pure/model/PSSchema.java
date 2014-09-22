@@ -37,7 +37,7 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
-import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 
 /**
@@ -116,7 +116,8 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
    */
   public boolean isValid ()
   {
-    return isValid (new CollectingPSErrorHandler ());
+    // Ignore all details - just get a true or a false
+    return isValid (DoNothingPSErrorHandler.getInstance ());
   }
 
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
