@@ -76,6 +76,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                            @Nonnull final PSXPathVariables aVariables)
   {
     final List <PSXPathBoundElement> ret = new ArrayList <PSXPathBoundElement> ();
+    boolean bHasAnyError = false;
+
     for (final Object aContentElement : aMixedContent.getAllContentElements ())
     {
       if (aContentElement instanceof PSName)
@@ -93,7 +95,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           catch (final XPathExpressionException ex)
           {
             error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex);
-            return null;
+            bHasAnyError = true;
           }
         }
         else
@@ -117,7 +119,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           catch (final XPathExpressionException ex)
           {
             error (aValueOf, "Failed to compile XPath expression in <value-of>: '" + sSelect + "'", ex);
-            return null;
+            bHasAnyError = true;
           }
         }
         else
@@ -126,6 +128,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           ret.add (new PSXPathBoundElement (aContentElement));
         }
     }
+
+    if (bHasAnyError)
+      return null;
+
     return ret;
   }
 
@@ -134,6 +140,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                                         @Nonnull final PSXPathVariables aVariables)
   {
     final Map <String, PSXPathBoundDiagnostic> ret = new HashMap <String, PSXPathBoundDiagnostic> ();
+    boolean bHasAnyError = false;
+
     final PSSchema aSchema = getOriginalSchema ();
     if (aSchema.hasDiagnostics ())
     {
@@ -144,17 +152,23 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         if (aBoundElements == null)
         {
           // error already emitted
-          return null;
+          bHasAnyError = true;
         }
-
-        final PSXPathBoundDiagnostic aBoundDiagnostic = new PSXPathBoundDiagnostic (aDiagnostic, aBoundElements);
-        if (ret.put (aDiagnostic.getID (), aBoundDiagnostic) != null)
+        else
         {
-          error (aDiagnostic, "A diagnostic element with ID '" + aDiagnostic.getID () + "' was overwritten!");
-          return null;
+          final PSXPathBoundDiagnostic aBoundDiagnostic = new PSXPathBoundDiagnostic (aDiagnostic, aBoundElements);
+          if (ret.put (aDiagnostic.getID (), aBoundDiagnostic) != null)
+          {
+            error (aDiagnostic, "A diagnostic element with ID '" + aDiagnostic.getID () + "' was overwritten!");
+            bHasAnyError = true;
+          }
         }
       }
     }
+
+    if (bHasAnyError)
+      return null;
+
     return ret;
   }
 
@@ -176,6 +190,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                            @Nonnull final PSXPathVariables aVariables)
   {
     final List <PSXPathBoundPattern> ret = new ArrayList <PSXPathBoundPattern> ();
+    boolean bHasAnyError = false;
 
     // For all relevant patterns
     for (final PSPattern aPattern : getAllRelevantPatterns ())
@@ -242,15 +257,17 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             if (aBoundElements == null)
             {
               // Error already emitted
-              return null;
+              bHasAnyError = true;
             }
-
-            final PSXPathBoundAssertReport aBoundAssertReport = new PSXPathBoundAssertReport (aAssertReport,
-                                                                                              sTest,
-                                                                                              aTestExpr,
-                                                                                              aBoundElements,
-                                                                                              aBoundDiagnostics);
-            aBoundAssertReports.add (aBoundAssertReport);
+            else
+            {
+              final PSXPathBoundAssertReport aBoundAssertReport = new PSXPathBoundAssertReport (aAssertReport,
+                                                                                                sTest,
+                                                                                                aTestExpr,
+                                                                                                aBoundElements,
+                                                                                                aBoundDiagnostics);
+              aBoundAssertReports.add (aBoundAssertReport);
+            }
           }
           catch (final XPathExpressionException ex)
           {
@@ -260,7 +277,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                   sTest +
                                   "' " +
                                   aVariables, ex);
-            return null;
+            bHasAnyError = true;
           }
         }
 
@@ -276,7 +293,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         catch (final XPathExpressionException ex)
         {
           error (aRule, "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'", ex);
-          return null;
+          bHasAnyError = true;
         }
 
         // Finally remove all variables added for the rule
@@ -290,6 +307,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // Finally remove all variables added for the pattern
       aVariables.removeAll (aAddedVarsPattern);
     }
+
+    if (bHasAnyError)
+      return null;
+
     return ret;
   }
 

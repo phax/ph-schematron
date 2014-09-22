@@ -102,8 +102,7 @@ public final class SchematronResourcePureTest
                          + "         schemaVersion=\"ISO19757-3\">\n"
                          + "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n"
                          + "  <iso:ns prefix=\"dp\" uri=\"http://www.dpawson.co.uk/ns#\" />\n"
-                         + " <iso:pattern >\n"
-                         + "    <iso:title>A very simple pattern with a title</iso:title>\n"
+                         + "  <iso:pattern>\n"
                          + "    <iso:rule context=\"chapter\">\n"
                          // This line contains the XPath error (Node xor number
                          // is invalid)
@@ -111,19 +110,16 @@ public final class SchematronResourcePureTest
                          // This line contains the second XPath error (Node xor
                          // number is still invalid)
                          + "      <iso:assert test=\"title xor 33\">Chapter should have a title</iso:assert>\n"
-                         + "      <iso:report test=\"count(para)\">\n"
-                         + "      <iso:value-of select=\"count(para)\"/> paragraphs</iso:report>\n"
                          + "    </iso:rule>\n"
                          + "  </iso:pattern>\n"
-                         + "\n"
                          + "</iso:schema>";
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
     final SchematronResourcePure aSch = SchematronResourcePure.fromByteArray (sTest.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ))
                                                               .setErrorHandler (aErrorHandler);
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
-    assertEquals ("Expected only one error: " + aErrorHandler.getResourceErrors ().toString (),
-                  1,
+    assertEquals ("Expected two errors: " + aErrorHandler.getResourceErrors ().toString (),
+                  2,
                   aErrorHandler.getResourceErrors ().size ());
     if (false)
       System.out.println (aErrorHandler.getResourceErrors ().toString ());
@@ -131,7 +127,7 @@ public final class SchematronResourcePureTest
     // Perform complete validation
     aErrorHandler.clearResourceErrors ();
     aSch.validateCompletely ();
-    assertEquals ("Expected two error2: " + aErrorHandler.getResourceErrors ().toString (),
+    assertEquals ("Expected two errors: " + aErrorHandler.getResourceErrors ().toString (),
                   2,
                   aErrorHandler.getResourceErrors ().size ());
   }
