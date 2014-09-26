@@ -159,7 +159,7 @@ public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) t
   final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
   final PSTitle aTitle = new PSTitle ();
   aTitle.addText ("Created by ph-schematron");
-   aSchema.setTitle (aTitle);
+  aSchema.setTitle (aTitle);
   return MicroWriter.writeToFile (aSchema.getAsMicroElement (), aSchematronFile).isSuccess ();
 }
 ```
