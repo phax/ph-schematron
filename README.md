@@ -169,4 +169,77 @@ It is also possible to implement your own query binding that is different from t
 ### Modify Existing Query Binding
 Additionally you may alter the existing Schematron processing by either using the Pure Schematron API as outlined in the example above or you may subclass `com.helger.schematron.pure.bound.PSBoundSchemaCacheKey` which offers a set of protected methods for easy customization when using `SchematronResourcePure`. In case you have a customized implementation, you need to use the special `SchematronResourcePure` constructor taking the Schematron `IReadableResource` and the `PSBoundSchemaCacheKey` implementation. See the documentation in the code for details on overriding `PSBoundSchemaCacheKey`.
 
+# Benchmarks
+As I had no time to do a real benchmark here are at least my unofficial findings. The pure validation is about 40-50% faster when the same Schematron is applied on the same XML over and over again. As both the XSLT and the Pure Schematron solutions internally use a cache, I assume that this will hold true when validating different XML files with the same rule set.
+
+# Known issues
+## Element order inconsistency
+I recently discovered an inconsistency between the Pure and the XSLT based version. The Schematron is the following:
+```xml
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xml:lang="de">
+  <sch:title>Example of Multi-Lingual Schema</sch:title>
+  <sch:pattern>
+    <sch:rule context="dog">
+      <sch:assert test="bone" diagnostics="d1 d2"> A dog should have a bone.</sch:assert>
+    </sch:rule>
+  </sch:pattern>
+  <sch:diagnostics>
+    <sch:diagnostic id="d1" xml:lang="en"> A dog should have a bone.</sch:diagnostic>
+    <sch:diagnostic id="d2" xml:lang="de"> Das  Hund muss ein Bein haben.</sch:diagnostic>
+  </sch:diagnostics>
+</sch:schema>
+```
+The respective XML file to validate is
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<dog xml:lang="de">
+  <fleas/>
+</dog>
+```
+When using Pure Schematron, the output is
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schematron-output title="Example of Multi-Lingual Schema" xmlns="http://purl.oclc.org/dsdl/svrl">
+  <active-pattern/>
+  <fired-rule context="//dog"/>
+  <failed-assert test="bone" location="//dog[0]">
+    <diagnostic-reference diagnostic="d1">
+      <text> A dog should have a bone. </text>
+    </diagnostic-reference>
+    <diagnostic-reference diagnostic="d2">
+      <text> Das Hund muss ein Bein haben. </text>
+    </diagnostic-reference>
+    <text> A dog should have a bone. </text>
+  </failed-assert>
+</schematron-output>
+```
+Whereas when using the XSLT based version, the (formatted) output is
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svrl:schematron-output schemaVersion="" title="Example of Multi-Lingual Schema" xmlns:iso="http://purl.oclc.org/dsdl/schematron"
+  xmlns:schold="http://www.ascc.net/xml/schematron" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:xhtml="http://www.w3.org/1999/xhtml"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <svrl:active-pattern document="...\ph-schematron\src\test\resources\issues\6\issue6.xml" />
+  <svrl:fired-rule context="dog" />
+  <svrl:failed-assert location="/dog" test="bone">
+    <svrl:text> A dog should have a bone. </svrl:text>
+    <svrl:diagnostic-reference diagnostic="d1" xml:lang="en">
+      A dog should have a bone.
+    </svrl:diagnostic-reference>
+    <svrl:diagnostic-reference diagnostic="d2" xml:lang="de">
+      Das Hund muss ein Bein haben.
+    </svrl:diagnostic-reference>
+  </svrl:failed-assert>
+</svrl:schematron-output>
+```
+and it’s easy to see that the order of `text` and `diagnostic-reference` within the `failed-assert` is different. According to the SVRL RNC (http://schematron.com/resource/svrl.rnc) the order created by the Pure version is imho correct:
+```
+# only failed assertions are reported
+failed-assert =  element failed-assert {
+    attlist.assert-and-report, 
+    diagnostic-reference*, 
+    human-text
+  }
+```  
+So when using the XSLT based version together with diagnostic references the created SVRL does not necessarily comply to the SVRL-XSD file contained in ph-schematron.
     
