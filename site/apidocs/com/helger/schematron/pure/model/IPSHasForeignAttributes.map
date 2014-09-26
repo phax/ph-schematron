@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSValueOf.html" title="com.helger.schematron.pure.model.PSValueOf" alt="" coords="16,124,101,151"/>
+<area shape="rect" id="node2_1" href="./PSNS.html" title="com.helger.schematron.pure.model.PSNS" alt="" coords="147,124,205,151"/>
+<area shape="rect" id="node3_2" href="./PSName.html" title="com.helger.schematron.pure.model.PSName" alt="" coords="250,124,323,151"/>
+<area shape="rect" id="node4_3" href="./PSExtends.html" title="com.helger.schematron.pure.model.PSExtends" alt="" coords="369,124,455,151"/>
+<area shape="rect" id="node5_4" href="./IPSHasForeignElements.html" title="com.helger.schematron.pure.model.IPSHasForeignElements" alt="" coords="501,115,664,159"/>
+<area shape="rect" id="node6_5" href="./IPSHasForeignAttributes.html" title="com.helger.schematron.pure.model.IPSHasForeignAttributes" alt="" coords="205,11,369,55"/>
+</map>

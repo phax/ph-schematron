@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./MainBenchmarkSchematronGetSVRL.html" title="com.helger.schematron.benchmark.MainBenchmarkSchematronGetSVRL" alt="" coords="16,112,256,139"/>
+<area shape="rect" id="node2_1" href="./MainBenchmarkIsValidSchematron.html" title="com.helger.schematron.benchmark.MainBenchmarkIsValidSchematron" alt="" coords="301,112,525,139"/>
+<area shape="rect" id="node3_2" href="./AbstractBenchmarkTask.html" title="com.helger.schematron.benchmark.AbstractBenchmarkTask" alt="" coords="186,16,363,43"/>
+</map>

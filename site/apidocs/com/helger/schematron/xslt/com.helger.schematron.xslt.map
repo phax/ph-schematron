@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SchematronXSLTValidatorFailedAssertOnly.html" title="com.helger.schematron.xslt.SchematronXSLTValidatorFailedAssertOnly" alt="" coords="16,120,288,147"/>
+<area shape="rect" id="node2_1" href="./SchematronXSLTValidatorDefault.html" title="com.helger.schematron.xslt.SchematronXSLTValidatorDefault" alt="" coords="334,120,546,147"/>
+<area shape="rect" id="node3_2" href="./SchematronResourceXSLTCache.html" title="com.helger.schematron.xslt.SchematronResourceXSLTCache" alt="" coords="508,20,721,47"/>
+<area shape="rect" id="node4_3" href="./SchematronResourceXSLT.html" title="com.helger.schematron.xslt.SchematronResourceXSLT" alt="" coords="729,120,905,147"/>
+<area shape="rect" id="node5_4" href="./SchematronResourceSCHCache.html" title="com.helger.schematron.xslt.SchematronResourceSCHCache" alt="" coords="1094,20,1303,47"/>
+<area shape="rect" id="node6_5" href="./SchematronResourceSCH.html" title="com.helger.schematron.xslt.SchematronResourceSCH" alt="" coords="951,120,1124,147"/>
+<area shape="rect" id="node7_6" href="./ISchematronXSLTValidator.html" title="com.helger.schematron.xslt.ISchematronXSLTValidator" alt="" coords="213,11,387,55"/>
+<area shape="rect" id="node8_7" href="./ISchematronXSLTProvider.html" title="com.helger.schematron.xslt.ISchematronXSLTProvider" alt="" coords="1349,11,1518,55"/>
+<area shape="rect" id="node10_8" href="./AbstractSchematronXSLTProvider.html" title="com.helger.schematron.xslt.AbstractSchematronXSLTProvider" alt="" coords="1315,120,1552,147"/>
+<area shape="rect" id="node9_9" href="./AbstractSchematronXSLTResource.html" title="com.helger.schematron.xslt.AbstractSchematronXSLTResource" alt="" coords="805,20,1049,47"/>
+</map>

@@ -1,0 +1,10 @@
+com.helger.schematron
+com.helger.schematron.benchmark
+com.helger.schematron.docs
+com.helger.schematron.pure
+com.helger.schematron.pure.bound.xpath
+com.helger.schematron.pure.model
+com.helger.schematron.pure.preprocess
+com.helger.schematron.supplemantery
+com.helger.schematron.svrl
+com.helger.schematron.xslt
