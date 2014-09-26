@@ -150,4 +150,23 @@ It is important to note, that in the second case no caching is performed, and th
 
 The most customization may be done to the pre-processor. The Schematron ISO standard defines a "Minimal Syntax" that is still compliant Schematron but among other with all includes resolved, all abstract patterns and abstract rules resolved. Because a Schematron that is minified has implications on the created SVRL document it was chosen to call the class *PSPreprocessor* and not *PSMinifier*. For example if all `<report>` elements are converted to `<assert>` elements, the SVRL would contain a `<failed-assert>` element instead of a `<successful-report>` element. By default the pre-processor creates a minimal Schematron but if offers the possibility to avoid certain minimizations.
 
+## Extensibility of Pure Schematron
+### Reading
+Pure Schematron can be extended in several ways. The reading itself is not very customizable, but after reading you have the possibility to modify the created Schematron object of type `com.helger.schematron.pure.model.PSSchema`. It offers getter and setter for all elements. The object hierarchy of `PSSchema` is very similar to the XML hierarchy of Schematron in general so it should not be too hard to handle. E.g. a `PSSchema` has a list of `PSPattern` objects, which in turn each have a list of `PSRule` elements. Via the method `IMicroElement getAsMicroElement ()` each Schematron object can easily be converted to an XML structure which can than easily be serialized to disk. The following example reads a Schematron file from disc, sets a `<title>` element and writes the document back to the source file:
+```java
+public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) throws Exception
+{
+  final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
+  final PSTitle aTitle = new PSTitle ();
+  aTitle.addText ("Created by ph-schematron");
+   aSchema.setTitle (aTitle);
+  return MicroWriter.writeToFile (aSchema.getAsMicroElement (), aSchematronFile).isSuccess ();
+}
+```
+### New Query Binding
+It is also possible to implement your own query binding that is different from the default XPath-based query binding. Therefore a class implementing the interface `com.helger.schematron.pure.binding.IPSQueryBinding` must be present. This implementation class must then be registered in the `com.helger.schematron.pure.binding.PSQueryBindingRegistry` via the static method `registerQueryBinding`. It is not possible to replace an existing query binding. The predefined XPath-based query binding is registered to the names *xslt* and *xslt2* as well as to the default (meaning unspecified) query binding. Implementing your own query binding is kind of time consuming as you need to implement at least the interfaces `com.helger.schematron.pure.binding.IPSQueryBinding` and `com.helger.schematron.pure.bound.IPSBoundSchema`.
+
+### Modify Existing Query Binding
+Additionally you may alter the existing Schematron processing by either using the Pure Schematron API as outlined in the example above or you may subclass `com.helger.schematron.pure.bound.PSBoundSchemaCacheKey` which offers a set of protected methods for easy customization when using `SchematronResourcePure`. In case you have a customized implementation, you need to use the special `SchematronResourcePure` constructor taking the Schematron `IReadableResource` and the `PSBoundSchemaCacheKey` implementation. See the documentation in the code for details on overriding `PSBoundSchemaCacheKey`.
+
     
