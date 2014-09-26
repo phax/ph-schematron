@@ -232,8 +232,7 @@
 					build it from source, at least Maven 3.0.4 is required. The
 					dependency for ph-schematron looks like this:</p>
 
-				<pre>
-					<code>&lt;dependency&gt;
+				<pre><code>&lt;dependency&gt;
   &lt;groupId&gt;com.helger&lt;/groupId&gt;
   &lt;artifactId&gt;ph-schematron&lt;/artifactId&gt;
   &lt;version&gt;2.8.3&lt;/version&gt;
@@ -380,8 +379,7 @@
 				</p>
 
 				<div class="highlight highlight-java">
-					<pre>
-						<span class="kd">public</span> <span class="kd">static</span> <span
+					<pre><span class="kd">public</span> <span class="kd">static</span> <span
 							class="kt">boolean</span> <span class="nf">validateXMLViaXSLTSchematron</span> <span
 							class="o">(</span><span class="nd">@Nonnull</span> <span
 							class="kd">final</span> <span class="n">File</span> <span
@@ -414,8 +412,7 @@
 					this:</p>
 
 				<div class="highlight highlight-java">
-					<pre>
-						<span class="kd">public</span> <span class="kd">static</span> <span
+					<pre><span class="kd">public</span> <span class="kd">static</span> <span
 							class="n">SchematronOutputType</span> <span class="nf">validateXMLViaXSLTSchematronFull</span> <span
 							class="o">(</span><span class="nd">@Nonnull</span> <span
 							class="kd">final</span> <span class="n">File</span> <span
@@ -481,8 +478,7 @@
 					rules from a file looks like this:</p>
 
 				<div class="highlight highlight-java">
-					<pre>
-						<span class="kd">public</span> <span class="kd">static</span> <span
+					<pre><span class="kd">public</span> <span class="kd">static</span> <span
 							class="kt">boolean</span> <span class="nf">validateXMLViaPureSchematron</span> <span
 							class="o">(</span><span class="nd">@Nonnull</span> <span
 							class="kd">final</span> <span class="n">File</span> <span
@@ -515,8 +511,7 @@
 					as well, in which case the code can look like this:</p>
 
 				<div class="highlight highlight-java">
-					<pre>
-						<span class="kd">public</span> <span class="kd">static</span> <span
+					<pre><span class="kd">public</span> <span class="kd">static</span> <span
 							class="kt">boolean</span> <span class="nf">validateXMLViaPureSchematron2</span> <span
 							class="o">(</span><span class="nd">@Nonnull</span> <span
 							class="kd">final</span> <span class="n">File</span> <span
@@ -670,8 +665,7 @@
 				</p>
 
 				<div class="highlight highlight-java">
-					<pre>
-						<span class="kd">public</span> <span class="kd">static</span> <span
+					<pre><span class="kd">public</span> <span class="kd">static</span> <span
 							class="kt">boolean</span> <span class="nf">readModifyAndWrite</span> <span
 							class="o">(</span><span class="nd">@Nonnull</span> <span
 							class="kd">final</span> <span class="n">File</span> <span
@@ -784,8 +778,7 @@
 					the XSLT based version. The Schematron is the following:</p>
 
 				<div class="highlight highlight-xml">
-					<pre>
-						<span class="nt">&lt;sch:schema</span> <span class="na">xmlns:sch=</span><span
+					<pre><span class="nt">&lt;sch:schema</span> <span class="na">xmlns:sch=</span><span
 							class="s">"http://purl.oclc.org/dsdl/schematron"</span> <span
 							class="na">xml:lang=</span><span class="s">"de"</span><span
 							class="nt">&gt;</span>
@@ -817,8 +810,7 @@
 				<p>The respective XML file to validate is</p>
 
 				<div class="highlight highlight-xml">
-					<pre>
-						<span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+					<pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;dog</span> <span class="na">xml:lang=</span><span
 							class="s">"de"</span><span class="nt">&gt;</span>
   <span class="nt">&lt;fleas/&gt;</span>
@@ -829,8 +821,7 @@
 				<p>When using Pure Schematron, the output is</p>
 
 				<div class="highlight highlight-xml">
-					<pre>
-						<span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+					<pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
 <span class="nt">&lt;schematron-output</span> <span class="na">title=</span><span
 							class="s">"Example of Multi-Lingual Schema"</span> <span
 							class="na">xmlns=</span><span class="s">"http://purl.oclc.org/dsdl/svrl"</span><span
@@ -862,8 +853,7 @@
 					output is</p>
 
 				<div class="highlight highlight-xml">
-					<pre>
-						<span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+					<pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
 <span class="nt">&lt;svrl:schematron-output</span> <span class="na">schemaVersion=</span><span
 							class="s">""</span> <span class="na">title=</span><span class="s">"Example of Multi-Lingual Schema"</span> <span
 							class="na">xmlns:iso=</span><span class="s">"http://purl.oclc.org/dsdl/schematron"</span>
@@ -911,8 +901,7 @@
 					the order created by the Pure version is imho correct:
 				</p>
 
-				<pre>
-					<code># only failed assertions are reported
+				<pre><code># only failed assertions are reported
 failed-assert =  element failed-assert {
     attlist.assert-and-report, 
     diagnostic-reference*, 
