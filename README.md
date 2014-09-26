@@ -99,5 +99,55 @@ public static SchematronOutputType validateXMLViaXSLTSchematronFull (@Nonnull fi
 ```
 The difference to the simple example is that instead of the method `getSchematronValidity` the method `applySchematronValidationToSVRL` is invoked.
 
+### Validation via Pure Schematron
+For Pure Schematron the implementation of the `ISchematronResource` interface resides in the class `com.helger.schematron.pure.SchematronResourcePure`. The constructor also takes at least the resource where to read the Schematron rules from. Additional a Schematron phase and a custom error handler can be supplied.
+
+Be careful when using the validation methods that take a `javax.xml.transform.Source` object as parameter. Only `DOMSource` and `StreamSource` objects are supported at the moment!
+
+A simple example to validate an XML file based on Schematron rules from a file looks like this:
+```java
+public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+{
+  final ISchematronResource aResPure = SchematronResourcePure.fromFile (aSchematronFile);
+  if (!aResPure.isValidSchematron ())
+    throw new IllegalArgumentException ("Invalid Schematron!");
+  return aResPure.getSchematronValidity(new StreamSource(aXMLFile)).isValid ();
+}
+```
+As an alternative you can also validate via the internal API as well, in which case the code can look like this:
+```java
+public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+{
+  // Read the schematron from file
+  final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
+  if (!aSchema.isValid ())
+    throw new IllegalArgumentException ("Invalid Schematron!");
+  // Resolve the query binding to use
+  final IPSQueryBinding aQueryBinding = PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());
+  // Pre-process schema
+  final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
+  aPreprocessor.setKeepTitles (true);
+  final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
+  // Bind the pre-processed schema
+  final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema, null, null);
+  // Read the XML file
+  final Document aXMLNode = DOMReader.readXMLDOM (aXMLFile);
+  if (aXMLNode == null)
+    return false;
+  // Perform the validation
+  return aBoundSchema.validatePartially (aXMLNode).isValid ();
+}
+```
+The code is clearly separated into the following steps:
+  * Reading the Schematron file from a File (lines 04-06). This part contains the Schematron include resolution.
+  * Determine the Schematron query binding to be used (line 08). The query binding is required to correctly pre-process the Schematron afterwards.
+  * Pre-process the read Schematron file (line 10-12). This resolves all abstract rules and patterns.
+  * Create the bound Schematron (line 14). This is the pre-compilation step, depending on the selected query binding. The second parameter that is `null` in the example is the name of the phase to use. When no phase is passed the `defaultPhase` attribute of the Schematron schema is checked and used. If no `defaultPhase` is present, all patterns are active.
+  * Read the XML file to be validated via DOM (line 16-18). Technical note: this is the class `com.helger.commons.xml.serialize.DOMReader` which offers a simplified API to read XML files and is not be confused with a class with the same name in DOM4J.
+  * Perform the Schematron validation of the read XML file (line 20).
+  
+It is important to note, that in the second case no caching is performed, and that the Schematron file is interpreted each time the method is called, which may not be as efficient as possible.
+
+The most customization may be done to the pre-processor. The Schematron ISO standard defines a "Minimal Syntax" that is still compliant Schematron but among other with all includes resolved, all abstract patterns and abstract rules resolved. Because a Schematron that is minified has implications on the created SVRL document it was chosen to call the class *PSPreprocessor* and not *PSMinifier*. For example if all `<report>` elements are converted to `<assert>` elements, the SVRL would contain a `<failed-assert>` element instead of a `<successful-report>` element. By default the pre-processor creates a minimal Schematron but if offers the possibility to avoid certain minimizations.
 
     
