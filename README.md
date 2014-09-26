@@ -67,4 +67,37 @@ To check if an XML document simply matches a Schematron rule set the methods `co
 Alternatively to the basic validation the interface also offers the possibility to create an SVRL result via the methods `org.w3c.dom.Document applySchematronValidation(…)` and `org.oclc.purl.dsdl.svrl.SchematronOutputType applySchematronValidationToSVRL(…)`. The first method type creates the SVRL only as an XML document node, where the second method type applies a JAXB binding, so that it is easier to access the information inside the SVRL. Internally these methods call each other depending on the concrete implementation, so they are ensured to deliver exactly the same result. The XSLT implementation is natively done in `applySchematronValidation` and then converted to a `SchematronOutputType` using the `com.helger.schematron.svrl.SVRLReader` class. With Pure Schematron a `SchematronOutputType` object is directly created and then converted to an XML document node via the class `com.helger.schematron.svrl.SVRLWriter`.
 
 The classes `SVRLReader` and `SVRLWriter` can generically be used to read and write SVRL files in a structured way. Both classes validate the SVRL based on SVRL XML Schema contained in the library.
+
+### Validation via XSLT
+As described above it is highly recommended to cache the XSLT script that is created from the source Schematron rule set. Nevertheless ph-schematron offers both possibilities to use Schematron.
+
+The easiest way to start working is by starting from a Schematron file. `com.helger.schematron.xslt.SchematronResourceSCH` is the implementation of the `ISchematronResource` interface to be used for this. The constructor takes at the least the Schematron resource that contains the rules. When using this class it is possibly to specify an optional Schematron phase to be used for validation. Additionally some static factory methods are present that allow creating `SchematronResourceSCH objects` from a `String` path or a `java.io.File` object.
+
+If a precompiled XSLT script is present (e.g. via the schematron2xslt Maven plugin or via manual pre-processing) the implementation class `com.helger.schematron.xslt.SchematronResourceXSLT` should be instantiated. It offers the same constructors and factory methods as the `SchematronResourceSCH` class. Please recall that the chosen phase already affected the created XSLT script, so it is not possible to specify a phase when using this implementation.
+
+Both implementations use an internal cache that keeps the created pre-precompiled `javax.xml.transform.Templates` objects in memory while the application is running. The cache for `SchematronResourceSCH` is located in the class `com.helger.schematron.xslt.SchematronResourceSCHCache` whereas the cache for `SchematronResourceXSLT` is located in the class `com.helger.schematron.xslt.SchematronResourceXSLTCache` – big surprise :)
+
+A simple example to validate an XML file (to `true` or `false`) based on Schematron rules from a file looks like this:
+```java
+public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+{
+  final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
+  if (!aResSCH.isValidSchematron ())
+    throw new IllegalArgumentException ("Invalid Schematron!");
+  return aResSCH.getSchematronValidity (new StreamSource(aXMLFile)).isValid ();
+}
+```
+The same example but creating a real SVRL output looks like this:
+```java
+public static SchematronOutputType validateXMLViaXSLTSchematronFull (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+{
+  final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
+  if (!aResSCH.isValidSchematron ())
+    throw new IllegalArgumentException ("Invalid Schematron!");
+  return aResSCH.applySchematronValidationToSVRL (new StreamSource (aXMLFile));
+}
+```
+The difference to the simple example is that instead of the method `getSchematronValidity` the method `applySchematronValidationToSVRL` is invoked.
+
+
     
