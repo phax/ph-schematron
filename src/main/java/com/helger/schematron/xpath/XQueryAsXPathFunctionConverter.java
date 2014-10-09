@@ -30,6 +30,7 @@ import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.functions.ExecutableFunctionLibrary;
 import net.sf.saxon.functions.FunctionLibrary;
 import net.sf.saxon.functions.FunctionLibraryList;
+import net.sf.saxon.query.DynamicQueryContext;
 import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
 import net.sf.saxon.trans.XPathException;
@@ -129,6 +130,8 @@ public class XQueryAsXPathFunctionConverter
 
       // create a Configuration object
       final Configuration aConfiguration = new Configuration ();
+      @SuppressWarnings ("unused")
+      final DynamicQueryContext aDynamicQueryContext = new DynamicQueryContext (aConfiguration);
       final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
       // The base URI required for resolving within the XQuery
       aStaticQueryCtx.setBaseURI (m_sBaseURL);

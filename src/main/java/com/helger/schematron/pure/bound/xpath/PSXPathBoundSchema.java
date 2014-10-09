@@ -388,11 +388,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPath;
       if (false)
       {
-        // Enable XPath 2.0
-        aSaxonXPath.setXPathLanguageLevel ("2.0");
-      }
-      if (false)
-      {
         // Enable this to debug Saxon function resolving
         aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
       }

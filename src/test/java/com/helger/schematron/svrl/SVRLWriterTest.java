@@ -30,7 +30,7 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
 
 /**
  * Test class for class {@link SVRLWriter}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SVRLWriterTest
@@ -43,6 +43,7 @@ public final class SVRLWriterTest
   {
     final Document aDoc = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON)
                                                .applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
+    assertNotNull (aDoc);
     final SchematronOutputType aSO = SVRLReader.readXML (aDoc);
 
     // Create XML
