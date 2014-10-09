@@ -65,7 +65,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>5.0.2</version>
+      <version>5.1.0</version>
     </dependency>
     <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
     <dependency>
