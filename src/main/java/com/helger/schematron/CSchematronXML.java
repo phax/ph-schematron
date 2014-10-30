@@ -19,7 +19,6 @@ package com.helger.schematron;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.xml.CXML;
 
 /**
  * Schematron XML constants.
@@ -54,8 +53,8 @@ public final class CSchematronXML
   public static final String ATTR_TEST = "test";
   public static final String ATTR_URI = "uri";
   public static final String ATTR_VALUE = "value";
-  public static final String ATTR_XML_LANG = CXML.XML_ATTR_LANG;
-  public static final String ATTR_XML_SPACE = CXML.XML_ATTR_SPACE;
+  public static final String ATTR_XML_LANG = "lang";
+  public static final String ATTR_XML_SPACE = "space";
   public static final String ELEMENT_ACTIVE = "active";
   public static final String ELEMENT_ASSERT = "assert";
   public static final String ELEMENT_DIAGNOSTIC = "diagnostic";

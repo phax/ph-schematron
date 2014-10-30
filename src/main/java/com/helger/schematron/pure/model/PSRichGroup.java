@@ -21,6 +21,7 @@ import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.XMLConstants;
 
 import com.helger.commons.ICloneable;
 import com.helger.commons.annotations.Nonempty;
@@ -32,7 +33,7 @@ import com.helger.schematron.CSchematronXML;
 
 /**
  * A single "rich" group
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
@@ -82,7 +83,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
    * The location of a graphics file containing some visible representation of
    * the severity, significance or other grouping of the associated element.<br>
    * An implementation is not required to make use of this attribute.
-   * 
+   *
    * @return The icon value
    */
   @Nullable
@@ -100,7 +101,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
    * The URI of external information of interest to maintainers and users of the
    * schema.<br>
    * An implementation is not required to make use of this attribute.
-   * 
+   *
    * @return The see value
    */
   @Nullable
@@ -117,7 +118,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
   /**
    * A formal public identifier for the schema, phase or other element.<br>
    * An implementation is not required to make use of this attribute.
-   * 
+   *
    * @return The FPI value
    */
   @Nullable
@@ -162,9 +163,9 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
     aElement.setAttribute (CSchematronXML.ATTR_ICON, m_sIcon);
     aElement.setAttribute (CSchematronXML.ATTR_SEE, m_sSee);
     aElement.setAttribute (CSchematronXML.ATTR_FPI, m_sFPI);
-    aElement.setAttribute (CSchematronXML.ATTR_XML_LANG, m_sXmlLang);
+    aElement.setAttribute (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_LANG, m_sXmlLang);
     if (m_eXmlSpace != null)
-      aElement.setAttribute (CSchematronXML.ATTR_XML_SPACE, m_eXmlSpace.getID ());
+      aElement.setAttribute (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_SPACE, m_eXmlSpace.getID ());
   }
 
   @Nonnull

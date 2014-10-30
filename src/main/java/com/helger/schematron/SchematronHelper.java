@@ -190,7 +190,7 @@ public final class SchematronHelper
         if (CSchematron.NAMESPACE_SCHEMATRON.equals (aElement.getNamespaceURI ()) &&
             aElement.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
         {
-          String sHref = aElement.getAttribute (CSchematronXML.ATTR_HREF);
+          String sHref = aElement.getAttributeValue (CSchematronXML.ATTR_HREF);
           try
           {
             final int nHashIndex = sHref.indexOf ('#');
@@ -239,7 +239,7 @@ public final class SchematronHelper
                                         if (aItem.isElement ())
                                         {
                                           final IMicroElement aCurElement = (IMicroElement) aItem;
-                                          final String sID = aCurElement.getAttribute ("id");
+                                          final String sID = aCurElement.getAttributeValue ("id");
                                           if (sFinalAnchor.equals (sID))
                                             aMatch.set (aCurElement);
                                         }

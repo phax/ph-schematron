@@ -177,7 +177,7 @@ public class PSReader
       }
 
     if (eActive.hasChildren ())
-      for (final IMicroNode aActiveChild : eActive.getChildren ())
+      for (final IMicroNode aActiveChild : eActive.getAllChildren ())
         switch (aActiveChild.getType ())
         {
           case TEXT:
@@ -250,7 +250,7 @@ public class PSReader
     }
 
     if (eAssertReport.hasChildren ())
-      for (final IMicroNode aAssertReportChild : eAssertReport.getChildren ())
+      for (final IMicroNode aAssertReportChild : eAssertReport.getAllChildren ())
         switch (aAssertReportChild.getType ())
         {
           case TEXT:
@@ -319,7 +319,7 @@ public class PSReader
     }
 
     if (eDiagnostic.hasChildren ())
-      for (final IMicroNode aDiagnosticChild : eDiagnostic.getChildren ())
+      for (final IMicroNode aDiagnosticChild : eDiagnostic.getAllChildren ())
         switch (aDiagnosticChild.getType ())
         {
           case TEXT:
@@ -420,7 +420,7 @@ public class PSReader
       }
 
     if (eDir.hasChildren ())
-      for (final IMicroNode aDirChild : eDir.getChildren ())
+      for (final IMicroNode aDirChild : eDir.getAllChildren ())
         switch (aDirChild.getType ())
         {
           case TEXT:
@@ -466,7 +466,7 @@ public class PSReader
       }
 
     if (eEmph.hasChildren ())
-      for (final IMicroNode aEmphChild : eEmph.getChildren ())
+      for (final IMicroNode aEmphChild : eEmph.getAllChildren ())
         switch (aEmphChild.getType ())
         {
           case TEXT:
@@ -727,7 +727,7 @@ public class PSReader
       }
 
     if (eP.hasChildren ())
-      for (final IMicroNode aChild : eP.getChildren ())
+      for (final IMicroNode aChild : eP.getAllChildren ())
         switch (aChild.getType ())
         {
           case TEXT:
@@ -1125,7 +1125,7 @@ public class PSReader
       }
 
     if (eSpan.hasChildren ())
-      for (final IMicroNode aSpanChild : eSpan.getChildren ())
+      for (final IMicroNode aSpanChild : eSpan.getAllChildren ())
         switch (aSpanChild.getType ())
         {
           case TEXT:
@@ -1171,7 +1171,7 @@ public class PSReader
       }
 
     if (eTitle.hasChildren ())
-      for (final IMicroNode aTitleChild : eTitle.getChildren ())
+      for (final IMicroNode aTitleChild : eTitle.getAllChildren ())
         switch (aTitleChild.getType ())
         {
           case TEXT:
