@@ -19,6 +19,7 @@ package com.helger.schematron.xslt;
 import java.io.File;
 import java.util.Locale;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.ErrorListener;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
@@ -45,7 +47,7 @@ import com.helger.commons.xml.transform.XMLTransformerFactory;
  * The XSLT preprocessor used to convert a Schematron XML document into an XSLT
  * document. This implementation uses JAXP with Saxon to be used as the
  * respective parser.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
@@ -79,7 +81,9 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
   private static Templates s_aStep2;
   private static Templates s_aStep3;
 
-  public SchematronProviderXSLTFromSCH (@Nullable final IReadableResource aSchematronResource,
+  private final IReadableResource m_aSchematronResource;
+
+  public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
                                         @Nullable final ErrorListener aCustomErrorListener,
                                         @Nullable final URIResolver aURIResolver)
   {
@@ -88,7 +92,7 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
 
   /**
    * Constructor
-   * 
+   *
    * @param aSchematronResource
    *        SCH resource
    * @param aCustomErrorListener
@@ -104,12 +108,13 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
    *        means English. Supported language codes are: cs, de, en, fr, nl (see
    *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
    */
-  public SchematronProviderXSLTFromSCH (@Nullable final IReadableResource aSchematronResource,
+  public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
                                         @Nullable final ErrorListener aCustomErrorListener,
                                         @Nullable final URIResolver aURIResolver,
                                         @Nullable final String sPhase,
                                         @Nullable final String sLanguageCode)
   {
+    m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     final ErrorListener aErrorListener = aCustomErrorListener != null ? aCustomErrorListener
                                                                      : new LoggingTransformErrorListener (Locale.US);
 
@@ -179,5 +184,11 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
     {
       s_aLogger.error ("Schematron preprocessor error", t);
     }
+  }
+
+  @Nonnull
+  public final IReadableResource getSchematronResource ()
+  {
+    return m_aSchematronResource;
   }
 }

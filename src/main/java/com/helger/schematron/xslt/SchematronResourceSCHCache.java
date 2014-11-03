@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.GlobalDebug;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.xml.serialize.XMLWriter;
 
@@ -46,36 +45,10 @@ public final class SchematronResourceSCHCache
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
   private static final Lock s_aLock = new ReentrantLock ();
-  private static final Map <String, ISchematronXSLTProvider> s_aCache = new HashMap <String, ISchematronXSLTProvider> ();
+  private static final Map <String, SchematronProviderXSLTFromSCH> s_aCache = new HashMap <String, SchematronProviderXSLTFromSCH> ();
 
   private SchematronResourceSCHCache ()
   {}
-
-  /**
-   * Create a new Schematron validator for the passed resource.
-   *
-   * @param aSchematronResource
-   *        The resource of the Schematron rules. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document. May be
-   *        <code>null</code>.
-   * @return <code>null</code> if the passed Schematron resource does not exist
-   *         or is invalid.
-   */
-  @Nullable
-  @Deprecated
-  @DevelopersNote ("For binary compatibility to schematron2xslt-maven-plugin 2.5.0")
-  public static ISchematronXSLTProvider createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                      @Nullable final ErrorListener aCustomErrorListener,
-                                                                      @Nullable final URIResolver aCustomURIResolver)
-  {
-    return createSchematronXSLTProvider (aSchematronResource, aCustomErrorListener, aCustomURIResolver, null, null);
-  }
 
   /**
    * Create a new Schematron validator for the passed resource.
@@ -102,11 +75,11 @@ public final class SchematronResourceSCHCache
    *         or is invalid.
    */
   @Nullable
-  public static ISchematronXSLTProvider createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                      @Nullable final ErrorListener aCustomErrorListener,
-                                                                      @Nullable final URIResolver aCustomURIResolver,
-                                                                      @Nullable final String sPhase,
-                                                                      @Nullable final String sLanguageCode)
+  public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
+                                                                            @Nullable final ErrorListener aCustomErrorListener,
+                                                                            @Nullable final URIResolver aCustomURIResolver,
+                                                                            @Nullable final String sPhase,
+                                                                            @Nullable final String sLanguageCode)
   {
     if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling Schematron instance " + aSchematronResource.toString ());
@@ -163,11 +136,11 @@ public final class SchematronResourceSCHCache
    *         or is invalid.
    */
   @Nullable
-  public static ISchematronXSLTProvider getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                   @Nullable final ErrorListener aCustomErrorListener,
-                                                                   @Nullable final URIResolver aCustomURIResolver,
-                                                                   @Nullable final String sPhase,
-                                                                   @Nullable final String sLanguageCode)
+  public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
+                                                                         @Nullable final ErrorListener aCustomErrorListener,
+                                                                         @Nullable final URIResolver aCustomURIResolver,
+                                                                         @Nullable final String sPhase,
+                                                                         @Nullable final String sLanguageCode)
   {
     ValueEnforcer.notNull (aSchematronResource, "resource");
 
@@ -184,7 +157,7 @@ public final class SchematronResourceSCHCache
       final String sResourceID = aSchematronResource.getResourceID ();
 
       // Validator already in the cache?
-      ISchematronXSLTProvider aProvider = s_aCache.get (sResourceID);
+      SchematronProviderXSLTFromSCH aProvider = s_aCache.get (sResourceID);
       if (aProvider == null)
       {
         // Create new object and put in cache
