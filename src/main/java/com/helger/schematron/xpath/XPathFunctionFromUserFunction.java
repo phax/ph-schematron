@@ -33,7 +33,7 @@ import net.sf.saxon.om.Sequence;
 import com.helger.commons.ValueEnforcer;
 
 /**
- * A proxy for an {@link XPathFunction} that is implemented as Saxon
+ * A proxy for an {@link XPathFunction} that is implemented as a Saxon
  * {@link UserFunction}.
  *
  * @author Philip Helger
@@ -67,7 +67,7 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
       for (final Object arg : args)
       {
         // Ripped from Saxon itself
-        final JPConverter converter = JPConverter.allocate (arg.getClass (), m_aConfiguration);
+        final JPConverter converter = JPConverter.allocate (arg.getClass (), null, m_aConfiguration);
         aValues[i] = converter.convert (arg, m_aXPathContext);
         ++i;
       }

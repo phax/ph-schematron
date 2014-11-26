@@ -33,6 +33,8 @@ import net.sf.saxon.functions.FunctionLibraryList;
 import net.sf.saxon.query.DynamicQueryContext;
 import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
+import net.sf.saxon.query.XQueryFunction;
+import net.sf.saxon.query.XQueryFunctionLibrary;
 import net.sf.saxon.trans.XPathException;
 
 import com.helger.commons.ValueEnforcer;
@@ -130,13 +132,14 @@ public class XQueryAsXPathFunctionConverter
 
       // create a Configuration object
       final Configuration aConfiguration = new Configuration ();
-      @SuppressWarnings ("unused")
       final DynamicQueryContext aDynamicQueryContext = new DynamicQueryContext (aConfiguration);
       final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
       // The base URI required for resolving within the XQuery
       aStaticQueryCtx.setBaseURI (m_sBaseURL);
-      final XQueryExpression exp = aStaticQueryCtx.compileQuery (aXQueryIS, null);
-      final Controller aXQController = exp.newController ();
+      // null == auto detect
+      final String sEncoding = null;
+      final XQueryExpression exp = aStaticQueryCtx.compileQuery (aXQueryIS, sEncoding);
+      final Controller aXQController = exp.newController (aDynamicQueryContext);
 
       // find all loaded methods and convert them to XPath functions
       final FunctionLibraryList aFuncLibList = exp.getExecutable ().getFunctionLibrary ();
@@ -145,9 +148,9 @@ public class XQueryAsXPathFunctionConverter
         // Ignore all Vendor, System etc. internal libraries
         if (aFuncLib instanceof FunctionLibraryList)
         {
+          // This block works with Saxon HE 9.5.1-x :)
           // This is the custom function library list
           final FunctionLibraryList aRealFuncLib = (FunctionLibraryList) aFuncLib;
-          // Assumption works with Saxon HE 9.5.1-6 :)
           for (final FunctionLibrary aNestedFuncLib : aRealFuncLib.getLibraryList ())
           {
             // Currently the user functions are in ExecutableFunctionLibrary
@@ -163,6 +166,23 @@ public class XQueryAsXPathFunctionConverter
               }
           }
         }
+        else
+          if (aFuncLib instanceof XQueryFunctionLibrary)
+          {
+            // This block works with Saxon HE 9.6.0-x :)
+            final XQueryFunctionLibrary aRealFuncLib = (XQueryFunctionLibrary) aFuncLib;
+            for (final XQueryFunction aXQueryFunction : ContainerHelper.newList (aRealFuncLib.getFunctionDefinitions ()))
+            {
+              // Ensure the function is compiled
+              aXQueryFunction.compile ();
+              aFunctionResolver.addUniqueFunction (aXQueryFunction.getFunctionName ().getNamespaceBinding ().getURI (),
+                                                   aXQueryFunction.getFunctionName ().getLocalPart (),
+                                                   aXQueryFunction.getNumberOfArguments (),
+                                                   new XPathFunctionFromUserFunction (aConfiguration,
+                                                                                      aXQController,
+                                                                                      aXQueryFunction.getUserFunction ()));
+            }
+          }
       }
 
       return aFunctionResolver;
