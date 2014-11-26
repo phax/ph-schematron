@@ -41,6 +41,7 @@ import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 import com.helger.commons.xml.xpath.MapBasedXPathVariableResolver;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLUtils;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.schematrontest.SchematronTestHelper;
@@ -159,7 +160,10 @@ public final class SchematronResourcePureTest
                          + "</iso:schema>";
 
     // Test without variable and function resolver
-    assertFalse (SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ).isValidSchematron ());
+    // -> an error is expected, but we don't need to log it
+    assertFalse (SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ)
+                                       .setErrorHandler (DoNothingPSErrorHandler.getInstance ())
+                                       .isValidSchematron ());
 
     // Test with variable and function resolver
     final MapBasedXPathVariableResolver aVarResolver = new MapBasedXPathVariableResolver ();
@@ -319,11 +323,12 @@ public final class SchematronResourcePureTest
                          + "         schemaVersion='ISO19757-3'>\n"
                          + "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n"
                          + "  <iso:ns prefix='dp' uri='http://www.dpawson.co.uk/ns#' />\n"
+                         + "  <iso:ns prefix='fn' uri='http://www.w3.org/2005/xpath-functions' />\n"
                          + "  <iso:ns prefix='functx' uri='http://www.functx.com' />\n"
                          + "    <iso:pattern >\n"
                          + "    <iso:title>A very simple pattern with a title</iso:title>\n"
                          + "    <iso:rule context='chapter'>\n"
-                         + "      <iso:assert test='functx:are-distinct-values(para/text()[0])'>Should have distinct values</iso:assert>\n"
+                         + "      <iso:assert test='functx:are-distinct-values(para/text())'>Should have distinct values</iso:assert>\n"
                          + "      </iso:rule>\n"
                          + "  </iso:pattern>\n"
                          + "</iso:schema>";
