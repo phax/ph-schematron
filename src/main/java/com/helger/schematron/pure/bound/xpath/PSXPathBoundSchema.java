@@ -314,6 +314,33 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     return ret;
   }
 
+  @Nonnull
+  public static XPathFactory createXPathFactorySaxonFirst () throws SchematronBindException
+  {
+    // The XPath object used to compile the expressions
+    XPathFactory aXPathFactory;
+    try
+    {
+      // First try to use Saxon
+      aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
+                                                "net.sf.saxon.xpath.XPathFactoryImpl2",
+                                                ClassLoader.getSystemClassLoader ());
+    }
+    catch (final Exception ex)
+    {
+      // Seems like Saxon is not in the class path - fall back to default JAXP
+      try
+      {
+        aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI);
+      }
+      catch (final Exception ex2)
+      {
+        throw new SchematronBindException ("Failed to create JAXP XPathFactory", ex2);
+      }
+    }
+    return aXPathFactory;
+  }
+
   /**
    * Create a new bound schema. All the XPath pre-compilation happens inside
    * this constructor, so that the {@link #validate(Node, IPSValidationHandler)}
@@ -368,16 +395,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                          getPhaseID () +
                          "' - second definition is ignored");
 
-    // The XPath object used to compile the expressions
-    XPathFactory aXPathFactory;
-    try
-    {
-      aXPathFactory = XPathFactory.newInstance ();
-    }
-    catch (final Exception ex)
-    {
-      throw new SchematronBindException ("Failed to create XPathFactory", ex);
-    }
+    final XPathFactory aXPathFactory = createXPathFactorySaxonFirst ();
     final XPath aXPath = XPathHelper.createNewXPath (aXPathFactory,
                                                      aXPathVariableResolver,
                                                      aXPathFunctionResolver,
