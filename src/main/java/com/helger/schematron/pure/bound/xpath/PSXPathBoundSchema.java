@@ -323,7 +323,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     {
       // First try to use Saxon
       aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
-                                                "net.sf.saxon.xpath.XPathFactoryImpl2",
+                                                "net.sf.saxon.xpath.XPathFactoryImpl",
                                                 ClassLoader.getSystemClassLoader ());
     }
     catch (final Exception ex)
