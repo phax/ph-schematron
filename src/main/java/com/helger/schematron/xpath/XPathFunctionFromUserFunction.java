@@ -29,12 +29,13 @@ import net.sf.saxon.expr.JPConverter;
 import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.StructuredQName;
 
 import com.helger.commons.ValueEnforcer;
 
 /**
  * A proxy for an {@link XPathFunction} that is implemented as a Saxon
- * {@link UserFunction}.
+ * {@link UserFunction}. This works only if Saxon is present in the classpath.
  *
  * @author Philip Helger
  */
@@ -43,7 +44,6 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
   private final Configuration m_aConfiguration;
   private final Controller m_aXQController;
   private final UserFunction m_aUserFunc;
-  private final XPathContextMajor m_aXPathContext;
 
   public XPathFunctionFromUserFunction (@Nonnull final Configuration aConfiguration,
                                         @Nonnull final Controller aXQController,
@@ -52,27 +52,50 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
     m_aConfiguration = ValueEnforcer.notNull (aConfiguration, "Configuration");
     m_aUserFunc = ValueEnforcer.notNull (aUserFunc, "UserFunc");
     m_aXQController = ValueEnforcer.notNull (aXQController, "XQController");
-    // This is surely not correct, but it works :)
-    m_aXPathContext = aXQController.newXPathContext ();
+  }
+
+  /**
+   * @return The underlying Saxon user function.
+   */
+  @Nonnull
+  public UserFunction getUserFunction ()
+  {
+    return m_aUserFunc;
+  }
+
+  /**
+   * @return The function name.
+   */
+  @Nonnull
+  public StructuredQName getFunctionName ()
+  {
+    return m_aUserFunc.getFunctionName ();
   }
 
   @Nullable
-  public Object evaluate (@SuppressWarnings ("rawtypes") final List args) throws XPathFunctionException
+  public Object evaluate (@SuppressWarnings ("rawtypes") final List aArgs) throws XPathFunctionException
   {
     try
     {
       // Convert the parameters
-      final Sequence [] aValues = new Sequence [args.size ()];
-      int i = 0;
-      for (final Object arg : args)
+      final Sequence [] aSequences = new Sequence [aArgs.size ()];
+      if (aArgs.size () > 0)
       {
-        // Ripped from Saxon itself
-        final JPConverter converter = JPConverter.allocate (arg.getClass (), null, m_aConfiguration);
-        aValues[i] = converter.convert (arg, m_aXPathContext);
-        ++i;
+        // Create a new context per evaluation
+        final XPathContextMajor aXPathContext = m_aXQController.newXPathContext ();
+
+        int nIndex = 0;
+        for (final Object aArg : aArgs)
+        {
+          // Ripped from Saxon itself; genericType is not needed
+          final JPConverter aConverter = JPConverter.allocate (aArg.getClass (), null, m_aConfiguration);
+          // Convert to Sequence
+          aSequences[nIndex] = aConverter.convert (aArg, aXPathContext);
+          ++nIndex;
+        }
       }
-      // Invoke function
-      return m_aUserFunc.call (aValues, m_aXQController);
+      // Finally invoke user function
+      return m_aUserFunc.call (aSequences, m_aXQController);
     }
     catch (final Exception ex)
     {

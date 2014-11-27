@@ -332,7 +332,7 @@ public final class SchematronResourcePureTest
                          + "    <iso:pattern >\n"
                          + "    <iso:title>A very simple pattern with a title</iso:title>\n"
                          + "    <iso:rule context='chapter'>\n"
-                         + "      <iso:assert test='functx:are-distinct-values(para/text())'>Should have distinct values</iso:assert>\n"
+                         + "      <iso:assert test='functx:are-distinct-values(para)'>Should have distinct values</iso:assert>\n"
                          + "      </iso:rule>\n"
                          + "  </iso:pattern>\n"
                          + "</iso:schema>";
