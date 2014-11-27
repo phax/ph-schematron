@@ -49,6 +49,22 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
     return m_aNestedErrorHandler;
   }
 
+  /**
+   * The abstract method that is called for both warnings and errors.
+   * 
+   * @param aRes
+   *        The resource in which the error occurred.
+   * @param eErrorLevel
+   *        The error level. Never <code>null</code>.
+   * @param aSourceElement
+   *        The source schematron element, in which the error occurred. Never
+   *        <code>null</code>.
+   * @param sMessage
+   *        The error message. Never <code>null</code>.
+   * @param t
+   *        The optional exception that might have occurred. May be
+   *        <code>null</code>.
+   */
   protected abstract void handle (@Nullable IReadableResource aRes,
                                   @Nonnull EErrorLevel eErrorLevel,
                                   @Nonnull IPSElement aSourceElement,

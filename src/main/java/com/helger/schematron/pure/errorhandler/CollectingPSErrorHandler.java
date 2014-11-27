@@ -16,11 +16,14 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IResourceError;
 import com.helger.commons.error.IResourceErrorGroup;
 import com.helger.commons.error.ResourceError;
 import com.helger.commons.error.ResourceErrorGroup;
@@ -62,8 +65,8 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
     String sField = CGStringHelper.getClassLocalName (aSourceElement);
     if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
       sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
-    m_aErrors.addResourceError (new ResourceError (new ResourceLocation (aRes == null ? null : aRes.getResourceID (),
-                                                                         sField), eErrorLevel, sMessage, t));
+    final ResourceLocation aLocation = new ResourceLocation (aRes == null ? null : aRes.getResourceID (), sField);
+    m_aErrors.addResourceError (new ResourceError (aLocation, eErrorLevel, sMessage, t));
   }
 
   @Nonnull
@@ -73,8 +76,29 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
     return m_aErrors.getClone ();
   }
 
+  @Nonnull
+  public List <IResourceError> getAllResourceErrors ()
+  {
+    return m_aErrors.getAllResourceErrors ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public IResourceErrorGroup getAllFailures ()
+  {
+    return m_aErrors.getAllFailures ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public IResourceErrorGroup getAllErrors ()
+  {
+    return m_aErrors.getAllErrors ();
+  }
+
   /**
-   * Clear all currently stored errors.
+   * Clear all currently stored errors. This might be helpful, if the same error
+   * handler is used several times.
    *
    * @return {@link EChange#CHANGED} if at least one item was cleared.
    */

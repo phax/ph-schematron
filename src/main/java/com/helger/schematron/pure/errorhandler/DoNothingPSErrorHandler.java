@@ -38,6 +38,9 @@ public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
     super ();
   }
 
+  /**
+   * @return The default instance of this class. Never <code>null</code>.
+   */
   @Nonnull
   public static DoNothingPSErrorHandler getInstance ()
   {
@@ -50,5 +53,7 @@ public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
                          @Nonnull final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
-  {}
+  {
+    // Do nothing :)
+  }
 }

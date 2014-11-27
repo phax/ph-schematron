@@ -42,6 +42,7 @@ import com.helger.commons.xml.xpath.MapBasedXPathVariableResolver;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
+import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLUtils;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.schematrontest.SchematronTestHelper;
@@ -342,10 +343,13 @@ public final class SchematronResourcePureTest
                                                     + "<para>100</para>"
                                                     + "<para>200</para>"
                                                     + "</chapter>");
+    final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler (new LoggingPSErrorHandler ());
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ)
                                                            .setFunctionResolver (aFunctionResolver)
+                                                           .setErrorHandler (aErrorHandler)
                                                            .applySchematronValidation (aTestDoc);
     assertNotNull (aOT);
+    assertTrue (aErrorHandler.isEmpty ());
     assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
   }
 }

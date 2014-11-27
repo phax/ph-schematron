@@ -32,7 +32,7 @@ import com.helger.schematron.pure.model.IPSHasID;
 
 /**
  * An implementation if {@link IPSErrorHandler} that logs to an SLF4J logger.
- * 
+ *
  * @author Philip Helger
  */
 public class LoggingPSErrorHandler extends AbstractPSErrorHandler
@@ -49,6 +49,20 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
     super (aNestedErrorHandler);
   }
 
+  @Nonnull
+  public static String getLogMessage (@Nullable final IReadableResource aRes,
+                                      @Nonnull final IPSElement aSourceElement,
+                                      @Nonnull final String sMessage)
+  {
+    return StringHelper.getImplodedNonEmpty (" - ",
+                                             aRes == null ? null : aRes.getPath (),
+                                             CGStringHelper.getClassLocalName (aSourceElement),
+                                             aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID () ? "ID " +
+                                                                                                                          ((IPSHasID) aSourceElement).getID ()
+                                                                                                                       : null,
+                                             sMessage);
+  }
+
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
                          @Nonnull final EErrorLevel eErrorLevel,
@@ -56,16 +70,6 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    LogUtils.log (s_aLogger,
-                  eErrorLevel,
-                  StringHelper.getImplodedNonEmpty (" - ",
-                                                    aRes == null ? null : aRes.getPath (),
-                                                    CGStringHelper.getClassLocalName (aSourceElement),
-                                                    aSourceElement instanceof IPSHasID &&
-                                                        ((IPSHasID) aSourceElement).hasID () ? "ID " +
-                                                                                               ((IPSHasID) aSourceElement).getID ()
-                                                                                            : null,
-                                                    sMessage),
-                  t);
+    LogUtils.log (s_aLogger, eErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
   }
 }
