@@ -84,7 +84,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
