@@ -31,8 +31,8 @@ import com.helger.commons.lang.ServiceLoaderUtils;
 
 /**
  * A central registry for all {@link ISVRLLocationBeautifierSPI} instances.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @NotThreadSafe
 public final class SVRLLocationBeautifierRegistry
@@ -49,7 +49,7 @@ public final class SVRLLocationBeautifierRegistry
 
   /**
    * Get the beautified location for the given namespace and local name.
-   * 
+   *
    * @param sNamespaceURI
    *        The namespace URI
    * @param sLocalName

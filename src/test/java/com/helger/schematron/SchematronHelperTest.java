@@ -35,8 +35,8 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
 
 /**
  * Test class for class {@link SchematronHelper}.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 public final class SchematronHelperTest
 {

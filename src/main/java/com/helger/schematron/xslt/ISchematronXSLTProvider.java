@@ -25,8 +25,8 @@ import org.w3c.dom.Document;
  * Interface for a factory creating Schematron validators from XSLT. Sometimes
  * the pre-built XSLTs are already available, and sometimes they need to be
  * built from the underlying Schematron file.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 public interface ISchematronXSLTProvider
 {

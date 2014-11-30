@@ -26,8 +26,8 @@ import com.helger.commons.string.StringHelper;
 
 /**
  * SVRL constants.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @Immutable
 public final class CSVRL

@@ -27,7 +27,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Abstract implementation of the {@link ISchematronResource} interface handling
  * the underlying resource and wrapping one method.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @NotThreadSafe
 public abstract class AbstractSchematronResource implements ISchematronResource

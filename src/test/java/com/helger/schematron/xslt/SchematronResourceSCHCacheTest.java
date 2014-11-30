@@ -43,7 +43,7 @@ import com.helger.schematrontest.SchematronTestHelper;
 /**
  * Test class for class {@link SchematronResourceSCHCache}
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 public final class SchematronResourceSCHCacheTest
 {
@@ -70,10 +70,10 @@ public final class SchematronResourceSCHCacheTest
     }
     final long nEnd = System.nanoTime ();
     s_aLogger.info ("Sync Total: " +
-        ((nEnd - nStart) / 1000) +
-        " microsecs btw. " +
-        ((nEnd - nStart) / 1000 / RUNS) +
-        " microsecs/run");
+                    ((nEnd - nStart) / 1000) +
+                    " microsecs btw. " +
+                    ((nEnd - nStart) / 1000 / RUNS) +
+                    " microsecs/run");
   }
 
   @Test
@@ -108,10 +108,10 @@ public final class SchematronResourceSCHCacheTest
     new ManagedExecutorService (aSenderThreadPool).shutdownAndWaitUntilAllTasksAreFinished ();
     final long nEnd = System.nanoTime ();
     s_aLogger.info ("Async Total: " +
-        ((nEnd - nStart) / 1000) +
-        " microsecs btw. " +
-        ((nEnd - nStart) / 1000 / RUNS) +
-        " microsecs/run");
+                    ((nEnd - nStart) / 1000) +
+                    " microsecs btw. " +
+                    ((nEnd - nStart) / 1000 / RUNS) +
+                    " microsecs/run");
   }
 
   @Test
@@ -142,7 +142,7 @@ public final class SchematronResourceSCHCacheTest
                                                                                                                aCEH,
                                                                                                                null,
                                                                                                                null,
-            "de");
+                                                                                                               "de");
         assertNotNull (aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());

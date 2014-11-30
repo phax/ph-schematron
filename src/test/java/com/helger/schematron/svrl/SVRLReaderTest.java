@@ -39,7 +39,7 @@ import com.helger.schematrontest.SchematronTestHelper;
 /**
  * Test class for class {@link SVRLReader}.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 public final class SVRLReaderTest
 {

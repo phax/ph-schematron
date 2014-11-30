@@ -31,15 +31,15 @@ import com.helger.commons.io.resource.FileSystemResource;
 
 /**
  * A Schematron resource that is based on an existing, pre-compiled XSLT script.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @NotThreadSafe
 public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
 {
   /**
    * Constructor
-   * 
+   *
    * @param aXSLTResource
    *        The XSLT resource. May not be <code>null</code>.
    */
@@ -50,7 +50,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aXSLTResource
    *        The XSLT resource. May not be <code>null</code>.
    * @param aValidator
@@ -65,7 +65,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aXSLTResource
    *        The XSLT resource. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -87,7 +87,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aXSLTResource
    *        The XSLT resource. May not be <code>null</code>.
    * @param aCustomErrorListener

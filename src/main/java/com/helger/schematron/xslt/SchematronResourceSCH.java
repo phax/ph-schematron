@@ -31,15 +31,15 @@ import com.helger.commons.io.resource.FileSystemResource;
 
 /**
  * A Schematron resource that is based on the original SCH file.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @NotThreadSafe
 public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 {
   /**
    * Constructor
-   * 
+   *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    */
@@ -50,7 +50,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    * @param aValidator
@@ -65,7 +65,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -88,7 +88,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    * @param sPhase
@@ -109,7 +109,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -145,7 +145,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Constructor
-   * 
+   *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -189,7 +189,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -203,7 +203,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -221,7 +221,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -247,7 +247,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -282,7 +282,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -306,7 +306,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -339,7 +339,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -379,7 +379,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -424,7 +424,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -438,7 +438,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -456,7 +456,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -482,7 +482,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -517,7 +517,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -541,7 +541,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -574,7 +574,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -614,7 +614,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
@@ -659,7 +659,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @return Never <code>null</code>.
@@ -672,7 +672,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param aValidator
@@ -689,7 +689,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -714,7 +714,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -748,7 +748,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param sPhase
@@ -771,7 +771,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param sPhase
@@ -803,7 +803,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param aCustomErrorListener
@@ -842,7 +842,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
 
   /**
    * Create a new Schematron resource.
-   * 
+   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @param aCustomErrorListener

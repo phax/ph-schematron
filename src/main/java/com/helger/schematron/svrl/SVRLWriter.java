@@ -32,7 +32,7 @@ import com.helger.commons.state.ESuccess;
  * {@link SchematronOutputType} elements and converts them to W3C nodes. The
  * writing itself is done with JAXB.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @Immutable
 public final class SVRLWriter

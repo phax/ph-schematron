@@ -36,7 +36,7 @@ import com.helger.commons.error.EErrorLevel;
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @ThreadSafe
 public final class SVRLUtils

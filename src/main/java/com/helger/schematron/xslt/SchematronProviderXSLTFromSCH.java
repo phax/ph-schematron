@@ -48,7 +48,7 @@ import com.helger.commons.xml.transform.XMLTransformerFactory;
  * document. This implementation uses JAXP with Saxon to be used as the
  * respective parser.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @NotThreadSafe
 final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider

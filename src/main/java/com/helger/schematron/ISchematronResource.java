@@ -32,8 +32,8 @@ import com.helger.schematron.svrl.SVRLReader;
  * Base interface for a Schematron resource. The implementation can e.g. be a
  * SCH file that needs preprocessing to XSLT or an already precompiled XSLT
  * file.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 public interface ISchematronResource extends IHasID <String>
 {
@@ -56,7 +56,7 @@ public interface ISchematronResource extends IHasID <String>
    * or not. This is the quick check method, as it breaks upon the first failed
    * assertion or the first successful report, if the implementation supports it
    * (as e.g. the native pure Schematron version).
-   * 
+   *
    * @param aXMLResource
    *        The source XML to read and validate against the Schematron. May not
    *        be <code>null</code>.
@@ -73,7 +73,7 @@ public interface ISchematronResource extends IHasID <String>
    * or not. This is the quick check method, as it breaks upon the first failed
    * assertion or the first successful report, if the implementation supports it
    * (as e.g. the native pure Schematron version).
-   * 
+   *
    * @param aXMLSource
    *        The source XML to be validated against the Schematron. May not be
    *        <code>null</code>.
@@ -88,7 +88,7 @@ public interface ISchematronResource extends IHasID <String>
   /**
    * Apply the Schematron validation on the passed XML resource and return an
    * SVRL XML DOM Document.
-   * 
+   *
    * @param aXMLResource
    *        The XML resource to validate via Schematron. May not be
    *        <code>null</code>.
@@ -105,7 +105,7 @@ public interface ISchematronResource extends IHasID <String>
   /**
    * Apply the Schematron validation on the passed XML source and return an SVRL
    * XML DOM Document.
-   * 
+   *
    * @param aXMLSource
    *        The XML source to validate via Schematron. May not be
    *        <code>null</code>.
@@ -122,7 +122,7 @@ public interface ISchematronResource extends IHasID <String>
   /**
    * Apply the Schematron validation on the passed XML resource and return a
    * {@link SchematronOutputType} object.
-   * 
+   *
    * @param aXMLResource
    *        The XML resource to validate via Schematron. May not be
    *        <code>null</code>.
@@ -137,7 +137,7 @@ public interface ISchematronResource extends IHasID <String>
   /**
    * Apply the Schematron validation on the passed XML source and return a
    * {@link SchematronOutputType} object.
-   * 
+   *
    * @param aXMLSource
    *        The XML source to validate via Schematron. May not be
    *        <code>null</code>.

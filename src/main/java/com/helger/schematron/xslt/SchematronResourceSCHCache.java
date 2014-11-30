@@ -38,7 +38,7 @@ import com.helger.commons.xml.serialize.XMLWriter;
 /**
  * Factory for creating {@link ISchematronXSLTProvider} objects.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @ThreadSafe
 public final class SchematronResourceSCHCache

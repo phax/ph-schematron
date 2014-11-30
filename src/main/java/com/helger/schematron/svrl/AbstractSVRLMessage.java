@@ -35,8 +35,8 @@ import com.helger.commons.string.ToStringGenerator;
 /**
  * A wrapper around FailedAssert and SuccessfulReport with easier error level
  * handling.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @Immutable
 public abstract class AbstractSVRLMessage

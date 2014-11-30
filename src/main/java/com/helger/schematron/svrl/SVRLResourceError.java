@@ -32,7 +32,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Special SVRL resource error that contains the Schematron &quot;test&quot; as
  * well.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 public class SVRLResourceError extends ResourceError
 {

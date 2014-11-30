@@ -39,7 +39,7 @@ import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 /**
  * Factory for creating {@link ISchematronXSLTProvider} objects.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @ThreadSafe
 public final class SchematronResourceXSLTCache
@@ -57,7 +57,8 @@ public final class SchematronResourceXSLTCache
     if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
-    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (GlobalDebug.isDebugMode () ? new LoggingTransformErrorListener (Locale.US)
+    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (GlobalDebug.isDebugMode ()
+                                                                                                                  ? new LoggingTransformErrorListener (Locale.US)
                                                                                                                   : null);
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource, aCEH);
     if (!aXSLTPreprocessor.isValidSchematron ())

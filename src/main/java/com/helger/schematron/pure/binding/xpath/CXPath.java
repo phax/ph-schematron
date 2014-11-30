@@ -14,28 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.svrl;
+package com.helger.schematron.pure.binding.xpath;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import org.oclc.purl.dsdl.svrl.SuccessfulReport;
+import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
- * A wrapper around {@link SuccessfulReport} with easier error level handling.
+ * Constants for handling XPath expressions
  *
  * @author Philip Helger
  */
 @Immutable
-public class SVRLSuccessfulReport extends AbstractSVRLMessage
+public final class CXPath
 {
-  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
-  {
-    super (aSuccessfulReport.getDiagnosticReference (),
-           aSuccessfulReport.getText (),
-           getBeautifiedLocation (aSuccessfulReport.getLocation ()),
-           aSuccessfulReport.getTest (),
-           aSuccessfulReport.getRole (),
-           SVRLUtils.getErrorLevelFromSuccessfulReport (aSuccessfulReport));
-  }
+  /** The namespace for XPath functions usually bound to the 'fn' prefix */
+  public static final String NAMESPACE_XPATH_FUNCTIONS = "http://www.w3.org/2005/xpath-functions";
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final CXPath s_aInstance = new CXPath ();
+
+  private CXPath ()
+  {}
 }

@@ -44,7 +44,7 @@ import com.helger.schematron.svrl.SVRLReader;
  * Abstract implementation of a Schematron resource that is based on XSLT
  * transformations.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @NotThreadSafe
 public abstract class AbstractSchematronXSLTResource extends AbstractSchematronResource

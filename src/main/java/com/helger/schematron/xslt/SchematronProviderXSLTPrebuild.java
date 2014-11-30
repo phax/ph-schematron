@@ -34,7 +34,7 @@ import com.helger.commons.xml.transform.XMLTransformerFactory;
  * This Schematron validator factory uses an existing, precompiled Schematron
  * XSLT for validation.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @NotThreadSafe
 final class SchematronProviderXSLTPrebuild extends AbstractSchematronXSLTProvider

@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * This is a helper class that provides a way to easily apply an Schematron
  * resource on an XML resource.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @Immutable
 public final class SchematronHelper

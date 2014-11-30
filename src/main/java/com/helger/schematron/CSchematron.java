@@ -23,8 +23,8 @@ import com.helger.commons.io.resource.ClassPathResource;
 
 /**
  * Constants for handling Schematron documents
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @Immutable
 public final class CSchematron

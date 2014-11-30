@@ -31,8 +31,8 @@ import com.helger.commons.io.IReadableResource;
  * This is the XML reader for Schematron SVRL documents. It reads XML DOM
  * documents and returns {@link SchematronOutputType} elements. The reading
  * itself is done with JAXB.<br>
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @Immutable
 public final class SVRLReader
@@ -46,7 +46,7 @@ public final class SVRLReader
 
   /**
    * Convert the passed resource into a SVRL domain object
-   * 
+   *
    * @param aRes
    *        The resource to be converted. May not be <code>null</code>.
    * @return <code>null</code> if the passed object could not be interpreted as
@@ -60,7 +60,7 @@ public final class SVRLReader
 
   /**
    * Convert the passed W3C node into a SVRL domain object
-   * 
+   *
    * @param aNode
    *        The node to be converted. May not be <code>null</code>.
    * @return <code>null</code> if the passed object could not be interpreted as
@@ -74,7 +74,7 @@ public final class SVRLReader
 
   /**
    * Convert the passed object into a SVRL domain object
-   * 
+   *
    * @param aSource
    *        The source to be converted. May not be <code>null</code>.
    * @return <code>null</code> if the passed object could not be interpreted as

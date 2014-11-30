@@ -42,7 +42,7 @@ import com.helger.commons.xml.serialize.DOMReader;
 /**
  * This is a common utility class.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @Immutable
 public final class SchematronUtils

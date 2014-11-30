@@ -23,11 +23,11 @@ import org.oclc.purl.dsdl.svrl.FailedAssert;
 
 /**
  * A wrapper around {@link FailedAssert} with easier error level handling.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @Immutable
-public final class SVRLFailedAssert extends AbstractSVRLMessage
+public class SVRLFailedAssert extends AbstractSVRLMessage
 {
   public SVRLFailedAssert (@Nonnull final FailedAssert aFailedAssert)
   {

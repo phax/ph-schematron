@@ -31,7 +31,7 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
 /**
  * Test class for class {@link SVRLWriter}.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 public final class SVRLWriterTest
 {

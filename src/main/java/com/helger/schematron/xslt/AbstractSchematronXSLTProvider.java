@@ -26,8 +26,8 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Abstract base class handling XSLT to perform Schematron validation.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ *
+ * @author Philip Helger
  */
 @NotThreadSafe
 public abstract class AbstractSchematronXSLTProvider implements ISchematronXSLTProvider
