@@ -269,14 +269,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
               aBoundAssertReports.add (aBoundAssertReport);
             }
           }
-          catch (final XPathExpressionException ex)
+          catch (final Throwable t)
           {
             error (aAssertReport, "Failed to compile XPath expression in <" +
                                   (aAssertReport.isAssert () ? "assert" : "report") +
                                   ">: '" +
                                   sTest +
                                   "' " +
-                                  aVariables, ex);
+                                  aVariables, t);
             bHasAnyError = true;
           }
         }
