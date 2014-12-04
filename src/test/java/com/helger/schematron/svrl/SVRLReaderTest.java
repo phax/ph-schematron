@@ -26,12 +26,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.helger.commons.GlobalDebug;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.serialize.DOMReader;
-import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematrontest.SchematronTestHelper;
@@ -54,11 +52,6 @@ public final class SVRLReaderTest
     final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
     assertNotNull ("Failed to parse demo XML", aDoc);
 
-    if (false)
-    {
-      GlobalDebug.setDebugModeDirect (true);
-      System.out.println (XMLWriter.getXMLString (aDoc));
-    }
     final SchematronOutputType aSO = SVRLReader.readXML (aDoc);
     assertNotNull ("Failed to parse Schematron output", aSO);
   }
