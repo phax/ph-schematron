@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.xslt;
 
+import java.io.InputStream;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.IInputStreamProvider;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
@@ -85,18 +88,19 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final IReadableResource aXMLResource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
-    if (!aXMLResource.exists ())
+    final InputStream aIS = aXMLResource.getInputStream ();
+    if (aIS == null)
     {
       // Resource not found
       s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
       return EValidity.INVALID;
     }
 
-    return getSchematronValidity (TransformSourceFactory.create (aXMLResource));
+    return getSchematronValidity (TransformSourceFactory.create (aIS));
   }
 
   @Nonnull
@@ -112,17 +116,18 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final IReadableResource aXMLResource) throws Exception
+  public Document applySchematronValidation (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
-    if (!aXMLResource.exists ())
+    final InputStream aIS = aXMLResource.getInputStream ();
+    if (aIS == null)
     {
       // Resource not found
       s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
       return null;
     }
-    return applySchematronValidation (TransformSourceFactory.create (aXMLResource));
+    return applySchematronValidation (TransformSourceFactory.create (aIS));
   }
 
   @Nullable
@@ -157,7 +162,7 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IReadableResource aXMLResource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
   {
     final Document aDoc = applySchematronValidation (aXMLResource);
     return aDoc == null ? null : SVRLReader.readXML (aDoc);

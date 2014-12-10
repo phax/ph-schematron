@@ -24,6 +24,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 
 import com.helger.commons.id.IHasID;
+import com.helger.commons.io.IInputStreamProvider;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.svrl.SVRLReader;
@@ -66,7 +67,7 @@ public interface ISchematronResource extends IHasID <String>
    *         in case of a sever error validating the schema
    */
   @Nonnull
-  EValidity getSchematronValidity (@Nonnull final IReadableResource aXMLResource) throws Exception;
+  EValidity getSchematronValidity (@Nonnull final IInputStreamProvider aXMLResource) throws Exception;
 
   /**
    * A method to check if the passed XML DOM node matches the Schematron rules
@@ -100,7 +101,7 @@ public interface ISchematronResource extends IHasID <String>
    *      into a domain object
    */
   @Nullable
-  Document applySchematronValidation (@Nonnull IReadableResource aXMLResource) throws Exception;
+  Document applySchematronValidation (@Nonnull IInputStreamProvider aXMLResource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML source and return an SVRL
@@ -132,7 +133,7 @@ public interface ISchematronResource extends IHasID <String>
    *         In case the transformation somehow goes wrong.
    */
   @Nullable
-  SchematronOutputType applySchematronValidationToSVRL (@Nonnull IReadableResource aXMLResource) throws Exception;
+  SchematronOutputType applySchematronValidationToSVRL (@Nonnull IInputStreamProvider aXMLResource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML source and return a

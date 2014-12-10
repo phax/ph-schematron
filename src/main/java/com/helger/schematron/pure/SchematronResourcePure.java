@@ -36,6 +36,7 @@ import org.w3c.dom.Node;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.charset.CharsetManager;
+import com.helger.commons.io.IInputStreamProvider;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -254,20 +255,37 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The SVRL document. Never <code>null</code>.
    * @throws SchematronException
    *         in case of a sever error validating the schema
+   * @deprecated Use {@link #applySchematronValidationToSVRL(Node)} instead
    */
+  @Deprecated
   @Nonnull
   public SchematronOutputType applySchematronValidation (@Nonnull final Node aXMLNode) throws SchematronException
+  {
+    return applySchematronValidationToSVRL (aXMLNode);
+  }
+
+  /**
+   * The main method to convert a node to an SVRL document.
+   *
+   * @param aXMLNode
+   *        The source node to be validated. May not be <code>null</code>.
+   * @return The SVRL document. Never <code>null</code>.
+   * @throws SchematronException
+   *         in case of a sever error validating the schema
+   */
+  @Nonnull
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLNode) throws SchematronException
   {
     return getOrCreateBoundSchema ().validateComplete (aXMLNode);
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final IReadableResource aXMLResource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
   {
     if (!isValidSchematron ())
       return EValidity.INVALID;
 
-    final Document aDoc = DOMReader.readXMLDOM (aXMLResource);
+    final Document aDoc = DOMReader.readXMLDOM (aXMLResource.getInputStream ());
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
@@ -289,7 +307,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final IReadableResource aXMLResource) throws Exception
+  public Document applySchematronValidation (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
   {
     final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLResource);
     return aSO == null ? null : SVRLWriter.createXML (aSO);
@@ -303,21 +321,22 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IReadableResource aXMLResource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
     if (!isValidSchematron ())
       return null;
 
-    if (!aXMLResource.exists ())
+    final InputStream aIS = aXMLResource.getInputStream ();
+    if (aIS == null)
       return null;
 
-    final Document aDoc = DOMReader.readXMLDOM (aXMLResource);
+    final Document aDoc = DOMReader.readXMLDOM (aIS);
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
-    return applySchematronValidation (aDoc);
+    return applySchematronValidationToSVRL (aDoc);
   }
 
   @Nullable
@@ -333,7 +352,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     if (aNode == null)
       return null;
 
-    return applySchematronValidation (aNode);
+    return applySchematronValidationToSVRL (aNode);
   }
 
   /**
