@@ -579,11 +579,11 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
                                        .appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("is-a", m_sIsA)
                                        .appendIfNotNull ("rich", m_aRich)
-                                       .append ("includes", m_aIncludes)
+                                       .appendIfNotEmpty ("includes", m_aIncludes)
                                        .appendIfNotNull ("title", m_aTitle)
-                                       .append ("content", m_aContent)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotNull ("foreignElements", m_aForeignElements)
+                                       .appendIfNotEmpty ("content", m_aContent)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
                                        .toString ();
   }
 }

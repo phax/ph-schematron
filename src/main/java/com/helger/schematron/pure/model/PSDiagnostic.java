@@ -345,9 +345,9 @@ public class PSDiagnostic implements IPSClonableElement <PSDiagnostic>, IPSOptio
   {
     return new ToStringGenerator (this).appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("rich", m_aRich)
-                                       .append ("content", m_aContent)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotNull ("foreignElements", m_aForeignElements)
+                                       .appendIfNotEmpty ("content", m_aContent)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
                                        .toString ();
   }
 }

@@ -116,6 +116,6 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("content", m_aContent).toString ();
+    return new ToStringGenerator (this).appendIfNotEmpty ("content", m_aContent).toString ();
   }
 }

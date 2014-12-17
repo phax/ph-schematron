@@ -300,9 +300,9 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("pattern", m_sPattern)
-                                       .append ("content", m_aContent)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotNull ("foreignElements", m_aForeignElements)
+                                       .appendIfNotEmpty ("content", m_aContent)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
                                        .toString ();
   }
 }

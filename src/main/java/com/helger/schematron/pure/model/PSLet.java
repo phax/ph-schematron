@@ -144,6 +144,8 @@ public class PSLet implements IPSClonableElement <PSLet>
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("name", m_sName).append ("value", m_sValue).toString ();
+    return new ToStringGenerator (this).appendIfNotNull ("name", m_sName)
+                                       .appendIfNotNull ("value", m_sValue)
+                                       .toString ();
   }
 }

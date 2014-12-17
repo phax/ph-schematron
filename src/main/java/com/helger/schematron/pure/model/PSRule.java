@@ -455,11 +455,11 @@ public class PSRule implements IPSElement, IPSHasID, IPSHasFlag, IPSHasForeignEl
                                        .append ("abstract", m_bAbstract)
                                        .appendIfNotNull ("context", m_sContext)
                                        .appendIfNotNull ("id", m_sID)
-                                       .append ("includes", m_aIncludes)
-                                       .append ("lets", m_aLets)
-                                       .append ("content", m_aContent)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotNull ("foreignElements", m_aForeignElements)
+                                       .appendIfNotEmpty ("includes", m_aIncludes)
+                                       .appendIfNotEmpty ("lets", m_aLets)
+                                       .appendIfNotEmpty ("content", m_aContent)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
                                        .toString ();
   }
 }

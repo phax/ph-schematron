@@ -179,7 +179,7 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   {
     return new ToStringGenerator (this).appendIfNotNull ("uri", m_sUri)
                                        .appendIfNotNull ("prefix", m_sPrefix)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
                                        .toString ();
   }
 }

@@ -149,7 +149,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("select", m_sSelect)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
                                        .toString ();
   }
 }

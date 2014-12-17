@@ -196,10 +196,10 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("includes", m_aIncludes)
-                                       .append ("diagnostics", m_aDiagnostics)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotNull ("foreignElements", m_aForeignElements)
+    return new ToStringGenerator (this).appendIfNotEmpty ("includes", m_aIncludes)
+                                       .appendIfNotEmpty ("diagnostics", m_aDiagnostics)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
                                        .toString ();
   }
 }

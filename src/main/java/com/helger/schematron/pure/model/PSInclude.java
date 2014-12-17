@@ -95,6 +95,6 @@ public class PSInclude implements IPSElement
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("href", m_sHref).toString ();
+    return new ToStringGenerator (this).appendIfNotNull ("href", m_sHref).toString ();
   }
 }

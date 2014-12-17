@@ -148,7 +148,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("path", m_sPath)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
                                        .toString ();
   }
 }

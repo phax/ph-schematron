@@ -456,9 +456,9 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
                                        .appendIfNotNull ("diagnostics", m_aDiagnostics)
                                        .appendIfNotNull ("rich", m_aRich)
                                        .appendIfNotNull ("linkable", m_aLinkable)
-                                       .append ("content", m_aContent)
-                                       .appendIfNotNull ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotNull ("foreignElements", m_aForeignElements)
+                                       .appendIfNotEmpty ("content", m_aContent)
+                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
                                        .toString ();
   }
 }
