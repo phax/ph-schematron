@@ -46,6 +46,7 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronUtils;
@@ -54,6 +55,8 @@ import com.helger.schematron.pure.bound.PSBoundSchemaCache;
 import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
+import com.helger.schematron.pure.exchange.PSWriter;
+import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.svrl.SVRLWriter;
 
 /**
@@ -476,5 +479,20 @@ public class SchematronResourcePure extends AbstractSchematronResource
   public static SchematronResourcePure fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
   {
     return fromByteArray (CharsetManager.getAsBytes (sSchematron, aCharset));
+  }
+
+  /**
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided
+   * by a domain model.<br>
+   * <b>Important:</b> in this case, no include resolution will be performed!!
+   *
+   * @param aSchematron
+   *        The Schematron model to be used. May not be <code>null</code> .
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourcePure fromSchema (@Nonnull final PSSchema aSchematron)
+  {
+    return fromString (new PSWriter ().getXMLString (aSchematron), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
   }
 }
