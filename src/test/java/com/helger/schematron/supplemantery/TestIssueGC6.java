@@ -17,41 +17,29 @@
 package com.helger.schematron.supplemantery;
 
 import java.io.File;
-import java.util.List;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.SchematronHelper;
+import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.svrl.SVRLFailedAssert;
-import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLWriter;
 
-public final class TestIssue5
+public final class TestIssueGC6
 {
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/5/schematron.sch"),
-                            new File ("src/test/resources/issues/5/AERODROME.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/6/issue6.sch"),
+                            new File ("src/test/resources/issues/6/issue6.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final SchematronResourcePure pure = new SchematronResourcePure (aSchematron);
-    // final FileOutputStream fos = new FileOutputStream (result);
-    // final Result res = new StreamResult (fos);
-
-    // res.setSystemId(result.getAbsolutePath());
-    // final SchematronOutputType svrl = pure.applySchematronValidationToSVRL
-    // (anXMLSource);
-    final SchematronOutputType aSO = SchematronHelper.applySchematron (pure, anXMLSource);
-    final List <SVRLFailedAssert> aFailedAsserts = SVRLUtils.getAllFailedAssertions (aSO);
-    System.out.println (aFailedAsserts);
+    final AbstractSchematronResource pure = new SchematronResourcePure (aSchematron);
+    System.out.println (SVRLWriter.createXMLString (pure.applySchematronValidationToSVRL (anXMLSource)));
   }
-
 }

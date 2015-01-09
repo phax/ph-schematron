@@ -26,13 +26,13 @@ import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLWriter;
 
-public final class TestIssue7
+public final class TestIssueGC9
 {
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/7/schematron.sch"),
-                            new File ("src/test/resources/issues/7/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/9/schematron.sch"),
+                            new File ("src/test/resources/issues/9/test.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception
