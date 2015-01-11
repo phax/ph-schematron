@@ -35,6 +35,7 @@ import org.w3c.dom.Document;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.IInputStreamProvider;
 import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.XMLFactory;
@@ -57,7 +58,7 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   private final ErrorListener m_aCustomErrorListener;
   private final URIResolver m_aCustomURIResolver;
   private final ISchematronXSLTProvider m_aXSLTProvider;
-  private final ISchematronXSLTValidator m_aValidator;
+  private final ISchematronXSLTValidator m_aXSLTValidator;
 
   public AbstractSchematronXSLTResource (@Nonnull final IReadableResource aSCHResource,
                                          @Nullable final ErrorListener aCustomErrorListener,
@@ -71,15 +72,55 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
                                          @Nullable final ErrorListener aCustomErrorListener,
                                          @Nullable final URIResolver aCustomURIResolver,
                                          @Nullable final ISchematronXSLTProvider aXSLTProvider,
-                                         @Nonnull final ISchematronXSLTValidator aValidator)
+                                         @Nonnull final ISchematronXSLTValidator aXSLTValidator)
   {
     super (aSCHResource);
-    ValueEnforcer.notNull (aValidator, "Validator");
+    ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
 
     m_aCustomErrorListener = aCustomErrorListener;
     m_aCustomURIResolver = aCustomURIResolver;
     m_aXSLTProvider = aXSLTProvider;
-    m_aValidator = aValidator;
+    m_aXSLTValidator = aXSLTValidator;
+  }
+
+  /**
+   * @return The error listener passed in the constructor. May be
+   *         <code>null</code>.
+   */
+  @Nullable
+  public ErrorListener getCustomErrorListener ()
+  {
+    return m_aCustomErrorListener;
+  }
+
+  /**
+   * @return The URI resolver passed in the constructor. May be
+   *         <code>null</code>.
+   */
+  @Nullable
+  public URIResolver getCustomURIResolver ()
+  {
+    return m_aCustomURIResolver;
+  }
+
+  /**
+   * @return The XSLT provider passed in the constructor. May be
+   *         <code>null</code>.
+   */
+  @Nullable
+  public ISchematronXSLTProvider getXSLTProvider ()
+  {
+    return m_aXSLTProvider;
+  }
+
+  /**
+   * @return The XSLT validator passed in the constructor. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public ISchematronXSLTValidator getXSLTValidator ()
+  {
+    return m_aXSLTValidator;
   }
 
   public final boolean isValidSchematron ()
@@ -100,7 +141,16 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
       return EValidity.INVALID;
     }
 
-    return getSchematronValidity (TransformSourceFactory.create (aIS));
+    try
+    {
+      // InputStream to Source
+      return getSchematronValidity (TransformSourceFactory.create (aIS));
+    }
+    finally
+    {
+      // Ensure InputStream is closed
+      StreamUtils.close (aIS);
+    }
   }
 
   @Nonnull
@@ -112,7 +162,7 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
       return EValidity.INVALID;
 
     // And now filter all elements that make the passed source invalid
-    return m_aValidator.getSchematronValidity (aSO);
+    return m_aXSLTValidator.getSchematronValidity (aSO);
   }
 
   @Nullable
@@ -127,7 +177,15 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
       s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
       return null;
     }
-    return applySchematronValidation (TransformSourceFactory.create (aIS));
+
+    try
+    {
+      return applySchematronValidation (TransformSourceFactory.create (aIS));
+    }
+    finally
+    {
+      StreamUtils.close (aIS);
+    }
   }
 
   @Nullable
@@ -149,12 +207,14 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
     if (m_aCustomURIResolver != null)
       aTransformer.setURIResolver (m_aCustomURIResolver);
 
+    // Debug print the created XSLT document
     if (false)
       System.out.println (XMLWriter.getXMLString (m_aXSLTProvider.getXSLTDocument ()));
 
     // Do the main transformation
     aTransformer.transform (aXMLSource, new DOMResult (ret));
 
+    // Debug print the created SVRL document
     if (false)
       System.out.println (XMLWriter.getXMLString (ret));
 
