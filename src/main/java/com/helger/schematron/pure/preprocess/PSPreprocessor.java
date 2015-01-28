@@ -391,7 +391,7 @@ public class PSPreprocessor
   }
 
   @Nonnull
-  private PSDiagnostics _getPreprocessedDiagnostics (@Nonnull final PSDiagnostics aDiagnostics) throws SchematronPreprocessException
+  private static PSDiagnostics _getPreprocessedDiagnostics (@Nonnull final PSDiagnostics aDiagnostics) throws SchematronPreprocessException
   {
     final PSDiagnostics ret = new PSDiagnostics ();
     if (aDiagnostics.hasAnyInclude ())
@@ -428,13 +428,13 @@ public class PSPreprocessor
   }
 
   /**
-   * Convert the passed schema to a preprocessed schema.
+   * Convert the passed schema to a pre-processed schema.
    *
    * @param aSchema
    *        The schema to pre-process. May not be <code>null</code>
-   * @return The original schema object, if it is already preprocessed - a
-   *         preprocessed copy otherwise! May be <code>null</code> if the
-   *         original schema is not yet preprocessed and
+   * @return The original schema object, if it is already pre-processed - a
+   *         pre-processed copy otherwise! May be <code>null</code> if the
+   *         original schema is not yet pre-processed and
    *         {@link #isKeepEmptySchema()} is set to <code>false</code>.
    * @throws SchematronPreprocessException
    *         In case a preprocessing error occurs
@@ -452,7 +452,7 @@ public class PSPreprocessor
   }
 
   /**
-   * Convert the passed schema to a preprocessed schema independent if it is
+   * Convert the passed schema to a pre-processed schema independent if it is
    * already minimal or not.
    *
    * @param aSchema
