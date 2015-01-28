@@ -235,13 +235,31 @@ public class SchematronResourcePure extends AbstractSchematronResource
     }
   }
 
+  /**
+   * Use the internal error handler to validate all elements in the schematron.
+   * It tries to catch as many errors as possible.
+   */
   public void validateCompletely ()
   {
+    // Use the provided error handler (if any)
+    final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler
+                                                                 : DoNothingPSErrorHandler.getInstance ();
+    validateCompletely (aErrorHandler);
+  }
+
+  /**
+   * Use the provided error handler to validate all elements in the schematron.
+   * It tries to catch as many errors as possible.
+   * 
+   * @param aErrorHandler
+   *        The error handler to use. May not be <code>null</code>.
+   */
+  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  {
+    ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
+
     try
     {
-      // Use the provided error handler (if any)
-      final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler
-                                                                   : DoNothingPSErrorHandler.getInstance ();
       getOrCreateBoundSchema ().getOriginalSchema ().validateCompletely (aErrorHandler);
     }
     catch (final RuntimeException ex)
