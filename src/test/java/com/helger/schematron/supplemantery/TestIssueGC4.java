@@ -27,8 +27,8 @@ import com.helger.schematron.pure.SchematronResourcePure;
 
 public final class TestIssueGC4
 {
-  private static final String PATH_SCH = "src/test/resources/issues/4/UBL-TR_Main_Schematron.xml";
-  private static final String PATH_XML = "src/test/resources/issues/4/1_TEMEL_FATURA_ZARF.xml";
+  private static final String PATH_SCH = "src/test/resources/issues/gc4/UBL-TR_Main_Schematron.xml";
+  private static final String PATH_XML = "src/test/resources/issues/gc4/1_TEMEL_FATURA_ZARF.xml";
 
   @Test
   public void testIssue () throws Exception
