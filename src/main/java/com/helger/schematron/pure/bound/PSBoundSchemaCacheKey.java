@@ -129,8 +129,7 @@ public class PSBoundSchemaCacheKey
    */
   @Nonnull
   @OverrideOnDemand
-  protected PSSchema readSchema (@Nonnull final IReadableResource aResource,
-                                 @Nullable final IPSErrorHandler aErrorHandler) throws SchematronException
+  public PSSchema readSchema (@Nonnull final IReadableResource aResource, @Nullable final IPSErrorHandler aErrorHandler) throws SchematronException
   {
     return new PSReader (aResource, aErrorHandler).readSchema ();
   }
@@ -146,7 +145,7 @@ public class PSBoundSchemaCacheKey
    */
   @Nonnull
   @OverrideOnDemand
-  protected IPSQueryBinding getQueryBinding (@Nonnull final PSSchema aSchema) throws SchematronException
+  public IPSQueryBinding getQueryBinding (@Nonnull final PSSchema aSchema) throws SchematronException
   {
     return PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());
   }
@@ -162,7 +161,7 @@ public class PSBoundSchemaCacheKey
    */
   @Nonnull
   @OverrideOnDemand
-  protected PSPreprocessor createPreprocessor (@Nonnull final IPSQueryBinding aQueryBinding)
+  public PSPreprocessor createPreprocessor (@Nonnull final IPSQueryBinding aQueryBinding)
   {
     final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
     aPreprocessor.setKeepTitles (true);
@@ -182,13 +181,16 @@ public class PSBoundSchemaCacheKey
    */
   @Nonnull
   @OverrideOnDemand
-  protected PSSchema createPreprocessedSchema (@Nonnull final PSSchema aSchema,
-                                               @Nonnull final IPSQueryBinding aQueryBinding) throws SchematronException
+  public PSSchema createPreprocessedSchema (@Nonnull final PSSchema aSchema,
+                                            @Nonnull final IPSQueryBinding aQueryBinding) throws SchematronException
   {
     final PSPreprocessor aPreprocessor = createPreprocessor (aQueryBinding);
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     if (aPreprocessedSchema == null)
-      throw new SchematronPreprocessException ("Failed to preprocess schema " + aSchema);
+      throw new SchematronPreprocessException ("Failed to preprocess schema " +
+                                               aSchema +
+                                               " with query binding " +
+                                               aQueryBinding);
     return aPreprocessedSchema;
   }
 
@@ -210,7 +212,6 @@ public class PSBoundSchemaCacheKey
    * @throws SchematronException
    *         In case reading or binding fails.
    */
-  @SuppressWarnings ("javadoc")
   @Nonnull
   public IPSBoundSchema createBoundSchema () throws SchematronException
   {

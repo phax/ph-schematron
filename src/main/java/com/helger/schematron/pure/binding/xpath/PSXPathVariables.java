@@ -21,25 +21,28 @@ import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.compare.ComparatorStringLongestFirst;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 
 /**
  * This class manages all variables present in Schematron &lt;let&gt; elements.
- * 
+ *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class PSXPathVariables
 {
   private final Map <String, String> m_aMap = new TreeMap <String, String> (new ComparatorStringLongestFirst ());
 
   /**
    * Add a new variable.
-   * 
+   *
    * @param aEntry
    *        The entry to be added - key is the variable name and value is the
    *        variable value. May not be <code>null</code>.
@@ -54,7 +57,7 @@ public class PSXPathVariables
 
   /**
    * Add a new variable.
-   * 
+   *
    * @param sName
    *        The name of the variable. May neither be <code>null</code> nor
    *        empty.
@@ -83,7 +86,7 @@ public class PSXPathVariables
 
   /**
    * Perform the text replacement of all variables in the specified text.
-   * 
+   *
    * @param sText
    *        The source text. May be <code>null</code>.
    * @return The text with all values replaced. May be <code>null</code> if the
@@ -97,7 +100,7 @@ public class PSXPathVariables
 
   /**
    * Remove the variable with the specified name
-   * 
+   *
    * @param sVarName
    *        The name of the variable to be removed. May be <code>null</code>.
    * @return {@link EChange#CHANGED} if the variable was removed successfully.
@@ -114,7 +117,7 @@ public class PSXPathVariables
 
   /**
    * Remove all variables with the specified names
-   * 
+   *
    * @param aVars
    *        A list of variable names to be removed. May be <code>null</code>.
    * @return {@link EChange#CHANGED} if at least one variable was removed
@@ -128,5 +131,29 @@ public class PSXPathVariables
       for (final String sName : aVars)
         eChange = eChange.or (remove (sName));
     return eChange;
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public Map <String, String> getAll ()
+  {
+    final Map <String, String> ret = new TreeMap <String, String> (new ComparatorStringLongestFirst ());
+    ret.putAll (m_aMap);
+    return ret;
+  }
+
+  public boolean contains (@Nullable final String sName)
+  {
+    if (StringHelper.hasNoText (sName))
+      return false;
+    return m_aMap.containsKey (sName);
+  }
+
+  @Nullable
+  public String get (@Nullable final String sName)
+  {
+    if (StringHelper.hasNoText (sName))
+      return null;
+    return m_aMap.get (sName);
   }
 }
