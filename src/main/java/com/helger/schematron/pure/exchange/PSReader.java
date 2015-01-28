@@ -30,6 +30,7 @@ import com.helger.commons.microdom.IMicroNode;
 import com.helger.commons.microdom.IMicroText;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.xml.serialize.ISAXReaderSettings;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.SchematronHelper;
@@ -1248,7 +1249,8 @@ public class PSReader
   public PSSchema readSchema () throws SchematronReadException
   {
     // Resolve all includes as the first action
-    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource);
+    final ISAXReaderSettings aSettings = null;
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource, aSettings);
     if (aDoc == null || aDoc.getDocumentElement () == null)
       throw new SchematronReadException (m_aResource, "Failed to resolve includes in resource " + m_aResource);
 

@@ -41,6 +41,7 @@ import com.helger.commons.microdom.IMicroNode;
 import com.helger.commons.microdom.serialize.MicroReader;
 import com.helger.commons.microdom.utils.MicroWalker;
 import com.helger.commons.mutable.Wrapper;
+import com.helger.commons.xml.serialize.ISAXReaderSettings;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLResourceError;
@@ -180,7 +181,8 @@ public final class SchematronHelper
 
   @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
   private static void _recursiveResolveAllSchematronIncludes (@Nonnull final IMicroElement eRoot,
-                                                              @Nonnull final IReadableResource aResource)
+                                                              @Nonnull final IReadableResource aResource,
+                                                              @Nullable final ISAXReaderSettings aSettings)
   {
     if (eRoot != null)
     {
@@ -214,23 +216,24 @@ public final class SchematronHelper
                                aIncludeRes.getPath () +
                                "'");
 
-            final IMicroDocument aIncludeDoc = MicroReader.readMicroXML (aIncludeRes);
-            if (aIncludeDoc == null)
+            // Read XML to be included
+            final IMicroDocument aIncludedDoc = MicroReader.readMicroXML (aIncludeRes, aSettings);
+            if (aIncludedDoc == null)
               throw new IllegalStateException ("Failed to parse include " + aIncludeRes);
 
-            IMicroElement aIncludeElement;
+            IMicroElement aIncludedContent;
             if (sAnchor == null)
             {
               // no anchor present - include the whole document
 
               // Return the document element
-              aIncludeElement = aIncludeDoc.getDocumentElement ();
+              aIncludedContent = aIncludedDoc.getDocumentElement ();
             }
             else
             {
               final String sFinalAnchor = sAnchor;
               final Wrapper <IMicroElement> aMatch = new Wrapper <IMicroElement> ();
-              MicroWalker.walkNode (aIncludeDoc.getDocumentElement (),
+              MicroWalker.walkNode (aIncludedDoc.getDocumentElement (),
                                     new DefaultHierarchyWalkerCallback <IMicroNode> ()
                                     {
                                       @Override
@@ -245,26 +248,26 @@ public final class SchematronHelper
                                         }
                                       }
                                     });
-              aIncludeElement = aMatch.get ();
-              if (aIncludeElement == null)
+              aIncludedContent = aMatch.get ();
+              if (aIncludedContent == null)
               {
                 s_aLogger.error ("Failed to resolve an element with the ID '" +
                                  sAnchor +
                                  "' in " +
                                  aIncludeRes +
-                                 "! Including the whole document!");
-                aIncludeElement = aIncludeDoc.getDocumentElement ();
+                                 "! Therefore including the whole document!");
+                aIncludedContent = aIncludedDoc.getDocumentElement ();
               }
             }
 
             // Important to detach from parent!
-            aIncludeElement.detachFromParent ();
+            aIncludedContent.detachFromParent ();
 
             // Recursive resolve includes
-            _recursiveResolveAllSchematronIncludes (aIncludeElement, aIncludeRes);
+            _recursiveResolveAllSchematronIncludes (aIncludedContent, aIncludeRes, aSettings);
 
-            // Now replace in MicroDOM
-            aElement.getParent ().replaceChild (aElement, aIncludeElement);
+            // Now replace "include" element with content in MicroDOM
+            aElement.getParent ().replaceChild (aElement, aIncludedContent);
           }
           catch (final IOException ex)
           {
@@ -285,11 +288,29 @@ public final class SchematronHelper
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource)
   {
-    final IMicroDocument aDoc = MicroReader.readMicroXML (aResource);
+    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null);
+  }
+
+  /**
+   * Resolve all Schematron includes of the passed resource.
+   *
+   * @param aResource
+   *        The Schematron resource to read. May not be <code>null</code>.
+   * @param aSettings
+   *        The SAX reader settings to be used. May be <code>null</code> to use
+   *        the default settings.
+   * @return <code>null</code> if the passed resource could not be read as XML
+   *         document
+   */
+  @Nullable
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+                                                                  @Nullable final ISAXReaderSettings aSettings)
+  {
+    final IMicroDocument aDoc = MicroReader.readMicroXML (aResource, aSettings);
     if (aDoc != null)
     {
       // Resolve all Schematron includes
-      _recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (), aResource);
+      _recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (), aResource, aSettings);
     }
     return aDoc;
   }
