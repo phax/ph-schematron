@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -40,6 +42,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.xpath.XPathHelper;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -47,6 +50,7 @@ import com.helger.schematron.pure.binding.SchematronBindException;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.bound.AbstractPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
+import com.helger.schematron.pure.model.IPSElement;
 import com.helger.schematron.pure.model.IPSHasMixedContent;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSDiagnostic;
@@ -68,6 +72,31 @@ import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 @Immutable
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
+  private static final class PSErrorListener implements ErrorListener
+  {
+    private final IPSErrorHandler m_aPSErrorHandler;
+
+    public PSErrorListener (@Nonnull final IPSErrorHandler aPSErrorHandler)
+    {
+      m_aPSErrorHandler = aPSErrorHandler;
+    }
+
+    public void warning (final TransformerException ex) throws TransformerException
+    {
+      m_aPSErrorHandler.warn ((IReadableResource) null, (IPSElement) null, ex.getMessage ());
+    }
+
+    public void error (final TransformerException ex) throws TransformerException
+    {
+      m_aPSErrorHandler.error ((IReadableResource) null, (IPSElement) null, ex.getMessage (), ex);
+    }
+
+    public void fatalError (final TransformerException ex) throws TransformerException
+    {
+      m_aPSErrorHandler.error ((IReadableResource) null, (IPSElement) null, ex.getMessage (), ex);
+    }
+  }
+
   private final List <PSXPathBoundPattern> m_aBoundPatterns;
 
   @Nullable
@@ -409,6 +438,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         // Enable this to debug Saxon function resolving
         aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
       }
+
+      // Wrap the PSErrorHandler to a ErrorListener
+      aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));
     }
 
     // Pre-compile all diagnostics first
