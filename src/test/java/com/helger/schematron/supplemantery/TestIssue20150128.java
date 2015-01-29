@@ -54,7 +54,6 @@ public final class TestIssue20150128
     resource.setErrorHandler (aErrorHandler);
     resource.setFunctionResolver (aFunctionResolver);
     assertTrue (resource.isValidSchematron ());
-    assertEquals (0, aErrorHandler.getResourceErrors ().size ());
-    System.out.println ("abc");
+    assertEquals (1, aErrorHandler.getResourceErrors ().size ());
   }
 }
