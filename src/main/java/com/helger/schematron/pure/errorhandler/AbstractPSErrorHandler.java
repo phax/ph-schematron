@@ -51,14 +51,14 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
 
   /**
    * The abstract method that is called for both warnings and errors.
-   * 
+   *
    * @param aRes
    *        The resource in which the error occurred.
    * @param eErrorLevel
    *        The error level. Never <code>null</code>.
    * @param aSourceElement
-   *        The source schematron element, in which the error occurred. Never
-   *        <code>null</code>.
+   *        The source schematron element, in which the error occurred. Maybe
+   *        <code>null</code> for XPath errors.
    * @param sMessage
    *        The error message. Never <code>null</code>.
    * @param t
@@ -67,12 +67,12 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
    */
   protected abstract void handle (@Nullable IReadableResource aRes,
                                   @Nonnull EErrorLevel eErrorLevel,
-                                  @Nonnull IPSElement aSourceElement,
+                                  @Nullable IPSElement aSourceElement,
                                   @Nonnull String sMessage,
                                   @Nullable Throwable t);
 
   public final void warn (@Nullable final IReadableResource aRes,
-                          @Nonnull final IPSElement aSourceElement,
+                          @Nullable final IPSElement aSourceElement,
                           @Nonnull final String sMessage)
   {
     handle (aRes, EErrorLevel.WARN, aSourceElement, sMessage, (Throwable) null);
@@ -83,13 +83,13 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
       aNestedErrorHandler.warn (aRes, aSourceElement, sMessage);
   }
 
-  public final void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMessage)
+  public final void error (@Nullable final IPSElement aSourceElement, @Nonnull final String sMessage)
   {
     error ((IReadableResource) null, aSourceElement, sMessage, (Throwable) null);
   }
 
   public final void error (@Nullable final IReadableResource aRes,
-                           @Nonnull final IPSElement aSourceElement,
+                           @Nullable final IPSElement aSourceElement,
                            @Nonnull final String sMessage,
                            @Nullable final Throwable t)
   {

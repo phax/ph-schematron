@@ -35,12 +35,12 @@ public interface IPSErrorHandler
    * @param aRes
    *        The resource in which the error occurred. May be <code>null</code>.
    * @param aSourceElement
-   *        The source element where the warning is encountered. Never
-   *        <code>null</code>.
+   *        The source element where the warning is encountered. Maybe
+   *        <code>null</code> for XPath errors.
    * @param sMessage
    *        The main warning message. Never <code>null</code>.
    */
-  void warn (@Nullable IReadableResource aRes, @Nonnull IPSElement aSourceElement, @Nonnull String sMessage);
+  void warn (@Nullable IReadableResource aRes, @Nullable IPSElement aSourceElement, @Nonnull String sMessage);
 
   /**
    * Emit an error. Shortcut for
@@ -49,12 +49,12 @@ public interface IPSErrorHandler
    * {@link Throwable}.
    *
    * @param aSourceElement
-   *        The source element where the warning is encountered. Never
-   *        <code>null</code>.
+   *        The source element where the warning is encountered. Maybe
+   *        <code>null</code> for XPath errors.
    * @param sMessage
    *        The main warning message. Never <code>null</code>.
    */
-  void error (@Nonnull IPSElement aSourceElement, @Nonnull String sMessage);
+  void error (@Nullable IPSElement aSourceElement, @Nonnull String sMessage);
 
   /**
    * Emit an error
@@ -62,8 +62,8 @@ public interface IPSErrorHandler
    * @param aRes
    *        The resource in which the error occurred. May be <code>null</code>.
    * @param aSourceElement
-   *        The source element where the warning is encountered. Never
-   *        <code>null</code>.
+   *        The source element where the warning is encountered. Maybe
+   *        <code>null</code> for XPath errors.
    * @param sMessage
    *        The main warning message. Never <code>null</code>.
    * @param t
@@ -71,7 +71,7 @@ public interface IPSErrorHandler
    *        <code>null</code>.
    */
   void error (@Nullable IReadableResource aRes,
-              @Nonnull IPSElement aSourceElement,
+              @Nullable IPSElement aSourceElement,
               @Nonnull String sMessage,
               @Nullable Throwable t);
 }

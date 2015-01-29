@@ -51,12 +51,13 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
 
   @Nonnull
   public static String getLogMessage (@Nullable final IReadableResource aRes,
-                                      @Nonnull final IPSElement aSourceElement,
+                                      @Nullable final IPSElement aSourceElement,
                                       @Nonnull final String sMessage)
   {
     return StringHelper.getImplodedNonEmpty (" - ",
                                              aRes == null ? null : aRes.getPath (),
-                                             CGStringHelper.getClassLocalName (aSourceElement),
+                                             aSourceElement == null ? null
+                                                                   : CGStringHelper.getClassLocalName (aSourceElement),
                                              aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID () ? "ID " +
                                                                                                                           ((IPSHasID) aSourceElement).getID ()
                                                                                                                        : null,
@@ -66,7 +67,7 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
                          @Nonnull final EErrorLevel eErrorLevel,
-                         @Nonnull final IPSElement aSourceElement,
+                         @Nullable final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {

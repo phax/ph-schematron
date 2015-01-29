@@ -58,13 +58,17 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
                          @Nonnull final EErrorLevel eErrorLevel,
-                         @Nonnull final IPSElement aSourceElement,
+                         @Nullable final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    String sField = CGStringHelper.getClassLocalName (aSourceElement);
-    if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
-      sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
+    String sField = "";
+    if (aSourceElement != null)
+    {
+      sField += CGStringHelper.getClassLocalName (aSourceElement);
+      if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
+        sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
+    }
     final ResourceLocation aLocation = new ResourceLocation (aRes == null ? null : aRes.getResourceID (), sField);
     m_aErrors.addResourceError (new ResourceError (aLocation, eErrorLevel, sMessage, t));
   }
