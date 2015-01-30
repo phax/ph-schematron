@@ -99,6 +99,36 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   private final List <PSXPathBoundPattern> m_aBoundPatterns;
 
+  /**
+   * Compile an XPath expression string to an {@link XPathExpressionException}
+   * object. If expression contains any variables, the
+   * {@link XPathVariableResolver} will be used to resolve them within this
+   * method!
+   *
+   * @param aXPathContext
+   *        Context to use. May not be <code>null</code>.
+   * @param sXPathExpression
+   *        The expression to be compiled. May not be <code>null</code>.
+   * @return The precompiled {@link XPathExpression}
+   * @throws XPathExpressionException
+   *         If expression cannot be compiled.
+   */
+  @Nullable
+  private XPathExpression _compileXPath (@Nonnull final XPath aXPathContext, @Nonnull final String sXPathExpression) throws XPathExpressionException
+  {
+    XPathExpression ret = null;
+    try
+    {
+      ret = aXPathContext.compile (sXPathExpression);
+    }
+    catch (final XPathExpressionException ex)
+    {
+      // Do something with it
+      throw ex;
+    }
+    return ret;
+  }
+
   @Nullable
   private List <PSXPathBoundElement> _createBoundElements (@Nonnull final IPSHasMixedContent aMixedContent,
                                                            @Nonnull final XPath aXPathContext,
@@ -118,7 +148,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           final String sPath = aVariables.getAppliedReplacement (aName.getPath ());
           try
           {
-            final XPathExpression aXpathExpression = aXPathContext.compile (sPath);
+            final XPathExpression aXpathExpression = _compileXPath (aXPathContext, sPath);
             ret.add (new PSXPathBoundElement (aName, sPath, aXpathExpression));
           }
           catch (final XPathExpressionException ex)
@@ -142,7 +172,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           final String sSelect = aVariables.getAppliedReplacement (aValueOf.getSelect ());
           try
           {
-            final XPathExpression aXPathExpression = aXPathContext.compile (sSelect);
+            final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sSelect);
             ret.add (new PSXPathBoundElement (aValueOf, sSelect, aXPathExpression));
           }
           catch (final XPathExpressionException ex)
@@ -165,7 +195,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   }
 
   @Nullable
-  private Map <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@Nonnull final XPath aXPath,
+  private Map <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@Nonnull final XPath aXPathContext,
                                                                         @Nonnull final PSXPathVariables aVariables)
   {
     final Map <String, PSXPathBoundDiagnostic> ret = new HashMap <String, PSXPathBoundDiagnostic> ();
@@ -177,7 +207,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // For all contained diagnostic elements
       for (final PSDiagnostic aDiagnostic : aSchema.getDiagnostics ().getAllDiagnostics ())
       {
-        final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic, aXPath, aVariables);
+        final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic, aXPathContext, aVariables);
         if (aBoundElements == null)
         {
           // error already emitted
@@ -204,7 +234,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   /**
    * Pre-compile all patterns incl. their content
    *
-   * @param aXPath
+   * @param aXPathContext
    *        Global XPath object to use. May not be <code>null</code>.
    * @param aBoundDiagnostics
    *        A map from DiagnosticID to its mapped counterpart. May not be
@@ -214,7 +244,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @return <code>null</code> if an XPath error is contained
    */
   @Nullable
-  private List <PSXPathBoundPattern> _createBoundPatterns (@Nonnull final XPath aXPath,
+  private List <PSXPathBoundPattern> _createBoundPatterns (@Nonnull final XPath aXPathContext,
                                                            @Nonnull final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
                                                            @Nonnull final PSXPathVariables aVariables)
   {
@@ -281,8 +311,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           final String sTest = aVariables.getAppliedReplacement (aAssertReport.getTest ());
           try
           {
-            final XPathExpression aTestExpr = aXPath.compile (sTest);
-            final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport, aXPath, aVariables);
+            final XPathExpression aTestExpr = _compileXPath (aXPathContext, sTest);
+            final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport,
+                                                                                    aXPathContext,
+                                                                                    aVariables);
             if (aBoundElements == null)
             {
               // Error already emitted
@@ -315,7 +347,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         PSXPathBoundRule aBoundRule = null;
         try
         {
-          final XPathExpression aRuleContext = aXPath.compile (sRuleContext);
+          final XPathExpression aRuleContext = _compileXPath (aXPathContext, sRuleContext);
           aBoundRule = new PSXPathBoundRule (aRule, sRuleContext, aRuleContext, aBoundAssertReports);
           aBoundRules.add (aBoundRule);
         }
@@ -409,13 +441,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
 
-    // Get all "global" variables that are defined in the schema and - if
-    // defined - in the specified phase
+    // Get all "global" variables that are defined in the schema
     final PSXPathVariables aVariables = new PSXPathVariables ();
     if (aSchema.hasAnyLet ())
       for (final Map.Entry <String, String> aEntry : aSchema.getAllLetsAsMap ().entrySet ())
         aVariables.add (aEntry);
+
     if (aPhase != null)
+    {
+      // Get all variables that are defined in the specified phase
       for (final Map.Entry <String, String> aEntry : aPhase.getAllLetsAsMap ().entrySet ())
         if (aVariables.add (aEntry).isUnchanged ())
           warn (aSchema, "Duplicate let with name '" +
@@ -423,16 +457,18 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                          "' in <phase> with name '" +
                          getPhaseID () +
                          "' - second definition is ignored");
+    }
 
     final XPathFactory aXPathFactory = createXPathFactorySaxonFirst ();
-    final XPath aXPath = XPathHelper.createNewXPath (aXPathFactory,
-                                                     aXPathVariableResolver,
-                                                     aXPathFunctionResolver,
-                                                     getNamespaceContext ());
+    final XPath aXPathContext = XPathHelper.createNewXPath (aXPathFactory,
+                                                            aXPathVariableResolver,
+                                                            aXPathFunctionResolver,
+                                                            getNamespaceContext ());
 
-    if (aXPath instanceof XPathEvaluator)
+    if (aXPathContext instanceof XPathEvaluator)
     {
-      final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPath;
+      // Saxon implementation special handling
+      final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPathContext;
       if (false)
       {
         // Enable this to debug Saxon function resolving
@@ -444,13 +480,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
 
     // Pre-compile all diagnostics first
-    final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPath, aVariables);
+    final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext, aVariables);
     if (aBoundDiagnostics == null)
-      throw new SchematronBindException ("Failed to precompile the diagnostics of the supplied schema. Check the log for XPath errors!");
+      throw new SchematronBindException ("Failed to precompile the diagnostics of the supplied schema. Check the " +
+                                         (aCustomErrorListener == null ? "log" : "error listener") +
+                                         " for XPath errors!");
 
     // Perform the pre-compilation of all XPath expressions in the patterns,
     // rules, asserts/reports and the content elements
-    m_aBoundPatterns = _createBoundPatterns (aXPath, aBoundDiagnostics, aVariables);
+    m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, aVariables);
     if (m_aBoundPatterns == null)
       throw new SchematronBindException ("Failed to precompile the supplied schema.");
   }
