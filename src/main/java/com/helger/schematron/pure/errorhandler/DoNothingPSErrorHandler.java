@@ -50,7 +50,7 @@ public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
                          @Nonnull final EErrorLevel eErrorLevel,
-                         @Nonnull final IPSElement aSourceElement,
+                         @Nullable final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
