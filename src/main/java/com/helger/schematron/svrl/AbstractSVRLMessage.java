@@ -21,7 +21,6 @@ import java.util.regex.Matcher;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 
@@ -38,7 +37,6 @@ import com.helger.commons.string.ToStringGenerator;
  *
  * @author Philip Helger
  */
-@Immutable
 public abstract class AbstractSVRLMessage
 {
   protected List <DiagnosticReference> m_aDiagnosticReferences;
