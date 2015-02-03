@@ -155,6 +155,15 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return m_aVariableResolver;
   }
 
+  /**
+   * Set the variable resolver to be used in the XPath statements. This can only
+   * be set before the Schematron is bound. If it is already bound an exception
+   * is thrown to indicate the unnecessity of the call.
+   *
+   * @param aVariableResolver
+   *        The variable resolver to set. May be <code>null</code>.
+   * @return this
+   */
   @Nonnull
   public SchematronResourcePure setVariableResolver (@Nullable final XPathVariableResolver aVariableResolver)
   {
@@ -173,6 +182,15 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return m_aFunctionResolver;
   }
 
+  /**
+   * Set the function resolver to be used in the XPath statements. This can only
+   * be set before the Schematron is bound. If it is already bound an exception
+   * is thrown to indicate the unnecessity of the call.
+   *
+   * @param aFunctionResolver
+   *        The function resolver to set. May be <code>null</code>.
+   * @return this
+   */
   @Nonnull
   public SchematronResourcePure setFunctionResolver (@Nullable final XPathFunctionResolver aFunctionResolver)
   {
@@ -250,7 +268,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   /**
    * Use the provided error handler to validate all elements in the schematron.
    * It tries to catch as many errors as possible.
-   * 
+   *
    * @param aErrorHandler
    *        The error handler to use. May not be <code>null</code>.
    */
