@@ -11,6 +11,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
+  * 2.9.0 introduced new APIs in several places
   * Since version 2.8.3 there is an easy way to use XQuery functions (like funcx library)
     as custom XPath functions
 
@@ -20,7 +21,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>2.9.0</version>
+  <version>2.9.1</version>
 </dependency>
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
