@@ -10,24 +10,24 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.binding.IPSQueryBinding
-	c3271 [label=<<table title="com.helger.schematron.pure.binding.IPSQueryBinding" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./IPSQueryBinding.html">
+	c3387 [label=<<table title="com.helger.schematron.pure.binding.IPSQueryBinding" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./IPSQueryBinding.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSQueryBinding </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding
-	c3273 [label=<<table title="com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./xpath/PSXPathQueryBinding.html">
+	c3389 [label=<<table title="com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./xpath/PSXPathQueryBinding.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSXPathQueryBinding </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.binding.IPSQueryBinding implements java.io.Serializable
-	c3373:p -> c3271:p [dir=back,arrowtail=empty,style=dashed];
+	c3493:p -> c3387:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding implements com.helger.schematron.pure.binding.IPSQueryBinding
-	c3271:p -> c3273:p [dir=back,arrowtail=empty,style=dashed];
+	c3387:p -> c3389:p [dir=back,arrowtail=empty,style=dashed];
 	// java.io.Serializable
-	c3373 [label=<<table title="java.io.Serializable" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="http://download.oracle.com/javase/6/docs/api/java/io/Serializable.html">
+	c3493 [label=<<table title="java.io.Serializable" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="http://download.oracle.com/javase/6/docs/api/java/io/Serializable.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> Serializable </td></tr>

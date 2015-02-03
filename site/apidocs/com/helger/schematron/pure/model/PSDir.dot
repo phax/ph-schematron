@@ -10,46 +10,46 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSDir
-	c7573 [label=<<table title="com.helger.schematron.pure.model.PSDir" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSDir.html">
+	c8310 [label=<<table title="com.helger.schematron.pure.model.PSDir" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSDir.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSDir </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSOptionalElement
-	c7579 [label=<<table title="com.helger.schematron.pure.model.IPSOptionalElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSOptionalElement.html">
+	c8316 [label=<<table title="com.helger.schematron.pure.model.IPSOptionalElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSOptionalElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSOptionalElement </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasTexts
-	c7580 [label=<<table title="com.helger.schematron.pure.model.IPSHasTexts" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasTexts.html">
+	c8317 [label=<<table title="com.helger.schematron.pure.model.IPSHasTexts" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasTexts.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasTexts </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasForeignElements
-	c7587 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignElements" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignElements.html">
+	c8324 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignElements" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignElements.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasForeignElements </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c7591 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
+	c8328 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSClonableElement&lt;IMPLTYPE extends IPSClonableElement&lt;IMPLTYPE&gt;&gt; </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSDir implements com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c7591:p -> c7573:p [dir=back,arrowtail=empty,style=dashed];
+	c8328:p -> c8310:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDir implements com.helger.schematron.pure.model.IPSOptionalElement
-	c7579:p -> c7573:p [dir=back,arrowtail=empty,style=dashed];
+	c8316:p -> c8310:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDir implements com.helger.schematron.pure.model.IPSHasForeignElements
-	c7587:p -> c7573:p [dir=back,arrowtail=empty,style=dashed];
+	c8324:p -> c8310:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDir implements com.helger.schematron.pure.model.IPSHasTexts
-	c7580:p -> c7573:p [dir=back,arrowtail=empty,style=dashed];
+	c8317:p -> c8310:p [dir=back,arrowtail=empty,style=dashed];
 }
 

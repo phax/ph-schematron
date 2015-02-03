@@ -10,15 +10,21 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.binding.xpath.PSXPathVariables
-	c347 [label=<<table title="com.helger.schematron.pure.binding.xpath.PSXPathVariables" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSXPathVariables.html">
+	c359 [label=<<table title="com.helger.schematron.pure.binding.xpath.PSXPathVariables" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSXPathVariables.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSXPathVariables </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding
-	c348 [label=<<table title="com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSXPathQueryBinding.html">
+	c360 [label=<<table title="com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSXPathQueryBinding.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSXPathQueryBinding </td></tr>
+		</table></td></tr>
+		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
+	// com.helger.schematron.pure.binding.xpath.CXPath
+	c361 [label=<<table title="com.helger.schematron.pure.binding.xpath.CXPath" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./CXPath.html">
+		<tr><td><table border="0" cellspacing="0" cellpadding="1">
+<tr><td align="center" balign="center"> CXPath </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 }

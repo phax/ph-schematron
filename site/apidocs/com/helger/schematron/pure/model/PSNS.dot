@@ -10,28 +10,28 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSNS
-	c6780 [label=<<table title="com.helger.schematron.pure.model.PSNS" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSNS.html">
+	c7489 [label=<<table title="com.helger.schematron.pure.model.PSNS" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSNS.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSNS </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasForeignAttributes
-	c6802 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignAttributes" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignAttributes.html">
+	c7511 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignAttributes" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignAttributes.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasForeignAttributes </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c6805 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
+	c7514 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSClonableElement&lt;IMPLTYPE extends IPSClonableElement&lt;IMPLTYPE&gt;&gt; </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSNS implements com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c6805:p -> c6780:p [dir=back,arrowtail=empty,style=dashed];
+	c7514:p -> c7489:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSNS implements com.helger.schematron.pure.model.IPSHasForeignAttributes
-	c6802:p -> c6780:p [dir=back,arrowtail=empty,style=dashed];
+	c7511:p -> c7489:p [dir=back,arrowtail=empty,style=dashed];
 }
 

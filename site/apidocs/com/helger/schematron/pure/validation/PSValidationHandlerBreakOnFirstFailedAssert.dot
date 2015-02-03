@@ -10,18 +10,18 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstFailedAssert
-	c10288 [label=<<table title="com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstFailedAssert" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSValidationHandlerBreakOnFirstFailedAssert.html">
+	c11121 [label=<<table title="com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstFailedAssert" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSValidationHandlerBreakOnFirstFailedAssert.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSValidationHandlerBreakOnFirstFailedAssert </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler
-	c10291 [label=<<table title="com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractPSPartialValidationHandler.html">
+	c11124 [label=<<table title="com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractPSPartialValidationHandler.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractPSPartialValidationHandler </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstFailedAssert extends com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler
-	c10291:p -> c10288:p [dir=back,arrowtail=empty];
+	c11124:p -> c11121:p [dir=back,arrowtail=empty];
 }
 

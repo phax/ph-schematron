@@ -10,18 +10,18 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.bound.AbstractPSBoundSchema
-	c4064 [label=<<table title="com.helger.schematron.pure.bound.AbstractPSBoundSchema" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="../AbstractPSBoundSchema.html">
+	c4325 [label=<<table title="com.helger.schematron.pure.bound.AbstractPSBoundSchema" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="../AbstractPSBoundSchema.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractPSBoundSchema </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema
-	c4065 [label=<<table title="com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSXPathBoundSchema.html">
+	c4326 [label=<<table title="com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSXPathBoundSchema.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSXPathBoundSchema </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema extends com.helger.schematron.pure.bound.AbstractPSBoundSchema
-	c4064:p -> c4065:p [dir=back,arrowtail=empty];
+	c4325:p -> c4326:p [dir=back,arrowtail=empty];
 }
 

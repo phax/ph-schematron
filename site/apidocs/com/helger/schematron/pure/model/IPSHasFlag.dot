@@ -10,27 +10,27 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSRule
-	c9352 [label=<<table title="com.helger.schematron.pure.model.PSRule" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSRule.html">
+	c10153 [label=<<table title="com.helger.schematron.pure.model.PSRule" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSRule.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSRule </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.PSAssertReport
-	c9370 [label=<<table title="com.helger.schematron.pure.model.PSAssertReport" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSAssertReport.html">
+	c10171 [label=<<table title="com.helger.schematron.pure.model.PSAssertReport" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSAssertReport.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSAssertReport </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasFlag
-	c9382 [label=<<table title="com.helger.schematron.pure.model.IPSHasFlag" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./IPSHasFlag.html">
+	c10183 [label=<<table title="com.helger.schematron.pure.model.IPSHasFlag" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./IPSHasFlag.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasFlag </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSRule implements com.helger.schematron.pure.model.IPSHasFlag
-	c9382:p -> c9352:p [dir=back,arrowtail=empty,style=dashed];
+	c10183:p -> c10153:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSAssertReport implements com.helger.schematron.pure.model.IPSHasFlag
-	c9382:p -> c9370:p [dir=back,arrowtail=empty,style=dashed];
+	c10183:p -> c10171:p [dir=back,arrowtail=empty,style=dashed];
 }
 

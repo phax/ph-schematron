@@ -10,16 +10,16 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSRichGroup.ESpace
-	c6214 [label=<<table title="com.helger.schematron.pure.model.PSRichGroup.ESpace" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSRichGroup.ESpace.html">
+	c6903 [label=<<table title="com.helger.schematron.pure.model.PSRichGroup.ESpace" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSRichGroup.ESpace.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;enumeration&#187; </td></tr>
 <tr><td align="center" balign="center"> ESpace </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSRichGroup.ESpace implements com.helger.commons.id.IHasID<IDTYPE>
-	c6290:p -> c6214:p [dir=back,arrowtail=empty,style=dashed];
+	c6979:p -> c6903:p [dir=back,arrowtail=empty,style=dashed];
 	// com.helger.commons.id.IHasID<IDTYPE>
-	c6290 [label=<<table title="com.helger.commons.id.IHasID" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p">
+	c6979 [label=<<table title="com.helger.commons.id.IHasID" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IHasID&lt;IDTYPE&gt; </td></tr>

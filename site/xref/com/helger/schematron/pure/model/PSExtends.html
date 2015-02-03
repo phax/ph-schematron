@@ -7,7 +7,7 @@
 <body>
 <div id="overview"><a href="../../../../../../apidocs/com/helger/schematron/pure/model/PSExtends.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014 Philip Helger (www.helger.com)</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014-2015 Philip Helger (www.helger.com)</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment"> * philip[at]helger[dot]com</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
@@ -137,12 +137,12 @@
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>   <strong class="jxr_keyword">public</strong> String toString ()
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>   {
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ToStringGenerator (<strong class="jxr_keyword">this</strong>).appendIfNotNull (<span class="jxr_string">"rule"</span>, m_sRule)
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>                                        .appendIfNotNull (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>                                        .appendIfNotEmpty (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>                                        .toString ();
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>   }
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2014&#x2013;2015 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
 </body>
 </html>

@@ -10,18 +10,18 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler
-	c4743 [label=<<table title="com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./LoggingPSErrorHandler.html">
+	c5028 [label=<<table title="com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./LoggingPSErrorHandler.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> LoggingPSErrorHandler </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.errorhandler.AbstractPSErrorHandler
-	c4747 [label=<<table title="com.helger.schematron.pure.errorhandler.AbstractPSErrorHandler" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractPSErrorHandler.html">
+	c5032 [label=<<table title="com.helger.schematron.pure.errorhandler.AbstractPSErrorHandler" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractPSErrorHandler.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractPSErrorHandler </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler extends com.helger.schematron.pure.errorhandler.AbstractPSErrorHandler
-	c4747:p -> c4743:p [dir=back,arrowtail=empty];
+	c5032:p -> c5028:p [dir=back,arrowtail=empty];
 }
 

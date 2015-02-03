@@ -10,7 +10,7 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.supplemantery.TestIssue20140523
-	c509 [label=<<table title="com.helger.schematron.supplemantery.TestIssue20140523" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./TestIssue20140523.html">
+	c788 [label=<<table title="com.helger.schematron.supplemantery.TestIssue20140523" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./TestIssue20140523.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> TestIssue20140523 </td></tr>
 		</table></td></tr>

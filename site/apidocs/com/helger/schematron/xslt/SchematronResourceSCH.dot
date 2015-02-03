@@ -10,18 +10,18 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.xslt.SchematronResourceSCH
-	c13343 [label=<<table title="com.helger.schematron.xslt.SchematronResourceSCH" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./SchematronResourceSCH.html">
+	c14284 [label=<<table title="com.helger.schematron.xslt.SchematronResourceSCH" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./SchematronResourceSCH.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronResourceSCH </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.AbstractSchematronXSLTResource
-	c13346 [label=<<table title="com.helger.schematron.xslt.AbstractSchematronXSLTResource" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSchematronXSLTResource.html">
+	c14287 [label=<<table title="com.helger.schematron.xslt.AbstractSchematronXSLTResource" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSchematronXSLTResource.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractSchematronXSLTResource </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.xslt.SchematronResourceSCH extends com.helger.schematron.xslt.AbstractSchematronXSLTResource
-	c13346:p -> c13343:p [dir=back,arrowtail=empty];
+	c14287:p -> c14284:p [dir=back,arrowtail=empty];
 }
 

@@ -10,19 +10,19 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSParam
-	c6554 [label=<<table title="com.helger.schematron.pure.model.PSParam" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSParam.html">
+	c7255 [label=<<table title="com.helger.schematron.pure.model.PSParam" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSParam.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSParam </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSElement
-	c6580 [label=<<table title="com.helger.schematron.pure.model.IPSElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSElement.html">
+	c7281 [label=<<table title="com.helger.schematron.pure.model.IPSElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSElement </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSParam implements com.helger.schematron.pure.model.IPSElement
-	c6580:p -> c6554:p [dir=back,arrowtail=empty,style=dashed];
+	c7281:p -> c7255:p [dir=back,arrowtail=empty,style=dashed];
 }
 

@@ -7,7 +7,7 @@
 <body>
 <div id="overview"><a href="../../../../../testapidocs/com/helger/schematron/xslt/SchematronResourceSCHCacheTest.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014 Philip Helger (www.helger.com)</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014-2015 Philip Helger (www.helger.com)</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment"> * philip[at]helger[dot]com</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
@@ -51,7 +51,7 @@
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * Test class for class {@link SchematronResourceSCHCache}</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * @author PEPPOL.AT, BRZ, Philip Helger</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * @author Philip Helger</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../com/helger/schematron/xslt/SchematronResourceSCHCacheTest.html">SchematronResourceSCHCacheTest</a>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  {
@@ -78,10 +78,10 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      }
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> nEnd = System.nanoTime ();
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      s_aLogger.info (<span class="jxr_string">"Sync Total: "</span> +
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          ((nEnd - nStart) / 1000) +
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          <span class="jxr_string">" microsecs btw. "</span> +
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          ((nEnd - nStart) / 1000 / RUNS) +
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <span class="jxr_string">" microsecs/run"</span>);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>                      ((nEnd - nStart) / 1000) +
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>                      <span class="jxr_string">" microsecs btw. "</span> +
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>                      ((nEnd - nStart) / 1000 / RUNS) +
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>                      <span class="jxr_string">" microsecs/run"</span>);
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>    }
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>    @Test
@@ -116,10 +116,10 @@
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">new</strong> ManagedExecutorService (aSenderThreadPool).shutdownAndWaitUntilAllTasksAreFinished ();
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> nEnd = System.nanoTime ();
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     s_aLogger.info (<span class="jxr_string">"Async Total: "</span> +
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         ((nEnd - nStart) / 1000) +
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>         <span class="jxr_string">" microsecs btw. "</span> +
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         ((nEnd - nStart) / 1000 / RUNS) +
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <span class="jxr_string">" microsecs/run"</span>);
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>                     ((nEnd - nStart) / 1000) +
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>                     <span class="jxr_string">" microsecs btw. "</span> +
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>                     ((nEnd - nStart) / 1000 / RUNS) +
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>                     <span class="jxr_string">" microsecs/run"</span>);
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>   }
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>   @Test
@@ -150,7 +150,7 @@
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>                                                                                                                aCEH,
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>                                                                                                                <strong class="jxr_keyword">null</strong>,
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>                                                                                                                <strong class="jxr_keyword">null</strong>,
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <span class="jxr_string">"de"</span>);
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>                                                                                                                <span class="jxr_string">"de"</span>);
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>         assertNotNull (aPreprocessor);
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>         assertNotNull (aPreprocessor.getXSLTDocument ());
@@ -167,6 +167,6 @@
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2014&#x2013;2015 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
 </body>
 </html>

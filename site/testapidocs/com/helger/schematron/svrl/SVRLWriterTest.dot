@@ -10,7 +10,7 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.svrl.SVRLWriterTest
-	c529 [label=<<table title="com.helger.schematron.svrl.SVRLWriterTest" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./SVRLWriterTest.html">
+	c813 [label=<<table title="com.helger.schematron.svrl.SVRLWriterTest" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./SVRLWriterTest.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLWriterTest </td></tr>
 		</table></td></tr>

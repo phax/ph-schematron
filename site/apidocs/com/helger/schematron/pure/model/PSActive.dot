@@ -10,37 +10,37 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSActive
-	c8139 [label=<<table title="com.helger.schematron.pure.model.PSActive" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSActive.html">
+	c8896 [label=<<table title="com.helger.schematron.pure.model.PSActive" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSActive.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSActive </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasMixedContent
-	c8143 [label=<<table title="com.helger.schematron.pure.model.IPSHasMixedContent" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasMixedContent.html">
+	c8900 [label=<<table title="com.helger.schematron.pure.model.IPSHasMixedContent" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasMixedContent.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasMixedContent </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasForeignElements
-	c8148 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignElements" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignElements.html">
+	c8905 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignElements" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignElements.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasForeignElements </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c8152 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
+	c8909 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSClonableElement&lt;IMPLTYPE extends IPSClonableElement&lt;IMPLTYPE&gt;&gt; </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSActive implements com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c8152:p -> c8139:p [dir=back,arrowtail=empty,style=dashed];
+	c8909:p -> c8896:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSActive implements com.helger.schematron.pure.model.IPSHasForeignElements
-	c8148:p -> c8139:p [dir=back,arrowtail=empty,style=dashed];
+	c8905:p -> c8896:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSActive implements com.helger.schematron.pure.model.IPSHasMixedContent
-	c8143:p -> c8139:p [dir=back,arrowtail=empty,style=dashed];
+	c8900:p -> c8896:p [dir=back,arrowtail=empty,style=dashed];
 }
 

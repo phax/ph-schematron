@@ -7,7 +7,7 @@
 <body>
 <div id="overview"><a href="../../../../../../apidocs/com/helger/schematron/pure/model/PSActive.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014 Philip Helger (www.helger.com)</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014-2015 Philip Helger (www.helger.com)</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment"> * philip[at]helger[dot]com</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
@@ -308,14 +308,14 @@
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>   <strong class="jxr_keyword">public</strong> String toString ()
 <a class="jxr_linenumber" name="L301" href="#L301">301</a>   {
 <a class="jxr_linenumber" name="L302" href="#L302">302</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ToStringGenerator (<strong class="jxr_keyword">this</strong>).appendIfNotNull (<span class="jxr_string">"pattern"</span>, m_sPattern)
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>                                        .append (<span class="jxr_string">"content"</span>, m_aContent)
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>                                        .appendIfNotNull (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>                                        .appendIfNotNull (<span class="jxr_string">"foreignElements"</span>, m_aForeignElements)
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>                                        .appendIfNotEmpty (<span class="jxr_string">"content"</span>, m_aContent)
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>                                        .appendIfNotEmpty (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>                                        .appendIfNotEmpty (<span class="jxr_string">"foreignElements"</span>, m_aForeignElements)
 <a class="jxr_linenumber" name="L306" href="#L306">306</a>                                        .toString ();
 <a class="jxr_linenumber" name="L307" href="#L307">307</a>   }
 <a class="jxr_linenumber" name="L308" href="#L308">308</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2014&#x2013;2015 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
 </body>
 </html>

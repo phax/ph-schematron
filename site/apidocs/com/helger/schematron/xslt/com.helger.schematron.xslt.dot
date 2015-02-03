@@ -10,76 +10,76 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.xslt.SchematronXSLTValidatorFailedAssertOnly
-	c1886 [label=<<table title="com.helger.schematron.xslt.SchematronXSLTValidatorFailedAssertOnly" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronXSLTValidatorFailedAssertOnly.html">
+	c1954 [label=<<table title="com.helger.schematron.xslt.SchematronXSLTValidatorFailedAssertOnly" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronXSLTValidatorFailedAssertOnly.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronXSLTValidatorFailedAssertOnly </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.SchematronXSLTValidatorDefault
-	c1887 [label=<<table title="com.helger.schematron.xslt.SchematronXSLTValidatorDefault" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronXSLTValidatorDefault.html">
+	c1955 [label=<<table title="com.helger.schematron.xslt.SchematronXSLTValidatorDefault" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronXSLTValidatorDefault.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronXSLTValidatorDefault </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.SchematronResourceXSLTCache
-	c1888 [label=<<table title="com.helger.schematron.xslt.SchematronResourceXSLTCache" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceXSLTCache.html">
+	c1956 [label=<<table title="com.helger.schematron.xslt.SchematronResourceXSLTCache" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceXSLTCache.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronResourceXSLTCache </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.SchematronResourceXSLT
-	c1889 [label=<<table title="com.helger.schematron.xslt.SchematronResourceXSLT" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceXSLT.html">
+	c1957 [label=<<table title="com.helger.schematron.xslt.SchematronResourceXSLT" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceXSLT.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronResourceXSLT </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.SchematronResourceSCHCache
-	c1890 [label=<<table title="com.helger.schematron.xslt.SchematronResourceSCHCache" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceSCHCache.html">
+	c1958 [label=<<table title="com.helger.schematron.xslt.SchematronResourceSCHCache" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceSCHCache.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronResourceSCHCache </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.SchematronResourceSCH
-	c1891 [label=<<table title="com.helger.schematron.xslt.SchematronResourceSCH" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceSCH.html">
+	c1959 [label=<<table title="com.helger.schematron.xslt.SchematronResourceSCH" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronResourceSCH.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronResourceSCH </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.ISchematronXSLTValidator
-	c1892 [label=<<table title="com.helger.schematron.xslt.ISchematronXSLTValidator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISchematronXSLTValidator.html">
+	c1960 [label=<<table title="com.helger.schematron.xslt.ISchematronXSLTValidator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISchematronXSLTValidator.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> ISchematronXSLTValidator </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.ISchematronXSLTProvider
-	c1893 [label=<<table title="com.helger.schematron.xslt.ISchematronXSLTProvider" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISchematronXSLTProvider.html">
+	c1961 [label=<<table title="com.helger.schematron.xslt.ISchematronXSLTProvider" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISchematronXSLTProvider.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> ISchematronXSLTProvider </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.AbstractSchematronXSLTResource
-	c1894 [label=<<table title="com.helger.schematron.xslt.AbstractSchematronXSLTResource" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSchematronXSLTResource.html">
+	c1962 [label=<<table title="com.helger.schematron.xslt.AbstractSchematronXSLTResource" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSchematronXSLTResource.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractSchematronXSLTResource </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.AbstractSchematronXSLTProvider
-	c1895 [label=<<table title="com.helger.schematron.xslt.AbstractSchematronXSLTProvider" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSchematronXSLTProvider.html">
+	c1963 [label=<<table title="com.helger.schematron.xslt.AbstractSchematronXSLTProvider" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSchematronXSLTProvider.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractSchematronXSLTProvider </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.xslt.SchematronXSLTValidatorFailedAssertOnly implements com.helger.schematron.xslt.ISchematronXSLTValidator
-	c1892:p -> c1886:p [dir=back,arrowtail=empty,style=dashed];
+	c1960:p -> c1954:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.xslt.SchematronXSLTValidatorDefault implements com.helger.schematron.xslt.ISchematronXSLTValidator
-	c1892:p -> c1887:p [dir=back,arrowtail=empty,style=dashed];
+	c1960:p -> c1955:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.xslt.SchematronResourceXSLT extends com.helger.schematron.xslt.AbstractSchematronXSLTResource
-	c1894:p -> c1889:p [dir=back,arrowtail=empty];
+	c1962:p -> c1957:p [dir=back,arrowtail=empty];
 	//com.helger.schematron.xslt.SchematronResourceSCH extends com.helger.schematron.xslt.AbstractSchematronXSLTResource
-	c1894:p -> c1891:p [dir=back,arrowtail=empty];
+	c1962:p -> c1959:p [dir=back,arrowtail=empty];
 	//com.helger.schematron.xslt.AbstractSchematronXSLTProvider implements com.helger.schematron.xslt.ISchematronXSLTProvider
-	c1893:p -> c1895:p [dir=back,arrowtail=empty,style=dashed];
+	c1961:p -> c1963:p [dir=back,arrowtail=empty,style=dashed];
 }
 

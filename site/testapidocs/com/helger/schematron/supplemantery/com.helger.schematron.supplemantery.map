@@ -1,9 +1,11 @@
 <map id="G" name="G">
 <area shape="rect" id="node1_0" href="./TestIssueXsltKey.html" title="com.helger.schematron.supplemantery.TestIssueXsltKey" alt="" coords="15,16,137,43"/>
-<area shape="rect" id="node2_1" href="./TestIssue9.html" title="com.helger.schematron.supplemantery.TestIssue9" alt="" coords="182,16,266,43"/>
-<area shape="rect" id="node3_2" href="./TestIssue7.html" title="com.helger.schematron.supplemantery.TestIssue7" alt="" coords="311,16,395,43"/>
-<area shape="rect" id="node4_3" href="./TestIssue6.html" title="com.helger.schematron.supplemantery.TestIssue6" alt="" coords="441,16,525,43"/>
-<area shape="rect" id="node5_4" href="./TestIssue5.html" title="com.helger.schematron.supplemantery.TestIssue5" alt="" coords="570,16,654,43"/>
-<area shape="rect" id="node6_5" href="./TestIssue4.html" title="com.helger.schematron.supplemantery.TestIssue4" alt="" coords="699,16,783,43"/>
-<area shape="rect" id="node7_6" href="./TestIssue20140523.html" title="com.helger.schematron.supplemantery.TestIssue20140523" alt="" coords="829,16,963,43"/>
+<area shape="rect" id="node2_1" href="./TestIssueGC9.html" title="com.helger.schematron.supplemantery.TestIssueGC9" alt="" coords="182,16,285,43"/>
+<area shape="rect" id="node3_2" href="./TestIssueGC7.html" title="com.helger.schematron.supplemantery.TestIssueGC7" alt="" coords="330,16,433,43"/>
+<area shape="rect" id="node4_3" href="./TestIssueGC6.html" title="com.helger.schematron.supplemantery.TestIssueGC6" alt="" coords="478,16,581,43"/>
+<area shape="rect" id="node5_4" href="./TestIssueGC5.html" title="com.helger.schematron.supplemantery.TestIssueGC5" alt="" coords="626,16,729,43"/>
+<area shape="rect" id="node6_5" href="./TestIssueGC4.html" title="com.helger.schematron.supplemantery.TestIssueGC4" alt="" coords="774,16,877,43"/>
+<area shape="rect" id="node7_6" href="./TestIssue4.html" title="com.helger.schematron.supplemantery.TestIssue4" alt="" coords="922,16,1006,43"/>
+<area shape="rect" id="node8_7" href="./TestIssue20150128.html" title="com.helger.schematron.supplemantery.TestIssue20150128" alt="" coords="1052,16,1185,43"/>
+<area shape="rect" id="node9_8" href="./TestIssue20140523.html" title="com.helger.schematron.supplemantery.TestIssue20140523" alt="" coords="1231,16,1364,43"/>
 </map>

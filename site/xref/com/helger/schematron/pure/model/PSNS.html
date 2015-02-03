@@ -7,7 +7,7 @@
 <body>
 <div id="overview"><a href="../../../../../../apidocs/com/helger/schematron/pure/model/PSNS.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014 Philip Helger (www.helger.com)</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014-2015 Philip Helger (www.helger.com)</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment"> * philip[at]helger[dot]com</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
@@ -187,12 +187,12 @@
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>   {
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ToStringGenerator (<strong class="jxr_keyword">this</strong>).appendIfNotNull (<span class="jxr_string">"uri"</span>, m_sUri)
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>                                        .appendIfNotNull (<span class="jxr_string">"prefix"</span>, m_sPrefix)
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                                        .appendIfNotNull (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                                        .appendIfNotEmpty (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>                                        .toString ();
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>   }
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2014&#x2013;2015 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
 </body>
 </html>

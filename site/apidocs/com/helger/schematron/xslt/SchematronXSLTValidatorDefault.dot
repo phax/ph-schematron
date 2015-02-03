@@ -10,19 +10,19 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.xslt.SchematronXSLTValidatorDefault
-	c12891 [label=<<table title="com.helger.schematron.xslt.SchematronXSLTValidatorDefault" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./SchematronXSLTValidatorDefault.html">
+	c13816 [label=<<table title="com.helger.schematron.xslt.SchematronXSLTValidatorDefault" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./SchematronXSLTValidatorDefault.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronXSLTValidatorDefault </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.xslt.ISchematronXSLTValidator
-	c12896 [label=<<table title="com.helger.schematron.xslt.ISchematronXSLTValidator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISchematronXSLTValidator.html">
+	c13821 [label=<<table title="com.helger.schematron.xslt.ISchematronXSLTValidator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISchematronXSLTValidator.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> ISchematronXSLTValidator </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.xslt.SchematronXSLTValidatorDefault implements com.helger.schematron.xslt.ISchematronXSLTValidator
-	c12896:p -> c12891:p [dir=back,arrowtail=empty,style=dashed];
+	c13821:p -> c13816:p [dir=back,arrowtail=empty,style=dashed];
 }
 

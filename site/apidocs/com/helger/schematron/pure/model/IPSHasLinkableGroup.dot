@@ -10,27 +10,27 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSRule
-	c8680 [label=<<table title="com.helger.schematron.pure.model.PSRule" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSRule.html">
+	c9457 [label=<<table title="com.helger.schematron.pure.model.PSRule" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSRule.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSRule </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.PSAssertReport
-	c8698 [label=<<table title="com.helger.schematron.pure.model.PSAssertReport" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSAssertReport.html">
+	c9475 [label=<<table title="com.helger.schematron.pure.model.PSAssertReport" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSAssertReport.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSAssertReport </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasLinkableGroup
-	c8704 [label=<<table title="com.helger.schematron.pure.model.IPSHasLinkableGroup" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./IPSHasLinkableGroup.html">
+	c9481 [label=<<table title="com.helger.schematron.pure.model.IPSHasLinkableGroup" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./IPSHasLinkableGroup.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasLinkableGroup </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSRule implements com.helger.schematron.pure.model.IPSHasLinkableGroup
-	c8704:p -> c8680:p [dir=back,arrowtail=empty,style=dashed];
+	c9481:p -> c9457:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSAssertReport implements com.helger.schematron.pure.model.IPSHasLinkableGroup
-	c8704:p -> c8698:p [dir=back,arrowtail=empty,style=dashed];
+	c9481:p -> c9475:p [dir=back,arrowtail=empty,style=dashed];
 }
 

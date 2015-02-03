@@ -10,64 +10,64 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.model.PSDiagnostic
-	c7913 [label=<<table title="com.helger.schematron.pure.model.PSDiagnostic" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSDiagnostic.html">
+	c8662 [label=<<table title="com.helger.schematron.pure.model.PSDiagnostic" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./PSDiagnostic.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSDiagnostic </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSOptionalElement
-	c7916 [label=<<table title="com.helger.schematron.pure.model.IPSOptionalElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSOptionalElement.html">
+	c8665 [label=<<table title="com.helger.schematron.pure.model.IPSOptionalElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSOptionalElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSOptionalElement </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasRichGroup
-	c7918 [label=<<table title="com.helger.schematron.pure.model.IPSHasRichGroup" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasRichGroup.html">
+	c8667 [label=<<table title="com.helger.schematron.pure.model.IPSHasRichGroup" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasRichGroup.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasRichGroup </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasMixedContent
-	c7919 [label=<<table title="com.helger.schematron.pure.model.IPSHasMixedContent" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasMixedContent.html">
+	c8668 [label=<<table title="com.helger.schematron.pure.model.IPSHasMixedContent" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasMixedContent.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasMixedContent </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasID
-	c7923 [label=<<table title="com.helger.schematron.pure.model.IPSHasID" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasID.html">
+	c8672 [label=<<table title="com.helger.schematron.pure.model.IPSHasID" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasID.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasID </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSHasForeignElements
-	c7924 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignElements" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignElements.html">
+	c8673 [label=<<table title="com.helger.schematron.pure.model.IPSHasForeignElements" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSHasForeignElements.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSHasForeignElements </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c7928 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
+	c8677 [label=<<table title="com.helger.schematron.pure.model.IPSClonableElement" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSClonableElement.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> IPSClonableElement&lt;IMPLTYPE extends IPSClonableElement&lt;IMPLTYPE&gt;&gt; </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.pure.model.PSDiagnostic implements com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE extends com.helger.schematron.pure.model.IPSClonableElement<IMPLTYPE>>
-	c7928:p -> c7913:p [dir=back,arrowtail=empty,style=dashed];
+	c8677:p -> c8662:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDiagnostic implements com.helger.schematron.pure.model.IPSOptionalElement
-	c7916:p -> c7913:p [dir=back,arrowtail=empty,style=dashed];
+	c8665:p -> c8662:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDiagnostic implements com.helger.schematron.pure.model.IPSHasID
-	c7923:p -> c7913:p [dir=back,arrowtail=empty,style=dashed];
+	c8672:p -> c8662:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDiagnostic implements com.helger.schematron.pure.model.IPSHasForeignElements
-	c7924:p -> c7913:p [dir=back,arrowtail=empty,style=dashed];
+	c8673:p -> c8662:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDiagnostic implements com.helger.schematron.pure.model.IPSHasMixedContent
-	c7919:p -> c7913:p [dir=back,arrowtail=empty,style=dashed];
+	c8668:p -> c8662:p [dir=back,arrowtail=empty,style=dashed];
 	//com.helger.schematron.pure.model.PSDiagnostic implements com.helger.schematron.pure.model.IPSHasRichGroup
-	c7918:p -> c7913:p [dir=back,arrowtail=empty,style=dashed];
+	c8667:p -> c8662:p [dir=back,arrowtail=empty,style=dashed];
 }
 

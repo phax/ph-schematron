@@ -10,90 +10,90 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.svrl.SVRLWriter
-	c1647 [label=<<table title="com.helger.schematron.svrl.SVRLWriter" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLWriter.html">
+	c1707 [label=<<table title="com.helger.schematron.svrl.SVRLWriter" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLWriter.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLWriter </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLUtils
-	c1648 [label=<<table title="com.helger.schematron.svrl.SVRLUtils" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLUtils.html">
+	c1708 [label=<<table title="com.helger.schematron.svrl.SVRLUtils" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLUtils.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLUtils </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLSuccessfulReport
-	c1649 [label=<<table title="com.helger.schematron.svrl.SVRLSuccessfulReport" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLSuccessfulReport.html">
+	c1709 [label=<<table title="com.helger.schematron.svrl.SVRLSuccessfulReport" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLSuccessfulReport.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLSuccessfulReport </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLResourceError
-	c1650 [label=<<table title="com.helger.schematron.svrl.SVRLResourceError" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLResourceError.html">
+	c1710 [label=<<table title="com.helger.schematron.svrl.SVRLResourceError" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLResourceError.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLResourceError </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLReader
-	c1651 [label=<<table title="com.helger.schematron.svrl.SVRLReader" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLReader.html">
+	c1711 [label=<<table title="com.helger.schematron.svrl.SVRLReader" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLReader.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLReader </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLMarshaller
-	c1652 [label=<<table title="com.helger.schematron.svrl.SVRLMarshaller" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLMarshaller.html">
+	c1712 [label=<<table title="com.helger.schematron.svrl.SVRLMarshaller" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLMarshaller.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLMarshaller </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLLocationBeautifierRegistry
-	c1653 [label=<<table title="com.helger.schematron.svrl.SVRLLocationBeautifierRegistry" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLLocationBeautifierRegistry.html">
+	c1713 [label=<<table title="com.helger.schematron.svrl.SVRLLocationBeautifierRegistry" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLLocationBeautifierRegistry.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLLocationBeautifierRegistry </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.SVRLFailedAssert
-	c1654 [label=<<table title="com.helger.schematron.svrl.SVRLFailedAssert" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLFailedAssert.html">
+	c1714 [label=<<table title="com.helger.schematron.svrl.SVRLFailedAssert" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SVRLFailedAssert.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SVRLFailedAssert </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.ISVRLLocationBeautifierSPI
-	c1655 [label=<<table title="com.helger.schematron.svrl.ISVRLLocationBeautifierSPI" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISVRLLocationBeautifierSPI.html">
+	c1715 [label=<<table title="com.helger.schematron.svrl.ISVRLLocationBeautifierSPI" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISVRLLocationBeautifierSPI.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> ISVRLLocationBeautifierSPI </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.ISVRLErrorLevelDeterminator
-	c1656 [label=<<table title="com.helger.schematron.svrl.ISVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISVRLErrorLevelDeterminator.html">
+	c1716 [label=<<table title="com.helger.schematron.svrl.ISVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./ISVRLErrorLevelDeterminator.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> ISVRLErrorLevelDeterminator </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator
-	c1657 [label=<<table title="com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./DefaultSVRLErrorLevelDeterminator.html">
+	c1717 [label=<<table title="com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./DefaultSVRLErrorLevelDeterminator.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> DefaultSVRLErrorLevelDeterminator </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.CSVRL
-	c1658 [label=<<table title="com.helger.schematron.svrl.CSVRL" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./CSVRL.html">
+	c1718 [label=<<table title="com.helger.schematron.svrl.CSVRL" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./CSVRL.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> CSVRL </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.AbstractSVRLMessage
-	c1659 [label=<<table title="com.helger.schematron.svrl.AbstractSVRLMessage" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSVRLMessage.html">
+	c1719 [label=<<table title="com.helger.schematron.svrl.AbstractSVRLMessage" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./AbstractSVRLMessage.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"><font face="ariali"> AbstractSVRLMessage </font></td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.svrl.SVRLSuccessfulReport extends com.helger.schematron.svrl.AbstractSVRLMessage
-	c1659:p -> c1649:p [dir=back,arrowtail=empty];
+	c1719:p -> c1709:p [dir=back,arrowtail=empty];
 	//com.helger.schematron.svrl.SVRLFailedAssert extends com.helger.schematron.svrl.AbstractSVRLMessage
-	c1659:p -> c1654:p [dir=back,arrowtail=empty];
+	c1719:p -> c1714:p [dir=back,arrowtail=empty];
 	//com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator implements com.helger.schematron.svrl.ISVRLErrorLevelDeterminator
-	c1656:p -> c1657:p [dir=back,arrowtail=empty,style=dashed];
+	c1716:p -> c1717:p [dir=back,arrowtail=empty,style=dashed];
 }
 

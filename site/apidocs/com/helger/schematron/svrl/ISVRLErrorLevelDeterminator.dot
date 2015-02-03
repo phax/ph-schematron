@@ -10,19 +10,19 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.svrl.ISVRLErrorLevelDeterminator
-	c12099 [label=<<table title="com.helger.schematron.svrl.ISVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./ISVRLErrorLevelDeterminator.html">
+	c12996 [label=<<table title="com.helger.schematron.svrl.ISVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./ISVRLErrorLevelDeterminator.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> ISVRLErrorLevelDeterminator </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator
-	c12100 [label=<<table title="com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./DefaultSVRLErrorLevelDeterminator.html">
+	c12997 [label=<<table title="com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./DefaultSVRLErrorLevelDeterminator.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> DefaultSVRLErrorLevelDeterminator </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator implements com.helger.schematron.svrl.ISVRLErrorLevelDeterminator
-	c12099:p -> c12100:p [dir=back,arrowtail=empty,style=dashed];
+	c12996:p -> c12997:p [dir=back,arrowtail=empty,style=dashed];
 }
 

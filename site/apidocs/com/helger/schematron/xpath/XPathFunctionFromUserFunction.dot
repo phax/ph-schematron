@@ -10,15 +10,15 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.xpath.XPathFunctionFromUserFunction
-	c12664 [label=<<table title="com.helger.schematron.xpath.XPathFunctionFromUserFunction" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./XPathFunctionFromUserFunction.html">
+	c13581 [label=<<table title="com.helger.schematron.xpath.XPathFunctionFromUserFunction" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" bgcolor="lemonChiffon" href="./XPathFunctionFromUserFunction.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> XPathFunctionFromUserFunction </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	//com.helger.schematron.xpath.XPathFunctionFromUserFunction implements javax.xml.xpath.XPathFunction
-	c12683:p -> c12664:p [dir=back,arrowtail=empty,style=dashed];
+	c13600:p -> c13581:p [dir=back,arrowtail=empty,style=dashed];
 	// javax.xml.xpath.XPathFunction
-	c12683 [label=<<table title="javax.xml.xpath.XPathFunction" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="http://download.oracle.com/javase/6/docs/api/javax/xml/xpath/XPathFunction.html">
+	c13600 [label=<<table title="javax.xml.xpath.XPathFunction" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="http://download.oracle.com/javase/6/docs/api/javax/xml/xpath/XPathFunction.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
 <tr><td align="center" balign="center"> XPathFunction </td></tr>

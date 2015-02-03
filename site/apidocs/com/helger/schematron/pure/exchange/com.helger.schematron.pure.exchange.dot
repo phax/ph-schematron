@@ -10,16 +10,37 @@ digraph G {
 	nodesep=0.25;
 	ranksep=0.5;
 	// com.helger.schematron.pure.exchange.SchematronReadException
-	c812 [label=<<table title="com.helger.schematron.pure.exchange.SchematronReadException" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronReadException.html">
+	c841 [label=<<table title="com.helger.schematron.pure.exchange.SchematronReadException" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./SchematronReadException.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> SchematronReadException </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
+	// com.helger.schematron.pure.exchange.PSWriterSettings
+	c842 [label=<<table title="com.helger.schematron.pure.exchange.PSWriterSettings" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSWriterSettings.html">
+		<tr><td><table border="0" cellspacing="0" cellpadding="1">
+<tr><td align="center" balign="center"> PSWriterSettings </td></tr>
+		</table></td></tr>
+		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
+	// com.helger.schematron.pure.exchange.PSWriter
+	c843 [label=<<table title="com.helger.schematron.pure.exchange.PSWriter" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSWriter.html">
+		<tr><td><table border="0" cellspacing="0" cellpadding="1">
+<tr><td align="center" balign="center"> PSWriter </td></tr>
+		</table></td></tr>
+		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
 	// com.helger.schematron.pure.exchange.PSReader
-	c813 [label=<<table title="com.helger.schematron.pure.exchange.PSReader" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSReader.html">
+	c844 [label=<<table title="com.helger.schematron.pure.exchange.PSReader" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./PSReader.html">
 		<tr><td><table border="0" cellspacing="0" cellpadding="1">
 <tr><td align="center" balign="center"> PSReader </td></tr>
 		</table></td></tr>
 		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
+	// com.helger.schematron.pure.exchange.IPSWriterSettings
+	c845 [label=<<table title="com.helger.schematron.pure.exchange.IPSWriterSettings" border="0" cellborder="1" cellspacing="0" cellpadding="2" port="p" href="./IPSWriterSettings.html">
+		<tr><td><table border="0" cellspacing="0" cellpadding="1">
+<tr><td align="center" balign="center"> &#171;interface&#187; </td></tr>
+<tr><td align="center" balign="center"> IPSWriterSettings </td></tr>
+		</table></td></tr>
+		</table>>, fontname="arial", fontcolor="black", fontsize=10.0];
+	//com.helger.schematron.pure.exchange.PSWriterSettings implements com.helger.schematron.pure.exchange.IPSWriterSettings
+	c845:p -> c842:p [dir=back,arrowtail=empty,style=dashed];
 }
 

@@ -7,7 +7,7 @@
 <body>
 <div id="overview"><a href="../../../../../../apidocs/com/helger/schematron/pure/model/PSSchema.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014 Philip Helger (www.helger.com)</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014-2015 Philip Helger (www.helger.com)</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment"> * philip[at]helger[dot]com</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
@@ -631,21 +631,21 @@
 <a class="jxr_linenumber" name="L623" href="#L623">623</a>                                        .appendIfNotNull (<span class="jxr_string">"defaultPhase"</span>, m_sDefaultPhase)
 <a class="jxr_linenumber" name="L624" href="#L624">624</a>                                        .appendIfNotNull (<span class="jxr_string">"queryBinding"</span>, m_sQueryBinding)
 <a class="jxr_linenumber" name="L625" href="#L625">625</a>                                        .appendIfNotNull (<span class="jxr_string">"title"</span>, m_aTitle)
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>                                        .append (<span class="jxr_string">"includes"</span>, m_aIncludes)
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>                                        .append (<span class="jxr_string">"nss"</span>, m_aNSs)
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>                                        .append (<span class="jxr_string">"startps"</span>, m_aStartPs)
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>                                        .append (<span class="jxr_string">"lets"</span>, m_aLets)
-<a class="jxr_linenumber" name="L630" href="#L630">630</a>                                        .append (<span class="jxr_string">"phases"</span>, m_aPhases)
-<a class="jxr_linenumber" name="L631" href="#L631">631</a>                                        .append (<span class="jxr_string">"patterns"</span>, m_aPatterns)
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>                                        .append (<span class="jxr_string">"endps"</span>, m_aEndPs)
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>                                        .appendIfNotEmpty (<span class="jxr_string">"includes"</span>, m_aIncludes)
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>                                        .appendIfNotEmpty (<span class="jxr_string">"nss"</span>, m_aNSs)
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>                                        .appendIfNotEmpty (<span class="jxr_string">"startps"</span>, m_aStartPs)
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>                                        .appendIfNotEmpty (<span class="jxr_string">"lets"</span>, m_aLets)
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>                                        .appendIfNotEmpty (<span class="jxr_string">"phases"</span>, m_aPhases)
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>                                        .appendIfNotEmpty (<span class="jxr_string">"patterns"</span>, m_aPatterns)
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>                                        .appendIfNotEmpty (<span class="jxr_string">"endps"</span>, m_aEndPs)
 <a class="jxr_linenumber" name="L633" href="#L633">633</a>                                        .appendIfNotNull (<span class="jxr_string">"diagnostics"</span>, m_aDiagnostics)
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>                                        .appendIfNotNull (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>                                        .appendIfNotNull (<span class="jxr_string">"foreignElements"</span>, m_aForeignElements)
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>                                        .appendIfNotEmpty (<span class="jxr_string">"foreignAttrs"</span>, m_aForeignAttrs)
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>                                        .appendIfNotEmpty (<span class="jxr_string">"foreignElements"</span>, m_aForeignElements)
 <a class="jxr_linenumber" name="L636" href="#L636">636</a>                                        .toString ();
 <a class="jxr_linenumber" name="L637" href="#L637">637</a>   }
 <a class="jxr_linenumber" name="L638" href="#L638">638</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2014&#x2013;2015 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
 </body>
 </html>

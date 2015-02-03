@@ -7,7 +7,7 @@
 <body>
 <div id="overview"><a href="../../../../../../apidocs/com/helger/schematron/pure/preprocess/PSPreprocessor.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014 Philip Helger (www.helger.com)</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_javadoccomment"> * Copyright (C) 2014-2015 Philip Helger (www.helger.com)</em>
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_javadoccomment"> * philip[at]helger[dot]com</em>
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
@@ -399,7 +399,7 @@
 <a class="jxr_linenumber" name="L391" href="#L391">391</a>   }
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> 
 <a class="jxr_linenumber" name="L393" href="#L393">393</a>   @Nonnull
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>   <strong class="jxr_keyword">private</strong> <a href="../../../../../com/helger/schematron/pure/model/PSDiagnostics.html">PSDiagnostics</a> _getPreprocessedDiagnostics (@Nonnull <strong class="jxr_keyword">final</strong> PSDiagnostics aDiagnostics) <strong class="jxr_keyword">throws</strong> SchematronPreprocessException
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../com/helger/schematron/pure/model/PSDiagnostics.html">PSDiagnostics</a> _getPreprocessedDiagnostics (@Nonnull <strong class="jxr_keyword">final</strong> PSDiagnostics aDiagnostics) <strong class="jxr_keyword">throws</strong> SchematronPreprocessException
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>   {
 <a class="jxr_linenumber" name="L396" href="#L396">396</a>     <strong class="jxr_keyword">final</strong> <a href="../../../../../com/helger/schematron/pure/model/PSDiagnostics.html">PSDiagnostics</a> ret = <strong class="jxr_keyword">new</strong> <a href="../../../../../com/helger/schematron/pure/model/PSDiagnostics.html">PSDiagnostics</a> ();
 <a class="jxr_linenumber" name="L397" href="#L397">397</a>     <strong class="jxr_keyword">if</strong> (aDiagnostics.hasAnyInclude ())
@@ -436,13 +436,13 @@
 <a class="jxr_linenumber" name="L428" href="#L428">428</a>   }
 <a class="jxr_linenumber" name="L429" href="#L429">429</a> 
 <a class="jxr_linenumber" name="L430" href="#L430">430</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">   * Convert the passed schema to a preprocessed schema.</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">   * Convert the passed schema to a pre-processed schema.</em>
 <a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">   *</em>
 <a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">   * @param aSchema</em>
 <a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">   *        The schema to pre-process. May not be &lt;code&gt;null&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">   * @return The original schema object, if it is already preprocessed - a</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">   *         preprocessed copy otherwise! May be &lt;code&gt;null&lt;/code&gt; if the</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">   *         original schema is not yet preprocessed and</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">   * @return The original schema object, if it is already pre-processed - a</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">   *         pre-processed copy otherwise! May be &lt;code&gt;null&lt;/code&gt; if the</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">   *         original schema is not yet pre-processed and</em>
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">   *         {@link #isKeepEmptySchema()} is set to &lt;code&gt;false&lt;/code&gt;.</em>
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">   * @throws SchematronPreprocessException</em>
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">   *         In case a preprocessing error occurs</em>
@@ -460,7 +460,7 @@
 <a class="jxr_linenumber" name="L452" href="#L452">452</a>   }
 <a class="jxr_linenumber" name="L453" href="#L453">453</a> 
 <a class="jxr_linenumber" name="L454" href="#L454">454</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">   * Convert the passed schema to a preprocessed schema independent if it is</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">   * Convert the passed schema to a pre-processed schema independent if it is</em>
 <a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">   * already minimal or not.</em>
 <a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">   *</em>
 <a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">   * @param aSchema</em>
@@ -533,6 +533,6 @@
 <a class="jxr_linenumber" name="L525" href="#L525">525</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2014 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2014&#x2013;2015 <a href="http://www.helger.com">Philip Helger</a>. All rights reserved.</div>
 </body>
 </html>
