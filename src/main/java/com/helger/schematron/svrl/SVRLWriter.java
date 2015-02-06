@@ -38,7 +38,6 @@ import com.helger.commons.state.ESuccess;
 public final class SVRLWriter
 {
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SVRLWriter s_aInstance = new SVRLWriter ();
 
   private SVRLWriter ()

@@ -38,7 +38,6 @@ import com.helger.commons.io.IReadableResource;
 public final class SVRLReader
 {
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SVRLReader s_aInstance = new SVRLReader ();
 
   private SVRLReader ()

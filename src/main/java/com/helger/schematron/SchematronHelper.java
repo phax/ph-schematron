@@ -61,7 +61,6 @@ public final class SchematronHelper
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronHelper.class);
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SchematronHelper s_aInstance = new SchematronHelper ();
 
   private SchematronHelper ()

@@ -46,7 +46,6 @@ public final class SVRLUtils
   private static ISVRLErrorLevelDeterminator s_aELD = new DefaultSVRLErrorLevelDeterminator ();
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SVRLUtils s_aInstance = new SVRLUtils ();
 
   private SVRLUtils ()

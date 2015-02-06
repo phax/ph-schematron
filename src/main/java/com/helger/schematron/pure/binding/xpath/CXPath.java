@@ -32,7 +32,6 @@ public final class CXPath
   public static final String NAMESPACE_XPATH_FUNCTIONS = "http://www.w3.org/2005/xpath-functions";
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final CXPath s_aInstance = new CXPath ();
 
   private CXPath ()

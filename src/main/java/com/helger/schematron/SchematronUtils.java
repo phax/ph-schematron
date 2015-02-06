@@ -50,7 +50,6 @@ public final class SchematronUtils
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronUtils.class);
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SchematronUtils s_aInstance = new SchematronUtils ();
 
   private SchematronUtils ()

@@ -41,7 +41,6 @@ public final class SVRLLocationBeautifierRegistry
   private static final List <ISVRLLocationBeautifierSPI> s_aList = ServiceLoaderUtils.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SVRLLocationBeautifierRegistry s_aInstance = new SVRLLocationBeautifierRegistry ();
 
   private SVRLLocationBeautifierRegistry ()

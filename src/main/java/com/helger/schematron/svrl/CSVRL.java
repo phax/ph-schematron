@@ -51,7 +51,6 @@ public final class CSVRL
   }
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final CSVRL s_aInstance = new CSVRL ();
 
   private CSVRL ()

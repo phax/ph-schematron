@@ -48,7 +48,6 @@ public final class CSchematron
   public static final String PHASE_DEFAULT = "#DEFAULT";
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final CSchematron s_aInstance = new CSchematron ();
 
   private CSchematron ()

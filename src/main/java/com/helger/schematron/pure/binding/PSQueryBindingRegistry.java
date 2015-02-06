@@ -74,7 +74,6 @@ public final class PSQueryBindingRegistry
   }
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final PSQueryBindingRegistry s_aInstance = new PSQueryBindingRegistry ();
 
   private PSQueryBindingRegistry ()
