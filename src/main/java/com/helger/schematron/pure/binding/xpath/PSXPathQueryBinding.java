@@ -110,6 +110,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     return getWithParamTextsReplacedStatic (sText, aStringReplacements);
   }
 
+  @SuppressWarnings ("deprecation")
   @Nonnull
   @DevelopersNote ("Its only deprecated in the interface!")
   public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
