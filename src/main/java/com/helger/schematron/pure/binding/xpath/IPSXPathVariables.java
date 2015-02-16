@@ -34,8 +34,19 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
   @ReturnsMutableCopy
   Map <String, String> getAll ();
 
+  /**
+   * @param sName
+   *        Name of the variable to check
+   * @return <code>true</code> if a variable with the passed name in present.
+   */
   boolean contains (@Nullable String sName);
 
+  /**
+   * @param sName
+   *        Variable name
+   * @return The variable value of the variable with the specified name or
+   *         <code>null</code> if no such variable is present.
+   */
   @Nullable
   String get (@Nullable String sName);
 }

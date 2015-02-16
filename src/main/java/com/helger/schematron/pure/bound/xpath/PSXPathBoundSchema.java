@@ -219,6 +219,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * Pre-compile all patterns incl. their content
    *
    * @param aXPathContext
+   * @param aXPathContext
    *        Global XPath object to use. May not be <code>null</code>.
    * @param aBoundDiagnostics
    *        A map from DiagnosticID to its mapped counterpart. May not be
@@ -246,14 +247,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         // The pattern has special variables, so we need to extend the variable
         // map
         for (final Map.Entry <String, String> aEntry : aPattern.getAllLetsAsMap ().entrySet ())
-        {
           if (aPatternVariables.add (aEntry).isUnchanged ())
-          {
-            warn (aPattern, "Duplicate let with name '" +
-                            aEntry.getKey () +
-                            "' in <pattern> - second definition is ignored");
-          }
-        }
+            error (aPattern, "Duplicate <let> with name '" + aEntry.getKey () + "' in <pattern>");
       }
 
       // For all rules of the current pattern
@@ -270,9 +265,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           {
             if (aRuleVariables.add (aEntry).isUnchanged ())
             {
-              warn (aRule, "Duplicate let with name '" +
-                           aEntry.getKey () +
-                           "' in <rule> - second definition is ignored");
+              error (aRule, "Duplicate <let> with name '" + aEntry.getKey () + "' in <rule>");
             }
           }
         }
@@ -446,18 +439,19 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final PSXPathVariables aGlobalVariables = new PSXPathVariables ();
     if (aSchema.hasAnyLet ())
       for (final Map.Entry <String, String> aEntry : aSchema.getAllLetsAsMap ().entrySet ())
-        aGlobalVariables.add (aEntry);
+        if (aGlobalVariables.add (aEntry).isUnchanged ())
+          error (aSchema, "Duplicate <let> with name '" + aEntry.getKey () + "' in global <schema>");
 
     if (aPhase != null)
     {
       // Get all variables that are defined in the specified phase
       for (final Map.Entry <String, String> aEntry : aPhase.getAllLetsAsMap ().entrySet ())
         if (aGlobalVariables.add (aEntry).isUnchanged ())
-          warn (aSchema, "Duplicate let with name '" +
-                         aEntry.getKey () +
-                         "' in <phase> with name '" +
-                         getPhaseID () +
-                         "' - second definition is ignored");
+          error (aSchema, "Duplicate <let> with name '" +
+                          aEntry.getKey () +
+                          "' in <phase> with name '" +
+                          getPhaseID () +
+                          "'");
     }
 
     final XPath aXPathContext = _createXPathContext ();

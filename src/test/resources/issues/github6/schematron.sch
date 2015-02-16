@@ -7,12 +7,9 @@
       </sch:assert>
     </sch:rule>
     <sch:rule context="//doc">
-      <sch:let name="xx" value="." /> 
-      <sch:assert test="0">
-        file <sch:value-of select="generic/reference/@To_File" /> referenced
-        from document <sch:value-of select="@Id" /> is referenced
-        <sch:value-of select="count(//reference[@To_File = $xx/generic/reference/@To_File])" />
-        times overall
+      <sch:let name="cur" value="." />
+      <sch:assert test="count(//reference[@To_File = $cur/generic/reference/@To_File]) = 1">
+        file <sch:value-of select="generic/reference/@To_File" /> referenced from document <sch:value-of select="@Id" /> is referenced <sch:value-of select="count(//reference[@To_File = $cur/generic/reference/@To_File])" /> times overall
       </sch:assert>
     </sch:rule>
   </sch:pattern>
