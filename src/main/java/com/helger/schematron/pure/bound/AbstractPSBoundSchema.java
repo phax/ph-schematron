@@ -56,6 +56,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   private final IPSQueryBinding m_aQueryBinding;
   private final PSSchema m_aOrigSchema;
   private final IPSErrorHandler m_aErrorHandler;
+  private final boolean m_bDefaultErrorHandler;
   private final MapBasedNamespaceContext m_aNamespaceContext;
   private final String m_sPhase;
   private final PSPhase m_aPhase;
@@ -72,6 +73,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     m_aQueryBinding = aQueryBinding;
     m_aOrigSchema = aOrigSchema;
     m_aErrorHandler = aCustomErrorHandler != null ? aCustomErrorHandler : new LoggingPSErrorHandler ();
+    m_bDefaultErrorHandler = aCustomErrorHandler == null;
 
     // Determine all namespaces of the schema
     m_aNamespaceContext = aOrigSchema.getAsNamespaceContext ();
@@ -133,6 +135,11 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   protected IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
+  }
+
+  protected boolean isDefaultErrorHandler ()
+  {
+    return m_bDefaultErrorHandler;
   }
 
   @OverridingMethodsMustInvokeSuper

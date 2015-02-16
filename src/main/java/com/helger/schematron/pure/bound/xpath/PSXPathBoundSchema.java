@@ -72,7 +72,10 @@ import com.helger.schematron.xslt.util.PSErrorListener;
 @Immutable
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
-  private final List <PSXPathBoundPattern> m_aBoundPatterns;
+  private final XPathVariableResolver m_aXPathVariableResolver;
+  private final XPathFunctionResolver m_aXPathFunctionResolver;
+  private final XPathFactory m_aXPathFactory;
+  private List <PSXPathBoundPattern> m_aBoundPatterns;
 
   /**
    * Compile an XPath expression string to an {@link XPathExpressionException}
@@ -401,6 +404,40 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                              @Nullable final XPathFunctionResolver aXPathFunctionResolver) throws SchematronBindException
   {
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener);
+    m_aXPathVariableResolver = aXPathVariableResolver;
+    m_aXPathFunctionResolver = aXPathFunctionResolver;
+    m_aXPathFactory = createXPathFactorySaxonFirst ();
+  }
+
+  @Nonnull
+  private XPath _createXPathContext ()
+  {
+    final XPath aXPathContext = XPathHelper.createNewXPath (m_aXPathFactory,
+                                                            m_aXPathVariableResolver,
+                                                            m_aXPathFunctionResolver,
+                                                            getNamespaceContext ());
+
+    if (aXPathContext instanceof XPathEvaluator)
+    {
+      // Saxon implementation special handling
+      final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPathContext;
+      if (false)
+      {
+        // Enable this to debug Saxon function resolving
+        aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
+      }
+
+      // Wrap the PSErrorHandler to a ErrorListener
+      aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));
+    }
+    return aXPathContext;
+  }
+
+  @Nonnull
+  public PSXPathBoundSchema bind () throws SchematronBindException
+  {
+    if (m_aBoundPatterns != null)
+      throw new IllegalStateException ("bind must only be called once!");
 
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
@@ -423,32 +460,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                          "' - second definition is ignored");
     }
 
-    final XPathFactory aXPathFactory = createXPathFactorySaxonFirst ();
-    final XPath aXPathContext = XPathHelper.createNewXPath (aXPathFactory,
-                                                            aXPathVariableResolver,
-                                                            aXPathFunctionResolver,
-                                                            getNamespaceContext ());
-
-    if (aXPathContext instanceof XPathEvaluator)
-    {
-      // Saxon implementation special handling
-      final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPathContext;
-      if (false)
-      {
-        // Enable this to debug Saxon function resolving
-        aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
-      }
-
-      // Wrap the PSErrorHandler to a ErrorListener
-      aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));
-    }
+    final XPath aXPathContext = _createXPathContext ();
 
     // Pre-compile all diagnostics first
     final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext,
                                                                                             aGlobalVariables);
     if (aBoundDiagnostics == null)
       throw new SchematronBindException ("Failed to precompile the diagnostics of the supplied schema. Check the " +
-                                         (aCustomErrorListener == null ? "log output" : "error listener") +
+                                         (isDefaultErrorHandler () ? "log output" : "error listener") +
                                          " for XPath errors!");
 
     // Perform the pre-compilation of all XPath expressions in the patterns,
@@ -456,6 +475,19 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, aGlobalVariables);
     if (m_aBoundPatterns == null)
       throw new SchematronBindException ("Failed to precompile the supplied schema.");
+    return this;
+  }
+
+  @Nullable
+  public XPathVariableResolver getXPathVariableResolver ()
+  {
+    return m_aXPathVariableResolver;
+  }
+
+  @Nullable
+  public XPathFunctionResolver getXPathFunctionResolver ()
+  {
+    return m_aXPathFunctionResolver;
   }
 
   @Nonnull
@@ -474,6 +506,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     ValueEnforcer.notNull (aNode, "Node");
     ValueEnforcer.notNull (aValidationHandler, "ValidationHandler");
 
+    if (m_aBoundPatterns == null)
+      throw new IllegalStateException ("bind was never called!");
+
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
 
@@ -490,7 +525,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       rules: for (final PSXPathBoundRule aBoundRule : aBoundPattern.getAllBoundRules ())
       {
         final PSRule aRule = aBoundRule.getRule ();
-        aValidationHandler.onRule (aRule, aBoundRule.getRuleExpression ());
 
         // Find all nodes matching the rules
         NodeList aRuleMatchingNodes = null;
@@ -512,6 +546,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           // For all contained assert and report elements
           for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.getAllBoundAssertReports ())
           {
+            // XSLT does "fired-rule" for each node
+            aValidationHandler.onRule (aRule, aBoundRule.getRuleExpression ());
+
             final PSAssertReport aAssertReport = aBoundAssertReport.getAssertReport ();
             final boolean bIsAssert = aAssertReport.isAssert ();
             final XPathExpression aTestExpression = aBoundAssertReport.getBoundTestExpression ();

@@ -25,9 +25,12 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class TestIssue6
 {
@@ -42,8 +45,11 @@ public final class TestIssue6
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final SchematronResourcePure aSCH = new SchematronResourcePure (aSchematron);
-    aSCH.setErrorHandler (new LoggingPSErrorHandler ());
+    final AbstractSchematronResource aSCH = new SchematronResourcePure (aSchematron);
+    if (aSCH instanceof SchematronResourcePure)
+      ((SchematronResourcePure) aSCH).setErrorHandler (new LoggingPSErrorHandler ());
+    else
+      System.out.println (XMLWriter.getXMLString (((SchematronResourceSCH) aSCH).getXSLTProvider ().getXSLTDocument ()));
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
     assertNotNull (aSVRL);
     System.out.println (SVRLWriter.createXMLString (aSVRL));

@@ -154,11 +154,13 @@ public class PSXPathQueryBinding implements IPSQueryBinding
       aSchemaToUse = aPreprocessor.getForcedPreprocessedSchema (aSchema);
     }
 
-    return new PSXPathBoundSchema (this,
-                                   aSchemaToUse,
-                                   sPhase,
-                                   aCustomErrorListener,
-                                   aVariableResolver,
-                                   aFunctionResolver);
+    final PSXPathBoundSchema ret = new PSXPathBoundSchema (this,
+                                                           aSchemaToUse,
+                                                           sPhase,
+                                                           aCustomErrorListener,
+                                                           aVariableResolver,
+                                                           aFunctionResolver);
+    ret.bind ();
+    return ret;
   }
 }
