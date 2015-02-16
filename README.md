@@ -1,6 +1,7 @@
 #ph-schematron
 
 ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com).
+It is licensed under Apache 2.0 license.
 
 *ph-schematron* is the successor of *phloc-schematron* and all further development happens here. 
 
