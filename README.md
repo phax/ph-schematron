@@ -11,6 +11,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
+  * 2.9.1 fixes a classloader issue added in 2.9.0
   * 2.9.0 introduced new APIs in several places
   * Since version 2.8.3 there is an easy way to use XQuery functions (like funcx library)
     as custom XPath functions
