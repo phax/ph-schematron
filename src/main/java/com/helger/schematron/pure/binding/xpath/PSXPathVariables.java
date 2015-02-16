@@ -29,6 +29,7 @@ import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.compare.ComparatorStringLongestFirst;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * This class manages all variables present in Schematron &lt;let&gt; elements.
@@ -36,9 +37,26 @@ import com.helger.commons.string.StringHelper;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSXPathVariables
+public class PSXPathVariables implements IPSXPathVariables
 {
-  private final Map <String, String> m_aMap = new TreeMap <String, String> (new ComparatorStringLongestFirst ());
+  @Nonnull
+  @ReturnsMutableCopy
+  private static Map <String, String> _createMap ()
+  {
+    return new TreeMap <String, String> (new ComparatorStringLongestFirst ());
+  }
+
+  private final Map <String, String> m_aMap;
+
+  public PSXPathVariables ()
+  {
+    m_aMap = _createMap ();
+  }
+
+  public PSXPathVariables (@Nonnull final IPSXPathVariables aOther)
+  {
+    m_aMap = aOther.getAll ();
+  }
 
   /**
    * Add a new variable.
@@ -137,7 +155,7 @@ public class PSXPathVariables
   @ReturnsMutableCopy
   public Map <String, String> getAll ()
   {
-    final Map <String, String> ret = new TreeMap <String, String> (new ComparatorStringLongestFirst ());
+    final Map <String, String> ret = _createMap ();
     ret.putAll (m_aMap);
     return ret;
   }
@@ -155,5 +173,18 @@ public class PSXPathVariables
     if (StringHelper.hasNoText (sName))
       return null;
     return m_aMap.get (sName);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public PSXPathVariables getClone ()
+  {
+    return new PSXPathVariables (this);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("map", m_aMap).toString ();
   }
 }

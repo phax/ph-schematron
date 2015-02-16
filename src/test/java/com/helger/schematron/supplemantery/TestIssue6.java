@@ -16,7 +16,7 @@
  */
 package com.helger.schematron.supplemantery;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
@@ -27,6 +27,7 @@ import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.svrl.SVRLWriter;
 
 public final class TestIssue6
 {
@@ -43,6 +44,7 @@ public final class TestIssue6
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
     final AbstractSchematronResource aSCH = new SchematronResourcePure (aSchematron);
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
-    assertNull (aSVRL);
+    assertNotNull (aSVRL);
+    System.out.println (SVRLWriter.createXMLString (aSVRL));
   }
 }

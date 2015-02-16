@@ -38,7 +38,12 @@ public class PSXPathBoundElement
   private final String m_sExpression;
   private final XPathExpression m_aBoundExpression;
 
-  public PSXPathBoundElement (@Nonnull final Object aElement)
+  public PSXPathBoundElement (@Nonnull final String sElement)
+  {
+    this (sElement, null, null);
+  }
+
+  public PSXPathBoundElement (@Nonnull final IPSElement aElement)
   {
     this (aElement, null, null);
   }

@@ -24,8 +24,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -42,12 +40,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.IReadableResource;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.xpath.XPathHelper;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
+import com.helger.schematron.pure.binding.xpath.IPSXPathVariables;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.bound.AbstractPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -64,6 +62,7 @@ import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
+import com.helger.schematron.xslt.util.PSErrorListener;
 
 /**
  * The default XPath binding for the pure Schematron implementation.
@@ -73,31 +72,6 @@ import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 @Immutable
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
-  private static final class PSErrorListener implements ErrorListener
-  {
-    private final IPSErrorHandler m_aPSErrorHandler;
-
-    public PSErrorListener (@Nonnull final IPSErrorHandler aPSErrorHandler)
-    {
-      m_aPSErrorHandler = aPSErrorHandler;
-    }
-
-    public void warning (final TransformerException ex) throws TransformerException
-    {
-      m_aPSErrorHandler.warn ((IReadableResource) null, (IPSElement) null, ex.getMessage ());
-    }
-
-    public void error (final TransformerException ex) throws TransformerException
-    {
-      m_aPSErrorHandler.error ((IReadableResource) null, (IPSElement) null, ex.getMessage (), ex);
-    }
-
-    public void fatalError (final TransformerException ex) throws TransformerException
-    {
-      m_aPSErrorHandler.error ((IReadableResource) null, (IPSElement) null, ex.getMessage (), ex);
-    }
-  }
-
   private final List <PSXPathBoundPattern> m_aBoundPatterns;
 
   /**
@@ -115,7 +89,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *         If expression cannot be compiled.
    */
   @Nullable
-  private XPathExpression _compileXPath (@Nonnull final XPath aXPathContext, @Nonnull final String sXPathExpression) throws XPathExpressionException
+  private static XPathExpression _compileXPath (@Nonnull final XPath aXPathContext,
+                                                @Nonnull final String sXPathExpression) throws XPathExpressionException
   {
     XPathExpression ret = null;
     try
@@ -133,7 +108,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nullable
   private List <PSXPathBoundElement> _createBoundElements (@Nonnull final IPSHasMixedContent aMixedContent,
                                                            @Nonnull final XPath aXPathContext,
-                                                           @Nonnull final PSXPathVariables aVariables)
+                                                           @Nonnull final IPSXPathVariables aVariables)
   {
     final List <PSXPathBoundElement> ret = new ArrayList <PSXPathBoundElement> ();
     boolean bHasAnyError = false;
@@ -185,7 +160,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         else
         {
           // No XPath compilation necessary
-          ret.add (new PSXPathBoundElement (aContentElement));
+          if (aContentElement instanceof String)
+            ret.add (new PSXPathBoundElement ((String) aContentElement));
+          else
+            ret.add (new PSXPathBoundElement ((IPSElement) aContentElement));
         }
     }
 
@@ -197,7 +175,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   @Nullable
   private Map <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@Nonnull final XPath aXPathContext,
-                                                                        @Nonnull final PSXPathVariables aVariables)
+                                                                        @Nonnull final IPSXPathVariables aGlobalVariables)
   {
     final Map <String, PSXPathBoundDiagnostic> ret = new HashMap <String, PSXPathBoundDiagnostic> ();
     boolean bHasAnyError = false;
@@ -208,7 +186,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // For all contained diagnostic elements
       for (final PSDiagnostic aDiagnostic : aSchema.getDiagnostics ().getAllDiagnostics ())
       {
-        final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic, aXPathContext, aVariables);
+        final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic,
+                                                                                aXPathContext,
+                                                                                aGlobalVariables);
         if (aBoundElements == null)
         {
           // error already emitted
@@ -240,14 +220,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @param aBoundDiagnostics
    *        A map from DiagnosticID to its mapped counterpart. May not be
    *        <code>null</code>.
-   * @param aVariables
+   * @param aGlobalVariables
    *        The global Schematron-let variables. May not be <code>null</code>.
    * @return <code>null</code> if an XPath error is contained
    */
   @Nullable
   private List <PSXPathBoundPattern> _createBoundPatterns (@Nonnull final XPath aXPathContext,
                                                            @Nonnull final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
-                                                           @Nonnull final PSXPathVariables aVariables)
+                                                           @Nonnull final IPSXPathVariables aGlobalVariables)
   {
     final List <PSXPathBoundPattern> ret = new ArrayList <PSXPathBoundPattern> ();
     boolean bHasAnyError = false;
@@ -256,24 +236,19 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     for (final PSPattern aPattern : getAllRelevantPatterns ())
     {
       // Handle pattern specific variables
-      List <String> aAddedVarsPattern = null;
+      final PSXPathVariables aPatternVariables = aGlobalVariables.getClone ();
+
       if (aPattern.hasAnyLet ())
       {
         // The pattern has special variables, so we need to extend the variable
         // map
         for (final Map.Entry <String, String> aEntry : aPattern.getAllLetsAsMap ().entrySet ())
         {
-          if (aVariables.add (aEntry).isUnchanged ())
+          if (aPatternVariables.add (aEntry).isUnchanged ())
           {
             warn (aPattern, "Duplicate let with name '" +
                             aEntry.getKey () +
                             "' in <pattern> - second definition is ignored");
-          }
-          else
-          {
-            if (aAddedVarsPattern == null)
-              aAddedVarsPattern = new ArrayList <String> ();
-            aAddedVarsPattern.add (aEntry.getKey ());
           }
         }
       }
@@ -283,24 +258,18 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       for (final PSRule aRule : aPattern.getAllRules ())
       {
         // Handle rule specific variables
-        List <String> aAddedVarsRule = null;
+        final PSXPathVariables aRuleVariables = aPatternVariables.getClone ();
         if (aRule.hasAnyLet ())
         {
           // The rule has special variables, so we need to extend the
           // variable map
           for (final Map.Entry <String, String> aEntry : aRule.getAllLetsAsMap ().entrySet ())
           {
-            if (aVariables.add (aEntry).isUnchanged ())
+            if (aRuleVariables.add (aEntry).isUnchanged ())
             {
               warn (aRule, "Duplicate let with name '" +
                            aEntry.getKey () +
                            "' in <rule> - second definition is ignored");
-            }
-            else
-            {
-              if (aAddedVarsRule == null)
-                aAddedVarsRule = new ArrayList <String> ();
-              aAddedVarsRule.add (aEntry.getKey ());
             }
           }
         }
@@ -309,13 +278,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         final List <PSXPathBoundAssertReport> aBoundAssertReports = new ArrayList <PSXPathBoundAssertReport> ();
         for (final PSAssertReport aAssertReport : aRule.getAllAssertReports ())
         {
-          final String sTest = aVariables.getAppliedReplacement (aAssertReport.getTest ());
+          final String sTest = aRuleVariables.getAppliedReplacement (aAssertReport.getTest ());
           try
           {
             final XPathExpression aTestExpr = _compileXPath (aXPathContext, sTest);
             final List <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport,
                                                                                     aXPathContext,
-                                                                                    aVariables);
+                                                                                    aRuleVariables);
             if (aBoundElements == null)
             {
               // Error already emitted
@@ -337,14 +306,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                   (aAssertReport.isAssert () ? "assert" : "report") +
                                   ">: '" +
                                   sTest +
-                                  "' " +
-                                  aVariables, t);
+                                  "' with the following variables: " +
+                                  aRuleVariables.getAll (), t);
             bHasAnyError = true;
           }
         }
 
         // Evaluate base node set for this rule
-        final String sRuleContext = aVariables.getAppliedReplacement (getValidationContext (aRule.getContext ()));
+        final String sRuleContext = aGlobalVariables.getAppliedReplacement (getValidationContext (aRule.getContext ()));
         PSXPathBoundRule aBoundRule = null;
         try
         {
@@ -357,17 +326,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           error (aRule, "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'", ex);
           bHasAnyError = true;
         }
-
-        // Finally remove all variables added for the rule
-        aVariables.removeAll (aAddedVarsRule);
       }
 
       // Create the bound pattern
       final PSXPathBoundPattern aBoundPattern = new PSXPathBoundPattern (aPattern, aBoundRules);
       ret.add (aBoundPattern);
-
-      // Finally remove all variables added for the pattern
-      aVariables.removeAll (aAddedVarsPattern);
     }
 
     if (bHasAnyError)
@@ -443,16 +406,16 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final PSPhase aPhase = getPhase ();
 
     // Get all "global" variables that are defined in the schema
-    final PSXPathVariables aVariables = new PSXPathVariables ();
+    final PSXPathVariables aGlobalVariables = new PSXPathVariables ();
     if (aSchema.hasAnyLet ())
       for (final Map.Entry <String, String> aEntry : aSchema.getAllLetsAsMap ().entrySet ())
-        aVariables.add (aEntry);
+        aGlobalVariables.add (aEntry);
 
     if (aPhase != null)
     {
       // Get all variables that are defined in the specified phase
       for (final Map.Entry <String, String> aEntry : aPhase.getAllLetsAsMap ().entrySet ())
-        if (aVariables.add (aEntry).isUnchanged ())
+        if (aGlobalVariables.add (aEntry).isUnchanged ())
           warn (aSchema, "Duplicate let with name '" +
                          aEntry.getKey () +
                          "' in <phase> with name '" +
@@ -481,15 +444,16 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
 
     // Pre-compile all diagnostics first
-    final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext, aVariables);
+    final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext,
+                                                                                            aGlobalVariables);
     if (aBoundDiagnostics == null)
       throw new SchematronBindException ("Failed to precompile the diagnostics of the supplied schema. Check the " +
-                                         (aCustomErrorListener == null ? "log" : "error listener") +
+                                         (aCustomErrorListener == null ? "log output" : "error listener") +
                                          " for XPath errors!");
 
     // Perform the pre-compilation of all XPath expressions in the patterns,
     // rules, asserts/reports and the content elements
-    m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, aVariables);
+    m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, aGlobalVariables);
     if (m_aBoundPatterns == null)
       throw new SchematronBindException ("Failed to precompile the supplied schema.");
   }
@@ -565,12 +529,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                   // It's an assert
                   if (!bTestResult)
                   {
+                    // Assert failed
                     if (aValidationHandler.onFailedAssert (aAssertReport,
                                                            aBoundAssertReport.getTestExpression (),
                                                            aRuleMatchingNode,
                                                            i,
                                                            aBoundAssertReport).isBreak ())
+                    {
                       return;
+                    }
                   }
                 }
                 else
@@ -578,12 +545,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                   // It's a report
                   if (bTestResult)
                   {
+                    // Successful report
                     if (aValidationHandler.onSuccessfulReport (aAssertReport,
                                                                aBoundAssertReport.getTestExpression (),
                                                                aRuleMatchingNode,
                                                                i,
                                                                aBoundAssertReport).isBreak ())
+                    {
                       return;
+                    }
                   }
                 }
               }

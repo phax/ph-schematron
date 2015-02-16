@@ -1,19 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<file>
-  <Customer>
-    <firstname> abc</firstname>
-    <ContactDetails>
-      <mobile>12345</mobile>
-      <mobile></mobile>
-    </ContactDetails>
-    <ContactDetails>
-      <mobile>12345</mobile>
-      <mobile></mobile>
-    </ContactDetails>
-  </Customer>
-  <Customer>
-    <firstname> abc</firstname>
-    <ContactDetails>
-    </ContactDetails>
-  </Customer>
-</file>
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <docs>
+    <doc Id="Doc_1">
+      <generic>
+        <reference To_File="File_1"/>
+      </generic>
+    </doc>
+    <doc Id="Doc_2">
+      <generic>
+        <reference To_File="File_3"/>
+      </generic>
+    </doc>
+    <doc Id="Doc_3">
+      <generic>
+        <reference To_File="File_2"/>
+      </generic>
+    </doc>
+  </docs>
+  <files>
+      <file Id="File_1">    
+      </file>
+      <file Id="File_2">    
+      </file>
+      <file Id="File_3">    
+      </file>
+  </files>
+</root>
