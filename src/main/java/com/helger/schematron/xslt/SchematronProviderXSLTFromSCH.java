@@ -187,7 +187,7 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
   }
 
   @Nonnull
-  public final IReadableResource getSchematronResource ()
+  public IReadableResource getSchematronResource ()
   {
     return m_aSchematronResource;
   }
