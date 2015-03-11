@@ -111,6 +111,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   }
 
   @Nonnull
+  @SuppressWarnings ("deprecation")
   @DevelopersNote ("Its only deprecated in the interface!")
   public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
                               @Nullable final String sPhase,
@@ -132,8 +133,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                                                                       : new CollectingPSErrorHandler ();
     if (!aSchema.isValid (aErrorHandler))
       throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
-                                         (aErrorHandler == aCustomErrorListener
-                                                                               ? ". Errors are in the provided error handler."
+                                         (aErrorHandler == aCustomErrorListener ? ". Errors are in the provided error handler."
                                                                                : ": " +
                                                                                  ((CollectingPSErrorHandler) aErrorHandler).getResourceErrors ()
                                                                                                                            .toString ()));
