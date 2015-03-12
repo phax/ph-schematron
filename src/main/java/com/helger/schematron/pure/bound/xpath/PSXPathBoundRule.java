@@ -24,7 +24,7 @@ import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSRule;
 
@@ -78,7 +78,7 @@ public class PSXPathBoundRule
   @ReturnsMutableCopy
   public List <PSXPathBoundAssertReport> getAllBoundAssertReports ()
   {
-    return ContainerHelper.newList (m_aBoundAssertReports);
+    return CollectionHelper.newList (m_aBoundAssertReports);
   }
 
   @Override

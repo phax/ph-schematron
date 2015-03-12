@@ -28,7 +28,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
@@ -258,7 +258,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <IMicroElement> getAllForeignElements ()
   {
-    return ContainerHelper.newList (m_aForeignElements);
+    return CollectionHelper.newList (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -286,7 +286,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public Map <String, String> getAllForeignAttributes ()
   {
-    return ContainerHelper.newOrderedMap (m_aForeignAttrs);
+    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
   }
 
   public void setID (@Nullable final String sID)
@@ -395,7 +395,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSInclude> getAllIncludes ()
   {
-    return ContainerHelper.newList (m_aIncludes);
+    return CollectionHelper.newList (m_aIncludes);
   }
 
   public void addNS (@Nonnull final PSNS aNS)
@@ -413,7 +413,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSNS> getAllNSs ()
   {
-    return ContainerHelper.newList (m_aNSs);
+    return CollectionHelper.newList (m_aNSs);
   }
 
   /**
@@ -439,7 +439,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSP> getAllStartPs ()
   {
-    return ContainerHelper.newList (m_aStartPs);
+    return CollectionHelper.newList (m_aStartPs);
   }
 
   public void addLet (@Nonnull final PSLet aLet)
@@ -457,7 +457,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSLet> getAllLets ()
   {
-    return ContainerHelper.newList (m_aLets);
+    return CollectionHelper.newList (m_aLets);
   }
 
   @Nonnull
@@ -480,7 +480,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSPhase> getAllPhases ()
   {
-    return ContainerHelper.newList (m_aPhases);
+    return CollectionHelper.newList (m_aPhases);
   }
 
   /**
@@ -528,7 +528,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSPattern> getAllPatterns ()
   {
-    return ContainerHelper.newList (m_aPatterns);
+    return CollectionHelper.newList (m_aPatterns);
   }
 
   @Nonnegative
@@ -557,7 +557,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @ReturnsMutableCopy
   public List <PSP> getAllEndPs ()
   {
-    return ContainerHelper.newList (m_aEndPs);
+    return CollectionHelper.newList (m_aEndPs);
   }
 
   public void setDiagnostics (@Nullable final PSDiagnostics aDiagnostics)

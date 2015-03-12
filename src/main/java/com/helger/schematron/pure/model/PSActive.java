@@ -28,7 +28,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
@@ -114,7 +114,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public List <IMicroElement> getAllForeignElements ()
   {
-    return ContainerHelper.newList (m_aForeignElements);
+    return CollectionHelper.newList (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -142,7 +142,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public Map <String, String> getAllForeignAttributes ()
   {
-    return ContainerHelper.newOrderedMap (m_aForeignAttrs);
+    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
   }
 
   /**
@@ -248,7 +248,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public List <Object> getAllContentElements ()
   {
-    return ContainerHelper.newList (m_aContent);
+    return CollectionHelper.newList (m_aContent);
   }
 
   @Nonnull

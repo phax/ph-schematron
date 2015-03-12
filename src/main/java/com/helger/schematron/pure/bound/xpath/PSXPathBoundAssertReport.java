@@ -25,7 +25,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 
@@ -96,7 +96,7 @@ public class PSXPathBoundAssertReport
   @Nonnull
   public List <PSXPathBoundElement> getAllBoundContentElements ()
   {
-    return ContainerHelper.newList (m_aBoundContent);
+    return CollectionHelper.newList (m_aBoundContent);
   }
 
   /**

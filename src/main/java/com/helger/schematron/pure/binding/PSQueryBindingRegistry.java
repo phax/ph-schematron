@@ -29,7 +29,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.exceptions.InitializationException;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 
@@ -153,7 +153,7 @@ public final class PSQueryBindingRegistry
     s_aRWLock.readLock ().lock ();
     try
     {
-      return ContainerHelper.newMap (s_aMap);
+      return CollectionHelper.newMap (s_aMap);
     }
     finally
     {

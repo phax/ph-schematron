@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.error.ResourceLocation;
 import com.helger.commons.regex.RegExHelper;
@@ -78,7 +78,7 @@ public abstract class AbstractSVRLMessage
                               @Nullable final String sRole,
                               @Nullable final EErrorLevel eFlag)
   {
-    m_aDiagnosticReferences = ContainerHelper.newList (aDiagnosticReferences);
+    m_aDiagnosticReferences = CollectionHelper.newList (aDiagnosticReferences);
     m_sText = sText;
     m_sLocation = sLocation;
     m_sTest = sTest;
@@ -90,7 +90,7 @@ public abstract class AbstractSVRLMessage
   @ReturnsMutableCopy
   public List <DiagnosticReference> getDiagnisticReferences ()
   {
-    return ContainerHelper.newList (m_aDiagnosticReferences);
+    return CollectionHelper.newList (m_aDiagnosticReferences);
   }
 
   @Nullable

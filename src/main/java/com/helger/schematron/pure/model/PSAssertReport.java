@@ -28,7 +28,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.regex.RegExHelper;
@@ -136,7 +136,7 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
   @ReturnsMutableCopy
   public List <IMicroElement> getAllForeignElements ()
   {
-    return ContainerHelper.newList (m_aForeignElements);
+    return CollectionHelper.newList (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -164,7 +164,7 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
   @ReturnsMutableCopy
   public Map <String, String> getAllForeignAttributes ()
   {
-    return ContainerHelper.newOrderedMap (m_aForeignAttrs);
+    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
   }
 
   public boolean isAssert ()
@@ -249,7 +249,7 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
   @ReturnsMutableCopy
   public List <String> getAllDiagnostics ()
   {
-    return ContainerHelper.newList (m_aDiagnostics);
+    return CollectionHelper.newList (m_aDiagnostics);
   }
 
   public void setRich (@Nullable final PSRichGroup aRich)
@@ -414,7 +414,7 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
   @ReturnsMutableCopy
   public List <Object> getAllContentElements ()
   {
-    return ContainerHelper.newList (m_aContent);
+    return CollectionHelper.newList (m_aContent);
   }
 
   @Nonnull
@@ -426,7 +426,7 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);
-    if (ContainerHelper.isNotEmpty (m_aDiagnostics))
+    if (CollectionHelper.isNotEmpty (m_aDiagnostics))
       ret.setAttribute (CSchematronXML.ATTR_DIAGNOSTICS, StringHelper.getImploded (' ', m_aDiagnostics));
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);

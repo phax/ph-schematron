@@ -19,6 +19,7 @@
 -->
 <changelog xmlns="http://www.phloc.com/ns/changelog/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.phloc.com/ns/changelog/1.0 schemas/changelog-1.0.xsd" version="1.0" component="ph-schematron">
+  <release date="2015-03-12" version="2.9.2" />
   <release date="2015-02-03" version="2.9.1" />
   <entry date="2015-02-02" category="tech" action="update">
     <change>

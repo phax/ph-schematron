@@ -39,7 +39,7 @@ import net.sf.saxon.trans.XPathException;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 
@@ -155,7 +155,7 @@ public class XQueryAsXPathFunctionConverter
           {
             // Currently the user functions are in ExecutableFunctionLibrary
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
-              for (final UserFunction aUserFunc : ContainerHelper.newList (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
+              for (final UserFunction aUserFunc : CollectionHelper.newList (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
               {
                 aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
                                                      aUserFunc.getFunctionName ().getLocalPart (),
@@ -171,7 +171,7 @@ public class XQueryAsXPathFunctionConverter
           {
             // This block works with Saxon HE 9.6.0-x :)
             final XQueryFunctionLibrary aRealFuncLib = (XQueryFunctionLibrary) aFuncLib;
-            for (final XQueryFunction aXQueryFunction : ContainerHelper.newList (aRealFuncLib.getFunctionDefinitions ()))
+            for (final XQueryFunction aXQueryFunction : CollectionHelper.newList (aRealFuncLib.getFunctionDefinitions ()))
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();

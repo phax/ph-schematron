@@ -25,7 +25,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
@@ -112,7 +112,7 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   @ReturnsMutableCopy
   public Map <String, String> getAllForeignAttributes ()
   {
-    return ContainerHelper.newOrderedMap (m_aForeignAttrs);
+    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
   }
 
   /**

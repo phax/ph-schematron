@@ -23,7 +23,7 @@ import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSPattern;
 
@@ -56,7 +56,7 @@ public class PSXPathBoundPattern
   @ReturnsMutableCopy
   public List <PSXPathBoundRule> getAllBoundRules ()
   {
-    return ContainerHelper.newList (m_aBoundRules);
+    return CollectionHelper.newList (m_aBoundRules);
   }
 
   @Override

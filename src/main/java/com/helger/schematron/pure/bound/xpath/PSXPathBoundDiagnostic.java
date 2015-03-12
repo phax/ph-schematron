@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSDiagnostic;
 
@@ -55,7 +55,7 @@ public class PSXPathBoundDiagnostic
   @Nonnull
   public List <PSXPathBoundElement> getAllBoundContentElements ()
   {
-    return ContainerHelper.newList (m_aBoundContent);
+    return CollectionHelper.newList (m_aBoundContent);
   }
 
   @Override

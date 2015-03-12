@@ -28,7 +28,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroElement;
 import com.helger.commons.string.StringHelper;
@@ -290,7 +290,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   @ReturnsMutableCopy
   public List <IMicroElement> getAllForeignElements ()
   {
-    return ContainerHelper.newList (m_aForeignElements);
+    return CollectionHelper.newList (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -318,7 +318,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   @ReturnsMutableCopy
   public Map <String, String> getAllForeignAttributes ()
   {
-    return ContainerHelper.newOrderedMap (m_aForeignAttrs);
+    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
   }
 
   public void setAbstract (final boolean bAbstract)
@@ -395,7 +395,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   @ReturnsMutableCopy
   public List <PSInclude> getAllIncludes ()
   {
-    return ContainerHelper.newList (m_aIncludes);
+    return CollectionHelper.newList (m_aIncludes);
   }
 
   public void setTitle (@Nullable final PSTitle aTitle)
@@ -544,7 +544,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   @ReturnsMutableCopy
   public List <IPSElement> getAllContentElements ()
   {
-    return ContainerHelper.newList (m_aContent);
+    return CollectionHelper.newList (m_aContent);
   }
 
   @Nonnull

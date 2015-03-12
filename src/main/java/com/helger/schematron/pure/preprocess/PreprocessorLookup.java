@@ -26,7 +26,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSRule;
@@ -97,7 +97,7 @@ final class PreprocessorLookup
   @ReturnsMutableCopy
   public SortedSet <String> getAllAbstractRuleIDs ()
   {
-    return ContainerHelper.newSortedSet (m_aRules.keySet ());
+    return CollectionHelper.newSortedSet (m_aRules.keySet ());
   }
 
   @Override
