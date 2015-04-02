@@ -75,6 +75,9 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
    */
   private static final String XSLT2_STEP3 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_svrl_for_xslt2.xsl";
 
+  /**
+   * This flag is for debugging purposes only. Only used during development.
+   */
   private static final boolean SAVE_INTERMEDIATE_FILES = false;
 
   private static Templates s_aStep1;
@@ -82,13 +85,6 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
   private static Templates s_aStep3;
 
   private final IReadableResource m_aSchematronResource;
-
-  public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
-                                        @Nullable final ErrorListener aCustomErrorListener,
-                                        @Nullable final URIResolver aURIResolver)
-  {
-    this (aSchematronResource, aCustomErrorListener, aURIResolver, null, null);
-  }
 
   /**
    * Constructor
