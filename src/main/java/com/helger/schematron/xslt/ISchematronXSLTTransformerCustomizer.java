@@ -17,6 +17,7 @@
 package com.helger.schematron.xslt;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.transform.Transformer;
 
 /**
@@ -24,22 +25,41 @@ import javax.xml.transform.Transformer;
  *
  * @author Philip Helger
  */
-public interface IXSLTTransformerCustomizer
+public interface ISchematronXSLTTransformerCustomizer
 {
   public enum EStep
   {
-    STEP1,
-    STEP2,
-    STEP3;
+    SCH2XSLT_1,
+    SCH2XSLT_2,
+    SCH2XSLT_3,
+    XSLT2XML;
   }
+
+  /**
+   * Determine if the output can be cached. This is e.g. <code>false</code> when
+   * custom parameters are provided.
+   *
+   * @return <code>true</code> if the result can be cached, <code>false</code>
+   *         if not.
+   */
+  boolean canCacheResult ();
 
   /**
    * Customize the given transformer.
    *
    * @param eStep
-   *        The step that is currently to be executed.
+   *        The step that is currently to be executed. Never <code>null</code>.
+   *        When using the conversion from Schematron to XSLT the first 3 steps
+   *        are used in the given order. When a the final XSLT is applied onto
+   *        the XML document, the last step is used.
    * @param aTransformer
    *        The transformer to be customized. Never <code>null</code>.
    */
   void customize (@Nonnull EStep eStep, @Nonnull Transformer aTransformer);
+
+  @Nullable
+  String getPhase ();
+
+  @Nullable
+  String getLanguageCode ();
 }

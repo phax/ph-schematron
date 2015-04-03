@@ -142,11 +142,11 @@ public final class SchematronResourceSCHCacheTest
       {
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
-                                                                                                               aCEH,
-                                                                                                               (URIResolver) null,
-                                                                                                               (Map <String, ?>) null,
-                                                                                                               (String) null,
-                                                                                                               "de");
+                                                                                                               new SchematronXSLTTransformerCustomizer (aCEH,
+                                                                                                                                                        (URIResolver) null,
+                                                                                                                                                        (Map <String, ?>) null,
+                                                                                                                                                        (String) null,
+                                                                                                                                                        "de"));
         assertNotNull (aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());

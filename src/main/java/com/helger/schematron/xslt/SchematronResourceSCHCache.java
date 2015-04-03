@@ -17,7 +17,6 @@
 package com.helger.schematron.xslt;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,20 +24,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.URIResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.GlobalDebug;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.xml.serialize.XMLWriter;
-import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 
 /**
  * Factory for creating {@link ISchematronXSLTProvider} objects.
@@ -60,71 +54,21 @@ public final class SchematronResourceSCHCache
    *
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document. May be
+   * @param aTransformerCustomizer
+   *        The XSLT transformer customizer to be used. May not be
    *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document. May be
-   *        <code>null</code>.
-   * @param aCustomParameters
-   *        A set of custom parameters that is passed to the XSLT Transformer.
-   *        May be <code>null</code> or empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
    * @return <code>null</code> if the passed Schematron resource does not exist
    *         or is invalid.
    */
   @Nullable
   public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                            @Nullable final ErrorListener aCustomErrorListener,
-                                                                            @Nullable final URIResolver aCustomURIResolver,
-                                                                            @Nullable final Map <String, ?> aCustomParameters,
-                                                                            @Nullable final String sPhase,
-                                                                            @Nullable final String sLanguageCode)
+                                                                            @Nonnull final ISchematronXSLTTransformerCustomizer aTransformerCustomizer)
   {
     if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling Schematron instance " + aSchematronResource.toString ());
 
-    // Ensure an error listener is present
-    final ErrorListener aRealErrorListener = aCustomErrorListener != null ? aCustomErrorListener
-                                                                         : new LoggingTransformErrorListener (Locale.US);
-
-    // Create the TransformerCustomizer
-    final IXSLTTransformerCustomizer aCustomizer = new IXSLTTransformerCustomizer ()
-    {
-      public void customize (@Nonnull final EStep eStep, @Nonnull final Transformer aTransformer)
-      {
-        aTransformer.setErrorListener (aRealErrorListener);
-        if (aCustomURIResolver != null)
-          aTransformer.setURIResolver (aCustomURIResolver);
-
-        if (eStep == EStep.STEP3)
-        {
-          // Set all custom parameters
-          if (aCustomParameters != null)
-            for (final Map.Entry <String, ?> aEntry : aCustomParameters.entrySet ())
-              aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
-
-          // On the last step, set the respective Schematron parameters as the
-          // last action to avoid they are overwritten by a custom parameter.
-          if (sPhase != null)
-            aTransformer.setParameter ("phase", sPhase);
-          if (sLanguageCode != null)
-            aTransformer.setParameter ("langCode", sLanguageCode);
-        }
-      }
-    };
-
     final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource,
-                                                                                               aCustomizer);
+                                                                                               aTransformerCustomizer);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
       // Schematron is invalid -> parsing failed
@@ -155,37 +99,18 @@ public final class SchematronResourceSCHCache
    *
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document. May be
+   * @param aTransformerCustomizer
+   *        The XSLT transformer customizer to be used. May not be
    *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document. May be
-   *        <code>null</code>.
-   * @param aCustomParameters
-   *        A set of custom parameters that is passed to the XSLT Transformer.
-   *        May be <code>null</code> or empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used.
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
    * @return <code>null</code> if the passed Schematron resource does not exist
    *         or is invalid.
    */
   @Nullable
   public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                         @Nullable final ErrorListener aCustomErrorListener,
-                                                                         @Nullable final URIResolver aCustomURIResolver,
-                                                                         @Nullable final Map <String, ?> aCustomParameters,
-                                                                         @Nullable final String sPhase,
-                                                                         @Nullable final String sLanguageCode)
+                                                                         @Nonnull final ISchematronXSLTTransformerCustomizer aTransformerCustomizer)
   {
-    ValueEnforcer.notNull (aSchematronResource, "resource");
+    ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
+    ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
 
     if (!aSchematronResource.exists ())
     {
@@ -193,23 +118,18 @@ public final class SchematronResourceSCHCache
       return null;
     }
 
-    if (CollectionHelper.isNotEmpty (aCustomParameters))
+    if (!aTransformerCustomizer.canCacheResult ())
     {
       // Create new object and return without cache handling because the custom
       // parameters may have side effects on the created XSLT!
-      return createSchematronXSLTProvider (aSchematronResource,
-                                           aCustomErrorListener,
-                                           aCustomURIResolver,
-                                           aCustomParameters,
-                                           sPhase,
-                                           sLanguageCode);
+      return createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
     }
 
     // Determine the unique resource ID for caching
     final String sCacheKey = StringHelper.<String> getImploded (':',
                                                                 aSchematronResource.getResourceID (),
-                                                                StringHelper.getNotNull (sPhase),
-                                                                StringHelper.getNotNull (sLanguageCode));
+                                                                StringHelper.getNotNull (aTransformerCustomizer.getPhase ()),
+                                                                StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
 
     s_aLock.lock ();
     try
@@ -219,12 +139,7 @@ public final class SchematronResourceSCHCache
       if (aProvider == null)
       {
         // Create new object and put in cache
-        aProvider = createSchematronXSLTProvider (aSchematronResource,
-                                                  aCustomErrorListener,
-                                                  aCustomURIResolver,
-                                                  aCustomParameters,
-                                                  sPhase,
-                                                  sLanguageCode);
+        aProvider = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
         if (aProvider != null)
           s_aCache.put (sCacheKey, aProvider);
       }

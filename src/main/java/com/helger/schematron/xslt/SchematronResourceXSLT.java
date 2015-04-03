@@ -80,9 +80,9 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
                                  @Nullable final URIResolver aCustomURIResolver)
   {
     super (aXSLTResource,
-           aCustomErrorListener,
-           aCustomURIResolver,
-           SchematronResourceXSLTCache.getSchematronXSLTProvider (aXSLTResource));
+           new SchematronXSLTTransformerCustomizer (aCustomErrorListener, aCustomURIResolver, null, null, null),
+           SchematronResourceXSLTCache.getSchematronXSLTProvider (aXSLTResource),
+           new SchematronXSLTValidatorDefault ());
   }
 
   /**
@@ -106,8 +106,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
                                  @Nonnull final ISchematronXSLTValidator aValidator)
   {
     super (aXSLTResource,
-           aCustomErrorListener,
-           aCustomURIResolver,
+           new SchematronXSLTTransformerCustomizer (aCustomErrorListener, aCustomURIResolver, null, null, null),
            SchematronResourceXSLTCache.getSchematronXSLTProvider (aXSLTResource),
            aValidator);
   }

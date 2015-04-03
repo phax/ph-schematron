@@ -21,10 +21,8 @@ import java.io.InputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
@@ -43,6 +41,7 @@ import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.svrl.SVRLReader;
+import com.helger.schematron.xslt.ISchematronXSLTTransformerCustomizer.EStep;
 
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT
@@ -55,52 +54,22 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTResource.class);
 
-  private final ErrorListener m_aCustomErrorListener;
-  private final URIResolver m_aCustomURIResolver;
+  private final ISchematronXSLTTransformerCustomizer m_aTransformerCustomizer;
   private final ISchematronXSLTProvider m_aXSLTProvider;
   private final ISchematronXSLTValidator m_aXSLTValidator;
 
   public AbstractSchematronXSLTResource (@Nonnull final IReadableResource aSCHResource,
-                                         @Nullable final ErrorListener aCustomErrorListener,
-                                         @Nullable final URIResolver aCustomURIResolver,
-                                         @Nullable final ISchematronXSLTProvider aXSLTProvider)
-  {
-    this (aSCHResource, aCustomErrorListener, aCustomURIResolver, aXSLTProvider, new SchematronXSLTValidatorDefault ());
-  }
-
-  public AbstractSchematronXSLTResource (@Nonnull final IReadableResource aSCHResource,
-                                         @Nullable final ErrorListener aCustomErrorListener,
-                                         @Nullable final URIResolver aCustomURIResolver,
+                                         @Nonnull final ISchematronXSLTTransformerCustomizer aTransformerCustomizer,
                                          @Nullable final ISchematronXSLTProvider aXSLTProvider,
                                          @Nonnull final ISchematronXSLTValidator aXSLTValidator)
   {
     super (aSCHResource);
+    ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
     ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
 
-    m_aCustomErrorListener = aCustomErrorListener;
-    m_aCustomURIResolver = aCustomURIResolver;
+    m_aTransformerCustomizer = aTransformerCustomizer;
     m_aXSLTProvider = aXSLTProvider;
     m_aXSLTValidator = aXSLTValidator;
-  }
-
-  /**
-   * @return The error listener passed in the constructor. May be
-   *         <code>null</code>.
-   */
-  @Nullable
-  public ErrorListener getCustomErrorListener ()
-  {
-    return m_aCustomErrorListener;
-  }
-
-  /**
-   * @return The URI resolver passed in the constructor. May be
-   *         <code>null</code>.
-   */
-  @Nullable
-  public URIResolver getCustomURIResolver ()
-  {
-    return m_aCustomURIResolver;
   }
 
   /**
@@ -202,10 +171,7 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
     // Create the transformer object from the templates specified in the
     // constructor
     final Transformer aTransformer = m_aXSLTProvider.getXSLTTemplates ().newTransformer ();
-    if (m_aCustomErrorListener != null)
-      aTransformer.setErrorListener (m_aCustomErrorListener);
-    if (m_aCustomURIResolver != null)
-      aTransformer.setURIResolver (m_aCustomURIResolver);
+    m_aTransformerCustomizer.customize (EStep.XSLT2XML, aTransformer);
 
     // Debug print the created XSLT document
     if (false)
@@ -239,9 +205,9 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   public String toString ()
   {
     return ToStringGenerator.getDerived (super.toString ())
-                            .appendIfNotNull ("customErrListener", m_aCustomErrorListener)
-                            .appendIfNotNull ("customURIResolver", m_aCustomURIResolver)
+                            .append ("TransformerCustomizer", m_aTransformerCustomizer)
                             .append ("XSLTProvider", m_aXSLTProvider)
+                            .append ("XSLTValidator", m_aXSLTValidator)
                             .toString ();
   }
 }

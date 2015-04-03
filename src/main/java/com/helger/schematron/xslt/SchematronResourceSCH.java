@@ -46,7 +46,13 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
    */
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
   {
-    this (aSCHResource, null, null, null, null);
+    this (aSCHResource,
+          (ErrorListener) null,
+          (URIResolver) null,
+          (Map <String, ?>) null,
+          (String) null,
+          (String) null,
+          new SchematronXSLTValidatorDefault ());
   }
 
   /**
@@ -61,7 +67,13 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
                                 @Nonnull final ISchematronXSLTValidator aValidator)
   {
-    this (aSCHResource, (ErrorListener) null, (URIResolver) null, (String) null, (String) null, aValidator);
+    this (aSCHResource,
+          (ErrorListener) null,
+          (URIResolver) null,
+          (Map <String, ?>) null,
+          (String) null,
+          (String) null,
+          aValidator);
   }
 
   /**
@@ -84,7 +96,13 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
                                 @Nullable final ErrorListener aCustomErrorListener,
                                 @Nullable final URIResolver aCustomURIResolver)
   {
-    this (aSCHResource, aCustomErrorListener, aCustomURIResolver, (String) null, (String) null);
+    this (aSCHResource,
+          aCustomErrorListener,
+          aCustomURIResolver,
+          (Map <String, ?>) null,
+          (String) null,
+          (String) null,
+          new SchematronXSLTValidatorDefault ());
   }
 
   /**
@@ -105,7 +123,12 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
                                 @Nullable final String sPhase,
                                 @Nullable final String sLanguageCode)
   {
-    this (aSCHResource, (ErrorListener) null, (URIResolver) null, sPhase, sLanguageCode);
+    this (aSCHResource,
+          (ErrorListener) null,
+          (URIResolver) null,
+          sPhase,
+          sLanguageCode,
+          new SchematronXSLTValidatorDefault ());
   }
 
   /**
@@ -184,7 +207,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
           (Map <String, ?>) null,
           sPhase,
           sLanguageCode,
-          new SchematronXSLTValidatorDefault ());
+          aValidator);
   }
 
   /**
@@ -226,14 +249,18 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
                                 @Nonnull final ISchematronXSLTValidator aValidator)
   {
     super (aSCHResource,
-           aCustomErrorListener,
-           aCustomURIResolver,
+           new SchematronXSLTTransformerCustomizer (aCustomErrorListener,
+                                                    aCustomURIResolver,
+                                                    aCustomParameters,
+                                                    sPhase,
+                                                    sLanguageCode),
            SchematronResourceSCHCache.getSchematronXSLTProvider (aSCHResource,
-                                                                 aCustomErrorListener,
-                                                                 aCustomURIResolver,
-                                                                 aCustomParameters,
-                                                                 sPhase,
-                                                                 sLanguageCode), aValidator);
+                                                                 new SchematronXSLTTransformerCustomizer (aCustomErrorListener,
+                                                                                                          aCustomURIResolver,
+                                                                                                          aCustomParameters,
+                                                                                                          sPhase,
+                                                                                                          sLanguageCode)),
+           aValidator);
   }
 
   /**

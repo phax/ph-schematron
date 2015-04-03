@@ -57,8 +57,7 @@ public final class SchematronResourceXSLTCache
     if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
-    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (GlobalDebug.isDebugMode ()
-                                                                                                                  ? new LoggingTransformErrorListener (Locale.US)
+    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (GlobalDebug.isDebugMode () ? new LoggingTransformErrorListener (Locale.US)
                                                                                                                   : null);
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource, aCEH);
     if (!aXSLTPreprocessor.isValidSchematron ())
@@ -86,11 +85,12 @@ public final class SchematronResourceXSLTCache
   }
 
   /**
-   * Create a new Schematron validator for the passed resource.
+   * Create a new Schematron XSLT provider for the passed resource.
    *
    * @param aXSLTResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
-   * @return <code>null</code> if the passed Schematron resource does not exist.
+   * @return <code>null</code> if the passed Schematron XSLT resource does not
+   *         exist.
    */
   @Nullable
   public static ISchematronXSLTProvider getSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource)
