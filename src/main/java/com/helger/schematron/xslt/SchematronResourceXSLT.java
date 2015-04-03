@@ -28,6 +28,7 @@ import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.schematron.xslt.customizer.XSLTTransformerCustomizer;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 
@@ -82,7 +83,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
                                  @Nullable final URIResolver aCustomURIResolver)
   {
     super (aXSLTResource,
-           new XSLTTransformerCustomizer (aCustomErrorListener, aCustomURIResolver, null),
+           new XSLTTransformerCustomizer ().setErrorListener (aCustomErrorListener).setURIResolver (aCustomURIResolver),
            SchematronResourceXSLTCache.getSchematronXSLTProvider (aXSLTResource),
            new SchematronXSLTValidatorDefault ());
   }
@@ -108,7 +109,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTResource
                                  @Nonnull final ISchematronXSLTValidator aValidator)
   {
     super (aXSLTResource,
-           new XSLTTransformerCustomizer (aCustomErrorListener, aCustomURIResolver, null),
+           new XSLTTransformerCustomizer ().setErrorListener (aCustomErrorListener).setURIResolver (aCustomURIResolver),
            SchematronResourceXSLTCache.getSchematronXSLTProvider (aXSLTResource),
            aValidator);
   }

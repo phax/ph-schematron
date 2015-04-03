@@ -41,6 +41,7 @@ import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.svrl.SVRLReader;
+import com.helger.schematron.xslt.customizer.IXSLTTransformerCustomizer;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 
 /**

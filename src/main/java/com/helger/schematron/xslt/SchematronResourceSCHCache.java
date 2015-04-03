@@ -33,6 +33,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.schematron.xslt.customizer.ISCHTransformerCustomizer;
 
 /**
  * Factory for creating {@link ISchematronXSLTProvider} objects.

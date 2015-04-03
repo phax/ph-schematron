@@ -29,6 +29,8 @@ import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.schematron.xslt.customizer.SCHTransformerCustomizer;
+import com.helger.schematron.xslt.customizer.XSLTTransformerCustomizer;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 
@@ -251,13 +253,15 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
                                 @Nonnull final ISchematronXSLTValidator aValidator)
   {
     super (aSCHResource,
-           new XSLTTransformerCustomizer (aCustomErrorListener, aCustomURIResolver, aCustomParameters),
+           new XSLTTransformerCustomizer ().setErrorListener (aCustomErrorListener)
+                                           .setURIResolver (aCustomURIResolver)
+                                           .setParameters (aCustomParameters),
            SchematronResourceSCHCache.getSchematronXSLTProvider (aSCHResource,
-                                                                 new SCHTransformerCustomizer (aCustomErrorListener,
-                                                                                               aCustomURIResolver,
-                                                                                               aCustomParameters,
-                                                                                               sPhase,
-                                                                                               sLanguageCode)),
+                                                                 new SCHTransformerCustomizer ().setErrorListener (aCustomErrorListener)
+                                                                                                .setURIResolver (aCustomURIResolver)
+                                                                                                .setParameters (aCustomParameters)
+                                                                                                .setPhase (sPhase)
+                                                                                                .setLanguageCode (sLanguageCode)),
            aValidator);
   }
 

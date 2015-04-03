@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.xslt.customizer;
 
 import java.util.Locale;
 import java.util.Map;
@@ -25,36 +25,78 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.URIResolver;
 
+import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.CollectionHelper;
+import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 
-public final class SCHTransformerCustomizer implements ISCHTransformerCustomizer
+/**
+ * The default implementation of {@link IXSLTTransformerCustomizer}.
+ *
+ * @author Philip Helger
+ */
+public abstract class AbstractTransformerCustomizer <IMPLTYPE extends AbstractTransformerCustomizer <IMPLTYPE>>
 {
-  private final ErrorListener m_aCustomErrorListener;
-  private final URIResolver m_aCustomURIResolver;
-  private final Map <String, ?> m_aCustomParameters;
-  private final String m_sPhase;
-  private final String m_sLanguageCode;
+  protected ErrorListener m_aCustomErrorListener;
+  protected URIResolver m_aCustomURIResolver;
+  protected Map <String, ?> m_aCustomParameters;
 
-  public SCHTransformerCustomizer (@Nullable final ErrorListener aCustomErrorListener,
-                                              @Nullable final URIResolver aCustomURIResolver,
-                                              @Nullable final Map <String, ?> aCustomParameters,
-                                              @Nullable final String sPhase,
-                                              @Nullable final String sLanguageCode)
+  public AbstractTransformerCustomizer ()
+  {}
+
+  @Nonnull
+  protected final IMPLTYPE thisAsT ()
+  {
+    // Avoid the unchecked cast warning in all places
+    return GenericReflection.<AbstractTransformerCustomizer <IMPLTYPE>, IMPLTYPE> uncheckedCast (this);
+  }
+
+  @Nullable
+  public ErrorListener getErrorListener ()
+  {
+    return m_aCustomErrorListener;
+  }
+
+  @Nonnull
+  public IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
-    m_aCustomURIResolver = aCustomURIResolver;
-    m_aCustomParameters = aCustomParameters;
-    m_sPhase = sPhase;
-    m_sLanguageCode = sLanguageCode;
+    return thisAsT ();
   }
 
-  public boolean canCacheResult ()
+  @Nullable
+  public URIResolver getURIResolver ()
   {
-    return CollectionHelper.isEmpty (m_aCustomParameters);
+    return m_aCustomURIResolver;
   }
 
-  public void customize (@Nonnull final EStep eStep, @Nonnull final Transformer aTransformer)
+  @Nonnull
+  public IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  {
+    m_aCustomURIResolver = aCustomURIResolver;
+    return thisAsT ();
+  }
+
+  public boolean hasParameters ()
+  {
+    return CollectionHelper.isNotEmpty (m_aCustomParameters);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public Map <String, ?> getParameters ()
+  {
+    return CollectionHelper.newOrderedMap (m_aCustomParameters);
+  }
+
+  @Nonnull
+  public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
+  {
+    m_aCustomParameters = CollectionHelper.newOrderedMap (aCustomParameters);
+    return thisAsT ();
+  }
+
+  public void customize (@Nonnull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -70,28 +112,5 @@ public final class SCHTransformerCustomizer implements ISCHTransformerCustomizer
     if (m_aCustomParameters != null)
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
-
-    if (eStep == EStep.SCH2XSLT_3)
-    {
-      // On the last step, set the respective Schematron parameters as the
-      // last action to avoid they are overwritten by a custom parameter.
-      if (m_sPhase != null)
-        aTransformer.setParameter ("phase", m_sPhase);
-
-      if (m_sLanguageCode != null)
-        aTransformer.setParameter ("langCode", m_sLanguageCode);
-    }
-  }
-
-  @Nullable
-  public String getPhase ()
-  {
-    return m_sPhase;
-  }
-
-  @Nullable
-  public String getLanguageCode ()
-  {
-    return m_sLanguageCode;
   }
 }
