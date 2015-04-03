@@ -17,26 +17,21 @@
 package com.helger.schematron.xslt;
 
 import javax.annotation.Nonnull;
-
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
-
-import com.helger.commons.state.EValidity;
+import javax.xml.transform.Transformer;
 
 /**
- * A special implementation of {@link ISchematronXSLTValidator} that only
- * handles failed asserts as failures, but not successful reports.
- * 
+ * This interface is used internally to when applying the Schematron XSLT onto
+ * an XML document.
+ *
  * @author Philip Helger
  */
-public class SchematronXSLTValidatorFailedAssertOnly implements ISchematronXSLTValidator
+public interface IXSLTTransformerCustomizer
 {
-  @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final SchematronOutputType aSO)
-  {
-    for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof FailedAssert)
-        return EValidity.INVALID;
-    return EValidity.VALID;
-  }
+  /**
+   * Customize the given transformer.
+   *
+   * @param aTransformer
+   *        The transformer to be customized. Never <code>null</code>.
+   */
+  void customize (@Nonnull Transformer aTransformer);
 }

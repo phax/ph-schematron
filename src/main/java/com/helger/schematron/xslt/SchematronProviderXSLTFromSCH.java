@@ -37,7 +37,7 @@ import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
-import com.helger.schematron.xslt.ISchematronXSLTTransformerCustomizer.EStep;
+import com.helger.schematron.xslt.ISCHTransformerCustomizer.EStep;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document into an XSLT
@@ -92,7 +92,7 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
    *        <code>null</code>.
    */
   public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
-                                        @Nonnull final ISchematronXSLTTransformerCustomizer aTransformerCustomizer)
+                                        @Nonnull final ISCHTransformerCustomizer aTransformerCustomizer)
   {
     m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");

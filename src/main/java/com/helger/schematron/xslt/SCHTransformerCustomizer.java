@@ -28,7 +28,7 @@ import javax.xml.transform.URIResolver;
 import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 
-public final class SchematronXSLTTransformerCustomizer implements ISchematronXSLTTransformerCustomizer
+public final class SCHTransformerCustomizer implements ISCHTransformerCustomizer
 {
   private final ErrorListener m_aCustomErrorListener;
   private final URIResolver m_aCustomURIResolver;
@@ -36,7 +36,7 @@ public final class SchematronXSLTTransformerCustomizer implements ISchematronXSL
   private final String m_sPhase;
   private final String m_sLanguageCode;
 
-  public SchematronXSLTTransformerCustomizer (@Nullable final ErrorListener aCustomErrorListener,
+  public SCHTransformerCustomizer (@Nullable final ErrorListener aCustomErrorListener,
                                               @Nullable final URIResolver aCustomURIResolver,
                                               @Nullable final Map <String, ?> aCustomParameters,
                                               @Nullable final String sPhase,

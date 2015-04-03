@@ -29,6 +29,8 @@ import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
+import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 
 /**
  * A Schematron resource that is based on the original SCH file.
@@ -249,17 +251,13 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
                                 @Nonnull final ISchematronXSLTValidator aValidator)
   {
     super (aSCHResource,
-           new SchematronXSLTTransformerCustomizer (aCustomErrorListener,
-                                                    aCustomURIResolver,
-                                                    aCustomParameters,
-                                                    sPhase,
-                                                    sLanguageCode),
+           new XSLTTransformerCustomizer (aCustomErrorListener, aCustomURIResolver, aCustomParameters),
            SchematronResourceSCHCache.getSchematronXSLTProvider (aSCHResource,
-                                                                 new SchematronXSLTTransformerCustomizer (aCustomErrorListener,
-                                                                                                          aCustomURIResolver,
-                                                                                                          aCustomParameters,
-                                                                                                          sPhase,
-                                                                                                          sLanguageCode)),
+                                                                 new SCHTransformerCustomizer (aCustomErrorListener,
+                                                                                               aCustomURIResolver,
+                                                                                               aCustomParameters,
+                                                                                               sPhase,
+                                                                                               sLanguageCode)),
            aValidator);
   }
 

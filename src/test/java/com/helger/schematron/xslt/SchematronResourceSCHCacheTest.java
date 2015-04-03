@@ -142,7 +142,7 @@ public final class SchematronResourceSCHCacheTest
       {
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
-                                                                                                               new SchematronXSLTTransformerCustomizer (aCEH,
+                                                                                                               new SCHTransformerCustomizer (aCEH,
                                                                                                                                                         (URIResolver) null,
                                                                                                                                                         (Map <String, ?>) null,
                                                                                                                                                         (String) null,

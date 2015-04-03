@@ -41,7 +41,7 @@ import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.svrl.SVRLReader;
-import com.helger.schematron.xslt.ISchematronXSLTTransformerCustomizer.EStep;
+import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT
@@ -54,12 +54,12 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTResource.class);
 
-  private final ISchematronXSLTTransformerCustomizer m_aTransformerCustomizer;
+  private final IXSLTTransformerCustomizer m_aTransformerCustomizer;
   private final ISchematronXSLTProvider m_aXSLTProvider;
   private final ISchematronXSLTValidator m_aXSLTValidator;
 
   public AbstractSchematronXSLTResource (@Nonnull final IReadableResource aSCHResource,
-                                         @Nonnull final ISchematronXSLTTransformerCustomizer aTransformerCustomizer,
+                                         @Nonnull final IXSLTTransformerCustomizer aTransformerCustomizer,
                                          @Nullable final ISchematronXSLTProvider aXSLTProvider,
                                          @Nonnull final ISchematronXSLTValidator aXSLTValidator)
   {
@@ -171,7 +171,7 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
     // Create the transformer object from the templates specified in the
     // constructor
     final Transformer aTransformer = m_aXSLTProvider.getXSLTTemplates ().newTransformer ();
-    m_aTransformerCustomizer.customize (EStep.XSLT2XML, aTransformer);
+    m_aTransformerCustomizer.customize (aTransformer);
 
     // Debug print the created XSLT document
     if (false)

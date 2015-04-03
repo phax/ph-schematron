@@ -25,14 +25,13 @@ import javax.xml.transform.Transformer;
  *
  * @author Philip Helger
  */
-public interface ISchematronXSLTTransformerCustomizer
+public interface ISCHTransformerCustomizer
 {
   public enum EStep
   {
     SCH2XSLT_1,
     SCH2XSLT_2,
-    SCH2XSLT_3,
-    XSLT2XML;
+    SCH2XSLT_3;
   }
 
   /**
