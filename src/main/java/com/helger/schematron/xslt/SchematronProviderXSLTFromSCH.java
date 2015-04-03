@@ -17,15 +17,11 @@
 package com.helger.schematron.xslt;
 
 import java.io.File;
-import java.util.Locale;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 
 import org.slf4j.Logger;
@@ -39,9 +35,9 @@ import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.serialize.XMLWriterSettings;
-import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
+import com.helger.schematron.xslt.IXSLTTransformerCustomizer.EStep;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document into an XSLT
@@ -91,28 +87,15 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
    *
    * @param aSchematronResource
    *        SCH resource
-   * @param aCustomErrorListener
-   *        Custom error listener. May be <code>null</code>.
-   * @param aURIResolver
-   *        Custom URI resolver. May be <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
+   * @param aTransformerCustomizer
+   *        The customizer for XSLT {@link Transformer} objects. May not be
+   *        <code>null</code>.
    */
   public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
-                                        @Nullable final ErrorListener aCustomErrorListener,
-                                        @Nullable final URIResolver aURIResolver,
-                                        @Nullable final String sPhase,
-                                        @Nullable final String sLanguageCode)
+                                        @Nonnull final IXSLTTransformerCustomizer aTransformerCustomizer)
   {
     m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
-    final ErrorListener aErrorListener = aCustomErrorListener != null ? aCustomErrorListener
-                                                                     : new LoggingTransformErrorListener (Locale.US);
+    ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
 
     try
     {
@@ -127,17 +110,13 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
       // perform step 1 (Schematron -> ResultStep1)
       final DOMResult aResult1 = new DOMResult ();
       final Transformer aTransformer1 = s_aStep1.newTransformer ();
-      aTransformer1.setErrorListener (aErrorListener);
-      if (aURIResolver != null)
-        aTransformer1.setURIResolver (aURIResolver);
+      aTransformerCustomizer.customize (EStep.STEP1, aTransformer1);
       aTransformer1.transform (TransformSourceFactory.create (aSchematronResource), aResult1);
 
       // perform step 2 (ResultStep1 -> ResultStep2)
       final DOMResult aResult2 = new DOMResult ();
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
-      aTransformer2.setErrorListener (aErrorListener);
-      if (aURIResolver != null)
-        aTransformer2.setURIResolver (aURIResolver);
+      aTransformerCustomizer.customize (EStep.STEP2, aTransformer2);
       aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
 
       if (SAVE_INTERMEDIATE_FILES)
@@ -153,13 +132,7 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
       // perform step 3 (ResultStep2 -> ResultStep3XSL)
       final DOMResult aResult3 = new DOMResult ();
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
-      aTransformer3.setErrorListener (aErrorListener);
-      if (aURIResolver != null)
-        aTransformer3.setURIResolver (aURIResolver);
-      if (sPhase != null)
-        aTransformer3.setParameter ("phase", sPhase);
-      if (sLanguageCode != null)
-        aTransformer3.setParameter ("langCode", sLanguageCode);
+      aTransformerCustomizer.customize (EStep.STEP3, aTransformer3);
       aTransformer3.transform (TransformSourceFactory.create (aResult2.getNode ()), aResult3);
 
       // Save the underlying XSLT document....

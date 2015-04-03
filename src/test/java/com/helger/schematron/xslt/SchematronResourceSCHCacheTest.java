@@ -21,8 +21,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.xml.transform.URIResolver;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -140,8 +143,9 @@ public final class SchematronResourceSCHCacheTest
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
                                                                                                                aCEH,
-                                                                                                               null,
-                                                                                                               null,
+                                                                                                               (URIResolver) null,
+                                                                                                               (Map <String, ?>) null,
+                                                                                                               (String) null,
                                                                                                                "de");
         assertNotNull (aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
