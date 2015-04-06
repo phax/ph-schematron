@@ -65,8 +65,8 @@ public final class SchematronResourceSCHCacheTest
       final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
       final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
       assertNotNull (aDoc);
-      if (i == 0)
-        System.out.println (XMLWriter.getXMLString (aDoc));
+      if (false)
+        s_aLogger.info (XMLWriter.getXMLString (aDoc));
     }
     final long nEnd = System.nanoTime ();
     s_aLogger.info ("Sync Total: " +
@@ -82,8 +82,9 @@ public final class SchematronResourceSCHCacheTest
     // Ensure that the Schematron is cached
     SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
 
-    // Create Thread pool with 5 possible threads
-    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (5);
+    // Create Thread pool with fixed number of threads
+    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ()
+                                                                                   .availableProcessors () * 2);
 
     final long nStart = System.nanoTime ();
     for (int i = 0; i < RUNS; ++i)
@@ -139,8 +140,8 @@ public final class SchematronResourceSCHCacheTest
       {
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
-                                                                                                               new SCHTransformerCustomizer ().setErrorListener (aCEH)
-                                                                                                                                              .setLanguageCode ("de"));
+                                                                                                                    new SCHTransformerCustomizer ().setErrorListener (aCEH)
+                                                                                                                                                   .setLanguageCode ("de"));
         assertNotNull (aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());
@@ -149,7 +150,8 @@ public final class SchematronResourceSCHCacheTest
         if (!aErrorGroup.isEmpty ())
         {
           for (final IResourceError aError : aErrorGroup)
-            s_aLogger.info ("!!" + aError.getAsString (Locale.US));
+            if (aError.isError ())
+              s_aLogger.info ("!!" + aError.getAsString (Locale.US));
           s_aLogger.info ("!!" + XMLWriter.getXMLString (aPreprocessor.getXSLTDocument ()));
         }
       }
