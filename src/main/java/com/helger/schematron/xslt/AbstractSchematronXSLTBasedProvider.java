@@ -30,18 +30,18 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @NotThreadSafe
-public abstract class AbstractSchematronXSLTProvider implements ISchematronXSLTProvider
+public abstract class AbstractSchematronXSLTBasedProvider implements ISchematronXSLTBasedProvider
 {
   // To be set be the implementing sub classes!
   protected Document m_aSchematronXSLTDoc;
-  protected Templates m_aSchematronXSLT;
+  protected Templates m_aSchematronXSLTTemplates;
 
-  protected AbstractSchematronXSLTProvider ()
+  protected AbstractSchematronXSLTBasedProvider ()
   {}
 
   public final boolean isValidSchematron ()
   {
-    return m_aSchematronXSLT != null;
+    return m_aSchematronXSLTTemplates != null;
   }
 
   @Nullable
@@ -53,14 +53,14 @@ public abstract class AbstractSchematronXSLTProvider implements ISchematronXSLTP
   @Nullable
   public final Templates getXSLTTemplates ()
   {
-    return m_aSchematronXSLT;
+    return m_aSchematronXSLTTemplates;
   }
 
   @Override
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("sch2xsltDoc", m_aSchematronXSLTDoc)
-                                       .appendIfNotNull ("sch2xsltTemplates", m_aSchematronXSLT)
+                                       .appendIfNotNull ("sch2xsltTemplates", m_aSchematronXSLTTemplates)
                                        .toString ();
   }
 }

@@ -20,8 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
-import javax.xml.transform.URIResolver;
-
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.xml.transform.DoNothingTransformErrorListener;
 import com.helger.schematron.pure.SchematronResourcePure;
@@ -72,9 +70,8 @@ public final class MainBenchmarkSchematronGetSVRL extends AbstractBenchmarkTask
   {
     public void run ()
     {
-      final SchematronResourceSCH aResSCH = new SchematronResourceSCH (VALID_SCHEMATRON,
-                                                                       new DoNothingTransformErrorListener (),
-                                                                       (URIResolver) null);
+      final SchematronResourceSCH aResSCH = new SchematronResourceSCH (VALID_SCHEMATRON);
+      aResSCH.setErrorListener (new DoNothingTransformErrorListener ());
       try
       {
         assertTrue (aResSCH.getSchematronValidity (VALID_XMLINSTANCE).isValid ());

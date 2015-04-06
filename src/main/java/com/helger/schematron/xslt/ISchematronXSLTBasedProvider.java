@@ -28,7 +28,7 @@ import org.w3c.dom.Document;
  *
  * @author Philip Helger
  */
-public interface ISchematronXSLTProvider
+public interface ISchematronXSLTBasedProvider
 {
   /**
    * @return <code>true</code> if the Schematron was successfully interpreted,

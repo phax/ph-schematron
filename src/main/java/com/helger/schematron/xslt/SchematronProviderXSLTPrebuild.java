@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,12 +38,13 @@ import com.helger.commons.xml.transform.XMLTransformerFactory;
  * @author Philip Helger
  */
 @NotThreadSafe
-final class SchematronProviderXSLTPrebuild extends AbstractSchematronXSLTProvider
+final class SchematronProviderXSLTPrebuild extends AbstractSchematronXSLTBasedProvider
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
 
   public SchematronProviderXSLTPrebuild (@Nullable final IReadableResource aXSLTResource,
-                                         @Nullable final ErrorListener aCustomErrorListener)
+                                         @Nullable final ErrorListener aCustomErrorListener,
+                                         @Nullable final URIResolver aCustomURIResolver)
   {
     try
     {
@@ -51,8 +53,8 @@ final class SchematronProviderXSLTPrebuild extends AbstractSchematronXSLTProvide
 
       // compile result of read file
       final TransformerFactory aTF = XMLTransformerFactory.createTransformerFactory (aCustomErrorListener,
-                                                                                     new DefaultTransformURIResolver ());
-      m_aSchematronXSLT = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
+                                                                                     new DefaultTransformURIResolver (aCustomURIResolver));
+      m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)
     {

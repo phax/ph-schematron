@@ -17,12 +17,16 @@
 package com.helger.schematron.xslt;
 
 import java.io.InputStream;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
@@ -31,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.IInputStreamProvider;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.streams.StreamUtils;
@@ -38,11 +44,12 @@ import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.svrl.SVRLReader;
-import com.helger.schematron.xslt.customizer.IXSLTTransformerCustomizer;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
+import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT
@@ -51,26 +58,57 @@ import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
  * @author Philip Helger
  */
 @NotThreadSafe
-public abstract class AbstractSchematronXSLTResource extends AbstractSchematronResource
+public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchematronResource
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTResource.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
-  private final IXSLTTransformerCustomizer m_aTransformerCustomizer;
-  private final ISchematronXSLTProvider m_aXSLTProvider;
-  private final ISchematronXSLTValidator m_aXSLTValidator;
+  protected ErrorListener m_aCustomErrorListener;
+  protected URIResolver m_aCustomURIResolver;
+  protected Map <String, ?> m_aCustomParameters;
+  private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
 
-  public AbstractSchematronXSLTResource (@Nonnull final IReadableResource aSCHResource,
-                                         @Nonnull final IXSLTTransformerCustomizer aTransformerCustomizer,
-                                         @Nullable final ISchematronXSLTProvider aXSLTProvider,
-                                         @Nonnull final ISchematronXSLTValidator aXSLTValidator)
+  public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
-    ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
-    ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
+  }
 
-    m_aTransformerCustomizer = aTransformerCustomizer;
-    m_aXSLTProvider = aXSLTProvider;
-    m_aXSLTValidator = aXSLTValidator;
+  @Nullable
+  public ErrorListener getErrorListener ()
+  {
+    return m_aCustomErrorListener;
+  }
+
+  public void setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
+  {
+    m_aCustomErrorListener = aCustomErrorListener;
+  }
+
+  @Nullable
+  public URIResolver getURIResolver ()
+  {
+    return m_aCustomURIResolver;
+  }
+
+  public void setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  {
+    m_aCustomURIResolver = aCustomURIResolver;
+  }
+
+  public boolean hasParameters ()
+  {
+    return CollectionHelper.isNotEmpty (m_aCustomParameters);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public Map <String, ?> getParameters ()
+  {
+    return CollectionHelper.newOrderedMap (m_aCustomParameters);
+  }
+
+  public void setParameters (@Nullable final Map <String, ?> aCustomParameters)
+  {
+    m_aCustomParameters = CollectionHelper.newOrderedMap (aCustomParameters);
   }
 
   /**
@@ -78,14 +116,10 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
    *         <code>null</code>.
    */
   @Nullable
-  public ISchematronXSLTProvider getXSLTProvider ()
-  {
-    return m_aXSLTProvider;
-  }
+  public abstract ISchematronXSLTBasedProvider getXSLTProvider ();
 
   /**
-   * @return The XSLT validator passed in the constructor. Never
-   *         <code>null</code>.
+   * @return The XSLT validator to be used. Never <code>null</code>.
    */
   @Nonnull
   public ISchematronXSLTValidator getXSLTValidator ()
@@ -93,9 +127,16 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
     return m_aXSLTValidator;
   }
 
+  public void setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
+  {
+    ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
+    m_aXSLTValidator = aXSLTValidator;
+  }
+
   public final boolean isValidSchematron ()
   {
-    return m_aXSLTProvider != null && m_aXSLTProvider.isValidSchematron ();
+    final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
+    return aXSLTProvider != null && aXSLTProvider.isValidSchematron ();
   }
 
   @Nonnull
@@ -163,7 +204,8 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   {
     ValueEnforcer.notNull (aXMLSource, "XMLSource");
 
-    if (!isValidSchematron ())
+    final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
+    if (aXSLTProvider == null || !aXSLTProvider.isValidSchematron ())
       return null;
 
     // Create result document
@@ -171,12 +213,27 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
 
     // Create the transformer object from the templates specified in the
     // constructor
-    final Transformer aTransformer = m_aXSLTProvider.getXSLTTemplates ().newTransformer ();
-    m_aTransformerCustomizer.customize (aTransformer);
+    final Transformer aTransformer = aXSLTProvider.getXSLTTemplates ().newTransformer ();
+
+    // Apply customizations
+    // Ensure an error listener is present
+    if (m_aCustomErrorListener != null)
+      aTransformer.setErrorListener (m_aCustomErrorListener);
+    else
+      aTransformer.setErrorListener (new LoggingTransformErrorListener (Locale.US));
+
+    // Set the optional URI Resolver
+    if (m_aCustomURIResolver != null)
+      aTransformer.setURIResolver (m_aCustomURIResolver);
+
+    // Set all custom parameters
+    if (m_aCustomParameters != null)
+      for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
+        aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
     // Debug print the created XSLT document
     if (false)
-      System.out.println (XMLWriter.getXMLString (m_aXSLTProvider.getXSLTDocument ()));
+      System.out.println (XMLWriter.getXMLString (aXSLTProvider.getXSLTDocument ()));
 
     // Do the main transformation
     aTransformer.transform (aXMLSource, new DOMResult (ret));
@@ -205,10 +262,6 @@ public abstract class AbstractSchematronXSLTResource extends AbstractSchematronR
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ())
-                            .append ("TransformerCustomizer", m_aTransformerCustomizer)
-                            .append ("XSLTProvider", m_aXSLTProvider)
-                            .append ("XSLTValidator", m_aXSLTValidator)
-                            .toString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("XSLTValidator", m_aXSLTValidator).toString ();
   }
 }

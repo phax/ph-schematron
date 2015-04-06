@@ -38,7 +38,6 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.transform.CollectingTransformErrorListener;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.xslt.customizer.SCHTransformerCustomizer;
 import com.helger.schematrontest.SchematronTestHelper;
 
 /**
@@ -139,7 +138,7 @@ public final class SchematronResourceSCHCacheTest
           !aRes.getPath ().endsWith ("/schematron-svrl.sch"))
       {
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
-        final ISchematronXSLTProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
+        final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
                                                                                                                new SCHTransformerCustomizer ().setErrorListener (aCEH)
                                                                                                                                               .setLanguageCode ("de"));
         assertNotNull (aPreprocessor);

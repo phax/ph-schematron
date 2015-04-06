@@ -37,8 +37,7 @@ import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
-import com.helger.schematron.xslt.customizer.ISCHTransformerCustomizer;
-import com.helger.schematron.xslt.customizer.ISCHTransformerCustomizer.EStep;
+import com.helger.schematron.xslt.SCHTransformerCustomizer.EStep;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document into an XSLT
@@ -48,7 +47,7 @@ import com.helger.schematron.xslt.customizer.ISCHTransformerCustomizer.EStep;
  * @author Philip Helger
  */
 @NotThreadSafe
-final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
+final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTBasedProvider
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTFromSCH.class);
 
@@ -93,7 +92,7 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
    *        <code>null</code>.
    */
   public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
-                                        @Nonnull final ISCHTransformerCustomizer aTransformerCustomizer)
+                                        @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
   {
     m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
@@ -148,7 +147,7 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTProvider
       }
 
       // compile result of step 3
-      m_aSchematronXSLT = XMLTransformerFactory.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Throwable t)
     {

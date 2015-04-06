@@ -22,8 +22,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.URIResolver;
-
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.xml.transform.DoNothingTransformErrorListener;
 import com.helger.schematron.CSchematron;
@@ -100,9 +98,8 @@ public final class MainBenchmarkIsValidSchematron extends AbstractBenchmarkTask
     {
       for (final IReadableResource aRes : m_aValidSchematrons)
       {
-        final SchematronResourceSCH aResSCH = new SchematronResourceSCH (aRes,
-                                                                         new DoNothingTransformErrorListener (),
-                                                                         (URIResolver) null);
+        final SchematronResourceSCH aResSCH = new SchematronResourceSCH (aRes);
+        aResSCH.setErrorListener (new DoNothingTransformErrorListener ());
         assertTrue (aRes.getPath (), aResSCH.isValidSchematron ());
       }
     }

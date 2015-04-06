@@ -19,12 +19,15 @@ package com.helger.schematron.xslt;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.URIResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,7 @@ import com.helger.commons.xml.transform.CollectingTransformErrorListener;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 
 /**
- * Factory for creating {@link ISchematronXSLTProvider} objects.
+ * Factory for creating {@link ISchematronXSLTBasedProvider} objects.
  *
  * @author Philip Helger
  */
@@ -45,21 +48,26 @@ import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 public final class SchematronResourceXSLTCache
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
-  private static final Lock s_aLock = new ReentrantLock ();
-  private static final Map <String, ISchematronXSLTProvider> s_aCache = new HashMap <String, ISchematronXSLTProvider> ();
+  private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
+  @GuardedBy ("s_aRWLock")
+  private static final Map <String, SchematronProviderXSLTPrebuild> s_aCache = new HashMap <String, SchematronProviderXSLTPrebuild> ();
 
   private SchematronResourceXSLTCache ()
   {}
 
   @Nullable
-  public static ISchematronXSLTProvider createSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource)
+  public static SchematronProviderXSLTPrebuild createSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource,
+                                                                             @Nullable final ErrorListener aCustomErrorListener,
+                                                                             @Nullable final URIResolver aCustomURIResolver)
   {
     if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
-    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (GlobalDebug.isDebugMode () ? new LoggingTransformErrorListener (Locale.US)
-                                                                                                                  : null);
-    final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource, aCEH);
+    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (aCustomErrorListener != null ? aCustomErrorListener
+                                                                                                                    : new LoggingTransformErrorListener (Locale.US));
+    final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource,
+                                                                                                 aCEH,
+                                                                                                 aCustomURIResolver);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
       // Schematron is invalid -> parsing failed
@@ -85,15 +93,22 @@ public final class SchematronResourceXSLTCache
   }
 
   /**
-   * Create a new Schematron XSLT provider for the passed resource.
+   * Return an existing or create a new Schematron XSLT provider for the passed
+   * resource.
    *
    * @param aXSLTResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
+   * @param aCustomErrorListener
+   *        The custom error listener to be used. May be <code>null</code>.
+   * @param aCustomURIResolver
+   *        The custom URI resolver to be used. May be <code>null</code>.
    * @return <code>null</code> if the passed Schematron XSLT resource does not
    *         exist.
    */
   @Nullable
-  public static ISchematronXSLTProvider getSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource)
+  public static SchematronProviderXSLTPrebuild getSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource,
+                                                                          @Nullable final ErrorListener aCustomErrorListener,
+                                                                          @Nullable final URIResolver aCustomURIResolver)
   {
     ValueEnforcer.notNull (aXSLTResource, "resource");
 
@@ -103,26 +118,43 @@ public final class SchematronResourceXSLTCache
       return null;
     }
 
-    s_aLock.lock ();
+    // Determine the unique resource ID for caching
+    final String sResourceID = aXSLTResource.getResourceID ();
+
+    SchematronProviderXSLTPrebuild aProvider;
+
+    // Validator already in the cache?
+    s_aRWLock.readLock ().lock ();
     try
     {
-      // Determine the unique resource ID for caching
-      final String sResourceID = aXSLTResource.getResourceID ();
-
-      // Validator already in the cache?
-      ISchematronXSLTProvider aProvider = s_aCache.get (sResourceID);
-      if (aProvider == null)
-      {
-        // Create new object and put in cache
-        aProvider = createSchematronXSLTProvider (aXSLTResource);
-        if (aProvider != null)
-          s_aCache.put (sResourceID, aProvider);
-      }
-      return aProvider;
+      aProvider = s_aCache.get (sResourceID);
     }
     finally
     {
-      s_aLock.unlock ();
+      s_aRWLock.readLock ().unlock ();
     }
+
+    if (aProvider == null)
+    {
+      s_aRWLock.writeLock ().lock ();
+      try
+      {
+        // Check again in write lock
+        aProvider = s_aCache.get (sResourceID);
+        if (aProvider == null)
+        {
+          // Create new object and put in cache
+          aProvider = createSchematronXSLTProvider (aXSLTResource, aCustomErrorListener, aCustomURIResolver);
+          if (aProvider != null)
+            s_aCache.put (sResourceID, aProvider);
+        }
+      }
+      finally
+      {
+        s_aRWLock.writeLock ().unlock ();
+      }
+    }
+    return aProvider;
   }
+
 }

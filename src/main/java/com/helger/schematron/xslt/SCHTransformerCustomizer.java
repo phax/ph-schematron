@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt.customizer;
+package com.helger.schematron.xslt;
 
 import java.util.Locale;
 import java.util.Map;
@@ -27,29 +27,30 @@ import javax.xml.transform.URIResolver;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 
 /**
- * The default implementation of {@link IXSLTTransformerCustomizer}.
+ * A wrapper for easier customization of the SCH to XSLT transformation.
  *
  * @author Philip Helger
  */
-public abstract class AbstractTransformerCustomizer <IMPLTYPE extends AbstractTransformerCustomizer <IMPLTYPE>>
+public class SCHTransformerCustomizer
 {
-  protected ErrorListener m_aCustomErrorListener;
-  protected URIResolver m_aCustomURIResolver;
-  protected Map <String, ?> m_aCustomParameters;
-
-  public AbstractTransformerCustomizer ()
-  {}
-
-  @Nonnull
-  protected final IMPLTYPE thisAsT ()
+  public static enum EStep
   {
-    // Avoid the unchecked cast warning in all places
-    return GenericReflection.<AbstractTransformerCustomizer <IMPLTYPE>, IMPLTYPE> uncheckedCast (this);
+    SCH2XSLT_1,
+    SCH2XSLT_2,
+    SCH2XSLT_3;
   }
+
+  private ErrorListener m_aCustomErrorListener;
+  private URIResolver m_aCustomURIResolver;
+  private Map <String, ?> m_aCustomParameters;
+  private String m_sPhase;
+  private String m_sLanguageCode;
+
+  public SCHTransformerCustomizer ()
+  {}
 
   @Nullable
   public ErrorListener getErrorListener ()
@@ -58,10 +59,10 @@ public abstract class AbstractTransformerCustomizer <IMPLTYPE extends AbstractTr
   }
 
   @Nonnull
-  public IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
+  public SCHTransformerCustomizer setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
-    return thisAsT ();
+    return this;
   }
 
   @Nullable
@@ -71,10 +72,10 @@ public abstract class AbstractTransformerCustomizer <IMPLTYPE extends AbstractTr
   }
 
   @Nonnull
-  public IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  public SCHTransformerCustomizer setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
-    return thisAsT ();
+    return this;
   }
 
   public boolean hasParameters ()
@@ -90,13 +91,44 @@ public abstract class AbstractTransformerCustomizer <IMPLTYPE extends AbstractTr
   }
 
   @Nonnull
-  public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
+  public SCHTransformerCustomizer setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
     m_aCustomParameters = CollectionHelper.newOrderedMap (aCustomParameters);
-    return thisAsT ();
+    return this;
   }
 
-  public void customize (@Nonnull final Transformer aTransformer)
+  @Nullable
+  public String getPhase ()
+  {
+    return m_sPhase;
+  }
+
+  @Nonnull
+  public SCHTransformerCustomizer setPhase (@Nullable final String sPhase)
+  {
+    m_sPhase = sPhase;
+    return this;
+  }
+
+  @Nullable
+  public String getLanguageCode ()
+  {
+    return m_sLanguageCode;
+  }
+
+  @Nonnull
+  public SCHTransformerCustomizer setLanguageCode (@Nullable final String sLanguageCode)
+  {
+    m_sLanguageCode = sLanguageCode;
+    return this;
+  }
+
+  public boolean canCacheResult ()
+  {
+    return !hasParameters ();
+  }
+
+  public void customize (@Nonnull final EStep eStep, @Nonnull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -112,5 +144,16 @@ public abstract class AbstractTransformerCustomizer <IMPLTYPE extends AbstractTr
     if (m_aCustomParameters != null)
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
+
+    if (eStep == EStep.SCH2XSLT_3)
+    {
+      // On the last step, set the respective Schematron parameters as the
+      // last action to avoid they are overwritten by a custom parameter.
+      if (m_sPhase != null)
+        aTransformer.setParameter ("phase", m_sPhase);
+
+      if (m_sLanguageCode != null)
+        aTransformer.setParameter ("langCode", m_sLanguageCode);
+    }
   }
 }

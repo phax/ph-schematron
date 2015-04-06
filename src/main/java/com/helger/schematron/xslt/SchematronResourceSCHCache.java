@@ -33,10 +33,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.xml.serialize.XMLWriter;
-import com.helger.schematron.xslt.customizer.ISCHTransformerCustomizer;
 
 /**
- * Factory for creating {@link ISchematronXSLTProvider} objects.
+ * Factory for creating {@link ISchematronXSLTBasedProvider} objects.
  *
  * @author Philip Helger
  */
@@ -63,10 +62,10 @@ public final class SchematronResourceSCHCache
    */
   @Nullable
   public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                            @Nonnull final ISCHTransformerCustomizer aTransformerCustomizer)
+                                                                            @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
   {
-    if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
-      s_aLogger.info ("Compiling Schematron instance " + aSchematronResource.toString ());
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
     final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource,
                                                                                                aTransformerCustomizer);
@@ -108,7 +107,7 @@ public final class SchematronResourceSCHCache
    */
   @Nullable
   public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                         @Nonnull final ISCHTransformerCustomizer aTransformerCustomizer)
+                                                                         @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");

@@ -17,22 +17,16 @@
 package com.helger.schematron.xslt;
 
 import java.io.File;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.URIResolver;
 
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.OverrideOnDemand;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.xslt.customizer.SCHTransformerCustomizer;
-import com.helger.schematron.xslt.customizer.XSLTTransformerCustomizer;
-import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
-import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 
 /**
  * A Schematron resource that is based on the original SCH file.
@@ -40,8 +34,12 @@ import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchematronResourceSCH extends AbstractSchematronXSLTResource
+public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource
 {
+  private boolean m_bUseCache = true;
+  private String m_sPhase;
+  private String m_sLanguageCode;
+
   /**
    * Constructor
    *
@@ -50,219 +48,62 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
    */
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
   {
-    this (aSCHResource,
-          (ErrorListener) null,
-          (URIResolver) null,
-          (Map <String, ?>) null,
-          (String) null,
-          (String) null,
-          new SchematronXSLTValidatorDefault ());
+    super (aSCHResource);
   }
 
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
-                                @Nonnull final ISchematronXSLTValidator aValidator)
+  public boolean isUseCache ()
   {
-    this (aSCHResource,
-          (ErrorListener) null,
-          (URIResolver) null,
-          (Map <String, ?>) null,
-          (String) null,
-          (String) null,
-          aValidator);
+    return m_bUseCache;
   }
 
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
-                                @Nullable final ErrorListener aCustomErrorListener,
-                                @Nullable final URIResolver aCustomURIResolver)
+  public void setUseCache (final boolean bUseCache)
   {
-    this (aSCHResource,
-          aCustomErrorListener,
-          aCustomURIResolver,
-          (Map <String, ?>) null,
-          (String) null,
-          (String) null,
-          new SchematronXSLTValidatorDefault ());
+    m_bUseCache = bUseCache;
   }
 
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
-                                @Nullable final String sPhase,
-                                @Nullable final String sLanguageCode)
+  @Nullable
+  public String getPhase ()
   {
-    this (aSCHResource,
-          (ErrorListener) null,
-          (URIResolver) null,
-          sPhase,
-          sLanguageCode,
-          new SchematronXSLTValidatorDefault ());
+    return m_sPhase;
   }
 
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
-                                @Nullable final ErrorListener aCustomErrorListener,
-                                @Nullable final URIResolver aCustomURIResolver,
-                                @Nullable final String sPhase,
-                                @Nullable final String sLanguageCode)
+  public void setPhase (@Nullable final String sPhase)
   {
-    this (aSCHResource,
-          aCustomErrorListener,
-          aCustomURIResolver,
-          sPhase,
-          sLanguageCode,
-          new SchematronXSLTValidatorDefault ());
+    m_sPhase = sPhase;
   }
 
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
-                                @Nullable final ErrorListener aCustomErrorListener,
-                                @Nullable final URIResolver aCustomURIResolver,
-                                @Nullable final String sPhase,
-                                @Nullable final String sLanguageCode,
-                                @Nonnull final ISchematronXSLTValidator aValidator)
+  @Nullable
+  public String getLanguageCode ()
   {
-    this (aSCHResource,
-          aCustomErrorListener,
-          aCustomURIResolver,
-          (Map <String, ?>) null,
-          sPhase,
-          sLanguageCode,
-          aValidator);
+    return m_sLanguageCode;
   }
 
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomParameters
-   *        A set of custom parameters that is passed to the XSLT Transformer.
-   *        May be <code>null</code> or empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource,
-                                @Nullable final ErrorListener aCustomErrorListener,
-                                @Nullable final URIResolver aCustomURIResolver,
-                                @Nullable final Map <String, ?> aCustomParameters,
-                                @Nullable final String sPhase,
-                                @Nullable final String sLanguageCode,
-                                @Nonnull final ISchematronXSLTValidator aValidator)
+  public void setLanguageCode (@Nullable final String sLanguageCode)
   {
-    super (aSCHResource,
-           new XSLTTransformerCustomizer ().setErrorListener (aCustomErrorListener)
-                                           .setURIResolver (aCustomURIResolver)
-                                           .setParameters (aCustomParameters),
-           SchematronResourceSCHCache.getSchematronXSLTProvider (aSCHResource,
-                                                                 new SCHTransformerCustomizer ().setErrorListener (aCustomErrorListener)
-                                                                                                .setURIResolver (aCustomURIResolver)
-                                                                                                .setParameters (aCustomParameters)
-                                                                                                .setPhase (sPhase)
-                                                                                                .setLanguageCode (sLanguageCode)),
-           aValidator);
+    m_sLanguageCode = sLanguageCode;
+  }
+
+  @Nonnull
+  @OverrideOnDemand
+  protected SCHTransformerCustomizer createTransformerCustomizer ()
+  {
+    return new SCHTransformerCustomizer ().setErrorListener (getErrorListener ())
+                                          .setURIResolver (getURIResolver ())
+                                          .setParameters (getParameters ())
+                                          .setPhase (m_sPhase)
+                                          .setLanguageCode (m_sLanguageCode);
+  }
+
+  @Override
+  @Nullable
+  public ISchematronXSLTBasedProvider getXSLTProvider ()
+  {
+    final SCHTransformerCustomizer aTransformerCustomizer = createTransformerCustomizer ();
+    if (m_bUseCache)
+      return SchematronResourceSCHCache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
+
+    // Always create a new one
+    return SchematronResourceSCHCache.createSchematronXSLTProvider (getResource (), aTransformerCustomizer);
   }
 
   /**
@@ -283,277 +124,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
    * Create a new Schematron resource.
    *
    * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath), aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final ErrorListener aCustomErrorListener,
-                                                     @Nullable final URIResolver aCustomURIResolver)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath), aCustomErrorListener, aCustomURIResolver);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final ErrorListener aCustomErrorListener,
-                                                     @Nullable final URIResolver aCustomURIResolver,
-                                                     @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      (String) null,
-                                      (String) null,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final String sPhase,
-                                                     @Nullable final String sLanguageCode)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath), sPhase, sLanguageCode);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final String sPhase,
-                                                     @Nullable final String sLanguageCode,
-                                                     @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath),
-                                      (ErrorListener) null,
-                                      (URIResolver) null,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final ErrorListener aCustomErrorListener,
-                                                     @Nullable final URIResolver aCustomURIResolver,
-                                                     @Nullable final String sPhase,
-                                                     @Nullable final String sLanguageCode)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      sPhase,
-                                      sLanguageCode);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final ErrorListener aCustomErrorListener,
-                                                     @Nullable final URIResolver aCustomURIResolver,
-                                                     @Nullable final String sPhase,
-                                                     @Nullable final String sLanguageCode,
-                                                     @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomParameters
-   *        A set of custom parameters that is passed to the XSLT Transformer.
-   *        May be <code>null</code> or empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                     @Nullable final ErrorListener aCustomErrorListener,
-                                                     @Nullable final URIResolver aCustomURIResolver,
-                                                     @Nullable final Map <String, ?> aCustomParameters,
-                                                     @Nullable final String sPhase,
-                                                     @Nullable final String sLanguageCode,
-                                                     @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      aCustomParameters,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
@@ -567,277 +137,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
   /**
    * Create a new Schematron resource.
    *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath), aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath), aCustomErrorListener, aCustomURIResolver);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      (String) null,
-                                      (String) null,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath), sPhase, sLanguageCode);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath),
-                                      (ErrorListener) null,
-                                      (URIResolver) null,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      sPhase,
-                                      sLanguageCode);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomParameters
-   *        A set of custom parameters that is passed to the XSLT Transformer.
-   *        May be <code>null</code> or empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nullable final Map <String, ?> aCustomParameters,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      aCustomParameters,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @return Never <code>null</code>.
@@ -846,268 +145,5 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTResource
   public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile)
   {
     return new SchematronResourceSCH (new FileSystemResource (aSCHFile));
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile), aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile), aCustomErrorListener, aCustomURIResolver);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      (String) null,
-                                      (String) null,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile), sPhase, sLanguageCode);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile),
-                                      (ErrorListener) null,
-                                      (URIResolver) null,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      sPhase,
-                                      sLanguageCode);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        An optional custom XSLT error listener that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomURIResolver
-   *        An optional custom XSLT URI resolver that is used when converting
-   *        the Schematron resource to an XSLT document, as well as for the
-   *        application of the XSLT onto the XML to be validated. May be
-   *        <code>null</code>.
-   * @param aCustomParameters
-   *        A set of custom parameters that is passed to the XSLT Transformer.
-   *        May be <code>null</code> or empty.
-   * @param sPhase
-   *        Optional phase to use. If not specified, the defaultPhase from the
-   *        schema is used. If no default phase is specified, than all patterns
-   *        are used
-   * @param sLanguageCode
-   *        An optional language code for the error messages. <code>null</code>
-   *        means English. Supported language codes are: cs, de, en, fr, nl (see
-   *        directory files schematron\20100414-xslt2\sch-messages-??.xhtml).
-   * @param aValidator
-   *        The validator to be used to determine whether a Schematron
-   *        validation was successful or not. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile,
-                                                @Nullable final ErrorListener aCustomErrorListener,
-                                                @Nullable final URIResolver aCustomURIResolver,
-                                                @Nullable final Map <String, ?> aCustomParameters,
-                                                @Nullable final String sPhase,
-                                                @Nullable final String sLanguageCode,
-                                                @Nonnull final ISchematronXSLTValidator aValidator)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile),
-                                      aCustomErrorListener,
-                                      aCustomURIResolver,
-                                      aCustomParameters,
-                                      sPhase,
-                                      sLanguageCode,
-                                      aValidator);
   }
 }
