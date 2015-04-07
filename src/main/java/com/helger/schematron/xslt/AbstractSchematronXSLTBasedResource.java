@@ -40,6 +40,7 @@ import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.IInputStreamProvider;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.XMLFactory;
@@ -56,9 +57,11 @@ import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
  * transformations.
  *
  * @author Philip Helger
+ * @param <IMPLTYPE>
+ *        Implementation type
  */
 @NotThreadSafe
-public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchematronResource
+public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>> extends AbstractSchematronResource
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
@@ -72,15 +75,24 @@ public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchema
     super (aSCHResource);
   }
 
+  @Nonnull
+  protected final IMPLTYPE thisAsT ()
+  {
+    // Avoid the unchecked cast warning in all places
+    return GenericReflection.<AbstractSchematronXSLTBasedResource <IMPLTYPE>, IMPLTYPE> uncheckedCast (this);
+  }
+
   @Nullable
   public ErrorListener getErrorListener ()
   {
     return m_aCustomErrorListener;
   }
 
-  public void setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
+  @Nonnull
+  public IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
+    return thisAsT ();
   }
 
   @Nullable
@@ -89,9 +101,11 @@ public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchema
     return m_aCustomURIResolver;
   }
 
-  public void setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  @Nonnull
+  public IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
+    return thisAsT ();
   }
 
   public boolean hasParameters ()
@@ -106,9 +120,11 @@ public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchema
     return CollectionHelper.newOrderedMap (m_aCustomParameters);
   }
 
-  public void setParameters (@Nullable final Map <String, ?> aCustomParameters)
+  @Nonnull
+  public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
     m_aCustomParameters = CollectionHelper.newOrderedMap (aCustomParameters);
+    return thisAsT ();
   }
 
   /**
@@ -127,10 +143,12 @@ public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchema
     return m_aXSLTValidator;
   }
 
-  public void setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
+  @Nonnull
+  public IMPLTYPE setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
   {
     ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
     m_aXSLTValidator = aXSLTValidator;
+    return thisAsT ();
   }
 
   public final boolean isValidSchematron ()
@@ -206,14 +224,17 @@ public abstract class AbstractSchematronXSLTBasedResource extends AbstractSchema
 
     final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
     if (aXSLTProvider == null || !aXSLTProvider.isValidSchematron ())
+    {
+      // We cannot progress because of invalid Schematron
       return null;
+    }
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
 
     // Create the transformer object from the templates specified in the
     // constructor
-    final Transformer aTransformer = aXSLTProvider.getXSLTTemplates ().newTransformer ();
+    final Transformer aTransformer = aXSLTProvider.getXSLTTransformer ();
 
     // Apply customizations
     // Ensure an error listener is present

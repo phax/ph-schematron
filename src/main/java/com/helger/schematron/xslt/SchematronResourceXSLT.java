@@ -33,7 +33,7 @@ import com.helger.commons.io.resource.FileSystemResource;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource
+public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource <SchematronResourceXSLT>
 {
   private boolean m_bUseCache = true;
 

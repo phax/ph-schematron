@@ -19,9 +19,11 @@ package com.helger.schematron.xslt;
 import java.io.File;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.dom.DOMResult;
 
 import org.slf4j.Logger;
@@ -47,7 +49,7 @@ import com.helger.schematron.xslt.SCHTransformerCustomizer.EStep;
  * @author Philip Helger
  */
 @NotThreadSafe
-final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTBasedProvider
+final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvider
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTFromSCH.class);
 
@@ -81,6 +83,8 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTBasedPro
   private static Templates s_aStep3;
 
   private final IReadableResource m_aSchematronResource;
+  private Document m_aSchematronXSLTDoc;
+  private Templates m_aSchematronXSLTTemplates;
 
   /**
    * Constructor
@@ -159,5 +163,22 @@ final class SchematronProviderXSLTFromSCH extends AbstractSchematronXSLTBasedPro
   public IReadableResource getSchematronResource ()
   {
     return m_aSchematronResource;
+  }
+
+  public final boolean isValidSchematron ()
+  {
+    return m_aSchematronXSLTTemplates != null;
+  }
+
+  @Nullable
+  public final Document getXSLTDocument ()
+  {
+    return m_aSchematronXSLTDoc;
+  }
+
+  @Nullable
+  public final Transformer getXSLTTransformer () throws TransformerConfigurationException
+  {
+    return m_aSchematronXSLTTemplates == null ? null : m_aSchematronXSLTTemplates.newTransformer ();
   }
 }

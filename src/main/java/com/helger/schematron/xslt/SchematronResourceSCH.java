@@ -34,7 +34,7 @@ import com.helger.commons.io.resource.FileSystemResource;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource
+public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <SchematronResourceSCH>
 {
   private boolean m_bUseCache = true;
   private String m_sPhase;

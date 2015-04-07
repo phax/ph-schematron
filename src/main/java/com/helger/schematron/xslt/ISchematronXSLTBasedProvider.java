@@ -17,7 +17,8 @@
 package com.helger.schematron.xslt;
 
 import javax.annotation.Nullable;
-import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.w3c.dom.Document;
 
@@ -45,8 +46,11 @@ public interface ISchematronXSLTBasedProvider
   Document getXSLTDocument ();
 
   /**
-   * @return The precompiled XSLT template to be used.
+   * @return The XSLT transformer to be used. May be <code>null</code> if the
+   *         compilation of the XSLT failed.
+   * @throws TransformerConfigurationException
+   *         In case of an internal error
    */
   @Nullable
-  Templates getXSLTTemplates ();
+  Transformer getXSLTTransformer () throws TransformerConfigurationException;
 }
