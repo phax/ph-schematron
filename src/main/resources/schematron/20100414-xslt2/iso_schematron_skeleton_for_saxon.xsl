@@ -1333,9 +1333,10 @@ which require a preprocess.
 	      		 		</axsl:param>
 	      		 	</xsl:when>
 	      		 	<xsl:otherwise>
-						<axsl:variable name="{@name}"  >
+              <!-- [ph] changed from variable to param -->
+						<axsl:param name="{@name}"  >
 						  <xsl:copy-of select="child::node()" />
-						</axsl:variable>
+						</axsl:param>
 	      		 	</xsl:otherwise> 
 	      		 </xsl:choose>
        		</xsl:when>
