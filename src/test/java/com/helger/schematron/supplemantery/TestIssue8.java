@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
@@ -44,13 +45,16 @@ public final class TestIssue8
   {
     // Create the custom parameters
     final Map <String, Object> aCustomParameters = new HashMap <String, Object> ();
-    aCustomParameters.put ("mob", "mobile");
-    aCustomParameters.put ("expected", "12345");
+    aCustomParameters.put ("xyz", "mobile");
+    aCustomParameters.put ("expected", "");
 
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 
     // Assign custom parameters
     aSCH.setParameters (aCustomParameters);
+
+    if (false)
+      System.out.println (XMLWriter.getXMLString (aSCH.getXSLTProvider ().getXSLTDocument ()));
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

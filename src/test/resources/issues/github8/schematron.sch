@@ -2,10 +2,12 @@
 <sch:schema xmlns="http://purl.oclc.org/dsdl/schematron" xmlns:sch="http://purl.oclc.org/dsdl/schematron"
   queryBinding="xslt2" schemaVersion="ISO19757-3">
   <sch:title>ISO schematron validation file for descriptive extended constraints</sch:title>
+
+  <!-- Externally passed parameters must be declared globally -->
+  <sch:let name="xyz" />
+  <sch:let name="expected" />
   
   <sch:pattern name="/Customer/ContactDetails">
-    <sch:let name="xyz" value="mobile" />
-    <sch:let name="expected" value="''" />
     <sch:rule context="//Customer/ContactDetails">
       <sch:assert test="$xyz">Mobile is missing</sch:assert>
     </sch:rule>
