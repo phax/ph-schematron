@@ -165,19 +165,19 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
     return m_aSchematronResource;
   }
 
-  public final boolean isValidSchematron ()
+  public boolean isValidSchematron ()
   {
     return m_aSchematronXSLTTemplates != null;
   }
 
   @Nullable
-  public final Document getXSLTDocument ()
+  public Document getXSLTDocument ()
   {
     return m_aSchematronXSLTDoc;
   }
 
   @Nullable
-  public final Transformer getXSLTTransformer () throws TransformerConfigurationException
+  public Transformer getXSLTTransformer () throws TransformerConfigurationException
   {
     return m_aSchematronXSLTTemplates == null ? null : m_aSchematronXSLTTemplates.newTransformer ();
   }
