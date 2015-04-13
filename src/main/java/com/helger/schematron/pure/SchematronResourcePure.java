@@ -294,23 +294,6 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The SVRL document. Never <code>null</code>.
    * @throws SchematronException
    *         in case of a sever error validating the schema
-   * @deprecated Use {@link #applySchematronValidationToSVRL(Node)} instead
-   */
-  @Deprecated
-  @Nonnull
-  public SchematronOutputType applySchematronValidation (@Nonnull final Node aXMLNode) throws SchematronException
-  {
-    return applySchematronValidationToSVRL (aXMLNode);
-  }
-
-  /**
-   * The main method to convert a node to an SVRL document.
-   *
-   * @param aXMLNode
-   *        The source node to be validated. May not be <code>null</code>.
-   * @return The SVRL document. Never <code>null</code>.
-   * @throws SchematronException
-   *         in case of a sever error validating the schema
    */
   @Nonnull
   public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLNode) throws SchematronException

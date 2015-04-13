@@ -106,26 +106,6 @@ public interface IPSQueryBinding extends Serializable
    *        evaluated.
    * @param aCustomErrorHandler
    *        An optional custom error handler to use. May be <code>null</code>.
-   * @return The precompiled, bound schema. Never <code>null</code>.
-   * @throws SchematronException
-   *         In case of a binding error
-   */
-  @Nonnull
-  @Deprecated
-  IPSBoundSchema bind (@Nonnull PSSchema aSchema, @Nullable String sPhase, @Nullable IPSErrorHandler aCustomErrorHandler) throws SchematronException;
-
-  /**
-   * Create a bound schema, which is like a precompiled schema.
-   *
-   * @param aSchema
-   *        The schema to be bound. May not be <code>null</code>.
-   * @param sPhase
-   *        The phase to use. May be <code>null</code>. If it is
-   *        <code>null</code> than the defaultPhase is used that is defined in
-   *        the schema. If no defaultPhase is present, than all patterns are
-   *        evaluated.
-   * @param aCustomErrorHandler
-   *        An optional custom error handler to use. May be <code>null</code>.
    * @param aVariableResolver
    *        Custom variable resolver. May be <code>null</code>.
    * @param aFunctionResolver

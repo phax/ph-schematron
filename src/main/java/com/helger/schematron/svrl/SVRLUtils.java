@@ -165,33 +165,6 @@ public final class SVRLUtils
     return getErrorLevelDeterminator ().getErrorLevelFromSuccessfulReport (aSuccessfulReport);
   }
 
-  /**
-   * Get the error level associated with a single failed assertion.
-   *
-   * @param sFlag
-   *        The flag to be queried. May not be <code>null</code>.
-   * @return The error level and never <code>null</code>.
-   * @deprecated Use {@link ISVRLErrorLevelDeterminator} implementations instead
-   */
-  @Nonnull
-  @Deprecated
-  public static EErrorLevel getErrorLevelFromFlag (@Nonnull final String sFlag)
-  {
-    ValueEnforcer.notNull (sFlag, "Flag");
-
-    if (sFlag.equalsIgnoreCase ("warning") || sFlag.equalsIgnoreCase ("warn"))
-      return EErrorLevel.WARN;
-    if (sFlag.equalsIgnoreCase ("error") || sFlag.equalsIgnoreCase ("err"))
-      return EErrorLevel.ERROR;
-    if (sFlag.equalsIgnoreCase ("fatal") ||
-        sFlag.equalsIgnoreCase ("fatal_error") ||
-        sFlag.equalsIgnoreCase ("fatalerror"))
-      return EErrorLevel.FATAL_ERROR;
-    throw new IllegalArgumentException ("Cannot convert the SVRL failed assertion flag '" +
-                                        sFlag +
-                                        "' to an error level. Please extend the preceeding list!");
-  }
-
   @Nonnull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
