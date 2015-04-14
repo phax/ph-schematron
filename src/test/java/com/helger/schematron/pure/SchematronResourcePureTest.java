@@ -189,9 +189,9 @@ public final class SchematronResourcePureTest
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
     assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
-    assertEquals (1, SVRLUtils.getAllSuccesssfulReports (aOT).size ());
+    assertEquals (1, SVRLUtils.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      2 paragraphs found", SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      2 paragraphs found", SVRLUtils.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -267,10 +267,10 @@ public final class SchematronResourcePureTest
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
     assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
-    assertEquals (1, SVRLUtils.getAllSuccesssfulReports (aOT).size ());
+    assertEquals (1, SVRLUtils.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
     assertEquals ("\n      Node details: para[First para], para[Second para] - end",
-                  SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
+                  SVRLUtils.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -311,9 +311,9 @@ public final class SchematronResourcePureTest
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
     assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
-    assertEquals (1, SVRLUtils.getAllSuccesssfulReports (aOT).size ());
+    assertEquals (1, SVRLUtils.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node kind: element - end", SVRLUtils.getAllSuccesssfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      Node kind: element - end", SVRLUtils.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test

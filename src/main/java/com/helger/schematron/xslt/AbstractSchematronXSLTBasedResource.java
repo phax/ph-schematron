@@ -26,6 +26,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 
@@ -33,6 +34,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
@@ -218,7 +220,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLResource) throws Exception
+  {
+    ValueEnforcer.notNull (aXMLResource, "XMLResource");
+
+    return applySchematronValidation (TransformSourceFactory.create (aXMLResource));
+  }
+
+  @Nullable
+  public final Document applySchematronValidation (@Nonnull final Source aXMLSource) throws TransformerException
   {
     ValueEnforcer.notNull (aXMLSource, "XMLSource");
 
@@ -275,6 +285,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @Nullable
   public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
+  {
+    final Document aDoc = applySchematronValidation (aXMLSource);
+    return aDoc == null ? null : SVRLReader.readXML (aDoc);
+  }
+
+  @Nullable
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLSource) throws Exception
   {
     final Document aDoc = applySchematronValidation (aXMLSource);
     return aDoc == null ? null : SVRLReader.readXML (aDoc);
