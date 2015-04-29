@@ -27,6 +27,7 @@ import com.helger.commons.io.IReadableResource;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroNode;
+import com.helger.commons.microdom.IMicroQName;
 import com.helger.commons.microdom.IMicroText;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.string.ToStringGenerator;
@@ -165,11 +166,11 @@ public class PSReader
   public PSActive readActiveFromXML (@Nonnull final IMicroElement eActive)
   {
     final PSActive ret = new PSActive ();
-    final Map <String, String> aAttrs = eActive.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eActive.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_PATTERN))
           ret.setPattern (sAttrValue);
@@ -224,12 +225,12 @@ public class PSReader
   public PSAssertReport readAssertReportFromXML (@Nonnull final IMicroElement eAssertReport)
   {
     final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ().equals (CSchematronXML.ELEMENT_ASSERT));
-    final Map <String, String> aAttrs = eAssertReport.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eAssertReport.getAllQAttributes ();
     if (aAttrs != null)
     {
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_TEST))
           ret.setTest (sAttrValue);
@@ -303,12 +304,12 @@ public class PSReader
   public PSDiagnostic readDiagnosticFromXML (@Nonnull final IMicroElement eDiagnostic)
   {
     final PSDiagnostic ret = new PSDiagnostic ();
-    final Map <String, String> aAttrs = eDiagnostic.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eDiagnostic.getAllQAttributes ();
     if (aAttrs != null)
     {
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ID))
           ret.setID (sAttrValue);
@@ -370,11 +371,11 @@ public class PSReader
   {
     final PSDiagnostics ret = new PSDiagnostics ();
 
-    final Map <String, String> aAttrs = eDiagnostics.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eDiagnostics.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         ret.addForeignAttribute (sAttrName, sAttrValue);
       }
@@ -408,11 +409,11 @@ public class PSReader
   public PSDir readDirFromXML (@Nonnull final IMicroElement eDir)
   {
     final PSDir ret = new PSDir ();
-    final Map <String, String> aAttrs = eDir.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eDir.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
           ret.setValue (EDirValue.getFromIDOrNull (sAttrValue));
@@ -457,11 +458,11 @@ public class PSReader
   public PSEmph readEmphFromXML (@Nonnull final IMicroElement eEmph)
   {
     final PSEmph ret = new PSEmph ();
-    final Map <String, String> aAttrs = eEmph.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eEmph.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
       }
@@ -503,11 +504,11 @@ public class PSReader
   public PSExtends readExtendsFromXML (@Nonnull final IMicroElement eExtends)
   {
     final PSExtends ret = new PSExtends ();
-    final Map <String, String> aAttrs = eExtends.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eExtends.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_RULE))
           ret.setRule (sAttrValue);
@@ -538,11 +539,11 @@ public class PSReader
   public PSInclude readIncludeFromXML (@Nonnull final IMicroElement eInclude)
   {
     final PSInclude ret = new PSInclude ();
-    final Map <String, String> aAttrs = eInclude.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eInclude.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_HREF))
           ret.setHref (sAttrValue);
@@ -573,11 +574,11 @@ public class PSReader
   public PSLet readLetFromXML (@Nonnull final IMicroElement eLet)
   {
     final PSLet ret = new PSLet ();
-    final Map <String, String> aAttrs = eLet.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eLet.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_NAME))
           ret.setName (sAttrValue);
@@ -608,13 +609,13 @@ public class PSReader
    * @return The created domain object. May not be <code>null</code>.
    */
   @Nonnull
-  public PSLinkableGroup readLinkableGroupFromXML (@Nullable final Map <String, String> aAttrs)
+  public PSLinkableGroup readLinkableGroupFromXML (@Nullable final Map <IMicroQName, String> aAttrs)
   {
     final PSLinkableGroup ret = new PSLinkableGroup ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
           ret.setRole (sAttrValue);
@@ -636,11 +637,11 @@ public class PSReader
   public PSName readNameFromXML (@Nonnull final IMicroElement eName)
   {
     final PSName ret = new PSName ();
-    final Map <String, String> aAttrs = eName.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eName.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_PATH))
           ret.setPath (sAttrValue);
@@ -671,11 +672,11 @@ public class PSReader
   public PSNS readNSFromXML (@Nonnull final IMicroElement eNS)
   {
     final PSNS ret = new PSNS ();
-    final Map <String, String> aAttrs = eNS.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eNS.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_URI))
           ret.setUri (sAttrValue);
@@ -709,11 +710,11 @@ public class PSReader
   public PSP readPFromXML (@Nonnull final IMicroElement eP)
   {
     final PSP ret = new PSP ();
-    final Map <String, String> aAttrs = eP.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eP.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ID))
           ret.setID (sAttrValue);
@@ -774,11 +775,11 @@ public class PSReader
   public PSParam readParamFromXML (@Nonnull final IMicroElement eParam)
   {
     final PSParam ret = new PSParam ();
-    final Map <String, String> aAttrs = eParam.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eParam.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_NAME))
           ret.setName (sAttrValue);
@@ -812,12 +813,12 @@ public class PSReader
   public PSPattern readPatternFromXML (@Nonnull final IMicroElement ePattern)
   {
     final PSPattern ret = new PSPattern ();
-    final Map <String, String> aAttrs = ePattern.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = ePattern.getAllQAttributes ();
     if (aAttrs != null)
     {
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
           ret.setAbstract (StringParser.parseBool (sAttrValue));
@@ -879,12 +880,12 @@ public class PSReader
   public PSPhase readPhaseFromXML (@Nonnull final IMicroElement ePhase)
   {
     final PSPhase ret = new PSPhase ();
-    final Map <String, String> aAttrs = ePhase.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = ePhase.getAllQAttributes ();
     if (aAttrs != null)
     {
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ID))
           ret.setID (sAttrValue);
@@ -927,13 +928,13 @@ public class PSReader
    * @return The created domain object. May not be <code>null</code>.
    */
   @Nonnull
-  public PSRichGroup readRichGroupFromXML (@Nullable final Map <String, String> aAttrs)
+  public PSRichGroup readRichGroupFromXML (@Nullable final Map <IMicroQName, String> aAttrs)
   {
     final PSRichGroup ret = new PSRichGroup ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ICON))
           ret.setIcon (sAttrValue);
@@ -965,12 +966,12 @@ public class PSReader
   public PSRule readRuleFromXML (@Nonnull final IMicroElement eRule)
   {
     final PSRule ret = new PSRule ();
-    final Map <String, String> aAttrs = eRule.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eRule.getAllQAttributes ();
     if (aAttrs != null)
     {
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_FLAG))
           ret.setFlag (sAttrValue);
@@ -1035,12 +1036,12 @@ public class PSReader
       throw new SchematronReadException (m_aResource, "The passed element is not an ISO Schematron element!");
 
     final PSSchema ret = new PSSchema (m_aResource);
-    final Map <String, String> aAttrs = eSchema.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eSchema.getAllQAttributes ();
     if (aAttrs != null)
     {
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_ID))
           ret.setID (sAttrValue);
@@ -1113,11 +1114,11 @@ public class PSReader
   public PSSpan readSpanFromXML (@Nonnull final IMicroElement eSpan)
   {
     final PSSpan ret = new PSSpan ();
-    final Map <String, String> aAttrs = eSpan.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eSpan.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_CLASS))
           ret.setClazz (sAttrValue);
@@ -1162,11 +1163,11 @@ public class PSReader
   public PSTitle readTitleFromXML (@Nonnull final IMicroElement eTitle)
   {
     final PSTitle ret = new PSTitle ();
-    final Map <String, String> aAttrs = eTitle.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eTitle.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
       }
@@ -1212,11 +1213,11 @@ public class PSReader
   public PSValueOf readValueOfFromXML (@Nonnull final IMicroElement eValueOf)
   {
     final PSValueOf ret = new PSValueOf ();
-    final Map <String, String> aAttrs = eValueOf.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = eValueOf.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
       {
-        final String sAttrName = aEntry.getKey ();
+        final String sAttrName = aEntry.getKey ().getName ();
         final String sAttrValue = _getAttributeValue (aEntry.getValue ());
         if (sAttrName.equals (CSchematronXML.ATTR_SELECT))
           ret.setSelect (sAttrValue);
