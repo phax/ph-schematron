@@ -65,7 +65,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>5.6.1</version>
+      <version>5.7.0</version>
     </dependency>
     <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
     <dependency>
@@ -126,7 +126,7 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.11.0</version>
+        <version>0.12.3</version>
         <executions>
           <execution>
             <id>svrl</id>
