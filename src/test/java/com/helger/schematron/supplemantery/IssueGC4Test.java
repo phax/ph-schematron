@@ -25,7 +25,7 @@ import org.junit.Test;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 
-public final class TestIssueGC4
+public final class IssueGC4Test
 {
   private static final String PATH_SCH = "src/test/resources/issues/gc4/UBL-TR_Main_Schematron.xml";
   private static final String PATH_XML = "src/test/resources/issues/gc4/1_TEMEL_FATURA_ZARF.xml";

@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 
-public final class TestIssue4
+public final class Issue4Test
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (TestIssue4.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue4Test.class);
 
   @Test
   public void testReadFromUNCWithInclude () throws Exception

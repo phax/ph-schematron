@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 
 import com.helger.commons.xml.serialize.XMLWriter;
 
-public class ClassCastExceptionError
+public class MainClassCastExceptionError
 {
   public static void main (final String [] args) throws Exception
   {

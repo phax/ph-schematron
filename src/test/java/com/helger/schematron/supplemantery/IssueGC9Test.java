@@ -23,23 +23,23 @@ import org.junit.Test;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLWriter;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 
-public final class TestIssueXsltKey
+public final class IssueGC9Test
 {
   @Test
-  public void testIssueXsltKey () throws Exception
+  public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/xslt-key/schematron.sch"),
-                            new File ("src/test/resources/issues/xslt-key/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/gc9/schematron.sch"),
+                            new File ("src/test/resources/issues/gc9/test.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final AbstractSchematronResource pure = new SchematronResourceSCH (aSchematron);
+    final AbstractSchematronResource pure = new SchematronResourcePure (aSchematron);
     System.out.println (SVRLWriter.createXMLString (pure.applySchematronValidationToSVRL (anXMLSource)));
   }
 }

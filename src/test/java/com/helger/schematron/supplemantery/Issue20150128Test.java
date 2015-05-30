@@ -28,7 +28,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 
-public final class TestIssue20150128
+public final class Issue20150128Test
 {
   @Test
   public void testEq () throws Exception

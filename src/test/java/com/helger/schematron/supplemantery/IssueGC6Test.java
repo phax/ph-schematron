@@ -26,7 +26,7 @@ import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLWriter;
 
-public final class TestIssueGC6
+public final class IssueGC6Test
 {
   @Test
   public void testIssue () throws Exception
