@@ -28,11 +28,11 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.GlobalDebug;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.write.XMLWriter;
 
 /**
  * Factory for creating {@link ISchematronXSLTBasedProvider} objects.

@@ -37,16 +37,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.io.IInputStreamProvider;
-import com.helger.commons.io.IReadableResource;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.io.IHasInputStream;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.XMLFactory;
-import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.AbstractSchematronResource;
@@ -160,7 +160,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
@@ -180,7 +180,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     finally
     {
       // Ensure InputStream is closed
-      StreamUtils.close (aIS);
+      StreamHelper.close (aIS);
     }
   }
 
@@ -197,7 +197,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
+  public Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
@@ -215,7 +215,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     }
     finally
     {
-      StreamUtils.close (aIS);
+      StreamHelper.close (aIS);
     }
   }
 
@@ -277,7 +277,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     final Document aDoc = applySchematronValidation (aXMLResource);
     return aDoc == null ? null : SVRLReader.readXML (aDoc);

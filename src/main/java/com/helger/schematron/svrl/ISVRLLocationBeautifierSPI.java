@@ -19,7 +19,7 @@ package com.helger.schematron.svrl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.annotations.IsSPIInterface;
+import com.helger.commons.annotation.IsSPIInterface;
 
 /**
  * Implement this SPI interface to beautify SVRL error messages by replacing

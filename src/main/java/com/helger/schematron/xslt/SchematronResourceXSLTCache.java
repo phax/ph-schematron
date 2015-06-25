@@ -32,10 +32,10 @@ import javax.xml.transform.URIResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.GlobalDebug;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.error.IResourceError;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.transform.CollectingTransformErrorListener;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 

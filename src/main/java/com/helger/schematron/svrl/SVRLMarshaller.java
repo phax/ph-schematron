@@ -23,9 +23,9 @@ import javax.xml.bind.JAXBElement;
 import org.oclc.purl.dsdl.svrl.ObjectFactory;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
-import com.helger.commons.GlobalDebug;
+import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.jaxb.utils.AbstractJAXBMarshaller;
+import com.helger.commons.jaxb.AbstractJAXBMarshaller;
 
 /**
  * This is the XML reader and write for Schematron SVRL documents. It reads XML

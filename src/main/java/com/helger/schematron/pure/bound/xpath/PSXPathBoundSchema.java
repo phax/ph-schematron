@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.lang.ClassHelper;
+import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.xpath.XPathHelper;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -345,7 +345,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // First try to use Saxon, using the context class loader
       aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
                                                 "net.sf.saxon.xpath.XPathFactoryImpl",
-                                                ClassHelper.getContextClassLoader ());
+                                                ClassLoaderHelper.getContextClassLoader ());
     }
     catch (final Exception ex)
     {

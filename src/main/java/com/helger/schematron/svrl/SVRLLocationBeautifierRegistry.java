@@ -25,9 +25,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.GlobalDebug;
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.lang.ServiceLoaderUtils;
+import com.helger.commons.annotation.PresentForCodeCoverage;
+import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.lang.ServiceLoaderHelper;
 
 /**
  * A central registry for all {@link ISVRLLocationBeautifierSPI} instances.
@@ -38,7 +38,7 @@ import com.helger.commons.lang.ServiceLoaderUtils;
 public final class SVRLLocationBeautifierRegistry
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SVRLLocationBeautifierRegistry.class);
-  private static final List <ISVRLLocationBeautifierSPI> s_aList = ServiceLoaderUtils.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
+  private static final List <ISVRLLocationBeautifierSPI> s_aList = ServiceLoaderHelper.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
 
   @PresentForCodeCoverage
   private static final SVRLLocationBeautifierRegistry s_aInstance = new SVRLLocationBeautifierRegistry ();

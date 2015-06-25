@@ -30,18 +30,19 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.error.IResourceErrorGroup;
 import com.helger.commons.error.ResourceErrorGroup;
-import com.helger.commons.hierarchy.DefaultHierarchyWalkerCallback;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
+import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroNode;
 import com.helger.commons.microdom.serialize.MicroReader;
-import com.helger.commons.microdom.utils.MicroWalker;
-import com.helger.commons.mutable.Wrapper;
-import com.helger.commons.xml.serialize.ISAXReaderSettings;
+import com.helger.commons.microdom.util.MicroVisitor;
+import com.helger.commons.wrapper.Wrapper;
+import com.helger.commons.xml.serialize.read.ISAXReaderSettings;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLResourceError;
@@ -232,21 +233,22 @@ public final class SchematronHelper
             {
               final String sFinalAnchor = sAnchor;
               final Wrapper <IMicroElement> aMatch = new Wrapper <IMicroElement> ();
-              MicroWalker.walkNode (aIncludedDoc.getDocumentElement (),
-                                    new DefaultHierarchyWalkerCallback <IMicroNode> ()
+              MicroVisitor.visit (aIncludedDoc.getDocumentElement (),
+                                  new DefaultHierarchyVisitorCallback <IMicroNode> ()
+                                  {
+                                    @Override
+                                    public EHierarchyVisitorReturn onItemBeforeChildren (final IMicroNode aItem)
                                     {
-                                      @Override
-                                      public void onItemBeforeChildren (final IMicroNode aItem)
+                                      if (aItem.isElement ())
                                       {
-                                        if (aItem.isElement ())
-                                        {
-                                          final IMicroElement aCurElement = (IMicroElement) aItem;
-                                          final String sID = aCurElement.getAttributeValue ("id");
-                                          if (sFinalAnchor.equals (sID))
-                                            aMatch.set (aCurElement);
-                                        }
+                                        final IMicroElement aCurElement = (IMicroElement) aItem;
+                                        final String sID = aCurElement.getAttributeValue ("id");
+                                        if (sFinalAnchor.equals (sID))
+                                          aMatch.set (aCurElement);
                                       }
-                                    });
+                                      return EHierarchyVisitorReturn.CONTINUE;
+                                    }
+                                  });
               aIncludedContent = aMatch.get ();
               if (aIncludedContent == null)
               {

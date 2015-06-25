@@ -23,10 +23,10 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.OverrideOnDemand;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -241,9 +241,9 @@ public class PSBoundSchemaCacheKey
       return false;
     final PSBoundSchemaCacheKey rhs = (PSBoundSchemaCacheKey) o;
     return m_aResource.equals (rhs.m_aResource) &&
-           EqualsUtils.equals (m_sPhase, rhs.m_sPhase) &&
-           EqualsUtils.equals (m_aVariableResolver, rhs.m_aVariableResolver) &&
-           EqualsUtils.equals (m_aFunctionResolver, rhs.m_aFunctionResolver);
+           EqualsHelper.equals (m_sPhase, rhs.m_sPhase) &&
+           EqualsHelper.equals (m_aVariableResolver, rhs.m_aVariableResolver) &&
+           EqualsHelper.equals (m_aFunctionResolver, rhs.m_aFunctionResolver);
   }
 
   @Override

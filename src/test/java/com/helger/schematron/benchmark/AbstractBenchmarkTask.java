@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.CGlobal;
-import com.helger.commons.SystemProperties;
 import com.helger.commons.system.SystemHelper;
+import com.helger.commons.system.SystemProperties;
 
 /**
  * Abstract benchmarking class.

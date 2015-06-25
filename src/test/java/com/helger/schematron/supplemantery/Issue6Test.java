@@ -23,9 +23,9 @@ import java.io.File;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
-import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;

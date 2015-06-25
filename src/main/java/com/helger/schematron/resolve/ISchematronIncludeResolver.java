@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.io.resource.IReadableResource;
 
 /**
  * Generic include resolver

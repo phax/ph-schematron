@@ -26,12 +26,12 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.error.EErrorLevel;
-import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.junit.DebugModeTestRule;
 import com.helger.commons.microdom.IMicroDocument;
-import com.helger.commons.mock.DebugModeTestRule;
-import com.helger.commons.mock.PHTestUtils;
-import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.mock.CommonsTestHelper;
+import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -106,7 +106,7 @@ public final class PSXPathBoundSchemaTest
       // Parse the schema
       final PSSchema aSchema = new PSReader (aRes).readSchema ();
       assertNotNull (aSchema);
-      PHTestUtils.testToStringImplementation (aSchema);
+      CommonsTestHelper.testToStringImplementation (aSchema);
 
       final CollectingPSErrorHandler aLogger = new CollectingPSErrorHandler ();
       assertTrue (aRes.getPath (), aSchema.isValid (aLogger));

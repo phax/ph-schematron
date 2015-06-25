@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlSchema;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
-import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.string.StringHelper;
 
 /**

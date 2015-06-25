@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.transform.DoNothingTransformErrorListener;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.SchematronResourcePure;

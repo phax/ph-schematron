@@ -38,9 +38,9 @@ import net.sf.saxon.query.XQueryFunctionLibrary;
 import net.sf.saxon.trans.XPathException;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 
 /**
@@ -189,7 +189,7 @@ public class XQueryAsXPathFunctionConverter
     }
     finally
     {
-      StreamUtils.close (aXQueryIS);
+      StreamHelper.close (aXQueryIS);
     }
   }
 }

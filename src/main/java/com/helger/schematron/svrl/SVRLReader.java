@@ -24,8 +24,8 @@ import javax.xml.transform.Source;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.annotation.PresentForCodeCoverage;
+import com.helger.commons.io.resource.IReadableResource;
 
 /**
  * This is the XML reader for Schematron SVRL documents. It reads XML DOM

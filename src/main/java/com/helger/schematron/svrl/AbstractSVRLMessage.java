@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 
 import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.CollectionHelper;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.error.ResourceLocation;
 import com.helger.commons.regex.RegExHelper;

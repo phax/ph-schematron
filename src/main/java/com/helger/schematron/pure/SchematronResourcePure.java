@@ -34,19 +34,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CharsetManager;
-import com.helger.commons.io.IInputStreamProvider;
-import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.inmemory.AbstractMemoryReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.commons.state.EValidity;
-import com.helger.commons.xml.serialize.DOMReader;
-import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.xml.serialize.read.DOMReader;
+import com.helger.commons.xml.serialize.write.XMLWriterSettings;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronUtils;
@@ -302,7 +302,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     if (!isValidSchematron ())
       return EValidity.INVALID;
@@ -329,7 +329,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
+  public Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLResource);
     return aSO == null ? null : SVRLWriter.createXML (aSO);
@@ -343,7 +343,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IInputStreamProvider aXMLResource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 

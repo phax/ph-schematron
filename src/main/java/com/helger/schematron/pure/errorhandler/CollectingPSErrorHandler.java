@@ -21,15 +21,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.error.IResourceError;
 import com.helger.commons.error.IResourceErrorGroup;
 import com.helger.commons.error.ResourceError;
 import com.helger.commons.error.ResourceErrorGroup;
 import com.helger.commons.error.ResourceLocation;
-import com.helger.commons.io.IReadableResource;
-import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.IPSElement;
@@ -65,7 +65,7 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
     String sField = "";
     if (aSourceElement != null)
     {
-      sField += CGStringHelper.getClassLocalName (aSourceElement);
+      sField += ClassHelper.getClassLocalName (aSourceElement);
       if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
         sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
     }

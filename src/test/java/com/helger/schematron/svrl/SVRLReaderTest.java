@@ -26,10 +26,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.XMLFactory;
-import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematrontest.SchematronTestHelper;

@@ -34,12 +34,12 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.streams.StringInputStream;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.stream.StringInputStream;
 import com.helger.commons.xml.schema.XMLSchemaCache;
-import com.helger.commons.xml.serialize.DOMReader;
-import com.helger.commons.xml.serialize.DOMReaderSettings;
+import com.helger.commons.xml.serialize.read.DOMReader;
+import com.helger.commons.xml.serialize.read.DOMReaderSettings;
 import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 import com.helger.commons.xml.xpath.MapBasedXPathVariableResolver;
 import com.helger.schematron.SchematronException;
@@ -125,7 +125,7 @@ public final class SchematronResourcePureTest
     assertFalse (aSch.isValidSchematron ());
     assertEquals ("Expected two errors: " + aErrorHandler.getResourceErrors ().toString (),
                   2,
-                  aErrorHandler.getResourceErrors ().size ());
+                  aErrorHandler.getResourceErrors ().getSize ());
     if (false)
       System.out.println (aErrorHandler.getResourceErrors ().toString ());
 
@@ -134,7 +134,7 @@ public final class SchematronResourcePureTest
     aSch.validateCompletely ();
     assertEquals ("Expected two errors: " + aErrorHandler.getResourceErrors ().toString (),
                   2,
-                  aErrorHandler.getResourceErrors ().size ());
+                  aErrorHandler.getResourceErrors ().getSize ());
   }
 
   @Test

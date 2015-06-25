@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.microdom.serialize.MicroWriter;
-import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.binding.IPSQueryBinding;

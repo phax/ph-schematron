@@ -35,7 +35,7 @@ import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collections.CollectionHelper;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.state.EContinue;
 import com.helger.commons.xml.XMLHelper;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;

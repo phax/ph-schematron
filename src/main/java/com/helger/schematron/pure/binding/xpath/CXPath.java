@@ -18,7 +18,7 @@ package com.helger.schematron.pure.binding.xpath;
 
 import javax.annotation.concurrent.Immutable;
 
-import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotation.PresentForCodeCoverage;
 
 /**
  * Constants for handling XPath expressions

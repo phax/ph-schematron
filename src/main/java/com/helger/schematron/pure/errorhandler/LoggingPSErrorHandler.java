@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.error.EErrorLevel;
-import com.helger.commons.io.IReadableResource;
-import com.helger.commons.lang.CGStringHelper;
-import com.helger.commons.log.LogUtils;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.lang.ClassHelper;
+import com.helger.commons.log.LogHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.pure.model.IPSElement;
 import com.helger.schematron.pure.model.IPSHasID;
@@ -57,7 +57,7 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
     return StringHelper.getImplodedNonEmpty (" - ",
                                              aRes == null ? null : aRes.getPath (),
                                              aSourceElement == null ? null
-                                                                   : CGStringHelper.getClassLocalName (aSourceElement),
+                                                                   : ClassHelper.getClassLocalName (aSourceElement),
                                              aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID () ? "ID " +
                                                                                                                           ((IPSHasID) aSourceElement).getID ()
                                                                                                                        : null,
@@ -71,6 +71,6 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    LogUtils.log (s_aLogger, eErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
+    LogHelper.log (s_aLogger, eErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
   }
 }
