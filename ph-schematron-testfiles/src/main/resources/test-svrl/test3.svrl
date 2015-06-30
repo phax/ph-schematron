@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schematron-output xmlns="http://purl.oclc.org/dsdl/svrl">
+  <ns-prefix-in-attribute-values uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    prefix="cac" />
+  <ns-prefix-in-attribute-values uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+    prefix="cbc" />
+  <ns-prefix-in-attribute-values uri="urn:oasis:names:specification:ubl:schema:xsd:Order-2"
+    prefix="ubl" />
+  <active-pattern id="UBL-T01" />
+  <fired-rule context="/ubl:Order/cac:BuyerCustomerParty/cac:Party" />
+  <failed-assert flag="warning"
+    test="count(cac:PartyIdentification)&lt;=1 and contains(preceding::cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0') or not (contains(preceding::cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0'))"
+    location="/ubl:Order/cac:BuyerCustomerParty/cac:Party">
+    <text>[BIICORE-T01-R435]-Element 'PartyIdentification' may occur at maximum 1 times.</text>
+  </failed-assert>
+  <fired-rule context="/ubl:Order/cac:SellerSupplierParty/cac:Party" />
+  <fired-rule context="/ubl:Order/cac:OrderLine/cac:LineItem/cac:Item" />
+  <fired-rule context="/ubl:Order/cac:OriginatoCustomerParty" />
+  <fired-rule context="/ubl:Order" />
+  <failed-assert flag="warning"
+    test="not(cbc:AccountingCostCode) and contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0') or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0'))"
+    location="/ubl:Order">
+    <text>[BIICORE-T01-R009]-A conformant CEN BII Order core data model SHOULD not have data elements not in the core.
+    </text>
+  </failed-assert>
+  <failed-assert flag="warning"
+    test="not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Department) and contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0') or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0'))"
+    location="/ubl:Order">
+    <text>[BIICORE-T01-R276]-A conformant CEN BII Order core data model SHOULD not have data elements not in the core.
+    </text>
+  </failed-assert>
+  <failed-assert flag="warning"
+    test="not(cac:OrderLine/cac:LineItem/cbc:AccountingCostCode) and contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0') or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0'))"
+    location="/ubl:Order">
+    <text>[BIICORE-T01-R358]-A conformant CEN BII Order core data model SHOULD not have data elements not in the core.
+    </text>
+  </failed-assert>
+  <fired-rule context="/ubl:Order/cac:Delivery/cac:DeliveryParty" />
+</schematron-output>

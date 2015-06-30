@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svrl:schematron-output schemaVersion="" title="Business rules for e-PRIOR Catalogue" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cct="urn:oasis:names:specification:ubl:schema:xsd:CoreComponentParameters-2" xmlns:iso="http://purl.oclc.org/dsdl/schematron" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:schold="http://www.ascc.net/xml/schematron" xmlns:stat="urn:oasis:names:specification:ubl:schema:xsd:DocumentStatusCode-1.0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:udt="urn:un:unece:uncefact:data:draft:UnqualifiedDataTypesSchemaModule:2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!--  
+      
+      
+     -->
+  <svrl:ns-prefix-in-attribute-values prefix="qdt" uri="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" />
+  <svrl:ns-prefix-in-attribute-values prefix="cct" uri="urn:oasis:names:specification:ubl:schema:xsd:CoreComponentParameters-2" />
+  <svrl:ns-prefix-in-attribute-values prefix="cbc" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" />
+  <svrl:ns-prefix-in-attribute-values prefix="cac" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" />
+  <svrl:ns-prefix-in-attribute-values prefix="udt" uri="urn:un:unece:uncefact:data:draft:UnqualifiedDataTypesSchemaModule:2" />
+  <svrl:ns-prefix-in-attribute-values prefix="stat" uri="urn:oasis:names:specification:ubl:schema:xsd:DocumentStatusCode-1.0" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:fired-rule context="cac:PostalAddress" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:fired-rule context="*[local-name()='Catalogue']/cbc:ID" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:fired-rule context="*[local-name()='Catalogue']" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:fired-rule context="cac:ReferencedContract" />
+  <svrl:failed-assert flag="warning" location="/*[local-name()='Catalogue']/*[local-name()='ReferencedContract']" test="not ( normalize-space(./cbc:ID) = '' )">
+    <svrl:text>error.referencedcontract_check_id</svrl:text>
+  </svrl:failed-assert>
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:fired-rule context="*[local-name()='Catalogue']/cbc:VersionID" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" />
+  <svrl:active-pattern document="G:\svn-peppol.eu\java\DemonstratorClient\trunk\demo_client\temp\a20a8ab0-c1a9-47e3-aa28-d41492f92170.xml" id="Catalogue_code_list_rules" name="Catalogue_code_list_rules" />
+  <svrl:fired-rule context="cbc:IdentificationCode" />
+</svrl:schematron-output>

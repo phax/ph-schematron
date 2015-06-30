@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cellar-book [<!ENTITY guy "Guy Lapalme" >
+                       <!ENTITY eacute "&#xe9;" >
+                       <!ENTITY mtl "Montr&eacute;al" >
+                       <!ENTITY GL "&guy;, &mtl;" >]>
+<?xml-stylesheet type="text/css" href="compact.css"?><!-- to display in a browser -->
+<!-- Full text inclusion of cellar-book and wine-catalog (validation with a Schema) -->
+<cellar-book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="CellarBook.xsd"
+    xmlns:cat="http://www.iro.umontreal.ca/lapalme/wine-catalog">
+    <wine-catalog xmlns="http://www.iro.umontreal.ca/lapalme/wine-catalog">
+        <wine name="Domaine de l'Île Margaux" appellation="Bordeaux supérieur" 
+            classification="a.c." code="C00043125" format="750ml">
+            <properties>
+                <color>red</color>
+                <alcoholic-strength>12.5</alcoholic-strength>
+                <nature>still</nature>
+            </properties>
+            <origin>
+                <country>France</country>
+                <region>Bordeaux</region>
+                <producer> SCEA Domaine de L'Île Margaux (B.P. 5) </producer>
+            </origin>
+            <comment>Ready for drinking now</comment>
+            <food-pairing> Accompanies <emph>Bordelaise ribsteak</emph>, 
+                <bold>pork with prunes</bold> or magret de canard. </food-pairing>
+            <price>22.80</price>
+            <year>2002</year>
+        </wine>
+        <wine name="Riesling Hugel" appellation="Alsace" classification="a.c." code="C00042101"
+            format="750ml">
+            <properties>
+                <color>white</color>
+                <alcoholic-strength>12</alcoholic-strength>
+                <nature>still</nature>
+            </properties>
+            <origin>
+                <country>France</country>
+                <region>Alsace and East</region>
+                <producer>Hugel &amp; Fils</producer>
+            </origin>
+            <price>17.95</price>
+            <year>2002</year>
+        </wine>
+        <wine name="Château Montguéret" appellation="Anjou" classification="a.c." code="C00871996"
+            format="750ml">
+            <properties>
+                <color>rosé</color>
+                <alcoholic-strength>11</alcoholic-strength>
+                <nature>still</nature>
+            </properties>
+            <origin>
+                <country>France</country>
+                <region>Loire Valley</region>
+                <producer>SCEA Château de Montguéret</producer>
+            </origin>
+            <comment> Made with Grolleau (100%). Ready to drink now. Serve at 8º-10ºC. </comment>
+            <tasting-note> Tender pink in color, this wine shows 
+                <emph>light raspberry</emph> highlights. </tasting-note>
+            <price>14.65</price>
+            <year>2003</year>
+        </wine>
+        <wine name="Mumm Cordon Rouge" appellation="Champagne" classification="a.c."
+            code="C00312363" format="375ml">
+            <properties>
+                <color>white</color>
+                <alcoholic-strength>12</alcoholic-strength>
+                <nature>Champagne</nature>
+            </properties>
+            <origin>
+                <country>France</country>
+                <region>Champagne</region>
+                <producer>G.H. Martel &amp; Co</producer>
+            </origin>
+            <comment> Ready for drinking now. Serve it fresh but not too cold. </comment>
+            <tasting-note> This champagne has a light fruity aroma. It is 
+                delicate and has exquisite bubbles. </tasting-note>
+            <price>33.00</price>
+            <year>2000</year>
+        </wine>
+        <wine name="Prado Rey Roble" appellation="Ribera-del-duero" classification="d.o."
+            code="C00929026" format="magnum">
+            <properties>
+                <color>red</color>
+                <alcoholic-strength>12.5</alcoholic-strength>
+                <nature>still</nature>
+            </properties>
+            <origin>
+                <country>Spain</country>
+                <region>Old Castille</region>
+                <producer>Real Sitio de Ventosilla SA</producer>
+            </origin>
+            <price>35.25</price>
+            <year>2002</year>
+        </wine>
+    </wine-catalog>
+    <owner>
+        <name>
+            <first>Jude</first>
+            <family>Raisin</family>
+        </name>
+        <street>1234 rue des Châteaux</street>
+        <city>St-George</city>
+        <province>ON</province>
+        <postal-code>M7W 7S0</postal-code>
+    </owner>
+    <location>
+        <street>4587 des Futailles</street>
+        <city>Vallée des crus</city>
+        <province>QC</province>
+        <postal-code>H3C 4J8</postal-code>
+    </location>
+    <cellar>
+        <wine code="C00043125">
+            <purchaseDate>2005-06-20</purchaseDate>
+            <quantity>2</quantity>
+            <comment><cat:bold>&GL;</cat:bold>: should reorder soon</comment>
+        </wine>
+        <wine code="C00312363">
+            <purchaseDate>2004-11-19</purchaseDate>
+            <quantity>5</quantity>
+            <rating stars="3"/>
+            <comment>Bottle too small...</comment>
+        </wine>
+        <wine code="C00871996">
+            <purchaseDate>2005-06-19</purchaseDate>
+            <quantity>0</quantity>
+            <comment>Really great</comment>
+        </wine>
+        <wine code="C00929026">
+            <purchaseDate>2003-10-15</purchaseDate>
+            <quantity>1</quantity>
+            <comment>for <cat:bold>big</cat:bold> parties</comment>
+        </wine>
+    </cellar>
+</cellar-book>

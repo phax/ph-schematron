@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sch:pattern abstract="true" id="table" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+    <sch:rule context="$table">
+        <sch:assert test="$row">
+        The element <sch:name/> is a table. Tables contain rows.
+        </sch:assert>
+    </sch:rule>
+    <sch:rule context="$row">
+        <sch:assert test="$entry">
+        The element <sch:name/> is a table row. Rows contain entries.
+        </sch:assert>
+    </sch:rule>
+</sch:pattern>

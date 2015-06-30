@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svrl:schematron-output xmlns:dp="http://www.dpawson.co.uk/ns#" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                        xmlns:svrl="http://purl.oclc.org/dsdl/svrl"
+                        xmlns:sch="http://www.ascc.net/xml/schematron"
+                        xmlns:iso="http://purl.oclc.org/dsdl/schematron"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                        title="Test ISO schematron file. Introduction mode"
+                        schemaVersion="">
+   <svrl:ns-prefix-in-attribute-values uri="http://www.dpawson.co.uk/ns#" prefix="dp"/>
+   <svrl:active-pattern/>
+   <svrl:fired-rule context="chapter"/>
+   <svrl:fired-rule context="chapter"/>
+   <svrl:fired-rule context="chapter"/>
+</svrl:schematron-output>

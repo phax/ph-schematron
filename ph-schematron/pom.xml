@@ -21,15 +21,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.helger</groupId>
-    <artifactId>parent-pom</artifactId>
-    <version>1.4.0</version>
+    <artifactId>ph-schematron-parent-pom</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>ph-schematron</name>
   <description>Library for validating XML documents with Schematron</description>
-  <url>https://github.com/phax/ph-schematron</url>
+  <url>https://github.com/phax/ph-schematron/ph-schematron</url>
   <inceptionYear>2014</inceptionYear>
 
   <licenses>
@@ -39,13 +38,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <scm>
-    <connection>scm:git:git@github.com:phax/ph-schematron.git</connection>
-    <developerConnection>scm:git:git@github.com:phax/ph-schematron.git</developerConnection>
-    <url>http://github.com/phax/ph-schematron</url>
-    <tag>HEAD</tag>
-  </scm>
 
   <organization>
     <name>Philip Helger</name>
@@ -65,13 +57,11 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>6.0.0-beta2</version>
     </dependency>
     <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>Saxon-HE</artifactId>
-      <version>9.6.0-6</version>
     </dependency>
     <!-- 
     <dependency>
@@ -84,7 +74,6 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
-      <version>2.0.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>

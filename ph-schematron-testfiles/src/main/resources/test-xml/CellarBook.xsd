@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:cat="http://www.iro.umontreal.ca/lapalme/wine-catalog">
+
+    <xs:import namespace="http://www.iro.umontreal.ca/lapalme/wine-catalog"
+        schemaLocation="WineCatalog.xsd"/>
+
+    <xs:element name="cellar">
+        <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="wine" type="Wine"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="Wine">
+        <xs:sequence>
+            <xs:element name="purchaseDate" type="xs:date"/>
+            <xs:element name="quantity" type="xs:nonNegativeInteger"/>
+            <xs:element name="rating" minOccurs="0">
+                <xs:complexType>
+                    <xs:attribute name="stars" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="comment" type="cat:Comment" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="code" type="xs:IDREF" use="required"/>
+    </xs:complexType>
+
+    
+    <xs:element name="name">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="first" type="xs:string" minOccurs="0"/>
+                <xs:element name="family" type="xs:string" minOccurs="0"/>
+                <xs:element name="initial" type="xs:string" minOccurs="0"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="cellar-book">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="cat:wine-catalog"/>
+                <xs:element name="owner" type="Owner"/>
+                <xs:element name="location" minOccurs="0">
+                    <xs:complexType>
+                        <xs:group ref="address"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element ref="cellar"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:group name="address">
+        <xs:sequence>
+            <xs:element name="street" type="xs:string"/>
+            <xs:element name="city" type="xs:string"/>
+            <xs:element name="province" type="ProvinceCA"/>
+            <xs:element name="postal-code" type="PostalCodeCA"/>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:simpleType name="ProvinceCA">
+        <!-- http://www.canadapost.ca/tools/pg/manual/b03-e.asp#c012 -->
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AB"/>
+            <xs:enumeration value="BC"/>
+            <xs:enumeration value="MB"/>
+            <xs:enumeration value="NB"/>
+            <xs:enumeration value="NL"/>
+            <xs:enumeration value="NT"/>
+            <xs:enumeration value="NS"/>
+            <xs:enumeration value="NU"/>
+            <xs:enumeration value="ON"/>
+            <xs:enumeration value="QC"/>
+            <xs:enumeration value="SK"/>
+            <xs:enumeration value="YT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="Owner">
+        <xs:sequence>
+            <xs:element ref="name"/>
+            <xs:group ref="address"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="PostalCodeCA">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Z][0-9][A-Z] [0-9][A-Z][0-9]"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

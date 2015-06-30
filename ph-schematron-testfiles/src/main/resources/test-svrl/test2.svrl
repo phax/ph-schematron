@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schematron-output xmlns="http://purl.oclc.org/dsdl/svrl">
+  <active-pattern />
+  <fired-rule context="AAA" />
+  <successful-report test="BBB" location="AAA">
+    <text>BBB element is present.</text>
+  </successful-report>
+  <failed-assert test="@name" location="AAA">
+    <text>AAA misses attribute name.</text>
+  </failed-assert>
+  <active-pattern />
+  <fired-rule context="AAA" />
+  <successful-report test="BBB" location="AAA">
+    <text>BBB element is present.</text>
+  </successful-report>
+  <active-pattern />
+  <fired-rule context="AAA" />
+  <failed-assert test="@name" location="AAA">
+    <text>AAA misses attribute name.</text>
+  </failed-assert>
+</schematron-output>

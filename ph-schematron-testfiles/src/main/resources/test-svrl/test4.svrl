@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schematron-output xmlns="http://purl.oclc.org/dsdl/svrl">
+  <ns-prefix-in-attribute-values uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    prefix="cac" />
+  <ns-prefix-in-attribute-values uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+    prefix="cbc" />
+  <ns-prefix-in-attribute-values uri="urn:oasis:names:specification:ubl:schema:xsd:Order-2"
+    prefix="ubl" />
+  <active-pattern id="Codes-T01" />
+  <fired-rule context="cbc:DocumentCurrencyCode" />
+  <fired-rule context="@currencyID" />
+  <fired-rule context="cac:Country//cbc:IdentificationCode" />
+  <fired-rule context="cac:TaxScheme//cbc:ID" />
+  <fired-rule context="cac:DeliveryTerms//cbc:ID" />
+  <active-pattern id="UBL-T01" />
+  <fired-rule context="//cac:BuyerCustomerParty" />
+  <fired-rule context="//cac:RequestedDeliveryPeriod" />
+  <fired-rule context="/ubl:Order" />
+  <fired-rule context="//cac:AdditionalDocumentReference" />
+  <fired-rule context="//cac:LineItem/cac:Price/cbc:PriceAmount" />
+  <fired-rule context="//cac:Country" />
+  <fired-rule context="//cac:Contract" />
+  <fired-rule context="/ubl:Order/cac:TaxTotal" />
+  <failed-assert flag="warning"
+    test="number(cbc:TaxAmount) = number(round(sum(//cac:OrderLine/cac:LineItem/cbc:TotalTaxAmount) * 10 * 10) div 100)"
+    location="/ubl:Order/cac:TaxTotal">
+    <text>[BIIRULE-T01-R029]-TaxTotal on header SHOULD be the sum of taxes on line level</text>
+  </failed-assert>
+  <fired-rule context="//cac:LineItem" />
+  <fired-rule context="//cac:SellerSupplierParty" />
+  <fired-rule context="//cac:Item" />
+  <fired-rule context="//cac:AnticipatedMonetaryTotal" />
+  <fired-rule context="//cac:OriginatorDocumentReference" />
+</schematron-output>

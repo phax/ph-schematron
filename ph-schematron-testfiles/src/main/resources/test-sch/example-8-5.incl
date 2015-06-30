@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+   <iso:rule context="chapter"
+   xmlns:iso="http://purl.oclc.org/dsdl/schematron"             
+   >                            
+      <iso:assert test="title">Chapter should have  a title</iso:assert>
+      <iso:report test="count(para)"><iso:value-of select="count(para)"/> paragraphs</iso:report>
+      <iso:assert test="count(para) >= 1">A chapter must have one or more paragraphs</iso:assert>
+      <iso:assert test="*[1][self::title]">Title must be first child of chapter</iso:assert>
+      <iso:assert test="@id">All chapters must have an ID attribute</iso:assert>
+    </iso:rule>
