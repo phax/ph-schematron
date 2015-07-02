@@ -242,8 +242,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     try
     {
       // Use the provided error handler (if any)
-      final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler
-                                                                   : DoNothingPSErrorHandler.getInstance ();
+      final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler : new DoNothingPSErrorHandler ();
       return getOrCreateBoundSchema ().getOriginalSchema ().isValid (aErrorHandler);
     }
     catch (final RuntimeException ex)
@@ -260,8 +259,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   public void validateCompletely ()
   {
     // Use the provided error handler (if any)
-    final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler
-                                                                 : DoNothingPSErrorHandler.getInstance ();
+    final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler : new DoNothingPSErrorHandler ();
     validateCompletely (aErrorHandler);
   }
 

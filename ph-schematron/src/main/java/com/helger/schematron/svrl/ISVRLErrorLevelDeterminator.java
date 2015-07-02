@@ -21,32 +21,32 @@ import javax.annotation.Nonnull;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 
 /**
  * Interface that helps in determining an error level from SVRL elements.
- * 
+ *
  * @author Philip Helger
  */
 public interface ISVRLErrorLevelDeterminator
 {
   /**
    * Get the error level associated with a single failed assertion.
-   * 
+   *
    * @param aFailedAssert
    *        The failed assert to be queried. May not be <code>null</code>.
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  EErrorLevel getErrorLevelFromFailedAssert (@Nonnull FailedAssert aFailedAssert);
+  IErrorLevel getErrorLevelFromFailedAssert (@Nonnull FailedAssert aFailedAssert);
 
   /**
    * Get the error level associated with a single successful report.
-   * 
+   *
    * @param aSuccessfulReport
    *        The failed assert to be queried. May not be <code>null</code>.
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  EErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull SuccessfulReport aSuccessfulReport);
+  IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull SuccessfulReport aSuccessfulReport);
 }

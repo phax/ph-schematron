@@ -79,7 +79,7 @@ public final class MainBenchmarkIsValidSchematron extends AbstractBenchmarkTask
       {
         final SchematronResourcePure aResPure = new SchematronResourcePure (aRes,
                                                                             CSchematron.PHASE_ALL,
-                                                                            DoNothingPSErrorHandler.getInstance ());
+                                                                            new DoNothingPSErrorHandler ());
         assertTrue (aRes.getPath (), aResPure.isValidSchematron ());
       }
     }

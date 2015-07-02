@@ -46,7 +46,8 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
  */
 public class DocumentationExamples
 {
-  public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile,
+                                                      @Nonnull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
     if (!aResSCH.isValidSchematron ())
@@ -63,7 +64,8 @@ public class DocumentationExamples
     return aResSCH.applySchematronValidationToSVRL (new StreamSource (aXMLFile));
   }
 
-  public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile,
+                                                      @Nonnull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResPure = SchematronResourcePure.fromFile (aSchematronFile);
     if (!aResPure.isValidSchematron ())
@@ -71,11 +73,12 @@ public class DocumentationExamples
     return aResPure.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
   }
 
-  public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile,
+                                                       @Nonnull final File aXMLFile) throws Exception
   {
     // Read the schematron from file
     final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
-    if (!aSchema.isValid (DoNothingPSErrorHandler.getInstance ()))
+    if (!aSchema.isValid (new DoNothingPSErrorHandler ()))
       throw new IllegalArgumentException ("Invalid Schematron!");
     // Resolve the query binding to use
     final IPSQueryBinding aQueryBinding = PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());

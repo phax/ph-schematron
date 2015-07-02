@@ -74,8 +74,8 @@ public final class PSPreprocessorTest
       if (false)
       {
         final String sXML = MicroWriter.getXMLString (aPreprocessedSchema.getAsMicroElement ());
-        SimpleFileIO.writeFile (new File ("test-minified", FilenameHelper.getWithoutPath (aRes.getPath ()) +
-                                                           ".min-pure.sch"),
+        SimpleFileIO.writeFile (new File ("test-minified",
+                                          FilenameHelper.getWithoutPath (aRes.getPath ()) + ".min-pure.sch"),
                                 sXML,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
       }
@@ -97,7 +97,7 @@ public final class PSPreprocessorTest
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     assertNotNull (aPreprocessedSchema);
-    assertTrue (aPreprocessedSchema.isValid (DoNothingPSErrorHandler.getInstance ()));
+    assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
     // Because titles are not in minimal mode
     assertFalse (aPreprocessedSchema.isMinimal ());
   }

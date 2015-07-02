@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.error.IResourceError;
 import com.helger.commons.error.IResourceErrorGroup;
 import com.helger.commons.error.ResourceError;
@@ -57,7 +57,7 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
 
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
-                         @Nonnull final EErrorLevel eErrorLevel,
+                         @Nonnull final IErrorLevel aErrorLevel,
                          @Nullable final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
@@ -70,7 +70,7 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
         sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
     }
     final ResourceLocation aLocation = new ResourceLocation (aRes == null ? null : aRes.getResourceID (), sField);
-    m_aErrors.addResourceError (new ResourceError (aLocation, eErrorLevel, sMessage, t));
+    m_aErrors.addResourceError (new ResourceError (aLocation, aErrorLevel, sMessage, t));
   }
 
   @Nonnull

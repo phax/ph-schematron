@@ -166,7 +166,7 @@ public final class SchematronResourcePureTest
     // Test without variable and function resolver
     // -> an error is expected, but we don't need to log it
     assertFalse (SchematronResourcePure.fromString (sTest, CCharset.CHARSET_ISO_8859_1_OBJ)
-                                       .setErrorHandler (DoNothingPSErrorHandler.getInstance ())
+                                       .setErrorHandler (new DoNothingPSErrorHandler ())
                                        .isValidSchematron ());
 
     // Test with variable and function resolver

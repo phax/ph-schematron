@@ -26,7 +26,7 @@ import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.error.ResourceLocation;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -44,7 +44,7 @@ public abstract class AbstractSVRLMessage
   protected String m_sLocation;
   protected String m_sTest;
   protected String m_sRole;
-  protected EErrorLevel m_eFlag;
+  protected IErrorLevel m_aFlag;
 
   @Nonnull
   protected static String getBeautifiedLocation (@Nonnull final String sLocation)
@@ -53,7 +53,8 @@ public abstract class AbstractSVRLMessage
     // Handle namespaces:
     // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
     // is the namespace URI
-    final Matcher m = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E", sResult);
+    final Matcher m = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
+                                              sResult);
     while (m.find ())
     {
       final String sLocalName = m.group (1);
@@ -76,14 +77,14 @@ public abstract class AbstractSVRLMessage
                               @Nullable final String sLocation,
                               @Nullable final String sTest,
                               @Nullable final String sRole,
-                              @Nullable final EErrorLevel eFlag)
+                              @Nullable final IErrorLevel aFlag)
   {
     m_aDiagnosticReferences = CollectionHelper.newList (aDiagnosticReferences);
     m_sText = sText;
     m_sLocation = sLocation;
     m_sTest = sTest;
     m_sRole = sRole;
-    m_eFlag = eFlag;
+    m_aFlag = aFlag;
   }
 
   @Nonnull
@@ -118,15 +119,15 @@ public abstract class AbstractSVRLMessage
   }
 
   @Nonnull
-  public EErrorLevel getFlag ()
+  public IErrorLevel getFlag ()
   {
-    return m_eFlag;
+    return m_aFlag;
   }
 
   @Nonnull
   public SVRLResourceError getAsResourceError (@Nullable final String sResourceName)
   {
-    return new SVRLResourceError (new ResourceLocation (sResourceName, m_sLocation), m_eFlag, m_sText, m_sTest);
+    return new SVRLResourceError (new ResourceLocation (sResourceName, m_sLocation), m_aFlag, m_sText, m_sTest);
   }
 
   @Override
@@ -137,7 +138,7 @@ public abstract class AbstractSVRLMessage
                                        .append ("location", m_sLocation)
                                        .append ("test", m_sTest)
                                        .appendIfNotNull ("role", m_sRole)
-                                       .append ("flag", m_eFlag)
+                                       .append ("flag", m_aFlag)
                                        .toString ();
   }
 }

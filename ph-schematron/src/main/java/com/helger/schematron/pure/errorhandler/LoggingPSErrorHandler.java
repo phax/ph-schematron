@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.log.LogHelper;
@@ -57,20 +57,20 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
     return StringHelper.getImplodedNonEmpty (" - ",
                                              aRes == null ? null : aRes.getPath (),
                                              aSourceElement == null ? null
-                                                                   : ClassHelper.getClassLocalName (aSourceElement),
+                                                                    : ClassHelper.getClassLocalName (aSourceElement),
                                              aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID () ? "ID " +
                                                                                                                           ((IPSHasID) aSourceElement).getID ()
-                                                                                                                       : null,
+                                                                                                                        : null,
                                              sMessage);
   }
 
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
-                         @Nonnull final EErrorLevel eErrorLevel,
+                         @Nonnull final IErrorLevel aErrorLevel,
                          @Nullable final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    LogHelper.log (s_aLogger, eErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
+    LogHelper.log (s_aLogger, aErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
   }
 }

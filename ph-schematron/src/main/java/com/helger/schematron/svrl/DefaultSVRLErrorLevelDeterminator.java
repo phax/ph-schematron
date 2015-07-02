@@ -24,6 +24,7 @@ import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 
 /**
  * The default implementation of {@link ISVRLErrorLevelDeterminator}.
@@ -32,7 +33,7 @@ import com.helger.commons.error.EErrorLevel;
  */
 public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDeterminator
 {
-  public static final EErrorLevel DEFAULT_ERROR_LEVEL = EErrorLevel.ERROR;
+  public static final IErrorLevel DEFAULT_ERROR_LEVEL = EErrorLevel.ERROR;
 
   /**
    * Get the error level associated with a single failed assertion.
@@ -42,7 +43,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  public EErrorLevel getErrorLevelFromFlag (@Nullable final String sFlag)
+  public IErrorLevel getErrorLevelFromFlag (@Nullable final String sFlag)
   {
     if (sFlag == null)
       return DEFAULT_ERROR_LEVEL;
@@ -64,7 +65,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
   }
 
   @Nonnull
-  public EErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
+  public IErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
   {
     ValueEnforcer.notNull (aFailedAssert, "FailedAssert");
 
@@ -72,7 +73,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
   }
 
   @Nonnull
-  public EErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  public IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
   {
     ValueEnforcer.notNull (aSuccessfulReport, "SuccessfulReport");
 

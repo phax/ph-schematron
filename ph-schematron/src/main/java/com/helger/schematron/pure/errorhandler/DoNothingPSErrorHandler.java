@@ -19,7 +19,7 @@ package com.helger.schematron.pure.errorhandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.pure.model.IPSElement;
 
@@ -31,25 +31,9 @@ import com.helger.schematron.pure.model.IPSElement;
  */
 public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
 {
-  private static final DoNothingPSErrorHandler s_aInstance = new DoNothingPSErrorHandler ();
-
-  public DoNothingPSErrorHandler ()
-  {
-    super ();
-  }
-
-  /**
-   * @return The default instance of this class. Never <code>null</code>.
-   */
-  @Nonnull
-  public static DoNothingPSErrorHandler getInstance ()
-  {
-    return s_aInstance;
-  }
-
   @Override
   protected void handle (@Nullable final IReadableResource aRes,
-                         @Nonnull final EErrorLevel eErrorLevel,
+                         @Nonnull final IErrorLevel aErrorLevel,
                          @Nullable final IPSElement aSourceElement,
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)

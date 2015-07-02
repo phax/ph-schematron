@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.IPSElement;
@@ -54,7 +55,7 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
    *
    * @param aRes
    *        The resource in which the error occurred.
-   * @param eErrorLevel
+   * @param aErrorLevel
    *        The error level. Never <code>null</code>.
    * @param aSourceElement
    *        The source schematron element, in which the error occurred. Maybe
@@ -66,7 +67,7 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
    *        <code>null</code>.
    */
   protected abstract void handle (@Nullable IReadableResource aRes,
-                                  @Nonnull EErrorLevel eErrorLevel,
+                                  @Nonnull IErrorLevel aErrorLevel,
                                   @Nullable IPSElement aSourceElement,
                                   @Nonnull String sMessage,
                                   @Nullable Throwable t);

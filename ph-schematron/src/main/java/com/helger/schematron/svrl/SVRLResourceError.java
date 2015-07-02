@@ -21,7 +21,7 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.error.IResourceLocation;
 import com.helger.commons.error.ResourceError;
 import com.helger.commons.hashcode.HashCodeGenerator;
@@ -43,7 +43,7 @@ public class SVRLResourceError extends ResourceError
    *
    * @param aLocation
    *        Location where the error occurred. May not be <code>null</code>.
-   * @param eErrorLevel
+   * @param aErrorLevel
    *        The error level. May not be <code>null</code>.
    * @param sErrorText
    *        The error text. May not be <code>null</code>.
@@ -52,11 +52,11 @@ public class SVRLResourceError extends ResourceError
    *        <code>null</code>.
    */
   public SVRLResourceError (@Nonnull final IResourceLocation aLocation,
-                            @Nonnull final EErrorLevel eErrorLevel,
+                            @Nonnull final IErrorLevel aErrorLevel,
                             @Nonnull final String sErrorText,
                             @Nonnull final String sTest)
   {
-    super (aLocation, eErrorLevel, sErrorText, null);
+    super (aLocation, aErrorLevel, sErrorText, null);
     ValueEnforcer.notNull (sTest, "Test");
     m_sTest = sTest;
   }

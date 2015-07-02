@@ -32,6 +32,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IErrorLevel;
 
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).
@@ -164,7 +165,7 @@ public final class SVRLUtils
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  public static EErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
+  public static IErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
   {
     return getErrorLevelDeterminator ().getErrorLevelFromFailedAssert (aFailedAssert);
   }
@@ -177,7 +178,7 @@ public final class SVRLUtils
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  public static EErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  public static IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
   {
     return getErrorLevelDeterminator ().getErrorLevelFromSuccessfulReport (aSuccessfulReport);
   }
