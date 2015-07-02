@@ -31,7 +31,6 @@ import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.error.IErrorLevel;
 
 /**
@@ -76,21 +75,21 @@ public final class SVRLUtils
    *
    * @param aSchematronOutput
    *        The schematron output to be used. May not be <code>null</code>.
-   * @param eErrorLevel
+   * @param aErrorLevel
    *        Minimum error level to be queried
    * @return A non-<code>null</code> list with all failed assertions.
    */
   @Nonnull
   @ReturnsMutableCopy
   public static List <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
-                                                                                     @Nonnull final EErrorLevel eErrorLevel)
+                                                                                     @Nonnull final IErrorLevel aErrorLevel)
   {
     final List <SVRLFailedAssert> ret = new ArrayList <SVRLFailedAssert> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof FailedAssert)
       {
         final SVRLFailedAssert aFA = new SVRLFailedAssert ((FailedAssert) aObj);
-        if (aFA.getFlag ().isMoreOrEqualSevereThan (eErrorLevel))
+        if (aFA.getFlag ().isMoreOrEqualSevereThan (aErrorLevel))
           ret.add (aFA);
       }
     return ret;
@@ -137,21 +136,21 @@ public final class SVRLUtils
    *
    * @param aSchematronOutput
    *        The schematron output to be used. May not be <code>null</code>.
-   * @param eErrorLevel
+   * @param aErrorLevel
    *        Minimum error level to be queried
    * @return A non-<code>null</code> list with all successful reports.
    */
   @Nonnull
   @ReturnsMutableCopy
   public static List <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
-                                                                                          @Nonnull final EErrorLevel eErrorLevel)
+                                                                                          @Nonnull final IErrorLevel aErrorLevel)
   {
     final List <SVRLSuccessfulReport> ret = new ArrayList <SVRLSuccessfulReport> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof SuccessfulReport)
       {
         final SVRLSuccessfulReport aFA = new SVRLSuccessfulReport ((SuccessfulReport) aObj);
-        if (aFA.getFlag ().isMoreOrEqualSevereThan (eErrorLevel))
+        if (aFA.getFlag ().isMoreOrEqualSevereThan (aErrorLevel))
           ret.add (aFA);
       }
     return ret;
