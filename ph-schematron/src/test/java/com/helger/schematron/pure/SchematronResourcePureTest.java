@@ -47,8 +47,8 @@ import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
-import com.helger.schematrontest.SchematronTestHelper;
 
 /**
  * Test class for class {@link SchematronResourcePure}.

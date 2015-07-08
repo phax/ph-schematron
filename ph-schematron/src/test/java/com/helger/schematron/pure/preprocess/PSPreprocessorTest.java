@@ -38,7 +38,7 @@ import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
-import com.helger.schematrontest.SchematronTestHelper;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Test class for class {@link PSPreprocessor}.

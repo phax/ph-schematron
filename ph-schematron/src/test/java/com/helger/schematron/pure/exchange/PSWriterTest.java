@@ -27,7 +27,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.model.PSSchema;
-import com.helger.schematrontest.SchematronTestHelper;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Test class for class {@link PSSchema} and {@link PSReader} and

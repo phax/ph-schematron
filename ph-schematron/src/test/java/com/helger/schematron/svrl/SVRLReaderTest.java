@@ -31,8 +31,8 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xslt.SchematronResourceSCH;
-import com.helger.schematrontest.SchematronTestHelper;
 
 /**
  * Test class for class {@link SVRLReader}.

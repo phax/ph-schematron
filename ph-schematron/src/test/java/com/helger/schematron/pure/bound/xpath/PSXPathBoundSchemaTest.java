@@ -42,7 +42,7 @@ import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLWriter;
-import com.helger.schematrontest.SchematronTestHelper;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Test class for class {@link PSPreprocessor}.

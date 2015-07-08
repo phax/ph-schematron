@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematrontest;
+package com.helger.schematron.testfiles;
 
 import org.junit.Test;
+
+import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Unit test class for class {@link SchematronTestHelper}.

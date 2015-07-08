@@ -75,7 +75,7 @@
         <configuration>
           <instructions>
             <Export-Package>
-              com.helger.schematrontest.*
+              com.helger.schematron.testfiles.*
             </Export-Package>
             <Import-Package>
               !javax.annotation.*,*

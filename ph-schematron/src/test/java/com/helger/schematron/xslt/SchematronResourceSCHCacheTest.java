@@ -38,7 +38,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.commons.xml.transform.CollectingTransformErrorListener;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematrontest.SchematronTestHelper;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Test class for class {@link SchematronResourceSCHCache}

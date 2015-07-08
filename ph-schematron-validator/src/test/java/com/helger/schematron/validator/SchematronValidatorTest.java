@@ -23,7 +23,7 @@ import org.junit.Test;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.schematron.SchematronHelper;
-import com.helger.schematrontest.SchematronTestHelper;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Test class for class {@link SchematronValidator}.
