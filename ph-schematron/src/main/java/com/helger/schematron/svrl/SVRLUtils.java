@@ -101,23 +101,6 @@ public final class SVRLUtils
    * @param aSchematronOutput
    *        The schematron output to be used. May not be <code>null</code>.
    * @return A non-<code>null</code> list with all successful reports.
-   * @deprecated Use {@link #getAllSuccessfulReports(SchematronOutputType)}
-   *             instead
-   */
-  @Deprecated
-  @Nonnull
-  @ReturnsMutableCopy
-  public static List <SVRLSuccessfulReport> getAllSuccesssfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
-  {
-    return getAllSuccessfulReports (aSchematronOutput);
-  }
-
-  /**
-   * Get a list of all successful reports in a given schematron output.
-   *
-   * @param aSchematronOutput
-   *        The schematron output to be used. May not be <code>null</code>.
-   * @return A non-<code>null</code> list with all successful reports.
    */
   @Nonnull
   @ReturnsMutableCopy
