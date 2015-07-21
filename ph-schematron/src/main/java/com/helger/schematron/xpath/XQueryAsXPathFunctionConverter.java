@@ -24,6 +24,12 @@ import java.net.MalformedURLException;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.instruct.UserFunction;
@@ -36,12 +42,6 @@ import net.sf.saxon.query.XQueryExpression;
 import net.sf.saxon.query.XQueryFunction;
 import net.sf.saxon.query.XQueryFunctionLibrary;
 import net.sf.saxon.trans.XPathException;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 
 /**
  * This class loads XQuery modules and provides a list of XPath functions.

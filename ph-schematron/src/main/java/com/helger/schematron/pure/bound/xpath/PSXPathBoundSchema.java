@@ -32,9 +32,6 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import net.sf.saxon.lib.FeatureKeys;
-import net.sf.saxon.xpath.XPathEvaluator;
-
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -63,6 +60,9 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.schematron.xslt.util.PSErrorListener;
+
+import net.sf.saxon.lib.FeatureKeys;
+import net.sf.saxon.xpath.XPathEvaluator;
 
 /**
  * The default XPath binding for the pure Schematron implementation.

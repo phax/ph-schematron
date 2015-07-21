@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 
+import com.helger.commons.ValueEnforcer;
+
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.JPConverter;
@@ -30,8 +32,6 @@ import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.StructuredQName;
-
-import com.helger.commons.ValueEnforcer;
 
 /**
  * A proxy for an {@link XPathFunction} that is implemented as a Saxon

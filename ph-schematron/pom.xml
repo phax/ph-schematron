@@ -58,6 +58,10 @@
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-jaxb</artifactId>
+    </dependency>
     <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
     <dependency>
       <groupId>net.sf.saxon</groupId>
