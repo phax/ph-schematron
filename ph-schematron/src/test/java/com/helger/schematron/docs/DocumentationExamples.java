@@ -44,7 +44,7 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
  *
  * @author Philip Helger
  */
-public class DocumentationExamples
+public final class DocumentationExamples
 {
   public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile,
                                                       @Nonnull final File aXMLFile) throws Exception
