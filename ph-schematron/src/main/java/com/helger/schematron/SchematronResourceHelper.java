@@ -45,14 +45,14 @@ import com.helger.commons.xml.serialize.read.DOMReader;
  * @author Philip Helger
  */
 @Immutable
-public final class SchematronUtils
+public final class SchematronResourceHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronUtils.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceHelper.class);
 
   @PresentForCodeCoverage
-  private static final SchematronUtils s_aInstance = new SchematronUtils ();
+  private static final SchematronResourceHelper s_aInstance = new SchematronResourceHelper ();
 
-  private SchematronUtils ()
+  private SchematronResourceHelper ()
   {}
 
   /**

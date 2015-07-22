@@ -49,7 +49,7 @@ import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.commons.xml.serialize.write.XMLWriterSettings;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronException;
-import com.helger.schematron.SchematronUtils;
+import com.helger.schematron.SchematronResourceHelper;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.bound.PSBoundSchemaCache;
 import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
@@ -319,7 +319,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
       return EValidity.INVALID;
 
     // Convert Source to Node
-    final Node aNode = SchematronUtils.getNodeOfSource (aXMLSource);
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource);
     if (aNode == null)
       return EValidity.INVALID;
 
@@ -368,7 +368,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
       return null;
 
     // Convert to Node
-    final Node aNode = SchematronUtils.getNodeOfSource (aXMLSource);
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource);
     if (aNode == null)
       return null;
 

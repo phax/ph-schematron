@@ -27,7 +27,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLFailedAssert;
-import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLHelper;
 
 public final class IssueGC5Test
 {
@@ -50,7 +50,7 @@ public final class IssueGC5Test
     // final SchematronOutputType svrl = pure.applySchematronValidationToSVRL
     // (anXMLSource);
     final SchematronOutputType aSO = SchematronHelper.applySchematron (pure, anXMLSource);
-    final List <SVRLFailedAssert> aFailedAsserts = SVRLUtils.getAllFailedAssertions (aSO);
+    final List <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSO);
     System.out.println (aFailedAsserts);
   }
 

@@ -36,6 +36,6 @@ public class SVRLFailedAssert extends AbstractSVRLMessage
            getBeautifiedLocation (aFailedAssert.getLocation ()),
            aFailedAssert.getTest (),
            aFailedAssert.getRole (),
-           SVRLUtils.getErrorLevelFromFailedAssert (aFailedAssert));
+           SVRLHelper.getErrorLevelFromFailedAssert (aFailedAssert));
   }
 }

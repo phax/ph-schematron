@@ -36,6 +36,6 @@ public class SVRLSuccessfulReport extends AbstractSVRLMessage
            getBeautifiedLocation (aSuccessfulReport.getLocation ()),
            aSuccessfulReport.getTest (),
            aSuccessfulReport.getRole (),
-           SVRLUtils.getErrorLevelFromSuccessfulReport (aSuccessfulReport));
+           SVRLHelper.getErrorLevelFromSuccessfulReport (aSuccessfulReport));
   }
 }

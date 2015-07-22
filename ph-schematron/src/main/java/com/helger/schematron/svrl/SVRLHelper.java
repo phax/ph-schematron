@@ -39,16 +39,16 @@ import com.helger.commons.error.IErrorLevel;
  * @author Philip Helger
  */
 @ThreadSafe
-public final class SVRLUtils
+public final class SVRLHelper
 {
   private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
 
   private static ISVRLErrorLevelDeterminator s_aELD = new DefaultSVRLErrorLevelDeterminator ();
 
   @PresentForCodeCoverage
-  private static final SVRLUtils s_aInstance = new SVRLUtils ();
+  private static final SVRLHelper s_aInstance = new SVRLHelper ();
 
-  private SVRLUtils ()
+  private SVRLHelper ()
   {}
 
   /**

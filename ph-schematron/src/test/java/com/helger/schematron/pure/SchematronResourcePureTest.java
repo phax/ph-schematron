@@ -46,7 +46,7 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
-import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 
@@ -188,10 +188,10 @@ public final class SchematronResourcePureTest
                                                            .setFunctionResolver (aFunctionResolver)
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
-    assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
-    assertEquals (1, SVRLUtils.getAllSuccessfulReports (aOT).size ());
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+    assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      2 paragraphs found", SVRLUtils.getAllSuccessfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      2 paragraphs found", SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -266,11 +266,11 @@ public final class SchematronResourcePureTest
                                                            .setFunctionResolver (aFunctionResolver)
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
-    assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
-    assertEquals (1, SVRLUtils.getAllSuccessfulReports (aOT).size ());
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+    assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
     assertEquals ("\n      Node details: para[First para], para[Second para] - end",
-                  SVRLUtils.getAllSuccessfulReports (aOT).get (0).getText ());
+                  SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -310,10 +310,10 @@ public final class SchematronResourcePureTest
                                                            .setFunctionResolver (aFunctionResolver)
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
-    assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
-    assertEquals (1, SVRLUtils.getAllSuccessfulReports (aOT).size ());
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+    assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node kind: element - end", SVRLUtils.getAllSuccessfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      Node kind: element - end", SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -355,7 +355,7 @@ public final class SchematronResourcePureTest
     // XXX fails :(
     if (false)
       assertTrue (aErrorHandler.isEmpty ());
-    assertEquals (0, SVRLUtils.getAllFailedAssertions (aOT).size ());
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
   }
 
   @Test
@@ -389,10 +389,10 @@ public final class SchematronResourcePureTest
                                                            .setFunctionResolver (aFunctionResolver)
                                                            .applySchematronValidationToSVRL (aTestDoc);
     assertNotNull (aOT);
-    if (SVRLUtils.getAllFailedAssertions (aOT).size () != 0)
+    if (SVRLHelper.getAllFailedAssertions (aOT).size () != 0)
     {
-      System.out.println (SVRLUtils.getAllFailedAssertions (aOT).get (0).getText ());
+      System.out.println (SVRLHelper.getAllFailedAssertions (aOT).get (0).getText ());
     }
-    assertTrue (SVRLUtils.getAllFailedAssertions (aOT).isEmpty ());
+    assertTrue (SVRLHelper.getAllFailedAssertions (aOT).isEmpty ());
   }
 }

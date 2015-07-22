@@ -46,7 +46,7 @@ import com.helger.commons.xml.serialize.read.ISAXReaderSettings;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLResourceError;
-import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLHelper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -174,7 +174,7 @@ public final class SchematronHelper
     ValueEnforcer.notNull (aSchematronOutput, "SchematronOutput");
 
     final ResourceErrorGroup ret = new ResourceErrorGroup ();
-    for (final SVRLFailedAssert aFailedAssert : SVRLUtils.getAllFailedAssertions (aSchematronOutput))
+    for (final SVRLFailedAssert aFailedAssert : SVRLHelper.getAllFailedAssertions (aSchematronOutput))
       ret.addResourceError (aFailedAssert.getAsResourceError (sResourceName));
     return ret;
   }
