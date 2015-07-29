@@ -17,7 +17,7 @@
 package com.helger.schematron.svrl;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.JAXBElement;
 
 import org.oclc.purl.dsdl.svrl.ObjectFactory;
@@ -31,10 +31,10 @@ import com.helger.jaxb.AbstractJAXBMarshaller;
  * This is the XML reader and write for Schematron SVRL documents. It reads XML
  * DOM documents and returns {@link SchematronOutputType} elements and vice
  * versa. The reading and writing itself is done with JAXB.<br>
- * 
+ *
  * @author Philip Helger
  */
-@Immutable
+@NotThreadSafe
 public class SVRLMarshaller extends AbstractJAXBMarshaller <SchematronOutputType>
 {
   public SVRLMarshaller ()
