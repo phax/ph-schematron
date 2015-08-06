@@ -66,17 +66,17 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons</artifactId>
-        <version>6.1.0</version>
+        <version>6.1.1</version>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-jaxb</artifactId>
-        <version>6.1.0</version>
+        <version>6.1.1</version>
       </dependency>
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>9.6.0-6</version>
+        <version>9.6.0-7</version>
       </dependency>
       
       <dependency>
