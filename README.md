@@ -15,6 +15,7 @@ Versions >= 3.0.0 are compatible with ph-commons >= 6.0
 
 ##News and noteworthy
 
+  * 3.0.1 keep diagnostics in Pure version; resource resolving emits to error handler
   * 3.0.0 because of update to ph-commons 6.0.0; extended XSLT based API 
   * 2.9.2 because of update to ph-commons 5.6.0 
   * 2.9.1 fixes a classloader issue added in 2.9.0
@@ -28,7 +29,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
@@ -44,7 +45,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <executions>
     <execution>
       <goals>
@@ -78,7 +79,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 

@@ -18,6 +18,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="ph-schematron">
+  <release date="2015-10-14" version="3.0.1" />
+  <entry date="2015-10-14" category="tech" action="update">
+    <change>
+      <text locale="en">Resource resolving errors are now emitted through the error handler</text>
+    </change>
+  </entry>
   <entry date="2015-08-06" category="tech" action="update">
     <change>
       <text locale="en">Updated to Saxon-HE 9.6.0-7</text>
