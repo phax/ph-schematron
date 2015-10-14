@@ -17,6 +17,7 @@
 package com.helger.schematron.supplemantery;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -27,6 +28,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLWriter;
 
 /**
@@ -46,6 +48,8 @@ public final class Issue11Test
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
+    aSCH.setErrorHandler (new LoggingPSErrorHandler ());
+    assertTrue (aSCH.isValidSchematron ());
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
