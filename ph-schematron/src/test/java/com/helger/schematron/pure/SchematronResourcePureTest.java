@@ -123,8 +123,8 @@ public final class SchematronResourcePureTest
                                                               .setErrorHandler (aErrorHandler);
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
-    assertEquals ("Expected two errors: " + aErrorHandler.getResourceErrors ().toString (),
-                  2,
+    assertEquals ("Expected three errors: " + aErrorHandler.getResourceErrors ().toString (),
+                  3,
                   aErrorHandler.getResourceErrors ().getSize ());
     if (false)
       System.out.println (aErrorHandler.getResourceErrors ().toString ());
@@ -132,8 +132,8 @@ public final class SchematronResourcePureTest
     // Perform complete validation
     aErrorHandler.clearResourceErrors ();
     aSch.validateCompletely ();
-    assertEquals ("Expected two errors: " + aErrorHandler.getResourceErrors ().toString (),
-                  2,
+    assertEquals ("Expected three errors: " + aErrorHandler.getResourceErrors ().toString (),
+                  3,
                   aErrorHandler.getResourceErrors ().getSize ());
   }
 
