@@ -55,18 +55,18 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * language binding:<br>
  *
  * <pre>
- *     <sch:pattern abstract="true" id="table">
- *         <sch:rule context="$table">
- *             <sch:assert test="$row">
- *             The element <sch:name/> is a table. Tables contain rows.
- *             </sch:assert>
- *         </sch:rule>
- *         <sch:rule context="$row">
- *             <sch:assert test="$entry">
- *             The element <sch:name/> is a table row. Rows contain entries.
- *             </sch:assert>
- *         </sch:rule>
- *     </sch:pattern>
+ *     &lt;sch:pattern abstract="true" id="table"&gt;
+ *         &lt;sch:rule context="$table"&gt;
+ *             &lt;sch:assert test="$row"&gt;
+ *             The element &lt;sch:name/&gt; is a table. Tables contain rows.
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *         &lt;sch:rule context="$row"&gt;
+ *             &lt;sch:assert test="$entry"&gt;
+ *             The element &lt;sch:name/&gt; is a table row. Rows contain entries.
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *     &lt;/sch:pattern&gt;
  * </pre>
  *
  * When a pattern element has the attribute is-a with a value specifying the
@@ -77,68 +77,69 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * create three patterns for tables with different names or structures.<br>
  *
  * <pre>
- *     <sch:pattern is-a="table" id="HTML_Table">
- *         <sch:param name="table" value="table"/>
- *         <sch:param name="row"   value="tr"/>
- *         <sch:param name="entry" value="td|th"/>
- *     </sch:pattern>
- *     <sch:pattern is-a="table" id="CALS_Table">
- *         <sch:param name="table" value="table"/>
- *         <sch:param name="row"   value=".//row"/>
- *         <sch:param name="entry" value="cell"/>
- *     </sch:pattern>
- *     <sch:pattern is-a="table" id="calendar">
- *         <sch:param name="table" value="calendar/year"/>
- *         <sch:param name="row"   value="week"/>
- *         <sch:param name="entry" value="day"/>
- *     </sch:pattern>
+ *     &lt;sch:pattern is-a="table" id="HTML_Table"&gt;
+ *         &lt;sch:param name="table" value="table"/&gt;
+ *         &lt;sch:param name="row"   value="tr"/&gt;
+ *         &lt;sch:param name="entry" value="td|th"/&gt;
+ *     &lt;/sch:pattern&gt;
+ *     &lt;sch:pattern is-a="table" id="CALS_Table"&gt;
+ *         &lt;sch:param name="table" value="table"/&gt;
+ *         &lt;sch:param name="row"   value=".//row"/&gt;
+ *         &lt;sch:param name="entry" value="cell"/&gt;
+ *     &lt;/sch:pattern&gt;
+ *     &lt;sch:pattern is-a="table" id="calendar"&gt;
+ *         &lt;sch:param name="table" value="calendar/year"/&gt;
+ *         &lt;sch:param name="row"   value="week"/&gt;
+ *         &lt;sch:param name="entry" value="day"/&gt;
+ *     &lt;/sch:pattern&gt;
  * </pre>
  *
  * When creating an instance of an abstract pattern, the parameter values
  * supplied by the param element replace the parameter references used in the
  * abstract patterns. The examples above use the default query language binding
- * in which the character $ is used as the delimiter for parameter references.<br>
+ * in which the character $ is used as the delimiter for parameter references.
+ * <br>
  * Thus, given the abstract patterns defined earlier in this clause, the
  * patterns defined above are equivalent to the following, with the id elements
  * shown expanded:<br>
  *
  * <pre>
- *     <sch:pattern id="HTML_table">
- *         <sch:rule context="table">
- *             <sch:assert test="tr">
+ *     &lt;sch:pattern id="HTML_table"&gt;
+ *         &lt;sch:rule context="table"&gt;
+ *             &lt;sch:assert test="tr"&gt;
  *             The element table is a table. Tables containing rows.
- *             </sch:assert>
- *         </sch:rule>
- *         <sch:rule context="tr">
- *             <sch:assert test="td|th">
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *         &lt;sch:rule context="tr"&gt;
+ *             &lt;sch:assert test="td|th"&gt;
  *             The element tr is a table row. Rows contain entries.
- *             </sch:assert>
- *         </sch:rule>
- *     </sch:pattern>
- *     <sch:pattern id="CALS_table">
- *         <sch:rule context="table">
- *             <sch:assert test=".//row">
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *     &lt;/sch:pattern&gt;
+ *     &lt;sch:pattern id="CALS_table"&gt;
+ *         &lt;sch:rule context="table"&gt;
+ *             &lt;sch:assert test=".//row"&gt;
  *             The element table is a table. Tables containing rows.
- *             </sch:assert>
- *         </sch:rule>
- *         <sch:rule context=".//row">
- *             <sch:assert test="cell">
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *         &lt;sch:rule context=".//row"&gt;
+ *             &lt;sch:assert test="cell"&gt;
  *             The element row is a table row. Rows contain entries.
- *             </sch:assert>
- *         </sch:rule>
- *     </sch:pattern>
- *     <sch:pattern id="calendar">
- *         <sch:rule context="calendar/year">
- *             <sch:assert test="week">
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *     &lt;/sch:pattern&gt;
+ *     &lt;sch:pattern id="calendar"&gt;
+ *         &lt;sch:rule context="calendar/year"&gt;
+ *             &lt;sch:assert test="week"&gt;
  *             The element year is a table. Tables containing rows.
- *             </sch:assert>
- *         </sch:rule>
- *         <sch:rule context="week">
- *             <sch:assert test="day">
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *         &lt;sch:rule context="week"&gt;
+ *             &lt;sch:assert test="day"&gt;
  *             The element week is a table row. Rows contain entries.
- *             </sch:assert>
- *         </sch:rule>
- *     </sch:pattern>
+ *             &lt;/sch:assert&gt;
+ *         &lt;/sch:rule&gt;
+ *     &lt;/sch:pattern&gt;
  * </pre>
  *
  * @author Philip Helger

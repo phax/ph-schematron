@@ -20,16 +20,16 @@ import javax.annotation.Nullable;
 
 /**
  * Base interface for all elements that may have an ID.
- * <code>IHasID&lt;String></code> is not used here, because it requires an ID to
- * be present!
- * 
+ * <code>IHasID&lt;String&gt;</code> is not used here, because it requires an ID
+ * to be present!
+ *
  * @author Philip Helger
  */
 public interface IPSHasID
 {
   /**
    * Set an ID for this object.
-   * 
+   *
    * @param sID
    *        The ID to be set. May be <code>null</code>.
    */
