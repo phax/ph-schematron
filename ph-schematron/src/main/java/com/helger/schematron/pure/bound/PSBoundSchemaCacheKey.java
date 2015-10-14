@@ -129,7 +129,8 @@ public class PSBoundSchemaCacheKey
    */
   @Nonnull
   @OverrideOnDemand
-  public PSSchema readSchema (@Nonnull final IReadableResource aResource, @Nullable final IPSErrorHandler aErrorHandler) throws SchematronException
+  public PSSchema readSchema (@Nonnull final IReadableResource aResource,
+                              @Nullable final IPSErrorHandler aErrorHandler) throws SchematronException
   {
     return new PSReader (aResource, aErrorHandler).readSchema ();
   }
@@ -163,8 +164,7 @@ public class PSBoundSchemaCacheKey
   @OverrideOnDemand
   public PSPreprocessor createPreprocessor (@Nonnull final IPSQueryBinding aQueryBinding)
   {
-    final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
-    aPreprocessor.setKeepTitles (true);
+    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (aQueryBinding);
     return aPreprocessor;
   }
 

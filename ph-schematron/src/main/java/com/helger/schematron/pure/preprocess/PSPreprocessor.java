@@ -176,7 +176,8 @@ public class PSPreprocessor
   }
 
   @Nonnull
-  private static PSPhase _getPreprocessedPhase (@Nonnull final PSPhase aPhase, @Nonnull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
+  private static PSPhase _getPreprocessedPhase (@Nonnull final PSPhase aPhase,
+                                                @Nonnull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
   {
     final PSPhase ret = new PSPhase ();
     ret.setID (aIDPool.getUniqueID (aPhase.getID ()));
@@ -521,5 +522,19 @@ public class PSPreprocessor
                                        .append ("keepEmptyPatterns", m_bKeepEmptyPatterns)
                                        .append ("keepEmptySchema", m_bKeepEmptySchema)
                                        .toString ();
+  }
+
+  @Nonnull
+  public static PSPreprocessor createPreprocessorWithoutInformationLoss (@Nonnull final IPSQueryBinding aQueryBinding)
+  {
+    final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
+
+    // Keep as much of the original information as possible, as it is not our
+    // goal to minify the scheme
+    aPreprocessor.setKeepReports (true);
+    aPreprocessor.setKeepDiagnostics (true);
+    aPreprocessor.setKeepTitles (true);
+
+    return aPreprocessor;
   }
 }

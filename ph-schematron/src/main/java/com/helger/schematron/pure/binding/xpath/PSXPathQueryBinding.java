@@ -127,25 +127,19 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     ValueEnforcer.notNull (aSchema, "Schema");
 
     final IPSErrorHandler aErrorHandler = aCustomErrorListener != null ? aCustomErrorListener
-                                                                      : new CollectingPSErrorHandler ();
+                                                                       : new CollectingPSErrorHandler ();
     if (!aSchema.isValid (aErrorHandler))
       throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
                                          (aErrorHandler == aCustomErrorListener ? ". Errors are in the provided error handler."
-                                                                               : ": " +
-                                                                                 ((CollectingPSErrorHandler) aErrorHandler).getResourceErrors ()
-                                                                                                                           .toString ()));
+                                                                                : ": " +
+                                                                                  ((CollectingPSErrorHandler) aErrorHandler).getResourceErrors ()
+                                                                                                                            .toString ()));
 
     PSSchema aSchemaToUse = aSchema;
     if (!aSchemaToUse.isPreprocessed ())
     {
       // Required for parameter resolution
-      final PSPreprocessor aPreprocessor = new PSPreprocessor (this);
-
-      // Keep as much of the original information as possible, as it is not our
-      // goal to minify the scheme
-      aPreprocessor.setKeepReports (true);
-      aPreprocessor.setKeepDiagnostics (true);
-      aPreprocessor.setKeepTitles (true);
+      final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (this);
 
       // Apply preprocessing
       aSchemaToUse = aPreprocessor.getForcedPreprocessedSchema (aSchema);
