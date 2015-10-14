@@ -29,6 +29,7 @@ import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroNode;
 import com.helger.commons.microdom.IMicroQName;
 import com.helger.commons.microdom.IMicroText;
+import com.helger.commons.microdom.serialize.MicroWriter;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.serialize.read.ISAXReaderSettings;
@@ -224,7 +225,8 @@ public class PSReader
   @Nonnull
   public PSAssertReport readAssertReportFromXML (@Nonnull final IMicroElement eAssertReport)
   {
-    final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ().equals (CSchematronXML.ELEMENT_ASSERT));
+    final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ()
+                                                                .equals (CSchematronXML.ELEMENT_ASSERT));
     final Map <IMicroQName, String> aAttrs = eAssertReport.getAllQAttributes ();
     if (aAttrs != null)
     {
@@ -857,11 +859,10 @@ public class PSReader
                   if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
                     ret.addParam (readParamFromXML (ePatternChild));
                   else
-                    _warn (ret,
-                           "Unsupported Schematron element '" +
-                               ePatternChild.getLocalName () +
-                               "' in " +
-                               ret.toString ());
+                    _warn (ret, "Unsupported Schematron element '" +
+                                ePatternChild.getLocalName () +
+                                "' in " +
+                                ret.toString ());
       }
       else
         ret.addForeignElement (ePatternChild.getClone ());
@@ -1037,27 +1038,27 @@ public class PSReader
 
     final PSSchema ret = new PSSchema (m_aResource);
     final Map <IMicroQName, String> aAttrs = eSchema.getAllQAttributes ();
-    if (aAttrs != null)
     {
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ID))
-          ret.setID (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_SCHEMA_VERSION))
-            ret.setSchemaVersion (sAttrValue);
+      if (aAttrs != null)
+        for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+        {
+          final String sAttrName = aEntry.getKey ().getName ();
+          final String sAttrValue = _getAttributeValue (aEntry.getValue ());
+          if (sAttrName.equals (CSchematronXML.ATTR_ID))
+            ret.setID (sAttrValue);
           else
-            if (sAttrName.equals (CSchematronXML.ATTR_DEFAULT_PHASE))
-              ret.setDefaultPhase (sAttrValue);
+            if (sAttrName.equals (CSchematronXML.ATTR_SCHEMA_VERSION))
+              ret.setSchemaVersion (sAttrValue);
             else
-              if (sAttrName.equals (CSchematronXML.ATTR_QUERY_BINDING))
-                ret.setQueryBinding (sAttrValue);
+              if (sAttrName.equals (CSchematronXML.ATTR_DEFAULT_PHASE))
+                ret.setDefaultPhase (sAttrValue);
               else
-                if (!PSRichGroup.isRichAttribute (sAttrName))
-                  ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
+                if (sAttrName.equals (CSchematronXML.ATTR_QUERY_BINDING))
+                  ret.setQueryBinding (sAttrValue);
+                else
+                  if (!PSRichGroup.isRichAttribute (sAttrName))
+                    ret.addForeignAttribute (sAttrName, sAttrValue);
+        }
       ret.setRich (readRichGroupFromXML (aAttrs));
     }
 
@@ -1251,9 +1252,14 @@ public class PSReader
   {
     // Resolve all includes as the first action
     final ISAXReaderSettings aSettings = null;
-    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource, aSettings);
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
+                                                                                    aSettings,
+                                                                                    m_aErrorHandler);
     if (aDoc == null || aDoc.getDocumentElement () == null)
       throw new SchematronReadException (m_aResource, "Failed to resolve includes in resource " + m_aResource);
+
+    if (false)
+      System.out.println (MicroWriter.getXMLString (aDoc));
 
     return readSchemaFromXML (aDoc.getDocumentElement ());
   }

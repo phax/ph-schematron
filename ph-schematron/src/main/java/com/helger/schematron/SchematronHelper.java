@@ -41,12 +41,15 @@ import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroNode;
 import com.helger.commons.microdom.serialize.MicroReader;
 import com.helger.commons.microdom.util.MicroVisitor;
+import com.helger.commons.state.ESuccess;
 import com.helger.commons.wrapper.Wrapper;
 import com.helger.commons.xml.serialize.read.ISAXReaderSettings;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
+import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
-import com.helger.schematron.svrl.SVRLResourceError;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.SVRLResourceError;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -97,7 +100,8 @@ public final class SchematronHelper
       throw new IllegalArgumentException ("Failed to apply Schematron " +
                                           aSchematron.getID () +
                                           " onto XML resource " +
-                                          aXML.getResourceID (), ex);
+                                          aXML.getResourceID (),
+                                          ex);
     }
   }
 
@@ -130,7 +134,8 @@ public final class SchematronHelper
       throw new IllegalArgumentException ("Failed to apply Schematron " +
                                           aSchematron.getID () +
                                           " onto XML source " +
-                                          aXML, ex);
+                                          aXML,
+                                          ex);
     }
   }
 
@@ -180,9 +185,11 @@ public final class SchematronHelper
   }
 
   @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
-  private static void _recursiveResolveAllSchematronIncludes (@Nonnull final IMicroElement eRoot,
-                                                              @Nonnull final IReadableResource aResource,
-                                                              @Nullable final ISAXReaderSettings aSettings)
+  @Nonnull
+  private static ESuccess _recursiveResolveAllSchematronIncludes (@Nonnull final IMicroElement eRoot,
+                                                                  @Nonnull final IReadableResource aResource,
+                                                                  @Nullable final ISAXReaderSettings aSettings,
+                                                                  @Nonnull final IPSErrorHandler aErrorHandler)
   {
     if (eRoot != null)
     {
@@ -205,7 +212,10 @@ public final class SchematronHelper
 
             final IReadableResource aIncludeRes = aIncludeResolver.getResolvedSchematronResource (sHref);
             if (aIncludeRes == null)
-              throw new IllegalStateException ("Failed to resolve include '" + sHref + "'");
+            {
+              aErrorHandler.error (aResource, null, "Failed to resolve include '" + sHref + "'", null);
+              return ESuccess.FAILURE;
+            }
 
             if (s_aLogger.isDebugEnabled ())
               s_aLogger.debug ("Resolved '" +
@@ -219,7 +229,10 @@ public final class SchematronHelper
             // Read XML to be included
             final IMicroDocument aIncludedDoc = MicroReader.readMicroXML (aIncludeRes, aSettings);
             if (aIncludedDoc == null)
-              throw new IllegalStateException ("Failed to parse include " + aIncludeRes);
+            {
+              aErrorHandler.error (aResource, null, "Failed to parse include " + aIncludeRes, null);
+              return ESuccess.FAILURE;
+            }
 
             IMicroElement aIncludedContent;
             if (sAnchor == null)
@@ -252,11 +265,13 @@ public final class SchematronHelper
               aIncludedContent = aMatch.get ();
               if (aIncludedContent == null)
               {
-                s_aLogger.error ("Failed to resolve an element with the ID '" +
-                                 sAnchor +
-                                 "' in " +
-                                 aIncludeRes +
-                                 "! Therefore including the whole document!");
+                aErrorHandler.warn (aResource,
+                                    null,
+                                    "Failed to resolve an element with the ID '" +
+                                          sAnchor +
+                                          "' in " +
+                                          aIncludeRes +
+                                          "! Therefore including the whole document!");
                 aIncludedContent = aIncludedDoc.getDocumentElement ();
               }
             }
@@ -264,18 +279,50 @@ public final class SchematronHelper
             // Important to detach from parent!
             aIncludedContent.detachFromParent ();
 
+            // Check for correct namespace URI of included content
+            if (!CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()))
+            {
+              aErrorHandler.error (aResource,
+                                   null,
+                                   "The included resource " +
+                                         aIncludeRes +
+                                         " contains the wrong XML namespace URI '" +
+                                         aIncludedContent.getNamespaceURI () +
+                                         "' but was expected to have '" +
+                                         CSchematron.NAMESPACE_SCHEMATRON +
+                                         "'",
+                                   null);
+              return ESuccess.FAILURE;
+            }
+
+            // Check that not a whole Schema but only a part is included
+            if (CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
+            {
+              aErrorHandler.warn (aResource,
+                                  null,
+                                  "The included resource " +
+                                        aIncludeRes +
+                                        " seems to be a complete schema. To includes parts of a schema the respective element must be the root element of the included resource.");
+            }
+
             // Recursive resolve includes
-            _recursiveResolveAllSchematronIncludes (aIncludedContent, aIncludeRes, aSettings);
+            if (_recursiveResolveAllSchematronIncludes (aIncludedContent,
+                                                        aIncludeRes,
+                                                        aSettings,
+                                                        aErrorHandler).isFailure ())
+              return ESuccess.FAILURE;
 
             // Now replace "include" element with content in MicroDOM
             aElement.getParent ().replaceChild (aElement, aIncludedContent);
           }
           catch (final IOException ex)
           {
-            throw new IllegalStateException ("Failed to read include '" + sHref + "'", ex);
+            aErrorHandler.error (aResource, null, "Failed to read include '" + sHref + "'", ex);
+            return ESuccess.FAILURE;
           }
         }
     }
+    return ESuccess.SUCCESS;
   }
 
   /**
@@ -289,7 +336,7 @@ public final class SchematronHelper
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource)
   {
-    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null);
+    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler ());
   }
 
   /**
@@ -304,14 +351,43 @@ public final class SchematronHelper
    *         document
    */
   @Nullable
+  @Deprecated
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings)
+  {
+    return getWithResolvedSchematronIncludes (aResource, aSettings, new LoggingPSErrorHandler ());
+  }
+
+  /**
+   * Resolve all Schematron includes of the passed resource.
+   *
+   * @param aResource
+   *        The Schematron resource to read. May not be <code>null</code>.
+   * @param aSettings
+   *        The SAX reader settings to be used. May be <code>null</code> to use
+   *        the default settings.
+   * @param aErrorHandler
+   *        The error handler to be used. May not be <code>null</code>.
+   * @return <code>null</code> if the passed resource could not be read as XML
+   *         document
+   */
+  @Nullable
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+                                                                  @Nullable final ISAXReaderSettings aSettings,
+                                                                  @Nonnull final IPSErrorHandler aErrorHandler)
   {
     final IMicroDocument aDoc = MicroReader.readMicroXML (aResource, aSettings);
     if (aDoc != null)
     {
       // Resolve all Schematron includes
-      _recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (), aResource, aSettings);
+      if (_recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (),
+                                                  aResource,
+                                                  aSettings,
+                                                  aErrorHandler).isFailure ())
+      {
+        // Error resolving includes
+        return null;
+      }
     }
     return aDoc;
   }
