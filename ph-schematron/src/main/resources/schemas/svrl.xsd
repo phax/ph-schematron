@@ -73,6 +73,7 @@
       <xs:sequence>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
         <xs:element ref="svrl:text"/>
+        <!-- Note: XSLT based version may emit the diagnostic-reference here :( -->
       </xs:sequence>
       <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
     </xs:complexType>
