@@ -233,15 +233,25 @@ public class SchematronResourcePure extends AbstractSchematronResource
   protected IPSBoundSchema getOrCreateBoundSchema ()
   {
     if (m_aBoundSchema == null)
-      m_aBoundSchema = createBoundSchema ();
+      try
+      {
+        m_aBoundSchema = createBoundSchema ();
+      }
+      catch (final RuntimeException ex)
+      {
+        if (m_aErrorHandler != null)
+          m_aErrorHandler.error (getResource (), null, "Error creating bound schema", ex);
+        throw ex;
+      }
+
     return m_aBoundSchema;
   }
 
   public boolean isValidSchematron ()
   {
+    // Use the provided error handler (if any)
     try
     {
-      // Use the provided error handler (if any)
       final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler : new DoNothingPSErrorHandler ();
       return getOrCreateBoundSchema ().getOriginalSchema ().isValid (aErrorHandler);
     }
