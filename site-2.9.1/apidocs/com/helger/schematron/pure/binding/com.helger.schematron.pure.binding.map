@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SchematronBindException.html" title="com.helger.schematron.pure.binding.SchematronBindException" alt="" coords="15,20,190,47"/>
+<area shape="rect" id="node2_1" href="./PSQueryBindingRegistry.html" title="com.helger.schematron.pure.binding.PSQueryBindingRegistry" alt="" coords="236,20,401,47"/>
+<area shape="rect" id="node3_2" href="./IPSQueryBinding.html" title="com.helger.schematron.pure.binding.IPSQueryBinding" alt="" coords="447,11,567,55"/>
+</map>

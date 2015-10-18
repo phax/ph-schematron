@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSValidationHandlerDefault.html" title="com.helger.schematron.pure.validation.PSValidationHandlerDefault" alt="" coords="185,120,365,147"/>
+<area shape="rect" id="node3_1" href="./AbstractPSPartialValidationHandler.html" title="com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler" alt="" coords="16,216,261,243"/>
+<area shape="rect" id="node4_2" href="./xpath/PSXPathValidationHandlerSVRL.html" title="com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL" alt="" coords="307,216,515,243"/>
+<area shape="rect" id="node2_3" href="./IPSValidationHandler.html" title="com.helger.schematron.pure.validation.IPSValidationHandler" alt="" coords="203,11,346,55"/>
+</map>

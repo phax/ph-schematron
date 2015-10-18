@@ -1,8 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node1_0" href="./PSP.html" title="com.helger.schematron.pure.model.PSP" alt="" coords="407,120,455,147"/>
-<area shape="rect" id="node2_1" href="./IPSOptionalElement.html" title="com.helger.schematron.pure.model.IPSOptionalElement" alt="" coords="15,11,153,55"/>
-<area shape="rect" id="node3_2" href="./IPSHasMixedContent.html" title="com.helger.schematron.pure.model.IPSHasMixedContent" alt="" coords="198,11,343,55"/>
-<area shape="rect" id="node4_3" href="./IPSHasID.html" title="com.helger.schematron.pure.model.IPSHasID" alt="" coords="389,11,473,55"/>
-<area shape="rect" id="node5_4" href="./IPSHasForeignElements.html" title="com.helger.schematron.pure.model.IPSHasForeignElements" alt="" coords="519,11,681,55"/>
-<area shape="rect" id="node6_5" href="./IPSElement.html" title="com.helger.schematron.pure.model.IPSElement" alt="" coords="727,11,817,55"/>
-</map>

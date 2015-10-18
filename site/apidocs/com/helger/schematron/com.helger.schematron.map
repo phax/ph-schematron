@@ -1,9 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node1_0" href="./SchematronUtils.html" title="com.helger.schematron.SchematronUtils" alt="" coords="16,20,133,47"/>
-<area shape="rect" id="node2_1" href="./SchematronHelper.html" title="com.helger.schematron.SchematronHelper" alt="" coords="179,20,307,47"/>
-<area shape="rect" id="node3_2" href="./SchematronException.html" title="com.helger.schematron.SchematronException" alt="" coords="352,20,501,47"/>
-<area shape="rect" id="node4_3" href="./ISchematronResource.html" title="com.helger.schematron.ISchematronResource" alt="" coords="547,11,696,55"/>
-<area shape="rect" id="node7_4" href="./AbstractSchematronResource.html" title="com.helger.schematron.AbstractSchematronResource" alt="" coords="515,120,728,147"/>
-<area shape="rect" id="node5_5" href="./CSchematronXML.html" title="com.helger.schematron.CSchematronXML" alt="" coords="741,20,867,47"/>
-<area shape="rect" id="node6_6" href="./CSchematron.html" title="com.helger.schematron.CSchematron" alt="" coords="913,20,1013,47"/>
-</map>

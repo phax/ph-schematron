@@ -1,0 +1,15 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSSpan.html" title="com.helger.schematron.pure.model.PSSpan" alt="" coords="16,224,85,251"/>
+<area shape="rect" id="node2_1" href="./PSSchema.html" title="com.helger.schematron.pure.model.PSSchema" alt="" coords="131,224,218,251"/>
+<area shape="rect" id="node3_2" href="./PSRule.html" title="com.helger.schematron.pure.model.PSRule" alt="" coords="263,224,329,251"/>
+<area shape="rect" id="node4_3" href="./PSPhase.html" title="com.helger.schematron.pure.model.PSPhase" alt="" coords="374,224,450,251"/>
+<area shape="rect" id="node5_4" href="./PSPattern.html" title="com.helger.schematron.pure.model.PSPattern" alt="" coords="495,224,577,251"/>
+<area shape="rect" id="node6_5" href="./PSP.html" title="com.helger.schematron.pure.model.PSP" alt="" coords="624,224,672,251"/>
+<area shape="rect" id="node7_6" href="./PSDir.html" title="com.helger.schematron.pure.model.PSDir" alt="" coords="719,224,774,251"/>
+<area shape="rect" id="node8_7" href="./PSDiagnostics.html" title="com.helger.schematron.pure.model.PSDiagnostics" alt="" coords="820,224,927,251"/>
+<area shape="rect" id="node9_8" href="./PSDiagnostic.html" title="com.helger.schematron.pure.model.PSDiagnostic" alt="" coords="973,224,1073,251"/>
+<area shape="rect" id="node10_9" href="./PSAssertReport.html" title="com.helger.schematron.pure.model.PSAssertReport" alt="" coords="1119,224,1233,251"/>
+<area shape="rect" id="node11_10" href="./PSActive.html" title="com.helger.schematron.pure.model.PSActive" alt="" coords="1279,224,1353,251"/>
+<area shape="rect" id="node12_11" href="./IPSHasForeignElements.html" title="com.helger.schematron.pure.model.IPSHasForeignElements" alt="" coords="567,115,729,159"/>
+<area shape="rect" id="node13_12" href="./IPSHasForeignAttributes.html" title="com.helger.schematron.pure.model.IPSHasForeignAttributes" alt="" coords="566,11,730,55"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SchematronXSLTValidatorFailedAssertOnly.html" title="com.helger.schematron.xslt.SchematronXSLTValidatorFailedAssertOnly" alt="" coords="16,120,288,147"/>
+<area shape="rect" id="node2_1" href="./SchematronXSLTValidatorDefault.html" title="com.helger.schematron.xslt.SchematronXSLTValidatorDefault" alt="" coords="334,120,546,147"/>
+<area shape="rect" id="node3_2" href="./ISchematronXSLTValidator.html" title="com.helger.schematron.xslt.ISchematronXSLTValidator" alt="" coords="209,11,383,55"/>
+</map>
