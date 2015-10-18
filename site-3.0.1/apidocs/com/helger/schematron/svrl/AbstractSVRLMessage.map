@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SVRLSuccessfulReport.html" title="com.helger.schematron.svrl.SVRLSuccessfulReport" alt="" coords="16,112,173,139"/>
+<area shape="rect" id="node2_1" href="./SVRLFailedAssert.html" title="com.helger.schematron.svrl.SVRLFailedAssert" alt="" coords="219,112,347,139"/>
+<area shape="rect" id="node3_2" href="./AbstractSVRLMessage.html" title="com.helger.schematron.svrl.AbstractSVRLMessage" alt="" coords="105,16,271,43"/>
+</map>
