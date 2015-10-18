@@ -115,7 +115,7 @@
 
 				<p>
 					ph-schematron ships with a special Apache Maven plugin called <a
-						href="https://github.com/phax/ph-sch2xslt-maven-plugin">ph-schematron2xslt-maven-plugin</a>
+						href="https://github.com/phax/ph-schematron">ph-schematron2xslt-maven-plugin</a>
 					that can be used to create the XSLT scripts from Schematron files
 					during build time. It is described in more detail below.
 				</p>
@@ -195,7 +195,7 @@
 				<p>
 					ph-schematron is an operating system independent Java 1.6 library.
 					As the underlying XPath Engine <a
-						href="http://saxon.sourceforge.net/">SaxonHE 9.5.1.6</a> is used.
+						href="http://saxon.sourceforge.net/">SaxonHE 9.6.0.7</a> is used.
 					Compared to <a href="http://xml.apache.org/xalan-j/">Apache
 						Xalan 2.7.1</a> it offers more XPath functions out of the box.
 					ph-schematron also depends on the OSS library <a
@@ -235,7 +235,7 @@
 				<pre><code>&lt;dependency&gt;
   &lt;groupId&gt;com.helger&lt;/groupId&gt;
   &lt;artifactId&gt;ph-schematron&lt;/artifactId&gt;
-  &lt;version&gt;2.8.3&lt;/version&gt;
+  &lt;version&gt;3.0.1&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
 
@@ -280,8 +280,7 @@
 					possibility to create an SVRL result via the methods
 					<code>org.w3c.dom.Document applySchematronValidation(…)</code>
 					and
-					<code>org.oclc.purl.dsdl.svrl.SchematronOutputType
-						applySchematronValidationToSVRL(…)</code>
+					<code>org.oclc.purl.dsdl.svrl.SchematronOutputType applySchematronValidationToSVRL(…)</code>
 					. The first method type creates the SVRL only as an XML document
 					node, where the second method type applies a JAXB binding, so that
 					it is easier to access the information inside the SVRL. Internally
