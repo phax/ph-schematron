@@ -122,7 +122,7 @@ public class XQueryAsXPathFunctionConverter
    */
   @Nonnull
   public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException,
-                                                                                                   IOException
+                                                                                                    IOException
   {
     ValueEnforcer.notNull (aXQueryIS, "XQueryIS");
 
@@ -157,6 +157,7 @@ public class XQueryAsXPathFunctionConverter
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
               for (final UserFunction aUserFunc : CollectionHelper.newList (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
               {
+                // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
                 aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
                                                      aUserFunc.getFunctionName ().getLocalPart (),
                                                      aUserFunc.getNumberOfArguments (),

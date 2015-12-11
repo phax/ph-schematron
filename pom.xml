@@ -70,6 +70,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- 9.7.0-1 has problems with the default namespace -->
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
