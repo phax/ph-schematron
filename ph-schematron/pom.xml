@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron</artifactId>
   <packaging>bundle</packaging>
@@ -119,7 +119,7 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
+        <version>0.13.1</version>
         <executions>
           <execution>
             <id>svrl</id>
