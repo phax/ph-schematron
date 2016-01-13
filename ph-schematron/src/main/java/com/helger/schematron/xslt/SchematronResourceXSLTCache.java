@@ -19,8 +19,6 @@ package com.helger.schematron.xslt;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.error.IResourceError;
 import com.helger.commons.io.resource.IReadableResource;
@@ -48,9 +47,9 @@ import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 public final class SchematronResourceXSLTCache
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
-  private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
+  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
-  private static final Map <String, SchematronProviderXSLTPrebuild> s_aCache = new HashMap <String, SchematronProviderXSLTPrebuild> ();
+  private static final Map <String, SchematronProviderXSLTPrebuild> s_aCache = new HashMap <> ();
 
   private SchematronResourceXSLTCache ()
   {}
@@ -64,7 +63,7 @@ public final class SchematronResourceXSLTCache
       s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
     final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (aCustomErrorListener != null ? aCustomErrorListener
-                                                                                                                    : new LoggingTransformErrorListener (Locale.US));
+                                                                                                                     : new LoggingTransformErrorListener (Locale.US));
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource,
                                                                                                  aCEH,
                                                                                                  aCustomURIResolver);
@@ -121,40 +120,23 @@ public final class SchematronResourceXSLTCache
     // Determine the unique resource ID for caching
     final String sResourceID = aXSLTResource.getResourceID ();
 
-    SchematronProviderXSLTPrebuild aProvider;
-
     // Validator already in the cache?
-    s_aRWLock.readLock ().lock ();
-    try
-    {
-      aProvider = s_aCache.get (sResourceID);
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    final SchematronProviderXSLTPrebuild aProvider = s_aRWLock.readLocked ( () -> s_aCache.get (sResourceID));
+    if (aProvider != null)
+      return aProvider;
 
-    if (aProvider == null)
-    {
-      s_aRWLock.writeLock ().lock ();
-      try
+    return s_aRWLock.writeLocked ( () -> {
+      // Check again in write lock
+      SchematronProviderXSLTPrebuild aProvider2 = s_aCache.get (sResourceID);
+      if (aProvider2 == null)
       {
-        // Check again in write lock
-        aProvider = s_aCache.get (sResourceID);
-        if (aProvider == null)
-        {
-          // Create new object and put in cache
-          aProvider = createSchematronXSLTProvider (aXSLTResource, aCustomErrorListener, aCustomURIResolver);
-          if (aProvider != null)
-            s_aCache.put (sResourceID, aProvider);
-        }
+        // Create new object and put in cache
+        aProvider2 = createSchematronXSLTProvider (aXSLTResource, aCustomErrorListener, aCustomURIResolver);
+        if (aProvider2 != null)
+          s_aCache.put (sResourceID, aProvider2);
       }
-      finally
-      {
-        s_aRWLock.writeLock ().unlock ();
-      }
-    }
-    return aProvider;
+      return aProvider2;
+    });
   }
 
 }

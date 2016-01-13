@@ -18,8 +18,6 @@ package com.helger.schematron.svrl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
@@ -31,6 +29,7 @@ import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.IErrorLevel;
 
 /**
@@ -41,7 +40,7 @@ import com.helger.commons.error.IErrorLevel;
 @ThreadSafe
 public final class SVRLHelper
 {
-  private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
+  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
 
   private static ISVRLErrorLevelDeterminator s_aELD = new DefaultSVRLErrorLevelDeterminator ();
 
@@ -168,29 +167,15 @@ public final class SVRLHelper
   @Nonnull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
-    s_aRWLock.readLock ().lock ();
-    try
-    {
-      return s_aELD;
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    return s_aRWLock.readLocked ( () -> s_aELD);
   }
 
   public static void setErrorLevelDeterminator (@Nonnull final ISVRLErrorLevelDeterminator aELD)
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
-    s_aRWLock.readLock ().lock ();
-    try
-    {
+    s_aRWLock.readLocked ( () -> {
       s_aELD = aELD;
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    });
   }
 }

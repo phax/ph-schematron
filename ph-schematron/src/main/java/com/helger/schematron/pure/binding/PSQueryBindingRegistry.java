@@ -18,8 +18,6 @@ package com.helger.schematron.pure.binding;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,6 +28,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.exception.InitializationException;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 
@@ -57,8 +56,8 @@ public final class PSQueryBindingRegistry
    */
   public static final IPSQueryBinding DEFAULT_QUERY_BINDING = PSXPathQueryBinding.getInstance ();
 
-  private static final ReadWriteLock s_aRWLock = new ReentrantReadWriteLock ();
-  private static final Map <String, IPSQueryBinding> s_aMap = new HashMap <String, IPSQueryBinding> ();
+  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
+  private static final Map <String, IPSQueryBinding> s_aMap = new HashMap <> ();
 
   static
   {
@@ -85,17 +84,11 @@ public final class PSQueryBindingRegistry
     ValueEnforcer.notEmpty (sName, "Name");
     ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
 
-    s_aRWLock.writeLock ().lock ();
-    try
-    {
+    s_aRWLock.writeLockedThrowing ( () -> {
       if (s_aMap.containsKey (sName))
         throw new SchematronBindException ("A queryBinding with the name '" + sName + "' is already registered!");
       s_aMap.put (sName, aQueryBinding);
-    }
-    finally
-    {
-      s_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   /**
@@ -113,15 +106,7 @@ public final class PSQueryBindingRegistry
     if (sName == null)
       return DEFAULT_QUERY_BINDING;
 
-    s_aRWLock.readLock ().lock ();
-    try
-    {
-      return s_aMap.get (sName);
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    return s_aRWLock.readLocked ( () -> s_aMap.get (sName));
   }
 
   /**
@@ -150,14 +135,6 @@ public final class PSQueryBindingRegistry
   @ReturnsMutableCopy
   public static Map <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
   {
-    s_aRWLock.readLock ().lock ();
-    try
-    {
-      return CollectionHelper.newMap (s_aMap);
-    }
-    finally
-    {
-      s_aRWLock.readLock ().unlock ();
-    }
+    return s_aRWLock.readLocked ( () -> CollectionHelper.newMap (s_aMap));
   }
 }
