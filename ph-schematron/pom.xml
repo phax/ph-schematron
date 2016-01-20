@@ -142,7 +142,6 @@
         </executions>
         <configuration>
           <extension>true</extension>
-          <specVersion>2.1</specVersion>
           <args>
             <arg>-no-header</arg>
             <arg>-Xph-default-locale</arg>
@@ -172,7 +171,7 @@
           <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-jaxb22-plugin</artifactId>
-            <version>2.2.11.6</version>
+            <version>2.2.11.7-SNAPSHOT</version>
           </dependency>
           <!-- Required for correct entity resolving in paths with blanks! -->
           <dependency>
