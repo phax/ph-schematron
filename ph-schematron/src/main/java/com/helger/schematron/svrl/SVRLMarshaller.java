@@ -16,15 +16,12 @@
  */
 package com.helger.schematron.svrl;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.bind.JAXBElement;
 
 import org.oclc.purl.dsdl.svrl.ObjectFactory;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.jaxb.AbstractJAXBMarshaller;
 
 /**
@@ -39,14 +36,7 @@ public class SVRLMarshaller extends AbstractJAXBMarshaller <SchematronOutputType
 {
   public SVRLMarshaller ()
   {
-    super (SchematronOutputType.class, new ClassPathResource (CSVRL.SVRL_XSD_PATH));
+    super (SchematronOutputType.class, CSVRL.SVRL_XSDS, o -> new ObjectFactory ().createSchematronOutput (o));
     setWriteFormatted (GlobalDebug.isDebugMode ());
-  }
-
-  @Override
-  @Nonnull
-  protected JAXBElement <SchematronOutputType> wrapObject (final SchematronOutputType aObject)
-  {
-    return new ObjectFactory ().createSchematronOutput (aObject);
   }
 }
