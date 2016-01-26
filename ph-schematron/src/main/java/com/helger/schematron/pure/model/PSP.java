@@ -203,7 +203,7 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   @Nullable
   public String getText ()
   {
-    return StringHelper.getImploded ("", m_aContent);
+    return StringHelper.getImploded (m_aContent);
   }
 
   public void addDir (@Nonnull final PSDir aDir)
