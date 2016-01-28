@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.compare.CompareHelper;
+import com.helger.commons.compare.ISerializableComparator;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -79,7 +79,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   @ReturnsMutableCopy
   public Map <String, String> getStringReplacementMap (@Nonnull final List <PSParam> aParams)
   {
-    final Map <String, String> ret = new TreeMap <> (CompareHelper.getComparatorStringLongestFirst ());
+    final Map <String, String> ret = new TreeMap <> (ISerializableComparator.getComparatorStringLongestFirst ());
     for (final PSParam aParam : aParams)
       ret.put (PARAM_VARIABLE_PREFIX + aParam.getName (), aParam.getValue ());
     return ret;

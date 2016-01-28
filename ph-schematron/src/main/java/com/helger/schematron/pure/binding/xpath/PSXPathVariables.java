@@ -26,7 +26,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.compare.CompareHelper;
+import com.helger.commons.compare.ISerializableComparator;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -43,7 +43,7 @@ public class PSXPathVariables implements IPSXPathVariables
   @ReturnsMutableCopy
   private static Map <String, String> _createMap ()
   {
-    return new TreeMap <> (CompareHelper.getComparatorStringLongestFirst ());
+    return new TreeMap <> (ISerializableComparator.getComparatorStringLongestFirst ());
   }
 
   private final Map <String, String> m_aMap;
