@@ -26,7 +26,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.compare.ComparatorStringLongestFirst;
+import com.helger.commons.compare.CompareHelper;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -43,7 +43,7 @@ public class PSXPathVariables implements IPSXPathVariables
   @ReturnsMutableCopy
   private static Map <String, String> _createMap ()
   {
-    return new TreeMap <String, String> (new ComparatorStringLongestFirst ());
+    return new TreeMap <> (CompareHelper.getComparatorStringLongestFirst ());
   }
 
   private final Map <String, String> m_aMap;
@@ -97,19 +97,15 @@ public class PSXPathVariables implements IPSXPathVariables
       return EChange.UNCHANGED;
 
     // Apply all existing variables to this variable value!
+    // This ensures that all variables used in variables are resolved correctly
+    // as long as the order of declaration is correct.
+    // Additionally this means that the order of the variables in this class is
+    // irrelevant
     final String sRealValue = getAppliedReplacement (sValue);
     m_aMap.put (sRealName, sRealValue);
     return EChange.CHANGED;
   }
 
-  /**
-   * Perform the text replacement of all variables in the specified text.
-   *
-   * @param sText
-   *        The source text. May be <code>null</code>.
-   * @return The text with all values replaced. May be <code>null</code> if the
-   *         source text is <code>null</code>.
-   */
   @Nullable
   public String getAppliedReplacement (@Nullable final String sText)
   {
