@@ -40,7 +40,7 @@ public final class CSVRL
   /** Path to the SVRL XSD file within the class path */
   public static final String SVRL_XSD_PATH = "schemas/svrl.xsd";
 
-  public static final List <? extends IReadableResource> SVRL_XSDS = CollectionHelper.newUnmodifiableList (new ClassPathResource (SVRL_XSD_PATH));
+  public static final List <? extends IReadableResource> SVRL_XSDS = CollectionHelper.makeUnmodifiable (new ClassPathResource (SVRL_XSD_PATH));
 
   /** Path to the SVRL RelaxNG Compact file within the class path */
   public static final String SVRL_RNC_PATH = "schemas/svrl.rnc";
