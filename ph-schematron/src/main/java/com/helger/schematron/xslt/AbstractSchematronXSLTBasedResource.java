@@ -42,9 +42,9 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
@@ -63,7 +63,9 @@ import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
  *        Implementation type
  */
 @NotThreadSafe
-public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>> extends AbstractSchematronResource
+public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>>
+                                                          extends AbstractSchematronResource
+                                                          implements IGenericImplTrait <IMPLTYPE>
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
@@ -75,13 +77,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
-  }
-
-  @Nonnull
-  protected final IMPLTYPE thisAsT ()
-  {
-    // Avoid the unchecked cast warning in all places
-    return GenericReflection.<AbstractSchematronXSLTBasedResource <IMPLTYPE>, IMPLTYPE> uncheckedCast (this);
   }
 
   @Nullable

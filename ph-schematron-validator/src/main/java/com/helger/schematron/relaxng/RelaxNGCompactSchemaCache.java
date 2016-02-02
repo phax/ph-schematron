@@ -26,6 +26,7 @@ import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
 
 import com.helger.commons.annotation.Singleton;
+import com.helger.commons.system.SystemProperties;
 import com.helger.commons.xml.ls.SimpleLSResourceResolver;
 import com.helger.commons.xml.sax.LoggingSAXErrorHandler;
 import com.helger.commons.xml.schema.SchemaCache;
@@ -42,8 +43,9 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
   static
   {
     // Ensure to use the JING RelaxNG Compact factory
-    System.setProperty ("javax.xml.validation.SchemaFactory:" + XMLConstants.RELAXNG_NS_URI,
-                        com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory.class.getName ());
+    SystemProperties.setPropertyValue ("javax.xml.validation.SchemaFactory:" +
+                                       XMLConstants.RELAXNG_NS_URI,
+                                       com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory.class.getName ());
   }
 
   private static final class SingletonHolder

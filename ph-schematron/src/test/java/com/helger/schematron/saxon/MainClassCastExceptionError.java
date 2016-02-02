@@ -24,6 +24,7 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 
 public class MainClassCastExceptionError
@@ -41,7 +42,7 @@ public class MainClassCastExceptionError
 
     final XPathExpression aExpr = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
                                                             "net.sf.saxon.xpath.XPathFactoryImpl",
-                                                            ClassLoader.getSystemClassLoader ())
+                                                            ClassLoaderHelper.getSystemClassLoader ())
                                               .newXPath ()
                                               .compile ("distinct-values(//para)");
     final Object aResult = aExpr.evaluate (aDoc, XPathConstants.NODESET);
