@@ -53,7 +53,8 @@ public final class SVRLWriter
    * @return {@link ESuccess}
    */
   @Nonnull
-  public static ESuccess writeSVRL (@Nonnull final SchematronOutputType aSchematronOutput, @Nonnull final Result aResult)
+  public static ESuccess writeSVRL (@Nonnull final SchematronOutputType aSchematronOutput,
+                                    @Nonnull final Result aResult)
   {
     return new SVRLMarshaller ().write (aSchematronOutput, aResult);
   }
@@ -68,7 +69,7 @@ public final class SVRLWriter
   @Nullable
   public static Document createXML (@Nonnull final SchematronOutputType aSchematronOutput)
   {
-    return new SVRLMarshaller ().write (aSchematronOutput);
+    return new SVRLMarshaller ().getAsDocument (aSchematronOutput);
   }
 
   /**
@@ -83,6 +84,6 @@ public final class SVRLWriter
   @Nullable
   public static String createXMLString (@Nonnull final SchematronOutputType aSchematronOutput)
   {
-    return new SVRLMarshaller ().getAsXMLString (aSchematronOutput);
+    return new SVRLMarshaller ().getAsString (aSchematronOutput);
   }
 }
