@@ -233,9 +233,9 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("value", m_eValue)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

@@ -51,7 +51,13 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSDiagnostic implements IPSClonableElement <PSDiagnostic>, IPSOptionalElement, IPSHasID, IPSHasForeignElements, IPSHasMixedContent, IPSHasRichGroup
+public class PSDiagnostic implements
+                          IPSClonableElement <PSDiagnostic>,
+                          IPSOptionalElement,
+                          IPSHasID,
+                          IPSHasForeignElements,
+                          IPSHasMixedContent,
+                          IPSHasRichGroup
 {
   private String m_sID;
   private PSRichGroup m_aRich;
@@ -345,9 +351,9 @@ public class PSDiagnostic implements IPSClonableElement <PSDiagnostic>, IPSOptio
   {
     return new ToStringGenerator (this).appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("rich", m_aRich)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

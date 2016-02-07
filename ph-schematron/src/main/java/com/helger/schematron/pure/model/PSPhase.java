@@ -327,10 +327,10 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   {
     return new ToStringGenerator (this).appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("rich", m_aRich)
-                                       .appendIfNotEmpty ("includes", m_aIncludes)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

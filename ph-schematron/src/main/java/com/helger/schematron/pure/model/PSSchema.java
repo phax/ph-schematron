@@ -56,7 +56,13 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup
+public class PSSchema implements
+                      IPSElement,
+                      IPSHasID,
+                      IPSHasForeignElements,
+                      IPSHasIncludes,
+                      IPSHasLets,
+                      IPSHasRichGroup
 {
   private final IReadableResource m_aResource;
   private String m_sID;
@@ -623,16 +629,16 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
                                        .appendIfNotNull ("defaultPhase", m_sDefaultPhase)
                                        .appendIfNotNull ("queryBinding", m_sQueryBinding)
                                        .appendIfNotNull ("title", m_aTitle)
-                                       .appendIfNotEmpty ("includes", m_aIncludes)
-                                       .appendIfNotEmpty ("nss", m_aNSs)
-                                       .appendIfNotEmpty ("startps", m_aStartPs)
-                                       .appendIfNotEmpty ("lets", m_aLets)
-                                       .appendIfNotEmpty ("phases", m_aPhases)
-                                       .appendIfNotEmpty ("patterns", m_aPatterns)
-                                       .appendIfNotEmpty ("endps", m_aEndPs)
+                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
+                                       .appendIf ("nss", m_aNSs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("startps", m_aStartPs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("lets", m_aLets, CollectionHelper::isNotEmpty)
+                                       .appendIf ("phases", m_aPhases, CollectionHelper::isNotEmpty)
+                                       .appendIf ("patterns", m_aPatterns, CollectionHelper::isNotEmpty)
+                                       .appendIf ("endps", m_aEndPs, CollectionHelper::isNotEmpty)
                                        .appendIfNotNull ("diagnostics", m_aDiagnostics)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

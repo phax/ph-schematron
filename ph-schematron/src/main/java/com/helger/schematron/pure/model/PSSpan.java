@@ -210,9 +210,9 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("class", m_sClass)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

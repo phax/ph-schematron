@@ -145,7 +145,13 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup
+public class PSPattern implements
+                       IPSElement,
+                       IPSHasID,
+                       IPSHasForeignElements,
+                       IPSHasIncludes,
+                       IPSHasLets,
+                       IPSHasRichGroup
 {
   private boolean m_bAbstract = false;
   private String m_sID;
@@ -580,11 +586,11 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
                                        .appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("is-a", m_sIsA)
                                        .appendIfNotNull ("rich", m_aRich)
-                                       .appendIfNotEmpty ("includes", m_aIncludes)
+                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
                                        .appendIfNotNull ("title", m_aTitle)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

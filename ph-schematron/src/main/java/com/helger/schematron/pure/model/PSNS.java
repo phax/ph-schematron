@@ -41,7 +41,8 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * namespace URI.<br>
  * NOTE: Because the characters allowed as names may change in versions of XML
  * subsequent to W3C XML 1.0, the ISO/IEC 19757-2 (RELAX NG Compact Syntax)
- * schema for Schematron does not constrain the prefix to particular characters.<br>
+ * schema for Schematron does not constrain the prefix to particular characters.
+ * <br>
  * In an ISO Schematron schema, namespace prefixes in context expressions,
  * assertion tests and other query expressions should use the namespace bindings
  * provided by this element. Namespace prefixes should not use the namespace
@@ -179,7 +180,7 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   {
     return new ToStringGenerator (this).appendIfNotNull ("uri", m_sUri)
                                        .appendIfNotNull ("prefix", m_sPrefix)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

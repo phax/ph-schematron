@@ -49,7 +49,8 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * NOTE: The natural-language assertion may contain information about actual
  * values in addition to expected values and may contain diagnostic information.
  * Users should note, however, that the diagnostic element is provided for such
- * information to encourage clear statement of the natural-language assertion.<br>
+ * information to encourage clear statement of the natural-language assertion.
+ * <br>
  * The icon, see and fpi attributes allow rich interfaces and documentation.<br>
  * The flag attribute allows more detailed outcomes.<br>
  * The role and subject attributes allow explicit identification of some part of
@@ -58,7 +59,14 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElements, IPSHasMixedContent, IPSHasID, IPSHasRichGroup, IPSHasLinkableGroup
+public class PSAssertReport implements
+                            IPSElement,
+                            IPSHasFlag,
+                            IPSHasForeignElements,
+                            IPSHasMixedContent,
+                            IPSHasID,
+                            IPSHasRichGroup,
+                            IPSHasLinkableGroup
 {
   private final boolean m_bIsAssert;
   private String m_sTest;
@@ -422,7 +430,7 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON,
                                                 m_bIsAssert ? CSchematronXML.ELEMENT_ASSERT
-                                                           : CSchematronXML.ELEMENT_REPORT);
+                                                            : CSchematronXML.ELEMENT_REPORT);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);
@@ -456,9 +464,9 @@ public class PSAssertReport implements IPSElement, IPSHasFlag, IPSHasForeignElem
                                        .appendIfNotNull ("diagnostics", m_aDiagnostics)
                                        .appendIfNotNull ("rich", m_aRich)
                                        .appendIfNotNull ("linkable", m_aLinkable)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

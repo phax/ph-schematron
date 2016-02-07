@@ -296,9 +296,9 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
     return new ToStringGenerator (this).appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("class", m_sClass)
                                        .appendIfNotNull ("icon", m_sIcon)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }

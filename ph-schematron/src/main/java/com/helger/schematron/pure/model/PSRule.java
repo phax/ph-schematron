@@ -59,7 +59,15 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSRule implements IPSElement, IPSHasID, IPSHasFlag, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup, IPSHasLinkableGroup
+public class PSRule implements
+                    IPSElement,
+                    IPSHasID,
+                    IPSHasFlag,
+                    IPSHasForeignElements,
+                    IPSHasIncludes,
+                    IPSHasLets,
+                    IPSHasRichGroup,
+                    IPSHasLinkableGroup
 {
   public static final boolean DEFAULT_ABSTRACT = false;
 
@@ -455,11 +463,11 @@ public class PSRule implements IPSElement, IPSHasID, IPSHasFlag, IPSHasForeignEl
                                        .append ("abstract", m_bAbstract)
                                        .appendIfNotNull ("context", m_sContext)
                                        .appendIfNotNull ("id", m_sID)
-                                       .appendIfNotEmpty ("includes", m_aIncludes)
-                                       .appendIfNotEmpty ("lets", m_aLets)
-                                       .appendIfNotEmpty ("content", m_aContent)
-                                       .appendIfNotEmpty ("foreignAttrs", m_aForeignAttrs)
-                                       .appendIfNotEmpty ("foreignElements", m_aForeignElements)
+                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
+                                       .appendIf ("lets", m_aLets, CollectionHelper::isNotEmpty)
+                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .toString ();
   }
 }
