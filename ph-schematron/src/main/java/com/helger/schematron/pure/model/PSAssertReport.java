@@ -29,6 +29,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
 import com.helger.commons.regex.RegExHelper;
@@ -128,13 +129,6 @@ public class PSAssertReport implements
     m_aForeignElements.add (aForeignElement);
   }
 
-  public void addForeignElements (@Nonnull final List <IMicroElement> aForeignElements)
-  {
-    ValueEnforcer.notNull (aForeignElements, "ForeignElements");
-    for (final IMicroElement aForeignElement : aForeignElements)
-      addForeignElement (aForeignElement);
-  }
-
   public boolean hasForeignElements ()
   {
     return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
@@ -156,13 +150,6 @@ public class PSAssertReport implements
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
-  public void addForeignAttributes (@Nonnull final Map <String, String> aForeignAttrs)
-  {
-    ValueEnforcer.notNull (aForeignAttrs, "ForeignAttrs");
-    for (final Map.Entry <String, String> aEntry : aForeignAttrs.entrySet ())
-      addForeignAttribute (aEntry.getKey (), aEntry.getValue ());
-  }
-
   public boolean hasForeignAttributes ()
   {
     return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
@@ -170,7 +157,7 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAllForeignAttributes ()
+  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
     return CollectionHelper.newOrderedMap (m_aForeignAttrs);
   }

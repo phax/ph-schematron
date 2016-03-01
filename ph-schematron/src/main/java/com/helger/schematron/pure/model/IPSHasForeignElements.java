@@ -20,20 +20,26 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.microdom.IMicroElement;
 
 /**
  * Base interface for Pure Schematron elements that support foreign elements and
  * attributes.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasForeignElements extends IPSHasForeignAttributes
 {
   void addForeignElement (@Nonnull IMicroElement aForeignElement);
 
-  void addForeignElements (@Nonnull List <IMicroElement> aForeignElements);
+  default void addForeignElements (@Nonnull final Iterable <IMicroElement> aForeignElements)
+  {
+    ValueEnforcer.notNull (aForeignElements, "ForeignElements");
+    for (final IMicroElement aForeignElement : aForeignElements)
+      addForeignElement (aForeignElement);
+  }
 
   boolean hasForeignElements ();
 

@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -29,6 +26,10 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
 import com.helger.commons.string.StringHelper;
@@ -49,9 +50,9 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignElements, IPSHasMixedContent
 {
   private String m_sPattern;
-  private final List <Object> m_aContent = new ArrayList <Object> ();
-  private Map <String, String> m_aForeignAttrs;
-  private List <IMicroElement> m_aForeignElements;
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
+  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSActive ()
   {}
@@ -94,25 +95,18 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
     if (m_aForeignElements == null)
-      m_aForeignElements = new ArrayList <IMicroElement> ();
+      m_aForeignElements = new CommonsArrayList <> ();
     m_aForeignElements.add (aForeignElement);
-  }
-
-  public void addForeignElements (@Nonnull final List <IMicroElement> aForeignElements)
-  {
-    ValueEnforcer.notNull (aForeignElements, "ForeignElements");
-    for (final IMicroElement aForeignElement : aForeignElements)
-      addForeignElement (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
+    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IMicroElement> getAllForeignElements ()
+  public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return CollectionHelper.newList (m_aForeignElements);
   }
@@ -122,27 +116,20 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
-  }
-
-  public void addForeignAttributes (@Nonnull final Map <String, String> aForeignAttrs)
-  {
-    ValueEnforcer.notNull (aForeignAttrs, "ForeignAttrs");
-    for (final Map.Entry <String, String> aEntry : aForeignAttrs.entrySet ())
-      addForeignAttribute (aEntry.getKey (), aEntry.getValue ());
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAllForeignAttributes ()
+  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   /**
@@ -180,9 +167,9 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllTexts ()
+  public ICommonsList <String> getAllTexts ()
   {
-    final List <String> ret = new ArrayList <String> ();
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
     for (final Object aElement : m_aContent)
       if (aElement instanceof String)
         ret.add ((String) aElement);
@@ -197,9 +184,9 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSDir> getAllDirs ()
+  public ICommonsList <PSDir> getAllDirs ()
   {
-    final List <PSDir> ret = new ArrayList <PSDir> ();
+    final ICommonsList <PSDir> ret = new CommonsArrayList <> ();
     for (final Object aElement : m_aContent)
       if (aElement instanceof PSDir)
         ret.add ((PSDir) aElement);
@@ -214,9 +201,9 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSEmph> getAllEmphs ()
+  public ICommonsList <PSEmph> getAllEmphs ()
   {
-    final List <PSEmph> ret = new ArrayList <PSEmph> ();
+    final ICommonsList <PSEmph> ret = new CommonsArrayList <> ();
     for (final Object aElement : m_aContent)
       if (aElement instanceof PSEmph)
         ret.add ((PSEmph) aElement);
@@ -231,9 +218,9 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSSpan> getAllSpans ()
+  public ICommonsList <PSSpan> getAllSpans ()
   {
-    final List <PSSpan> ret = new ArrayList <PSSpan> ();
+    final ICommonsList <PSSpan> ret = new CommonsArrayList <> ();
     for (final Object aElement : m_aContent)
       if (aElement instanceof PSSpan)
         ret.add ((PSSpan) aElement);
@@ -246,7 +233,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <Object> getAllContentElements ()
+  public ICommonsList <Object> getAllContentElements ()
   {
     return CollectionHelper.newList (m_aContent);
   }

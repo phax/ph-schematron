@@ -20,22 +20,29 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 
 /**
  * Base interface for Pure Schematron elements that support foreign attributes.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasForeignAttributes
 {
   void addForeignAttribute (@Nonnull String sAttrName, @Nonnull String sAttrValue);
 
-  void addForeignAttributes (@Nonnull Map <String, String> aForeignAttrs);
+  default void addForeignAttributes (@Nonnull final Map <String, String> aForeignAttrs)
+  {
+    ValueEnforcer.notNull (aForeignAttrs, "ForeignAttrs");
+    for (final Map.Entry <String, String> aEntry : aForeignAttrs.entrySet ())
+      addForeignAttribute (aEntry.getKey (), aEntry.getValue ());
+  }
 
   boolean hasForeignAttributes ();
 
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, String> getAllForeignAttributes ();
+  ICommonsOrderedMap <String, String> getAllForeignAttributes ();
 }
