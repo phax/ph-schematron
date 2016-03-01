@@ -16,23 +16,22 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 
 /**
  * Base interface for all objects having {@link PSLet} elements contained
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasLets
 {
   /**
    * Add a {@link PSLet} element.
-   * 
+   *
    * @param aLet
    *        The let element to be added. May not be <code>null</code>.
    */
@@ -50,7 +49,7 @@ public interface IPSHasLets
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <PSLet> getAllLets ();
+  ICommonsList <PSLet> getAllLets ();
 
   /**
    * @return The content of all {@link PSLet} elements as an ordered Map from
@@ -59,5 +58,5 @@ public interface IPSHasLets
    */
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, String> getAllLetsAsMap ();
+  ICommonsOrderedMap <String, String> getAllLetsAsMap ();
 }

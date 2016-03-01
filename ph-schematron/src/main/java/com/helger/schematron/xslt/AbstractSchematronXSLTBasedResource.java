@@ -38,7 +38,8 @@ import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.StreamHelper;
@@ -71,7 +72,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver;
-  protected Map <String, ?> m_aCustomParameters;
+  protected ICommonsOrderedMap <String, ?> m_aCustomParameters;
   private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
 
   public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
@@ -107,20 +108,20 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   public boolean hasParameters ()
   {
-    return CollectionHelper.isNotEmpty (m_aCustomParameters);
+    return m_aCustomParameters != null && m_aCustomParameters.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, ?> getParameters ()
+  public ICommonsOrderedMap <String, ?> getParameters ()
   {
-    return CollectionHelper.newOrderedMap (m_aCustomParameters);
+    return new CommonsLinkedHashMap <> (m_aCustomParameters);
   }
 
   @Nonnull
   public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
-    m_aCustomParameters = CollectionHelper.newOrderedMap (aCustomParameters);
+    m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
     return thisAsT ();
   }
 

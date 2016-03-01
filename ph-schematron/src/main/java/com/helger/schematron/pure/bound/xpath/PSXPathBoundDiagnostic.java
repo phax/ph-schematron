@@ -16,13 +16,12 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSDiagnostic;
 
@@ -35,10 +34,10 @@ import com.helger.schematron.pure.model.PSDiagnostic;
 public class PSXPathBoundDiagnostic
 {
   private final PSDiagnostic m_aDiagnostic;
-  private final List <PSXPathBoundElement> m_aBoundContent;
+  private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
 
   public PSXPathBoundDiagnostic (@Nonnull final PSDiagnostic aDiagnostic,
-                                 @Nonnull final List <PSXPathBoundElement> aBoundContent)
+                                 @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent)
   {
     ValueEnforcer.notNull (aDiagnostic, "Diagnostic");
     ValueEnforcer.notNull (aBoundContent, "BoundContent");
@@ -53,9 +52,10 @@ public class PSXPathBoundDiagnostic
   }
 
   @Nonnull
-  public List <PSXPathBoundElement> getAllBoundContentElements ()
+  @ReturnsMutableCopy
+  public ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
   {
-    return CollectionHelper.newList (m_aBoundContent);
+    return m_aBoundContent.getClone ();
   }
 
   @Override

@@ -16,22 +16,21 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 
 /**
  * Base interface for Pure Schematron elements that support includes.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasIncludes
 {
   /**
    * Add an include to this object.
-   * 
+   *
    * @param aInclude
    *        The include to be added. May not be <code>null</code>.
    */
@@ -48,5 +47,5 @@ public interface IPSHasIncludes
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <PSInclude> getAllIncludes ();
+  ICommonsList <PSInclude> getAllIncludes ();
 }

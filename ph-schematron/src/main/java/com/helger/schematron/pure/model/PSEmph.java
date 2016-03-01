@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -27,6 +24,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
 import com.helger.commons.string.StringHelper;
@@ -45,7 +44,7 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 @NotThreadSafe
 public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, IPSHasTexts
 {
-  private final List <String> m_aContent = new ArrayList <String> ();
+  private final ICommonsList <String> m_aContent = new CommonsArrayList <> ();
 
   public PSEmph ()
   {}
@@ -79,14 +78,14 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
 
   public boolean hasAnyText ()
   {
-    return !m_aContent.isEmpty ();
+    return m_aContent.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllTexts ()
+  public ICommonsList <String> getAllTexts ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nullable

@@ -16,14 +16,12 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSPattern;
 
@@ -36,9 +34,10 @@ import com.helger.schematron.pure.model.PSPattern;
 public class PSXPathBoundPattern
 {
   private final PSPattern m_aPattern;
-  private final List <PSXPathBoundRule> m_aBoundRules;
+  private final ICommonsList <PSXPathBoundRule> m_aBoundRules;
 
-  public PSXPathBoundPattern (@Nonnull final PSPattern aPattern, @Nonnull final List <PSXPathBoundRule> aBoundRules)
+  public PSXPathBoundPattern (@Nonnull final PSPattern aPattern,
+                              @Nonnull final ICommonsList <PSXPathBoundRule> aBoundRules)
   {
     ValueEnforcer.notNull (aPattern, "Pattern");
     ValueEnforcer.notNull (aBoundRules, "BoundRules");
@@ -54,9 +53,9 @@ public class PSXPathBoundPattern
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSXPathBoundRule> getAllBoundRules ()
+  public ICommonsList <PSXPathBoundRule> getAllBoundRules ()
   {
-    return CollectionHelper.newList (m_aBoundRules);
+    return m_aBoundRules.getClone ();
   }
 
   @Override

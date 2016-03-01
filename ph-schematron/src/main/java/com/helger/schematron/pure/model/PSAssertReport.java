@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -29,6 +26,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
@@ -73,12 +73,12 @@ public class PSAssertReport implements
   private String m_sTest;
   private String m_sFlag;
   private String m_sID;
-  private List <String> m_aDiagnostics;
+  private ICommonsList <String> m_aDiagnostics;
   private PSRichGroup m_aRich;
   private PSLinkableGroup m_aLinkable;
-  private final List <Object> m_aContent = new ArrayList <Object> ();
-  private Map <String, String> m_aForeignAttrs;
-  private List <IMicroElement> m_aForeignElements;
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
+  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSAssertReport (final boolean bIsAssert)
   {
@@ -125,20 +125,20 @@ public class PSAssertReport implements
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
     if (m_aForeignElements == null)
-      m_aForeignElements = new ArrayList <IMicroElement> ();
+      m_aForeignElements = new CommonsArrayList <> ();
     m_aForeignElements.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
+    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IMicroElement> getAllForeignElements ()
+  public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return CollectionHelper.newList (m_aForeignElements);
+    return new CommonsArrayList <> (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -146,20 +146,20 @@ public class PSAssertReport implements
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public boolean isAssert ()
@@ -199,11 +199,6 @@ public class PSAssertReport implements
     m_sID = sID;
   }
 
-  public boolean hasID ()
-  {
-    return m_sID != null;
-  }
-
   @Nullable
   public String getID ()
   {
@@ -232,7 +227,7 @@ public class PSAssertReport implements
    * @param aDiagnostics
    *        The value to be set. May be <code>null</code>.
    */
-  public void setDiagnostics (@Nullable final List <String> aDiagnostics)
+  public void setDiagnostics (@Nullable final ICommonsList <String> aDiagnostics)
   {
     m_aDiagnostics = aDiagnostics;
   }
@@ -242,19 +237,14 @@ public class PSAssertReport implements
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllDiagnostics ()
+  public ICommonsList <String> getAllDiagnostics ()
   {
-    return CollectionHelper.newList (m_aDiagnostics);
+    return new CommonsArrayList <> (m_aDiagnostics);
   }
 
   public void setRich (@Nullable final PSRichGroup aRich)
   {
     m_aRich = aRich;
-  }
-
-  public boolean hasRich ()
-  {
-    return m_aRich != null;
   }
 
   @Nullable
@@ -263,32 +253,15 @@ public class PSAssertReport implements
     return m_aRich;
   }
 
-  @Nullable
-  public PSRichGroup getRichClone ()
-  {
-    return m_aRich == null ? null : m_aRich.getClone ();
-  }
-
   public void setLinkable (@Nullable final PSLinkableGroup aLinkable)
   {
     m_aLinkable = aLinkable;
-  }
-
-  public boolean hasLinkable ()
-  {
-    return m_aLinkable != null;
   }
 
   @Nullable
   public PSLinkableGroup getLinkable ()
   {
     return m_aLinkable;
-  }
-
-  @Nullable
-  public PSLinkableGroup getLinkableClone ()
-  {
-    return m_aLinkable == null ? null : m_aLinkable.getClone ();
   }
 
   public void addText (@Nonnull @Nonempty final String sText)
@@ -299,21 +272,14 @@ public class PSAssertReport implements
 
   public boolean hasAnyText ()
   {
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        return true;
-    return false;
+    return m_aContent.containsAny (e -> e instanceof String);
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllTexts ()
+  public ICommonsList <String> getAllTexts ()
   {
-    final List <String> ret = new ArrayList <String> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        ret.add ((String) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (String.class);
   }
 
   public void addName (@Nonnull final PSName aName)
@@ -324,13 +290,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSName> getAllNames ()
+  public ICommonsList <PSName> getAllNames ()
   {
-    final List <PSName> ret = new ArrayList <PSName> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSName)
-        ret.add ((PSName) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSName.class);
   }
 
   public void addValueOf (@Nonnull final PSValueOf aValueOf)
@@ -341,13 +303,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSValueOf> getAllValueOfs ()
+  public ICommonsList <PSValueOf> getAllValueOfs ()
   {
-    final List <PSValueOf> ret = new ArrayList <PSValueOf> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSValueOf)
-        ret.add ((PSValueOf) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSValueOf.class);
   }
 
   public void addEmph (@Nonnull final PSEmph aEmph)
@@ -358,13 +316,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSEmph> getAllEmphs ()
+  public ICommonsList <PSEmph> getAllEmphs ()
   {
-    final List <PSEmph> ret = new ArrayList <PSEmph> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSEmph)
-        ret.add ((PSEmph) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSEmph.class);
   }
 
   public void addDir (@Nonnull final PSDir aDir)
@@ -375,13 +329,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSDir> getAllDirs ()
+  public ICommonsList <PSDir> getAllDirs ()
   {
-    final List <PSDir> ret = new ArrayList <PSDir> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSDir)
-        ret.add ((PSDir) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
   public void addSpan (@Nonnull final PSSpan aSpan)
@@ -392,13 +342,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSSpan> getAllSpans ()
+  public ICommonsList <PSSpan> getAllSpans ()
   {
-    final List <PSSpan> ret = new ArrayList <PSSpan> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSSpan)
-        ret.add ((PSSpan) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSSpan.class);
   }
 
   /**
@@ -407,9 +353,9 @@ public class PSAssertReport implements
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <Object> getAllContentElements ()
+  public ICommonsList <Object> getAllContentElements ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nonnull

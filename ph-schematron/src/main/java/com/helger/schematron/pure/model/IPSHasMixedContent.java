@@ -16,16 +16,15 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 
 /**
  * Base interface for a Schematron element that has {@link String} and
  * {@link IPSElement} content mixed.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasMixedContent extends IPSHasTexts
@@ -35,5 +34,5 @@ public interface IPSHasMixedContent extends IPSHasTexts
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <Object> getAllContentElements ();
+  ICommonsList <Object> getAllContentElements ();
 }

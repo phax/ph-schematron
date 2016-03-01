@@ -16,12 +16,11 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.microdom.IMicroElement;
 
 /**
@@ -45,5 +44,5 @@ public interface IPSHasForeignElements extends IPSHasForeignAttributes
 
   @Nonnull
   @ReturnsMutableCopy
-  List <IMicroElement> getAllForeignElements ();
+  ICommonsList <IMicroElement> getAllForeignElements ();
 }

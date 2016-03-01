@@ -16,16 +16,14 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 
@@ -40,14 +38,14 @@ public class PSXPathBoundAssertReport
   private final PSAssertReport m_aAssertReport;
   private final String m_sTestExpression;
   private final XPathExpression m_aBoundTestExpression;
-  private final List <PSXPathBoundElement> m_aBoundContent;
-  private final Map <String, PSXPathBoundDiagnostic> m_aBoundDiagnostics;
+  private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
+  private final ICommonsMap <String, PSXPathBoundDiagnostic> m_aBoundDiagnostics;
 
   public PSXPathBoundAssertReport (@Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final XPathExpression aBoundTestExpression,
-                                   @Nonnull final List <PSXPathBoundElement> aBoundContent,
-                                   @Nonnull final Map <String, PSXPathBoundDiagnostic> aBoundDiagnostics)
+                                   @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent,
+                                   @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics)
   {
     ValueEnforcer.notNull (aAssertReport, "AssertReport");
     ValueEnforcer.notNull (sTestExpression, "TestExpression");
@@ -94,9 +92,9 @@ public class PSXPathBoundAssertReport
    *         the source assert/report.
    */
   @Nonnull
-  public List <PSXPathBoundElement> getAllBoundContentElements ()
+  public ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
   {
-    return CollectionHelper.newList (m_aBoundContent);
+    return m_aBoundContent.getClone ();
   }
 
   /**

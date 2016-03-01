@@ -26,7 +26,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.URIResolver;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.xml.transform.LoggingTransformErrorListener;
 
 /**
@@ -45,7 +46,7 @@ public class SCHTransformerCustomizer
 
   private ErrorListener m_aCustomErrorListener;
   private URIResolver m_aCustomURIResolver;
-  private Map <String, ?> m_aCustomParameters;
+  private ICommonsOrderedMap <String, ?> m_aCustomParameters;
   private String m_sPhase;
   private String m_sLanguageCode;
 
@@ -80,20 +81,20 @@ public class SCHTransformerCustomizer
 
   public boolean hasParameters ()
   {
-    return CollectionHelper.isNotEmpty (m_aCustomParameters);
+    return m_aCustomParameters != null && m_aCustomParameters.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, ?> getParameters ()
+  public ICommonsOrderedMap <String, ?> getParameters ()
   {
-    return CollectionHelper.newOrderedMap (m_aCustomParameters);
+    return new CommonsLinkedHashMap <> (m_aCustomParameters);
   }
 
   @Nonnull
   public SCHTransformerCustomizer setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
-    m_aCustomParameters = CollectionHelper.newOrderedMap (aCustomParameters);
+    m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
     return this;
   }
 

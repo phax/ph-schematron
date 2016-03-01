@@ -36,14 +36,17 @@ public interface IPSHasID
   void setID (@Nullable String sID);
 
   /**
-   * @return <code>true</code> if an ID is present, <code>false</code>
-   *         otherwise.
-   */
-  boolean hasID ();
-
-  /**
    * @return The optional ID of this element. May be <code>null</code>.
    */
   @Nullable
   String getID ();
+
+  /**
+   * @return <code>true</code> if an ID is present, <code>false</code>
+   *         otherwise.
+   */
+  default boolean hasID ()
+  {
+    return getID () != null;
+  }
 }

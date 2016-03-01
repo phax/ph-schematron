@@ -108,7 +108,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return CollectionHelper.newList (m_aForeignElements);
+    return new CommonsArrayList <> (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -159,21 +159,14 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
 
   public boolean hasAnyText ()
   {
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        return true;
-    return false;
+    return m_aContent.containsAny (e -> e instanceof String);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
-    final ICommonsList <String> ret = new CommonsArrayList <> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        ret.add ((String) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (String.class);
   }
 
   public void addDir (@Nonnull final PSDir aDir)
@@ -186,11 +179,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public ICommonsList <PSDir> getAllDirs ()
   {
-    final ICommonsList <PSDir> ret = new CommonsArrayList <> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSDir)
-        ret.add ((PSDir) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
   public void addEmph (@Nonnull final PSEmph aEmph)
@@ -203,11 +192,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public ICommonsList <PSEmph> getAllEmphs ()
   {
-    final ICommonsList <PSEmph> ret = new CommonsArrayList <> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSEmph)
-        ret.add ((PSEmph) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSEmph.class);
   }
 
   public void addSpan (@Nonnull final PSSpan aSpan)
@@ -220,11 +205,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public ICommonsList <PSSpan> getAllSpans ()
   {
-    final ICommonsList <PSSpan> ret = new CommonsArrayList <> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSSpan)
-        ret.add ((PSSpan) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSSpan.class);
   }
 
   /**
@@ -235,7 +216,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @ReturnsMutableCopy
   public ICommonsList <Object> getAllContentElements ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nonnull

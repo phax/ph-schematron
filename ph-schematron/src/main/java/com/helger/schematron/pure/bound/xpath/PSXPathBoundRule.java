@@ -16,15 +16,13 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSRule;
 
@@ -39,12 +37,13 @@ public class PSXPathBoundRule
   private final PSRule m_aRule;
   private final String m_sRuleExpression;
   private final XPathExpression m_aBoundRuleExpression;
-  private final List <PSXPathBoundAssertReport> m_aBoundAssertReports;
+
+  private final ICommonsList <PSXPathBoundAssertReport> m_aBoundAssertReports;
 
   public PSXPathBoundRule (@Nonnull final PSRule aRule,
                            @Nonnull final String sRuleExpression,
                            @Nonnull final XPathExpression aBoundRuleExpression,
-                           @Nonnull final List <PSXPathBoundAssertReport> aBoundAssertReports)
+                           @Nonnull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports)
   {
     ValueEnforcer.notNull (aRule, "Rule");
     ValueEnforcer.notEmpty (sRuleExpression, "RuleExpression");
@@ -76,9 +75,9 @@ public class PSXPathBoundRule
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSXPathBoundAssertReport> getAllBoundAssertReports ()
+  public ICommonsList <PSXPathBoundAssertReport> getAllBoundAssertReports ()
   {
-    return CollectionHelper.newList (m_aBoundAssertReports);
+    return m_aBoundAssertReports.getClone ();
   }
 
   @Override

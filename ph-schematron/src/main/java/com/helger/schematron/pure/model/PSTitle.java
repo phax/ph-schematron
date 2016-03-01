@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -26,6 +23,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
 import com.helger.commons.string.ToStringGenerator;
@@ -44,7 +43,7 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 @NotThreadSafe
 public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement, IPSHasMixedContent
 {
-  private final List <Object> m_aContent = new ArrayList <Object> ();
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
 
   public PSTitle ()
   {}
@@ -78,21 +77,14 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
 
   public boolean hasAnyText ()
   {
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        return true;
-    return false;
+    return m_aContent.containsAny (e -> e instanceof String);
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllTexts ()
+  public ICommonsList <String> getAllTexts ()
   {
-    final List <String> ret = new ArrayList <String> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        ret.add ((String) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (String.class);
   }
 
   public void addDir (@Nonnull final PSDir aDir)
@@ -103,13 +95,9 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSDir> getAllDirs ()
+  public ICommonsList <PSDir> getAllDirs ()
   {
-    final List <PSDir> ret = new ArrayList <PSDir> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSDir)
-        ret.add ((PSDir) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
   /**
@@ -117,9 +105,9 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <Object> getAllContentElements ()
+  public ICommonsList <Object> getAllContentElements ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nonnull

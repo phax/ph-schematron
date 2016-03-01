@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -29,6 +26,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
@@ -78,11 +78,11 @@ public class PSRule implements
   private boolean m_bAbstract = DEFAULT_ABSTRACT;
   private String m_sContext;
   private String m_sID;
-  private final List <PSInclude> m_aIncludes = new ArrayList <PSInclude> ();
-  private final List <PSLet> m_aLets = new ArrayList <PSLet> ();
-  private final List <IPSElement> m_aContent = new ArrayList <IPSElement> ();
-  private Map <String, String> m_aForeignAttrs;
-  private List <IMicroElement> m_aForeignElements;
+  private final ICommonsList <PSInclude> m_aIncludes = new CommonsArrayList <> ();
+  private final ICommonsList <PSLet> m_aLets = new CommonsArrayList <> ();
+  private final ICommonsList <IPSElement> m_aContent = new CommonsArrayList <> ();
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
+  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSRule ()
   {}
@@ -167,20 +167,20 @@ public class PSRule implements
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
     if (m_aForeignElements == null)
-      m_aForeignElements = new ArrayList <IMicroElement> ();
+      m_aForeignElements = new CommonsArrayList <> ();
     m_aForeignElements.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
+    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IMicroElement> getAllForeignElements ()
+  public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return CollectionHelper.newList (m_aForeignElements);
+    return new CommonsArrayList <> (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -188,20 +188,20 @@ public class PSRule implements
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public void setFlag (@Nullable final String sFlag)
@@ -220,21 +220,10 @@ public class PSRule implements
     m_aRich = aRich;
   }
 
-  public boolean hasRich ()
-  {
-    return m_aRich != null;
-  }
-
   @Nullable
   public PSRichGroup getRich ()
   {
     return m_aRich;
-  }
-
-  @Nullable
-  public PSRichGroup getRichClone ()
-  {
-    return m_aRich == null ? null : m_aRich.getClone ();
   }
 
   public void setLinkable (@Nullable final PSLinkableGroup aLinkable)
@@ -242,21 +231,10 @@ public class PSRule implements
     m_aLinkable = aLinkable;
   }
 
-  public boolean hasLinkable ()
-  {
-    return m_aLinkable != null;
-  }
-
   @Nullable
   public PSLinkableGroup getLinkable ()
   {
     return m_aLinkable;
-  }
-
-  @Nullable
-  public PSLinkableGroup getLinkableClone ()
-  {
-    return m_aLinkable == null ? null : m_aLinkable.getClone ();
   }
 
   /**
@@ -293,11 +271,6 @@ public class PSRule implements
     m_sID = sID;
   }
 
-  public boolean hasID ()
-  {
-    return m_sID != null;
-  }
-
   @Nullable
   public String getID ()
   {
@@ -312,14 +285,14 @@ public class PSRule implements
 
   public boolean hasAnyInclude ()
   {
-    return !m_aIncludes.isEmpty ();
+    return m_aIncludes.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSInclude> getAllIncludes ()
+  public ICommonsList <PSInclude> getAllIncludes ()
   {
-    return CollectionHelper.newList (m_aIncludes);
+    return m_aIncludes.getClone ();
   }
 
   public void addLet (@Nonnull final PSLet aLet)
@@ -330,21 +303,21 @@ public class PSRule implements
 
   public boolean hasAnyLet ()
   {
-    return !m_aLets.isEmpty ();
+    return m_aLets.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSLet> getAllLets ()
+  public ICommonsList <PSLet> getAllLets ()
   {
-    return CollectionHelper.newList (m_aLets);
+    return m_aLets.getClone ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAllLetsAsMap ()
+  public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
-    final Map <String, String> ret = new LinkedHashMap <String, String> ();
+    final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
     for (final PSLet aLet : m_aLets)
       ret.put (aLet.getName (), aLet.getValue ());
     return ret;
@@ -358,13 +331,9 @@ public class PSRule implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSAssertReport> getAllAssertReports ()
+  public ICommonsList <PSAssertReport> getAllAssertReports ()
   {
-    final List <PSAssertReport> ret = new ArrayList <PSAssertReport> ();
-    for (final IPSElement aElement : m_aContent)
-      if (aElement instanceof PSAssertReport)
-        ret.add ((PSAssertReport) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSAssertReport.class);
   }
 
   public void addExtends (@Nonnull final PSExtends aExtends)
@@ -375,31 +344,20 @@ public class PSRule implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSExtends> getAllExtends ()
+  public ICommonsList <PSExtends> getAllExtends ()
   {
-    final List <PSExtends> ret = new ArrayList <PSExtends> ();
-    for (final IPSElement aElement : m_aContent)
-      if (aElement instanceof PSExtends)
-        ret.add ((PSExtends) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSExtends.class);
   }
 
   @Nonnegative
   public int getExtendsCount ()
   {
-    int ret = 0;
-    for (final IPSElement aElement : m_aContent)
-      if (aElement instanceof PSExtends)
-        ++ret;
-    return ret;
+    return m_aContent.getCount (e -> e instanceof PSExtends);
   }
 
   public boolean hasAnyExtends ()
   {
-    for (final IPSElement aElement : m_aContent)
-      if (aElement instanceof PSExtends)
-        return true;
-    return false;
+    return m_aContent.containsAny (e -> e instanceof PSExtends);
   }
 
   /**
@@ -408,9 +366,9 @@ public class PSRule implements
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <IPSElement> getAllContentElements ()
+  public ICommonsList <IPSElement> getAllContentElements ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nonnull

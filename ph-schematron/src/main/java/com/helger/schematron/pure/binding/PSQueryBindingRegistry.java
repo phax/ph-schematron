@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.binding;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -27,7 +24,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.exception.InitializationException;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -57,7 +55,7 @@ public final class PSQueryBindingRegistry
   public static final IPSQueryBinding DEFAULT_QUERY_BINDING = PSXPathQueryBinding.getInstance ();
 
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  private static final Map <String, IPSQueryBinding> s_aMap = new HashMap <> ();
+  private static final ICommonsMap <String, IPSQueryBinding> s_aMap = new CommonsHashMap <> ();
 
   static
   {
@@ -133,8 +131,8 @@ public final class PSQueryBindingRegistry
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static Map <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
+  public static ICommonsMap <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
   {
-    return s_aRWLock.readLocked ( () -> CollectionHelper.newMap (s_aMap));
+    return s_aRWLock.readLocked ( () -> s_aMap.getClone ());
   }
 }

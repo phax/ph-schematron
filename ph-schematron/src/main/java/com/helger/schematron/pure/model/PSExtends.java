@@ -16,7 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -26,6 +25,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
@@ -47,7 +47,7 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 public class PSExtends implements IPSElement, IPSHasForeignAttributes
 {
   private String m_sRule;
-  private Map <String, String> m_aForeignAttrs;
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
 
   public PSExtends ()
   {}
@@ -78,20 +78,20 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public void setRule (@Nullable final String sRule)

@@ -20,14 +20,14 @@ import javax.annotation.Nullable;
 
 /**
  * Base interface for objects having a rich group.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasRichGroup
 {
   /**
    * Overwrite any existing rich group.
-   * 
+   *
    * @param aRich
    *        The new rich group to set. May be <code>null</code>.
    */
@@ -37,7 +37,10 @@ public interface IPSHasRichGroup
    * @return <code>true</code> if a rich group is present, <code>false</code>
    *         otherwise.
    */
-  boolean hasRich ();
+  default boolean hasRich ()
+  {
+    return getRich () != null;
+  }
 
   /**
    * @return Get the existing rich group or <code>null</code> if none is
@@ -51,5 +54,9 @@ public interface IPSHasRichGroup
    *         is present at this object.
    */
   @Nullable
-  PSRichGroup getRichClone ();
+  default PSRichGroup getRichClone ()
+  {
+    final PSRichGroup aRich = getRich ();
+    return aRich == null ? null : aRich.getClone ();
+  }
 }

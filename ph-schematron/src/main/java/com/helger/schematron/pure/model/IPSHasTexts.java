@@ -16,22 +16,21 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 
 /**
  * Base interface for all Schematron objects having text children (as Strings)
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasTexts
 {
   /**
    * Add a new text element.
-   * 
+   *
    * @param sText
    *        The text to be added. May not be <code>null</code>.
    */
@@ -48,5 +47,5 @@ public interface IPSHasTexts
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <String> getAllTexts ();
+  ICommonsList <String> getAllTexts ();
 }

@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -29,6 +26,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.id.IHasID;
 import com.helger.commons.lang.EnumHelper;
@@ -79,9 +79,9 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
   }
 
   private EDirValue m_eValue;
-  private final List <String> m_aContent = new ArrayList <String> ();
-  private Map <String, String> m_aForeignAttrs;
-  private List <IMicroElement> m_aForeignElements;
+  private final ICommonsList <String> m_aContent = new CommonsArrayList <> ();
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
+  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSDir ()
   {}
@@ -113,20 +113,20 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
     if (m_aForeignElements == null)
-      m_aForeignElements = new ArrayList <IMicroElement> ();
+      m_aForeignElements = new CommonsArrayList <> ();
     m_aForeignElements.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
+    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IMicroElement> getAllForeignElements ()
+  public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return CollectionHelper.newList (m_aForeignElements);
+    return new CommonsArrayList <> (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -134,20 +134,20 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public void setValue (@Nullable final EDirValue eValue)
@@ -169,14 +169,14 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
 
   public boolean hasAnyText ()
   {
-    return !m_aContent.isEmpty ();
+    return m_aContent.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllTexts ()
+  public ICommonsList <String> getAllTexts ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nullable

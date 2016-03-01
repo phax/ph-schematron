@@ -25,7 +25,8 @@ import javax.annotation.Nullable;
 import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.error.ResourceLocation;
 import com.helger.commons.regex.RegExHelper;
@@ -39,7 +40,7 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public abstract class AbstractSVRLMessage
 {
-  protected List <DiagnosticReference> m_aDiagnosticReferences;
+  protected ICommonsList <DiagnosticReference> m_aDiagnosticReferences;
   protected String m_sText;
   protected String m_sLocation;
   protected String m_sTest;
@@ -79,7 +80,7 @@ public abstract class AbstractSVRLMessage
                               @Nullable final String sRole,
                               @Nullable final IErrorLevel aFlag)
   {
-    m_aDiagnosticReferences = CollectionHelper.newList (aDiagnosticReferences);
+    m_aDiagnosticReferences = new CommonsArrayList <> (aDiagnosticReferences);
     m_sText = sText;
     m_sLocation = sLocation;
     m_sTest = sTest;
@@ -89,9 +90,9 @@ public abstract class AbstractSVRLMessage
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <DiagnosticReference> getDiagnisticReferences ()
+  public ICommonsList <DiagnosticReference> getDiagnisticReferences ()
   {
-    return CollectionHelper.newList (m_aDiagnosticReferences);
+    return m_aDiagnosticReferences.getClone ();
   }
 
   @Nullable

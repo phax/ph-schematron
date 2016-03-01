@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.bound;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -28,7 +25,8 @@ import org.w3c.dom.Node;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
@@ -60,7 +58,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   private final MapBasedNamespaceContext m_aNamespaceContext;
   private final String m_sPhase;
   private final PSPhase m_aPhase;
-  private final List <PSPattern> m_aPatterns = new ArrayList <PSPattern> ();
+  private final ICommonsList <PSPattern> m_aPatterns = new CommonsArrayList <> ();
 
   public AbstractPSBoundSchema (@Nonnull final IPSQueryBinding aQueryBinding,
                                 @Nonnull final PSSchema aOrigSchema,
@@ -111,7 +109,8 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
         final PSPattern aPattern = aOrigSchema.getPatternOfID (sActivePatternID);
         if (aPattern == null)
         {
-          warn (aOrigSchema, "Failed to resolve pattern with ID '" +
+          warn (aOrigSchema,
+                "Failed to resolve pattern with ID '" +
                              sActivePatternID +
                              "' - ignoring this pattern in phase '" +
                              sRealPhase +
@@ -199,9 +198,9 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
 
   @Nonnull
   @ReturnsMutableCopy
-  public final List <PSPattern> getAllRelevantPatterns ()
+  public final ICommonsList <PSPattern> getAllRelevantPatterns ()
   {
-    return CollectionHelper.newList (m_aPatterns);
+    return m_aPatterns.getClone ();
   }
 
   /**

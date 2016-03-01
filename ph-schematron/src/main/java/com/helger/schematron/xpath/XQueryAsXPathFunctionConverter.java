@@ -26,7 +26,7 @@ import javax.annotation.WillClose;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.iterate.IterableIterator;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 
@@ -155,7 +155,7 @@ public class XQueryAsXPathFunctionConverter
           {
             // Currently the user functions are in ExecutableFunctionLibrary
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
-              for (final UserFunction aUserFunc : CollectionHelper.newList (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
+              for (final UserFunction aUserFunc : new IterableIterator <> (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
                 aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
@@ -172,7 +172,7 @@ public class XQueryAsXPathFunctionConverter
           {
             // This block works with Saxon HE 9.6.0-x :)
             final XQueryFunctionLibrary aRealFuncLib = (XQueryFunctionLibrary) aFuncLib;
-            for (final XQueryFunction aXQueryFunction : CollectionHelper.newList (aRealFuncLib.getFunctionDefinitions ()))
+            for (final XQueryFunction aXQueryFunction : new IterableIterator <> (aRealFuncLib.getFunctionDefinitions ()))
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();

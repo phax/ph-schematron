@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -29,6 +26,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.MicroElement;
@@ -53,9 +53,9 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   private String m_sID;
   private String m_sClass;
   private String m_sIcon;
-  private final List <Object> m_aContent = new ArrayList <Object> ();
-  private Map <String, String> m_aForeignAttrs;
-  private List <IMicroElement> m_aForeignElements;
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
+  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSP ()
   {}
@@ -87,20 +87,20 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
     if (m_aForeignElements == null)
-      m_aForeignElements = new ArrayList <IMicroElement> ();
+      m_aForeignElements = new CommonsArrayList <> ();
     m_aForeignElements.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
+    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IMicroElement> getAllForeignElements ()
+  public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return CollectionHelper.newList (m_aForeignElements);
+    return new CommonsArrayList <> (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -108,30 +108,25 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public void setID (@Nullable final String sID)
   {
     m_sID = sID;
-  }
-
-  public boolean hasID ()
-  {
-    return m_sID != null;
   }
 
   @Nullable
@@ -170,21 +165,14 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
 
   public boolean hasAnyText ()
   {
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        return true;
-    return false;
+    return m_aContent.containsAny (e -> e instanceof String);
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllTexts ()
+  public ICommonsList <String> getAllTexts ()
   {
-    final List <String> ret = new ArrayList <String> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof String)
-        ret.add ((String) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (String.class);
   }
 
   @Nullable
@@ -201,31 +189,22 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSDir> getAllDirs ()
+  public ICommonsList <PSDir> getAllDirs ()
   {
-    final List <PSDir> ret = new ArrayList <PSDir> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSDir)
-        ret.add ((PSDir) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
   public void addEmph (@Nonnull final PSEmph aEmph)
   {
-    if (aEmph == null)
-      throw new NullPointerException ("Emph");
+    ValueEnforcer.notNull (aEmph, "Emph");
     m_aContent.add (aEmph);
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSEmph> getAllEmphs ()
+  public ICommonsList <PSEmph> getAllEmphs ()
   {
-    final List <PSEmph> ret = new ArrayList <PSEmph> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSEmph)
-        ret.add ((PSEmph) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSEmph.class);
   }
 
   public void addSpan (@Nonnull final PSSpan aSpan)
@@ -236,13 +215,9 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSSpan> getAllSpans ()
+  public ICommonsList <PSSpan> getAllSpans ()
   {
-    final List <PSSpan> ret = new ArrayList <PSSpan> ();
-    for (final Object aElement : m_aContent)
-      if (aElement instanceof PSSpan)
-        ret.add ((PSSpan) aElement);
-    return ret;
+    return m_aContent.getAllInstanceOf (PSSpan.class);
   }
 
   /**
@@ -251,9 +226,9 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <Object> getAllContentElements ()
+  public ICommonsList <Object> getAllContentElements ()
   {
-    return CollectionHelper.newList (m_aContent);
+    return m_aContent.getClone ();
   }
 
   @Nonnull

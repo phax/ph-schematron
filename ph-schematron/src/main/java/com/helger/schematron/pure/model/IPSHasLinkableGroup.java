@@ -20,14 +20,14 @@ import javax.annotation.Nullable;
 
 /**
  * Base interface for objects having a linkable group.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSHasLinkableGroup
 {
   /**
    * Overwrite any existing linkable group.
-   * 
+   *
    * @param aLinkable
    *        The new linkable group to set. May be <code>null</code>.
    */
@@ -37,7 +37,10 @@ public interface IPSHasLinkableGroup
    * @return <code>true</code> if a linkable group is present,
    *         <code>false</code> otherwise.
    */
-  boolean hasLinkable ();
+  default boolean hasLinkable ()
+  {
+    return getLinkable () != null;
+  }
 
   /**
    * @return Get the existing linkable group or <code>null</code> if none is
@@ -51,5 +54,9 @@ public interface IPSHasLinkableGroup
    *         linkable group is present at this object.
    */
   @Nullable
-  PSLinkableGroup getLinkableClone ();
+  default PSLinkableGroup getLinkableClone ()
+  {
+    final PSLinkableGroup aLinkable = getLinkable ();
+    return aLinkable == null ? null : aLinkable.getClone ();
+  }
 }

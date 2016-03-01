@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -29,6 +26,9 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.microdom.IMicroElement;
@@ -72,16 +72,16 @@ public class PSSchema implements
   private String m_sDefaultPhase;
   private String m_sQueryBinding;
   private PSTitle m_aTitle;
-  private final List <PSInclude> m_aIncludes = new ArrayList <PSInclude> ();
-  private final List <PSNS> m_aNSs = new ArrayList <PSNS> ();
-  private final List <PSP> m_aStartPs = new ArrayList <PSP> ();
-  private final List <PSLet> m_aLets = new ArrayList <PSLet> ();
-  private final List <PSPhase> m_aPhases = new ArrayList <PSPhase> ();
-  private final List <PSPattern> m_aPatterns = new ArrayList <PSPattern> ();
-  private final List <PSP> m_aEndPs = new ArrayList <PSP> ();
+  private final ICommonsList <PSInclude> m_aIncludes = new CommonsArrayList <> ();
+  private final ICommonsList <PSNS> m_aNSs = new CommonsArrayList <> ();
+  private final ICommonsList <PSP> m_aStartPs = new CommonsArrayList <> ();
+  private final ICommonsList <PSLet> m_aLets = new CommonsArrayList <> ();
+  private final ICommonsList <PSPhase> m_aPhases = new CommonsArrayList <> ();
+  private final ICommonsList <PSPattern> m_aPatterns = new CommonsArrayList <> ();
+  private final ICommonsList <PSP> m_aEndPs = new CommonsArrayList <> ();
   private PSDiagnostics m_aDiagnostics;
-  private Map <String, String> m_aForeignAttrs;
-  private List <IMicroElement> m_aForeignElements;
+  private ICommonsOrderedMap <String, String> m_aForeignAttrs;
+  private ICommonsList <IMicroElement> m_aForeignElements;
 
   /**
    * Default constructor for a new schema that was not read from a file.
@@ -245,20 +245,20 @@ public class PSSchema implements
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
     if (m_aForeignElements == null)
-      m_aForeignElements = new ArrayList <IMicroElement> ();
+      m_aForeignElements = new CommonsArrayList <> ();
     m_aForeignElements.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && !m_aForeignElements.isEmpty ();
+    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IMicroElement> getAllForeignElements ()
+  public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return CollectionHelper.newList (m_aForeignElements);
+    return new CommonsArrayList <> (m_aForeignElements);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -266,30 +266,25 @@ public class PSSchema implements
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
     if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new LinkedHashMap <String, String> ();
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean hasForeignAttributes ()
   {
-    return m_aForeignAttrs != null && !m_aForeignAttrs.isEmpty ();
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aForeignAttrs);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public void setID (@Nullable final String sID)
   {
     m_sID = sID;
-  }
-
-  public boolean hasID ()
-  {
-    return m_sID != null;
   }
 
   @Nullable
@@ -303,21 +298,10 @@ public class PSSchema implements
     m_aRich = aRich;
   }
 
-  public boolean hasRich ()
-  {
-    return m_aRich != null;
-  }
-
   @Nullable
   public PSRichGroup getRich ()
   {
     return m_aRich;
-  }
-
-  @Nullable
-  public PSRichGroup getRichClone ()
-  {
-    return m_aRich == null ? null : m_aRich.getClone ();
   }
 
   public void setQueryBinding (@Nullable final String sQueryBinding)
@@ -381,14 +365,14 @@ public class PSSchema implements
 
   public boolean hasAnyInclude ()
   {
-    return !m_aIncludes.isEmpty ();
+    return m_aIncludes.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSInclude> getAllIncludes ()
+  public ICommonsList <PSInclude> getAllIncludes ()
   {
-    return CollectionHelper.newList (m_aIncludes);
+    return m_aIncludes.getClone ();
   }
 
   public void addNS (@Nonnull final PSNS aNS)
@@ -399,14 +383,14 @@ public class PSSchema implements
 
   public boolean hasAnyNS ()
   {
-    return !m_aNSs.isEmpty ();
+    return m_aNSs.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSNS> getAllNSs ()
+  public ICommonsList <PSNS> getAllNSs ()
   {
-    return CollectionHelper.newList (m_aNSs);
+    return m_aNSs.getClone ();
   }
 
   /**
@@ -430,9 +414,9 @@ public class PSSchema implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSP> getAllStartPs ()
+  public ICommonsList <PSP> getAllStartPs ()
   {
-    return CollectionHelper.newList (m_aStartPs);
+    return m_aStartPs.getClone ();
   }
 
   public void addLet (@Nonnull final PSLet aLet)
@@ -443,21 +427,21 @@ public class PSSchema implements
 
   public boolean hasAnyLet ()
   {
-    return !m_aLets.isEmpty ();
+    return m_aLets.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSLet> getAllLets ()
+  public ICommonsList <PSLet> getAllLets ()
   {
-    return CollectionHelper.newList (m_aLets);
+    return m_aLets.getClone ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAllLetsAsMap ()
+  public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
-    final Map <String, String> ret = new LinkedHashMap <String, String> ();
+    final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
     for (final PSLet aLet : m_aLets)
       ret.put (aLet.getName (), aLet.getValue ());
     return ret;
@@ -471,9 +455,9 @@ public class PSSchema implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSPhase> getAllPhases ()
+  public ICommonsList <PSPhase> getAllPhases ()
   {
-    return CollectionHelper.newList (m_aPhases);
+    return m_aPhases.getClone ();
   }
 
   /**
@@ -482,13 +466,9 @@ public class PSSchema implements
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAllPhaseIDs ()
+  public ICommonsList <String> getAllPhaseIDs ()
   {
-    final List <String> ret = new ArrayList <String> ();
-    for (final PSPhase aPhase : m_aPhases)
-      if (aPhase.hasID ())
-        ret.add (aPhase.getID ());
-    return ret;
+    return m_aPhases.getAllMapped (PSPhase::hasID, PSPhase::getID);
   }
 
   @Nullable
@@ -509,7 +489,7 @@ public class PSSchema implements
 
   public boolean hasPatterns ()
   {
-    return !m_aPatterns.isEmpty ();
+    return m_aPatterns.isNotEmpty ();
   }
 
   public boolean hasNoPatterns ()
@@ -519,9 +499,9 @@ public class PSSchema implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSPattern> getAllPatterns ()
+  public ICommonsList <PSPattern> getAllPatterns ()
   {
-    return CollectionHelper.newList (m_aPatterns);
+    return m_aPatterns.getClone ();
   }
 
   @Nonnegative
@@ -548,9 +528,9 @@ public class PSSchema implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <PSP> getAllEndPs ()
+  public ICommonsList <PSP> getAllEndPs ()
   {
-    return CollectionHelper.newList (m_aEndPs);
+    return m_aEndPs.getClone ();
   }
 
   public void setDiagnostics (@Nullable final PSDiagnostics aDiagnostics)

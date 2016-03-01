@@ -16,17 +16,16 @@
  */
 package com.helger.schematron.pure.preprocess;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.CommonsTreeSet;
+import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.ext.ICommonsSortedSet;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSRule;
@@ -42,8 +41,8 @@ import com.helger.schematron.pure.model.PSSchema;
 @NotThreadSafe
 final class PreprocessorLookup
 {
-  private final Map <String, PSPattern> m_aPatterns = new HashMap <String, PSPattern> ();
-  private final Map <String, PSRule> m_aRules = new HashMap <String, PSRule> ();
+  private final ICommonsMap <String, PSPattern> m_aPatterns = new CommonsHashMap <> ();
+  private final ICommonsMap <String, PSRule> m_aRules = new CommonsHashMap <> ();
 
   public PreprocessorLookup (@Nonnull final PSSchema aSchema)
   {
@@ -95,9 +94,9 @@ final class PreprocessorLookup
    */
   @Nonnull
   @ReturnsMutableCopy
-  public SortedSet <String> getAllAbstractRuleIDs ()
+  public ICommonsSortedSet <String> getAllAbstractRuleIDs ()
   {
-    return CollectionHelper.newSortedSet (m_aRules.keySet ());
+    return new CommonsTreeSet <> (m_aRules.keySet ());
   }
 
   @Override
