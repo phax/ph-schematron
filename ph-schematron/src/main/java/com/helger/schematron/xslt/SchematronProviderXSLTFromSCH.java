@@ -38,6 +38,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.commons.xml.serialize.write.XMLWriterSettings;
 import com.helger.commons.xml.transform.TransformSourceFactory;
+import com.helger.commons.xml.transform.XMLTransformerFactory;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.schematron.xslt.SCHTransformerCustomizer.EStep;
 
@@ -105,11 +106,14 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
     {
       // prepare all steps
       if (s_aStep1 == null)
-        s_aStep1 = SchematronTransformerFactory.newTemplates (new ClassPathResource (XSLT2_STEP1));
+        s_aStep1 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                       new ClassPathResource (XSLT2_STEP1));
       if (s_aStep2 == null)
-        s_aStep2 = SchematronTransformerFactory.newTemplates (new ClassPathResource (XSLT2_STEP2));
+        s_aStep2 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                       new ClassPathResource (XSLT2_STEP2));
       if (s_aStep3 == null)
-        s_aStep3 = SchematronTransformerFactory.newTemplates (new ClassPathResource (XSLT2_STEP3));
+        s_aStep3 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                       new ClassPathResource (XSLT2_STEP3));
 
       // perform step 1 (Schematron -> ResultStep1)
       final DOMResult aResult1 = new DOMResult ();
@@ -153,7 +157,8 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
       }
 
       // compile result of step 3
-      m_aSchematronXSLTTemplates = SchematronTransformerFactory.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                                       TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Throwable t)
     {

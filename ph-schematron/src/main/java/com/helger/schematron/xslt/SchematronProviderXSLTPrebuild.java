@@ -58,7 +58,7 @@ final class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvid
       m_aSchematronXSLTDoc = DOMReader.readXMLDOM (aXSLTResource);
 
       // compile result of read file
-      final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
+      final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactorySaxonFirst (aCustomErrorListener,
                                                                                             new DefaultTransformURIResolver (aCustomURIResolver));
       m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
