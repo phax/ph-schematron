@@ -33,7 +33,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.commons.xml.transform.DefaultTransformURIResolver;
 import com.helger.commons.xml.transform.TransformSourceFactory;
-import com.helger.commons.xml.transform.XMLTransformerFactory;
+import com.helger.schematron.saxon.SchematronTransformerFactory;
 
 /**
  * This Schematron validator factory uses an existing, precompiled Schematron
@@ -58,8 +58,8 @@ final class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvid
       m_aSchematronXSLTDoc = DOMReader.readXMLDOM (aXSLTResource);
 
       // compile result of read file
-      final TransformerFactory aTF = XMLTransformerFactory.createTransformerFactory (aCustomErrorListener,
-                                                                                     new DefaultTransformURIResolver (aCustomURIResolver));
+      final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
+                                                                                            new DefaultTransformURIResolver (aCustomURIResolver));
       m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)
