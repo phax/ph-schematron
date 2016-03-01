@@ -17,7 +17,6 @@
 package com.helger.schematron.pure.binding.xpath;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,6 +25,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.CommonsTreeMap;
+import com.helger.commons.collection.ext.ICommonsNavigableMap;
 import com.helger.commons.compare.IComparator;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
@@ -41,12 +42,12 @@ public class PSXPathVariables implements IPSXPathVariables
 {
   @Nonnull
   @ReturnsMutableCopy
-  private static Map <String, String> _createMap ()
+  private static ICommonsNavigableMap <String, String> _createMap ()
   {
-    return new TreeMap <> (IComparator.getComparatorStringLongestFirst ());
+    return new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
   }
 
-  private final Map <String, String> m_aMap;
+  private final ICommonsNavigableMap <String, String> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -149,11 +150,9 @@ public class PSXPathVariables implements IPSXPathVariables
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAll ()
+  public ICommonsNavigableMap <String, String> getAll ()
   {
-    final Map <String, String> ret = _createMap ();
-    ret.putAll (m_aMap);
-    return ret;
+    return m_aMap.getClone ();
   }
 
   public boolean contains (@Nullable final String sName)

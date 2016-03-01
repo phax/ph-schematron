@@ -17,12 +17,12 @@
 package com.helger.schematron.pure.binding.xpath;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsNavigableMap;
 import com.helger.commons.lang.ICloneable;
 
 /**
@@ -48,7 +48,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    */
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, String> getAll ();
+  ICommonsNavigableMap <String, String> getAll ();
 
   /**
    * @param sName

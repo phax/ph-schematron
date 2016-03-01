@@ -18,7 +18,6 @@ package com.helger.schematron.pure.binding.xpath;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.CommonsTreeMap;
+import com.helger.commons.collection.ext.ICommonsNavigableMap;
 import com.helger.commons.compare.IComparator;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.SchematronException;
@@ -77,9 +78,9 @@ public class PSXPathQueryBinding implements IPSQueryBinding
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getStringReplacementMap (@Nonnull final List <PSParam> aParams)
+  public ICommonsNavigableMap <String, String> getStringReplacementMap (@Nonnull final List <PSParam> aParams)
   {
-    final Map <String, String> ret = new TreeMap <> (IComparator.getComparatorStringLongestFirst ());
+    final ICommonsNavigableMap <String, String> ret = new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
     for (final PSParam aParam : aParams)
       ret.put (PARAM_VARIABLE_PREFIX + aParam.getName (), aParam.getValue ());
     return ret;

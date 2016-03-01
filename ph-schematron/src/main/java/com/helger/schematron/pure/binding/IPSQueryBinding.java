@@ -26,6 +26,7 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -67,7 +68,7 @@ public interface IPSQueryBinding extends Serializable
    */
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, String> getStringReplacementMap (@Nonnull List <PSParam> aParams);
+  ICommonsNavigableMap <String, String> getStringReplacementMap (@Nonnull List <PSParam> aParams);
 
   /**
    * Apply the Map created by {@link #getNegatedTestExpression(String)} on a
