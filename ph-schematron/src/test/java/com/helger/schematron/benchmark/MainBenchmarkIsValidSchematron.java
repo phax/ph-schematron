@@ -19,9 +19,10 @@ package com.helger.schematron.benchmark;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.xml.transform.DoNothingTransformErrorListener;
 import com.helger.schematron.CSchematron;
@@ -41,7 +42,7 @@ public final class MainBenchmarkIsValidSchematron extends AbstractBenchmarkTask
   {
     logSystemInfo ();
 
-    final List <IReadableResource> aValidSchematrons = new ArrayList <IReadableResource> ();
+    final ICommonsList <IReadableResource> aValidSchematrons = new CommonsArrayList <> ();
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
       if (!aRes.getPath ().endsWith ("/BIICORE-UBL-T01.sch") &&
           !aRes.getPath ().endsWith ("/BIICORE-UBL-T10.sch") &&

@@ -16,7 +16,6 @@
  */
 package com.helger.schematron.pure.preprocess;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.model.IPSElement;
@@ -213,10 +214,10 @@ public class PSPreprocessor
    */
   @Nonnull
   @ReturnsMutableCopy
-  private static List <PSAssertReport> _getResolvedExtends (@Nonnull final List <IPSElement> aRuleContent,
-                                                            @Nonnull final PreprocessorLookup aLookup) throws SchematronPreprocessException
+  private static ICommonsList <PSAssertReport> _getResolvedExtends (@Nonnull final List <IPSElement> aRuleContent,
+                                                                    @Nonnull final PreprocessorLookup aLookup) throws SchematronPreprocessException
   {
-    final List <PSAssertReport> ret = new ArrayList <PSAssertReport> ();
+    final ICommonsList <PSAssertReport> ret = new CommonsArrayList <> ();
     for (final IPSElement aElement : aRuleContent)
     {
       if (aElement instanceof PSAssertReport)

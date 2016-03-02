@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.svrl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -29,6 +26,8 @@ import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.IErrorLevel;
 
@@ -59,9 +58,9 @@ public final class SVRLHelper
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static List <SVRLFailedAssert> getAllFailedAssertions (@Nonnull final SchematronOutputType aSchematronOutput)
+  public static ICommonsList <SVRLFailedAssert> getAllFailedAssertions (@Nonnull final SchematronOutputType aSchematronOutput)
   {
-    final List <SVRLFailedAssert> ret = new ArrayList <SVRLFailedAssert> ();
+    final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof FailedAssert)
         ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
@@ -80,10 +79,10 @@ public final class SVRLHelper
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static List <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
-                                                                                     @Nonnull final IErrorLevel aErrorLevel)
+  public static ICommonsList <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
+                                                                                             @Nonnull final IErrorLevel aErrorLevel)
   {
-    final List <SVRLFailedAssert> ret = new ArrayList <SVRLFailedAssert> ();
+    final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof FailedAssert)
       {
@@ -103,9 +102,9 @@ public final class SVRLHelper
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static List <SVRLSuccessfulReport> getAllSuccessfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
+  public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
   {
-    final List <SVRLSuccessfulReport> ret = new ArrayList <SVRLSuccessfulReport> ();
+    final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof SuccessfulReport)
         ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
@@ -124,10 +123,10 @@ public final class SVRLHelper
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static List <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
-                                                                                          @Nonnull final IErrorLevel aErrorLevel)
+  public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
+                                                                                                  @Nonnull final IErrorLevel aErrorLevel)
   {
-    final List <SVRLSuccessfulReport> ret = new ArrayList <SVRLSuccessfulReport> ();
+    final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof SuccessfulReport)
       {
@@ -174,8 +173,6 @@ public final class SVRLHelper
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
-    s_aRWLock.readLocked ( () -> {
-      s_aELD = aELD;
-    });
+    s_aRWLock.readLocked ( () -> s_aELD = aELD);
   }
 }
