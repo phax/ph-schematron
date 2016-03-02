@@ -16,12 +16,11 @@
  */
 package com.helger.schematron.testfiles;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.microdom.IMicroDocument;
@@ -35,14 +34,14 @@ import com.helger.commons.microdom.serialize.MicroReader;
  */
 public final class SchematronTestHelper
 {
-  private static final List <SchematronTestFile> s_aSCHs = _readDI (new ClassPathResource ("test-sch/dirindex.xml"));
-  private static final List <SchematronTestFile> s_aSVRLs = _readDI (new ClassPathResource ("test-svrl/dirindex.xml"));
-  private static final List <SchematronTestFile> s_aXMLs = _readDI (new ClassPathResource ("test-xml/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> s_aSCHs = _readDI (new ClassPathResource ("test-sch/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> s_aSVRLs = _readDI (new ClassPathResource ("test-svrl/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> s_aXMLs = _readDI (new ClassPathResource ("test-xml/dirindex.xml"));
 
   @Nonnull
-  private static List <SchematronTestFile> _readDI (@Nonnull final IReadableResource aDI)
+  private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aDI)
   {
-    final List <SchematronTestFile> ret = new ArrayList <SchematronTestFile> ();
+    final ICommonsList <SchematronTestFile> ret = new CommonsArrayList <> ();
     final IMicroDocument aDoc = MicroReader.readMicroXML (aDI);
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to open/parse " + aDI + " as XML");
@@ -65,67 +64,51 @@ public final class SchematronTestHelper
 
   @Nonnull
   @Nonempty
-  public static List <IReadableResource> getAllValidSchematronFiles ()
+  public static ICommonsList <IReadableResource> getAllValidSchematronFiles ()
   {
-    final List <IReadableResource> ret = new ArrayList <IReadableResource> ();
-    for (final SchematronTestFile aFile : s_aSCHs)
-      if (!aFile.getFileBaseName ().startsWith ("invalid") && !aFile.getParentDirBaseName ().equals ("include"))
-        ret.add (aFile.getResource ());
-    return ret;
+    return s_aSCHs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid") &&
+                                          !aFile.getParentDirBaseName ().equals ("include"),
+                                 SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
-  public static List <IReadableResource> getAllInvalidSchematronFiles ()
+  public static ICommonsList <IReadableResource> getAllInvalidSchematronFiles ()
   {
-    final List <IReadableResource> ret = new ArrayList <IReadableResource> ();
-    for (final SchematronTestFile aFile : s_aSCHs)
-      if (aFile.getFileBaseName ().startsWith ("invalid") && !aFile.getParentDirBaseName ().equals ("include"))
-        ret.add (aFile.getResource ());
-    return ret;
+    return s_aSCHs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid") &&
+                                          !aFile.getParentDirBaseName ().equals ("include"),
+                                 SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
-  public static List <IReadableResource> getAllValidSVRLFiles ()
+  public static ICommonsList <IReadableResource> getAllValidSVRLFiles ()
   {
-    final List <IReadableResource> ret = new ArrayList <IReadableResource> ();
-    for (final SchematronTestFile aFile : s_aSVRLs)
-      if (!aFile.getFileBaseName ().startsWith ("invalid"))
-        ret.add (aFile.getResource ());
-    return ret;
+    return s_aSVRLs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"),
+                                  SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
-  public static List <IReadableResource> getAllInvalidSVRLFiles ()
+  public static ICommonsList <IReadableResource> getAllInvalidSVRLFiles ()
   {
-    final List <IReadableResource> ret = new ArrayList <IReadableResource> ();
-    for (final SchematronTestFile aFile : s_aSVRLs)
-      if (aFile.getFileBaseName ().startsWith ("invalid"))
-        ret.add (aFile.getResource ());
-    return ret;
+    return s_aSVRLs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"),
+                                  SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
-  public static List <IReadableResource> getAllValidXMLFiles ()
+  public static ICommonsList <IReadableResource> getAllValidXMLFiles ()
   {
-    final List <IReadableResource> ret = new ArrayList <IReadableResource> ();
-    for (final SchematronTestFile aFile : s_aXMLs)
-      if (aFile.getFileBaseName ().startsWith ("invalid"))
-        ret.add (aFile.getResource ());
-    return ret;
+    return s_aXMLs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"),
+                                 SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
-  public static List <IReadableResource> getAllInvalidXMLFiles ()
+  public static ICommonsList <IReadableResource> getAllInvalidXMLFiles ()
   {
-    final List <IReadableResource> ret = new ArrayList <IReadableResource> ();
-    for (final SchematronTestFile aFile : s_aXMLs)
-      if (!aFile.getFileBaseName ().startsWith ("invalid"))
-        ret.add (aFile.getResource ());
-    return ret;
+    return s_aXMLs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"),
+                                 SchematronTestFile::getResource);
   }
 }
