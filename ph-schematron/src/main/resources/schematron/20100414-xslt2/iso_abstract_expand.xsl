@@ -230,15 +230,15 @@
 	<xslt:template mode="iae:do-pattern" match="*">
 		<xslt:param name="caller"/>
 		<xslt:copy>
-			<xslt:for-each select="@*[name()='test' or name()='context' or name()='select']">
+			<xslt:for-each select="@*[name()='value' or name()='flag' or name()='test' or name()='context' or name()='select']">
 				<xslt:attribute name="{name()}">
 				<xslt:call-template name="iae:macro-expand">
 						<xslt:with-param name="text"><xslt:value-of select="."/></xslt:with-param>
 						<xslt:with-param name="caller"><xslt:value-of select="$caller"/></xslt:with-param>
 					</xslt:call-template>
 				</xslt:attribute>
-			</xslt:for-each>	
-			<xslt:copy-of select="@*[name()!='test'][name()!='context'][name()!='select']" />
+			</xslt:for-each>
+			<xslt:copy-of select="@*[name()!='value'][name()!='flag'][name()!='test'][name()!='context'][name()!='select']" />
 			<xsl:for-each select="node()">
 				<xsl:choose>
 				    <!-- Experiment: replace macros in text as well, to allow parameterized assertions
