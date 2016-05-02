@@ -26,6 +26,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.hashcode.IHashCodeGenerator;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.SchematronException;
@@ -52,8 +53,8 @@ public class PSBoundSchemaCacheKey
   private final IPSErrorHandler m_aErrorHandler;
   private final XPathVariableResolver m_aVariableResolver;
   private final XPathFunctionResolver m_aFunctionResolver;
-  // Ssatus vars
-  private Integer m_aHashCode;
+  // Status vars
+  private transient int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
   public PSBoundSchemaCacheKey (@Nonnull final IReadableResource aResource,
                                 @Nullable final String sPhase,
@@ -249,13 +250,14 @@ public class PSBoundSchemaCacheKey
   @Override
   public int hashCode ()
   {
-    if (m_aHashCode == null)
-      m_aHashCode = new HashCodeGenerator (this).append (m_aResource)
-                                                .append (m_sPhase)
-                                                .append (m_aVariableResolver)
-                                                .append (m_aFunctionResolver)
-                                                .getHashCodeObj ();
-    return m_aHashCode.intValue ();
+    int ret = m_nHashCode;
+    if (ret == IHashCodeGenerator.ILLEGAL_HASHCODE)
+      ret = m_nHashCode = new HashCodeGenerator (this).append (m_aResource)
+                                                      .append (m_sPhase)
+                                                      .append (m_aVariableResolver)
+                                                      .append (m_aFunctionResolver)
+                                                      .getHashCode ();
+    return ret;
   }
 
   @Override
