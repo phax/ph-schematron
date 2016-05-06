@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
@@ -95,6 +96,7 @@ public final class Issue16Test
   }
 
   @Test
+  @Ignore
   public void testIssue16 () throws Exception
   {
     final File schematronFile = new ClassPathResource ("issues/github16/sample_schematron.sch").getAsFile ();
