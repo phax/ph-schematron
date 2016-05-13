@@ -74,7 +74,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>9.6.0-7</version>
+        <version>9.7.0-4</version>
       </dependency>
       
       <dependency>

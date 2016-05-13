@@ -160,7 +160,7 @@ public class XQueryAsXPathFunctionConverter
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
                 aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
                                                      aUserFunc.getFunctionName ().getLocalPart (),
-                                                     aUserFunc.getNumberOfArguments (),
+                                                     aUserFunc.getArity (),
                                                      new XPathFunctionFromUserFunction (aConfiguration,
                                                                                         aXQController,
                                                                                         aUserFunc));

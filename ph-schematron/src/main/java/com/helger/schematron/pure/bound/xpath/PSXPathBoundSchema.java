@@ -40,6 +40,7 @@ import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.commons.xml.xpath.XPathHelper;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -60,6 +61,7 @@ import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
+import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.schematron.xslt.util.PSErrorListener;
 
 import net.sf.saxon.lib.FeatureKeys;
@@ -408,10 +410,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nonnull
   private XPath _createXPathContext ()
   {
+    final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
     final XPath aXPathContext = XPathHelper.createNewXPath (m_aXPathFactory,
                                                             m_aXPathVariableResolver,
                                                             m_aXPathFunctionResolver,
-                                                            getNamespaceContext ());
+                                                            aNamespaceContext);
 
     if (aXPathContext instanceof XPathEvaluator)
     {
@@ -422,6 +425,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         // Enable this to debug Saxon function resolving
         aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
       }
+
+      // Since 9.7.0-4 it must implement NamespaceResolver
+      aSaxonXPath.setNamespaceContext (new SaxonNamespaceContext (aNamespaceContext));
 
       // Wrap the PSErrorHandler to a ErrorListener
       aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));

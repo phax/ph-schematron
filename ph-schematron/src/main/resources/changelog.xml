@@ -18,6 +18,11 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="ph-schematron">
+  <entry date="2016-05-13" category="tech" action="update">
+    <change>
+      <text locale="en">Updated to Saxon-HE 9.7.0-4</text>
+    </change>
+  </entry>
   <release date="2015-10-14" version="3.0.1" />
   <entry date="2015-10-14" category="tech" action="update">
     <change>
