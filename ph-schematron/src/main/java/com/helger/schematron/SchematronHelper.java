@@ -33,6 +33,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.error.IResourceErrorGroup;
 import com.helger.commons.error.ResourceErrorGroup;
+import com.helger.commons.hierarchy.visit.ChildrenProviderHierarchyVisitor;
 import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
 import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
 import com.helger.commons.io.resource.IReadableResource;
@@ -40,7 +41,6 @@ import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroNode;
 import com.helger.commons.microdom.serialize.MicroReader;
-import com.helger.commons.microdom.util.MicroVisitor;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.wrapper.Wrapper;
 import com.helger.commons.xml.serialize.read.ISAXReaderSettings;
@@ -246,22 +246,24 @@ public final class SchematronHelper
             {
               final String sFinalAnchor = sAnchor;
               final Wrapper <IMicroElement> aMatch = new Wrapper <IMicroElement> ();
-              MicroVisitor.visit (aIncludedDoc.getDocumentElement (),
-                                  new DefaultHierarchyVisitorCallback <IMicroNode> ()
-                                  {
-                                    @Override
-                                    public EHierarchyVisitorReturn onItemBeforeChildren (final IMicroNode aItem)
-                                    {
-                                      if (aItem.isElement ())
-                                      {
-                                        final IMicroElement aCurElement = (IMicroElement) aItem;
-                                        final String sID = aCurElement.getAttributeValue ("id");
-                                        if (sFinalAnchor.equals (sID))
-                                          aMatch.set (aCurElement);
-                                      }
-                                      return EHierarchyVisitorReturn.CONTINUE;
-                                    }
-                                  });
+              // Also include the root element in the search
+              ChildrenProviderHierarchyVisitor.visitFrom (aIncludedDoc.getDocumentElement (),
+                                                          new DefaultHierarchyVisitorCallback <IMicroNode> ()
+                                                          {
+                                                            @Override
+                                                            public EHierarchyVisitorReturn onItemBeforeChildren (final IMicroNode aItem)
+                                                            {
+                                                              if (aItem.isElement ())
+                                                              {
+                                                                final IMicroElement aCurElement = (IMicroElement) aItem;
+                                                                final String sID = aCurElement.getAttributeValue ("id");
+                                                                if (sFinalAnchor.equals (sID))
+                                                                  aMatch.set (aCurElement);
+                                                              }
+                                                              return EHierarchyVisitorReturn.CONTINUE;
+                                                            }
+                                                          },
+                                                          true);
               aIncludedContent = aMatch.get ();
               if (aIncludedContent == null)
               {
