@@ -16,23 +16,22 @@
  */
 package com.helger.schematron.pure.preprocess;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.helger.commons.collection.ext.CommonsHashSet;
+import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Utility lookup cache for all used IDs within a schema.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
 final class PreprocessorIDPool
 {
-  private final Set <String> m_aUsedIDs = new HashSet <String> ();
+  private final ICommonsSet <String> m_aUsedIDs = new CommonsHashSet<> ();
 
   public PreprocessorIDPool ()
   {}
@@ -40,7 +39,7 @@ final class PreprocessorIDPool
   /**
    * Create a unique ID based on the passed one. If the passed ID is not yet
    * contained, than a numeric index is appended until the ID is unique.
-   * 
+   *
    * @param sID
    *        The source ID. May be <code>null</code>.
    * @return <code>null</code> if the passed ID is <code>null</code> indicating

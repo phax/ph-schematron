@@ -245,7 +245,7 @@ public final class SchematronHelper
             else
             {
               final String sFinalAnchor = sAnchor;
-              final Wrapper <IMicroElement> aMatch = new Wrapper <IMicroElement> ();
+              final Wrapper <IMicroElement> aMatch = new Wrapper<> ();
               // Also include the root element in the search
               ChildrenProviderHierarchyVisitor.visitFrom (aIncludedDoc.getDocumentElement (),
                                                           new DefaultHierarchyVisitorCallback <IMicroNode> ()

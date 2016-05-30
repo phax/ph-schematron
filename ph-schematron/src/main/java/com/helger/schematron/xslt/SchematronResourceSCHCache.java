@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.xslt;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -29,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
@@ -44,7 +44,7 @@ public final class SchematronResourceSCHCache
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
   private static final Lock s_aLock = new ReentrantLock ();
-  private static final Map <String, SchematronProviderXSLTFromSCH> s_aCache = new HashMap <String, SchematronProviderXSLTFromSCH> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> s_aCache = new CommonsHashMap<> ();
 
   private SchematronResourceSCHCache ()
   {}

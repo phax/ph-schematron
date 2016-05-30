@@ -19,14 +19,14 @@ package com.helger.schematron.supplemantery;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.schematron.svrl.SVRLWriter;
@@ -44,7 +44,7 @@ public final class Issue8Test
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
     // Create the custom parameters
-    final Map <String, Object> aCustomParameters = new HashMap <String, Object> ();
+    final ICommonsMap <String, Object> aCustomParameters = new CommonsHashMap<> ();
     aCustomParameters.put ("xyz", "mobile");
     aCustomParameters.put ("expected", "");
 
