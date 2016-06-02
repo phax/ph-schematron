@@ -16,12 +16,11 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.error.IResourceError;
 import com.helger.commons.error.IResourceErrorGroup;
@@ -81,7 +80,7 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
   }
 
   @Nonnull
-  public List <IResourceError> getAllResourceErrors ()
+  public ICommonsList <IResourceError> getAllResourceErrors ()
   {
     return m_aErrors.getAllResourceErrors ();
   }

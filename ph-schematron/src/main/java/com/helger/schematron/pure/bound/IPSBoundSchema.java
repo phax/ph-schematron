@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.bound;
 
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -25,6 +23,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.schematron.CSchematron;
@@ -38,7 +37,7 @@ import com.helger.schematron.pure.validation.SchematronValidationException;
 /**
  * Base interface for a bound schema. A bound schema is a {@link PSSchema} with
  * a specific
- * 
+ *
  * @author Philip Helger
  */
 public interface IPSBoundSchema
@@ -90,13 +89,13 @@ public interface IPSBoundSchema
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <PSPattern> getAllRelevantPatterns ();
+  ICommonsList <PSPattern> getAllRelevantPatterns ();
 
   /**
    * Get the validation context to be used. As rules can be stated as "element"
    * they are not necessarily present on root level. For XPath this may e.g. be
    * resolved by prepending "//" so that all elements are resolved correctly.
-   * 
+   *
    * @param sRuleContext
    *        The original rule context. May not be <code>null</code>.
    * @return The real validation context to use.
@@ -107,7 +106,7 @@ public interface IPSBoundSchema
   /**
    * The generic validation method. It validates the passed XML node to this
    * bound schema.
-   * 
+   *
    * @param aNode
    *        The node to be validated. May not be <code>null</code>.
    * @param aHandler
@@ -121,7 +120,7 @@ public interface IPSBoundSchema
   /**
    * Special validation that breaks on the first error. This is a specialized
    * call of {@link #validate(Node, IPSValidationHandler)}.
-   * 
+   *
    * @param aNode
    *        The XML node to be validated. May not be <code>null</code>.
    * @return {@link EValidity#VALID} if the document is valid,
@@ -135,7 +134,7 @@ public interface IPSBoundSchema
   /**
    * Special validation that creates an SVRL document. This is a specialized
    * call of {@link #validate(Node, IPSValidationHandler)}.
-   * 
+   *
    * @param aNode
    *        The XML node to be validated. May not be <code>null</code>.
    * @return The SVRL domain object.

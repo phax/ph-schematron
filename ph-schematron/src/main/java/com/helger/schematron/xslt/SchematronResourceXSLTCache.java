@@ -16,9 +16,7 @@
  */
 package com.helger.schematron.xslt;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.error.IResourceError;
@@ -49,7 +49,7 @@ public final class SchematronResourceXSLTCache
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
-  private static final Map <String, SchematronProviderXSLTPrebuild> s_aCache = new HashMap <> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap <> ();
 
   private SchematronResourceXSLTCache ()
   {}
