@@ -239,6 +239,7 @@ public class PSAssertReport implements
   @ReturnsMutableCopy
   public ICommonsList <String> getAllDiagnostics ()
   {
+    // May be null
     return new CommonsArrayList <> (m_aDiagnostics);
   }
 

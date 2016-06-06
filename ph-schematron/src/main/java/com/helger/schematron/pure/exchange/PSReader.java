@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.exchange;
 
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -26,8 +24,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
-import com.helger.commons.microdom.IMicroNode;
-import com.helger.commons.microdom.IMicroQName;
 import com.helger.commons.microdom.IMicroText;
 import com.helger.commons.microdom.serialize.MicroWriter;
 import com.helger.commons.string.StringParser;
@@ -167,52 +163,79 @@ public class PSReader
   public PSActive readActiveFromXML (@Nonnull final IMicroElement eActive)
   {
     final PSActive ret = new PSActive ();
-    final Map <IMicroQName, String> aAttrs = eActive.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+    eActive.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_PATTERN))
+        ret.setPattern (sAttrValue);
+      else
+        ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eActive.forAllChildren (aActiveChild -> {
+      switch (aActiveChild.getType ())
       {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_PATTERN))
-          ret.setPattern (sAttrValue);
-        else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
-
-    if (eActive.hasChildren ())
-      for (final IMicroNode aActiveChild : eActive.getAllChildren ())
-        switch (aActiveChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aActiveChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aActiveChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              final String sLocalName = eElement.getLocalName ();
-              if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
-                ret.addDir (readDirFromXML (eElement));
-              else
-                if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
-                  ret.addEmph (readEmphFromXML (eElement));
-                else
-                  if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
-                    ret.addSpan (readSpanFromXML (eElement));
-                  else
-                    _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
-            }
+        case TEXT:
+          ret.addText (((IMicroText) aActiveChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aActiveChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
+              ret.addDir (readDirFromXML (eElement));
             else
-              ret.addForeignElement (eElement.getClone ());
+              if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
+                ret.addEmph (readEmphFromXML (eElement));
+              else
+                if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
+                  ret.addSpan (readSpanFromXML (eElement));
+                else
+                  _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
 
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aActiveChild);
-        }
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aActiveChild);
+      }
+    });
     return ret;
+  }
+
+  private void _handleRichGroup (@Nonnull final String sAttrName,
+                                 @Nonnull final String sAttrValue,
+                                 @Nonnull final PSRichGroup aRichGroup)
+  {
+    if (sAttrName.equals (CSchematronXML.ATTR_ICON))
+      aRichGroup.setIcon (sAttrValue);
+    else
+      if (sAttrName.equals (CSchematronXML.ATTR_SEE))
+        aRichGroup.setSee (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_FPI))
+          aRichGroup.setFPI (sAttrValue);
+        else
+          if (sAttrName.equals (CSchematronXML.ATTR_XML_LANG))
+            aRichGroup.setXmlLang (sAttrValue);
+          else
+            if (sAttrName.equals (CSchematronXML.ATTR_XML_SPACE))
+              aRichGroup.setXmlSpace (ESpace.getFromIDOrNull (sAttrValue));
+  }
+
+  private void _handleLinkableGroup (@Nonnull final String sAttrName,
+                                     @Nonnull final String sAttrValue,
+                                     @Nonnull final PSLinkableGroup aLinkableGroup)
+  {
+    if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
+      aLinkableGroup.setRole (sAttrValue);
+    else
+      if (sAttrName.equals (CSchematronXML.ATTR_SUBJECT))
+        aLinkableGroup.setSubject (sAttrValue);
   }
 
   /**
@@ -227,71 +250,73 @@ public class PSReader
   {
     final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ()
                                                                 .equals (CSchematronXML.ELEMENT_ASSERT));
-    final Map <IMicroQName, String> aAttrs = eAssertReport.getAllQAttributes ();
-    if (aAttrs != null)
-    {
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_TEST))
-          ret.setTest (sAttrValue);
+
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    final PSLinkableGroup aLinkableGroup = new PSLinkableGroup ();
+    eAssertReport.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_TEST))
+        ret.setTest (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_FLAG))
+          ret.setFlag (sAttrValue);
         else
-          if (sAttrName.equals (CSchematronXML.ATTR_FLAG))
-            ret.setFlag (sAttrValue);
+          if (sAttrName.equals (CSchematronXML.ATTR_ID))
+            ret.setID (sAttrValue);
           else
-            if (sAttrName.equals (CSchematronXML.ATTR_ID))
-              ret.setID (sAttrValue);
+            if (sAttrName.equals (CSchematronXML.ATTR_DIAGNOSTICS))
+              ret.setDiagnostics (sAttrValue);
             else
-              if (sAttrName.equals (CSchematronXML.ATTR_DIAGNOSTICS))
-                ret.setDiagnostics (sAttrValue);
+              if (PSRichGroup.isRichAttribute (sAttrName))
+                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
               else
-                if (!PSRichGroup.isRichAttribute (sAttrName) && !PSLinkableGroup.isLinkableAttribute (sAttrName))
-                  ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
-      ret.setRich (readRichGroupFromXML (aAttrs));
-      ret.setLinkable (readLinkableGroupFromXML (aAttrs));
-    }
-
-    if (eAssertReport.hasChildren ())
-      for (final IMicroNode aAssertReportChild : eAssertReport.getAllChildren ())
-        switch (aAssertReportChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aAssertReportChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aAssertReportChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              final String sLocalName = eElement.getLocalName ();
-              if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
-                ret.addName (readNameFromXML (eElement));
-              else
-                if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
-                  ret.addValueOf (readValueOfFromXML (eElement));
+                if (PSLinkableGroup.isLinkableAttribute (sAttrName))
+                  _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
                 else
-                  if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
-                    ret.addEmph (readEmphFromXML (eElement));
-                  else
-                    if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
-                      ret.addDir (readDirFromXML (eElement));
-                    else
-                      if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
-                        ret.addSpan (readSpanFromXML (eElement));
-                      else
-                        _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
-            }
-            else
-              ret.addForeignElement (eElement.getClone ());
+                  ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+    ret.setRich (aRichGroup);
+    ret.setLinkable (aLinkableGroup);
 
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aAssertReportChild);
-        }
+    eAssertReport.forAllChildren (aAssertReportChild -> {
+      switch (aAssertReportChild.getType ())
+      {
+        case TEXT:
+          ret.addText (((IMicroText) aAssertReportChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aAssertReportChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
+              ret.addName (readNameFromXML (eElement));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+                ret.addValueOf (readValueOfFromXML (eElement));
+              else
+                if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
+                  ret.addEmph (readEmphFromXML (eElement));
+                else
+                  if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
+                    ret.addDir (readDirFromXML (eElement));
+                  else
+                    if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
+                      ret.addSpan (readSpanFromXML (eElement));
+                    else
+                      _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
+
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aAssertReportChild);
+      }
+    });
     return ret;
   }
 
@@ -306,58 +331,56 @@ public class PSReader
   public PSDiagnostic readDiagnosticFromXML (@Nonnull final IMicroElement eDiagnostic)
   {
     final PSDiagnostic ret = new PSDiagnostic ();
-    final Map <IMicroQName, String> aAttrs = eDiagnostic.getAllQAttributes ();
-    if (aAttrs != null)
-    {
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ID))
-          ret.setID (sAttrValue);
+
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    eDiagnostic.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (PSRichGroup.isRichAttribute (sAttrName))
+          _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
         else
-          if (!PSRichGroup.isRichAttribute (sAttrName))
-            ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
-      ret.setRich (readRichGroupFromXML (aAttrs));
-    }
+          ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+    ret.setRich (aRichGroup);
 
-    if (eDiagnostic.hasChildren ())
-      for (final IMicroNode aDiagnosticChild : eDiagnostic.getAllChildren ())
-        switch (aDiagnosticChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aDiagnosticChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aDiagnosticChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              final String sLocalName = eElement.getLocalName ();
-              if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
-                ret.addValueOf (readValueOfFromXML (eElement));
-              else
-                if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
-                  ret.addEmph (readEmphFromXML (eElement));
-                else
-                  if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
-                    ret.addDir (readDirFromXML (eElement));
-                  else
-                    if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
-                      ret.addSpan (readSpanFromXML (eElement));
-                    else
-                      _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
-            }
+    eDiagnostic.forAllChildren (aDiagnosticChild -> {
+      switch (aDiagnosticChild.getType ())
+      {
+        case TEXT:
+          ret.addText (((IMicroText) aDiagnosticChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aDiagnosticChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+              ret.addValueOf (readValueOfFromXML (eElement));
             else
-              ret.addForeignElement (eElement.getClone ());
+              if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
+                ret.addEmph (readEmphFromXML (eElement));
+              else
+                if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
+                  ret.addDir (readDirFromXML (eElement));
+                else
+                  if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
+                    ret.addSpan (readSpanFromXML (eElement));
+                  else
+                    _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
 
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aDiagnosticChild);
-        }
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aDiagnosticChild);
+      }
+    });
     return ret;
   }
 
@@ -373,17 +396,12 @@ public class PSReader
   {
     final PSDiagnostics ret = new PSDiagnostics ();
 
-    final Map <IMicroQName, String> aAttrs = eDiagnostics.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
+    eDiagnostics.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
 
-    for (final IMicroElement eDiagnosticsChild : eDiagnostics.getAllChildElements ())
-    {
+    eDiagnostics.forAllChildElements (eDiagnosticsChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eDiagnosticsChild.getNamespaceURI ()))
       {
         if (eDiagnosticsChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
@@ -396,7 +414,7 @@ public class PSReader
       }
       else
         ret.addForeignElement (eDiagnosticsChild.getClone ());
-    }
+    });
     return ret;
   }
 
@@ -411,41 +429,38 @@ public class PSReader
   public PSDir readDirFromXML (@Nonnull final IMicroElement eDir)
   {
     final PSDir ret = new PSDir ();
-    final Map <IMicroQName, String> aAttrs = eDir.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+
+    eDir.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
+        ret.setValue (EDirValue.getFromIDOrNull (sAttrValue));
+      else
+        ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eDir.forAllChildren (aDirChild -> {
+      switch (aDirChild.getType ())
       {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
-          ret.setValue (EDirValue.getFromIDOrNull (sAttrValue));
-        else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
+        case TEXT:
+          ret.addText (((IMicroText) aDirChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aDirChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
+
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aDirChild);
       }
-
-    if (eDir.hasChildren ())
-      for (final IMicroNode aDirChild : eDir.getAllChildren ())
-        switch (aDirChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aDirChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aDirChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
-            }
-            else
-              ret.addForeignElement (eElement.getClone ());
-
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aDirChild);
-        }
+    });
     return ret;
   }
 
@@ -460,38 +475,35 @@ public class PSReader
   public PSEmph readEmphFromXML (@Nonnull final IMicroElement eEmph)
   {
     final PSEmph ret = new PSEmph ();
-    final Map <IMicroQName, String> aAttrs = eEmph.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+
+    eEmph.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+
+    eEmph.forAllChildren (aEmphChild -> {
+      switch (aEmphChild.getType ())
       {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+        case TEXT:
+          ret.addText (((IMicroText) aEmphChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aEmphChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
+          }
+          else
+            _warn (ret, "Unsupported namespace URI '" + eElement.getNamespaceURI () + "'");
+
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aEmphChild);
       }
-
-    if (eEmph.hasChildren ())
-      for (final IMicroNode aEmphChild : eEmph.getAllChildren ())
-        switch (aEmphChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aEmphChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aEmphChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
-            }
-            else
-              _warn (ret, "Unsupported namespace URI '" + eElement.getNamespaceURI () + "'");
-
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aEmphChild);
-        }
+    });
     return ret;
   }
 
@@ -506,27 +518,23 @@ public class PSReader
   public PSExtends readExtendsFromXML (@Nonnull final IMicroElement eExtends)
   {
     final PSExtends ret = new PSExtends ();
-    final Map <IMicroQName, String> aAttrs = eExtends.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_RULE))
-          ret.setRule (sAttrValue);
-        else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
 
-    for (final IMicroElement eChild : eExtends.getAllChildElements ())
-    {
+    eExtends.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_RULE))
+        ret.setRule (sAttrValue);
+      else
+        ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eExtends.forAllChildElements (eChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eChild.getNamespaceURI () + "'");
-    }
+    });
     return ret;
   }
 
@@ -541,27 +549,23 @@ public class PSReader
   public PSInclude readIncludeFromXML (@Nonnull final IMicroElement eInclude)
   {
     final PSInclude ret = new PSInclude ();
-    final Map <IMicroQName, String> aAttrs = eInclude.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_HREF))
-          ret.setHref (sAttrValue);
-        else
-          _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
-      }
 
-    for (final IMicroElement eValueOfChild : eInclude.getAllChildElements ())
-    {
+    eInclude.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_HREF))
+        ret.setHref (sAttrValue);
+      else
+        _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+
+    eInclude.forAllChildElements (eValueOfChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eValueOfChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eValueOfChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eValueOfChild.getNamespaceURI () + "'");
-    }
+    });
     return ret;
   }
 
@@ -576,55 +580,26 @@ public class PSReader
   public PSLet readLetFromXML (@Nonnull final IMicroElement eLet)
   {
     final PSLet ret = new PSLet ();
-    final Map <IMicroQName, String> aAttrs = eLet.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_NAME))
-          ret.setName (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
-            ret.setValue (sAttrValue);
-          else
-            _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
-      }
 
-    for (final IMicroElement eLetChild : eLet.getAllChildElements ())
-    {
+    eLet.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_NAME))
+        ret.setName (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
+          ret.setValue (sAttrValue);
+        else
+          _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+
+    eLet.forAllChildElements (eLetChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eLetChild.getNamespaceURI () + "'");
-    }
-    return ret;
-  }
-
-  /**
-   * Read all attributes for a linkable group
-   *
-   * @param aAttrs
-   *        The attributes of a micro element. May be <code>null</code>.
-   * @return The created domain object. May not be <code>null</code>.
-   */
-  @Nonnull
-  public PSLinkableGroup readLinkableGroupFromXML (@Nullable final Map <IMicroQName, String> aAttrs)
-  {
-    final PSLinkableGroup ret = new PSLinkableGroup ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
-          ret.setRole (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_SUBJECT))
-            ret.setSubject (sAttrValue);
-      }
+    });
     return ret;
   }
 
@@ -639,27 +614,23 @@ public class PSReader
   public PSName readNameFromXML (@Nonnull final IMicroElement eName)
   {
     final PSName ret = new PSName ();
-    final Map <IMicroQName, String> aAttrs = eName.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_PATH))
-          ret.setPath (sAttrValue);
-        else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
 
-    for (final IMicroElement eNameChild : eName.getAllChildElements ())
-    {
+    eName.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_PATH))
+        ret.setPath (sAttrValue);
+      else
+        ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eName.forAllChildElements (eNameChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eNameChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eNameChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eNameChild.getNamespaceURI () + "'");
-    }
+    });
     return ret;
   }
 
@@ -674,30 +645,26 @@ public class PSReader
   public PSNS readNSFromXML (@Nonnull final IMicroElement eNS)
   {
     final PSNS ret = new PSNS ();
-    final Map <IMicroQName, String> aAttrs = eNS.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_URI))
-          ret.setUri (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_PREFIX))
-            ret.setPrefix (sAttrValue);
-          else
-            ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
 
-    for (final IMicroElement eLetChild : eNS.getAllChildElements ())
-    {
+    eNS.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_URI))
+        ret.setUri (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_PREFIX))
+          ret.setPrefix (sAttrValue);
+        else
+          ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eNS.forAllChildElements (eLetChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eLetChild.getNamespaceURI () + "'");
-    }
+    });
     return ret;
   }
 
@@ -712,57 +679,53 @@ public class PSReader
   public PSP readPFromXML (@Nonnull final IMicroElement eP)
   {
     final PSP ret = new PSP ();
-    final Map <IMicroQName, String> aAttrs = eP.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ID))
-          ret.setID (sAttrValue);
+    eP.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_CLASS))
+          ret.setClazz (sAttrValue);
         else
-          if (sAttrName.equals (CSchematronXML.ATTR_CLASS))
-            ret.setClazz (sAttrValue);
+          if (sAttrName.equals (CSchematronXML.ATTR_ICON))
+            ret.setIcon (sAttrValue);
           else
-            if (sAttrName.equals (CSchematronXML.ATTR_ICON))
-              ret.setIcon (sAttrValue);
-            else
-              ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
+            ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
 
-    if (eP.hasChildren ())
-      for (final IMicroNode aChild : eP.getAllChildren ())
-        switch (aChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              final String sLocalName = eElement.getLocalName ();
-              if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
-                ret.addDir (readDirFromXML (eElement));
+    eP.forAllChildren (aChild -> {
+      switch (aChild.getType ())
+      {
+        case TEXT:
+          ret.addText (((IMicroText) aChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
+              ret.addDir (readDirFromXML (eElement));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
+                ret.addEmph (readEmphFromXML (eElement));
               else
-                if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
-                  ret.addEmph (readEmphFromXML (eElement));
+                if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
+                  ret.addSpan (readSpanFromXML (eElement));
                 else
-                  if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
-                    ret.addSpan (readSpanFromXML (eElement));
-                  else
-                    _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
-            }
-            else
-              ret.addForeignElement (eElement.getClone ());
+                  _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
 
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aChild);
-        }
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aChild);
+      }
+    });
     return ret;
   }
 
@@ -777,30 +740,26 @@ public class PSReader
   public PSParam readParamFromXML (@Nonnull final IMicroElement eParam)
   {
     final PSParam ret = new PSParam ();
-    final Map <IMicroQName, String> aAttrs = eParam.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_NAME))
-          ret.setName (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
-            ret.setValue (sAttrValue);
-          else
-            _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
-      }
 
-    for (final IMicroElement eParamChild : eParam.getAllChildElements ())
-    {
+    eParam.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_NAME))
+        ret.setName (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
+          ret.setValue (sAttrValue);
+        else
+          _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+
+    eParam.forAllChildElements (eParamChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eParamChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eParamChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eParamChild.getNamespaceURI () + "'");
-    }
+    });
     return ret;
   }
 
@@ -815,30 +774,27 @@ public class PSReader
   public PSPattern readPatternFromXML (@Nonnull final IMicroElement ePattern)
   {
     final PSPattern ret = new PSPattern ();
-    final Map <IMicroQName, String> aAttrs = ePattern.getAllQAttributes ();
-    if (aAttrs != null)
-    {
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
-          ret.setAbstract (StringParser.parseBool (sAttrValue));
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_ID))
-            ret.setID (sAttrValue);
-          else
-            if (sAttrName.equals (CSchematronXML.ATTR_IS_A))
-              ret.setIsA (sAttrValue);
-            else
-              if (!PSRichGroup.isRichAttribute (sAttrName))
-                ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
-      ret.setRich (readRichGroupFromXML (aAttrs));
-    }
 
-    for (final IMicroElement ePatternChild : ePattern.getAllChildElements ())
-    {
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    ePattern.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
+        ret.setAbstract (StringParser.parseBool (sAttrValue));
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_ID))
+          ret.setID (sAttrValue);
+        else
+          if (sAttrName.equals (CSchematronXML.ATTR_IS_A))
+            ret.setIsA (sAttrValue);
+          else
+            if (PSRichGroup.isRichAttribute (sAttrName))
+              _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+            else
+              ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+    ret.setRich (aRichGroup);
+
+    ePattern.forAllChildElements (ePatternChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (ePatternChild.getNamespaceURI ()))
       {
         if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
@@ -866,7 +822,7 @@ public class PSReader
       }
       else
         ret.addForeignElement (ePatternChild.getClone ());
-    }
+    });
     return ret;
   }
 
@@ -881,24 +837,21 @@ public class PSReader
   public PSPhase readPhaseFromXML (@Nonnull final IMicroElement ePhase)
   {
     final PSPhase ret = new PSPhase ();
-    final Map <IMicroQName, String> aAttrs = ePhase.getAllQAttributes ();
-    if (aAttrs != null)
-    {
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ID))
-          ret.setID (sAttrValue);
-        else
-          if (!PSRichGroup.isRichAttribute (sAttrName))
-            ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
-      ret.setRich (readRichGroupFromXML (aAttrs));
-    }
 
-    for (final IMicroElement ePhaseChild : ePhase.getAllChildElements ())
-    {
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    ePhase.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (PSRichGroup.isRichAttribute (sAttrName))
+          _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+        else
+          ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+    ret.setRich (aRichGroup);
+
+    ePhase.forAllChildElements (ePhaseChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (ePhaseChild.getNamespaceURI ()))
       {
         if (ePhaseChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
@@ -917,42 +870,7 @@ public class PSReader
       }
       else
         ret.addForeignElement (ePhaseChild.getClone ());
-    }
-    return ret;
-  }
-
-  /**
-   * Read all attributes that make up a rich group
-   *
-   * @param aAttrs
-   *        The attributes of a micro element. May be <code>null</code>.
-   * @return The created domain object. May not be <code>null</code>.
-   */
-  @Nonnull
-  public PSRichGroup readRichGroupFromXML (@Nullable final Map <IMicroQName, String> aAttrs)
-  {
-    final PSRichGroup ret = new PSRichGroup ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_ICON))
-          ret.setIcon (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_SEE))
-            ret.setSee (sAttrValue);
-          else
-            if (sAttrName.equals (CSchematronXML.ATTR_FPI))
-              ret.setFPI (sAttrValue);
-            else
-              if (sAttrName.equals (CSchematronXML.ATTR_XML_LANG))
-                ret.setXmlLang (sAttrValue);
-              else
-                if (sAttrName.equals (CSchematronXML.ATTR_XML_SPACE))
-                  ret.setXmlSpace (ESpace.getFromIDOrNull (sAttrValue));
-
-      }
+    });
     return ret;
   }
 
@@ -967,54 +885,55 @@ public class PSReader
   public PSRule readRuleFromXML (@Nonnull final IMicroElement eRule)
   {
     final PSRule ret = new PSRule ();
-    final Map <IMicroQName, String> aAttrs = eRule.getAllQAttributes ();
-    if (aAttrs != null)
-    {
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_FLAG))
-          ret.setFlag (sAttrValue);
-        else
-          if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
-            ret.setAbstract (StringParser.parseBool (sAttrValue));
-          else
-            if (sAttrName.equals (CSchematronXML.ATTR_CONTEXT))
-              ret.setContext (sAttrValue);
-            else
-              if (sAttrName.equals (CSchematronXML.ATTR_ID))
-                ret.setID (sAttrValue);
-              else
-                if (!PSRichGroup.isRichAttribute (sAttrName) && !PSLinkableGroup.isLinkableAttribute (sAttrName))
-                  ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
-      ret.setRich (readRichGroupFromXML (aAttrs));
-      ret.setLinkable (readLinkableGroupFromXML (aAttrs));
-    }
 
-    for (final IMicroElement eRuleChild : eRule.getAllChildElements ())
-    {
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    final PSLinkableGroup aLinkableGroup = new PSLinkableGroup ();
+    eRule.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_FLAG))
+        ret.setFlag (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
+          ret.setAbstract (StringParser.parseBool (sAttrValue));
+        else
+          if (sAttrName.equals (CSchematronXML.ATTR_CONTEXT))
+            ret.setContext (sAttrValue);
+          else
+            if (sAttrName.equals (CSchematronXML.ATTR_ID))
+              ret.setID (sAttrValue);
+            else
+              if (PSRichGroup.isRichAttribute (sAttrName))
+                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+              else
+                if (PSLinkableGroup.isLinkableAttribute (sAttrName))
+                  _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                else
+                  ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+    ret.setRich (aRichGroup);
+    ret.setLinkable (aLinkableGroup);
+
+    eRule.forAllChildElements (eRuleChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eRuleChild.getNamespaceURI ()))
       {
-        if (eRuleChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
+        final String sLocalName = eRuleChild.getLocalName ();
+        if (sLocalName.equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (eRuleChild));
         else
-          if (eRuleChild.getLocalName ().equals (CSchematronXML.ELEMENT_LET))
+          if (sLocalName.equals (CSchematronXML.ELEMENT_LET))
             ret.addLet (readLetFromXML (eRuleChild));
           else
-            if (eRuleChild.getLocalName ().equals (CSchematronXML.ELEMENT_ASSERT) ||
-                eRuleChild.getLocalName ().equals (CSchematronXML.ELEMENT_REPORT))
+            if (sLocalName.equals (CSchematronXML.ELEMENT_ASSERT) || sLocalName.equals (CSchematronXML.ELEMENT_REPORT))
               ret.addAssertReport (readAssertReportFromXML (eRuleChild));
             else
-              if (eRuleChild.getLocalName ().equals (CSchematronXML.ELEMENT_EXTENDS))
+              if (sLocalName.equals (CSchematronXML.ELEMENT_EXTENDS))
                 ret.addExtends (readExtendsFromXML (eRuleChild));
               else
-                _warn (ret, "Unsupported Schematron element '" + eRuleChild.getLocalName () + "'");
+                _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
       }
       else
         ret.addForeignElement (eRuleChild.getClone ());
-    }
+    });
     return ret;
   }
 
@@ -1037,33 +956,29 @@ public class PSReader
       throw new SchematronReadException (m_aResource, "The passed element is not an ISO Schematron element!");
 
     final PSSchema ret = new PSSchema (m_aResource);
-    final Map <IMicroQName, String> aAttrs = eSchema.getAllQAttributes ();
-    {
-      if (aAttrs != null)
-        for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-        {
-          final String sAttrName = aEntry.getKey ().getName ();
-          final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-          if (sAttrName.equals (CSchematronXML.ATTR_ID))
-            ret.setID (sAttrValue);
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    eSchema.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_SCHEMA_VERSION))
+          ret.setSchemaVersion (sAttrValue);
+        else
+          if (sAttrName.equals (CSchematronXML.ATTR_DEFAULT_PHASE))
+            ret.setDefaultPhase (sAttrValue);
           else
-            if (sAttrName.equals (CSchematronXML.ATTR_SCHEMA_VERSION))
-              ret.setSchemaVersion (sAttrValue);
+            if (sAttrName.equals (CSchematronXML.ATTR_QUERY_BINDING))
+              ret.setQueryBinding (sAttrValue);
             else
-              if (sAttrName.equals (CSchematronXML.ATTR_DEFAULT_PHASE))
-                ret.setDefaultPhase (sAttrValue);
+              if (PSRichGroup.isRichAttribute (sAttrName))
+                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
               else
-                if (sAttrName.equals (CSchematronXML.ATTR_QUERY_BINDING))
-                  ret.setQueryBinding (sAttrValue);
-                else
-                  if (!PSRichGroup.isRichAttribute (sAttrName))
-                    ret.addForeignAttribute (sAttrName, sAttrValue);
-        }
-      ret.setRich (readRichGroupFromXML (aAttrs));
-    }
+                ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+    ret.setRich (aRichGroup);
 
-    for (final IMicroElement eSchemaChild : eSchema.getAllChildElements ())
-    {
+    eSchema.forAllChildElements (eSchemaChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eSchemaChild.getNamespaceURI ()))
       {
         if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
@@ -1100,7 +1015,7 @@ public class PSReader
       }
       else
         ret.addForeignElement (eSchemaChild.getClone ());
-    }
+    });
     return ret;
   }
 
@@ -1115,41 +1030,38 @@ public class PSReader
   public PSSpan readSpanFromXML (@Nonnull final IMicroElement eSpan)
   {
     final PSSpan ret = new PSSpan ();
-    final Map <IMicroQName, String> aAttrs = eSpan.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+
+    eSpan.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_CLASS))
+        ret.setClazz (sAttrValue);
+      else
+        ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eSpan.forAllChildren (aSpanChild -> {
+      switch (aSpanChild.getType ())
       {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_CLASS))
-          ret.setClazz (sAttrValue);
-        else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
+        case TEXT:
+          ret.addText (((IMicroText) aSpanChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aSpanChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
+
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aSpanChild);
       }
-
-    if (eSpan.hasChildren ())
-      for (final IMicroNode aSpanChild : eSpan.getAllChildren ())
-        switch (aSpanChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aSpanChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aSpanChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
-            }
-            else
-              ret.addForeignElement (eElement.getClone ());
-
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aSpanChild);
-        }
+    });
     return ret;
   }
 
@@ -1164,42 +1076,39 @@ public class PSReader
   public PSTitle readTitleFromXML (@Nonnull final IMicroElement eTitle)
   {
     final PSTitle ret = new PSTitle ();
-    final Map <IMicroQName, String> aAttrs = eTitle.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+
+    eTitle.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+
+    eTitle.forAllChildren (aTitleChild -> {
+      switch (aTitleChild.getType ())
       {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
-      }
-
-    if (eTitle.hasChildren ())
-      for (final IMicroNode aTitleChild : eTitle.getAllChildren ())
-        switch (aTitleChild.getType ())
-        {
-          case TEXT:
-            ret.addText (((IMicroText) aTitleChild).getNodeValue ());
-            break;
-          case ELEMENT:
-            final IMicroElement eElement = (IMicroElement) aTitleChild;
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
-            {
-              final String sLocalName = eElement.getLocalName ();
-              if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
-                ret.addDir (readDirFromXML (eElement));
-              else
-                _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
-            }
+        case TEXT:
+          ret.addText (((IMicroText) aTitleChild).getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aTitleChild;
+          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          {
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
+              ret.addDir (readDirFromXML (eElement));
             else
-              _warn (ret, "Unsupported namespace URI '" + eElement.getNamespaceURI () + "'");
+              _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+          }
+          else
+            _warn (ret, "Unsupported namespace URI '" + eElement.getNamespaceURI () + "'");
 
-            break;
-          case COMMENT:
-            // Ignore comments
-            break;
-          default:
-            _warn (ret, "Unsupported child node: " + aTitleChild);
-        }
+          break;
+        case COMMENT:
+          // Ignore comments
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aTitleChild);
+      }
+    });
     return ret;
   }
 
@@ -1214,27 +1123,23 @@ public class PSReader
   public PSValueOf readValueOfFromXML (@Nonnull final IMicroElement eValueOf)
   {
     final PSValueOf ret = new PSValueOf ();
-    final Map <IMicroQName, String> aAttrs = eValueOf.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-      {
-        final String sAttrName = aEntry.getKey ().getName ();
-        final String sAttrValue = _getAttributeValue (aEntry.getValue ());
-        if (sAttrName.equals (CSchematronXML.ATTR_SELECT))
-          ret.setSelect (sAttrValue);
-        else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
-      }
 
-    for (final IMicroElement eValueOfChild : eValueOf.getAllChildElements ())
-    {
+    eValueOf.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_SELECT))
+        ret.setSelect (sAttrValue);
+      else
+        ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eValueOf.forAllChildElements (eValueOfChild -> {
       if (CSchematron.NAMESPACE_SCHEMATRON.equals (eValueOfChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eValueOfChild.getLocalName () + "'");
       }
       else
         _warn (ret, "Unsupported namespace URI '" + eValueOfChild.getNamespaceURI () + "'");
-    }
+    });
     return ret;
   }
 
