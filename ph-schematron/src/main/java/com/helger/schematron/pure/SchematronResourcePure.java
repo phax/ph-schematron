@@ -45,8 +45,6 @@ import com.helger.commons.io.resource.inmemory.AbstractMemoryReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.commons.state.EValidity;
-import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.commons.xml.serialize.write.XMLWriterSettings;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronResourceHelper;
@@ -58,6 +56,8 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * A Schematron resource that is not XSLT based but using the pure (native Java)

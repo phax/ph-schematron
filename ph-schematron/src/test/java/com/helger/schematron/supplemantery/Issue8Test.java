@@ -28,9 +28,9 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.xml.serialize.write.XMLWriter;
 import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.serialize.write.XMLWriter;
 
 public final class Issue8Test
 {

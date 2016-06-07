@@ -27,9 +27,9 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.id.IHasID;
 import com.helger.commons.lang.EnumHelper;
 import com.helger.commons.lang.ICloneable;
-import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
+import com.helger.xml.microdom.IMicroElement;
 
 /**
  * A single "rich" group

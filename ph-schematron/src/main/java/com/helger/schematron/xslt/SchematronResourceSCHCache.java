@@ -32,7 +32,7 @@ import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.xml.serialize.write.XMLWriter;
+import com.helger.xml.serialize.write.XMLWriter;
 
 /**
  * Factory for creating {@link ISchematronXSLTBasedProvider} objects.

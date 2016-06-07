@@ -26,7 +26,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 import net.sf.saxon.om.NamespaceResolver;
 

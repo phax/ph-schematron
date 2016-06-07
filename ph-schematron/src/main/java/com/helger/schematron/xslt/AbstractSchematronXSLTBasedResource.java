@@ -46,14 +46,14 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
-import com.helger.commons.xml.XMLFactory;
-import com.helger.commons.xml.serialize.write.XMLWriter;
-import com.helger.commons.xml.transform.LoggingTransformErrorListener;
-import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.svrl.SVRLReader;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
+import com.helger.xml.XMLFactory;
+import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.transform.LoggingTransformErrorListener;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT

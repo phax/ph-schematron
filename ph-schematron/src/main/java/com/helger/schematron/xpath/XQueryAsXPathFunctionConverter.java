@@ -28,7 +28,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.iterate.IterableIterator;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
+import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;

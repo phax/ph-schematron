@@ -20,8 +20,8 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 
-import com.helger.commons.microdom.IMicroElement;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
+import com.helger.xml.microdom.IMicroElement;
 
 /**
  * Base interface for a single Pure Schematron element

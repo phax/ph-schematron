@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.commons.xml.transform.DefaultTransformURIResolver;
-import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
+import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.transform.DefaultTransformURIResolver;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * This Schematron validator factory uses an existing, precompiled Schematron

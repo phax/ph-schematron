@@ -35,12 +35,12 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.serialize.write.XMLWriter;
-import com.helger.commons.xml.serialize.write.XMLWriterSettings;
-import com.helger.commons.xml.transform.TransformSourceFactory;
-import com.helger.commons.xml.transform.XMLTransformerFactory;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.schematron.xslt.SCHTransformerCustomizer.EStep;
+import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.xml.transform.TransformSourceFactory;
+import com.helger.xml.transform.XMLTransformerFactory;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document into an XSLT

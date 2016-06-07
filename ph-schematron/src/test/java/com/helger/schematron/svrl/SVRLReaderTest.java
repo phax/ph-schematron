@@ -28,11 +28,11 @@ import org.xml.sax.SAXException;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.XMLFactory;
-import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.XMLFactory;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * Test class for class {@link SVRLReader}.

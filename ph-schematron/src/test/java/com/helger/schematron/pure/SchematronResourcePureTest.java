@@ -37,11 +37,6 @@ import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.StringInputStream;
-import com.helger.commons.xml.schema.XMLSchemaCache;
-import com.helger.commons.xml.serialize.read.DOMReader;
-import com.helger.commons.xml.serialize.read.DOMReaderSettings;
-import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
-import com.helger.commons.xml.xpath.MapBasedXPathVariableResolver;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
@@ -49,6 +44,11 @@ import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
+import com.helger.xml.schema.XMLSchemaCache;
+import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.serialize.read.DOMReaderSettings;
+import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
+import com.helger.xml.xpath.MapBasedXPathVariableResolver;
 
 /**
  * Test class for class {@link SchematronResourcePure}.

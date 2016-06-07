@@ -35,8 +35,8 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.error.IResourceError;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.transform.CollectingTransformErrorListener;
-import com.helger.commons.xml.transform.LoggingTransformErrorListener;
+import com.helger.xml.transform.CollectingTransformErrorListener;
+import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
  * Factory for creating {@link ISchematronXSLTBasedProvider} objects.

@@ -27,9 +27,9 @@ import org.xml.sax.ErrorHandler;
 
 import com.helger.commons.annotation.Singleton;
 import com.helger.commons.system.SystemProperties;
-import com.helger.commons.xml.ls.SimpleLSResourceResolver;
-import com.helger.commons.xml.sax.LoggingSAXErrorHandler;
-import com.helger.commons.xml.schema.SchemaCache;
+import com.helger.xml.ls.SimpleLSResourceResolver;
+import com.helger.xml.sax.LoggingSAXErrorHandler;
+import com.helger.xml.schema.SchemaCache;
 
 /**
  * This class is used to cache Relax NG Compact schema objects.

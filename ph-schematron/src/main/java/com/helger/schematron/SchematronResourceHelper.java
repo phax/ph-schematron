@@ -37,7 +37,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.string.StringHelper;
-import com.helger.commons.xml.serialize.read.DOMReader;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * This is a common utility class.

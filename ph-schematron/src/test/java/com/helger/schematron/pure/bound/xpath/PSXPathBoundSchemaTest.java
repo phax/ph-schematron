@@ -29,9 +29,7 @@ import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.junit.DebugModeTestRule;
-import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.mock.CommonsTestHelper;
-import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -43,6 +41,8 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * Test class for class {@link PSPreprocessor}.

@@ -40,8 +40,6 @@ import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
-import com.helger.commons.xml.xpath.XPathHelper;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
 import com.helger.schematron.pure.binding.xpath.IPSXPathVariables;
@@ -63,6 +61,8 @@ import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.schematron.xslt.util.PSErrorListener;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
+import com.helger.xml.xpath.XPathHelper;
 
 import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.xpath.XPathEvaluator;

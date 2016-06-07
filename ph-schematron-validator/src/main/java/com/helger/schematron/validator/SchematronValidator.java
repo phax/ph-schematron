@@ -32,12 +32,12 @@ import org.xml.sax.SAXException;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.microdom.IMicroNode;
-import com.helger.commons.microdom.serialize.MicroWriter;
-import com.helger.commons.xml.sax.CollectingSAXErrorHandler;
-import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.relaxng.RelaxNGCompactSchemaCache;
+import com.helger.xml.microdom.IMicroNode;
+import com.helger.xml.microdom.serialize.MicroWriter;
+import com.helger.xml.sax.CollectingSAXErrorHandler;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Helper class that validates a Schematron against the RelaxNG Compact scheme.

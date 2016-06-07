@@ -30,8 +30,6 @@ import org.w3c.dom.Document;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.microdom.serialize.MicroWriter;
-import com.helger.commons.xml.serialize.read.DOMReader;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -46,6 +44,8 @@ import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLSuccessfulReport;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.microdom.serialize.MicroWriter;
+import com.helger.xml.serialize.read.DOMReader;
 
 public final class Issue16Test
 {

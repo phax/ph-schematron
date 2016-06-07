@@ -23,10 +23,10 @@ import org.junit.Test;
 
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.xml.xpath.MapBasedXPathFunctionResolver;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
+import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
 public final class Issue20150128Test
 {

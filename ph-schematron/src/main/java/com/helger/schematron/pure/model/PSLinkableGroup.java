@@ -23,9 +23,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.lang.ICloneable;
-import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
+import com.helger.xml.microdom.IMicroElement;
 
 /**
  * A single "linkable" group

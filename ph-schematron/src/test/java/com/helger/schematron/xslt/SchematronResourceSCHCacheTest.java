@@ -35,10 +35,10 @@ import com.helger.commons.error.IResourceErrorGroup;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.serialize.write.XMLWriter;
-import com.helger.commons.xml.transform.CollectingTransformErrorListener;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.transform.CollectingTransformErrorListener;
 
 /**
  * Test class for class {@link SchematronResourceSCHCache}

@@ -25,7 +25,6 @@ import org.w3c.dom.Node;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.state.EValidity;
-import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.model.PSPattern;
@@ -33,6 +32,7 @@ import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**
  * Base interface for a bound schema. A bound schema is a {@link PSSchema} with

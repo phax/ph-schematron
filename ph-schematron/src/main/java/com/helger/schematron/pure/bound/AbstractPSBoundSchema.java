@@ -29,7 +29,6 @@ import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -42,6 +41,7 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler;
 import com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstError;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**
  * Base implementation of {@link IPSBoundSchema} with all common elements. It is

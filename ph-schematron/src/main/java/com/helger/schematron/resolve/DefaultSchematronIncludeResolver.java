@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.xml.ls.SimpleLSResourceResolver;
+import com.helger.xml.ls.SimpleLSResourceResolver;
 
 /**
  * The default implementation of {@link ISchematronIncludeResolver} using the

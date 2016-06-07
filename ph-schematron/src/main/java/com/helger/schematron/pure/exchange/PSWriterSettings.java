@@ -22,9 +22,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.xml.serialize.write.EXMLSerializeIndent;
-import com.helger.commons.xml.serialize.write.IXMLWriterSettings;
-import com.helger.commons.xml.serialize.write.XMLWriterSettings;
+import com.helger.xml.serialize.write.EXMLSerializeIndent;
+import com.helger.xml.serialize.write.IXMLWriterSettings;
+import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * This class contains the settings to be used with {@link PSWriter}.

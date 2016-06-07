@@ -26,8 +26,8 @@ import javax.xml.transform.URIResolver;
 import com.helger.commons.CGlobal;
 import com.helger.commons.exception.InitializationException;
 import com.helger.commons.lang.ClassLoaderHelper;
-import com.helger.commons.xml.transform.DefaultTransformURIResolver;
-import com.helger.commons.xml.transform.LoggingTransformErrorListener;
+import com.helger.xml.transform.DefaultTransformURIResolver;
+import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
  * A special {@link TransformerFactory} handler that prefers Saxon's

@@ -21,9 +21,9 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.xml.transform.DoNothingTransformErrorListener;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.transform.DoNothingTransformErrorListener;
 
 /**
  * Mini benchmark

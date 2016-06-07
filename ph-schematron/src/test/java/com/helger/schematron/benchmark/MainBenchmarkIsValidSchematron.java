@@ -24,12 +24,12 @@ import java.util.List;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.transform.DoNothingTransformErrorListener;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.transform.DoNothingTransformErrorListener;
 
 /**
  * Mini benchmark

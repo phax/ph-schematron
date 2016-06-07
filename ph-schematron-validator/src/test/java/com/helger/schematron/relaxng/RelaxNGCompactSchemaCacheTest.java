@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.xml.transform.TransformSourceFactory;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Test class for RelaxNG

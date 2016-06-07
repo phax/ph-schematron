@@ -29,9 +29,9 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.transform.TransformSourceFactory;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Test class for class {@link SchematronHelper}.

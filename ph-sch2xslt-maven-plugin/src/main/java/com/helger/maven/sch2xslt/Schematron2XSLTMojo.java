@@ -34,11 +34,11 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.xml.serialize.write.XMLWriter;
-import com.helger.commons.xml.transform.AbstractTransformErrorListener;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCHCache;
+import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.transform.AbstractTransformErrorListener;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 

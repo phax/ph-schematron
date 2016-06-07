@@ -21,9 +21,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.microdom.IMicroDocument;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.xml.microdom.IMicroDocument;
 
 /**
  * Test class for class {@link SchematronValidator}.

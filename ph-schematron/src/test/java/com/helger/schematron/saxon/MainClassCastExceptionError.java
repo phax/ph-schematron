@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.helger.commons.lang.ClassLoaderHelper;
-import com.helger.commons.xml.serialize.write.XMLWriter;
+import com.helger.xml.serialize.write.XMLWriter;
 
 public class MainClassCastExceptionError
 {

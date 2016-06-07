@@ -37,7 +37,6 @@ import org.w3c.dom.Node;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.state.EContinue;
-import com.helger.commons.xml.XMLHelper;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundElement;
@@ -57,6 +56,7 @@ import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.PSValidationHandlerDefault;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.xml.XMLHelper;
 
 /**
  * A special validation handler that creates an SVRL document. This class only

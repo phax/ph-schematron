@@ -28,7 +28,7 @@ import javax.xml.transform.URIResolver;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsLinkedHashMap;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
-import com.helger.commons.xml.transform.LoggingTransformErrorListener;
+import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
  * A wrapper for easier customization of the SCH to XSLT transformation.
