@@ -30,6 +30,7 @@ import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.error.IErrorLevel;
 import com.helger.commons.error.ResourceLocation;
 import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -54,18 +55,18 @@ public abstract class AbstractSVRLMessage
     // Handle namespaces:
     // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
     // is the namespace URI
-    final Matcher m = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
+    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
                                               sResult);
-    while (m.find ())
+    while (aMatcher.find ())
     {
-      final String sLocalName = m.group (1);
-      final String sNamespaceURI = m.group (2);
+      final String sLocalName = aMatcher.group (1);
+      final String sNamespaceURI = aMatcher.group (2);
 
       // Check if there is a known beautifier for this pair of namespace and
       // local name
       final String sBeautified = SVRLLocationBeautifierRegistry.getBeautifiedLocation (sNamespaceURI, sLocalName);
       if (sBeautified != null)
-        sResult = sResult.replace (m.group (), sBeautified);
+        sResult = StringHelper.replaceAll (sResult, aMatcher.group (), sBeautified);
     }
     return sResult;
   }
