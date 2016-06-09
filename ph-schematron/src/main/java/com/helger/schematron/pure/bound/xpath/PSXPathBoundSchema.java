@@ -352,8 +352,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                 "net.sf.saxon.xpath.XPathFactoryImpl",
                                                 ClassLoaderHelper.getContextClassLoader ());
     }
-    catch (final Exception ex)
+    catch (final Throwable t)
     {
+      // Must be Throwable because of e.g. IllegalAccessError (see issue #19)
       // Seems like Saxon is not in the class path - fall back to default JAXP
       try
       {
