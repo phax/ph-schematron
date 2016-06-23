@@ -53,11 +53,6 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
       </goals>
     </execution>
   </executions>
-  <configuration>
-    <schematronDirectory>${basedir}/src/main/schematron</schematronDirectory>
-    <xsltDirectory>${basedir}/src/main/resources/xslt</xsltDirectory>
-    <xsltExtension>.xsl</xsltExtension>
-  </configuration>
 </plugin>
 ```
 The possible configuration parameters are:
