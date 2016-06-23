@@ -77,7 +77,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    * The directory where the Schematron files reside.
    *
    * @parameter property="schematronDirectory"
-   *            default="${basedir}/src/main/schematron"
+   *            default-value="${basedir}/src/main/schematron"
    */
   private File schematronDirectory;
 
@@ -94,7 +94,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    * The directory where the XSLT files will be saved.
    *
    * @required
-   * @parameter property="xsltDirectory" default="${basedir}/src/main/xslt"
+   * @parameter property="xsltDirectory" default-value="${basedir}/src/main/xslt"
    */
   private File xsltDirectory;
 
