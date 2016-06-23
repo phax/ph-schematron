@@ -3,18 +3,14 @@
 ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com).
 It is licensed under Apache 2.0 license.
 
-*ph-schematron* is the successor of *phloc-schematron* and all further development happens here. 
-
 It offers several different possibilities to perform this task where each solution offers its own advantages and disadvantages that are outlined below in more detail. ph-schematron only supports ISO Schematron and no other Schematron version.
 The most common way is to convert the source Schematron file to an XSLT script and apply this XSLT on the XML document to be validated. Alternatively ph-schematron offers a native implementation for the Schematron XPath binding which offers superior performance over the XSLT approach but has some other minor limitations.
 
 Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
 
-Versions <= 2.9.2 are compatible with ph-commons < 6.0
-Versions >= 3.0.0 are compatible with ph-commons >= 6.0
-
 ##News and noteworthy
 
+  * 4.0.0 updated to JDK8 and Saxon-HE 9.7
   * 3.0.1 keep diagnostics in Pure version; resource resolving emits to error handler
   * 3.0.0 because of update to ph-commons 6.0.0; extended XSLT based API 
   * 2.9.2 because of update to ph-commons 5.6.0 
@@ -29,7 +25,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>3.0.1</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
@@ -45,7 +41,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>3.0.1</version>
+  <version>4.0.0</version>
   <executions>
     <execution>
       <goals>
@@ -74,7 +70,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>3.0.1</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 
