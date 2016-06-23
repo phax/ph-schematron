@@ -63,44 +63,20 @@
     </dependency>
     
     <!-- RelaxNG -->
-    <!-- Especially compiled ISORelax version that is compatible with Java 1.6 -->
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>isorelax</artifactId>
-      <version>1.1</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-isorelax</artifactId>
     </dependency>
     <dependency>
       <groupId>com.thaiopensource</groupId>
       <artifactId>jing</artifactId>
-      <version>20091111</version>
-      <exclusions>
-        <exclusion>
-          <groupId>isorelax</groupId>
-          <artifactId>isorelax</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>saxon</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     
     <!-- Trang -->
     <dependency>
       <groupId>com.thaiopensource</groupId>
       <artifactId>trang</artifactId>
-      <version>20091111</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>isorelax</groupId>
-          <artifactId>isorelax</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>saxon</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>

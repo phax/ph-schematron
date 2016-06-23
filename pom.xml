@@ -76,6 +76,45 @@
         <version>9.7.0-6</version>
       </dependency>
       
+      <!-- RelaxNG -->
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>ph-isorelax</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.thaiopensource</groupId>
+        <artifactId>jing</artifactId>
+        <version>20091111</version>
+        <exclusions>
+          <exclusion>
+            <groupId>isorelax</groupId>
+            <artifactId>isorelax</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <!-- Trang -->
+      <dependency>
+        <groupId>com.thaiopensource</groupId>
+        <artifactId>trang</artifactId>
+        <version>20091111</version>
+        <exclusions>
+          <exclusion>
+            <groupId>isorelax</groupId>
+            <artifactId>isorelax</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-schematron-testfiles</artifactId>
