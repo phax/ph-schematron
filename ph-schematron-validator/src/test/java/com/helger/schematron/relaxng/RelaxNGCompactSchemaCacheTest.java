@@ -21,7 +21,6 @@ import java.io.IOException;
 
 import javax.xml.validation.Validator;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -30,30 +29,29 @@ import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Test class for RelaxNG
- * 
+ *
  * @author Philip Helger
  */
 public final class RelaxNGCompactSchemaCacheTest
 {
   @Test
-  @Ignore
   public void testTrang ()
   {
     String [] args = new String [] { "-I",
-                                    "rnc",
-                                    "-O",
-                                    "rng",
-                                    new File ("src\\main\\resources\\schemas\\iso-schematron.rnc").getAbsolutePath (),
-                                    new File ("src\\test\\resources\\schemas\\iso-schematron.rng").getAbsolutePath () };
+                                     "rnc",
+                                     "-O",
+                                     "rng",
+                                     new File ("src\\main\\resources\\schemas\\iso-schematron.rnc").getAbsolutePath (),
+                                     new File ("src\\test\\resources\\schemas\\iso-schematron.rng").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
 
     args = new String [] { "-I",
-                          "rnc",
-                          "-O",
-                          "rng",
-                          new File ("src\\main\\resources\\schemas\\svrl.rnc").getAbsolutePath (),
-                          new File ("src\\test\\resources\\schemas\\svrl.rng").getAbsolutePath () };
+                           "rnc",
+                           "-O",
+                           "rng",
+                           new File ("src\\main\\resources\\schemas\\svrl.rnc").getAbsolutePath (),
+                           new File ("src\\test\\resources\\schemas\\svrl.rng").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
   }
