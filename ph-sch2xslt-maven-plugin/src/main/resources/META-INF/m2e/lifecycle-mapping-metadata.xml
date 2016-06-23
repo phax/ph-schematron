@@ -27,7 +27,8 @@
       </pluginExecutionFilter>
       <action>
         <execute>
-          <runOnIncremental>false</runOnIncremental>
+          <runOnIncremental>true</runOnIncremental>
+          <runOnConfiguration>false</runOnConfiguration>
         </execute>
       </action>
     </pluginExecution>
