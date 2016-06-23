@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.relaxng;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -67,12 +69,11 @@ public final class RelaxNGCompactSchemaCacheTest
                                                             .getValidator (new ClassPathResource ("schemas/svrl.rnc"));
 
       aValidator.validate (TransformSourceFactory.create (new ClassPathResource ("test-svrl/test1.svrl")));
-      System.err.println (" is valid.");
+      // Success
     }
     catch (final SAXException ex)
     {
-      System.err.print (" is not valid because: ");
-      ex.printStackTrace ();
+      fail (ex.getMessage ());
     }
   }
 }

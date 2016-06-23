@@ -24,16 +24,8 @@
         </attribute>
       </optional>
       <optional>
-        <!--
-          [ph] 2013/03/21
-          Added #ALL and #DEFAULT because they are invalid IDREFs    
-        -->
         <attribute name="defaultPhase">
-          <choice>
-            <data type="IDREF"/>
-            <value>#ALL</value>
-            <value>#DEFAULT</value>
-          </choice>
+          <data type="IDREF"/>
         </attribute>
       </optional>
       <optional>
