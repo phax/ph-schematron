@@ -28,6 +28,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.commons.error.IResourceError;
 import com.helger.commons.io.file.FileHelper;
@@ -62,6 +63,12 @@ public final class Schematron2XSLTMojo extends AbstractMojo
         getLog ().warn (aResError.getAsString (Locale.US), aResError.getLinkedException ());
     }
   }
+
+  /**
+   * BuildContext for m2e (it's a pass-though straight to the filesystem when invoked from the Maven cli)
+   * @component
+   */
+  private BuildContext buildContext;
 
   /**
    * The Maven Project.
@@ -274,6 +281,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             {
               // Write the resulting XSLT file to disk
               XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), FileHelper.getOutputStream (aXSLTFile));
+              buildContext.refresh (aXsltFileDirectory);
             }
             else
             {
