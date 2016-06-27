@@ -54,13 +54,28 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
   {
+	private final File source;
+	
+	public PluginErrorListener (@Nonnull final File aSource) 
+	{
+	  source = aSource;
+	}
+	
     @Override
     protected void internalLog (@Nonnull final IResourceError aResError)
     {
-      if (aResError.isError ())
-        getLog ().error (aResError.getAsString (Locale.US), aResError.getLinkedException ());
-      else
-        getLog ().warn (aResError.getAsString (Locale.US), aResError.getLinkedException ());
+      Throwable cause = aResError.getLinkedException ().getCause ();
+      int line = aResError.getLocation ().getLineNumber ();
+      int column = aResError.getLocation ().getColumnNumber ();
+      
+      if (aResError.isError ()) 
+      {
+      	buildContext.addMessage (source, line, column, cause.getMessage(), BuildContext.SEVERITY_ERROR, cause);
+      }
+      else 
+      {
+        buildContext.addMessage (source, line, column, cause.getMessage(), BuildContext.SEVERITY_WARNING, cause);
+      }
     }
   }
 
@@ -266,8 +281,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
           // 3.3 Okay, write the XSLT file
           try
           {
+            buildContext.removeMessages (aFile);
             // Custom error listener to log to the Mojo logger
-            final ErrorListener aMojoErrorListener = new PluginErrorListener ();
+            final ErrorListener aMojoErrorListener = new PluginErrorListener (aFile);
 
             // Custom error listener
             // No custom URI resolver
