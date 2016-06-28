@@ -27,8 +27,6 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.svrl.SVRLMarshaller;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class Issue25Test
 {
@@ -38,9 +36,8 @@ public final class Issue25Test
     final IReadableResource aSCH = new ClassPathResource ("test-sch/xfront/example05/check-classifications.sch");
     final IReadableResource aXML = new ClassPathResource ("test-sch/xfront/example05/valid-document.xml");
 
-    final SchematronOutputType aSOT = SchematronHelper.applySchematron (new SchematronResourceSCH (aSCH), aXML);
+    final SchematronOutputType aSOT = SchematronHelper.applySchematron (new SchematronResourcePure (aSCH), aXML);
     assertNotNull (aSOT);
-    System.out.println (new SVRLMarshaller ().getAsString (aSOT));
     assertTrue (SVRLHelper.getAllFailedAssertions (aSOT).isEmpty ());
   }
 
