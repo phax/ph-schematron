@@ -19,10 +19,6 @@ package com.helger.schematron.svrl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SuccessfulReport;
-
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.error.IErrorLevel;
 
@@ -35,13 +31,6 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
 {
   public static final IErrorLevel DEFAULT_ERROR_LEVEL = EErrorLevel.ERROR;
 
-  /**
-   * Get the error level associated with a single failed assertion.
-   *
-   * @param sFlag
-   *        The flag to be queried. May be <code>null</code>.
-   * @return The error level and never <code>null</code>.
-   */
   @Nonnull
   public IErrorLevel getErrorLevelFromFlag (@Nullable final String sFlag)
   {
@@ -59,24 +48,8 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
         sFlag.equalsIgnoreCase ("fatalerror"))
       return EErrorLevel.FATAL_ERROR;
 
-    throw new IllegalArgumentException ("Cannot convert the SVRL failed assertion flag '" +
+    throw new IllegalArgumentException ("Cannot convert the SVRL flag '" +
                                         sFlag +
                                         "' to an error level. Please extend the preceeding list!");
-  }
-
-  @Nonnull
-  public IErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
-  {
-    ValueEnforcer.notNull (aFailedAssert, "FailedAssert");
-
-    return getErrorLevelFromFlag (aFailedAssert.getFlag ());
-  }
-
-  @Nonnull
-  public IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
-  {
-    ValueEnforcer.notNull (aSuccessfulReport, "SuccessfulReport");
-
-    return getErrorLevelFromFlag (aSuccessfulReport.getFlag ());
   }
 }

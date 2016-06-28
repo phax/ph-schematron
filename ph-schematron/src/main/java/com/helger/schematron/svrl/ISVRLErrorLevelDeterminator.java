@@ -17,10 +17,12 @@
 package com.helger.schematron.svrl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.IErrorLevel;
 
 /**
@@ -28,8 +30,20 @@ import com.helger.commons.error.IErrorLevel;
  *
  * @author Philip Helger
  */
+@FunctionalInterface
 public interface ISVRLErrorLevelDeterminator
 {
+  /**
+   * Get the error level associated with a single failed assertion/successful
+   * report.
+   *
+   * @param sFlag
+   *        The flag to be queried. May be <code>null</code>.
+   * @return The error level and never <code>null</code>.
+   */
+  @Nonnull
+  IErrorLevel getErrorLevelFromFlag (@Nullable String sFlag);
+
   /**
    * Get the error level associated with a single failed assertion.
    *
@@ -38,7 +52,12 @@ public interface ISVRLErrorLevelDeterminator
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  IErrorLevel getErrorLevelFromFailedAssert (@Nonnull FailedAssert aFailedAssert);
+  default IErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
+  {
+    ValueEnforcer.notNull (aFailedAssert, "FailedAssert");
+
+    return getErrorLevelFromFlag (aFailedAssert.getFlag ());
+  }
 
   /**
    * Get the error level associated with a single successful report.
@@ -48,5 +67,10 @@ public interface ISVRLErrorLevelDeterminator
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull SuccessfulReport aSuccessfulReport);
+  default IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  {
+    ValueEnforcer.notNull (aSuccessfulReport, "SuccessfulReport");
+
+    return getErrorLevelFromFlag (aSuccessfulReport.getFlag ());
+  }
 }
