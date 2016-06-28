@@ -1,19 +1,20 @@
 <?xml version="1.0"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+   <sch:ns prefix="fn" uri="http://www.w3.org/2005/xpath-functions" />
 
    <sch:pattern name="Reserved Word Filter (words from external document)">
 
       <sch:rule context="Para">
 
-         <sch:assert test="count(.//node()[contains(., document('reserved-words-list.xml')/Reserved-Words/li[1])]) = 0">
+         <sch:assert test="count(.//node()[contains(., fn:doc('reserved-words-list.xml')/Reserved-Words/li[1])]) = 0">
              The Para element must not contain this reserved word
          </sch:assert>
 
-         <sch:assert test="count(.//node()[contains(., document('reserved-words-list.xml')/Reserved-Words/li[2])]) = 0">
+         <sch:assert test="count(.//node()[contains(., fn:doc('reserved-words-list.xml')/Reserved-Words/li[2])]) = 0">
              The Para element must not contain this reserved word
          </sch:assert>
 
-         <sch:assert test="count(.//node()[contains(., document('reserved-words-list.xml')/Reserved-Words/li[3])]) = 0">
+         <sch:assert test="count(.//node()[contains(., fn:doc('reserved-words-list.xml')/Reserved-Words/li[3])]) = 0">
              The Para element must not contain this reserved word
          </sch:assert>
 
