@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 
-   <sch:pattern name="Vote Count">
+   <sch:pattern id="VoteCount">
 
       <sch:p>The election results must add up to 100%.</sch:p> 
 
@@ -15,7 +15,7 @@
 
    </sch:pattern>
 
-   <sch:pattern name="Checksum">
+   <sch:pattern id="Checksum">
 
       <sch:p>The tenth digit of DocumentNumber is a checksum digit. The checksum digit
              must equal the sum of the preceding nine digits multiplied by their position, mod 9.</sch:p> 

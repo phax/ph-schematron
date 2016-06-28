@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 
-   <sch:pattern name="Reserved Word Filter">
+   <sch:pattern id="ReservedWordFilter">
 
       <sch:p>These reserved words are not allowed anywhere in the
              document: SCRIPT, FUNCTION.</sch:p> 

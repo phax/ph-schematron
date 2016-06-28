@@ -17,7 +17,7 @@
 
    </sch:phase>
 
-   <sch:pattern name="Security Classification Policy" id="SCP">
+   <sch:pattern id="SCP">
 
       <sch:p>A Para's classification value cannot be more sensitive 
          than the Document's classification value.</sch:p> 
@@ -54,7 +54,7 @@
 
    </sch:pattern>
 
-   <sch:pattern name="Reserved Word Filter" id="RWF">
+   <sch:pattern id="RWF">
 
       <sch:p>These reserved words are not allowed anywhere in the
          document: SCRIPT, FUNCTION.</sch:p> 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 
-   <sch:pattern name="Vote Count">
+   <sch:pattern id="VoteCount">
 
       <sch:p>The election results must add up to 100%.</sch:p> 
 

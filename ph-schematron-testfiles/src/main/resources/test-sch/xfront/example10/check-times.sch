@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 
-   <sch:pattern name="Laws of Physics">
+   <sch:pattern>
 
       <sch:p>An aircraft's takeoff datetime must be prior to its landing datetime.</sch:p> 
 

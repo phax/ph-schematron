@@ -2,7 +2,7 @@
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
    <sch:ns prefix="fn" uri="http://www.w3.org/2005/xpath-functions" />
 
-   <sch:pattern name="Reserved Word Filter (words from external document)">
+   <sch:pattern>
 
       <sch:rule context="Para">
 

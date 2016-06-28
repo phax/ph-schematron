@@ -4,7 +4,7 @@
    <sch:ns uri="http://www.example.org"
            prefix="ex" />
 
-   <sch:pattern name="Security Classification Policy">
+   <sch:pattern>
 
       <sch:p>A Para's classification value cannot be more sensitive 
          than the Document's classification value.</sch:p> 

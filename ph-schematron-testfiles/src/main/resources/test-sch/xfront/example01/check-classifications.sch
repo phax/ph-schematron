@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 
-   <sch:pattern name="Security Classification Policy">
+   <sch:pattern id="SecurityClassificationPolicy">
 
       <sch:p>A Para's classification value cannot be more sensitive 
              than the Document's classification value.</sch:p> 
