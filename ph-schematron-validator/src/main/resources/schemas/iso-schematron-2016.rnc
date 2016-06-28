@@ -44,7 +44,7 @@ schema = element schema {
         pattern+,
         p*,
         diagnostics?,
-        properties))
+        properties?))
   }
 active = element active {
     attribute pattern { xsd:IDREF },

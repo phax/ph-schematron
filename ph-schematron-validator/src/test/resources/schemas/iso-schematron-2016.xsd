@@ -87,7 +87,9 @@
           <optional>
             <ref name="diagnostics"/>
           </optional>
-          <ref name="properties"/>
+          <optional>
+            <ref name="properties"/>
+          </optional>
         </group>
       </interleave>
     </element>

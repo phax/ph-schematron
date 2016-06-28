@@ -31,8 +31,8 @@ import org.xml.sax.SAXException;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.schematron.CSchematron;
 import com.helger.schematron.relaxng.RelaxNGCompactSchemaCache;
 import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.serialize.MicroWriter;
@@ -49,6 +49,12 @@ import com.helger.xml.transform.TransformSourceFactory;
 @Immutable
 public final class SchematronValidator
 {
+  /** Path to the Schematron RelaxNG Compact file within the class path */
+  public static final String SCHEMATRON_RNC_PATH = "schemas/iso-schematron-2016.rnc";
+
+  /** The readable resource with the RelaxNG compact Schematron rules */
+  public static final ClassPathResource SCHEMATRON_RNC = new ClassPathResource (SCHEMATRON_RNC_PATH);
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronValidator.class);
 
   @PresentForCodeCoverage
@@ -121,7 +127,7 @@ public final class SchematronValidator
     try
     {
       // Get a validator from the RNC schema.
-      final Validator aValidator = RelaxNGCompactSchemaCache.getInstance ().getValidator (CSchematron.SCHEMATRON_RNC);
+      final Validator aValidator = RelaxNGCompactSchemaCache.getInstance ().getValidator (SCHEMATRON_RNC);
 
       // Ensure a collecting error handler is set
       final ErrorHandler aOldEH = aValidator.getErrorHandler ();

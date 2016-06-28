@@ -19,7 +19,6 @@ package com.helger.schematron;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.io.resource.ClassPathResource;
 
 /**
  * Constants for handling Schematron documents
@@ -29,12 +28,6 @@ import com.helger.commons.io.resource.ClassPathResource;
 @Immutable
 public final class CSchematron
 {
-  /** Path to the Schematron RelaxNG Compact file within the class path */
-  public static final String SCHEMATRON_RNC_PATH = "schemas/iso-schematron.rnc";
-
-  /** The readable resource with the RelaxNG compact Schematron rules */
-  public static final ClassPathResource SCHEMATRON_RNC = new ClassPathResource (CSchematron.SCHEMATRON_RNC_PATH);
-
   /** The namespace URL for Schematron documents */
   public static final String NAMESPACE_SCHEMATRON = "http://purl.oclc.org/dsdl/schematron";
 
