@@ -17,6 +17,7 @@
 package com.helger.schematron.xslt;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -77,7 +78,9 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
   /**
    * This flag is for debugging purposes only. Only used during development.
    */
-  private static final boolean SAVE_INTERMEDIATE_FILES = false;
+  private static final AtomicBoolean s_bSaveIntermediateFiles = new AtomicBoolean (false);
+  private static File s_aIntermediateMinifiedSCHFolder = new File ("test-minified");
+  private static File s_aIntermediateFinalXSLTFolder = new File ("test-final");
 
   private static Templates s_aStep1;
   private static Templates s_aStep2;
@@ -86,6 +89,40 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
   private final IReadableResource m_aSchematronResource;
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
+
+  public static final boolean isSaveIntermediateFiles ()
+  {
+    return s_bSaveIntermediateFiles.get ();
+  }
+
+  public static final void setSaveIntermediateFiles (final boolean bSaveIntermediateFiles)
+  {
+    s_bSaveIntermediateFiles.set (bSaveIntermediateFiles);
+  }
+
+  @Nonnull
+  public static final File getIntermediateMinifiedSCHFolder ()
+  {
+    return s_aIntermediateMinifiedSCHFolder;
+  }
+
+  public static final void setIntermediateMinifiedSCHFolder (@Nonnull final File aIntermediateMinifiedSCHFolder)
+  {
+    ValueEnforcer.notNull (aIntermediateMinifiedSCHFolder, "IntermediateMinifiedSCHFolder");
+    s_aIntermediateMinifiedSCHFolder = aIntermediateMinifiedSCHFolder;
+  }
+
+  @Nonnull
+  public static final File getIntermediateFinalXSLTFolder ()
+  {
+    return s_aIntermediateFinalXSLTFolder;
+  }
+
+  public static final void setIntermediateFinalXSLTFolder (@Nonnull final File aIntermediateFinalXSLTFolder)
+  {
+    ValueEnforcer.notNull (aIntermediateFinalXSLTFolder, "IntermediateFinalXSLTFolder");
+    s_aIntermediateFinalXSLTFolder = aIntermediateFinalXSLTFolder;
+  }
 
   /**
    * Constructor
@@ -127,12 +164,12 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
       aTransformerCustomizer.customize (EStep.SCH2XSLT_2, aTransformer2);
       aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
 
-      if (SAVE_INTERMEDIATE_FILES)
+      if (isSaveIntermediateFiles ())
       {
         final String sXML = XMLWriter.getXMLString (aResult2.getNode ());
-        SimpleFileIO.writeFile (new File ("test-minified",
+        SimpleFileIO.writeFile (new File (s_aIntermediateMinifiedSCHFolder,
                                           FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                           ".min-xslt.sch"),
+                                                                            ".min-xslt.sch"),
                                 sXML,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
       }
@@ -147,10 +184,10 @@ final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvide
       // Note: Saxon 6.5.5 does not allow to clone the document node!!!!
       m_aSchematronXSLTDoc = (Document) aResult3.getNode ();
 
-      if (SAVE_INTERMEDIATE_FILES)
+      if (isSaveIntermediateFiles ())
       {
         final String sXML = XMLWriter.getXMLString (m_aSchematronXSLTDoc);
-        SimpleFileIO.writeFile (new File ("test-final",
+        SimpleFileIO.writeFile (new File (s_aIntermediateFinalXSLTFolder,
                                           FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt"),
                                 sXML,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
