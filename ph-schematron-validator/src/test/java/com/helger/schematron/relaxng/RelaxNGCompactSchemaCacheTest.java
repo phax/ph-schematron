@@ -37,7 +37,7 @@ import com.helger.xml.transform.TransformSourceFactory;
 public final class RelaxNGCompactSchemaCacheTest
 {
   @Test
-  public void testTrang ()
+  public void testRNCtoRNG ()
   {
     String [] args = new String [] { "-I",
                                      "rnc",
@@ -54,6 +54,28 @@ public final class RelaxNGCompactSchemaCacheTest
                            "rng",
                            new File ("src\\main\\resources\\schemas\\svrl.rnc").getAbsolutePath (),
                            new File ("src\\test\\resources\\schemas\\svrl.rng").getAbsolutePath () };
+    // Call trang
+    new com.thaiopensource.relaxng.translate.Driver ().run (args);
+  }
+
+  @Test
+  public void testRNCtoXSD ()
+  {
+    String [] args = new String [] { "-I",
+                                     "rnc",
+                                     "-O",
+                                     "rng",
+                                     new File ("src\\main\\resources\\schemas\\iso-schematron.rnc").getAbsolutePath (),
+                                     new File ("src\\test\\resources\\schemas\\iso-schematron.xsd").getAbsolutePath () };
+    // Call trang
+    new com.thaiopensource.relaxng.translate.Driver ().run (args);
+
+    args = new String [] { "-I",
+                           "rnc",
+                           "-O",
+                           "xsd",
+                           new File ("src\\main\\resources\\schemas\\svrl.rnc").getAbsolutePath (),
+                           new File ("src\\test\\resources\\schemas\\svrl.xsd").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
   }
