@@ -1,0 +1,205 @@
+# Copyright © ISO/IEC 2015
+
+# The following permission notice and disclaimer shall be included in all
+# copies of this XML schema ("the Schema"), and derivations of the Schema:
+
+# Permission is hereby granted, free of charge in perpetuity, to any
+# person obtaining a copy of the Schema, to use, copy, modify, merge and
+# distribute free of charge, copies of the Schema for the purposes of
+# developing, implementing, installing and using software based on the
+# Schema, and to permit persons to whom the Schema is furnished to do so,
+# subject to the following conditions:
+
+# THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE USE OR
+# OTHER DEALINGS IN THE SCHEMA.
+
+# In addition, any modified copy of the Schema shall include the following
+# notice:
+
+# "THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
+# AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD".
+
+namespace local = ""
+default namespace sch = "http://purl.oclc.org/dsdl/schematron"
+start = schema
+# Element declarations
+schema = element schema {
+    attribute id { xsd:ID }?,
+    rich,
+    attribute schemaVersion { non-empty-string }?,
+    attribute defaultPhase { xsd:IDREF }?,
+    attribute queryBinding { non-empty-string }?,
+    (foreign
+      & inclusion*
+      & (title?,
+        ns*,
+        p*,
+        let*,
+        phase*,
+        pattern+,
+        p*,
+        diagnostics?,
+        properties))
+  }
+active = element active {
+    attribute pattern { xsd:IDREF },
+    (foreign & (text | dir | emph | span)*)
+  }
+assert = element assert {
+    attribute test { exprValue },
+    attribute flag { flagValue }?,
+    attribute id { xsd:ID }?,
+    attribute diagnostics { xsd:IDREFS }?,
+    attribute properties { xsd:IDREFS }?,
+    rich,
+    linkable,
+    (foreign & (text | name | value-of | emph | dir | span)*)
+  }
+diagnostic = element diagnostic {
+    attribute id { xsd:ID },
+    rich,
+    (foreign & (text | value-of | emph | dir | span)*)
+    }
+diagnostics = element diagnostics { foreign & inclusion* & diagnostic* }
+dir = element dir {
+    attribute value { "ltr" | "rtl" }?,
+    (foreign & text)
+  }
+emph = element emph { text }
+extends = element extends {
+    (attribute rule { xsd:IDREF }
+    | attribute href { uriValue }),
+    foreign-empty
+  }
+let = element let {
+    attribute name { nameValue },
+    (attribute value { string }
+    | foreign-element+)
+  }
+name = element name {
+    attribute path { pathValue }?,
+    foreign-empty
+  }
+ns = element ns {
+    attribute uri { uriValue },
+    attribute prefix { nameValue },
+    foreign-empty
+  }
+p = element p {
+    attribute id { xsd:ID }?,
+    attribute class { classValue }?,
+    attribute icon { uriValue }?,
+    (foreign & (text | dir | emph | span)*)
+  }
+param = element param {
+    attribute name { nameValue },
+    attribute value { non-empty-string }
+  }
+pattern = element pattern {
+    attribute documents { pathValue }?,
+    rich,
+    (foreign
+      & inclusion*
+      & ((attribute abstract { "true" },
+          attribute id { xsd:ID },
+          title?,
+          (p*, let*, rule*))
+      | (attribute abstract { "false" }?,
+         attribute id { xsd:ID }?,
+         title?,
+         (p*, let*, rule*))
+      | (attribute abstract { "false" }?,
+         attribute is-a { xsd:IDREF },
+         attribute id { xsd:ID }?,
+         title?,
+         (p*, param*))))
+  }
+phase = element phase {
+    attribute id { xsd:ID },
+    rich,
+    (foreign & inclusion* & (p*, let*, active*))
+  }
+properties = element properties { property* }
+property = element property {
+    attribute id { xsd:ID },
+    attribute role { roleValue }?,
+    attribute scheme { text }?,
+    (foreign & (text | name | value-of | emph | dir | span)*)
+  }
+report = element report {
+    attribute test { exprValue },
+    attribute flag { flagValue }?,
+    attribute id { xsd:ID }?,
+    attribute diagnostics { xsd:IDREFS }?,
+    attribute properties { xsd:IDREFS }?,
+    rich,
+    linkable,
+    (foreign & (text | name | value-of | emph | dir | span)*)
+  }
+rule = element rule {
+    attribute flag { flagValue }?,
+    rich,
+    linkable,
+    (foreign
+    & inclusion*
+    & ((attribute abstract { "true" },
+        attribute id { xsd:ID },
+        let*,
+        (assert | report | extends | p)+)
+     | (attribute context { pathValue },
+        attribute id { xsd:ID }?,
+        attribute abstract { "false" }?,
+        let*,
+        (assert | report | extends | p)+)))
+  }
+span = element span {
+    attribute class { classValue },
+    (foreign & text)
+  }
+title = element title { (text | dir)* }
+value-of = element value-of {
+    attribute select { pathValue },
+    foreign-empty
+  }
+# common declarations
+inclusion = element include {
+    attribute href { uriValue },
+    foreign-empty
+  }
+rich =
+  attribute icon { uriValue }?,
+  attribute see { uriValue }?,
+  attribute fpi { fpiValue }?,
+  attribute xml:lang { langValue }?,
+  attribute xml:space { "preserve" | "default" }?
+linkable =
+  attribute role { roleValue }?,
+  attribute subject { pathValue }?
+foreign = foreign-attributes, foreign-element*
+foreign-empty = foreign-attributes
+foreign-attributes = attribute * - (local:* | xml:*) { text }*
+foreign-element = element * - sch:* {
+    (attribute * { text }
+    | foreign-element
+    | schema
+    | text)*
+  }
+
+# Data types
+uriValue = xsd:anyURI
+pathValue = string
+exprValue = string
+fpiValue = string
+langValue = xsd:language
+roleValue = string
+flagValue = string
+nameValue = string
+
+# In the default query language binding, xsd:NCNAME
+classValue = string
+non-empty-string = xsd:token { minLength = "1" }

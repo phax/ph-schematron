@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © ISO/IEC 2015
+  
+  The following permission notice and disclaimer shall be included in all
+  copies of this XML schema ("the Schema"), and derivations of the Schema:
+  Permission is hereby granted, free of charge in perpetuity, to any
+  person obtaining a copy of the Schema, to use, copy, modify, merge and
+  distribute free of charge, copies of the Schema for the purposes of
+  developing, implementing, installing and using software based on the
+  Schema, and to permit persons to whom the Schema is furnished to do so,
+  subject to the following conditions:
+  
+  THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE USE OR
+  OTHER DEALINGS IN THE SCHEMA.
+  
+  In addition, any modified copy of the Schema shall include the following
+  notice:
+  
+  THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
+  AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://purl.oclc.org/dsdl/svrl" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:element name="schematron-output">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:ns-prefix-in-attribute-values"/>
+        <xs:sequence maxOccurs="unbounded">
+          <xs:element ref="svrl:active-pattern"/>
+          <xs:sequence maxOccurs="unbounded">
+            <xs:element ref="svrl:fired-rule"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element ref="svrl:failed-assert"/>
+              <xs:element ref="svrl:successful-report"/>
+            </xs:choice>
+          </xs:sequence>
+        </xs:sequence>
+      </xs:sequence>
+      <xs:attribute name="title"/>
+      <xs:attribute name="phase" type="xs:NMTOKEN"/>
+      <xs:attribute name="schemaVersion"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- only namespaces from sch:ns need to be reported -->
+  <xs:element name="ns-prefix-in-attribute-values">
+    <xs:complexType>
+      <xs:attribute name="prefix" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="uri" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- only active patterns are reported -->
+  <xs:element name="active-pattern">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="documents"/>
+      <xs:attribute name="name"/>
+      <xs:attribute name="role" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- only rules that are fired are reported, -->
+  <xs:element name="fired-rule">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="name"/>
+      <xs:attribute name="context" use="required"/>
+      <xs:attribute name="role" type="xs:NMTOKEN"/>
+      <xs:attribute name="flag" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- only references are reported, not the diagnostic -->
+  <xs:element name="diagnostic-reference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="svrl:text"/>
+      </xs:sequence>
+      <xs:attribute name="diagnostic" use="required" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- only failed assertions are reported -->
+  <xs:element name="failed-assert">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:property-reference"/>
+        <xs:element ref="svrl:text"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- only successful asserts are reported -->
+  <xs:element name="successful-report">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:property-reference"/>
+        <xs:element ref="svrl:text"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- property-reference -->
+  <xs:element name="property-reference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="svrl:text"/>
+      </xs:sequence>
+      <xs:attribute name="property" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="role"/>
+      <xs:attribute name="scheme"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- human text -->
+  <xs:element name="text">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svrl:rich-text">
+          <xs:attribute ref="xml:space"/>
+          <xs:attribute ref="xml:lang"/>
+          <xs:attribute name="see"/>
+          <xs:attribute name="icon"/>
+          <xs:attribute name="fpi"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- rich text -->
+  <xs:complexType name="rich-text" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="svrl:foreign"/>
+      <xs:element ref="svrl:dir"/>
+      <xs:element ref="svrl:span"/>
+      <xs:element ref="svrl:emph"/>
+    </xs:choice>
+    <xs:attributeGroup ref="svrl:foreign"/>
+  </xs:complexType>
+  <!-- directionality -->
+  <xs:element name="dir">
+    <xs:complexType mixed="true">
+      <xs:attribute name="class"/>
+      <xs:attribute name="dir"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- emphasis -->
+  <xs:element name="emph">
+    <xs:complexType mixed="true">
+      <xs:attribute name="class"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- arbitrary markup -->
+  <xs:element name="span">
+    <xs:complexType mixed="true">
+      <xs:attribute name="class" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- foreign -->
+  <xs:group name="foreign">
+    <xs:sequence>
+      <xs:group minOccurs="0" ref="svrl:foreign-element"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:attributeGroup name="foreign">
+    <xs:attributeGroup ref="svrl:foreign-attributes"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="foreign-attributes">
+    <xs:attributeGroup ref="xml:local"/>
+  </xs:attributeGroup>
+  <xs:group name="foreign-element">
+    <xs:choice>
+      <xs:any namespace="##other" processContents="skip"/>
+      <xs:any namespace="##local" processContents="skip"/>
+    </xs:choice>
+  </xs:group>
+  <xs:attributeGroup name="attlist.assert-and-report">
+    <xs:attribute name="id" type="xs:ID"/>
+    <xs:attribute name="location" use="required"/>
+    <xs:attribute name="test" use="required"/>
+    <xs:attribute name="role" type="xs:NMTOKEN"/>
+    <xs:attribute name="flag" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+</xs:schema>

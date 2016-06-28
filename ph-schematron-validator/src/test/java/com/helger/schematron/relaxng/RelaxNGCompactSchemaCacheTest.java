@@ -81,6 +81,50 @@ public final class RelaxNGCompactSchemaCacheTest
   }
 
   @Test
+  public void testRNCtoRNG2016 ()
+  {
+    String [] args = new String [] { "-I",
+                                     "rnc",
+                                     "-O",
+                                     "rng",
+                                     new File ("src/main/resources/schemas/iso-schematron-2016.rnc").getAbsolutePath (),
+                                     new File ("src/test/resources/schemas/iso-schematron-2016.rng").getAbsolutePath () };
+    // Call trang
+    new com.thaiopensource.relaxng.translate.Driver ().run (args);
+
+    args = new String [] { "-I",
+                           "rnc",
+                           "-O",
+                           "rng",
+                           new File ("src/main/resources/schemas/svrl-2016.rnc").getAbsolutePath (),
+                           new File ("src/test/resources/schemas/svrl-2016.rng").getAbsolutePath () };
+    // Call trang
+    new com.thaiopensource.relaxng.translate.Driver ().run (args);
+  }
+
+  @Test
+  public void testRNCtoXSD2016 ()
+  {
+    String [] args = new String [] { "-I",
+                                     "rnc",
+                                     "-O",
+                                     "rng",
+                                     new File ("src/main/resources/schemas/iso-schematron-2016.rnc").getAbsolutePath (),
+                                     new File ("src/test/resources/schemas/iso-schematron-2016.xsd").getAbsolutePath () };
+    // Call trang
+    new com.thaiopensource.relaxng.translate.Driver ().run (args);
+
+    args = new String [] { "-I",
+                           "rnc",
+                           "-O",
+                           "xsd",
+                           new File ("src/main/resources/schemas/svrl-2016.rnc").getAbsolutePath (),
+                           new File ("src/test/resources/schemas/svrl-2016.xsd").getAbsolutePath () };
+    // Call trang
+    new com.thaiopensource.relaxng.translate.Driver ().run (args);
+  }
+
+  @Test
   public void testSVRL () throws IOException
   {
     // Check the document
