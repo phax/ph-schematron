@@ -18,6 +18,7 @@ package com.helger.schematron.testfiles;
 
 import javax.annotation.Nonnull;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
@@ -41,7 +42,10 @@ public final class SchematronTestHelper
   @Nonnull
   private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aDI)
   {
-    final ICommonsList <SchematronTestFile> ret = new CommonsArrayList <> ();
+    ValueEnforcer.notNull (aDI, "Resource");
+    ValueEnforcer.isTrue (aDI.exists (), () -> "Resource " + aDI + " does not exist!");
+
+    final ICommonsList <SchematronTestFile> ret = new CommonsArrayList<> ();
     final IMicroDocument aDoc = MicroReader.readMicroXML (aDI);
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to open/parse " + aDI + " as XML");
