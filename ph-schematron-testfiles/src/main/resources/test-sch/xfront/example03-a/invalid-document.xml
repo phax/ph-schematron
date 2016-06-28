@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<?oxygen SCHSchema="check-election-results.sch" type="xml"?>
+<Election>
+     <ResultsByPercentage>
+          <Candidate name="John">61</Candidate> 
+          <Candidate name="Sara">124</Candidate> 
+          <Candidate name="Bill">15</Candidate>
+     </ResultsByPercentage>
+     <DocumentNumber>4389023238</DocumentNumber>
+</Election>

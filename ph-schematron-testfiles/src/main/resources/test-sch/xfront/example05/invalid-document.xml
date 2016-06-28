@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?oxygen SCHSchema="check-classifications.sch" type="xml"?>
+<Document xmlns="http://www.example.org"
+          classification="confidential">
+    <Para classification="unclassified">
+          One if by land, two if by sea;
+    </Para>
+    <Para classification="confidential">
+          And I on the opposite shore will be,
+          Ready to ride and spread the alarm
+    </Para>
+    <Para classification="secret">
+          Ready to ride and spread the alarm
+          Through every Middlesex, village and farm,
+    </Para>
+    <Para classification="top-secret">
+          For the country folk to be up and to arm.
+    </Para>
+</Document>

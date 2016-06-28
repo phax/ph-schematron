@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<?oxygen SCHSchema="check-reserved-words.sch" type="xml"?>
+<Document classification="confidential">
+    <Para classification="unclassified">
+          One if by land, two if by sea;
+    </Para>
+    <Para classification="confidential">
+          And I on the espionage shore will be,
+          Ready to ride and spread the alarm
+    </Para>
+    <Para classification="secret">
+          Ready to bomb ride and spread the alarm
+          Through every Middlesex, village and farm,
+    </Para>
+    <Para classification="top-secret">
+          For the espionage country folk to covert be up and to arm.
+    </Para>
+</Document>

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+If there is a Para is labeled "secret" then the Document should be labeled either secret or top-secretIf there is a Para is labeled "top-secret" then the Document should be labeled top-secret

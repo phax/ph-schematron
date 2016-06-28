@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <iso:schema xmlns="http://purl.oclc.org/dsdl/schematron" 
           xmlns:iso="http://purl.oclc.org/dsdl/schematron" 
-          xmlns:sch="http://www.ascc.net/xml/schematron"
+          xmlns:sch="http://purl.oclc.org/dsdl/schematron"
           queryBinding='xslt2'
           schemaVersion="Rev 1.6">
   <iso:title>Test ISO schematron file. Introduction mode </iso:title>

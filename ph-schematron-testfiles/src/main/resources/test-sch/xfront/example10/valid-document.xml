@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<?oxygen SCHSchema="check-times.sch" type="xml"?>
+<Aircraft>
+    <Takeoff>2007-05-03T11:33:00</Takeoff>
+    <Landing>2007-05-03T13:00:00</Landing>
+</Aircraft>

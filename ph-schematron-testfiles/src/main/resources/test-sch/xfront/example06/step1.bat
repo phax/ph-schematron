@@ -1,0 +1,1 @@
+run-xalan check-classifications.sch skeleton1-5.xsl Validator.xsl

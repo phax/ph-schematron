@@ -1,0 +1,1 @@
+run-xalan check-classifications.sch iso_schematron_skeleton.xsl Validator.xsl
