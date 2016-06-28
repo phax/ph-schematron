@@ -37,14 +37,14 @@ import com.helger.xml.transform.TransformSourceFactory;
 public final class RelaxNGCompactSchemaCacheTest
 {
   @Test
-  public void testRNCtoRNG ()
+  public void testRNCtoRNG2006 ()
   {
     String [] args = new String [] { "-I",
                                      "rnc",
                                      "-O",
                                      "rng",
-                                     new File ("src\\main\\resources\\schemas\\iso-schematron.rnc").getAbsolutePath (),
-                                     new File ("src\\test\\resources\\schemas\\iso-schematron.rng").getAbsolutePath () };
+                                     new File ("src/main/resources/schemas/iso-schematron-2006.rnc").getAbsolutePath (),
+                                     new File ("src/test/resources/schemas/iso-schematron-2006.rng").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
 
@@ -52,21 +52,21 @@ public final class RelaxNGCompactSchemaCacheTest
                            "rnc",
                            "-O",
                            "rng",
-                           new File ("src\\main\\resources\\schemas\\svrl.rnc").getAbsolutePath (),
-                           new File ("src\\test\\resources\\schemas\\svrl.rng").getAbsolutePath () };
+                           new File ("src/main/resources/schemas/svrl-2006.rnc").getAbsolutePath (),
+                           new File ("src/test/resources/schemas/svrl-2006.rng").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
   }
 
   @Test
-  public void testRNCtoXSD ()
+  public void testRNCtoXSD2006 ()
   {
     String [] args = new String [] { "-I",
                                      "rnc",
                                      "-O",
                                      "rng",
-                                     new File ("src\\main\\resources\\schemas\\iso-schematron.rnc").getAbsolutePath (),
-                                     new File ("src\\test\\resources\\schemas\\iso-schematron.xsd").getAbsolutePath () };
+                                     new File ("src/main/resources/schemas/iso-schematron-2006.rnc").getAbsolutePath (),
+                                     new File ("src/test/resources/schemas/iso-schematron-2006.xsd").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
 
@@ -74,8 +74,8 @@ public final class RelaxNGCompactSchemaCacheTest
                            "rnc",
                            "-O",
                            "xsd",
-                           new File ("src\\main\\resources\\schemas\\svrl.rnc").getAbsolutePath (),
-                           new File ("src\\test\\resources\\schemas\\svrl.xsd").getAbsolutePath () };
+                           new File ("src/main/resources/schemas/svrl-2006.rnc").getAbsolutePath (),
+                           new File ("src/test/resources/schemas/svrl-2006.xsd").getAbsolutePath () };
     // Call trang
     new com.thaiopensource.relaxng.translate.Driver ().run (args);
   }
@@ -88,7 +88,7 @@ public final class RelaxNGCompactSchemaCacheTest
     {
       // Get a validator from the schema.
       final Validator aValidator = RelaxNGCompactSchemaCache.getInstance ()
-                                                            .getValidator (new ClassPathResource ("schemas/svrl.rnc"));
+                                                            .getValidator (new ClassPathResource ("schemas/svrl-2006.rnc"));
 
       aValidator.validate (TransformSourceFactory.create (new ClassPathResource ("test-svrl/test1.svrl")));
       // Success
