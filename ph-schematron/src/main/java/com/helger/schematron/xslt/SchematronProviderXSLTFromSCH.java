@@ -51,7 +51,7 @@ import com.helger.xml.transform.XMLTransformerFactory;
  * @author Philip Helger
  */
 @NotThreadSafe
-final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvider
+public final class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvider
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTFromSCH.class);
 
