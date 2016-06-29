@@ -35,6 +35,7 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.string.StringHelper;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCHCache;
@@ -54,33 +55,34 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
   {
-	private final File source;
-	
-	public PluginErrorListener (@Nonnull final File aSource) 
-	{
-	  source = aSource;
-	}
-	
+    private final File m_aSourceFile;
+
+    public PluginErrorListener (@Nonnull final File aSource)
+    {
+      m_aSourceFile = aSource;
+    }
+
     @Override
     protected void internalLog (@Nonnull final IResourceError aResError)
     {
-      Throwable cause = aResError.getLinkedException ().getCause ();
-      int line = aResError.getLocation ().getLineNumber ();
-      int column = aResError.getLocation ().getColumnNumber ();
-      
-      if (aResError.isError ()) 
-      {
-      	buildContext.addMessage (source, line, column, cause.getMessage(), BuildContext.SEVERITY_ERROR, cause);
-      }
-      else 
-      {
-        buildContext.addMessage (source, line, column, cause.getMessage(), BuildContext.SEVERITY_WARNING, cause);
-      }
+      final int nLine = aResError.getLocation ().getLineNumber ();
+      final int nColumn = aResError.getLocation ().getColumnNumber ();
+      final String sMessage = aResError.getDisplayText (Locale.US);
+      final Throwable aCause = aResError.getLinkedException ().getCause ();
+
+      buildContext.addMessage (m_aSourceFile,
+                               nLine,
+                               nColumn,
+                               sMessage,
+                               aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
+                               aCause);
     }
   }
 
   /**
-   * BuildContext for m2e (it's a pass-though straight to the filesystem when invoked from the Maven cli)
+   * BuildContext for m2e (it's a pass-though straight to the filesystem when
+   * invoked from the Maven cli)
+   *
    * @component
    */
   private BuildContext buildContext;
@@ -116,7 +118,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    * The directory where the XSLT files will be saved.
    *
    * @required
-   * @parameter property="xsltDirectory" default-value="${basedir}/src/main/xslt"
+   * @parameter property="xsltDirectory"
+   *            default-value="${basedir}/src/main/xslt"
    */
   private File xsltDirectory;
 
@@ -151,7 +154,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    */
   private String languageCode;
 
-  public void setSchematronDirectory (final File aDir)
+  public void setSchematronDirectory (@Nonnull final File aDir)
   {
     schematronDirectory = aDir;
     if (!schematronDirectory.isAbsolute ())
@@ -165,7 +168,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     getLog ().debug ("Setting Schematron pattern to '" + sPattern + "'");
   }
 
-  public void setXsltDirectory (final File aDir)
+  public void setXsltDirectory (@Nonnull final File aDir)
   {
     xsltDirectory = aDir;
     if (!xsltDirectory.isAbsolute ())
@@ -215,15 +218,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       throw new MojoExecutionException ("The specified Schematron directory " +
                                         schematronDirectory +
                                         " is not a directory!");
-    if (schematronPattern == null || schematronPattern.isEmpty ())
-    {
+    if (StringHelper.hasNoText (schematronPattern))
       throw new MojoExecutionException ("No Schematron pattern specified!");
-    }
     if (xsltDirectory == null)
       throw new MojoExecutionException ("No XSLT directory specified!");
     if (xsltDirectory.exists () && !xsltDirectory.isDirectory ())
       throw new MojoExecutionException ("The specified XSLT directory " + xsltDirectory + " is not a directory!");
-    if (xsltExtension == null || xsltExtension.length () == 0 || !xsltExtension.startsWith ("."))
+    if (StringHelper.hasNoText (xsltExtension) || !xsltExtension.startsWith ("."))
       throw new MojoExecutionException ("The XSLT extension '" + xsltExtension + "' is invalid!");
 
     if (!xsltDirectory.exists () && !xsltDirectory.mkdirs ())
