@@ -67,8 +67,12 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     {
       final int nLine = aResError.getLocation ().getLineNumber ();
       final int nColumn = aResError.getLocation ().getColumnNumber ();
-      final String sMessage = aResError.getDisplayText (Locale.US);
-      final Throwable aCause = aResError.getLinkedException ().getCause ();
+      final Throwable aLinkedException = aResError.getLinkedException ();
+      final String sMessage = StringHelper.getImplodedNonEmpty (" - ",
+                                                                aResError.getDisplayText (Locale.US),
+                                                                aLinkedException == null ? null
+                                                                                         : aLinkedException.getMessage ());
+      final Throwable aCause = aLinkedException != null ? aLinkedException.getCause () : null;
 
       buildContext.addMessage (m_aSourceFile,
                                nLine,
