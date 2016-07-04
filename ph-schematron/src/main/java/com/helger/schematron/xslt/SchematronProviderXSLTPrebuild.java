@@ -42,7 +42,7 @@ import com.helger.xml.transform.TransformSourceFactory;
  * @author Philip Helger
  */
 @NotThreadSafe
-final class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvider
+public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvider
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
   private Document m_aSchematronXSLTDoc;
@@ -59,7 +59,7 @@ final class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvid
 
       // compile result of read file
       final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactorySaxonFirst (aCustomErrorListener,
-                                                                                            new DefaultTransformURIResolver (aCustomURIResolver));
+                                                                                                      new DefaultTransformURIResolver (aCustomURIResolver));
       m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)
