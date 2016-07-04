@@ -17,6 +17,7 @@
 package com.helger.maven.sch2xslt;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -36,9 +37,12 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.svrl.CSVRL;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCHCache;
+import com.helger.xml.CXML;
+import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -303,13 +307,24 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             if (aXsltProvider != null)
             {
               // Write the resulting XSLT file to disk
+              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl",
+                                                                                                      CSVRL.SVRL_NAMESPACE_URI);
+              // Add all namespaces from XSLT document root
+              final String sNSPrefix = CXML.XML_ATTR_XMLNS + ":";
+              XMLHelper.getAllAttributesAsMap (aXsltProvider.getXSLTDocument ().getDocumentElement ())
+                       .forEach ( (sAttrName, sAttrValue) -> {
+                         if (sAttrName.startsWith (sNSPrefix))
+                           aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
+                       });
+
               final XMLWriterSettings aXWS = new XMLWriterSettings ();
-              aXWS.setNamespaceContext (new MapBasedNamespaceContext ().addMapping ("xsl",
-                                                                                    "http://www.w3.org/1999/XSL/Transform")
-                                                                       .addMapping ("svrl",
-                                                                                    "http://purl.oclc.org/dsdl/svrl"))
-                  .setPutNamespaceContextPrefixesInRoot (true);
-              XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), FileHelper.getOutputStream (aXSLTFile), aXWS);
+              aXWS.setNamespaceContext (aNSContext).setPutNamespaceContextPrefixesInRoot (true);
+
+              final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
+              if (aOS == null)
+                throw new IllegalStateException ("Failed to open output stream for file " +
+                                                 aXSLTFile.getAbsolutePath ());
+              XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), aOS, aXWS);
               buildContext.refresh (aXsltFileDirectory);
             }
             else
