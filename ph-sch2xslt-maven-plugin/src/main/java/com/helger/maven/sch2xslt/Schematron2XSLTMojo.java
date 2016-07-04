@@ -39,7 +39,9 @@ import com.helger.commons.string.StringHelper;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCHCache;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -301,7 +303,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             if (aXsltProvider != null)
             {
               // Write the resulting XSLT file to disk
-              XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), FileHelper.getOutputStream (aXSLTFile));
+              final XMLWriterSettings aXWS = new XMLWriterSettings ();
+              aXWS.setNamespaceContext (new MapBasedNamespaceContext ().addMapping ("xsl",
+                                                                                    "http://www.w3.org/1999/XSL/Transform")
+                                                                       .addMapping ("svrl",
+                                                                                    "http://purl.oclc.org/dsdl/svrl"))
+                  .setPutNamespaceContextPrefixesInRoot (true);
+              XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), FileHelper.getOutputStream (aXSLTFile), aXWS);
               buildContext.refresh (aXsltFileDirectory);
             }
             else
