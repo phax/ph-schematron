@@ -58,22 +58,22 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   /**
    * The classpath directory where the Schematron 2 XSLT files reside.
    */
-  private static final String SCHEMATRON_DIRECTORY_XSLT2 = "schematron/20100414-xslt2/";
+  public static final String SCHEMATRON_DIRECTORY_XSLT2 = "schematron/20100414-xslt2/";
 
   /**
    * The class path to first XSLT to be applied.
    */
-  private static final String XSLT2_STEP1 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_dsdl_include.xsl";
+  public static final String XSLT2_STEP1 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_dsdl_include.xsl";
 
   /**
    * The class path to second XSLT to be applied.
    */
-  private static final String XSLT2_STEP2 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_abstract_expand.xsl";
+  public static final String XSLT2_STEP2 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_abstract_expand.xsl";
 
   /**
    * The class path to third and last XSLT to be applied.
    */
-  private static final String XSLT2_STEP3 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_svrl_for_xslt2.xsl";
+  public static final String XSLT2_STEP3 = SCHEMATRON_DIRECTORY_XSLT2 + "iso_svrl_for_xslt2.xsl";
 
   /**
    * This flag is for debugging purposes only. Only used during development.
