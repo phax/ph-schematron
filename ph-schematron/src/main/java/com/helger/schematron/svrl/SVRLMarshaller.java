@@ -36,8 +36,13 @@ public class SVRLMarshaller extends AbstractJAXBMarshaller <SchematronOutputType
 {
   public SVRLMarshaller ()
   {
+    this (true);
+  }
+
+  public SVRLMarshaller (final boolean bCheckSVRLXSD)
+  {
     super (SchematronOutputType.class,
-           false ? null : CSVRL.SVRL_XSDS,
+           bCheckSVRLXSD ? CSVRL.SVRL_XSDS : null,
            x -> new ObjectFactory ().createSchematronOutput (x));
     setWriteFormatted (GlobalDebug.isDebugMode ());
   }
