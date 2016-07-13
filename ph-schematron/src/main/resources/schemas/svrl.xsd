@@ -43,7 +43,8 @@
   <!-- only active patterns are reported -->
   <xs:element name="active-pattern">
     <xs:complexType>
-      <xs:attribute name="id" type="xs:ID"/>
+      <!-- [ph] changed from ID to NCName for real-life handling -->
+      <xs:attribute name="id" type="xs:NCName"/>
       <xs:attribute name="name"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="document"/>
@@ -52,7 +53,8 @@
   <!-- only rules that are fired are reported, -->
   <xs:element name="fired-rule">
     <xs:complexType>
-      <xs:attribute name="id" type="xs:ID"/>
+      <!-- [ph] changed from ID to NCName for real-life handling -->
+      <xs:attribute name="id" type="xs:NCName"/>
       <xs:attribute name="context" use="required"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="flag" type="xs:NMTOKEN"/>
@@ -90,7 +92,8 @@
   </xs:element>
   <xs:element name="text" type="xs:string"/>
   <xs:attributeGroup name="attlist.assert-and-report">
-    <xs:attribute name="id" type="xs:ID"/>
+    <!-- [ph] changed from ID to NCName for real-life handling -->
+    <xs:attribute name="id" type="xs:NCName"/>
     <xs:attribute name="location" use="required"/>
     <xs:attribute name="test" use="required"/>
     <xs:attribute name="role" type="xs:NMTOKEN"/>
