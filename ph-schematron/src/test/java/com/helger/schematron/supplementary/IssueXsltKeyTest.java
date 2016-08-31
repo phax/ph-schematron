@@ -14,44 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.supplemantery;
-
-import static org.junit.Assert.assertNotNull;
+package com.helger.schematron.supplementary;
 
 import java.io.File;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
-import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;
-import com.helger.xml.serialize.write.XMLWriter;
 
-public final class Issue6Test
+public final class IssueXsltKeyTest
 {
   @Test
-  public void testIssue () throws Exception
+  public void testIssueXsltKey () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github6/schematron.sch"),
-                            new File ("src/test/resources/issues/github6/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/xslt-key/schematron.sch"),
+                            new File ("src/test/resources/issues/xslt-key/test.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final AbstractSchematronResource aSCH = new SchematronResourceSCH (aSchematron);
-    if (aSCH instanceof SchematronResourcePure)
-      ((SchematronResourcePure) aSCH).setErrorHandler (new LoggingPSErrorHandler ());
-    else
-      System.out.println (XMLWriter.getXMLString (((SchematronResourceSCH) aSCH).getXSLTProvider ().getXSLTDocument ()));
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
-    assertNotNull (aSVRL);
-    System.out.println (SVRLWriter.createXMLString (aSVRL));
+    final AbstractSchematronResource pure = new SchematronResourceSCH (aSchematron);
+    System.out.println (SVRLWriter.createXMLString (pure.applySchematronValidationToSVRL (anXMLSource)));
   }
 }
