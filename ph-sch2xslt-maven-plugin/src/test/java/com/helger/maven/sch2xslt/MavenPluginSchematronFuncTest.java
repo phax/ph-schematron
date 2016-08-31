@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-public class MavenPluginSchematronTest
+public final class MavenPluginSchematronFuncTest
 {
   @Rule
   public EasyMockRule mocks = new EasyMockRule (this);

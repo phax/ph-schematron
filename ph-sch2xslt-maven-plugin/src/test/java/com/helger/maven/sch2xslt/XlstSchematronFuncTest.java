@@ -27,7 +27,7 @@ import com.helger.schematron.xslt.SchematronProviderXSLTFromSCH;
 
 import net.sf.saxon.Transform;
 
-public final class XlstSchematronTest
+public final class XlstSchematronFuncTest
 {
   private static final String TEST_XSLT_SCHEMATRON = "testXsltSchematron";
 
