@@ -30,7 +30,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.relaxng.RelaxNGCompactSchemaCache;
@@ -144,7 +144,7 @@ public final class SchematronValidator
       aValidator.validate (aSource, null);
 
       // Check results
-      return aCEH.getResourceErrors ().getMostSevereErrorLevel ().isLessSevereThan (EErrorLevel.ERROR);
+      return aCEH.getErrorList ().getMostSevereErrorLevel ().isLessSevereThan (EErrorLevel.ERROR);
     }
     catch (final SAXException ex)
     {

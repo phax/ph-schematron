@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.commons.error.IResourceError;
+import com.helger.commons.error.IError;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -57,6 +57,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @phase generate-resources
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
 public final class Schematron2XSLTMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
@@ -69,23 +70,20 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     }
 
     @Override
-    protected void internalLog (@Nonnull final IResourceError aResError)
+    protected void internalLog (@Nonnull final IError aResError)
     {
       final int nLine = aResError.getLocation ().getLineNumber ();
       final int nColumn = aResError.getLocation ().getColumnNumber ();
-      final Throwable aLinkedException = aResError.getLinkedException ();
       final String sMessage = StringHelper.getImplodedNonEmpty (" - ",
-                                                                aResError.getDisplayText (Locale.US),
-                                                                aLinkedException == null ? null
-                                                                                         : aLinkedException.getMessage ());
-      final Throwable aCause = aLinkedException != null ? aLinkedException.getCause () : null;
+                                                                aResError.getErrorText (Locale.US),
+                                                                aResError.getLinkedExceptionMessage ());
 
       buildContext.addMessage (m_aSourceFile,
                                nLine,
                                nColumn,
                                sMessage,
                                aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
-                               aCause);
+                               aResError.getLinkedExceptionCause ());
     }
   }
 

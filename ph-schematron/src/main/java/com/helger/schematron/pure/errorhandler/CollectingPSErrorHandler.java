@@ -21,12 +21,13 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.error.IErrorLevel;
-import com.helger.commons.error.IResourceError;
-import com.helger.commons.error.IResourceErrorGroup;
-import com.helger.commons.error.ResourceError;
-import com.helger.commons.error.ResourceErrorGroup;
-import com.helger.commons.error.ResourceLocation;
+import com.helger.commons.error.IError;
+import com.helger.commons.error.SingleError;
+import com.helger.commons.error.level.IErrorLevel;
+import com.helger.commons.error.list.ErrorList;
+import com.helger.commons.error.list.IErrorList;
+import com.helger.commons.error.location.ErrorLocation;
+import com.helger.commons.error.location.IErrorLocation;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.state.EChange;
@@ -42,7 +43,7 @@ import com.helger.schematron.pure.model.IPSHasID;
  */
 public class CollectingPSErrorHandler extends AbstractPSErrorHandler
 {
-  private final ResourceErrorGroup m_aErrors = new ResourceErrorGroup ();
+  private final ErrorList m_aErrors = new ErrorList ();
 
   public CollectingPSErrorHandler ()
   {
@@ -61,40 +62,48 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    String sField = "";
+    final SingleError.Builder aBuilder = SingleError.builder ()
+                                                    .setErrorLevel (aErrorLevel)
+                                                    .setErrorLocation (aRes == null ? null
+                                                                                    : new ErrorLocation (aRes.getResourceID (),
+                                                                                                         IErrorLocation.ILLEGAL_NUMBER,
+                                                                                                         IErrorLocation.ILLEGAL_NUMBER))
+                                                    .setErrorText (sMessage)
+                                                    .setLinkedException (t);
+
     if (aSourceElement != null)
     {
-      sField += ClassHelper.getClassLocalName (aSourceElement);
+      String sField = ClassHelper.getClassLocalName (aSourceElement);
       if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
         sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
+      aBuilder.setErrorFieldName (sField);
     }
-    final ResourceLocation aLocation = new ResourceLocation (aRes == null ? null : aRes.getResourceID (), sField);
-    m_aErrors.addResourceError (new ResourceError (aLocation, aErrorLevel, sMessage, t));
+    m_aErrors.add (aBuilder.build ());
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public IResourceErrorGroup getResourceErrors ()
+  public IErrorList getResourceErrors ()
   {
     return m_aErrors.getClone ();
   }
 
   @Nonnull
-  public ICommonsList <IResourceError> getAllResourceErrors ()
+  public ICommonsList <IError> getAllResourceErrors ()
   {
-    return m_aErrors.getAllResourceErrors ();
+    return m_aErrors.getAllItems ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public IResourceErrorGroup getAllFailures ()
+  public IErrorList getAllFailures ()
   {
     return m_aErrors.getAllFailures ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public IResourceErrorGroup getAllErrors ()
+  public IErrorList getAllErrors ()
   {
     return m_aErrors.getAllErrors ();
   }

@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.error.IErrorLevel;
+import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.log.LogHelper;
@@ -58,9 +58,10 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
                                              aRes == null ? null : aRes.getPath (),
                                              aSourceElement == null ? null
                                                                     : ClassHelper.getClassLocalName (aSourceElement),
-                                             aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID () ? "ID " +
-                                                                                                                          ((IPSHasID) aSourceElement).getID ()
-                                                                                                                        : null,
+                                             aSourceElement instanceof IPSHasID &&
+                                                                                                                      ((IPSHasID) aSourceElement).hasID () ? "ID " +
+                                                                                                                                                             ((IPSHasID) aSourceElement).getID ()
+                                                                                                                                                           : null,
                                              sMessage);
   }
 
