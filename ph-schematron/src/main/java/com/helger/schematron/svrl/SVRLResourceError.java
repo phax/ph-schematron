@@ -19,13 +19,15 @@ package com.helger.schematron.svrl;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.IErrorLevel;
-import com.helger.commons.error.IResourceLocation;
-import com.helger.commons.error.ResourceError;
+import com.helger.commons.error.SingleError;
+import com.helger.commons.error.level.IErrorLevel;
+import com.helger.commons.error.location.IErrorLocation;
+import com.helger.commons.error.text.ConstantHasErrorText;
+import com.helger.commons.error.text.IHasErrorText;
 import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -34,14 +36,14 @@ import com.helger.commons.string.ToStringGenerator;
  *
  * @author Philip Helger
  */
-public class SVRLResourceError extends ResourceError
+public class SVRLResourceError extends SingleError
 {
   private final String m_sTest;
 
   /**
    * Constructor.
    *
-   * @param aLocation
+   * @param aErrorLocation
    *        Location where the error occurred. May not be <code>null</code>.
    * @param aErrorLevel
    *        The error level. May not be <code>null</code>.
@@ -51,14 +53,25 @@ public class SVRLResourceError extends ResourceError
    *        The SVRL test that triggered this error. May not be
    *        <code>null</code>.
    */
-  public SVRLResourceError (@Nonnull final IResourceLocation aLocation,
+  @Deprecated
+  public SVRLResourceError (@Nonnull final IErrorLocation aErrorLocation,
                             @Nonnull final IErrorLevel aErrorLevel,
                             @Nonnull final String sErrorText,
                             @Nonnull final String sTest)
   {
-    super (aLocation, aErrorLevel, sErrorText, null);
-    ValueEnforcer.notNull (sTest, "Test");
-    m_sTest = sTest;
+    this (aErrorLevel, null, null, aErrorLocation, ConstantHasErrorText.createOnDemand (sErrorText), null, sTest);
+  }
+
+  public SVRLResourceError (@Nonnull final IErrorLevel aErrorLevel,
+                            @Nullable final String sErrorID,
+                            @Nullable final String sErrorFieldName,
+                            @Nullable final IErrorLocation aErrorLocation,
+                            @Nullable final IHasErrorText aErrorText,
+                            @Nullable final Throwable aLinkedException,
+                            @Nonnull final String sTest)
+  {
+    super (aErrorLevel, sErrorID, sErrorFieldName, aErrorLocation, aErrorText, aLinkedException);
+    m_sTest = ValueEnforcer.notNull (sTest, "Test");
   }
 
   /**
@@ -73,12 +86,8 @@ public class SVRLResourceError extends ResourceError
   @Override
   public String getAsString (@Nonnull final Locale aContentLocale)
   {
-    String ret = "[" + getErrorLevel ().getID () + "]";
-    final String sLocation = getLocation ().getAsString ();
-    if (StringHelper.hasText (sLocation))
-      ret += ' ' + sLocation;
-    ret += "; Test=" + m_sTest;
-    ret += "; Message=" + getDisplayText (aContentLocale);
+    String ret = super.getAsString (aContentLocale);
+    ret += " Test=" + m_sTest;
     return ret;
   }
 
@@ -103,5 +112,34 @@ public class SVRLResourceError extends ResourceError
   public String toString ()
   {
     return ToStringGenerator.getDerived (super.toString ()).append ("test", m_sTest).toString ();
+  }
+
+  public static class SVRLErrorBuilder extends AbstractBuilder <SVRLResourceError, SVRLErrorBuilder>
+  {
+    private String m_sTest;
+
+    public SVRLErrorBuilder (@Nonnull final String sTest)
+    {
+      setTest (sTest);
+    }
+
+    @Nonnull
+    public SVRLErrorBuilder setTest (@Nonnull final String sTest)
+    {
+      m_sTest = ValueEnforcer.notNull (sTest, "Test");
+      return this;
+    }
+
+    @Override
+    public SVRLResourceError build ()
+    {
+      return new SVRLResourceError (m_aErrorLevel,
+                                    m_sErrorID,
+                                    m_sErrorFieldName,
+                                    m_aErrorLocation,
+                                    m_aErrorText,
+                                    m_aLinkedException,
+                                    m_sTest);
+    }
   }
 }

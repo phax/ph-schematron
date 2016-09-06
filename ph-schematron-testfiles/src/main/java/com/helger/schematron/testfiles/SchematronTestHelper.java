@@ -40,15 +40,15 @@ public final class SchematronTestHelper
   private static final ICommonsList <SchematronTestFile> s_aXMLs = _readDI (new ClassPathResource ("test-xml/dirindex.xml"));
 
   @Nonnull
-  private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aDI)
+  private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aRes)
   {
-    ValueEnforcer.notNull (aDI, "Resource");
-    ValueEnforcer.isTrue (aDI.exists (), () -> "Resource " + aDI + " does not exist!");
+    ValueEnforcer.notNull (aRes, "Resource");
+    ValueEnforcer.isTrue (aRes.exists (), () -> "Resource " + aRes + " does not exist!");
 
     final ICommonsList <SchematronTestFile> ret = new CommonsArrayList<> ();
-    final IMicroDocument aDoc = MicroReader.readMicroXML (aDI);
+    final IMicroDocument aDoc = MicroReader.readMicroXML (aRes);
     if (aDoc == null)
-      throw new IllegalArgumentException ("Failed to open/parse " + aDI + " as XML");
+      throw new IllegalArgumentException ("Failed to open/parse " + aRes + " as XML");
     String sLastParentDirBaseName = null;
     for (final IMicroElement eItem : aDoc.getDocumentElement ().getAllChildElements ())
       if (eItem.getTagName ().equals ("directory"))

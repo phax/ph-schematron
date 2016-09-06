@@ -23,7 +23,7 @@ import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.IErrorLevel;
+import com.helger.commons.error.level.IErrorLevel;
 
 /**
  * Interface that helps in determining an error level from SVRL elements.

@@ -19,8 +19,8 @@ package com.helger.schematron.svrl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.error.EErrorLevel;
-import com.helger.commons.error.IErrorLevel;
+import com.helger.commons.error.level.EErrorLevel;
+import com.helger.commons.error.level.IErrorLevel;
 
 /**
  * The default implementation of {@link ISVRLErrorLevelDeterminator}.

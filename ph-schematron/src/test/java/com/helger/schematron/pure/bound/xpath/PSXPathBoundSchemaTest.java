@@ -25,7 +25,7 @@ import org.junit.rules.TestRule;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.xml.sax.SAXException;
 
-import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.junit.DebugModeTestRule;
@@ -55,17 +55,17 @@ public final class PSXPathBoundSchemaTest
   public final TestRule m_aRule = new DebugModeTestRule ();
 
   private static final String [] SCH = new String [] { "valid01.sch",
-                                                      "valid02.sch",
-                                                      "biicore/BIICORE-UBL-T01.sch",
-                                                      "biirules/BIIRULES-UBL-T01.sch",
-                                                      "CellarBook.sch",
-                                                      "VariableTests.sch" };
+                                                       "valid02.sch",
+                                                       "biicore/BIICORE-UBL-T01.sch",
+                                                       "biirules/BIIRULES-UBL-T01.sch",
+                                                       "CellarBook.sch",
+                                                       "VariableTests.sch" };
   private static final String [] XML = new String [] { "valid01.xml",
-                                                      "valid01.xml",
-                                                      "goodOrder01.xml",
-                                                      "goodOrder01.xml",
-                                                      "CellarBook.xml",
-                                                      "valid01.xml" };
+                                                       "valid01.xml",
+                                                       "goodOrder01.xml",
+                                                       "goodOrder01.xml",
+                                                       "CellarBook.xml",
+                                                       "valid01.xml" };
 
   @Test
   public void testSchematronValidation () throws SAXException, SchematronException

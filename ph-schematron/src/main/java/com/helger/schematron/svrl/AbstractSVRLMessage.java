@@ -27,11 +27,12 @@ import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.error.IErrorLevel;
-import com.helger.commons.error.ResourceLocation;
+import com.helger.commons.error.level.IErrorLevel;
+import com.helger.commons.error.location.ErrorLocation;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
 
 /**
  * A wrapper around FailedAssert and SuccessfulReport with easier error level
@@ -129,7 +130,11 @@ public abstract class AbstractSVRLMessage
   @Nonnull
   public SVRLResourceError getAsResourceError (@Nullable final String sResourceName)
   {
-    return new SVRLResourceError (new ResourceLocation (sResourceName, m_sLocation), m_aFlag, m_sText, m_sTest);
+    return new SVRLErrorBuilder (m_sTest).setErrorLevel (m_aFlag)
+                                         .setErrorFieldName (m_sLocation)
+                                         .setErrorLocation (new ErrorLocation (sResourceName))
+                                         .setErrorText (m_sText)
+                                         .build ();
   }
 
   @Override

@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.concurrent.ManagedExecutorService;
-import com.helger.commons.error.IResourceError;
-import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.error.IError;
+import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -84,25 +84,22 @@ public final class SchematronResourceSCHCacheTest
 
     // Create Thread pool with fixed number of threads
     final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ()
-                                                                                   .availableProcessors () * 2);
+                                                                                   .availableProcessors () *
+                                                                            2);
 
     final long nStart = System.nanoTime ();
     for (int i = 0; i < RUNS; ++i)
     {
-      aSenderThreadPool.submit (new Runnable ()
-      {
-        public void run ()
+      aSenderThreadPool.submit ( () -> {
+        try
         {
-          try
-          {
-            final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
-            final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
-            assertNotNull (aDoc);
-          }
-          catch (final Exception ex)
-          {
-            throw new IllegalStateException (ex);
-          }
+          final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
+          final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
+          assertNotNull (aDoc);
+        }
+        catch (final Exception ex)
+        {
+          throw new IllegalStateException (ex);
         }
       });
     }
@@ -146,10 +143,10 @@ public final class SchematronResourceSCHCacheTest
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());
 
-        final IResourceErrorGroup aErrorGroup = aCEH.getResourceErrors ();
-        if (!aErrorGroup.isEmpty ())
+        final IErrorList aErrorGroup = aCEH.getErrorList ();
+        if (aErrorGroup.isNotEmpty ())
         {
-          for (final IResourceError aError : aErrorGroup)
+          for (final IError aError : aErrorGroup)
             if (aError.isError ())
               s_aLogger.info ("!!" + aError.getAsString (Locale.US));
           s_aLogger.info ("!!" + XMLWriter.getXMLString (aPreprocessor.getXSLTDocument ()));

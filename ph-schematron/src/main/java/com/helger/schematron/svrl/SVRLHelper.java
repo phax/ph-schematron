@@ -29,7 +29,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.error.IErrorLevel;
+import com.helger.commons.error.level.IErrorLevel;
 
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).
@@ -60,7 +60,7 @@ public final class SVRLHelper
   @ReturnsMutableCopy
   public static ICommonsList <SVRLFailedAssert> getAllFailedAssertions (@Nonnull final SchematronOutputType aSchematronOutput)
   {
-    final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
+    final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList<> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof FailedAssert)
         ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
@@ -82,7 +82,7 @@ public final class SVRLHelper
   public static ICommonsList <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
                                                                                              @Nonnull final IErrorLevel aErrorLevel)
   {
-    final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
+    final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList<> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof FailedAssert)
       {
@@ -104,7 +104,7 @@ public final class SVRLHelper
   @ReturnsMutableCopy
   public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
   {
-    final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
+    final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList<> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof SuccessfulReport)
         ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
@@ -126,7 +126,7 @@ public final class SVRLHelper
   public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
                                                                                                   @Nonnull final IErrorLevel aErrorLevel)
   {
-    final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
+    final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList<> ();
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof SuccessfulReport)
       {

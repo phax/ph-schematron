@@ -28,7 +28,6 @@ import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.error.location.ErrorLocation;
-import com.helger.commons.error.location.IErrorLocation;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.state.EChange;
@@ -66,9 +65,7 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
     final SingleErrorBuilder aBuilder = SingleError.builder ()
                                                    .setErrorLevel (aErrorLevel)
                                                    .setErrorLocation (aRes == null ? null
-                                                                                   : new ErrorLocation (aRes.getResourceID (),
-                                                                                                        IErrorLocation.ILLEGAL_NUMBER,
-                                                                                                        IErrorLocation.ILLEGAL_NUMBER))
+                                                                                   : new ErrorLocation (aRes.getResourceID ()))
                                                    .setErrorText (sMessage)
                                                    .setLinkedException (t);
 
