@@ -23,6 +23,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.SingleError;
+import com.helger.commons.error.SingleError.SingleErrorBuilder;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
@@ -62,14 +63,14 @@ public class CollectingPSErrorHandler extends AbstractPSErrorHandler
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    final SingleError.Builder aBuilder = SingleError.builder ()
-                                                    .setErrorLevel (aErrorLevel)
-                                                    .setErrorLocation (aRes == null ? null
-                                                                                    : new ErrorLocation (aRes.getResourceID (),
-                                                                                                         IErrorLocation.ILLEGAL_NUMBER,
-                                                                                                         IErrorLocation.ILLEGAL_NUMBER))
-                                                    .setErrorText (sMessage)
-                                                    .setLinkedException (t);
+    final SingleErrorBuilder aBuilder = SingleError.builder ()
+                                                   .setErrorLevel (aErrorLevel)
+                                                   .setErrorLocation (aRes == null ? null
+                                                                                   : new ErrorLocation (aRes.getResourceID (),
+                                                                                                        IErrorLocation.ILLEGAL_NUMBER,
+                                                                                                        IErrorLocation.ILLEGAL_NUMBER))
+                                                   .setErrorText (sMessage)
+                                                   .setLinkedException (t);
 
     if (aSourceElement != null)
     {

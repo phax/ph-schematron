@@ -33,7 +33,7 @@ import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.error.IResourceError;
+import com.helger.commons.error.IError;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.LoggingTransformErrorListener;
@@ -49,7 +49,7 @@ public final class SchematronResourceXSLTCache
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
-  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap<> ();
 
   private SchematronResourceXSLTCache ()
   {}
@@ -71,7 +71,7 @@ public final class SchematronResourceXSLTCache
     {
       // Schematron is invalid -> parsing failed
       s_aLogger.warn ("The XSLT resource '" + aXSLTResource.getResourceID () + "' is invalid!");
-      for (final IResourceError aError : aCEH.getResourceErrors ())
+      for (final IError aError : aCEH.getErrorList ())
         s_aLogger.warn ("  " + aError.getAsString (Locale.US));
       return null;
     }
