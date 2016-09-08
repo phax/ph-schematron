@@ -72,15 +72,16 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     @Override
     protected void internalLog (@Nonnull final IError aResError)
     {
-      final int nLine = aResError.getLocation ().getLineNumber ();
-      final int nColumn = aResError.getLocation ().getColumnNumber ();
+      final int nLine = aResError.getErrorLocation ().getLineNumber ();
+      final int nColumn = aResError.getErrorLocation ().getColumnNumber ();
       final String sMessage = StringHelper.getImplodedNonEmpty (" - ",
                                                                 aResError.getErrorText (Locale.US),
                                                                 aResError.getLinkedExceptionMessage ());
 
+      // 0 means undefined line/column
       buildContext.addMessage (m_aSourceFile,
-                               nLine,
-                               nColumn,
+                               nLine <= 0 ? 0 : nLine,
+                               nColumn <= 0 ? 0 : nColumn,
                                sMessage,
                                aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
                                aResError.getLinkedExceptionCause ());
