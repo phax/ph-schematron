@@ -10,7 +10,10 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
-  * 4.0.1
+  * 4.1.0 - 2016-09-09
+    * Binding to ph-commons 8.5.x
+  * 4.0.2 - 2016-07-22
+  * 4.0.1 - 2016-07-05
     * better integration of sch2xslt Maven plugin into m2e - thanks to @baerrach
   * 4.0.0 - 2016-06-15
     * updated to JDK8
