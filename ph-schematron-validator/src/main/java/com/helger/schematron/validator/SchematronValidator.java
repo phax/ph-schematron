@@ -136,8 +136,8 @@ public final class SchematronValidator
         aCEH = (CollectingSAXErrorHandler) aOldEH;
       else
       {
-        aCEH = new CollectingSAXErrorHandler (aOldEH);
-        aValidator.setErrorHandler (aCEH);
+        aCEH = new CollectingSAXErrorHandler ();
+        aValidator.setErrorHandler (aCEH.andThen (aOldEH));
       }
 
       // Perform validation

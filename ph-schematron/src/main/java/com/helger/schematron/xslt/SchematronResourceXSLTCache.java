@@ -62,10 +62,10 @@ public final class SchematronResourceXSLTCache
     if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
-    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener (aCustomErrorListener != null ? aCustomErrorListener
-                                                                                                                     : new LoggingTransformErrorListener (Locale.US));
+    final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource,
-                                                                                                 aCEH,
+                                                                                                 aCEH.andThen (aCustomErrorListener != null ? aCustomErrorListener
+                                                                                                                                            : new LoggingTransformErrorListener (Locale.US)),
                                                                                                  aCustomURIResolver);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
