@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.collection.ext.ICommonsList;
@@ -43,10 +45,14 @@ import com.helger.xml.transform.ResourceStreamSource;
  */
 public final class Issue29Test
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue29Test.class);
+
   @Nullable
   static SchematronOutputType validateXmlUsingSchematron (@Nonnull final IReadableResource aRes)
   {
     SchematronOutputType ob = null;
+
+    // Must use the XSLT based version, because of "key" usage
     final ISchematronResource aResSCH = new SchematronResourceSCH (new ClassPathResource ("issues/github29/pbs.sch"));
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
@@ -74,5 +80,6 @@ public final class Issue29Test
     assertNotNull (aSOT);
     final ICommonsList <SVRLFailedAssert> aErrors = SVRLHelper.getAllFailedAssertions (aSOT);
     assertNotNull (aErrors);
+    s_aLogger.info ("Errors found: " + aErrors);
   }
 }

@@ -124,6 +124,32 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     s_aIntermediateFinalXSLTFolder = aIntermediateFinalXSLTFolder;
   }
 
+  public static void cacheXSLTTemplates ()
+  {
+    // prepare all steps
+    if (s_aStep1 == null)
+    {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Creating XSLT step 1 template");
+      s_aStep1 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                     new ClassPathResource (XSLT2_STEP1));
+    }
+    if (s_aStep2 == null)
+    {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Creating XSLT step 2 template");
+      s_aStep2 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                     new ClassPathResource (XSLT2_STEP2));
+    }
+    if (s_aStep3 == null)
+    {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Creating XSLT step 3 template");
+      s_aStep3 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+                                                     new ClassPathResource (XSLT2_STEP3));
+    }
+  }
+
   /**
    * Constructor
    *
@@ -141,16 +167,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
 
     try
     {
-      // prepare all steps
-      if (s_aStep1 == null)
-        s_aStep1 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
-                                                       new ClassPathResource (XSLT2_STEP1));
-      if (s_aStep2 == null)
-        s_aStep2 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
-                                                       new ClassPathResource (XSLT2_STEP2));
-      if (s_aStep3 == null)
-        s_aStep3 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
-                                                       new ClassPathResource (XSLT2_STEP3));
+      cacheXSLTTemplates ();
 
       // perform step 1 (Schematron -> ResultStep1)
       final DOMResult aResult1 = new DOMResult ();
@@ -158,11 +175,17 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       aTransformerCustomizer.customize (EStep.SCH2XSLT_1, aTransformer1);
       aTransformer1.transform (TransformSourceFactory.create (aSchematronResource), aResult1);
 
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Finished applying XSLT step 1 on " + aSchematronResource);
+
       // perform step 2 (ResultStep1 -> ResultStep2)
       final DOMResult aResult2 = new DOMResult ();
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
       aTransformerCustomizer.customize (EStep.SCH2XSLT_2, aTransformer2);
       aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Finished applying XSLT step 2 on " + aSchematronResource);
 
       if (isSaveIntermediateFiles ())
       {
@@ -179,6 +202,9 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
       aTransformerCustomizer.customize (EStep.SCH2XSLT_3, aTransformer3);
       aTransformer3.transform (TransformSourceFactory.create (aResult2.getNode ()), aResult3);
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Finished applying XSLT step 3 on " + aSchematronResource);
 
       // Save the underlying XSLT document....
       // Note: Saxon 6.5.5 does not allow to clone the document node!!!!

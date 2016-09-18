@@ -87,6 +87,9 @@ public final class SchematronResourceSCHCache
                                        aSchematronResource.getResourceID () +
                                        "'!");
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Finished compiling Schematron instance " + aSchematronResource.toString ());
+
     // Create the main validator for the schematron
     return aXSLTPreprocessor;
   }

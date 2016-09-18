@@ -115,13 +115,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, ?> getParameters ()
   {
-    return new CommonsLinkedHashMap <> (m_aCustomParameters);
+    return new CommonsLinkedHashMap<> (m_aCustomParameters);
   }
 
   @Nonnull
   public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
-    m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
+    m_aCustomParameters = new CommonsLinkedHashMap<> (aCustomParameters);
     return thisAsT ();
   }
 
@@ -262,8 +262,14 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (false)
       System.out.println (XMLWriter.getXMLString (aXSLTProvider.getXSLTDocument ()));
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Applying Schematron XSLT on XML [start]");
+
     // Do the main transformation
     aTransformer.transform (aXMLSource, new DOMResult (ret));
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Applying Schematron XSLT on XML [end]");
 
     // Debug print the created SVRL document
     if (false)
