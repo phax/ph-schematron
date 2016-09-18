@@ -16,18 +16,25 @@
  */
 package com.helger.schematron.supplementary;
 
-import java.io.File;
+import static org.junit.Assert.assertNotNull;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.transform.stream.StreamSource;
 
+import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.transform.ResourceStreamSource;
 
 /**
  * Test code for issue #29
@@ -37,20 +44,15 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
 public final class Issue29Test
 {
   @Nullable
-  static SchematronOutputType validateXmlUsingSchematron ()
+  static SchematronOutputType validateXmlUsingSchematron (@Nonnull final IReadableResource aRes)
   {
-    final String samplePathToXMLFile = "";
-    final String samplePathToSchematronFIle = "";
-    // ...
-    final File anXMLFile = new File (samplePathToXMLFile);
-    final File aSchematronFile = new File (samplePathToSchematronFIle);
-    SchematronOutputType ob = new SchematronOutputType ();
-    final ISchematronResource aResSCH = new SchematronResourceSCH (new FileSystemResource (aSchematronFile));
+    SchematronOutputType ob = null;
+    final ISchematronResource aResSCH = new SchematronResourceSCH (new ClassPathResource ("issues/github29/pbs.sch"));
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
     try
     {
-      final Document aDoc = aResSCH.applySchematronValidation (new StreamSource (anXMLFile));
+      final Document aDoc = aResSCH.applySchematronValidation (new ResourceStreamSource (aRes));
       if (aDoc != null)
       {
         final SVRLMarshaller marshaller = new SVRLMarshaller ();
@@ -63,5 +65,14 @@ public final class Issue29Test
       pE.printStackTrace ();
     }
     return ob;
+  }
+
+  @Test
+  public void testGood () throws Exception
+  {
+    final SchematronOutputType aSOT = validateXmlUsingSchematron (new GZIPReadableResource (new ClassPathResource ("issues/github29/sample.xml.gz")));
+    assertNotNull (aSOT);
+    final ICommonsList <SVRLFailedAssert> aErrors = SVRLHelper.getAllFailedAssertions (aSOT);
+    assertNotNull (aErrors);
   }
 }
