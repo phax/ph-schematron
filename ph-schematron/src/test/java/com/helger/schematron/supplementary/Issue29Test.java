@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
@@ -32,10 +33,10 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.wrapped.GZIPReadableResource;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.transform.ResourceStreamSource;
 
 /**
@@ -53,7 +54,7 @@ public final class Issue29Test
     SchematronOutputType ob = null;
 
     // Must use the XSLT based version, because of "key" usage
-    final ISchematronResource aResSCH = new SchematronResourceSCH (new ClassPathResource ("issues/github29/pbs.sch"));
+    final ISchematronResource aResSCH = new SchematronResourcePure (new ClassPathResource ("issues/github29/pbs.sch"));
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
     try
@@ -74,6 +75,7 @@ public final class Issue29Test
   }
 
   @Test
+  @Ignore ("Takes too long - more than 1 min")
   public void testGood () throws Exception
   {
     final SchematronOutputType aSOT = validateXmlUsingSchematron (new GZIPReadableResource (new ClassPathResource ("issues/github29/sample.xml.gz")));
