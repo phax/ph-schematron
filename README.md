@@ -10,6 +10,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
+  * 4.1.1 - 2016-xx-yy
+    * Added possibility to use XML EntityResolver (#30)
   * 4.1.0 - 2016-09-09
     * Binding to ph-commons 8.5.x
   * 4.0.2 - 2016-07-22
