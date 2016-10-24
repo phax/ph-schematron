@@ -82,9 +82,9 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   private static File s_aIntermediateMinifiedSCHFolder = new File ("test-minified");
   private static File s_aIntermediateFinalXSLTFolder = new File ("test-final");
 
-  private static Templates s_aStep1;
-  private static Templates s_aStep2;
-  private static Templates s_aStep3;
+  private static volatile Templates s_aStep1;
+  private static volatile Templates s_aStep2;
+  private static volatile Templates s_aStep3;
 
   private final IReadableResource m_aSchematronResource;
   private Document m_aSchematronXSLTDoc;

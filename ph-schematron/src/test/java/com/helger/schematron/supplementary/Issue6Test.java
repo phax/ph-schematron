@@ -32,6 +32,8 @@ import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public final class Issue6Test
 {
   @Test
@@ -41,6 +43,7 @@ public final class Issue6Test
                             new File ("src/test/resources/issues/github6/test.xml"));
   }
 
+  @SuppressFBWarnings ("BC_IMPOSSIBLE_INSTANCEOF")
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
@@ -49,7 +52,8 @@ public final class Issue6Test
     if (aSCH instanceof SchematronResourcePure)
       ((SchematronResourcePure) aSCH).setErrorHandler (new LoggingPSErrorHandler ());
     else
-      System.out.println (XMLWriter.getXMLString (((SchematronResourceSCH) aSCH).getXSLTProvider ().getXSLTDocument ()));
+      System.out.println (XMLWriter.getXMLString (((SchematronResourceSCH) aSCH).getXSLTProvider ()
+                                                                                .getXSLTDocument ()));
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
     assertNotNull (aSVRL);
     System.out.println (SVRLWriter.createXMLString (aSVRL));
