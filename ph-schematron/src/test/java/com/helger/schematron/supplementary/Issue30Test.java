@@ -16,7 +16,7 @@
  */
 package com.helger.schematron.supplementary;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -75,6 +75,6 @@ public final class Issue30Test
     aResPure.setErrorHandler (aErrorHandler);
 
     aResPure.validateCompletely ();
-    assertTrue (aResPure.isValidSchematron ());
+    assertFalse (aResPure.isValidSchematron ());
   }
 }
