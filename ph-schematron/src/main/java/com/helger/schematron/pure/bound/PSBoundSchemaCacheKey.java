@@ -22,6 +22,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.xml.sax.EntityResolver;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.equals.EqualsHelper;
@@ -53,6 +55,7 @@ public class PSBoundSchemaCacheKey
   private final IPSErrorHandler m_aErrorHandler;
   private final XPathVariableResolver m_aVariableResolver;
   private final XPathFunctionResolver m_aFunctionResolver;
+  private final EntityResolver m_aEntityResolver;
   // Status vars
   private transient int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
@@ -60,7 +63,8 @@ public class PSBoundSchemaCacheKey
                                 @Nullable final String sPhase,
                                 @Nullable final IPSErrorHandler aErrorHandler,
                                 @Nullable final XPathVariableResolver aVariableResolver,
-                                @Nullable final XPathFunctionResolver aFunctionResolver)
+                                @Nullable final XPathFunctionResolver aFunctionResolver,
+                                @Nullable final EntityResolver aEntityResolver)
   {
     ValueEnforcer.notNull (aResource, "Resource");
 
@@ -69,6 +73,7 @@ public class PSBoundSchemaCacheKey
     m_aErrorHandler = aErrorHandler;
     m_aVariableResolver = aVariableResolver;
     m_aFunctionResolver = aFunctionResolver;
+    m_aEntityResolver = aEntityResolver;
   }
 
   /**
@@ -118,6 +123,15 @@ public class PSBoundSchemaCacheKey
   }
 
   /**
+   * @return The XML entity resolver to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public final EntityResolver getEntityResolver ()
+  {
+    return m_aEntityResolver;
+  }
+
+  /**
    * Read the specified schema from the passed resource.
    *
    * @param aResource
@@ -130,10 +144,33 @@ public class PSBoundSchemaCacheKey
    */
   @Nonnull
   @OverrideOnDemand
+  @Deprecated
   public PSSchema readSchema (@Nonnull final IReadableResource aResource,
                               @Nullable final IPSErrorHandler aErrorHandler) throws SchematronException
   {
-    return new PSReader (aResource, aErrorHandler).readSchema ();
+    return readSchema (aResource, aErrorHandler, (EntityResolver) null);
+  }
+
+  /**
+   * Read the specified schema from the passed resource.
+   *
+   * @param aResource
+   *        The resource to read from. Never <code>null</code>.
+   * @param aErrorHandler
+   *        The error handler to use. May be <code>null</code>.
+   * @param aEntityResolver
+   *        The XML entity resolver to be used. May be <code>null</code>.
+   * @return The read schema. May not be <code>null</code>.
+   * @throws SchematronException
+   *         In case there is an error reading.
+   */
+  @Nonnull
+  @OverrideOnDemand
+  public PSSchema readSchema (@Nonnull final IReadableResource aResource,
+                              @Nullable final IPSErrorHandler aErrorHandler,
+                              @Nullable final EntityResolver aEntityResolver) throws SchematronException
+  {
+    return new PSReader (aResource, aErrorHandler, aEntityResolver).readSchema ();
   }
 
   /**
@@ -217,7 +254,7 @@ public class PSBoundSchemaCacheKey
   public IPSBoundSchema createBoundSchema () throws SchematronException
   {
     // Read schema from resource
-    final PSSchema aSchema = readSchema (getResource (), getErrorHandler ());
+    final PSSchema aSchema = readSchema (getResource (), getErrorHandler (), getEntityResolver ());
 
     // Resolve the query binding to be used
     final IPSQueryBinding aQueryBinding = getQueryBinding (aSchema);

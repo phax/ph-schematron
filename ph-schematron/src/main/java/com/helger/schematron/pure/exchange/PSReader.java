@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.xml.sax.EntityResolver;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringParser;
@@ -49,16 +51,16 @@ import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRichGroup;
 import com.helger.schematron.pure.model.PSRichGroup.ESpace;
-import com.helger.xml.microdom.IMicroDocument;
-import com.helger.xml.microdom.IMicroElement;
-import com.helger.xml.microdom.IMicroText;
-import com.helger.xml.microdom.serialize.MicroWriter;
-import com.helger.xml.serialize.read.ISAXReaderSettings;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSSpan;
 import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.IMicroElement;
+import com.helger.xml.microdom.IMicroText;
+import com.helger.xml.microdom.serialize.MicroWriter;
+import com.helger.xml.serialize.read.SAXReaderSettings;
 
 /**
  * Utility class for reading all Schematron elements from a resource.
@@ -70,6 +72,7 @@ public class PSReader
 {
   private final IReadableResource m_aResource;
   private final IPSErrorHandler m_aErrorHandler;
+  private final EntityResolver m_aEntityResolver;
 
   /**
    * Constructor without an error handler
@@ -80,7 +83,7 @@ public class PSReader
    */
   public PSReader (@Nonnull final IReadableResource aResource)
   {
-    this (aResource, null);
+    this (aResource, null, null);
   }
 
   /**
@@ -96,9 +99,31 @@ public class PSReader
    */
   public PSReader (@Nonnull final IReadableResource aResource, @Nullable final IPSErrorHandler aErrorHandler)
   {
+    this (aResource, aErrorHandler, null);
+  }
+
+  /**
+   * Constructor with an error handler
+   *
+   * @param aResource
+   *        The resource to read the Schematron from. May not be
+   *        <code>null</code>.
+   * @param aErrorHandler
+   *        The error handler to use. May be <code>null</code>. If the error
+   *        handler is <code>null</code> a {@link LoggingPSErrorHandler} is
+   *        automatically created and used.
+   * @param aEntityResolver
+   *        The XML entity resolver to be used. May be <code>null</code>.
+   * @since 4.1.1
+   */
+  public PSReader (@Nonnull final IReadableResource aResource,
+                   @Nullable final IPSErrorHandler aErrorHandler,
+                   @Nullable final EntityResolver aEntityResolver)
+  {
     ValueEnforcer.notNull (aResource, "Resource");
     m_aResource = aResource;
     m_aErrorHandler = aErrorHandler != null ? aErrorHandler : new LoggingPSErrorHandler ();
+    m_aEntityResolver = aEntityResolver;
   }
 
   /**
@@ -815,7 +840,8 @@ public class PSReader
                   if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
                     ret.addParam (readParamFromXML (ePatternChild));
                   else
-                    _warn (ret, "Unsupported Schematron element '" +
+                    _warn (ret,
+                           "Unsupported Schematron element '" +
                                 ePatternChild.getLocalName () +
                                 "' in " +
                                 ret.toString ());
@@ -1156,7 +1182,8 @@ public class PSReader
   public PSSchema readSchema () throws SchematronReadException
   {
     // Resolve all includes as the first action
-    final ISAXReaderSettings aSettings = null;
+    final SAXReaderSettings aSettings = new SAXReaderSettings ().setEntityResolver (m_aEntityResolver);
+
     final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
                                                                                     aSettings,
                                                                                     m_aErrorHandler);

@@ -28,6 +28,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
@@ -51,6 +52,7 @@ import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.serialize.MicroReader;
+import com.helger.xml.sax.InputSourceFactory;
 import com.helger.xml.serialize.read.ISAXReaderSettings;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -402,7 +404,13 @@ public final class SchematronHelper
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @Nonnull final IPSErrorHandler aErrorHandler)
   {
-    final IMicroDocument aDoc = MicroReader.readMicroXML (aResource, aSettings);
+    final InputSource aIS = InputSourceFactory.create (aResource);
+    if (aIS != null && aIS.getSystemId () == null)
+    {
+      // Work around for file based resources; fixed in ph-xml 8.5.3
+      aIS.setSystemId (aResource.getAsURL ().toExternalForm ());
+    }
+    final IMicroDocument aDoc = MicroReader.readMicroXML (aIS, aSettings);
     if (aDoc != null)
     {
       // Resolve all Schematron includes

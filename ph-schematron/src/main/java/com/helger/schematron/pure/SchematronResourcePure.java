@@ -32,6 +32,7 @@ import javax.xml.xpath.XPathVariableResolver;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -76,6 +77,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   private IPSErrorHandler m_aErrorHandler;
   private XPathVariableResolver m_aVariableResolver;
   private XPathFunctionResolver m_aFunctionResolver;
+  private EntityResolver m_aEntityResolver;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
@@ -200,6 +202,35 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return this;
   }
 
+  /**
+   * @return The XML entity resolver to be used. May be <code>null</code>.
+   * @since 4.1.1
+   */
+  @Nullable
+  public EntityResolver getEntityResolver ()
+  {
+    return m_aEntityResolver;
+  }
+
+  /**
+   * Set the XML entity resolver to be used when reading XML. This can only be
+   * set before the Schematron is bound. If it is already bound an exception is
+   * thrown to indicate the unnecessity of the call.
+   *
+   * @param aEntityResolver
+   *        The function resolver to set. May be <code>null</code>.
+   * @return this
+   * @since 4.1.1
+   */
+  @Nonnull
+  public SchematronResourcePure setEntityResolver (@Nullable final EntityResolver aEntityResolver)
+  {
+    if (m_aBoundSchema != null)
+      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
+    m_aEntityResolver = aEntityResolver;
+    return this;
+  }
+
   @Nonnull
   protected IPSBoundSchema createBoundSchema ()
   {
@@ -209,7 +240,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
                                                                        getPhase (),
                                                                        aErrorHandler,
                                                                        getVariableResolver (),
-                                                                       getFunctionResolver ());
+                                                                       getFunctionResolver (),
+                                                                       getEntityResolver ());
     if (aResource instanceof AbstractMemoryReadableResource)
     {
       // No need to cache anything for memory resources
