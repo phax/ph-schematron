@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSSchema.html" title="com.helger.schematron.pure.model.PSSchema" alt="" coords="16,118,101,143"/>
+<area shape="rect" id="node2_1" href="./PSRule.html" title="com.helger.schematron.pure.model.PSRule" alt="" coords="147,118,211,143"/>
+<area shape="rect" id="node3_2" href="./PSPhase.html" title="com.helger.schematron.pure.model.PSPhase" alt="" coords="256,118,331,143"/>
+<area shape="rect" id="node4_3" href="./PSPattern.html" title="com.helger.schematron.pure.model.PSPattern" alt="" coords="376,118,456,143"/>
+<area shape="rect" id="node5_4" href="./PSDiagnostic.html" title="com.helger.schematron.pure.model.PSDiagnostic" alt="" coords="501,118,600,143"/>
+<area shape="rect" id="node6_5" href="./PSAssertReport.html" title="com.helger.schematron.pure.model.PSAssertReport" alt="" coords="646,118,759,143"/>
+<area shape="rect" id="node7_6" href="./IPSHasRichGroup.html" title="com.helger.schematron.pure.model.IPSHasRichGroup" alt="" coords="293,11,417,53"/>
+</map>

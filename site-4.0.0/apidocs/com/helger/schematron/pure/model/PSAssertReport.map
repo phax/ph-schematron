@@ -1,0 +1,10 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSAssertReport.html" title="com.helger.schematron.pure.model.PSAssertReport" alt="" coords="552,118,665,143"/>
+<area shape="rect" id="node2_1" href="./IPSHasRichGroup.html" title="com.helger.schematron.pure.model.IPSHasRichGroup" alt="" coords="16,11,140,53"/>
+<area shape="rect" id="node3_2" href="./IPSHasMixedContent.html" title="com.helger.schematron.pure.model.IPSHasMixedContent" alt="" coords="186,11,330,53"/>
+<area shape="rect" id="node4_3" href="./IPSHasLinkableGroup.html" title="com.helger.schematron.pure.model.IPSHasLinkableGroup" alt="" coords="375,11,522,53"/>
+<area shape="rect" id="node5_4" href="./IPSHasID.html" title="com.helger.schematron.pure.model.IPSHasID" alt="" coords="567,11,650,53"/>
+<area shape="rect" id="node6_5" href="./IPSHasForeignElements.html" title="com.helger.schematron.pure.model.IPSHasForeignElements" alt="" coords="696,11,857,53"/>
+<area shape="rect" id="node7_6" href="./IPSHasFlag.html" title="com.helger.schematron.pure.model.IPSHasFlag" alt="" coords="903,11,991,53"/>
+<area shape="rect" id="node8_7" href="./IPSElement.html" title="com.helger.schematron.pure.model.IPSElement" alt="" coords="1037,11,1125,53"/>
+</map>
