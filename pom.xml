@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.9.1</version>
+    <version>1.9.2-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-parent-pom</artifactId>
   <version>4.1.1-SNAPSHOT</version>
@@ -46,6 +46,13 @@
     <url>http://github.com/phax/ph-schematron</url>
     <tag>HEAD</tag>
   </scm>
+  
+  <distributionManagement>
+    <site>
+      <id>github.io</id>
+      <url>http://phax.github.io/ph-schematron/</url>
+    </site>
+  </distributionManagement>
 
   <organization>
     <name>Philip Helger</name>
