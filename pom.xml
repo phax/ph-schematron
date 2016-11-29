@@ -80,7 +80,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>9.7.0-11</version>
+        <version>9.7.0-12</version>
       </dependency>
       
       <!-- RelaxNG -->
