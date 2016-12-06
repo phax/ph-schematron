@@ -158,6 +158,11 @@
         <artifactId>ph-sch2xslt-maven-plugin</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.maven</groupId>
+        <artifactId>ph-schematron-maven-plugin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   
@@ -174,5 +179,6 @@
     <module>ph-schematron</module>
     <module>ph-schematron-validator</module>
     <module>ph-sch2xslt-maven-plugin</module>
+    <module>ph-schematron-maven-plugin</module>
   </modules>
 </project>
