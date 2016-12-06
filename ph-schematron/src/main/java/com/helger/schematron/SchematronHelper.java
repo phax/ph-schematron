@@ -405,11 +405,6 @@ public final class SchematronHelper
                                                                   @Nonnull final IPSErrorHandler aErrorHandler)
   {
     final InputSource aIS = InputSourceFactory.create (aResource);
-    if (aIS != null && aIS.getSystemId () == null)
-    {
-      // Work around for file based resources; fixed in ph-xml 8.5.3
-      aIS.setSystemId (aResource.getAsURL ().toExternalForm ());
-    }
     final IMicroDocument aDoc = MicroReader.readMicroXML (aIS, aSettings);
     if (aDoc != null)
     {
