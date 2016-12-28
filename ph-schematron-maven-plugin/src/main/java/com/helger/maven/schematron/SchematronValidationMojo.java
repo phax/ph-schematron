@@ -44,6 +44,7 @@ import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformResultFactory;
@@ -274,29 +275,49 @@ public final class SchematronValidationMojo extends AbstractMojo
     final Locale aDisplayLocale = Locale.US;
     ISchematronResource aSch;
     IErrorList aSCHErrors;
-    if (true)
+    switch (EProcessingMode.getFromIDOrNull (schematronProcessingEngine))
     {
-      // pure
-      final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-      final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (schematronFile));
-      aRealSCH.setPhase (phaseName);
-      aRealSCH.setErrorHandler (aErrorHdl);
-      aRealSCH.validateCompletely ();
+      case PURE:
+      {
+        // pure
+        final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
+        final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (schematronFile));
+        aRealSCH.setPhase (phaseName);
+        aRealSCH.setErrorHandler (aErrorHdl);
+        aRealSCH.validateCompletely ();
 
-      aSch = aRealSCH;
-      aSCHErrors = aErrorHdl.getAllErrors ();
-    }
-    else
-    {
-      // SCH
-      final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-      final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (schematronFile));
-      aRealSCH.setPhase (phaseName);
-      aRealSCH.setErrorListener (aErrorHdl);
-      aRealSCH.isValidSchematron ();
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getAllErrors ();
+        break;
+      }
+      case SCHEMATRON:
+      {
+        // SCH
+        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+        final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (schematronFile));
+        aRealSCH.setPhase (phaseName);
+        aRealSCH.setErrorListener (aErrorHdl);
+        aRealSCH.isValidSchematron ();
 
-      aSch = aRealSCH;
-      aSCHErrors = aErrorHdl.getErrorList ();
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getErrorList ();
+        break;
+      }
+      case XSLT:
+      {
+        // SCH
+        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+        final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (schematronFile));
+        // phase is ignored
+        aRealSCH.setErrorListener (aErrorHdl);
+        aRealSCH.isValidSchematron ();
+
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getErrorList ();
+        break;
+      }
+      default:
+        throw new MojoExecutionException ("No handler for processing engine '" + schematronProcessingEngine + "'");
     }
     if (aSCHErrors != null)
     {
