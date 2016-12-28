@@ -55,7 +55,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Applies Schematron validation onto an XML file
  *
- * @goal convert
+ * @goal validate
  * @phase process-resources
  * @author Philip Helger
  */
