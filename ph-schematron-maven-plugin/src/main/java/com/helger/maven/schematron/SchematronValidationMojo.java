@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.transform.ErrorListener;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -32,14 +33,20 @@ import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.commons.error.IError;
+import com.helger.commons.error.level.EErrorLevel;
+import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
+import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceSCHCache;
 import com.helger.xml.CXML;
 import com.helger.xml.XMLHelper;
@@ -47,6 +54,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.AbstractTransformErrorListener;
+import com.helger.xml.transform.CollectingTransformErrorListener;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -107,11 +115,22 @@ public final class SchematronValidationMojo extends AbstractMojo
   private MavenProject project;
 
   /**
-   * The Schematron files.
+   * The Schematron file. This may also be an XSLT file if it is precompiled.
    *
    * @parameter property="schematronFile"
    */
   private File schematronFile;
+
+  /**
+   * The processing engine to use. Can be one of the following:
+   * <ul>
+   * <li>pure - for SCH files</li>
+   * <li>schematron - for SCH files that will be converted to XSLT and applied
+   * from there.</li>
+   * <li>xslt - apply pre-build XSLT files</li>
+   * </ul>
+   */
+  private String schematronProcessingEngine = EProcessingMode.PURE.getID ();
 
   /**
    * The directory where the XML files reside.
@@ -158,7 +177,16 @@ public final class SchematronValidationMojo extends AbstractMojo
     schematronFile = aFile;
     if (!schematronFile.isAbsolute ())
       schematronFile = new File (project.getBasedir (), aFile.getPath ());
-    getLog ().debug ("Using Schematron file '" + schematronFile + "'");
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("Using Schematron file '" + schematronFile + "'");
+  }
+
+  public void setSchematronProcessingEngine (@Nullable final String sEngine)
+  {
+    final EProcessingMode eMode = EProcessingMode.getFromIDOrNull (sEngine);
+    schematronProcessingEngine = eMode == null ? null : eMode.getID ();
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("Schematron processing mode set to '" + eMode + "'");
   }
 
   public void setXmlDirectory (@Nonnull final File aDir)
@@ -166,31 +194,37 @@ public final class SchematronValidationMojo extends AbstractMojo
     xmlDirectory = aDir;
     if (!xmlDirectory.isAbsolute ())
       xmlDirectory = new File (project.getBasedir (), aDir.getPath ());
-    getLog ().debug ("Searching XML files in the directory '" + xmlDirectory + "'");
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("Searching XML files in the directory '" + xmlDirectory + "'");
   }
 
   public void setXmlPattern (final String sPattern)
   {
     xmlPattern = sPattern;
-    getLog ().debug ("Setting XML file pattern to '" + sPattern + "'");
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("Setting XML file pattern to '" + sPattern + "'");
   }
 
   public void setPhaseName (final String sPhaseName)
   {
     phaseName = sPhaseName;
-    if (phaseName == null)
-      getLog ().debug ("Using default phase");
-    else
-      getLog ().debug ("Using the phase '" + phaseName + "'");
+
+    if (getLog ().isDebugEnabled ())
+      if (phaseName == null)
+        getLog ().debug ("Using default phase");
+      else
+        getLog ().debug ("Using the phase '" + phaseName + "'");
   }
 
   public void setLanguageCode (final String sLanguageCode)
   {
     languageCode = sLanguageCode;
-    if (languageCode == null)
-      getLog ().debug ("Using default language code");
-    else
-      getLog ().debug ("Using the language code '" + languageCode + "'");
+
+    if (getLog ().isDebugEnabled ())
+      if (languageCode == null)
+        getLog ().debug ("Using default language code");
+      else
+        getLog ().debug ("Using the language code '" + languageCode + "'");
   }
 
   public void setSvrlDirectory (@Nonnull final File aDir)
@@ -198,7 +232,8 @@ public final class SchematronValidationMojo extends AbstractMojo
     svrlDirectory = aDir;
     if (!svrlDirectory.isAbsolute ())
       svrlDirectory = new File (project.getBasedir (), aDir.getPath ());
-    getLog ().debug ("Writing SVRL files to directory '" + svrlDirectory + "'");
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("Writing SVRL files to directory '" + svrlDirectory + "'");
   }
 
   public void execute () throws MojoExecutionException, MojoFailureException
@@ -208,6 +243,11 @@ public final class SchematronValidationMojo extends AbstractMojo
       throw new MojoExecutionException ("No Schematron file specified!");
     if (schematronFile.exists () && !schematronFile.isFile ())
       throw new MojoExecutionException ("The specified Schematron file " + schematronFile + " is not a file!");
+    if (schematronProcessingEngine == null)
+      throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
+                                        StringHelper.getImploded (", ",
+                                                                  EProcessingMode.values (),
+                                                                  x -> "'" + x.getID () + "'"));
     if (xmlDirectory == null)
       throw new MojoExecutionException ("No XML directory specified!");
     if (xmlDirectory.exists () && !xmlDirectory.isDirectory ())
@@ -222,6 +262,47 @@ public final class SchematronValidationMojo extends AbstractMojo
     }
 
     // 1. Parse Schematron file
+    final Locale aDisplayLocale = Locale.US;
+    ISchematronResource aSch;
+    IErrorList aSCHErrors;
+    if (true)
+    {
+      final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
+      final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (schematronFile));
+      aRealSCH.setPhase (phaseName);
+      aRealSCH.setErrorHandler (aErrorHdl);
+      aRealSCH.validateCompletely ();
+
+      aSch = aRealSCH;
+      aSCHErrors = aErrorHdl.getAllErrors ();
+    }
+    else
+    {
+      final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+      final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (schematronFile));
+      aRealSCH.setPhase (phaseName);
+      aRealSCH.setErrorListener (aErrorHdl);
+      aRealSCH.isValidSchematron ();
+
+      aSch = aRealSCH;
+      aSCHErrors = aErrorHdl.getErrorList ();
+    }
+    if (aSCHErrors != null)
+    {
+      boolean bAnyError = false;
+      for (final IError aError : aSCHErrors)
+        if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.ERROR))
+        {
+          getLog ().error ("Error in Schematron: " + aError.getAsString (aDisplayLocale));
+          bAnyError = true;
+        }
+        else
+          if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.WARN))
+            getLog ().warn ("Warning in Schematron: " + aError.getAsString (aDisplayLocale));
+      if (bAnyError)
+        throw new MojoExecutionException ("The provided Schematron file contains errors. See log for details.");
+    }
+
     // TODO continue here
 
     // 2. for all XML files that match the pattern
