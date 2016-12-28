@@ -54,7 +54,10 @@ public interface IPSErrorHandler
    * @param sMessage
    *        The main warning message. Never <code>null</code>.
    */
-  void error (@Nullable IPSElement aSourceElement, @Nonnull String sMessage);
+  default void error (@Nullable final IPSElement aSourceElement, @Nonnull final String sMessage)
+  {
+    error ((IReadableResource) null, aSourceElement, sMessage, (Throwable) null);
+  }
 
   /**
    * Emit an error

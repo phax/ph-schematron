@@ -44,6 +44,10 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
     m_aNestedErrorHandler = aNestedErrorHandler;
   }
 
+  /**
+   * @return The nested error handler as passed in the constructor or
+   *         <code>null</code> if none was provided.
+   */
   @Nullable
   public IPSErrorHandler getNestedErrorHandler ()
   {
@@ -82,11 +86,6 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
     final IPSErrorHandler aNestedErrorHandler = getNestedErrorHandler ();
     if (aNestedErrorHandler != null)
       aNestedErrorHandler.warn (aRes, aSourceElement, sMessage);
-  }
-
-  public final void error (@Nullable final IPSElement aSourceElement, @Nonnull final String sMessage)
-  {
-    error ((IReadableResource) null, aSourceElement, sMessage, (Throwable) null);
   }
 
   public final void error (@Nullable final IReadableResource aRes,
