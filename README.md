@@ -13,6 +13,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
   * 4.1.2
     * Binds to ph-commons 8.5.3
     * Updated to Saxon-HE 9.7.0-14
+    * Added a new Schematron validation Maven plugin
   * 4.1.1 - 2016-11-03
     * Added possibility to use XML EntityResolver (#30)
     * Updated to Saxon-HE 9.7.0-10
@@ -82,6 +83,37 @@ The possible configuration parameters are:
   * `overwriteWithoutQuestion` - Overwrite existing Schematron files without notice? If this is set to `false` than existing XSLT files are not overwritten. Default is `true`.
   * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+
+#ph-schematron-maven-plugin
+
+Maven plugin to validate XML files against convert Schematron (SCH) at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the validator.
+
+This plugin was introduced in version 4.1.2.
+
+By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-schematron-maven-plugin</artifactId>
+  <version>4.1.2-SNAPSHOT</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>validate</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+The possible configuration parameters are:
+  * `schematronFile` - The Schematron file to be applied. This parameter is mandatory.
+  * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `pure`.
+  * `xmlDirectory` - The directory where the XML files to be validated are contained. This parameter is mandatory.
+  * `xmlIncludes` - A pattern for the XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be converted. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
+  * `xmlExcludes` - A pattern for the XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be converted. Files in the `xmlDirectory` and its subdirectories will be considered.
+  * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
+  * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+  * `svrlDirectory` - The directory where the SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated with the suffix `.svrl`.
 
 #ph-schematron-validator
 
