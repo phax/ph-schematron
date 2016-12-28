@@ -339,13 +339,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
           }
           catch (final Exception ex)
           {
-            final String message = "Failed to convert '" +
-                                   aFile.getPath () +
-                                   "' to XSLT file '" +
-                                   aXSLTFile.getPath () +
-                                   "'";
-            getLog ().error (message, ex);
-            throw new MojoFailureException (message, ex);
+            final String sMessage = "Failed to convert '" +
+                                    aFile.getPath () +
+                                    "' to XSLT file '" +
+                                    aXSLTFile.getPath () +
+                                    "'";
+            getLog ().error (sMessage, ex);
+            throw new MojoExecutionException (sMessage, ex);
           }
         }
       }
