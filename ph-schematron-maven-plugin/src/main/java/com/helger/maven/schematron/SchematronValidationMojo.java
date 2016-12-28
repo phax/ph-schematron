@@ -17,44 +17,37 @@
 package com.helger.maven.schematron;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.transform.ErrorListener;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.svrl.CSVRL;
-import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
-import com.helger.schematron.xslt.SCHTransformerCustomizer;
+import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;
-import com.helger.schematron.xslt.SchematronResourceSCHCache;
-import com.helger.xml.CXML;
-import com.helger.xml.XMLHelper;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
-import com.helger.xml.serialize.write.XMLWriter;
-import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 import com.helger.xml.transform.CollectingTransformErrorListener;
+import com.helger.xml.transform.TransformResultFactory;
+import com.helger.xml.transform.TransformSourceFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -144,9 +137,18 @@ public final class SchematronValidationMojo extends AbstractMojo
    * wildcards. All files that match the pattern will be converted. Files in the
    * xmlDirectory and its subdirectories will be considered.
    *
-   * @parameter property="xmlPattern" default-value="**\/*.xml"
+   * @parameter property="xmlIncludes" default-value="**\/*.xml"
    */
-  private String xmlPattern;
+  private String xmlIncludes;
+
+  /**
+   * A pattern for the XML files. Can contain Ant-style wildcards and double
+   * wildcards. All files that match the pattern will NOT be converted. Only
+   * files in the xmlDirectory and its subdirectories will be considered.
+   *
+   * @parameter property="xmlExcludes"
+   */
+  private String xmlExcludes;
 
   /**
    * Define the phase to be used for Schematron validation. By default the
@@ -198,11 +200,18 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Searching XML files in the directory '" + xmlDirectory + "'");
   }
 
-  public void setXmlPattern (final String sPattern)
+  public void setXmlIncludes (final String sPattern)
   {
-    xmlPattern = sPattern;
+    xmlIncludes = sPattern;
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Setting XML file pattern to '" + sPattern + "'");
+      getLog ().debug ("Setting XML file includes to '" + sPattern + "'");
+  }
+
+  public void setXmlExcludes (final String sPattern)
+  {
+    xmlExcludes = sPattern;
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("Setting XML file excludes to '" + sPattern + "'");
   }
 
   public void setPhaseName (final String sPhaseName)
@@ -245,15 +254,15 @@ public final class SchematronValidationMojo extends AbstractMojo
       throw new MojoExecutionException ("The specified Schematron file " + schematronFile + " is not a file!");
     if (schematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                                        StringHelper.getImploded (", ",
-                                                                  EProcessingMode.values (),
-                                                                  x -> "'" + x.getID () + "'"));
+                                        StringHelper.getImplodedMapped (", ",
+                                                                        EProcessingMode.values (),
+                                                                        x -> "'" + x.getID () + "'"));
     if (xmlDirectory == null)
       throw new MojoExecutionException ("No XML directory specified!");
     if (xmlDirectory.exists () && !xmlDirectory.isDirectory ())
       throw new MojoExecutionException ("The specified XML directory " + xmlDirectory + " is not a directory!");
-    if (StringHelper.hasNoText (xmlPattern))
-      throw new MojoExecutionException ("No XML pattern specified!");
+    if (StringHelper.hasNoText (xmlIncludes))
+      throw new MojoExecutionException ("No XML include pattern specified!");
 
     if (svrlDirectory != null)
     {
@@ -267,6 +276,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     IErrorList aSCHErrors;
     if (true)
     {
+      // pure
       final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
       final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (schematronFile));
       aRealSCH.setPhase (phaseName);
@@ -278,6 +288,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     }
     else
     {
+      // SCH
       final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
       final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (schematronFile));
       aRealSCH.setPhase (phaseName);
@@ -302,119 +313,69 @@ public final class SchematronValidationMojo extends AbstractMojo
       if (bAnyError)
         throw new MojoExecutionException ("The provided Schematron file contains errors. See log for details.");
     }
-
-    // TODO continue here
+    getLog ().info ("Successfully parsed Schematron file '" + schematronFile.getPath () + "'");
 
     // 2. for all XML files that match the pattern
     final DirectoryScanner aScanner = new DirectoryScanner ();
     aScanner.setBasedir (xmlDirectory);
-    aScanner.setIncludes (new String [] { xmlPattern });
+    aScanner.setIncludes (new String [] { xmlIncludes });
+    if (xmlExcludes != null)
+      aScanner.setExcludes (new String [] { xmlExcludes });
     aScanner.setCaseSensitive (true);
     aScanner.scan ();
-    final String [] aFilenames = aScanner.getIncludedFiles ();
-    if (aFilenames != null)
+    final String [] aXMLFilenames = aScanner.getIncludedFiles ();
+    if (aXMLFilenames != null)
     {
-      for (final String sFilename : aFilenames)
+      for (final String sXMLFilename : aXMLFilenames)
       {
-        final File aFile = new File (xmlDirectory, sFilename);
+        final File aXMLFile = new File (xmlDirectory, sXMLFilename);
 
-        // TODO continue here
-
-        // 1. build XSLT file name (outputdir + localpath with new extension)
-        final File aXSLTFile = new File (xsltDirectory, FilenameHelper.getWithoutExtension (sFilename) + xsltExtension);
-
-        getLog ().info ("Converting Schematron file '" +
-                        aFile.getPath () +
-                        "' to XSLT file '" +
-                        aXSLTFile.getPath () +
+        // Validate XML file
+        getLog ().info ("Validating XML file '" +
+                        aXMLFile.getPath () +
+                        "' against Schematron rules from '" +
+                        schematronFile +
                         "'");
-
-        // 2. The Schematron resource
-        final IReadableResource aSchematronResource = new FileSystemResource (aFile);
-
-        // 3. Check if the XSLT file already exists
-        if (aXSLTFile.exists () && !overwriteWithoutQuestion)
+        try
         {
-          // 3.1 Not overwriting the existing file
-          getLog ().debug ("Skipping XSLT file '" + aXSLTFile.getPath () + "' because it already exists!");
-        }
-        else
-        {
-          // 3.2 Create the directory, if necessary
-          final File aXsltFileDirectory = aXSLTFile.getParentFile ();
-          if (aXsltFileDirectory != null && !aXsltFileDirectory.exists ())
+          final SchematronOutputType aSOT = aSch.applySchematronValidationToSVRL (TransformSourceFactory.create (aXMLFile));
+
+          if (svrlDirectory != null)
           {
-            getLog ().debug ("Creating directory '" + aXsltFileDirectory.getPath () + "'");
-            if (!aXsltFileDirectory.mkdirs ())
-            {
-              final String message = "Failed to convert '" +
-                                     aFile.getPath () +
-                                     "' because directory '" +
-                                     aXsltFileDirectory.getPath () +
-                                     "' could not be created";
-              getLog ().error (message);
-              throw new MojoFailureException (message);
-            }
-          }
-          // 3.3 Okay, write the XSLT file
-          try
-          {
-            buildContext.removeMessages (aFile);
-            // Custom error listener to log to the Mojo logger
-            final ErrorListener aMojoErrorListener = new PluginErrorListener (aFile);
-
-            // Custom error listener
-            // No custom URI resolver
-            // Specified phase - default = null
-            // Specified language code - default = null
-            final ISchematronXSLTBasedProvider aXsltProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (aSchematronResource,
-                                                                                                                        new SCHTransformerCustomizer ().setErrorListener (aMojoErrorListener)
-                                                                                                                                                       .setPhase (phaseName)
-                                                                                                                                                       .setLanguageCode (languageCode));
-            if (aXsltProvider != null)
-            {
-              // Write the resulting XSLT file to disk
-              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl",
-                                                                                                      CSVRL.SVRL_NAMESPACE_URI);
-              // Add all namespaces from XSLT document root
-              final String sNSPrefix = CXML.XML_ATTR_XMLNS + ":";
-              XMLHelper.getAllAttributesAsMap (aXsltProvider.getXSLTDocument ().getDocumentElement ())
-                       .forEach ( (sAttrName, sAttrValue) -> {
-                         if (sAttrName.startsWith (sNSPrefix))
-                           aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
-                       });
-
-              final XMLWriterSettings aXWS = new XMLWriterSettings ();
-              aXWS.setNamespaceContext (aNSContext).setPutNamespaceContextPrefixesInRoot (true);
-
-              final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
-              if (aOS == null)
-                throw new IllegalStateException ("Failed to open output stream for file " +
-                                                 aXSLTFile.getAbsolutePath ());
-              XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), aOS, aXWS);
-              buildContext.refresh (aXsltFileDirectory);
-            }
+            // Save SVRL
+            final File aSVRLFile = new File (svrlDirectory, sXMLFilename + ".svrl");
+            if (SVRLWriter.writeSVRL (aSOT, TransformResultFactory.create (aSVRLFile)).isSuccess ())
+              getLog ().info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
             else
-            {
-              final String message = "Failed to convert '" + aFile.getPath () + "': the Schematron resource is invalid";
-              getLog ().error (message);
-              throw new MojoFailureException (message);
-            }
+              getLog ().error ("Error saving SVRL file '" + aSVRLFile.getPath () + "'");
           }
-          catch (final MojoFailureException up)
+
+          final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSOT);
+          if (aFailedAsserts.isNotEmpty ())
           {
-            throw up;
+            final String sMessage = aFailedAsserts.size () +
+                                    " failed Schematron assertions for XML file '" +
+                                    aXMLFile.getPath () +
+                                    "'";
+            getLog ().error (sMessage);
+            aFailedAsserts.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ())
+                                                           .getAsString (Locale.US)));
+            throw new MojoFailureException (sMessage);
           }
-          catch (final Exception ex)
-          {
-            final String message = "Failed to convert '" +
-                                   aFile.getPath () +
-                                   "' to XSLT file '" +
-                                   aXSLTFile.getPath () +
-                                   "'";
-            getLog ().error (message, ex);
-            throw new MojoFailureException (message, ex);
-          }
+        }
+        catch (final MojoFailureException | MojoExecutionException up)
+        {
+          throw up;
+        }
+        catch (final Exception ex)
+        {
+          final String sMessage = "Exception validating XML '" +
+                                  aXMLFile.getPath () +
+                                  "' against Schematron rules from '" +
+                                  schematronFile +
+                                  "'";
+          getLog ().error (sMessage, ex);
+          throw new MojoExecutionException (sMessage, ex);
         }
       }
     }

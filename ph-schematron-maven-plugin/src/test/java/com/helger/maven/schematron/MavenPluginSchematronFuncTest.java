@@ -19,6 +19,7 @@ package com.helger.maven.schematron;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
@@ -31,8 +32,6 @@ import org.easymock.TestSubject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonatype.plexus.build.incremental.BuildContext;
-
-import com.helger.maven.schematron.SchematronValidationMojo;
 
 public final class MavenPluginSchematronFuncTest
 {
@@ -47,16 +46,41 @@ public final class MavenPluginSchematronFuncTest
   private final SchematronValidationMojo OUT = new SchematronValidationMojo ();
 
   @Test
-  public void testMavenPlugin () throws MojoExecutionException, MojoFailureException
+  public void testMavenPluginValid () throws MojoExecutionException, MojoFailureException
   {
     expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
     replay (project);
 
-    OUT.setSchematronDirectory (new File ("src/test/resources/schematron"));
-    OUT.setSchematronPattern ("**\\/*.sch");
-    OUT.setXsltDirectory (new File ("target/test/schematron-via-maven-plugin"));
-    OUT.setXsltExtension (".xslt");
+    OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
+    OUT.setSchematronProcessingEngine ("pure");
+    OUT.setXmlDirectory (new File ("src/test/resources/data"));
+    OUT.setXmlIncludes ("*.xml");
+    OUT.setXmlExcludes ("*-invalid.xml");
     OUT.execute ();
+
+    verify (project);
+  }
+
+  @Test
+  public void testMavenPluginInvalid () throws MojoExecutionException
+  {
+    expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
+    replay (project);
+
+    OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
+    OUT.setSchematronProcessingEngine ("pure");
+    OUT.setXmlDirectory (new File ("src/test/resources/data"));
+    OUT.setXmlIncludes ("*.xml");
+    OUT.setXmlExcludes ("*-valid.xml");
+    try
+    {
+      OUT.execute ();
+      fail ();
+    }
+    catch (final MojoFailureException ex)
+    {
+      // expected
+    }
 
     verify (project);
   }
