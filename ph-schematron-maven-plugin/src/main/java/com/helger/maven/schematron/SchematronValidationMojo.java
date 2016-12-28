@@ -153,7 +153,9 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   /**
    * Define the phase to be used for Schematron validation. By default the
-   * <code>defaultPhase</code> attribute of the Schematron file is used.
+   * <code>defaultPhase</code> attribute of the Schematron file is used. This
+   * phase name is only used if the processing engine <code>pure</code> or
+   * <code>schematron</code> are used.
    *
    * @parameter property="phaseName"
    */
@@ -171,7 +173,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * The SVRL path to write to. The filenames are based on the source XML
    * filenames.
    *
-   * @parameter property="svrlPath"
+   * @parameter property="svrlDirectory"
    */
   private File svrlDirectory;
 
@@ -296,6 +298,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (schematronFile));
         aRealSCH.setPhase (phaseName);
+        aRealSCH.setLanguageCode (languageCode);
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.isValidSchematron ();
 
