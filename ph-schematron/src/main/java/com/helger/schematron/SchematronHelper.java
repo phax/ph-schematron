@@ -32,8 +32,6 @@ import org.xml.sax.InputSource;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.error.IResourceErrorGroup;
-import com.helger.commons.error.ResourceErrorGroup;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.hierarchy.visit.ChildrenProviderHierarchyVisitor;
@@ -63,7 +61,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Philip Helger
  */
-@SuppressWarnings ("deprecation")
 @Immutable
 public final class SchematronHelper
 {
@@ -164,27 +161,6 @@ public final class SchematronHelper
     ValueEnforcer.notNull (aNode, "Node");
 
     return applySchematron (aSchematron, new DOMSource (aNode));
-  }
-
-  /**
-   * Convert a {@link SchematronOutputType} to an {@link IErrorList}.
-   *
-   * @param aSchematronOutput
-   *        The result of Schematron validation
-   * @param sResourceName
-   *        The name of the resource that was validated (may be a file path
-   *        etc.)
-   * @return List non-<code>null</code> error list of {@link SVRLResourceError}
-   *         objects.
-   * @deprecated Use {@link #convertToErrorList(SchematronOutputType,String)}
-   *             instead
-   */
-  @Deprecated
-  @Nonnull
-  public static IResourceErrorGroup convertToResourceErrorGroup (@Nonnull final SchematronOutputType aSchematronOutput,
-                                                                 @Nullable final String sResourceName)
-  {
-    return ResourceErrorGroup.createAndConvert (convertToErrorList (aSchematronOutput, sResourceName));
   }
 
   /**
