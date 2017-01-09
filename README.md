@@ -10,8 +10,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
-  * 4.1.2
-    * Binds to ph-commons 8.5.3
+  * 4.2.0 -2017-01-09
+    * Binds to ph-commons 8.6.0
     * Updated to Saxon-HE 9.7.0-14
     * Added a new Schematron validation Maven plugin
   * 4.1.1 - 2016-11-03
@@ -49,7 +49,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>4.1.1</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
@@ -65,7 +65,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>4.1.1</version>
+  <version>4.2.0</version>
   <executions>
     <execution>
       <goals>
@@ -88,14 +88,14 @@ The possible configuration parameters are:
 
 Maven plugin to validate XML files against convert Schematron (SCH) at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the validator.
 
-This plugin was introduced in version 4.1.2.
+This plugin was introduced in version 4.2.0.
 
 By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>4.1.2-SNAPSHOT</version>
+  <version>4.2.0</version>
   <executions>
     <execution>
       <goals>
@@ -125,7 +125,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>4.1.1</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 
