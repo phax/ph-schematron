@@ -16,25 +16,28 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.error.list.ErrorList;
 
 /**
- * An implementation if {@link IPSErrorHandler} that collects all error
- * messages.
+ * An implementation if {@link IPSErrorHandler} that collects all error messages
+ * in a provided error list.
  *
  * @author Philip Helger
+ * @since 4.2.1
  */
-public class CollectingPSErrorHandler extends AbstractCollectingPSErrorHandler
+public class WrappedCollectingPSErrorHandler extends AbstractCollectingPSErrorHandler
 {
-  public CollectingPSErrorHandler ()
+  public WrappedCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList)
   {
-    this (null);
+    super (aErrorList, null);
   }
 
-  public CollectingPSErrorHandler (@Nullable final IPSErrorHandler aNestedErrorHandler)
+  public WrappedCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList,
+                                          @Nullable final IPSErrorHandler aNestedErrorHandler)
   {
-    super (new ErrorList (), aNestedErrorHandler);
+    super (aErrorList, aNestedErrorHandler);
   }
 }

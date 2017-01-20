@@ -10,38 +10,40 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
-  * 4.2.0 -2017-01-09
+  * v4.2.1
+    * Added WrappedCollectingPSErrorHandler
+  * v4.2.0 -2017-01-09
     * Binds to ph-commons 8.6.0
     * Updated to Saxon-HE 9.7.0-14
     * Added a new Schematron validation Maven plugin
-  * 4.1.1 - 2016-11-03
+  * v4.1.1 - 2016-11-03
     * Added possibility to use XML EntityResolver (#30)
     * Updated to Saxon-HE 9.7.0-10
-  * 4.1.0 - 2016-09-09
+  * v4.1.0 - 2016-09-09
     * Binding to ph-commons 8.5.x
-  * 4.0.2 - 2016-07-22
-  * 4.0.1 - 2016-07-05
+  * v4.0.2 - 2016-07-22
+  * v4.0.1 - 2016-07-05
     * better integration of sch2xslt Maven plugin into m2e - thanks to @baerrach
-  * 4.0.0 - 2016-06-15
+  * v4.0.0 - 2016-06-15
     * updated to JDK8
     * updated to Saxon-HE 9.7
-  * 3.0.1 - 2015-10-14
+  * v3.0.1 - 2015-10-14
     * keep diagnostics in Pure version; resource resolving emits to error handler
-  * 3.0.0 - 2015-07-29
+  * v3.0.0 - 2015-07-29
     * because of update to ph-commons 6.0.0; extended XSLT based API 
-  * 2.9.2 - 2015-03-12
+  * v2.9.2 - 2015-03-12
     * because of update to ph-commons 5.6.0 
-  * 2.9.1 - 2015-02-03
+  * v2.9.1 - 2015-02-03
     * fixes a classloader issue added in 2.9.0
-  * 2.9.0 - 2015-01-30
+  * v2.9.0 - 2015-01-30
     * introduced new APIs in several places
     * updated to Saxon-HE 9.6
-  * 2.8.4 - 2014-10-30    
-  * 2.8.3 - 2014-09-16
+  * v2.8.4 - 2014-10-30    
+  * v2.8.3 - 2014-09-16
     * An easy way to use XQuery functions (like funcx library) as custom XPath functions was added
-  * 2.8.2 - 2014-09-02
-  * 2.8.1 - 2014-08-29
-  * 2.8.0 - 2014-08-28
+  * v2.8.2 - 2014-09-02
+  * v2.8.1 - 2014-08-29
+  * v2.8.0 - 2014-08-28
 
 ## Usage with Maven
 The dependency for ph-schematron looks like this:
