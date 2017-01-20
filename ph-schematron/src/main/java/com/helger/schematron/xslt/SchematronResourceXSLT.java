@@ -35,8 +35,6 @@ import com.helger.commons.io.resource.IReadableResource;
 @NotThreadSafe
 public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource <SchematronResourceXSLT>
 {
-  private boolean m_bUseCache = true;
-
   /**
    * Constructor
    *
@@ -48,21 +46,11 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
     super (aXSLTResource);
   }
 
-  public boolean isUseCache ()
-  {
-    return m_bUseCache;
-  }
-
-  public void setUseCache (final boolean bUseCache)
-  {
-    m_bUseCache = bUseCache;
-  }
-
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
-    if (m_bUseCache)
+    if (isUseCache ())
       return SchematronResourceXSLTCache.getSchematronXSLTProvider (getResource (),
                                                                     getErrorListener (),
                                                                     getURIResolver ());

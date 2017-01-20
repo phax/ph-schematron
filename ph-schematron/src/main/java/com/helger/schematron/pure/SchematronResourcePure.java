@@ -242,7 +242,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
                                                                        getVariableResolver (),
                                                                        getFunctionResolver (),
                                                                        getEntityResolver ());
-    if (aResource instanceof AbstractMemoryReadableResource)
+    if (aResource instanceof AbstractMemoryReadableResource || !isUseCache ())
     {
       // No need to cache anything for memory resources
       try

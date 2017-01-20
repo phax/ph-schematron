@@ -34,6 +34,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
 {
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
+  private boolean m_bUseCache = true;
 
   public AbstractSchematronResource (@Nonnull final IReadableResource aResource)
   {
@@ -53,9 +54,19 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return m_aResource;
   }
 
+  public boolean isUseCache ()
+  {
+    return m_bUseCache;
+  }
+
+  public void setUseCache (final boolean bUseCache)
+  {
+    m_bUseCache = bUseCache;
+  }
+
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("resource", m_aResource).toString ();
+    return new ToStringGenerator (this).append ("Resource", m_aResource).append ("UseCache", m_bUseCache).toString ();
   }
 }

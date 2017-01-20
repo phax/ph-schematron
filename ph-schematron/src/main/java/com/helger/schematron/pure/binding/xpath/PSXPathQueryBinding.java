@@ -133,7 +133,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
       throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
                                          (aErrorHandler == aCustomErrorListener ? ". Errors are in the provided error handler."
                                                                                 : ": " +
-                                                                                  ((CollectingPSErrorHandler) aErrorHandler).getResourceErrors ()
+                                                                                  ((CollectingPSErrorHandler) aErrorHandler).getErrorList ()
                                                                                                                             .toString ()));
 
     PSSchema aSchemaToUse = aSchema;

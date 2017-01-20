@@ -36,7 +36,6 @@ import com.helger.commons.io.resource.IReadableResource;
 @NotThreadSafe
 public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <SchematronResourceSCH>
 {
-  private boolean m_bUseCache = true;
   private String m_sPhase;
   private String m_sLanguageCode;
 
@@ -49,16 +48,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
-  }
-
-  public boolean isUseCache ()
-  {
-    return m_bUseCache;
-  }
-
-  public void setUseCache (final boolean bUseCache)
-  {
-    m_bUseCache = bUseCache;
   }
 
   @Nullable
@@ -99,7 +88,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
     final SCHTransformerCustomizer aTransformerCustomizer = createTransformerCustomizer ();
-    if (m_bUseCache)
+    if (isUseCache ())
       return SchematronResourceSCHCache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
 
     // Always create a new one

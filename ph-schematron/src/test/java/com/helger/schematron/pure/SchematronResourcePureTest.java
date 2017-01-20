@@ -123,18 +123,18 @@ public final class SchematronResourcePureTest
                                                               .setErrorHandler (aErrorHandler);
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
-    assertEquals ("Expected three errors: " + aErrorHandler.getResourceErrors ().toString (),
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
                   3,
-                  aErrorHandler.getResourceErrors ().getSize ());
+                  aErrorHandler.getErrorList ().getSize ());
     if (false)
-      System.out.println (aErrorHandler.getResourceErrors ().toString ());
+      System.out.println (aErrorHandler.getErrorList ().toString ());
 
     // Perform complete validation
     aErrorHandler.clearResourceErrors ();
     aSch.validateCompletely ();
-    assertEquals ("Expected three errors: " + aErrorHandler.getResourceErrors ().toString (),
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
                   3,
-                  aErrorHandler.getResourceErrors ().getSize ());
+                  aErrorHandler.getErrorList ().getSize ());
   }
 
   @Test
