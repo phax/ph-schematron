@@ -92,7 +92,9 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     m_aErrorHandler.warn (m_aSchema.getResource (), aSourceElement, sMsg);
   }
 
-  private void _error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg, @Nullable final Throwable t)
+  private void _error (@Nonnull final IPSElement aSourceElement,
+                       @Nonnull final String sMsg,
+                       @Nullable final Throwable t)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
@@ -121,7 +123,8 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
   }
 
   @Override
-  public void onStart (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  public void onStart (@Nonnull final PSSchema aSchema,
+                       @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     final SchematronOutputType aSchematronOutput = new SchematronOutputType ();
     if (aActivePhase != null)
@@ -199,9 +202,9 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
             }
             catch (final XPathExpressionException ex)
             {
-              _error (aName, "Failed to evaluate XPath expression to a string: '" +
-                             aBoundElement.getExpression () +
-                             "'", ex);
+              _error (aName,
+                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
+                      ex);
               // Append the path so that something is present in the output
               aSB.append (aName.getPath ());
             }
@@ -222,9 +225,9 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
             }
             catch (final XPathExpressionException ex)
             {
-              _error (aValueOf, "Failed to evaluate XPath expression to a string: '" +
-                                aBoundElement.getExpression () +
-                                "'", ex);
+              _error (aValueOf,
+                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
+                      ex);
               // Append the path so that something is present in the output
               aSB.append (aValueOf.getSelect ());
             }
@@ -291,6 +294,12 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     }
   }
 
+  @Nonnull
+  private static String _getPathToNode (@Nonnull final Node aNode)
+  {
+    return XMLHelper.getPathToNode2 (aNode, "/");
+  }
+
   @Override
   @Nonnull
   public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
@@ -306,7 +315,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     final FailedAssert aFailedAssert = new FailedAssert ();
     aFailedAssert.setFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
-    aFailedAssert.setLocation (XMLHelper.getPathToNode2 (aRuleMatchingNode));
+    aFailedAssert.setLocation (_getPathToNode (aRuleMatchingNode));
     // TODO role
     aFailedAssert.setTest (sTestExpression);
     aFailedAssert.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
@@ -333,7 +342,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     final SuccessfulReport aSuccessfulReport = new SuccessfulReport ();
     aSuccessfulReport.setFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());
-    aSuccessfulReport.setLocation (XMLHelper.getPathToNode2 (aRuleMatchingNode));
+    aSuccessfulReport.setLocation (_getPathToNode (aRuleMatchingNode));
     // TODO role
     aSuccessfulReport.setTest (sTestExpression);
     aSuccessfulReport.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
