@@ -19,9 +19,10 @@ package com.helger.schematron.supplementary;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
@@ -33,23 +34,23 @@ public final class Issue20150128Test
   @Test
   public void testEq () throws Exception
   {
-    final String sTest2 = "<?xml version='1.0' encoding='iso-8859-1'?>\n"
-                          + "<schema xmlns='http://purl.oclc.org/dsdl/schematron'>\n"
-                          + "  <ns prefix='functx' uri='http://www.functx.com' />\n"
-                          + "  <pattern >\n"
-                          + "    <title>A very simple pattern with a title</title>\n"
-                          + "    <rule context='chapter'>\n"
-                          + "      <assert test='aaa eq 1'>aaa equals 1></assert>\n"
-                          + "      </rule>\n"
-                          + "  </pattern>\n"
-                          + "\n"
-                          + "</schema>";
+    final String sTest2 = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
+                          "<schema xmlns='http://purl.oclc.org/dsdl/schematron'>\n" +
+                          "  <ns prefix='functx' uri='http://www.functx.com' />\n" +
+                          "  <pattern >\n" +
+                          "    <title>A very simple pattern with a title</title>\n" +
+                          "    <rule context='chapter'>\n" +
+                          "      <assert test='aaa eq 1'>aaa equals 1></assert>\n" +
+                          "      </rule>\n" +
+                          "  </pattern>\n" +
+                          "\n" +
+                          "</schema>";
 
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
 
     final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
 
-    final SchematronResourcePure resource = SchematronResourcePure.fromString (sTest2, CCharset.CHARSET_ISO_8859_1_OBJ);
+    final SchematronResourcePure resource = SchematronResourcePure.fromString (sTest2, StandardCharsets.ISO_8859_1);
 
     resource.setErrorHandler (aErrorHandler);
     resource.setFunctionResolver (aFunctionResolver);
