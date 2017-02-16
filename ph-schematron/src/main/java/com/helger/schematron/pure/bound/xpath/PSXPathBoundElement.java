@@ -96,6 +96,6 @@ public class PSXPathBoundElement
     return new ToStringGenerator (this).append ("element", m_aElement)
                                        .appendIfNotNull ("expression", m_sExpression)
                                        .appendIfNotNull ("boundExpression", m_aBoundExpression)
-                                       .toString ();
+                                       .getToString ();
   }
 }

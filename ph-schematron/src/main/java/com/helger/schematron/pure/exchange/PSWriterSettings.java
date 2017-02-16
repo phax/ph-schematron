@@ -75,6 +75,6 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("XMLWriterSettings", m_aXMLWriterSettings).toString ();
+    return new ToStringGenerator (this).append ("XMLWriterSettings", m_aXMLWriterSettings).getToString ();
   }
 }

@@ -118,6 +118,6 @@ public class PSXPathBoundAssertReport
                                        .append ("boundTestExpression", m_aBoundTestExpression)
                                        .append ("boundContent", m_aBoundContent)
                                        .append ("boundDiagnostics", m_aBoundDiagnostics)
-                                       .toString ();
+                                       .getToString ();
   }
 }

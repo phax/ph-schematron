@@ -20,9 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
@@ -55,7 +56,7 @@ public final class PSWriterTest
       final String sXML1 = aWriter.getXMLStringNotNull (aSchema1);
 
       // Re-read the created XML and re-create it
-      final PSSchema aSchema2 = new PSReader (new ReadableResourceString (sXML1, CCharset.CHARSET_UTF_8_OBJ)).readSchema ();
+      final PSSchema aSchema2 = new PSReader (new ReadableResourceString (sXML1, StandardCharsets.UTF_8)).readSchema ();
       final String sXML2 = aWriter.getXMLStringNotNull (aSchema2);
 
       // Originally created XML and re-created-written XML must match

@@ -606,6 +606,6 @@ public class PSSchema implements
                                        .appendIfNotNull ("diagnostics", m_aDiagnostics)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
-                                       .toString ();
+                                       .getToString ();
   }
 }

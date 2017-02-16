@@ -87,6 +87,6 @@ public class PSXPathBoundRule
                                        .append ("ruleExpression", m_sRuleExpression)
                                        .append ("boundRuleExpression", m_aBoundRuleExpression)
                                        .append ("boundAssertReports", m_aBoundAssertReports)
-                                       .toString ();
+                                       .getToString ();
   }
 }

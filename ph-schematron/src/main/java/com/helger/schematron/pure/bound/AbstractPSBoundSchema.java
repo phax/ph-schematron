@@ -234,6 +234,6 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                                        .appendIfNotNull ("phase", m_sPhase)
                                        .appendIfNotNull ("phase", m_aPhase)
                                        .append ("patterns", m_aPatterns)
-                                       .toString ();
+                                       .getToString ();
   }
 }

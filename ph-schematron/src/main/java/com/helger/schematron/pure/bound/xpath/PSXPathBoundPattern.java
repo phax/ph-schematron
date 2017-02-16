@@ -61,6 +61,8 @@ public class PSXPathBoundPattern
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("pattern", m_aPattern).append ("boundRules", m_aBoundRules).toString ();
+    return new ToStringGenerator (this).append ("pattern", m_aPattern)
+                                       .append ("boundRules", m_aBoundRules)
+                                       .getToString ();
   }
 }

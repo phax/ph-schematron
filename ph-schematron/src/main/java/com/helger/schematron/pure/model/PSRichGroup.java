@@ -188,6 +188,6 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
                                        .appendIfNotNull ("fpi", m_sFPI)
                                        .appendIfNotNull ("xml:lang", m_sXmlLang)
                                        .appendIfNotNull ("xml:space", m_eXmlSpace)
-                                       .toString ();
+                                       .getToString ();
   }
 }

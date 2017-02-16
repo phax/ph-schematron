@@ -18,9 +18,10 @@ package com.helger.schematron.supplementary;
 
 import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.xslt.SchematronResourceSCH;
@@ -54,7 +55,7 @@ public final class SO32784781Test
                         "  </diagnostics>\r\n" +
                         "</schema>";
     final ISchematronResource isr = new SchematronResourceSCH (new ReadableResourceString (sSCH,
-                                                                                           CCharset.CHARSET_UTF_8_OBJ));
+                                                                                           StandardCharsets.UTF_8));
     assertTrue (isr.isValidSchematron ());
   }
 }

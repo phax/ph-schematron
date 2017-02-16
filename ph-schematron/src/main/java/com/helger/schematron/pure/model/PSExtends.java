@@ -124,6 +124,6 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
   {
     return new ToStringGenerator (this).appendIfNotNull ("rule", m_sRule)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .toString ();
+                                       .getToString ();
   }
 }

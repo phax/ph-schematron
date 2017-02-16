@@ -173,6 +173,6 @@ public class PSWriter
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("writerSettings", m_aWriterSettings).toString ();
+    return new ToStringGenerator (this).append ("writerSettings", m_aWriterSettings).getToString ();
   }
 }

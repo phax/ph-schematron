@@ -70,6 +70,6 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("baseHref", m_sBaseHref).toString ();
+    return new ToStringGenerator (this).append ("baseHref", m_sBaseHref).getToString ();
   }
 }

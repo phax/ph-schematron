@@ -142,6 +142,6 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).appendIfNotNull ("ErrorList", m_aErrorList).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).appendIfNotNull ("ErrorList", m_aErrorList).getToString ();
   }
 }

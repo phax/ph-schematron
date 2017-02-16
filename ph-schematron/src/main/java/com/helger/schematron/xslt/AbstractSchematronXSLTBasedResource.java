@@ -115,13 +115,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, ?> getParameters ()
   {
-    return new CommonsLinkedHashMap<> (m_aCustomParameters);
+    return new CommonsLinkedHashMap <> (m_aCustomParameters);
   }
 
   @Nonnull
   public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
-    m_aCustomParameters = new CommonsLinkedHashMap<> (aCustomParameters);
+    m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
     return thisAsT ();
   }
 
@@ -302,6 +302,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("XSLTValidator", m_aXSLTValidator).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("XSLTValidator", m_aXSLTValidator).getToString ();
   }
 }

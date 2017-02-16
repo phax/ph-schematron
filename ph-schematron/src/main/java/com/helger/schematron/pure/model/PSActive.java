@@ -271,6 +271,6 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
-                                       .toString ();
+                                       .getToString ();
   }
 }

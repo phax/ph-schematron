@@ -111,7 +111,7 @@ public class SVRLResourceError extends SingleError
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("test", m_sTest).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("test", m_sTest).getToString ();
   }
 
   public static class SVRLErrorBuilder extends AbstractBuilder <SVRLResourceError, SVRLErrorBuilder>

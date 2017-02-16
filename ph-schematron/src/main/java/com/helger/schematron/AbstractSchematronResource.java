@@ -67,6 +67,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Resource", m_aResource).append ("UseCache", m_bUseCache).toString ();
+    return new ToStringGenerator (this).append ("Resource", m_aResource)
+                                       .append ("UseCache", m_bUseCache)
+                                       .getToString ();
   }
 }

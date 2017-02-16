@@ -305,6 +305,6 @@ public class PSBoundSchemaCacheKey
                                        .appendIfNotNull ("errorHandler", m_aErrorHandler)
                                        .appendIfNotNull ("variableResolver", m_aVariableResolver)
                                        .appendIfNotNull ("functionResolver", m_aFunctionResolver)
-                                       .toString ();
+                                       .getToString ();
   }
 }

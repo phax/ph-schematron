@@ -522,7 +522,7 @@ public class PSPreprocessor
                                        .append ("keepReports", m_bKeepReports)
                                        .append ("keepEmptyPatterns", m_bKeepEmptyPatterns)
                                        .append ("keepEmptySchema", m_bKeepEmptySchema)
-                                       .toString ();
+                                       .getToString ();
   }
 
   @Nonnull

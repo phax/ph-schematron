@@ -92,6 +92,6 @@ public class SchematronTestFile
     return new ToStringGenerator (this).append ("parentDirBaseName", m_sParentDirBaseName)
                                        .append ("res", m_aRes)
                                        .append ("fileBaseName", m_sFileBaseName)
-                                       .toString ();
+                                       .getToString ();
   }
 }

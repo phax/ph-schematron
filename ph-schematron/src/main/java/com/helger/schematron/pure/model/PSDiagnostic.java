@@ -304,6 +304,6 @@ public class PSDiagnostic implements
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
-                                       .toString ();
+                                       .getToString ();
   }
 }

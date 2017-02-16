@@ -180,6 +180,6 @@ public class PSXPathVariables implements IPSXPathVariables
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("map", m_aMap).toString ();
+    return new ToStringGenerator (this).append ("map", m_aMap).getToString ();
   }
 }

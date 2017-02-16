@@ -10,6 +10,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ##News and noteworthy
 
+  * v4.2.2
+    * Updated to Saxon-HE 9.7.0-15
   * v4.2.1
     * Added WrappedCollectingPSErrorHandler
   * v4.2.0 -2017-01-09

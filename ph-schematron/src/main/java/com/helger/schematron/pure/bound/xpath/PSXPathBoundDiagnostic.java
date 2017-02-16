@@ -63,6 +63,6 @@ public class PSXPathBoundDiagnostic
   {
     return new ToStringGenerator (this).append ("diagnostic", m_aDiagnostic)
                                        .append ("boundContent", m_aBoundContent)
-                                       .toString ();
+                                       .getToString ();
   }
 }

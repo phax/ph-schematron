@@ -82,7 +82,7 @@ public abstract class AbstractSVRLMessage
                               @Nullable final String sRole,
                               @Nullable final IErrorLevel aFlag)
   {
-    m_aDiagnosticReferences = new CommonsArrayList<> (aDiagnosticReferences);
+    m_aDiagnosticReferences = new CommonsArrayList <> (aDiagnosticReferences);
     m_sText = sText;
     m_sLocation = sLocation;
     m_sTest = sTest;
@@ -146,6 +146,6 @@ public abstract class AbstractSVRLMessage
                                        .append ("test", m_sTest)
                                        .appendIfNotNull ("role", m_sRole)
                                        .append ("flag", m_aFlag)
-                                       .toString ();
+                                       .getToString ();
   }
 }

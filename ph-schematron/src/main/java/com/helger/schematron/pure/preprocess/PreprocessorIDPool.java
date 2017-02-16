@@ -31,7 +31,7 @@ import com.helger.commons.string.ToStringGenerator;
 @NotThreadSafe
 final class PreprocessorIDPool
 {
-  private final ICommonsSet <String> m_aUsedIDs = new CommonsHashSet<> ();
+  private final ICommonsSet <String> m_aUsedIDs = new CommonsHashSet <> ();
 
   public PreprocessorIDPool ()
   {}
@@ -75,6 +75,6 @@ final class PreprocessorIDPool
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("usedIDs", m_aUsedIDs).toString ();
+    return new ToStringGenerator (this).append ("usedIDs", m_aUsedIDs).getToString ();
   }
 }

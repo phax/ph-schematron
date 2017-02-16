@@ -120,7 +120,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                                    @Nonnull final XPath aXPathContext,
                                                                    @Nonnull final IPSXPathVariables aVariables)
   {
-    final ICommonsList <PSXPathBoundElement> ret = new CommonsArrayList<> ();
+    final ICommonsList <PSXPathBoundElement> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
 
     for (final Object aContentElement : aMixedContent.getAllContentElements ())
@@ -187,7 +187,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private ICommonsMap <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@Nonnull final XPath aXPathContext,
                                                                                 @Nonnull final IPSXPathVariables aGlobalVariables)
   {
-    final ICommonsMap <String, PSXPathBoundDiagnostic> ret = new CommonsHashMap<> ();
+    final ICommonsMap <String, PSXPathBoundDiagnostic> ret = new CommonsHashMap <> ();
     boolean bHasAnyError = false;
 
     final PSSchema aSchema = getOriginalSchema ();
@@ -240,7 +240,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                                    @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
                                                                    @Nonnull final IPSXPathVariables aGlobalVariables)
   {
-    final ICommonsList <PSXPathBoundPattern> ret = new CommonsArrayList<> ();
+    final ICommonsList <PSXPathBoundPattern> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
 
     // For all relevant patterns
@@ -259,7 +259,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       }
 
       // For all rules of the current pattern
-      final ICommonsList <PSXPathBoundRule> aBoundRules = new CommonsArrayList<> ();
+      final ICommonsList <PSXPathBoundRule> aBoundRules = new CommonsArrayList <> ();
       for (final PSRule aRule : aPattern.getAllRules ())
       {
         // Handle rule specific variables
@@ -274,7 +274,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         }
 
         // For all contained assert and reports within the current rule
-        final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList<> ();
+        final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList <> ();
         for (final PSAssertReport aAssertReport : aRule.getAllAssertReports ())
         {
           final String sTest = aRuleVariables.getAppliedReplacement (aAssertReport.getTest ());
@@ -637,6 +637,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("boundPatterns", m_aBoundPatterns).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("boundPatterns", m_aBoundPatterns).getToString ();
   }
 }

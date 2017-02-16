@@ -187,6 +187,6 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
                                        .appendIf ("diagnostics", m_aDiagnostics, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
-                                       .toString ();
+                                       .getToString ();
   }
 }

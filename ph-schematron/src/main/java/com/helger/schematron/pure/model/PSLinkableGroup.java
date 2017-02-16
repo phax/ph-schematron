@@ -29,7 +29,7 @@ import com.helger.xml.microdom.IMicroElement;
 
 /**
  * A single "linkable" group
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
@@ -52,7 +52,7 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
    * arc between the context node and any nodes which match the path expression
    * given by the subject attribute.<br>
    * An implementation is not required to make use of this attribute.
-   * 
+   *
    * @return The role value
    */
   @Nullable
@@ -79,7 +79,7 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
    * In such a case, the nodes located by the subject attribute may be more
    * useful.<br>
    * An implementation is not required to make use of this element.
-   * 
+   *
    * @return The subject value
    */
   @Nullable
@@ -113,6 +113,6 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
   {
     return new ToStringGenerator (this).appendIfNotNull ("role", m_sRole)
                                        .appendIfNotNull ("subject", m_sSubject)
-                                       .toString ();
+                                       .getToString ();
   }
 }

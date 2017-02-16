@@ -102,6 +102,6 @@ final class PreprocessorLookup
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("patterns", m_aPatterns).append ("rules", m_aRules).toString ();
+    return new ToStringGenerator (this).append ("patterns", m_aPatterns).append ("rules", m_aRules).getToString ();
   }
 }

@@ -104,6 +104,6 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("nestedErrorHandler", m_aNestedErrorHandler).toString ();
+    return new ToStringGenerator (this).appendIfNotNull ("nestedErrorHandler", m_aNestedErrorHandler).getToString ();
   }
 }
