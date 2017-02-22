@@ -261,8 +261,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return PSBoundSchemaCache.getInstance ().getFromCache (aCacheKey);
   }
 
+  /**
+   * Get the cached bound schema or create a new one.
+   * 
+   * @return The bound schema. Never <code>null</code>.
+   */
   @Nonnull
-  protected IPSBoundSchema getOrCreateBoundSchema ()
+  public IPSBoundSchema getOrCreateBoundSchema ()
   {
     if (m_aBoundSchema == null)
       try
