@@ -21,8 +21,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.collection.ext.ICommonsNavigableMap;
@@ -207,20 +205,22 @@ public class PSPreprocessor
    *        objects. Never <code>null</code>.
    * @param aLookup
    *        The rule lookup object
-   * @return List of assert/report elements. Never <code>null</code>.
    * @throws SchematronPreprocessException
    *         If the base rule of an extends object could not be resolved.
    */
-  @Nonnull
-  @ReturnsMutableCopy
-  private static ICommonsList <PSAssertReport> _getResolvedExtends (@Nonnull final ICommonsList <IPSElement> aRuleContent,
-                                                                    @Nonnull final PreprocessorLookup aLookup) throws SchematronPreprocessException
+  private void _resolveRuleContent (@Nonnull final ICommonsList <IPSElement> aRuleContent,
+                                    @Nonnull final PreprocessorLookup aLookup,
+                                    @Nonnull final PreprocessorIDPool aIDPool,
+                                    @Nullable final ICommonsMap <String, String> aParamValueMap,
+                                    @Nonnull final PSRule aTargetRule) throws SchematronPreprocessException
   {
-    final ICommonsList <PSAssertReport> ret = new CommonsArrayList<> ();
     for (final IPSElement aElement : aRuleContent)
     {
       if (aElement instanceof PSAssertReport)
-        ret.add ((PSAssertReport) aElement);
+      {
+        final PSAssertReport aAssertReport = (PSAssertReport) aElement;
+        aTargetRule.addAssertReport (_getPreprocessedAssert (aAssertReport, aIDPool, aParamValueMap));
+      }
       else
       {
         final PSExtends aExtends = (PSExtends) aElement;
@@ -231,11 +231,15 @@ public class PSPreprocessor
                                                    sRuleID +
                                                    "' in extends statement. Available rules are: " +
                                                    aLookup.getAllAbstractRuleIDs ());
+
         // Recursively resolve the extends of the base rule
-        ret.addAll (_getResolvedExtends (aBaseRule.getAllContentElements (), aLookup));
+        _resolveRuleContent (aBaseRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, aTargetRule);
+
+        // Copy all lets
+        for (final PSLet aBaseLet : aBaseRule.getAllLets ())
+          aTargetRule.addLet (aBaseLet.getClone ());
       }
     }
-    return ret;
   }
 
   @Nonnull
@@ -311,8 +315,7 @@ public class PSPreprocessor
       throw new SchematronPreprocessException ("Cannot preprocess <rule> with an <include>");
     for (final PSLet aLet : aRule.getAllLets ())
       ret.addLet (aLet.getClone ());
-    for (final PSAssertReport aAssertReport : _getResolvedExtends (aRule.getAllContentElements (), aLookup))
-      ret.addAssertReport (_getPreprocessedAssert (aAssertReport, aIDPool, aParamValueMap));
+    _resolveRuleContent (aRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, ret);
     ret.addForeignElements (aRule.getAllForeignElements ());
     ret.addForeignAttributes (aRule.getAllForeignAttributes ());
     return ret;
