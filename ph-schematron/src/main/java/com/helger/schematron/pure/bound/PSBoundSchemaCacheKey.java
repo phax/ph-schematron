@@ -39,6 +39,7 @@ import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
+import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
  * This class represents keys for the {@link PSBoundSchemaCache}. It is a
@@ -229,6 +230,8 @@ public class PSBoundSchemaCacheKey
                                                aSchema +
                                                " with query binding " +
                                                aQueryBinding);
+    if (false)
+      System.out.println ("PREPROC:\n" + MicroWriter.getXMLString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }
 
