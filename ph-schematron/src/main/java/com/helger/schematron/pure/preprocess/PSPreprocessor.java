@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.preprocess;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -27,6 +24,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.ext.ICommonsNavigableMap;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.model.IPSElement;
@@ -214,10 +213,10 @@ public class PSPreprocessor
    */
   @Nonnull
   @ReturnsMutableCopy
-  private static ICommonsList <PSAssertReport> _getResolvedExtends (@Nonnull final List <IPSElement> aRuleContent,
+  private static ICommonsList <PSAssertReport> _getResolvedExtends (@Nonnull final ICommonsList <IPSElement> aRuleContent,
                                                                     @Nonnull final PreprocessorLookup aLookup) throws SchematronPreprocessException
   {
-    final ICommonsList <PSAssertReport> ret = new CommonsArrayList <> ();
+    final ICommonsList <PSAssertReport> ret = new CommonsArrayList<> ();
     for (final IPSElement aElement : aRuleContent)
     {
       if (aElement instanceof PSAssertReport)
@@ -242,7 +241,7 @@ public class PSPreprocessor
   @Nonnull
   private PSAssertReport _getPreprocessedAssert (@Nonnull final PSAssertReport aAssertReport,
                                                  @Nonnull final PreprocessorIDPool aIDPool,
-                                                 @Nullable final Map <String, String> aParamValueMap)
+                                                 @Nullable final ICommonsMap <String, String> aParamValueMap)
   {
     String sTest = aAssertReport.getTest ();
     if (aAssertReport.isReport () && !m_bKeepReports)
@@ -293,7 +292,7 @@ public class PSPreprocessor
   private PSRule _getPreprocessedRule (@Nonnull final PSRule aRule,
                                        @Nonnull final PreprocessorLookup aLookup,
                                        @Nonnull final PreprocessorIDPool aIDPool,
-                                       @Nullable final Map <String, String> aParamValueMap) throws SchematronPreprocessException
+                                       @Nullable final ICommonsMap <String, String> aParamValueMap) throws SchematronPreprocessException
   {
     if (aRule.isAbstract ())
     {
@@ -353,7 +352,7 @@ public class PSPreprocessor
         ret.setRich (aBasePattern.getRichClone ());
 
       // get the string replacements
-      final Map <String, String> aParamValueMap = m_aQueryBinding.getStringReplacementMap (aPattern.getAllParams ());
+      final ICommonsNavigableMap <String, String> aParamValueMap = m_aQueryBinding.getStringReplacementMap (aPattern.getAllParams ());
 
       for (final IPSElement aElement : aBasePattern.getAllContentElements ())
       {
