@@ -1169,7 +1169,7 @@ public class PSReader
       throw new SchematronReadException (m_aResource, "Failed to resolve includes in resource " + m_aResource);
 
     if (false)
-      System.out.println (MicroWriter.getXMLString (aDoc));
+      System.out.println (MicroWriter.getNodeAsString (aDoc));
 
     return readSchemaFromXML (aDoc.getDocumentElement ());
   }

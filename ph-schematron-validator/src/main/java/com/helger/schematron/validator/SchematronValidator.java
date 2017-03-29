@@ -76,7 +76,7 @@ public final class SchematronValidator
     if (aNode == null)
       return false;
 
-    return isValidSchematron (TransformSourceFactory.create (MicroWriter.getXMLString (aNode)));
+    return isValidSchematron (TransformSourceFactory.create (MicroWriter.getNodeAsString (aNode)));
   }
 
   /**

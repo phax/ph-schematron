@@ -1,4 +1,4 @@
-#ph-schematron
+# ph-schematron
 
 ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com).
 It is licensed under Apache 2.0 license.
@@ -8,7 +8,7 @@ The most common way is to convert the source Schematron file to an XSLT script a
 
 Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
 
-##News and noteworthy
+## News and noteworthy
 
   * v4.2.2 - 2017-02-22
     * Updated to Saxon-HE 9.7.0-15
@@ -50,7 +50,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## Usage with Maven
 The dependency for ph-schematron looks like this:
-```
+```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
@@ -59,7 +59,7 @@ The dependency for ph-schematron looks like this:
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
 
-#ph-sch2xslt-maven-plugin
+# ph-sch2xslt-maven-plugin
 
 Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the converter.
 
@@ -89,7 +89,7 @@ The possible configuration parameters are:
   * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
 
-#ph-schematron-maven-plugin
+# ph-schematron-maven-plugin
 
 Maven plugin to validate XML files against convert Schematron (SCH) at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the validator.
 
@@ -120,11 +120,11 @@ The possible configuration parameters are:
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
   * `svrlDirectory` - The directory where the SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated with the suffix `.svrl`.
 
-#ph-schematron-validator
+# ph-schematron-validator
 
 A validator for Schematron definitions based on RelaxNG definition.
 
-#Maven usage
+# Maven usage
 Add the following to your pom.xml to use this artifact:
 ```
 <dependency>

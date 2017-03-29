@@ -52,8 +52,8 @@ public final class Issue6Test
     if (aSCH instanceof SchematronResourcePure)
       ((SchematronResourcePure) aSCH).setErrorHandler (new LoggingPSErrorHandler ());
     else
-      System.out.println (XMLWriter.getXMLString (((SchematronResourceSCH) aSCH).getXSLTProvider ()
-                                                                                .getXSLTDocument ()));
+      System.out.println (XMLWriter.getNodeAsString (((SchematronResourceSCH) aSCH).getXSLTProvider ()
+                                                                                   .getXSLTDocument ()));
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
     assertNotNull (aSVRL);
     System.out.println (SVRLWriter.createXMLString (aSVRL));

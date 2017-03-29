@@ -52,12 +52,12 @@ public final class PSReaderTest
 
       // Convert back to XML
       final IMicroElement e1 = aSchema1.getAsMicroElement ();
-      final String sXML1 = MicroWriter.getXMLString (e1);
+      final String sXML1 = MicroWriter.getNodeAsString (e1);
 
       // Re-read the created XML and re-create it
       final PSSchema aSchema2 = aReader.readSchemaFromXML (e1);
       final IMicroElement e2 = aSchema2.getAsMicroElement ();
-      final String sXML2 = MicroWriter.getXMLString (e2);
+      final String sXML2 = MicroWriter.getNodeAsString (e2);
 
       // Originally created XML and re-created-written XML must match
       assertEquals (sXML1, sXML2);

@@ -231,7 +231,7 @@ public class PSBoundSchemaCacheKey
                                                " with query binding " +
                                                aQueryBinding);
     if (false)
-      System.out.println ("PREPROC:\n" + MicroWriter.getXMLString (aPreprocessedSchema.getAsMicroElement ()));
+      System.out.println ("PREPROC:\n" + MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }
 

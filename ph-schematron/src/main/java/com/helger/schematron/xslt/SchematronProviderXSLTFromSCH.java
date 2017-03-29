@@ -189,7 +189,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
 
       if (isSaveIntermediateFiles ())
       {
-        final String sXML = XMLWriter.getXMLString (aResult2.getNode ());
+        final String sXML = XMLWriter.getNodeAsString (aResult2.getNode ());
         SimpleFileIO.writeFile (new File (s_aIntermediateMinifiedSCHFolder,
                                           FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
                                                                             ".min-xslt.sch"),
@@ -212,7 +212,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
 
       if (isSaveIntermediateFiles ())
       {
-        final String sXML = XMLWriter.getXMLString (m_aSchematronXSLTDoc);
+        final String sXML = XMLWriter.getNodeAsString (m_aSchematronXSLTDoc);
         SimpleFileIO.writeFile (new File (s_aIntermediateFinalXSLTFolder,
                                           FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt"),
                                 sXML,

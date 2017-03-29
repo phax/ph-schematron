@@ -44,7 +44,7 @@ public final class SchematronResourceSCHCache
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
   private static final Lock s_aLock = new ReentrantLock ();
-  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> s_aCache = new CommonsHashMap<> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> s_aCache = new CommonsHashMap <> ();
 
   private SchematronResourceSCHCache ()
   {}
@@ -76,7 +76,8 @@ public final class SchematronResourceSCHCache
       if (GlobalDebug.isDebugMode () && aXSLTPreprocessor.getXSLTDocument () != null)
       {
         // Log the created XSLT document for better error tracking
-        s_aLogger.warn ("  Created XSLT document:\n" + XMLWriter.getXMLString (aXSLTPreprocessor.getXSLTDocument ()));
+        s_aLogger.warn ("  Created XSLT document:\n" +
+                        XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
       }
       return null;
     }

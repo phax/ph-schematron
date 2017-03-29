@@ -44,7 +44,7 @@ public final class Issue8Test
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
     // Create the custom parameters
-    final ICommonsMap <String, Object> aCustomParameters = new CommonsHashMap<> ();
+    final ICommonsMap <String, Object> aCustomParameters = new CommonsHashMap <> ();
     aCustomParameters.put ("xyz", "mobile");
     aCustomParameters.put ("expected", "");
 
@@ -54,7 +54,7 @@ public final class Issue8Test
     aSCH.setParameters (aCustomParameters);
 
     if (false)
-      System.out.println (XMLWriter.getXMLString (aSCH.getXSLTProvider ().getXSLTDocument ()));
+      System.out.println (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

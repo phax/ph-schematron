@@ -260,7 +260,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
     // Debug print the created XSLT document
     if (false)
-      System.out.println (XMLWriter.getXMLString (aXSLTProvider.getXSLTDocument ()));
+      System.out.println (XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Applying Schematron XSLT on XML [start]");
@@ -273,7 +273,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
     // Debug print the created SVRL document
     if (false)
-      System.out.println (XMLWriter.getXMLString (ret));
+      System.out.println (XMLWriter.getNodeAsString (ret));
 
     return ret;
   }

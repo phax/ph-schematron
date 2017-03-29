@@ -66,7 +66,7 @@ public final class SchematronResourceSCHCacheTest
       final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
       assertNotNull (aDoc);
       if (false)
-        s_aLogger.info (XMLWriter.getXMLString (aDoc));
+        s_aLogger.info (XMLWriter.getNodeAsString (aDoc));
     }
     final long nEnd = System.nanoTime ();
     s_aLogger.info ("Sync Total: " +
@@ -149,7 +149,7 @@ public final class SchematronResourceSCHCacheTest
           for (final IError aError : aErrorGroup)
             if (aError.isError ())
               s_aLogger.info ("!!" + aError.getAsString (Locale.US));
-          s_aLogger.info ("!!" + XMLWriter.getXMLString (aPreprocessor.getXSLTDocument ()));
+          s_aLogger.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
         }
       }
   }
