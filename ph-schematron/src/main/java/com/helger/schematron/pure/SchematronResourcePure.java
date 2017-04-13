@@ -36,7 +36,6 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.charset.CharsetManager;
 import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -263,7 +262,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   /**
    * Get the cached bound schema or create a new one.
-   * 
+   *
    * @return The bound schema. Never <code>null</code>.
    */
   @Nonnull
@@ -542,7 +541,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nonnull
   public static SchematronResourcePure fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
   {
-    return fromByteArray (CharsetManager.getAsBytes (sSchematron, aCharset));
+    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
   /**

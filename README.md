@@ -10,6 +10,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+  * v4.2.3 - work in progress
+    * Updated to Saxon-HE 9.7.0-18
   * v4.2.2 - 2017-02-22
     * Updated to Saxon-HE 9.7.0-15
     * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
