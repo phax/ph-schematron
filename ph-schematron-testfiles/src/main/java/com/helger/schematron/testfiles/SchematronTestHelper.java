@@ -16,14 +16,19 @@
  */
 package com.helger.schematron.testfiles;
 
+import java.io.File;
+
 import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.io.file.iterate.FileSystemRecursiveIterator;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.lang.ClassPathHelper;
+import com.helger.commons.string.StringHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroReader;
@@ -42,10 +47,19 @@ public final class SchematronTestHelper
   @Nonnull
   private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aRes)
   {
+    if (false)
+      ClassPathHelper.getAllClassPathEntries ().forEach (x -> {
+        System.out.println (x);
+        if (new File (x).isDirectory ())
+        {
+          final FileSystemRecursiveIterator it = new FileSystemRecursiveIterator (new File (x));
+          it.forEach (y -> System.out.println (StringHelper.getRepeated ("  ", it.getLevel ()) + y));
+        }
+      });
     ValueEnforcer.notNull (aRes, "Resource");
     ValueEnforcer.isTrue (aRes.exists (), () -> "Resource " + aRes + " does not exist!");
 
-    final ICommonsList <SchematronTestFile> ret = new CommonsArrayList<> ();
+    final ICommonsList <SchematronTestFile> ret = new CommonsArrayList <> ();
     final IMicroDocument aDoc = MicroReader.readMicroXML (aRes);
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to open/parse " + aRes + " as XML");
