@@ -310,11 +310,12 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                                                                                                       CSVRL.SVRL_NAMESPACE_URI);
               // Add all namespaces from XSLT document root
               final String sNSPrefix = CXML.XML_ATTR_XMLNS + ":";
-              XMLHelper.getAllAttributesAsMap (aXsltProvider.getXSLTDocument ().getDocumentElement ())
-                       .forEach ( (sAttrName, sAttrValue) -> {
-                         if (sAttrName.startsWith (sNSPrefix))
-                           aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
-                       });
+              XMLHelper.forAllAttributes (aXsltProvider.getXSLTDocument ().getDocumentElement (),
+                                          (sAttrName, sAttrValue) -> {
+                                            if (sAttrName.startsWith (sNSPrefix))
+                                              aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()),
+                                                                     sAttrValue);
+                                          });
 
               final XMLWriterSettings aXWS = new XMLWriterSettings ();
               aXWS.setNamespaceContext (aNSContext).setPutNamespaceContextPrefixesInRoot (true);
