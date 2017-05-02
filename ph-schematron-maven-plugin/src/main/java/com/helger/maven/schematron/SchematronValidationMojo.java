@@ -368,6 +368,9 @@ public final class SchematronValidationMojo extends AbstractMojo
           {
             // Save SVRL
             final File aSVRLFile = new File (svrlDirectory, sXMLFilename + ".svrl");
+            if (!aSVRLFile.getParentFile ().mkdirs ())
+              getLog ().error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!");
+
             if (SVRLWriter.writeSVRL (aSOT, TransformResultFactory.create (aSVRLFile)).isSuccess ())
               getLog ().info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
             else
