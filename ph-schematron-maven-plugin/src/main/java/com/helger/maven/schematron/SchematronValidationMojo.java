@@ -328,6 +328,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     }
     if (aSCHErrors != null)
     {
+      // Error validating the Schematrons!!
       boolean bAnyError = false;
       for (final IError aError : aSCHErrors)
         if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.ERROR))
@@ -346,7 +347,8 @@ public final class SchematronValidationMojo extends AbstractMojo
     // 2. for all XML files that match the pattern
     final DirectoryScanner aScanner = new DirectoryScanner ();
     aScanner.setBasedir (xmlDirectory);
-    aScanner.setIncludes (new String [] { xmlIncludes });
+    if (xmlIncludes != null)
+      aScanner.setIncludes (new String [] { xmlIncludes });
     if (xmlExcludes != null)
       aScanner.setExcludes (new String [] { xmlExcludes });
     aScanner.setCaseSensitive (true);
