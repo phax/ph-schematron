@@ -51,8 +51,6 @@ public class Schematron extends Task
 {
   /**
    * The Schematron file. This may also be an XSLT file if it is precompiled.
-   *
-   * @parameter property="schematronFile"
    */
   private File schematronFile;
 
@@ -70,8 +68,6 @@ public class Schematron extends Task
   /**
    * The directory where the XML files reside that are expected to match the
    * Schematron rules.
-   *
-   * @parameter property="xmlDirectory"
    */
   private File xmlDirectory;
 
@@ -80,18 +76,14 @@ public class Schematron extends Task
    * wildcards and double wildcards. All files that match the pattern will be
    * converted. Files in the xmlDirectory and its subdirectories will be
    * considered.
-   *
-   * @parameter property="xmlIncludes" default-value="**\/*.xml"
    */
-  private String xmlIncludes;
+  private String xmlIncludes = "**/*.xml";
 
   /**
    * A pattern for the XML files that should be excluded. Can contain Ant-style
    * wildcards and double wildcards. All files that match the pattern will NOT
    * be converted. Only files in the xmlDirectory and its subdirectories will be
    * considered.
-   *
-   * @parameter property="xmlExcludes"
    */
   private String xmlExcludes;
 
@@ -100,24 +92,18 @@ public class Schematron extends Task
    * <code>defaultPhase</code> attribute of the Schematron file is used. This
    * phase name is only used if the processing engine <code>pure</code> or
    * <code>schematron</code> are used.
-   *
-   * @parameter property="phaseName"
    */
   private String phaseName;
 
   /**
    * Define the language code to be used for Schematron validation. Default is
    * English. Supported language codes are: cs, de, en, fr, nl.
-   *
-   * @parameter property="languageCode"
    */
   private String languageCode;
 
   /**
    * The SVRL path to write to. The filenames are based on the source XML
    * filenames.
-   *
-   * @parameter property="svrlDirectory"
    */
   private File svrlDirectory;
 
