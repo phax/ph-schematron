@@ -180,5 +180,6 @@
     <module>ph-schematron-validator</module>
     <module>ph-sch2xslt-maven-plugin</module>
     <module>ph-schematron-maven-plugin</module>
+    <module>ph-schematron-ant-task</module>
   </modules>
 </project>
