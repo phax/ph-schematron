@@ -12,6 +12,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
   * v4.2.3 - work in progress
     * Updated to Saxon-HE 9.7.0-18
+    * Fixed an error with nested SVRL directories in Maven plugin (#37)
+    * Added possibility to use "negative" tests in Maven plugin (#38)
+    * Added ANT plugin to validate Schematron resources (#39)
   * v4.2.2 - 2017-02-22
     * Updated to Saxon-HE 9.7.0-15
     * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
@@ -115,12 +118,17 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 The possible configuration parameters are:
   * `schematronFile` - The Schematron file to be applied. This parameter is mandatory.
   * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `pure`.
-  * `xmlDirectory` - The directory where the XML files to be validated are contained. This parameter is mandatory.
-  * `xmlIncludes` - A pattern for the XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be converted. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
-  * `xmlExcludes` - A pattern for the XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be converted. Files in the `xmlDirectory` and its subdirectories will be considered.
+  * `xmlDirectory` - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory match the Schematron rules. Either this parameter or `xmlErrorDirectory` parameter are mandatory.
+  * `xmlIncludes` - A pattern for the XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
+  * `xmlExcludes` - A pattern for the XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
+  * `svrlDirectory` - The directory where the SVRL (Schematron Validation Report Language) files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlDirectory`, `xmlIncludes` and `xmlExcludes`) with the suffix `.svrl`.
+  * `xmlErrorDirectory` (since v4.2.3) - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory do **not** match the Schematron rules. Either this parameter or `xmlDirectory` parameter are mandatory.
+  * `xmlErrorIncludes` (since v4.2.3) - A pattern for the erroneous XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
+  * `xmlErrorExcludes` (since v4.2.3) - A pattern for the erroneous XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
+  * `svrlErrorDirectory` (since v4.2.3) - The directory where the erroneous SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlErrorDirectory`, `xmlErrorIncludes` and `xmlErrorExcludes`) with the suffix `.svrl`.
   * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
-  * `svrlDirectory` - The directory where the SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated with the suffix `.svrl`.
+
 
 # ph-schematron-validator
 
