@@ -14,36 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.maven.schematron;
-
-import java.util.Locale;
+package com.helger.schematron;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.string.StringHelper;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
 
-public enum EProcessingMode
+public enum ESchematronMode implements IHasID <String>
 {
-  PURE,
-  SCHEMATRON,
-  XSLT;
+  PURE ("pure"),
+  SCHEMATRON ("schematron"),
+  XSLT ("xslt");
+
+  private final String m_sID;
+
+  private ESchematronMode (@Nonnull @Nonempty final String sID)
+  {
+    m_sID = sID;
+  }
 
   @Nonnull
   @Nonempty
   public String getID ()
   {
-    return name ().toLowerCase (Locale.US);
+    return m_sID;
   }
 
   @Nullable
-  public static EProcessingMode getFromIDOrNull (@Nullable final String sID)
+  public static ESchematronMode getFromIDOrNull (@Nullable final String sID)
   {
-    if (StringHelper.hasText (sID))
-      for (final EProcessingMode e : values ())
-        if (e.getID ().equals (sID))
-          return e;
-    return null;
+    return EnumHelper.getFromIDOrNull (ESchematronMode.class, sID);
   }
 }

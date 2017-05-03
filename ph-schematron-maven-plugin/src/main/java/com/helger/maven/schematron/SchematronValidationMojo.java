@@ -37,6 +37,7 @@ import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
@@ -124,7 +125,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * <li>xslt - apply pre-build XSLT files</li>
    * </ul>
    */
-  private String schematronProcessingEngine = EProcessingMode.PURE.getID ();
+  private String schematronProcessingEngine = ESchematronMode.PURE.getID ();
 
   /**
    * The directory where the XML files reside that are expected to match the
@@ -191,7 +192,7 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   public void setSchematronProcessingEngine (@Nullable final String sEngine)
   {
-    final EProcessingMode eMode = EProcessingMode.getFromIDOrNull (sEngine);
+    final ESchematronMode eMode = ESchematronMode.getFromIDOrNull (sEngine);
     schematronProcessingEngine = eMode == null ? null : eMode.getID ();
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Schematron processing mode set to '" + eMode + "'");
@@ -261,7 +262,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (schematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
                                         StringHelper.getImplodedMapped (", ",
-                                                                        EProcessingMode.values (),
+                                                                        ESchematronMode.values (),
                                                                         x -> "'" + x.getID () + "'"));
     if (xmlDirectory == null)
       throw new MojoExecutionException ("No XML directory specified!");
@@ -280,7 +281,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     final Locale aDisplayLocale = Locale.US;
     ISchematronResource aSch;
     IErrorList aSCHErrors;
-    switch (EProcessingMode.getFromIDOrNull (schematronProcessingEngine))
+    switch (ESchematronMode.getFromIDOrNull (schematronProcessingEngine))
     {
       case PURE:
       {
