@@ -33,6 +33,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.schematron.ESchematronMode;
+
 public final class MavenPluginSchematronFuncTest
 {
   @Rule
@@ -46,16 +48,31 @@ public final class MavenPluginSchematronFuncTest
   private final SchematronValidationMojo OUT = new SchematronValidationMojo ();
 
   @Test
-  public void testMavenPluginValid () throws MojoExecutionException, MojoFailureException
+  public void testMavenPluginValidTestGood () throws MojoExecutionException, MojoFailureException
   {
     expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
     replay (project);
 
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
-    OUT.setSchematronProcessingEngine ("pure");
+    OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
     OUT.setXmlDirectory (new File ("src/test/resources/data"));
     OUT.setXmlIncludes ("*.xml");
     OUT.setXmlExcludes ("*-invalid.xml");
+    OUT.execute ();
+
+    verify (project);
+  }
+
+  @Test
+  public void testMavenPluginValidTestBad () throws MojoExecutionException, MojoFailureException
+  {
+    expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
+    replay (project);
+
+    OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
+    OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
+    OUT.setXmlErrorDirectory (new File ("src/test/resources/data"));
+    OUT.setXmlErrorIncludes ("*-invalid.xml");
     OUT.execute ();
 
     verify (project);
@@ -68,7 +85,7 @@ public final class MavenPluginSchematronFuncTest
     replay (project);
 
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
-    OUT.setSchematronProcessingEngine ("pure");
+    OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
     OUT.setXmlDirectory (new File ("src/test/resources/data"));
     OUT.setXmlIncludes ("*.xml");
     OUT.setXmlExcludes ("*-valid.xml");

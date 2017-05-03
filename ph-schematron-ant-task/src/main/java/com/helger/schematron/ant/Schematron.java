@@ -88,6 +88,40 @@ public class Schematron extends Task
   private String xmlExcludes;
 
   /**
+   * The SVRL path to write to(for positive tests). The filenames are based on
+   * the source XML filenames.
+   */
+  private File svrlDirectory;
+
+  /**
+   * The directory where the erroneous XML files reside that are expected to NOT
+   * match the Schematron rules.
+   */
+  private File xmlErrorDirectory;
+
+  /**
+   * A pattern for the erroneous XML files that should be included. Can contain
+   * Ant-style wildcards and double wildcards. All files that match the pattern
+   * will be converted. Files in the xmlDirectory and its subdirectories will be
+   * considered.
+   */
+  private String xmlErrorIncludes = "**/*.xml";
+
+  /**
+   * A pattern for the erroneous XML files that should be excluded. Can contain
+   * Ant-style wildcards and double wildcards. All files that match the pattern
+   * will NOT be converted. Only files in the xmlDirectory and its
+   * subdirectories will be considered.
+   */
+  private String xmlErrorExcludes;
+
+  /**
+   * The SVRL path to write to (for negative tests). The filenames are based on
+   * the source XML filenames.
+   */
+  private File svrlErrorDirectory;
+
+  /**
    * Define the phase to be used for Schematron validation. By default the
    * <code>defaultPhase</code> attribute of the Schematron file is used. This
    * phase name is only used if the processing engine <code>pure</code> or
@@ -100,12 +134,6 @@ public class Schematron extends Task
    * English. Supported language codes are: cs, de, en, fr, nl.
    */
   private String languageCode;
-
-  /**
-   * The SVRL path to write to. The filenames are based on the source XML
-   * filenames.
-   */
-  private File svrlDirectory;
 
   public void setSchematronFile (@Nonnull final File aFile)
   {
@@ -130,36 +158,16 @@ public class Schematron extends Task
     log ("Searching XML files in the directory '" + xmlDirectory + "'", Project.MSG_DEBUG);
   }
 
-  public void setXmlIncludes (final String sPattern)
+  public void setXmlIncludes (@Nullable final String sPattern)
   {
     xmlIncludes = sPattern;
     log ("Setting XML file includes to '" + sPattern + "'", Project.MSG_DEBUG);
   }
 
-  public void setXmlExcludes (final String sPattern)
+  public void setXmlExcludes (@Nullable final String sPattern)
   {
     xmlExcludes = sPattern;
     log ("Setting XML file excludes to '" + sPattern + "'", Project.MSG_DEBUG);
-  }
-
-  public void setPhaseName (final String sPhaseName)
-  {
-    phaseName = sPhaseName;
-
-    if (phaseName == null)
-      log ("Using default phase", Project.MSG_DEBUG);
-    else
-      log ("Using the phase '" + phaseName + "'", Project.MSG_DEBUG);
-  }
-
-  public void setLanguageCode (final String sLanguageCode)
-  {
-    languageCode = sLanguageCode;
-
-    if (languageCode == null)
-      log ("Using default language code", Project.MSG_DEBUG);
-    else
-      log ("Using the language code '" + languageCode + "'", Project.MSG_DEBUG);
   }
 
   public void setSvrlDirectory (@Nonnull final File aDir)
@@ -170,14 +178,156 @@ public class Schematron extends Task
     log ("Writing SVRL files to directory '" + svrlDirectory + "'", Project.MSG_DEBUG);
   }
 
+  public void setXmlErrorDirectory (@Nonnull final File aDir)
+  {
+    xmlErrorDirectory = aDir;
+    if (!xmlErrorDirectory.isAbsolute ())
+      xmlErrorDirectory = new File (getProject ().getBaseDir (), aDir.getPath ());
+    log ("Searching erroneous XML files in the directory '" + xmlDirectory + "'", Project.MSG_DEBUG);
+  }
+
+  public void setXmlErrorIncludes (@Nullable final String sPattern)
+  {
+    xmlErrorIncludes = sPattern;
+    log ("Setting erroneous XML file includes to '" + sPattern + "'", Project.MSG_DEBUG);
+  }
+
+  public void setXmlErrorExcludes (@Nullable final String sPattern)
+  {
+    xmlErrorExcludes = sPattern;
+    log ("Setting erroneous XML file excludes to '" + sPattern + "'", Project.MSG_DEBUG);
+  }
+
+  public void setSvrlErrorDirectory (@Nonnull final File aDir)
+  {
+    svrlErrorDirectory = aDir;
+    if (!svrlErrorDirectory.isAbsolute ())
+      svrlErrorDirectory = new File (getProject ().getBaseDir (), aDir.getPath ());
+    log ("Writing erroneous SVRL files to directory '" + svrlErrorDirectory + "'", Project.MSG_DEBUG);
+  }
+
+  public void setPhaseName (@Nullable final String sPhaseName)
+  {
+    phaseName = sPhaseName;
+
+    if (phaseName == null)
+      log ("Using default phase", Project.MSG_DEBUG);
+    else
+      log ("Using the phase '" + phaseName + "'", Project.MSG_DEBUG);
+  }
+
+  public void setLanguageCode (@Nullable final String sLanguageCode)
+  {
+    languageCode = sLanguageCode;
+
+    if (languageCode == null)
+      log ("Using default language code", Project.MSG_DEBUG);
+    else
+      log ("Using the language code '" + languageCode + "'", Project.MSG_DEBUG);
+  }
+
   @Override
   public void init () throws BuildException
   {
     super.init ();
   }
 
+  private void _performValidation (@Nonnull final ISchematronResource aSch,
+                                   @Nonnull final File aXMLDirectory,
+                                   @Nullable final String sXMLIncludes,
+                                   @Nullable final String sXMLExcludes,
+                                   @Nullable final File aSVRLDirectory,
+                                   final boolean bExpectSuccess) throws BuildException
+  {
+    final DirectoryScanner aScanner = new DirectoryScanner ();
+    aScanner.setBasedir (aXMLDirectory);
+    if (StringHelper.hasText (sXMLIncludes))
+      aScanner.setIncludes (new String [] { sXMLIncludes });
+    if (StringHelper.hasText (sXMLExcludes))
+      aScanner.setExcludes (new String [] { sXMLExcludes });
+    aScanner.setCaseSensitive (true);
+    aScanner.scan ();
+    final String [] aXMLFilenames = aScanner.getIncludedFiles ();
+    if (aXMLFilenames != null)
+    {
+      for (final String sXMLFilename : aXMLFilenames)
+      {
+        final File aXMLFile = new File (aXMLDirectory, sXMLFilename);
+
+        // Validate XML file
+        log ("Validating XML file '" +
+             aXMLFile.getPath () +
+             "' against Schematron rules from '" +
+             schematronFile +
+             "' expecting " +
+             (bExpectSuccess ? "success" : "failure"),
+             Project.MSG_INFO);
+        try
+        {
+          final SchematronOutputType aSOT = aSch.applySchematronValidationToSVRL (TransformSourceFactory.create (aXMLFile));
+
+          if (aSVRLDirectory != null)
+          {
+            // Save SVRL
+            final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
+            if (!aSVRLFile.getParentFile ().mkdirs ())
+              log ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!", Project.MSG_ERR);
+
+            if (SVRLWriter.writeSVRL (aSOT, TransformResultFactory.create (aSVRLFile)).isSuccess ())
+              log ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_INFO);
+            else
+              log ("Error saving SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_ERR);
+          }
+
+          final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSOT);
+          if (bExpectSuccess)
+          {
+            // No failed assertions expected
+            if (aFailedAsserts.isNotEmpty ())
+            {
+              final String sMessage = aFailedAsserts.size () +
+                                      " failed Schematron assertions for XML file '" +
+                                      aXMLFile.getPath () +
+                                      "'";
+              log (sMessage, Project.MSG_ERR);
+              aFailedAsserts.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
+                                                Project.MSG_ERR));
+              throw new BuildException (sMessage);
+            }
+          }
+          else
+          {
+            // At least one failed assertions expected
+            if (aFailedAsserts.isEmpty ())
+            {
+              final String sMessage = "No failed Schematron assertions for erroneous XML file '" +
+                                      aXMLFile.getPath () +
+                                      "'";
+              log (sMessage, Project.MSG_ERR);
+              throw new BuildException (sMessage);
+            }
+          }
+        }
+        catch (final BuildException up)
+        {
+          throw up;
+        }
+        catch (final Exception ex)
+        {
+          final String sMessage = "Exception validating XML '" +
+                                  aXMLFile.getPath () +
+                                  "' against Schematron rules from '" +
+                                  schematronFile +
+                                  "'";
+          log (sMessage, ex, Project.MSG_DEBUG);
+          throw new BuildException (sMessage, ex);
+        }
+      }
+    }
+  }
+
   @Override
-  public void execute () throws BuildException, BuildException
+  public void execute () throws BuildException
   {
     if (schematronFile == null)
       throw new BuildException ("No Schematron file specified!");
@@ -188,17 +338,36 @@ public class Schematron extends Task
                                 StringHelper.getImplodedMapped (", ",
                                                                 ESchematronMode.values (),
                                                                 x -> "'" + x.getID () + "'"));
-    if (xmlDirectory == null)
-      throw new BuildException ("No XML directory specified!");
-    if (xmlDirectory.exists () && !xmlDirectory.isDirectory ())
-      throw new BuildException ("The specified XML directory " + xmlDirectory + " is not a directory!");
-    if (StringHelper.hasNoText (xmlIncludes))
-      throw new BuildException ("No XML include pattern specified!");
+    if (xmlDirectory == null && xmlErrorDirectory == null)
+      throw new BuildException ("No XML directory specified - positive or negative directory must be present!");
 
-    if (svrlDirectory != null)
+    if (xmlDirectory != null)
     {
-      if (!svrlDirectory.exists () && !svrlDirectory.mkdirs ())
-        throw new BuildException ("Failed to create the SVRL directory " + svrlDirectory);
+      if (xmlDirectory.exists () && !xmlDirectory.isDirectory ())
+        throw new BuildException ("The specified XML directory " + xmlDirectory + " is not a directory!");
+      if (StringHelper.hasNoText (xmlIncludes))
+        throw new BuildException ("No XML include pattern specified!");
+      if (svrlDirectory != null)
+      {
+        if (!svrlDirectory.exists () && !svrlDirectory.mkdirs ())
+          throw new BuildException ("Failed to create the SVRL directory " + svrlDirectory);
+      }
+    }
+
+    if (xmlErrorDirectory != null)
+    {
+      if (xmlErrorDirectory.exists () && !xmlErrorDirectory.isDirectory ())
+        throw new BuildException ("The specified erroneous XML directory " +
+                                  xmlErrorDirectory +
+                                  " is not a directory!");
+      if (StringHelper.hasNoText (xmlErrorIncludes))
+        throw new BuildException ("No erroneous XML include pattern specified!");
+
+      if (svrlErrorDirectory != null)
+      {
+        if (!svrlErrorDirectory.exists () && !svrlErrorDirectory.mkdirs ())
+          throw new BuildException ("Failed to create the erroneous SVRL directory " + svrlErrorDirectory);
+      }
     }
 
     // 1. Parse Schematron file
@@ -269,73 +438,9 @@ public class Schematron extends Task
     log ("Successfully parsed Schematron file '" + schematronFile.getPath () + "'", Project.MSG_INFO);
 
     // 2. for all XML files that match the pattern
-    final DirectoryScanner aScanner = new DirectoryScanner ();
-    aScanner.setBasedir (xmlDirectory);
-    if (xmlIncludes != null)
-      aScanner.setIncludes (new String [] { xmlIncludes });
-    if (xmlExcludes != null)
-      aScanner.setExcludes (new String [] { xmlExcludes });
-    aScanner.setCaseSensitive (true);
-    aScanner.scan ();
-    final String [] aXMLFilenames = aScanner.getIncludedFiles ();
-    if (aXMLFilenames != null)
-    {
-      for (final String sXMLFilename : aXMLFilenames)
-      {
-        final File aXMLFile = new File (xmlDirectory, sXMLFilename);
-
-        // Validate XML file
-        log ("Validating XML file '" +
-             aXMLFile.getPath () +
-             "' against Schematron rules from '" +
-             schematronFile +
-             "'",
-             Project.MSG_INFO);
-        try
-        {
-          final SchematronOutputType aSOT = aSch.applySchematronValidationToSVRL (TransformSourceFactory.create (aXMLFile));
-
-          if (svrlDirectory != null)
-          {
-            // Save SVRL
-            final File aSVRLFile = new File (svrlDirectory, sXMLFilename + ".svrl");
-            if (!aSVRLFile.getParentFile ().mkdirs ())
-              log ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!", Project.MSG_ERR);
-
-            if (SVRLWriter.writeSVRL (aSOT, TransformResultFactory.create (aSVRLFile)).isSuccess ())
-              log ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_INFO);
-            else
-              log ("Error saving SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_ERR);
-          }
-
-          final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSOT);
-          if (aFailedAsserts.isNotEmpty ())
-          {
-            final String sMessage = aFailedAsserts.size () +
-                                    " failed Schematron assertions for XML file '" +
-                                    aXMLFile.getPath () +
-                                    "'";
-            log (sMessage, Project.MSG_ERR);
-            aFailedAsserts.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
-                                              Project.MSG_ERR));
-            throw new BuildException (sMessage);
-          }
-        }
-        catch (final BuildException up)
-        {
-          throw up;
-        }
-        catch (final Exception ex)
-        {
-          final String sMessage = "Exception validating XML '" +
-                                  aXMLFile.getPath () +
-                                  "' against Schematron rules from '" +
-                                  schematronFile +
-                                  "'";
-          log (sMessage, ex, Project.MSG_DEBUG);
-          throw new BuildException (sMessage, ex);
-        }
-      }
-    }
+    if (xmlDirectory != null)
+      _performValidation (aSch, xmlDirectory, xmlIncludes, xmlExcludes, svrlDirectory, true);
+    if (xmlErrorDirectory != null)
+      _performValidation (aSch, xmlErrorDirectory, xmlErrorIncludes, xmlErrorExcludes, svrlErrorDirectory, false);
   }
 }
