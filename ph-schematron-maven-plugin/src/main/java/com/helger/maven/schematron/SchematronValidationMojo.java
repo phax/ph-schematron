@@ -127,25 +127,28 @@ public final class SchematronValidationMojo extends AbstractMojo
   private String schematronProcessingEngine = EProcessingMode.PURE.getID ();
 
   /**
-   * The directory where the XML files reside.
+   * The directory where the XML files reside that are expected to match the
+   * Schematron rules.
    *
    * @parameter property="xmlDirectory"
    */
   private File xmlDirectory;
 
   /**
-   * A pattern for the XML files. Can contain Ant-style wildcards and double
-   * wildcards. All files that match the pattern will be converted. Files in the
-   * xmlDirectory and its subdirectories will be considered.
+   * A pattern for the XML files that should be included. Can contain Ant-style
+   * wildcards and double wildcards. All files that match the pattern will be
+   * converted. Files in the xmlDirectory and its subdirectories will be
+   * considered.
    *
    * @parameter property="xmlIncludes" default-value="**\/*.xml"
    */
   private String xmlIncludes;
 
   /**
-   * A pattern for the XML files. Can contain Ant-style wildcards and double
-   * wildcards. All files that match the pattern will NOT be converted. Only
-   * files in the xmlDirectory and its subdirectories will be considered.
+   * A pattern for the XML files that should be excluded. Can contain Ant-style
+   * wildcards and double wildcards. All files that match the pattern will NOT
+   * be converted. Only files in the xmlDirectory and its subdirectories will be
+   * considered.
    *
    * @parameter property="xmlExcludes"
    */
