@@ -61,18 +61,12 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.10.1</version>
+      <version>1.9.6</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-schematron-testfiles</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -112,7 +106,7 @@
           <excludes>
             <exclude>**/NOTICE</exclude>
             <exclude>**/LICENSE</exclude>
-            <exclude>src/test/resources/schemas/**</exclude>
+            <exclude>src/test/resources/**</exclude>
           </excludes>
         </configuration>
       </plugin>

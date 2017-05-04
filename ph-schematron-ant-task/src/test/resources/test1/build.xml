@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="check">
+  <!-- Create path -->
+  <path id="phsch.path">
+  	<fileset dir="../../../../target">
+  		<include name="*-jar-with-dependencies.jar"/>
+    </fileset>
+  </path>
+  <!-- Define <schematron> task -->
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" classpathref="phsch.path" />
+  <target name="check">
+    <schematron schematronFile="sample_schematron.sch" expectSuccess="true">
+      <fileset dir="xml">
+        <include name="*.xml" />
+        <exclude name="err*.xml" />
+      </fileset>
+    </schematron>
+    <schematron schematronFile="sample_schematron.sch" expectSuccess="false">
+      <fileset dir="xml">
+        <include name="err*.xml" />
+      </fileset>
+    </schematron>
+  </target>
+</project>

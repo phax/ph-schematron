@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<simple>
+  <title>Example</title>
+  <X>
+    <A>This is string XA</A>
+    <B>This is string XB</B>
+  </X>
+  <Y>
+    <A>This is string YA</A>
+    <B>This is string YB</B>
+  </Y>
+</simple>
