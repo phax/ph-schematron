@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
 import com.helger.commons.ValueEnforcer;
@@ -62,6 +63,9 @@ public final class SchematronResourceHelper
    *
    * @param aSource
    *        The transform source to use. May not be <code>null</code>.
+   * @param aEntityResolver
+   *        Optional entity resolver to be used in case the source must be
+   *        parsed. May be <code>null</code>.
    * @return The DOM node and never <code>null</code>.
    * @throws SAXException
    *         In case XML parsing fails
@@ -69,7 +73,8 @@ public final class SchematronResourceHelper
    *         in case an unsupported {@link Source} implementation is provided.
    */
   @Nullable
-  public static Node getNodeOfSource (@Nonnull final Source aSource) throws SAXException
+  public static Node getNodeOfSource (@Nonnull final Source aSource,
+                                      @Nullable final EntityResolver aEntityResolver) throws SAXException
   {
     ValueEnforcer.notNull (aSource, "Source");
 
@@ -85,6 +90,8 @@ public final class SchematronResourceHelper
       // a system ID
       final StreamSource aStreamSource = (StreamSource) aSource;
       final DOMReaderSettings aDRS = new DOMReaderSettings ();
+      if (aEntityResolver != null)
+        aDRS.setEntityResolver (aEntityResolver);
 
       final InputStream aIS = aStreamSource.getInputStream ();
       if (aIS != null)

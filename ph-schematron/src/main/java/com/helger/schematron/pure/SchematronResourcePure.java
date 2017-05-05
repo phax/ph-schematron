@@ -369,7 +369,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
       return EValidity.INVALID;
 
     // Convert Source to Node
-    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource);
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, m_aEntityResolver);
     if (aNode == null)
       return EValidity.INVALID;
 
@@ -425,7 +425,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
       return null;
 
     // Convert to Node
-    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource);
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, m_aEntityResolver);
     if (aNode == null)
       return null;
 
