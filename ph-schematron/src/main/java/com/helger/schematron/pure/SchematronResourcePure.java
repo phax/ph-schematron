@@ -202,7 +202,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * @return The XML entity resolver to be used. May be <code>null</code>.
+   * @return The XML entity resolver to be used to read the Schematron. May be
+   *         <code>null</code>.
    * @since 4.1.1
    */
   @Nullable
@@ -212,9 +213,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Set the XML entity resolver to be used when reading XML. This can only be
-   * set before the Schematron is bound. If it is already bound an exception is
-   * thrown to indicate the unnecessity of the call.
+   * Set the XML entity resolver to be used when reading the Schematron. This
+   * can only be set before the Schematron is bound. If it is already bound an
+   * exception is thrown to indicate the unnecessity of the call.
    *
    * @param aEntityResolver
    *        The function resolver to set. May be <code>null</code>.
