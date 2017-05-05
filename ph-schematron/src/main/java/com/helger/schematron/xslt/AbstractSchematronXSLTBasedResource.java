@@ -94,12 +94,23 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return thisAsT ();
   }
 
+  /**
+   * @return The {@link URIResolver} to be used for reading the Schematron. May
+   *         be <code>null</code>.
+   */
   @Nullable
   public URIResolver getURIResolver ()
   {
     return m_aCustomURIResolver;
   }
 
+  /**
+   * Set the {@link URIResolver} to be used for reading Schematron.
+   * 
+   * @param aCustomURIResolver
+   *        The {@link URIResolver} to use. May be <code>null</code>,
+   * @return this for chaining
+   */
   @Nonnull
   public IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
