@@ -112,8 +112,14 @@ public class Schematron extends Task
    */
   private boolean m_bExpectSuccess = true;
 
-  /** for resolving entities such as dtds */
+  /**
+   * For resolving entities such as DTDs. This is used both for the Schematron
+   * file as well as for the XML files to be validated.
+   */
   private final XMLCatalog m_aXmlCatalog = new XMLCatalog ();
+
+  public Schematron ()
+  {}
 
   public void setSchematronFile (@Nonnull final File aFile)
   {

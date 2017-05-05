@@ -63,7 +63,7 @@ public final class SchematronResourceHelper
    * @param aSource
    *        The transform source to use. May not be <code>null</code>.
    * @param aDRS
-   *        Optional DOMReader settings to use. May be <code>null</code>.
+   *        DOMReader settings to use. May not be <code>null</code>.
    * @return The DOM node and never <code>null</code>.
    * @throws SAXException
    *         In case XML parsing fails
@@ -72,9 +72,10 @@ public final class SchematronResourceHelper
    */
   @Nullable
   public static Node getNodeOfSource (@Nonnull final Source aSource,
-                                      @Nullable final DOMReaderSettings aDRS) throws SAXException
+                                      @Nonnull final DOMReaderSettings aDRS) throws SAXException
   {
     ValueEnforcer.notNull (aSource, "Source");
+    ValueEnforcer.notNull (aDRS, "DOMReaderSettings");
 
     if (aSource instanceof DOMSource)
     {

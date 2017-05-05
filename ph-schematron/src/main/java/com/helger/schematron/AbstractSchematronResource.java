@@ -37,6 +37,7 @@ import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.xml.EXMLParserFeature;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
 import com.helger.xml.transform.TransformSourceFactory;
@@ -118,11 +119,20 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     final DOMReaderSettings aDRS = new DOMReaderSettings ();
     if (m_aEntityResolver != null)
       aDRS.setEntityResolver (m_aEntityResolver);
+    if (false)
+    {
+      final boolean m_bLoadExternalSchemas = false;
+      aDRS.setFeatureValue (EXMLParserFeature.EXTERNAL_GENERAL_ENTITIES, m_bLoadExternalSchemas);
+      aDRS.setFeatureValue (EXMLParserFeature.EXTERNAL_PARAMETER_ENTITIES, m_bLoadExternalSchemas);
+      aDRS.setFeatureValue (EXMLParserFeature.LOAD_EXTERNAL_DTD, m_bLoadExternalSchemas);
+      aDRS.setFeatureValue (EXMLParserFeature.VALIDATION, true);
+      aDRS.setFeatureValue (EXMLParserFeature.NAMESPACES, true);
+    }
     return aDRS;
   }
 
   @Nullable
-  private Node _getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  protected Node getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
     InputStream aIS = null;
@@ -145,11 +155,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
+    s_aLogger.info ("Read XML resource " + aXMLResource);
     return aDoc;
   }
 
   @Nullable
-  private Node _getAsNode (@Nonnull final Source aXMLSource) throws Exception
+  protected Node getAsNode (@Nonnull final Source aXMLSource) throws Exception
   {
     // Convert to Node
     final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
@@ -159,12 +170,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nonnull
-  public final EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     if (!isValidSchematron ())
       return EValidity.INVALID;
 
-    final Node aXMLNode = _getAsNode (aXMLResource);
+    final Node aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return EValidity.INVALID;
 
@@ -172,12 +183,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nonnull
-  public final EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception
   {
     if (!isValidSchematron ())
       return EValidity.INVALID;
 
-    final Node aXMLNode = _getAsNode (aXMLSource);
+    final Node aXMLNode = getAsNode (aXMLSource);
     if (aXMLNode == null)
       return EValidity.INVALID;
 
@@ -185,12 +196,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  public Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     if (!isValidSchematron ())
       return null;
 
-    final Node aXMLNode = _getAsNode (aXMLResource);
+    final Node aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return null;
 
@@ -198,12 +209,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
+  public Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
   {
     if (!isValidSchematron ())
       return null;
 
-    final Node aXMLNode = _getAsNode (aXMLSource);
+    final Node aXMLNode = getAsNode (aXMLSource);
     if (aXMLNode == null)
       return null;
 
@@ -211,12 +222,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public final SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     if (!isValidSchematron ())
       return null;
 
-    final Node aXMLNode = _getAsNode (aXMLResource);
+    final Node aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return null;
 
@@ -224,12 +235,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public final SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
   {
     if (!isValidSchematron ())
       return null;
 
-    final Node aXMLNode = _getAsNode (aXMLSource);
+    final Node aXMLNode = getAsNode (aXMLSource);
     if (aXMLNode == null)
       return null;
 
