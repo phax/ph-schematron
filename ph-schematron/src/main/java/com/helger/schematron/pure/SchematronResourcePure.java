@@ -79,7 +79,6 @@ public class SchematronResourcePure extends AbstractSchematronResource
   private IPSErrorHandler m_aErrorHandler;
   private XPathVariableResolver m_aVariableResolver;
   private XPathFunctionResolver m_aFunctionResolver;
-  private EntityResolver m_aEntityResolver;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
@@ -205,23 +204,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * @return The XML entity resolver to be used to read the Schematron. May be
-   *         <code>null</code>.
-   * @since 4.1.1
-   */
-  @Nullable
-  public EntityResolver getEntityResolver ()
-  {
-    return m_aEntityResolver;
-  }
-
-  /**
-   * Set the XML entity resolver to be used when reading the Schematron. This
-   * can only be set before the Schematron is bound. If it is already bound an
-   * exception is thrown to indicate the unnecessity of the call.
+   * Set the XML entity resolver to be used when reading the Schematron or the
+   * XML to be validated. This can only be set before the Schematron is bound.
+   * If it is already bound an exception is thrown to indicate the unnecessity
+   * of the call.
    *
    * @param aEntityResolver
-   *        The function resolver to set. May be <code>null</code>.
+   *        The entity resolver to set. May be <code>null</code>.
    * @return this
    * @since 4.1.1
    */
@@ -230,7 +219,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aEntityResolver = aEntityResolver;
+    internalSetEntityResolver (aEntityResolver);
     return this;
   }
 
@@ -369,7 +358,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
       return EValidity.INVALID;
 
     // Convert Source to Node
-    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, m_aEntityResolver);
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
     if (aNode == null)
       return EValidity.INVALID;
 
@@ -409,7 +398,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     if (aIS == null)
       return null;
 
-    final Document aDoc = DOMReader.readXMLDOM (aIS);
+    final Document aDoc = DOMReader.readXMLDOM (aIS, internalCreateDOMReaderSettings ());
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
@@ -425,7 +414,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
       return null;
 
     // Convert to Node
-    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, m_aEntityResolver);
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
     if (aNode == null)
       return null;
 

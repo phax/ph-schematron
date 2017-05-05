@@ -395,6 +395,7 @@ public class Schematron extends Task
         aRealSCH.setLanguageCode (m_sLanguageCode);
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.setURIResolver (m_aXmlCatalog);
+        aRealSCH.setEntityResolver (m_aXmlCatalog);
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;
@@ -406,9 +407,11 @@ public class Schematron extends Task
         // SCH
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
-        // phase is ignored
+        // phase and language are ignored because this was decided when the XSLT
+        // was created
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.setURIResolver (m_aXmlCatalog);
+        aRealSCH.setEntityResolver (m_aXmlCatalog);
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;

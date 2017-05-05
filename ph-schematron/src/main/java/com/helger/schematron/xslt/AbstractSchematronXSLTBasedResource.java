@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -106,7 +107,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   /**
    * Set the {@link URIResolver} to be used for reading Schematron.
-   * 
+   *
    * @param aCustomURIResolver
    *        The {@link URIResolver} to use. May be <code>null</code>,
    * @return this for chaining
@@ -134,6 +135,22 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
     m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
+    return thisAsT ();
+  }
+
+  /**
+   * Set the XML entity resolver to be used when reading the XML to be
+   * validated.
+   *
+   * @param aEntityResolver
+   *        The entity resolver to set. May be <code>null</code>.
+   * @return this
+   * @since 4.2.3
+   */
+  @Nonnull
+  public IMPLTYPE setEntityResolver (@Nullable final EntityResolver aEntityResolver)
+  {
+    internalSetEntityResolver (aEntityResolver);
     return thisAsT ();
   }
 
@@ -210,7 +227,16 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
     final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
-    final InputStream aIS = aStreamSrc.getInputStream ();
+    InputStream aIS = null;
+    try
+    {
+      aIS = aStreamSrc.getInputStream ();
+    }
+    catch (final IllegalStateException ex)
+    {
+      // Fall through
+      // Happens e.g. for ResourceStreamSource with non-existing resources
+    }
     if (aIS == null)
     {
       // Resource not found

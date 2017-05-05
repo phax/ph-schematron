@@ -2,7 +2,9 @@
 <project basedir=".">
   <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
   <target name="check">
-    <schematron schematronFile="test.sch" expectSuccess="true">
+    <schematron schematronFile="test.sch" 
+    	          expectSuccess="true"
+    	          schematronProcessingEngine="pure">
       <fileset dir=".">
         <include name="test.xml" />
       </fileset>
