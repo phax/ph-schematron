@@ -68,7 +68,24 @@ public interface ISchematronResource extends IHasID <String>
    *         in case of a sever error validating the schema
    */
   @Nonnull
-  EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception;
+  EValidity getSchematronValidity (@Nonnull IHasInputStream aXMLResource) throws Exception;
+
+  /**
+   * A method to check if the passed DOM node matches the Schematron rules or
+   * not. This is the quick check method, as it breaks upon the first failed
+   * assertion or the first successful report, if the implementation supports it
+   * (as e.g. the native pure Schematron version).
+   *
+   * @param aXMLNode
+   *        The source DOM node to validate against the Schematron. May not be
+   *        <code>null</code>.
+   * @return {@link EValidity#VALID} if the document is valid,
+   *         {@link EValidity#INVALID} if it is invalid.
+   * @throws Exception
+   *         in case of a sever error validating the schema
+   */
+  @Nonnull
+  EValidity getSchematronValidity (@Nonnull Node aXMLNode) throws Exception;
 
   /**
    * A method to check if the passed XML DOM node matches the Schematron rules
@@ -85,7 +102,7 @@ public interface ISchematronResource extends IHasID <String>
    *         in case of a sever error validating the schema
    */
   @Nonnull
-  EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception;
+  EValidity getSchematronValidity (@Nonnull Source aXMLSource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML resource and return an

@@ -16,17 +16,30 @@
  */
 package com.helger.schematron;
 
+import java.io.InputStream;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
+import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
+import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Abstract implementation of the {@link ISchematronResource} interface handling
@@ -37,6 +50,8 @@ import com.helger.xml.serialize.read.DOMReaderSettings;
 @NotThreadSafe
 public abstract class AbstractSchematronResource implements ISchematronResource
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronResource.class);
+
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
   private boolean m_bUseCache = true;
@@ -104,6 +119,121 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (m_aEntityResolver != null)
       aDRS.setEntityResolver (m_aEntityResolver);
     return aDRS;
+  }
+
+  @Nullable
+  private Node _getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  {
+    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
+    InputStream aIS = null;
+    try
+    {
+      aIS = aStreamSrc.getInputStream ();
+    }
+    catch (final IllegalStateException ex)
+    {
+      // Fall through
+      // Happens e.g. for ResourceStreamSource with non-existing resources
+    }
+    if (aIS == null)
+    {
+      // Resource not found
+      s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
+      return null;
+    }
+    final Document aDoc = DOMReader.readXMLDOM (aIS, internalCreateDOMReaderSettings ());
+    if (aDoc == null)
+      throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
+
+    return aDoc;
+  }
+
+  @Nullable
+  private Node _getAsNode (@Nonnull final Source aXMLSource) throws Exception
+  {
+    // Convert to Node
+    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
+    if (aNode == null)
+      return null;
+    return aNode;
+  }
+
+  @Nonnull
+  public final EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  {
+    if (!isValidSchematron ())
+      return EValidity.INVALID;
+
+    final Node aXMLNode = _getAsNode (aXMLResource);
+    if (aXMLNode == null)
+      return EValidity.INVALID;
+
+    return getSchematronValidity (aXMLNode);
+  }
+
+  @Nonnull
+  public final EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception
+  {
+    if (!isValidSchematron ())
+      return EValidity.INVALID;
+
+    final Node aXMLNode = _getAsNode (aXMLSource);
+    if (aXMLNode == null)
+      return EValidity.INVALID;
+
+    return getSchematronValidity (aXMLNode);
+  }
+
+  @Nullable
+  public final Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  {
+    if (!isValidSchematron ())
+      return null;
+
+    final Node aXMLNode = _getAsNode (aXMLResource);
+    if (aXMLNode == null)
+      return null;
+
+    return applySchematronValidation (aXMLNode);
+  }
+
+  @Nullable
+  public final Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
+  {
+    if (!isValidSchematron ())
+      return null;
+
+    final Node aXMLNode = _getAsNode (aXMLSource);
+    if (aXMLNode == null)
+      return null;
+
+    return applySchematronValidation (aXMLNode);
+  }
+
+  @Nullable
+  public final SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  {
+    if (!isValidSchematron ())
+      return null;
+
+    final Node aXMLNode = _getAsNode (aXMLResource);
+    if (aXMLNode == null)
+      return null;
+
+    return applySchematronValidationToSVRL (aXMLNode);
+  }
+
+  @Nullable
+  public final SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
+  {
+    if (!isValidSchematron ())
+      return null;
+
+    final Node aXMLNode = _getAsNode (aXMLSource);
+    if (aXMLNode == null)
+      return null;
+
+    return applySchematronValidationToSVRL (aXMLNode);
   }
 
   @Override

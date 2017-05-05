@@ -16,7 +16,6 @@
  */
 package com.helger.schematron.xslt;
 
-import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,12 +23,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMSource;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
@@ -42,9 +40,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsLinkedHashMap;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
-import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
@@ -55,7 +51,6 @@ import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.LoggingTransformErrorListener;
-import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT
@@ -185,35 +180,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode) throws Exception
   {
-    ValueEnforcer.notNull (aXMLResource, "XMLResource");
+    ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    final InputStream aIS = aXMLResource.getInputStream ();
-    if (aIS == null)
-    {
-      // Resource not found
-      s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
-      return EValidity.INVALID;
-    }
-
-    try
-    {
-      // InputStream to Source
-      return getSchematronValidity (TransformSourceFactory.create (aIS));
-    }
-    finally
-    {
-      // Ensure InputStream is closed
-      StreamHelper.close (aIS);
-    }
-  }
-
-  @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception
-  {
     // We don't have a short circuit here - apply the full validation
-    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLSource);
+    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode);
     if (aSO == null)
       return EValidity.INVALID;
 
@@ -222,49 +194,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
-  {
-    ValueEnforcer.notNull (aXMLResource, "XMLResource");
-
-    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
-    InputStream aIS = null;
-    try
-    {
-      aIS = aStreamSrc.getInputStream ();
-    }
-    catch (final IllegalStateException ex)
-    {
-      // Fall through
-      // Happens e.g. for ResourceStreamSource with non-existing resources
-    }
-    if (aIS == null)
-    {
-      // Resource not found
-      s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
-      return null;
-    }
-    try
-    {
-      return applySchematronValidation (aStreamSrc);
-    }
-    finally
-    {
-      StreamHelper.close (aIS);
-    }
-  }
-
-  @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode) throws Exception
+  public final Document applySchematronValidation (@Nonnull final Node aXMLNode) throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
-
-    return applySchematronValidation (TransformSourceFactory.create (aXMLNode));
-  }
-
-  @Nullable
-  public final Document applySchematronValidation (@Nonnull final Source aXMLSource) throws TransformerException
-  {
-    ValueEnforcer.notNull (aXMLSource, "XMLSource");
 
     final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
     if (aXSLTProvider == null || !aXSLTProvider.isValidSchematron ())
@@ -304,7 +236,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       s_aLogger.debug ("Applying Schematron XSLT on XML [start]");
 
     // Do the main transformation
-    aTransformer.transform (aXMLSource, new DOMResult (ret));
+    aTransformer.transform (new DOMSource (aXMLNode), new DOMResult (ret));
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Applying Schematron XSLT on XML [end]");
@@ -314,20 +246,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       System.out.println (XMLWriter.getNodeAsString (ret));
 
     return ret;
-  }
-
-  @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
-  {
-    final Document aDoc = applySchematronValidation (aXMLResource);
-    return aDoc == null ? null : SVRLReader.readXML (aDoc);
-  }
-
-  @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
-  {
-    final Document aDoc = applySchematronValidation (aXMLSource);
-    return aDoc == null ? null : SVRLReader.readXML (aDoc);
   }
 
   @Nullable
