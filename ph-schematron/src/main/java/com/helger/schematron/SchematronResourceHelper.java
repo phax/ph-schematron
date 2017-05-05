@@ -38,6 +38,7 @@ import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.serialize.read.DOMReaderSettings;
 
 /**
  * This is a common utility class.
@@ -83,12 +84,13 @@ public final class SchematronResourceHelper
       // In StreamSource it can either be a byte stream or a character stream or
       // a system ID
       final StreamSource aStreamSource = (StreamSource) aSource;
+      final DOMReaderSettings aDRS = new DOMReaderSettings ();
 
       final InputStream aIS = aStreamSource.getInputStream ();
       if (aIS != null)
       {
         // Byte stream
-        final Document aDoc = DOMReader.readXMLDOM (aIS);
+        final Document aDoc = DOMReader.readXMLDOM (aIS, aDRS);
         if (aDoc == null)
           throw new IllegalArgumentException ("Failed to read source " + aSource + " as XML from InputStream " + aIS);
         return aDoc;
@@ -98,7 +100,7 @@ public final class SchematronResourceHelper
       if (aReader != null)
       {
         // CHaracter stream
-        final Document aDoc = DOMReader.readXMLDOM (aReader);
+        final Document aDoc = DOMReader.readXMLDOM (aReader, aDRS);
         if (aDoc == null)
           throw new IllegalArgumentException ("Failed to read source " + aSource + " as XML from Reader " + aReader);
         return aDoc;
@@ -111,7 +113,7 @@ public final class SchematronResourceHelper
         try
         {
           final URLResource aURL = new URLResource (sSystemID);
-          final Document aDoc = DOMReader.readXMLDOM (aURL);
+          final Document aDoc = DOMReader.readXMLDOM (aURL, aDRS);
           if (aDoc == null)
             throw new IllegalArgumentException ("Failed to read source " +
                                                 aSource +
