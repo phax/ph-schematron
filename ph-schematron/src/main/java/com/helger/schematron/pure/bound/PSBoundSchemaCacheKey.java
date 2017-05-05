@@ -139,26 +139,6 @@ public class PSBoundSchemaCacheKey
    *        The resource to read from. Never <code>null</code>.
    * @param aErrorHandler
    *        The error handler to use. May be <code>null</code>.
-   * @return The read schema. May not be <code>null</code>.
-   * @throws SchematronException
-   *         In case there is an error reading.
-   */
-  @Nonnull
-  @OverrideOnDemand
-  @Deprecated
-  public PSSchema readSchema (@Nonnull final IReadableResource aResource,
-                              @Nullable final IPSErrorHandler aErrorHandler) throws SchematronException
-  {
-    return readSchema (aResource, aErrorHandler, (EntityResolver) null);
-  }
-
-  /**
-   * Read the specified schema from the passed resource.
-   *
-   * @param aResource
-   *        The resource to read from. Never <code>null</code>.
-   * @param aErrorHandler
-   *        The error handler to use. May be <code>null</code>.
    * @param aEntityResolver
    *        The XML entity resolver to be used. May be <code>null</code>.
    * @return The read schema. May not be <code>null</code>.
@@ -240,7 +220,7 @@ public class PSBoundSchemaCacheKey
    * phase. The usual routine is to
    * <ol>
    * <li>read the schema from the resource - see
-   * {@link #readSchema(IReadableResource, IPSErrorHandler)}</li>
+   * {@link #readSchema(IReadableResource, IPSErrorHandler, EntityResolver)}</li>
    * <li>resolve the query binding - see {@link #getQueryBinding(PSSchema)}</li>
    * <li>pre-process the schema -
    * {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}</li>
