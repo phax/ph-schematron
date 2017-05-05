@@ -381,6 +381,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
+  public Document applySchematronValidation (@Nonnull final Node aXML) throws Exception
+  {
+    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXML);
+    return aSO == null ? null : SVRLWriter.createXML (aSO);
+  }
+
+  @Nullable
   public Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
   {
     final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLSource);

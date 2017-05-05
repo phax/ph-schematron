@@ -22,6 +22,7 @@ import javax.xml.transform.Source;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import com.helger.commons.id.IHasID;
 import com.helger.commons.io.IHasInputStream;
@@ -91,7 +92,7 @@ public interface ISchematronResource extends IHasID <String>
    * SVRL XML DOM Document.
    *
    * @param aXMLResource
-   *        The XML resource to validate via Schematron. May not be
+   *        The XML resource to be validated via Schematron. May not be
    *        <code>null</code>.
    * @return <code>null</code> if the passed resource does not exist or the non-
    *         <code>null</code> SVRL document otherwise.
@@ -104,11 +105,28 @@ public interface ISchematronResource extends IHasID <String>
   Document applySchematronValidation (@Nonnull IHasInputStream aXMLResource) throws Exception;
 
   /**
+   * Apply the Schematron validation on the passed DOM node and return an SVRL
+   * XML DOM Document.
+   *
+   * @param aXMLNode
+   *        The DOM node to be validated via Schematron. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if the passed resource does not exist or the non-
+   *         <code>null</code> SVRL document otherwise.
+   * @throws Exception
+   *         In case the transformation somehow goes wrong.
+   * @see SVRLReader#readXML(org.w3c.dom.Node) on how to convert the document
+   *      into a domain object
+   */
+  @Nullable
+  Document applySchematronValidation (@Nonnull Node aXMLNode) throws Exception;
+
+  /**
    * Apply the Schematron validation on the passed XML source and return an SVRL
    * XML DOM Document.
    *
    * @param aXMLSource
-   *        The XML source to validate via Schematron. May not be
+   *        The XML source to be validated via Schematron. May not be
    *        <code>null</code>.
    * @return The SVRL XML document containing the result. May be
    *         <code>null</code> when interpreting the Schematron failed.
@@ -125,7 +143,7 @@ public interface ISchematronResource extends IHasID <String>
    * {@link SchematronOutputType} object.
    *
    * @param aXMLResource
-   *        The XML resource to validate via Schematron. May not be
+   *        The XML resource to be validated via Schematron. May not be
    *        <code>null</code>.
    * @return The SVRL object containing the result. May be <code>null</code>
    *         when interpreting the Schematron failed.
@@ -136,11 +154,26 @@ public interface ISchematronResource extends IHasID <String>
   SchematronOutputType applySchematronValidationToSVRL (@Nonnull IHasInputStream aXMLResource) throws Exception;
 
   /**
+   * Apply the Schematron validation on the passed DOM Node and return a
+   * {@link SchematronOutputType} object.
+   *
+   * @param aXMLNode
+   *        The DOM node to be validated via Schematron. May not be
+   *        <code>null</code>.
+   * @return The SVRL object containing the result. May be <code>null</code>
+   *         when interpreting the Schematron failed.
+   * @throws Exception
+   *         In case the transformation somehow goes wrong.
+   */
+  @Nullable
+  SchematronOutputType applySchematronValidationToSVRL (@Nonnull Node aXMLNode) throws Exception;
+
+  /**
    * Apply the Schematron validation on the passed XML source and return a
    * {@link SchematronOutputType} object.
    *
    * @param aXMLSource
-   *        The XML source to validate via Schematron. May not be
+   *        The XML source to be validated via Schematron. May not be
    *        <code>null</code>.
    * @return The SVRL object containing the result. May be <code>null</code>
    *         when interpreting the Schematron failed.
