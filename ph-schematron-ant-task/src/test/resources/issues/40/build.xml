@@ -3,8 +3,18 @@
   <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
   <target name="check">
     <schematron schematronFile="test.sch" 
-    	          expectSuccess="true"
-    	          schematronProcessingEngine="pure">
+                expectSuccess="true"
+                schematronProcessingEngine="pure">
+      <fileset dir=".">
+        <include name="test.xml" />
+      </fileset>
+      <xmlcatalog>
+        <dtd publicId="-//bla//DTD XML test//EN" location="test.dtd"/>
+      </xmlcatalog>
+    </schematron>
+    <schematron schematronFile="test.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="schematron">
       <fileset dir=".">
         <include name="test.xml" />
       </fileset>
