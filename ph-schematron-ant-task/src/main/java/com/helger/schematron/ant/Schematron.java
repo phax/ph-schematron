@@ -28,6 +28,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
+import org.apache.tools.ant.types.XMLCatalog;
 import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.ResourceUtils;
@@ -111,6 +112,9 @@ public class Schematron extends Task
    */
   private boolean m_bExpectSuccess = true;
 
+  /** for resolving entities such as dtds */
+  private final XMLCatalog m_aXmlCatalog = new XMLCatalog ();
+
   public void setSchematronFile (@Nonnull final File aFile)
   {
     m_aSchematronFile = aFile;
@@ -175,10 +179,23 @@ public class Schematron extends Task
          Project.MSG_DEBUG);
   }
 
+  /**
+   * Add the catalog to our internal catalog
+   *
+   * @param aXmlCatalog
+   *        the XMLCatalog instance to use to look up DTDs
+   */
+  public void addConfiguredXMLCatalog (@Nonnull final XMLCatalog aXmlCatalog)
+  {
+    m_aXmlCatalog.addConfiguredXMLCatalog (aXmlCatalog);
+    log ("Added XMLCatalog " + aXmlCatalog, Project.MSG_DEBUG);
+  }
+
   @Override
   public void init () throws BuildException
   {
     super.init ();
+    m_aXmlCatalog.setProject (getProject ());
   }
 
   private static final File NULL_FILE_PLACEHOLDER = new File ("/dummy_NULL");
@@ -362,6 +379,7 @@ public class Schematron extends Task
         final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setErrorHandler (aErrorHdl);
+        aRealSCH.setEntityResolver (m_aXmlCatalog);
         aRealSCH.validateCompletely ();
 
         aSch = aRealSCH;
@@ -376,6 +394,7 @@ public class Schematron extends Task
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (m_sLanguageCode);
         aRealSCH.setErrorListener (aErrorHdl);
+        aRealSCH.setURIResolver (m_aXmlCatalog);
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;
@@ -389,6 +408,7 @@ public class Schematron extends Task
         final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
         // phase is ignored
         aRealSCH.setErrorListener (aErrorHdl);
+        aRealSCH.setURIResolver (m_aXmlCatalog);
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;

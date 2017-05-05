@@ -48,6 +48,9 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  <properties>
+    <ant.version>1.9.6</ant.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -61,12 +64,18 @@
     <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
-      <version>1.9.6</version>
+      <version>${ant.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-testutil</artifactId>
+      <version>${ant.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
