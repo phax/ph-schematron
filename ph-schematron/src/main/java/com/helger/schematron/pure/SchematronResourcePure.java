@@ -65,7 +65,10 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * cache is thread safe. So once you configured this object fully (with all the
  * setter), it can be considered thread safe.<br>
  * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no
- * XSLT functions in Schematron asserts and reports!
+ * XSLT functions in Schematron asserts and reports! If your Schematrons use
+ * XSLT functionality you're better off using the
+ * {@link com.helger.schematron.xslt.SchematronResourceSCH} or
+ * {@link com.helger.schematron.xslt.SchematronResourceXSLT} classes instead!
  *
  * @author Philip Helger
  */
@@ -381,9 +384,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXML) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode) throws Exception
   {
-    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXML);
+    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode);
     return aSO == null ? null : SVRLWriter.createXML (aSO);
   }
 

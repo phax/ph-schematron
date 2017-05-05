@@ -29,6 +29,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
@@ -197,17 +198,17 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   {
     ValueEnforcer.notNull (aXMLResource, "XMLResource");
 
-    final InputStream aIS = aXMLResource.getInputStream ();
+    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
+    final InputStream aIS = aStreamSrc.getInputStream ();
     if (aIS == null)
     {
       // Resource not found
       s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
       return null;
     }
-
     try
     {
-      return applySchematronValidation (TransformSourceFactory.create (aIS));
+      return applySchematronValidation (aStreamSrc);
     }
     finally
     {
@@ -216,11 +217,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLResource) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode) throws Exception
   {
-    ValueEnforcer.notNull (aXMLResource, "XMLResource");
+    ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    return applySchematronValidation (TransformSourceFactory.create (aXMLResource));
+    return applySchematronValidation (TransformSourceFactory.create (aXMLNode));
   }
 
   @Nullable
