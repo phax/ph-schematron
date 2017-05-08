@@ -33,7 +33,7 @@ final class LoggingBuildListener implements BuildListener
         if (aEvent.getPriority () <= Project.MSG_INFO)
           s_aLogger.info (aEvent.getMessage (), aEvent.getException ());
         else
-          s_aLogger.info (aEvent.getMessage (), aEvent.getException ());
+          s_aLogger.debug (aEvent.getMessage (), aEvent.getException ());
   }
 
   public void buildStarted (final BuildEvent aEvent)
