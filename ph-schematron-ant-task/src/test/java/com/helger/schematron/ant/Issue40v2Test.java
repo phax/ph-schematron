@@ -8,9 +8,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class Issue40Test
+public final class Issue40v2Test
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue40Test.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue40v2Test.class);
 
   @Rule
   public final BuildFileRule m_aBuildRule = new BuildFileRule ();
@@ -18,7 +18,7 @@ public final class Issue40Test
   @Before
   public void init ()
   {
-    m_aBuildRule.configureProject ("src/test/resources/issues/40/build.xml");
+    m_aBuildRule.configureProject ("src/test/resources/issues/40v2/build.xml");
     m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
   }
 

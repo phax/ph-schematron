@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="xml">
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  <target name="check">
+    <schematron schematronFile="../sch/test.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="pure">
+      <fileset dir=".">
+        <include name="test.xml" />
+      </fileset>
+      <xmlcatalog>
+        <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
+      </xmlcatalog>
+    </schematron>
+  </target>
+</project>
