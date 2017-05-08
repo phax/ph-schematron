@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.transform.URIResolver;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -33,7 +34,9 @@ import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.ResourceUtils;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.xml.sax.EntityResolver;
 
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsList;
@@ -195,6 +198,30 @@ public class Schematron extends Task
   {
     m_aXmlCatalog.addConfiguredXMLCatalog (aXmlCatalog);
     log ("Added XMLCatalog " + aXmlCatalog, Project.MSG_DEBUG);
+  }
+
+  /**
+   * Get the {@link EntityResolver} to be used.
+   *
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  @OverrideOnDemand
+  protected EntityResolver getEntityResolver ()
+  {
+    return m_aXmlCatalog;
+  }
+
+  /**
+   * Get the {@link URIResolver} to be used.
+   *
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  @OverrideOnDemand
+  protected URIResolver getURIResolver ()
+  {
+    return m_aXmlCatalog;
   }
 
   @Override
@@ -385,7 +412,7 @@ public class Schematron extends Task
         final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setErrorHandler (aErrorHdl);
-        aRealSCH.setEntityResolver (m_aXmlCatalog);
+        aRealSCH.setEntityResolver (getEntityResolver ());
         aRealSCH.validateCompletely ();
 
         aSch = aRealSCH;
@@ -400,8 +427,8 @@ public class Schematron extends Task
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (m_sLanguageCode);
         aRealSCH.setErrorListener (aErrorHdl);
-        aRealSCH.setURIResolver (m_aXmlCatalog);
-        aRealSCH.setEntityResolver (m_aXmlCatalog);
+        aRealSCH.setURIResolver (getURIResolver ());
+        aRealSCH.setEntityResolver (getEntityResolver ());
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;
@@ -416,8 +443,8 @@ public class Schematron extends Task
         // phase and language are ignored because this was decided when the XSLT
         // was created
         aRealSCH.setErrorListener (aErrorHdl);
-        aRealSCH.setURIResolver (m_aXmlCatalog);
-        aRealSCH.setEntityResolver (m_aXmlCatalog);
+        aRealSCH.setURIResolver (getURIResolver ());
+        aRealSCH.setEntityResolver (getEntityResolver ());
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;
