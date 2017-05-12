@@ -37,6 +37,7 @@ import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.resolve.DefaultEntityResolver;
 import com.helger.xml.EXMLParserFeature;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
@@ -58,10 +59,18 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   private boolean m_bUseCache = true;
   private EntityResolver m_aEntityResolver;
 
+  /**
+   * Constructor
+   *
+   * @param aResource
+   *        The Schematron resource. May not be <code>null</code>.
+   */
   public AbstractSchematronResource (@Nonnull final IReadableResource aResource)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
+    // Set a default entity resolver
+    m_aEntityResolver = DefaultEntityResolver.createOnDemand (aResource);
   }
 
   @Nonnull
@@ -112,6 +121,12 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     m_aEntityResolver = aEntityResolver;
   }
 
+  /**
+   * @return The {@link DOMReaderSettings} to be used for reading the XML files
+   *         to be validated. This includes the {@link EntityResolver} to be
+   *         used.
+   * @see #getEntityResolver()
+   */
   @Nonnull
   @ReturnsMutableCopy
   protected DOMReaderSettings internalCreateDOMReaderSettings ()

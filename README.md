@@ -15,7 +15,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Fixed an error with nested SVRL directories in Maven plugin (#37)
     * Added possibility to use "negative" tests in Maven plugin (#38)
     * Added ANT plugin to validate Schematron resources (#39, #40)
-    * Using the EntityResolver also for the XML files to be validated
+    * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
+    * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
   * v4.2.2 - 2017-02-22
     * Updated to Saxon-HE 9.7.0-15
     * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
