@@ -157,6 +157,9 @@ There is currently only one task:
 <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
 ```
 
+For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
+Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script. 
+
 ## Validate an XML file
 
 The validation itself looks like this:
