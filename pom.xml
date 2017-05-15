@@ -163,6 +163,11 @@
         <artifactId>ph-schematron-maven-plugin</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.maven</groupId>
+        <artifactId>ph-schematron-ant-task</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   
