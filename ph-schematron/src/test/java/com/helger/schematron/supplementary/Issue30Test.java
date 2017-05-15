@@ -26,8 +26,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.IPSElement;
-import com.helger.xml.ls.SimpleLSResourceResolver;
-import com.helger.xml.sax.InputSourceFactory;
+import com.helger.schematron.resolve.DefaultEntityResolver;
 
 /**
  * Test code for issue #30
@@ -42,13 +41,7 @@ public final class Issue30Test
   public void testOfSchematronPH () throws Exception
   {
     final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github30/ph-test.sch");
-    aResPure.setEntityResolver ( (publicId, systemId) -> {
-      final String sBaseURI = aResPure.getResource ().getAsURL ().toExternalForm ();
-      final IReadableResource aResolvedRes = SimpleLSResourceResolver.doStandardResourceResolving (systemId, sBaseURI);
-      if (aResolvedRes == null)
-        return null;
-      return InputSourceFactory.create (aResolvedRes);
-    });
+    aResPure.setEntityResolver (DefaultEntityResolver.createOnDemand (aResPure.getResource ()));
     final IPSErrorHandler aErrorHandler = new IPSErrorHandler ()
     {
       @Override

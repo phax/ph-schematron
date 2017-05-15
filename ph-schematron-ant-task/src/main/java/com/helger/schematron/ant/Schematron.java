@@ -81,7 +81,7 @@ public class Schematron extends Task
    * <li>xslt - apply pre-build XSLT files</li>
    * </ul>
    */
-  private ESchematronMode m_eSchematronProcessingEngine = ESchematronMode.PURE;
+  private ESchematronMode m_eSchematronProcessingEngine = ESchematronMode.SCHEMATRON;
 
   /**
    * The collection for resources (like FileSets etc.) which are to be

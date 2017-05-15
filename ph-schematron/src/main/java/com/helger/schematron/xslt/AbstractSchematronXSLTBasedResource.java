@@ -50,6 +50,7 @@ import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
@@ -68,7 +69,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
   protected ErrorListener m_aCustomErrorListener;
-  protected URIResolver m_aCustomURIResolver;
+  protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected ICommonsOrderedMap <String, ?> m_aCustomParameters;
   private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
 

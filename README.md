@@ -15,7 +15,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Fixed an error with nested SVRL directories in Maven plugin (#37)
     * Added possibility to use "negative" tests in Maven plugin (#38)
     * Added ANT plugin to validate Schematron resources (#39, #40)
-    * Using the EntityResolver also for the XML files to be validated
+    * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
+    * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
   * v4.2.2 - 2017-02-22
     * Updated to Saxon-HE 9.7.0-15
     * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
@@ -135,7 +136,7 @@ The possible configuration parameters are:
 
 A validator for Schematron definitions based on RelaxNG definition.
 
-# Maven usage
+## Usage with Maven
 Add the following to your pom.xml to use this artifact:
 ```
 <dependency>
@@ -144,6 +145,67 @@ Add the following to your pom.xml to use this artifact:
   <version>4.2.2</version>
 </dependency>
 ```
+
+# Ant task
+
+Since ph-schematron 4.3.0 there is an Apache Ant task that enables you to validate XML files against Schematron rules.
+As I'm not an Ant expert please forgive me if some of the explanations are not 100% accurate.
+
+## Declare the task
+
+There is currently only one task:
+```xml
+<taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+```
+
+For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
+Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script. 
+
+## Validate an XML file
+
+The validation itself looks like this:
+```xml
+  <target name="validate">
+...
+    <schematron schematronFile="sample_schematron.sch" expectSuccess="true">
+      <fileset dir="xml">
+        <include name="*.xml" />
+        <exclude name="err*.xml" />
+      </fileset>
+    </schematron>
+...
+  </target>
+```
+
+Basically you declare the Schematron file (relative to the project's base directory),
+define whether you expect a successful validation or failures,
+and finally you name the XML files to be validated (as resource collections - e.g. Filesets).
+
+The `schematron` element allows for the following attributes:
+  * `File` **schematronFile** - The Schematron file to be used for validation
+  * `String` **schematronProcessingEngine** - The internal engine to be used. Must be one of `pure`, `schematron` or `xslt`. The default is `schematron`.
+  * `File` **svrlDirectory** - An optional directory where the SVRL files should be written to.
+  * `String` **phaseName** - The optional Schematron phase to be used. Note: this is only available when using the processing engine `pure` or `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created.
+  * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
+  * `boolean` **expectSuccess** - `true` to expect successful validation, `false` to expect validation errors. If the expectation is incorrect, the build will fail.
+  
+Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver both for the Schematron and the XML files to be validated! See https://ant.apache.org/manual/Types/xmlcatalog.html for details on the XML catalog. Here is an example that shows how to use an inline XML catalog:
+
+```xml
+  <target name="validate">
+    <schematron schematronFile="../sch/test.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="pure">
+      <fileset dir=".">
+        <include name="test.xml" />
+      </fileset>
+      <xmlcatalog>
+        <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
+      </xmlcatalog>
+    </schematron>
+  </target>
+```
+ 
 
 ---
 
