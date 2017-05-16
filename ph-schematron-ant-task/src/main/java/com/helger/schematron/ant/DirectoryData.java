@@ -20,24 +20,55 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ext.CommonsLinkedHashSet;
+import com.helger.commons.collection.ext.ICommonsIterable;
 import com.helger.commons.collection.ext.ICommonsOrderedSet;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Stores resolved ResourceCollection data.
- * 
+ *
  * @author Philip Helger
  */
 final class DirectoryData
 {
-  final File m_aBaseDir;
-  final ICommonsOrderedSet <String> m_aDirs = new CommonsLinkedHashSet <> ();
-  final ICommonsOrderedSet <String> m_aFiles = new CommonsLinkedHashSet <> ();
+  private final File m_aBaseDir;
+  private final ICommonsOrderedSet <String> m_aDirs = new CommonsLinkedHashSet <> ();
+  private final ICommonsOrderedSet <String> m_aFiles = new CommonsLinkedHashSet <> ();
 
   public DirectoryData (@Nonnull final File aBaseDir)
   {
+    ValueEnforcer.notNull (aBaseDir, "BaseDir");
     m_aBaseDir = aBaseDir;
+  }
+
+  @Nonnull
+  public File getBaseDir ()
+  {
+    return m_aBaseDir;
+  }
+
+  public void addDir (final String sDir)
+  {
+    m_aDirs.add (sDir);
+  }
+
+  @Nonnull
+  public ICommonsIterable <String> getDirs ()
+  {
+    return m_aDirs;
+  }
+
+  public void addFile (final String sFile)
+  {
+    m_aFiles.add (sFile);
+  }
+
+  @Nonnull
+  public ICommonsIterable <String> getFiles ()
+  {
+    return m_aFiles;
   }
 
   @Override

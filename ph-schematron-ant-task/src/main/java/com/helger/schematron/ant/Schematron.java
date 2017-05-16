@@ -270,9 +270,9 @@ public class Schematron extends Task
         {
           final DirectoryData aBaseDir = aFiles.computeIfAbsent (_getKeyFile (baseDir), k -> new DirectoryData (k));
           if (aRes.isDirectory ())
-            aBaseDir.m_aDirs.add (name);
+            aBaseDir.addDir (name);
           else
-            aBaseDir.m_aFiles.add (name);
+            aBaseDir.addFile (name);
         }
         else
           throw new BuildException ("Could not resolve resource " + aRes.toLongString () + " to a file.");
@@ -281,15 +281,15 @@ public class Schematron extends Task
 
     for (final DirectoryData aBaseDir : aFiles.values ())
     {
-      log ("Scanning directory " + aBaseDir.m_aBaseDir + " for XMLs to be Schematron validated", Project.MSG_DEBUG);
+      log ("Scanning directory " + aBaseDir.getBaseDir () + " for XMLs to be Schematron validated", Project.MSG_DEBUG);
 
       final ICommonsList <String> aIncludes = new CommonsArrayList <> ();
-      aIncludes.addAll (aBaseDir.m_aFiles);
-      for (final String sFile : aBaseDir.m_aDirs)
+      aIncludes.addAll (aBaseDir.getFiles ());
+      for (final String sFile : aBaseDir.getDirs ())
         aIncludes.add (sFile + "/**");
 
       final DirectoryScanner aScanner = new DirectoryScanner ();
-      aScanner.setBasedir (aBaseDir.m_aBaseDir);
+      aScanner.setBasedir (aBaseDir.getBaseDir ());
       if (aIncludes.isNotEmpty ())
         aScanner.setIncludes (aIncludes.toArray (new String [0]));
       aScanner.setCaseSensitive (true);
@@ -300,7 +300,7 @@ public class Schematron extends Task
       {
         for (final String sXMLFilename : aXMLFilenames)
         {
-          final File aXMLFile = new File (aBaseDir.m_aBaseDir, sXMLFilename);
+          final File aXMLFile = new File (aBaseDir.getBaseDir (), sXMLFilename);
 
           // Validate XML file
           log ("Validating XML file '" +

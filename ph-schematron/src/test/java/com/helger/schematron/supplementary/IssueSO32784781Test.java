@@ -32,7 +32,7 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
  *
  * @author Philip Helger
  */
-public final class SO32784781Test
+public final class IssueSO32784781Test
 {
   @Test
   public void testBasic ()

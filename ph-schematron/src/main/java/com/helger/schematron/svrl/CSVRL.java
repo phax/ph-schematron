@@ -23,8 +23,9 @@ import javax.xml.bind.annotation.XmlSchema;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
+import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
@@ -40,7 +41,8 @@ public final class CSVRL
   /** Path to the SVRL XSD file within the class path */
   public static final String SVRL_XSD_PATH = "schemas/svrl.xsd";
 
-  public static final List <? extends IReadableResource> SVRL_XSDS = CollectionHelper.makeUnmodifiable (new ClassPathResource (SVRL_XSD_PATH));
+  @CodingStyleguideUnaware
+  public static final List <? extends IReadableResource> SVRL_XSDS = new CommonsArrayList <> (new ClassPathResource (SVRL_XSD_PATH)).getAsUnmodifiable ();
 
   /** Path to the SVRL RelaxNG Compact file within the class path */
   public static final String SVRL_RNC_PATH = "schemas/svrl.rnc";
