@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.ant;
 
+import javax.annotation.Nonnull;
+
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
@@ -38,7 +40,7 @@ final class LoggingBuildListener implements BuildListener
   public void targetFinished (final BuildEvent aEvent)
   {}
 
-  public void messageLogged (final BuildEvent aEvent)
+  public void messageLogged (@Nonnull final BuildEvent aEvent)
   {
     if (aEvent.getPriority () <= Project.MSG_ERR)
       s_aLogger.error (aEvent.getMessage (), aEvent.getException ());
@@ -49,7 +51,10 @@ final class LoggingBuildListener implements BuildListener
         if (aEvent.getPriority () <= Project.MSG_INFO)
           s_aLogger.info (aEvent.getMessage (), aEvent.getException ());
         else
+        {
+          // Switch this from "debug" to "info" to get more output
           s_aLogger.debug (aEvent.getMessage (), aEvent.getException ());
+        }
   }
 
   public void buildStarted (final BuildEvent aEvent)
