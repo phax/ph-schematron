@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
-import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -73,11 +72,11 @@ public final class SchematronResourceSCHCache
     {
       // Schematron is invalid -> parsing failed
       s_aLogger.warn ("The Schematron resource '" + aSchematronResource.getResourceID () + "' is invalid!");
-      if (GlobalDebug.isDebugMode () && aXSLTPreprocessor.getXSLTDocument () != null)
+      if (s_aLogger.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
       {
         // Log the created XSLT document for better error tracking
-        s_aLogger.warn ("  Created XSLT document:\n" +
-                        XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
+        s_aLogger.debug ("  Created XSLT document:\n" +
+                         XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
       }
       return null;
     }

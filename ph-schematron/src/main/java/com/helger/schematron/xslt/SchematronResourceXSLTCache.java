@@ -32,7 +32,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.error.IError;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.xml.transform.CollectingTransformErrorListener;
@@ -49,7 +48,7 @@ public final class SchematronResourceXSLTCache
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
-  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap<> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap <> ();
 
   private SchematronResourceXSLTCache ()
   {}
@@ -59,7 +58,7 @@ public final class SchematronResourceXSLTCache
                                                                              @Nullable final ErrorListener aCustomErrorListener,
                                                                              @Nullable final URIResolver aCustomURIResolver)
   {
-    if (GlobalDebug.isDebugMode () && s_aLogger.isInfoEnabled ())
+    if (s_aLogger.isInfoEnabled ())
       s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
     final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();

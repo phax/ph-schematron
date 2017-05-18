@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.lang.ServiceLoaderHelper;
 
 /**
@@ -63,8 +62,8 @@ public final class SVRLLocationBeautifierRegistry
       if (sBeautified != null)
         return sBeautified;
     }
-    if (GlobalDebug.isDebugMode ())
-      s_aLogger.warn ("Unsupported elements for beautification: " + sNamespaceURI + " -- " + sLocalName);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Unsupported elements for beautification: " + sNamespaceURI + " -- " + sLocalName);
     return null;
   }
 }
