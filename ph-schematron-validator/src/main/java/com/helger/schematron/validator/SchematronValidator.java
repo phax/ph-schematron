@@ -144,7 +144,7 @@ public final class SchematronValidator
       aValidator.validate (aSource, null);
 
       // Check results
-      return aCEH.getErrorList ().getMostSevereErrorLevel ().isLessSevereThan (EErrorLevel.ERROR);
+      return aCEH.getErrorList ().getMostSevereErrorLevel ().isLT (EErrorLevel.ERROR);
     }
     catch (final SAXException ex)
     {

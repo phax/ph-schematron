@@ -512,13 +512,13 @@ public final class SchematronValidationMojo extends AbstractMojo
       // Error validating the Schematrons!!
       boolean bAnyError = false;
       for (final IError aError : aSCHErrors)
-        if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.ERROR))
+        if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
         {
           getLog ().error ("Error in Schematron: " + aError.getAsString (aDisplayLocale));
           bAnyError = true;
         }
         else
-          if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.WARN))
+          if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
             getLog ().warn ("Warning in Schematron: " + aError.getAsString (aDisplayLocale));
       if (bAnyError)
         throw new MojoExecutionException ("The provided Schematron file contains errors. See log for details.");

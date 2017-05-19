@@ -26,7 +26,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.IPSElement;
-import com.helger.schematron.resolve.DefaultEntityResolver;
+import com.helger.xml.sax.DefaultEntityResolver;
 
 /**
  * Test code for issue #30

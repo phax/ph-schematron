@@ -459,13 +459,13 @@ public class Schematron extends Task
       // Error validating the Schematrons!!
       boolean bAnyError = false;
       for (final IError aError : aSCHErrors)
-        if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.ERROR))
+        if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
         {
           log ("Error in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_ERR);
           bAnyError = true;
         }
         else
-          if (aError.getErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.WARN))
+          if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
             log ("Warning in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_WARN);
       if (bAnyError)
         throw new BuildException ("The provided Schematron file contains errors. See log for details.");

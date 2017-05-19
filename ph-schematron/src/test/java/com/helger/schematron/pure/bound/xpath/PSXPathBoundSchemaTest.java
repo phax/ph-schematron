@@ -133,7 +133,7 @@ public final class PSXPathBoundSchemaTest
         final CollectingPSErrorHandler aCEH = new CollectingPSErrorHandler ();
         PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH);
         // Either an ERROR was collected or an exception was thrown
-        assertTrue (aCEH.getErrorList ().getMostSevereErrorLevel ().isMoreOrEqualSevereThan (EErrorLevel.ERROR));
+        assertTrue (aCEH.getErrorList ().getMostSevereErrorLevel ().isGE (EErrorLevel.ERROR));
       }
       catch (final SchematronException ex)
       {
