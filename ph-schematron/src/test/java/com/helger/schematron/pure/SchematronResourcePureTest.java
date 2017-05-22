@@ -332,7 +332,7 @@ public final class SchematronResourcePureTest
     assertNotNull (aOT);
     // XXX fails :(
     if (false)
-      assertTrue (aErrorHandler.isEmpty ());
+      assertTrue (aErrorHandler.getAllErrors ().toString (), aErrorHandler.isEmpty ());
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
   }
 

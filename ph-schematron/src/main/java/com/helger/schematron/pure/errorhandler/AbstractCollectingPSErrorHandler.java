@@ -21,8 +21,6 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.error.IError;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.error.SingleError.SingleErrorBuilder;
 import com.helger.commons.error.level.IErrorLevel;
@@ -78,30 +76,11 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
     m_aErrorList.add (aBuilder.build ());
   }
 
-  /**
-   * @return all errors
-   * @deprecated Use {@link #getErrorList()} instead
-   */
-  @Deprecated
-  @Nonnull
-  @ReturnsMutableCopy
-  public IErrorList getResourceErrors ()
-  {
-    return getErrorList ();
-  }
-
   @Nonnull
   @ReturnsMutableCopy
   public IErrorList getErrorList ()
   {
     return m_aErrorList.getClone ();
-  }
-
-  @Nonnull
-  @Deprecated
-  public ICommonsList <IError> getAllResourceErrors ()
-  {
-    return m_aErrorList.getAllItems ();
   }
 
   @Nonnull

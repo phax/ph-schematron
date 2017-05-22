@@ -247,7 +247,7 @@ public final class SchematronHelper
             else
             {
               final String sFinalAnchor = sAnchor;
-              final Wrapper <IMicroElement> aMatch = new Wrapper<> ();
+              final Wrapper <IMicroElement> aMatch = new Wrapper <> ();
               // Also include the root element in the search
               ChildrenProviderHierarchyVisitor.visitFrom (aIncludedDoc.getDocumentElement (),
                                                           new DefaultHierarchyVisitorCallback <IMicroNode> ()
@@ -341,25 +341,6 @@ public final class SchematronHelper
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource)
   {
     return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler ());
-  }
-
-  /**
-   * Resolve all Schematron includes of the passed resource.
-   *
-   * @param aResource
-   *        The Schematron resource to read. May not be <code>null</code>.
-   * @param aSettings
-   *        The SAX reader settings to be used. May be <code>null</code> to use
-   *        the default settings.
-   * @return <code>null</code> if the passed resource could not be read as XML
-   *         document
-   */
-  @Nullable
-  @Deprecated
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
-                                                                  @Nullable final ISAXReaderSettings aSettings)
-  {
-    return getWithResolvedSchematronIncludes (aResource, aSettings, new LoggingPSErrorHandler ());
   }
 
   /**

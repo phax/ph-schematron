@@ -13,6 +13,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
   * v4.3.1 - work in progress
     * Updated to ph-commons 8.6.5
     * Fixed too verbose logging of created XSLT
+    * Removed some old deprecated methods
   * v4.3.0 - 2017-05-15
     * Updated to Saxon-HE 9.7.0-18
     * Fixed an error with nested SVRL directories in Maven plugin (#37)

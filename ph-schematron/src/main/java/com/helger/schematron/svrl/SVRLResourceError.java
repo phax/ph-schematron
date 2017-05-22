@@ -25,7 +25,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.location.IErrorLocation;
-import com.helger.commons.error.text.ConstantHasErrorText;
 import com.helger.commons.error.text.IHasErrorText;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
@@ -43,25 +42,22 @@ public class SVRLResourceError extends SingleError
   /**
    * Constructor.
    *
-   * @param aErrorLocation
-   *        Location where the error occurred. May not be <code>null</code>.
    * @param aErrorLevel
    *        The error level. May not be <code>null</code>.
-   * @param sErrorText
-   *        The error text. May not be <code>null</code>.
+   * @param sErrorID
+   *        Error ID. May be <code>null</code>.
+   * @param sErrorFieldName
+   *        Error field name. May be <code>null</code>.
+   * @param aErrorLocation
+   *        Location where the error occurred. May be <code>null</code>.
+   * @param aErrorText
+   *        The error text. May be <code>null</code>.
+   * @param aLinkedException
+   *        An exception that caused the error. May be <code>null</code>.
    * @param sTest
    *        The SVRL test that triggered this error. May not be
    *        <code>null</code>.
    */
-  @Deprecated
-  public SVRLResourceError (@Nonnull final IErrorLocation aErrorLocation,
-                            @Nonnull final IErrorLevel aErrorLevel,
-                            @Nonnull final String sErrorText,
-                            @Nonnull final String sTest)
-  {
-    this (aErrorLevel, null, null, aErrorLocation, ConstantHasErrorText.createOnDemand (sErrorText), null, sTest);
-  }
-
   public SVRLResourceError (@Nonnull final IErrorLevel aErrorLevel,
                             @Nullable final String sErrorID,
                             @Nullable final String sErrorFieldName,
