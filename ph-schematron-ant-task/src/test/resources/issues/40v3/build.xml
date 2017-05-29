@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="xml">
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  <target name="check">
+    <schematron schematronFile="../sch/test.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="pure">
+      <fileset dir=".">
+        <include name="test*.xml" />
+      </fileset>
+      <xmlcatalog>
+        <catalogpath>
+        	<!-- basedir is "xml"!!! -->
+          <pathelement location="../catalog1.xml"/>
+          <pathelement location="../catalog/catalog2.xml"/>
+        </catalogpath>
+      </xmlcatalog>
+    </schematron>
+  </target>
+</project>

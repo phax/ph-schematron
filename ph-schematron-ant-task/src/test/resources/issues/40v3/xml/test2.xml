@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE note PUBLIC "-//bla//DTD XML test2//EN" "http://example.org/note.dtd">
+<note>
+  <to>Tove</to>
+  <from>Jani</from>
+  <heading>Reminder</heading>
+  <body>Don't forget me this weekend!</body>
+</note>

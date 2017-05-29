@@ -28,6 +28,18 @@ final class LoggingBuildListener implements BuildListener
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (LoggingBuildListener.class);
 
+  private final boolean m_bDebugMode;
+
+  public LoggingBuildListener ()
+  {
+    this (false);
+  }
+
+  public LoggingBuildListener (final boolean bDebugMode)
+  {
+    m_bDebugMode = bDebugMode;
+  }
+
   public void taskStarted (final BuildEvent aEvent)
   {}
 
@@ -53,7 +65,10 @@ final class LoggingBuildListener implements BuildListener
         else
         {
           // Switch this from "debug" to "info" to get more output
-          s_aLogger.debug (aEvent.getMessage (), aEvent.getException ());
+          if (m_bDebugMode)
+            s_aLogger.info (aEvent.getMessage (), aEvent.getException ());
+          else
+            s_aLogger.debug (aEvent.getMessage (), aEvent.getException ());
         }
   }
 
