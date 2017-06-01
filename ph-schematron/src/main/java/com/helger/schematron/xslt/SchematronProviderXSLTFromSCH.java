@@ -58,7 +58,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   /**
    * The classpath directory where the Schematron 2 XSLT files reside.
    */
-  public static final String SCHEMATRON_DIRECTORY_XSLT2 = "schematron/20100414-xslt2/";
+  public static final String SCHEMATRON_DIRECTORY_XSLT2 = "schematron/20100710-xslt2/";
 
   /**
    * The class path to first XSLT to be applied.
