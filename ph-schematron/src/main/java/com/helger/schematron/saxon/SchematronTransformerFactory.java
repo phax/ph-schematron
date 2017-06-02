@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
@@ -29,6 +30,8 @@ import com.helger.commons.exception.InitializationException;
 import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
+
+import net.sf.saxon.lib.FeatureKeys;
 
 /**
  * A special {@link TransformerFactory} handler that prefers Saxon's
@@ -92,8 +95,12 @@ public final class SchematronTransformerFactory
       final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
                                                                      : ClassLoaderHelper.getContextClassLoader ();
       aFactory = TransformerFactory.newInstance (SAXON_TRANSFORMER_FACTORY_CLASS, aEffectiveClassLoader);
+
+      // Debug only
+      if (false)
+        aFactory.setFeature (FeatureKeys.TRACE_OPTIMIZER_DECISIONS, true);
     }
-    catch (final TransformerFactoryConfigurationError ex)
+    catch (final TransformerFactoryConfigurationError | TransformerConfigurationException ex)
     {
       try
       {
