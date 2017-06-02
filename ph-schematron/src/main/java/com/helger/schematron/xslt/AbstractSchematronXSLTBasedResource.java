@@ -56,6 +56,8 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
 import net.sf.saxon.jaxp.TransformerImpl;
 import net.sf.saxon.lib.StandardLogger;
 import net.sf.saxon.s9api.XsltTransformer;
+import net.sf.saxon.trace.RuleTraceListener;
+import net.sf.saxon.trace.TraceEventMulticaster;
 import net.sf.saxon.trace.XSLTTraceListener;
 
 /**
@@ -248,9 +250,16 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
         final XsltTransformer aXT = ((TransformerImpl) aTransformer).getUnderlyingXsltTransformer ();
 
         aXT.setMessageListener ( (a, b, c) -> s_aLogger.info ("MessageListener: " + a + ", " + b + ", " + c));
-        aXT.setTraceFunctionDestination (new StandardLogger ());
+        aXT.setTraceFunctionDestination (new StandardLogger (System.err));
         if (false)
           aXT.getUnderlyingController ().setTraceListener (new XSLTTraceListener ());
+        if (false)
+        {
+          final RuleTraceListener aTL = new RuleTraceListener ();
+          aTL.setOutputDestination (new StandardLogger (System.err));
+          aXT.getUnderlyingController ().setTraceListener (TraceEventMulticaster.add (aTL, null));
+        }
+
         if (false)
           System.out.println ("mode=" + aXT.getInitialMode ());
         if (false)
