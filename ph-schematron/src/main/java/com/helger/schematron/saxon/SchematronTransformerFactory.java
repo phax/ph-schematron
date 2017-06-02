@@ -18,6 +18,7 @@ package com.helger.schematron.saxon;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -37,35 +38,60 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
  *
  * @author Philip Helger
  */
+@Immutable
 public final class SchematronTransformerFactory
 {
+  public static final String SAXON_TRANSFORMER_FACTORY_CLASS = "net.sf.saxon.TransformerFactoryImpl";
   private static final TransformerFactory s_aDefaultFactory;
 
   static
   {
-    s_aDefaultFactory = createTransformerFactorySaxonFirst (new LoggingTransformErrorListener (CGlobal.DEFAULT_LOCALE),
+    s_aDefaultFactory = createTransformerFactorySaxonFirst ((ClassLoader) null,
+                                                            new LoggingTransformErrorListener (CGlobal.DEFAULT_LOCALE),
                                                             new DefaultTransformURIResolver ());
   }
 
   private SchematronTransformerFactory ()
   {}
 
+  /**
+   * @return The default "Saxon first" {@link TransformerFactory}. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public static TransformerFactory getDefaultSaxonFirst ()
   {
     return s_aDefaultFactory;
   }
 
+  /**
+   * Create a new {@link TransformerFactory} trying to invoke the Saxon
+   * implementation first using the class
+   * {@value #SAXON_TRANSFORMER_FACTORY_CLASS}.
+   *
+   * @param aClassLoader
+   *        The optional class loader to be used. May be <code>null</code>.
+   * @param aErrorListener
+   *        An optional XSLT error listener to be used. May be
+   *        <code>null</code>.
+   * @param aURIResolver
+   *        An optional XSLT URI resolver to be used. May be <code>null</code>.
+   * @return A new {@link TransformerFactory} and not <code>null</code>.
+   * @throws InitializationException
+   *         In case initialization fails.
+   */
   @Nonnull
-  public static TransformerFactory createTransformerFactorySaxonFirst (@Nullable final ErrorListener aErrorListener,
+  public static TransformerFactory createTransformerFactorySaxonFirst (@Nullable final ClassLoader aClassLoader,
+                                                                       @Nullable final ErrorListener aErrorListener,
                                                                        @Nullable final URIResolver aURIResolver)
   {
     TransformerFactory aFactory;
     try
     {
       // Try Saxon first
-      aFactory = TransformerFactory.newInstance ("net.sf.saxon.TransformerFactoryImpl",
-                                                 ClassLoaderHelper.getContextClassLoader ());
+      final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
+                                                                     : ClassLoaderHelper.getContextClassLoader ();
+      aFactory = TransformerFactory.newInstance (SAXON_TRANSFORMER_FACTORY_CLASS, aEffectiveClassLoader);
     }
     catch (final TransformerFactoryConfigurationError ex)
     {
@@ -79,6 +105,7 @@ public final class SchematronTransformerFactory
         throw new InitializationException ("Failed to create XML TransformerFactory", ex2);
       }
     }
+
     if (aErrorListener != null)
       aFactory.setErrorListener (aErrorListener);
     if (aURIResolver != null)
