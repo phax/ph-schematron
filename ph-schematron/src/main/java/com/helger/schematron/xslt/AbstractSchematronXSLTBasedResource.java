@@ -53,6 +53,11 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
+import net.sf.saxon.jaxp.TransformerImpl;
+import net.sf.saxon.lib.StandardLogger;
+import net.sf.saxon.s9api.XsltTransformer;
+import net.sf.saxon.trace.XSLTTraceListener;
+
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT
  * transformations.
@@ -206,6 +211,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       return null;
     }
 
+    // Debug print the created XSLT document
+    if (false)
+      System.out.println (XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
+
     // Create result document
     final Document ret = XMLFactory.newDocument ();
 
@@ -229,12 +238,26 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
-    // Debug print the created XSLT document
-    if (false)
-      System.out.println (XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
-
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Applying Schematron XSLT on XML [start]");
+
+    // Enable this for hardcore Saxon debugging only
+    if (false)
+      if (aTransformer.getClass ().getName ().equals ("net.sf.saxon.jaxp.TransformerImpl"))
+      {
+        final XsltTransformer aXT = ((TransformerImpl) aTransformer).getUnderlyingXsltTransformer ();
+
+        aXT.setMessageListener ( (a, b, c) -> s_aLogger.info ("MessageListener: " + a + ", " + b + ", " + c));
+        aXT.setTraceFunctionDestination (new StandardLogger ());
+        if (false)
+          aXT.getUnderlyingController ().setTraceListener (new XSLTTraceListener ());
+        if (false)
+          System.out.println ("mode=" + aXT.getInitialMode ());
+        if (false)
+          System.out.println ("temp=" + aXT.getInitialTemplate ());
+        if (false)
+          System.out.println (aTransformer.getOutputProperties ());
+      }
 
     // Do the main transformation
     aTransformer.transform (new DOMSource (aXMLNode), new DOMResult (ret));
@@ -243,8 +266,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       s_aLogger.debug ("Applying Schematron XSLT on XML [end]");
 
     // Debug print the created SVRL document
-    if (false)
-      System.out.println (XMLWriter.getNodeAsString (ret));
+    if (true)
+      s_aLogger.info ("SVRL:\n" + XMLWriter.getNodeAsString (ret));
 
     return ret;
   }
@@ -253,7 +276,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLSource) throws Exception
   {
     final Document aDoc = applySchematronValidation (aXMLSource);
-    return aDoc == null ? null : SVRLReader.readXML (aDoc);
+    if (aDoc == null)
+      return null;
+
+    // Avoid NPE later on
+    if (aDoc.getDocumentElement () == null)
+      throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
+    return SVRLReader.readXML (aDoc);
   }
 
   @Override

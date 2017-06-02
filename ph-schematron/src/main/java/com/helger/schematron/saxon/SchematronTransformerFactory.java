@@ -99,6 +99,8 @@ public final class SchematronTransformerFactory
       // Debug only
       if (false)
         aFactory.setFeature (FeatureKeys.TRACE_OPTIMIZER_DECISIONS, true);
+      if (false)
+        aFactory.setAttribute (FeatureKeys.XSLT_VERSION, "2.0");
     }
     catch (final TransformerFactoryConfigurationError | TransformerConfigurationException ex)
     {
