@@ -78,7 +78,8 @@ VERSION INFORMATION
      * Original written for old namespace
      * http://www.topologi.com/resources/iso-pre-pro.xsl
 -->	
-<xslt:stylesheet version="1.0" xmlns:xslt="http://www.w3.org/1999/XSL/Transform" 
+<!-- [ph] change from 1.0 to 2.0 -->
+<xslt:stylesheet version="2.0" xmlns:xslt="http://www.w3.org/1999/XSL/Transform" 
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:iso="http://purl.oclc.org/dsdl/schematron"  
     xmlns:nvdl="http://purl.oclc.org/dsdl/nvdl"  
