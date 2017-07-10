@@ -12,7 +12,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 ## News and noteworthy
 
   * v4.3.2 - work in progress
-    * Updated to Saxon-HE 9.8.0-1
+    * Updated to Saxon-HE 9.8.0-3
     * Changed all XSLT scripts to use and create only XSLT 2.0 (because Saxon 9.8.0-1 does not support XSLT 1.0 anymore)
   * v4.3.1 - 2017-05-29
     * Updated to ph-commons 8.6.5
