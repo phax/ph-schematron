@@ -24,13 +24,13 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resourceresolver.DefaultResourceResolver;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.xml.ls.SimpleLSResourceResolver;
 
 /**
  * The default implementation of {@link ISchematronIncludeResolver} using the
- * {@link SimpleLSResourceResolver#doStandardResourceResolving(String, String)}
- * method internally.
+ * {@link DefaultResourceResolver#getResolvedResource(String, String)} method
+ * internally.
  *
  * @author Philip Helger
  */
@@ -64,7 +64,7 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
   @Nonnull
   public IReadableResource getResolvedSchematronResource (@Nonnull @Nonempty final String sHref) throws IOException
   {
-    return SimpleLSResourceResolver.doStandardResourceResolving (sHref, getBaseHref ());
+    return DefaultResourceResolver.getResolvedResource (sHref, getBaseHref ());
   }
 
   @Override
