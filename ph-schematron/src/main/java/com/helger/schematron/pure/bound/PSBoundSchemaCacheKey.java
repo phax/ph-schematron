@@ -22,6 +22,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
@@ -31,6 +33,7 @@ import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.hashcode.IHashCodeGenerator;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
@@ -51,6 +54,8 @@ import com.helger.xml.microdom.serialize.MicroWriter;
 @Immutable
 public class PSBoundSchemaCacheKey
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (PSBoundSchemaCacheKey.class);
+
   private final IReadableResource m_aResource;
   private final String m_sPhase;
   private final IPSErrorHandler m_aErrorHandler;
@@ -210,8 +215,9 @@ public class PSBoundSchemaCacheKey
                                                aSchema +
                                                " with query binding " +
                                                aQueryBinding);
-    if (false)
-      System.out.println ("PREPROC:\n" + MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
+    if (SchematronDebug.isShowPreprocessedSchematron ())
+      s_aLogger.info ("Preprocessed Schematron:\n" +
+                      MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }
 

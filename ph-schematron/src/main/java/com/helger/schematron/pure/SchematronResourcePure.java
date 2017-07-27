@@ -29,6 +29,8 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -44,6 +46,7 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.bound.PSBoundSchemaCache;
@@ -71,6 +74,8 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 @NotThreadSafe
 public class SchematronResourcePure extends AbstractSchematronResource
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourcePure.class);
+
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
   private XPathVariableResolver m_aVariableResolver;
@@ -344,7 +349,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    return getOrCreateBoundSchema ().validateComplete (aXMLNode);
+    final SchematronOutputType aSOT = getOrCreateBoundSchema ().validateComplete (aXMLNode);
+
+    // Debug print the created SVRL document
+    if (SchematronDebug.isShowCreatedSVRL ())
+      s_aLogger.info ("Created SVRL:\n" + SVRLWriter.createXMLString (aSOT));
+
+    return aSOT;
   }
 
   @Nullable

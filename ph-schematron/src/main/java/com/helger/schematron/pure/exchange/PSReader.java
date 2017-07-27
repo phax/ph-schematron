@@ -20,6 +20,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
@@ -28,6 +30,7 @@ import com.helger.commons.string.StringParser;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
@@ -48,6 +51,8 @@ import com.helger.xml.serialize.read.SAXReaderSettings;
 @Immutable
 public class PSReader
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (PSReader.class);
+
   private final IReadableResource m_aResource;
   private final IPSErrorHandler m_aErrorHandler;
   private final EntityResolver m_aEntityResolver;
@@ -1168,8 +1173,8 @@ public class PSReader
     if (aDoc == null || aDoc.getDocumentElement () == null)
       throw new SchematronReadException (m_aResource, "Failed to resolve includes in resource " + m_aResource);
 
-    if (false)
-      System.out.println (MicroWriter.getNodeAsString (aDoc));
+    if (SchematronDebug.isShowResolvedSourceSchematron ())
+      s_aLogger.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
 
     return readSchemaFromXML (aDoc.getDocumentElement ());
   }

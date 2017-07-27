@@ -45,6 +45,7 @@ import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.svrl.SVRLReader;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
@@ -69,8 +70,9 @@ import net.sf.saxon.trace.XSLTTraceListener;
  */
 @NotThreadSafe
 public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>>
-                                                          extends AbstractSchematronResource
-                                                          implements IGenericImplTrait <IMPLTYPE>
+                                                          extends
+                                                          AbstractSchematronResource implements
+                                                          IGenericImplTrait <IMPLTYPE>
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
@@ -213,8 +215,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     }
 
     // Debug print the created XSLT document
-    if (false)
-      System.out.println (XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
+    if (SchematronDebug.isShowCreatedXSLT ())
+      s_aLogger.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
@@ -274,8 +276,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       s_aLogger.debug ("Applying Schematron XSLT on XML [end]");
 
     // Debug print the created SVRL document
-    if (true)
-      s_aLogger.info ("SVRL:\n" + XMLWriter.getNodeAsString (ret));
+    if (SchematronDebug.isShowCreatedSVRL ())
+      s_aLogger.info ("Created SVRL:\n" + XMLWriter.getNodeAsString (ret));
 
     return ret;
   }
