@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+  * v4.3.3 - 2017-07-27
+    * Reverted to Saxon-HE 9.7.0_18 because of incompatibilities in production
   * v4.3.2 - 2017-07-25
     * Updated to Saxon-HE 9.8.0-3
     * Changed all XSLT scripts to use and create only XSLT 2.0 (because Saxon 9.8.x does not support XSLT 1.0 anymore)
@@ -70,7 +72,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>4.3.2</version>
+  <version>4.3.3</version>
 </dependency>
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
@@ -86,7 +88,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>4.3.2</version>
+  <version>4.3.3</version>
   <executions>
     <execution>
       <goals>
@@ -116,7 +118,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>4.3.2</version>
+  <version>4.3.3</version>
   <executions>
     <execution>
       <goals>
@@ -151,7 +153,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>4.3.2</version>
+  <version>4.3.3</version>
 </dependency>
 ```
 
