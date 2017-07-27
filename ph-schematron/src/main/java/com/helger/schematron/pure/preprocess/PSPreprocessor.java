@@ -21,9 +21,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsMap;
-import com.helger.commons.collection.ext.ICommonsNavigableMap;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.model.IPSElement;

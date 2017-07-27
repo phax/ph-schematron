@@ -17,15 +17,11 @@
 package com.helger.schematron.pure.bound;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ELockType;
-import com.helger.commons.annotation.IsLocked;
-import com.helger.commons.cache.AbstractNotifyingCache;
+import com.helger.commons.cache.Cache;
 import com.helger.schematron.SchematronException;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A cache for {@link IPSBoundSchema} instances. Use {@link #getInstance()} to
@@ -34,7 +30,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Philip Helger
  */
-public class PSBoundSchemaCache extends AbstractNotifyingCache <PSBoundSchemaCacheKey, IPSBoundSchema>
+public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSchema>
 {
   private static final class SingletonHolder
   {
@@ -46,36 +42,29 @@ public class PSBoundSchemaCache extends AbstractNotifyingCache <PSBoundSchemaCac
    */
   private PSBoundSchemaCache ()
   {
-    super (PSBoundSchemaCache.class.getName ());
+    this (PSBoundSchemaCache.class.getName ());
   }
 
   public PSBoundSchemaCache (@Nonnull final String sCacheName)
   {
-    super (sCacheName);
+    super (aKey -> {
+      ValueEnforcer.notNull (aKey, "Key");
+
+      try
+      {
+        return aKey.createBoundSchema ();
+      }
+      catch (final SchematronException ex)
+      {
+        // Convert to an unchecked exception :(
+        throw new IllegalArgumentException (ex);
+      }
+    }, CGlobal.ILLEGAL_UINT, sCacheName);
   }
 
   @Nonnull
   public static PSBoundSchemaCache getInstance ()
   {
     return SingletonHolder.s_aInstance;
-  }
-
-  @Override
-  @Nonnull
-  @IsLocked (ELockType.WRITE)
-  @SuppressFBWarnings ("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
-  protected IPSBoundSchema getValueToCache (@Nullable final PSBoundSchemaCacheKey aKey)
-  {
-    ValueEnforcer.notNull (aKey, "Key");
-
-    try
-    {
-      return aKey.createBoundSchema ();
-    }
-    catch (final SchematronException ex)
-    {
-      // Convert to an unchecked exception :(
-      throw new IllegalArgumentException (ex);
-    }
   }
 }

@@ -108,31 +108,32 @@ public final class SchematronResourcePureTest
                          "    <iso:rule context=\"chapter\">\n"
                          // This line contains the XPath error (Node xor number
                          // is invalid)
-                         + "      <iso:assert test=\"title xor 55\">Chapter should have a title</iso:assert>\n"
+                         +
+                         "      <iso:assert test=\"title xor 55\">Chapter should have a title</iso:assert>\n"
                          // This line contains the second XPath error (Node xor
                          // number is still invalid)
                          +
                          "      <iso:assert test=\"title xor 33\">Chapter should have a title</iso:assert>\n" +
-                         "    </iso:rule>\n" + "  </iso:pattern>\n" + "</iso:schema>";
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "</iso:schema>";
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
     final SchematronResourcePure aSch = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                                               .setErrorHandler (aErrorHandler);
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
-    assertEquals ("Expected three errors: " +
-                  aErrorHandler.getErrorList ().toString (),
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
                   3,
-                  aErrorHandler.getErrorList ().getSize ());
+                  aErrorHandler.getErrorList ().size ());
     if (false)
       System.out.println (aErrorHandler.getErrorList ().toString ());
 
     // Perform complete validation
     aErrorHandler.clearResourceErrors ();
     aSch.validateCompletely ();
-    assertEquals ("Expected three errors: " +
-                  aErrorHandler.getErrorList ().toString (),
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
                   3,
-                  aErrorHandler.getErrorList ().getSize ());
+                  aErrorHandler.getErrorList ().size ());
   }
 
   @Test
@@ -151,13 +152,18 @@ public final class SchematronResourcePureTest
                          "    <iso:title>A very simple pattern with a title</iso:title>\n" +
                          "    <iso:rule context=\"chapter\">\n"
                          // Custom variable
-                         + "      <iso:assert test=\"$title-element\">Chapter should have a title</iso:assert>\n"
+                         +
+                         "      <iso:assert test=\"$title-element\">Chapter should have a title</iso:assert>\n"
                          // Custom function
-                         + "      <iso:report test=\"java:my-count(para) = 2\">\n"
+                         +
+                         "      <iso:report test=\"java:my-count(para) = 2\">\n"
                          // Custom function
                          +
                          "      <iso:value-of select=\"java:my-count(para)\"/> paragraphs found</iso:report>\n" +
-                         "    </iso:rule>\n" + "  </iso:pattern>\n" + "\n" + "</iso:schema>";
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "\n" +
+                         "</iso:schema>";
 
     // Test without variable and function resolver
     // -> an error is expected, but we don't need to log it
@@ -206,7 +212,10 @@ public final class SchematronResourcePureTest
                          // Custom function
                          +
                          "      Node details: <iso:value-of select=\"java:get-nodelist-details(para)\"/> - end</iso:report>\n" +
-                         "    </iso:rule>\n" + "  </iso:pattern>\n" + "\n" + "</iso:schema>";
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "\n" +
+                         "</iso:schema>";
 
     // Test with variable and function resolver
     final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
@@ -273,7 +282,10 @@ public final class SchematronResourcePureTest
                          // Custom function
                          +
                          "      Node kind: <iso:value-of select='functx:node-kind(para)'/> - end</iso:report>\n" +
-                         "    </iso:rule>\n" + "  </iso:pattern>\n" + "\n" + "</iso:schema>";
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "\n" +
+                         "</iso:schema>";
 
     final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
 

@@ -38,8 +38,8 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsLinkedHashMap;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.CommonsLinkedHashMap;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;

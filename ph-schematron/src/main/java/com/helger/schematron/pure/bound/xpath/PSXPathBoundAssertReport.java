@@ -22,8 +22,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 

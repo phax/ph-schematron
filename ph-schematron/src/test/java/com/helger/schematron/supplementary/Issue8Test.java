@@ -25,8 +25,8 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.SVRLWriter;
 import com.helger.schematron.xslt.SchematronResourceSCH;

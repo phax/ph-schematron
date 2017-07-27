@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsNavigableMap;
+import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.commons.lang.ICloneable;
 
 /**

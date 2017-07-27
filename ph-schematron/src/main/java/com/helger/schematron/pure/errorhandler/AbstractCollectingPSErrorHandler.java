@@ -106,7 +106,7 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
   @Nonnull
   public EChange clearResourceErrors ()
   {
-    return m_aErrorList.clear ();
+    return m_aErrorList.removeAll ();
   }
 
   /**

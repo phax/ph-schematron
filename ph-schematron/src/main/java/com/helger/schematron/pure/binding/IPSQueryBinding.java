@@ -26,7 +26,7 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsNavigableMap;
+import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;

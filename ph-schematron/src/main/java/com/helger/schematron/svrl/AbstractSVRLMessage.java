@@ -25,8 +25,8 @@ import javax.annotation.Nullable;
 import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsArrayList;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.location.ErrorLocation;
 import com.helger.commons.regex.RegExHelper;

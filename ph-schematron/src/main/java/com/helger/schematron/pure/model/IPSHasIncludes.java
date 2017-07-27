@@ -19,7 +19,7 @@ package com.helger.schematron.pure.model;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsList;
 
 /**
  * Base interface for Pure Schematron elements that support includes.

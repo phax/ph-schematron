@@ -19,8 +19,8 @@ package com.helger.schematron.pure.model;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 
 /**
  * Base interface for all objects having {@link PSLet} elements contained

@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 import javax.xml.namespace.NamespaceContext;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.ext.CommonsArrayList;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.StringHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 

@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsTreeMap;
-import com.helger.commons.collection.ext.ICommonsNavigableMap;
+import com.helger.commons.collection.impl.CommonsTreeMap;
+import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.commons.compare.IComparator;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.SchematronException;

@@ -19,8 +19,8 @@ package com.helger.schematron.pure.preprocess;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.helger.commons.collection.ext.CommonsHashSet;
-import com.helger.commons.collection.ext.ICommonsSet;
+import com.helger.commons.collection.impl.CommonsHashSet;
+import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.string.ToStringGenerator;
 
 /**

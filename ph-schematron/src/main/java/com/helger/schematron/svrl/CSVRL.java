@@ -25,7 +25,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;

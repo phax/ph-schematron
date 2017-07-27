@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 
 /**
  * Base interface for Pure Schematron elements that support foreign attributes.

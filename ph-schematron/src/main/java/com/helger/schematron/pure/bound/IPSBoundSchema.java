@@ -23,7 +23,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.binding.IPSQueryBinding;

@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.helger.commons.concurrent.ManagedExecutorService;
+import com.helger.commons.concurrent.ExecutorServiceHelper;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -103,7 +103,7 @@ public final class SchematronResourceSCHCacheTest
         }
       });
     }
-    new ManagedExecutorService (aSenderThreadPool).shutdownAndWaitUntilAllTasksAreFinished ();
+    ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
     final long nEnd = System.nanoTime ();
     s_aLogger.info ("Async Total: " +
                     ((nEnd - nStart) / 1000) +

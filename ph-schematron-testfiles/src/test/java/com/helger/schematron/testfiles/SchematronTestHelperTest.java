@@ -18,8 +18,6 @@ package com.helger.schematron.testfiles;
 
 import org.junit.Test;
 
-import com.helger.schematron.testfiles.SchematronTestHelper;
-
 /**
  * Unit test class for class {@link SchematronTestHelper}.
  *

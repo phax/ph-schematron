@@ -31,7 +31,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;

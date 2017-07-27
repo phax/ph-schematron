@@ -22,10 +22,10 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.CommonsTreeSet;
-import com.helger.commons.collection.ext.ICommonsMap;
-import com.helger.commons.collection.ext.ICommonsSortedSet;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.CommonsTreeSet;
+import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSRule;
