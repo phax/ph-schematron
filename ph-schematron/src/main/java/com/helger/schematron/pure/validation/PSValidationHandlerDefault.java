@@ -38,7 +38,8 @@ import com.helger.schematron.pure.model.PSSchema;
 @NotThreadSafe
 public class PSValidationHandlerDefault implements IPSValidationHandler
 {
-  public void onStart (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  public void onStart (@Nonnull final PSSchema aSchema,
+                       @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     // empty
   }
@@ -73,7 +74,8 @@ public class PSValidationHandlerDefault implements IPSValidationHandler
     return EContinue.CONTINUE;
   }
 
-  public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  public void onEnd (@Nonnull final PSSchema aSchema,
+                     @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     // empty
   }

@@ -25,7 +25,9 @@ import com.helger.commons.lang.ICloneable;
  * @param <IMPLTYPE>
  *        The real implementation type
  */
-public interface IPSClonableElement <IMPLTYPE extends IPSClonableElement <IMPLTYPE>> extends IPSElement, ICloneable <IMPLTYPE>
+public interface IPSClonableElement <IMPLTYPE extends IPSClonableElement <IMPLTYPE>> extends
+                                    IPSElement,
+                                    ICloneable <IMPLTYPE>
 {
   /* empty */
 }

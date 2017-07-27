@@ -59,9 +59,7 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
                                              aSourceElement == null ? null
                                                                     : ClassHelper.getClassLocalName (aSourceElement),
                                              aSourceElement instanceof IPSHasID &&
-                                                                                                                      ((IPSHasID) aSourceElement).hasID () ? "ID " +
-                                                                                                                                                             ((IPSHasID) aSourceElement).getID ()
-                                                                                                                                                           : null,
+                                                                                                                      ((IPSHasID) aSourceElement).hasID () ? "ID " + ((IPSHasID) aSourceElement).getID () : null,
                                              sMessage);
   }
 

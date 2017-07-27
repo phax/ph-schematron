@@ -189,7 +189,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
         final String sXML = XMLWriter.getNodeAsString (aResult2.getNode ());
         SimpleFileIO.writeFile (new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
                                           FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                                                                ".min-xslt.sch"),
+                                                                                               ".min-xslt.sch"),
                                 sXML,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
       }
