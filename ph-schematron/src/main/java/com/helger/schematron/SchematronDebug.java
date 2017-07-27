@@ -37,16 +37,16 @@ public final class SchematronDebug
    * @see #setSaveIntermediateXSLTFiles(boolean)
    * @see #setShowCreatedXSLT(boolean)
    * @see #setShowCreatedSVRL(boolean)
-   * @see #setShowPreprocessedSchematron(boolean)
    * @see #setShowResolvedSourceSchematron(boolean)
+   * @see #setShowPreprocessedSchematron(boolean)
    */
   public static void setDebugMode (final boolean bDebugMode)
   {
     setSaveIntermediateXSLTFiles (bDebugMode);
     setShowCreatedXSLT (bDebugMode);
     setShowCreatedSVRL (bDebugMode);
-    setShowPreprocessedSchematron (bDebugMode);
     setShowResolvedSourceSchematron (bDebugMode);
+    setShowPreprocessedSchematron (bDebugMode);
   }
 
   /**
@@ -117,21 +117,11 @@ public final class SchematronDebug
   }
 
   /**
-   * @return <code>true</code> to show the created SVRL.
+   * @return <code>true</code> to log the created SVRL.
    */
   public static boolean isShowCreatedSVRL ()
   {
     return s_aShowCreatedSVRL.get ();
-  }
-
-  public static void setShowPreprocessedSchematron (final boolean bShow)
-  {
-    s_aShowPreprocessedSchematron.set (bShow);
-  }
-
-  public static boolean isShowPreprocessedSchematron ()
-  {
-    return s_aShowPreprocessedSchematron.get ();
   }
 
   public static void setShowResolvedSourceSchematron (final boolean bShow)
@@ -139,8 +129,26 @@ public final class SchematronDebug
     s_aShowResolvedSourceSchematron.set (bShow);
   }
 
+  /**
+   * @return <code>true</code> to log the read, with includes resolved,
+   *         Schematron. This is only applied in pure mode.
+   */
   public static boolean isShowResolvedSourceSchematron ()
   {
     return s_aShowResolvedSourceSchematron.get ();
+  }
+
+  public static void setShowPreprocessedSchematron (final boolean bShow)
+  {
+    s_aShowPreprocessedSchematron.set (bShow);
+  }
+
+  /**
+   * @return <code>true</code> to log the created preprocessed Schematron. This
+   *         is only applied in pure mode.
+   */
+  public static boolean isShowPreprocessedSchematron ()
+  {
+    return s_aShowPreprocessedSchematron.get ();
   }
 }
