@@ -19,13 +19,11 @@ package com.helger.schematron.svrl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.transform.Result;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.state.ESuccess;
 
 /**
  * This is the XML writer for Schematron SVRL documents. It reads
@@ -42,22 +40,6 @@ public final class SVRLWriter
 
   private SVRLWriter ()
   {}
-
-  /**
-   * Convert the passed schematron output element into an W3C Document node.
-   *
-   * @param aSchematronOutput
-   *        The schematron output to be converted. May not be <code>null</code>.
-   * @param aResult
-   *        The result object to write to.
-   * @return {@link ESuccess}
-   */
-  @Nonnull
-  public static ESuccess writeSVRL (@Nonnull final SchematronOutputType aSchematronOutput,
-                                    @Nonnull final Result aResult)
-  {
-    return new SVRLMarshaller ().write (aSchematronOutput, aResult);
-  }
 
   /**
    * Convert the passed schematron output element into an W3C Document node.

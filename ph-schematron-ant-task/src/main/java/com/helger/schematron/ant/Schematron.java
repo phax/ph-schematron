@@ -52,11 +52,10 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.CollectingTransformErrorListener;
-import com.helger.xml.transform.TransformResultFactory;
 import com.helger.xml.transform.TransformSourceFactory;
 
 /**
@@ -321,7 +320,7 @@ public class Schematron extends Task
               if (!aSVRLFile.getParentFile ().mkdirs ())
                 log ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!", Project.MSG_ERR);
 
-              if (SVRLWriter.writeSVRL (aSOT, TransformResultFactory.create (aSVRLFile)).isSuccess ())
+              if (new SVRLMarshaller ().write (aSOT, aSVRLFile).isSuccess ())
                 log ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_INFO);
               else
                 log ("Error saving SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_ERR);

@@ -43,12 +43,11 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 import com.helger.xml.transform.CollectingTransformErrorListener;
-import com.helger.xml.transform.TransformResultFactory;
 import com.helger.xml.transform.TransformSourceFactory;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -360,7 +359,7 @@ public final class SchematronValidationMojo extends AbstractMojo
             if (!aSVRLFile.getParentFile ().mkdirs ())
               getLog ().error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!");
 
-            if (SVRLWriter.writeSVRL (aSOT, TransformResultFactory.create (aSVRLFile)).isSuccess ())
+            if (new SVRLMarshaller ().write (aSOT, aSVRLFile).isSuccess ())
               getLog ().info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
             else
               getLog ().error ("Error saving SVRL file '" + aSVRLFile.getPath () + "'");
