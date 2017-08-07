@@ -19,7 +19,6 @@ package com.helger.schematron.svrl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.transform.Source;
 
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
@@ -69,19 +68,5 @@ public final class SVRLReader
   public static SchematronOutputType readXML (@Nonnull final Node aNode)
   {
     return new SVRLMarshaller ().read (aNode);
-  }
-
-  /**
-   * Convert the passed object into a SVRL domain object
-   *
-   * @param aSource
-   *        The source to be converted. May not be <code>null</code>.
-   * @return <code>null</code> if the passed object could not be interpreted as
-   *         SVRL.
-   */
-  @Nullable
-  public static SchematronOutputType readXML (@Nonnull final Source aSource)
-  {
-    return new SVRLMarshaller ().read (aSource);
   }
 }
