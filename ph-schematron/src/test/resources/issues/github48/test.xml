@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<file>
+  <Customer type="abc">
+    <firstname>abc</firstname>
+  </Customer>
+  <Customer>
+    <firstname>def</firstname>
+  </Customer>
+</file>
