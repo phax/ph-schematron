@@ -10,7 +10,9 @@ The most common way is to convert the source Schematron file to an XSLT script a
 Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
 
 ## News and noteworthy
-
+  * v5.0.0 - work in progress
+    * Updated to ph-commons 9.0.0
+    * Added new ANT task for preprocessing Schematron files only
   * v4.3.4 - 2017-07-27
     * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
   * v4.3.3 - 2017-07-27
@@ -159,12 +161,15 @@ Add the following to your pom.xml to use this artifact:
 </dependency>
 ```
 
-# Ant task
+# Ant tasks
 
 Since ph-schematron 4.3.0 there is an Apache Ant task that enables you to validate XML files against Schematron rules.
 As I'm not an Ant expert please forgive me if some of the explanations are not 100% accurate.
+ph-schematron 5.0.0 adds a new task for preprocessing Schematron files. 
 
-## Declare the task
+## Validate documents with Schematron (since 4.3.0)
+
+### Declare the task
 
 There is currently only one task:
 ```xml
@@ -174,7 +179,7 @@ There is currently only one task:
 For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
 Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script. 
 
-## Validate an XML file
+### Execute task
 
 The validation itself looks like this:
 ```xml
@@ -196,7 +201,7 @@ and finally you name the XML files to be validated (as resource collections - e.
 
 The `schematron` element allows for the following attributes:
   * `File` **schematronFile** - The Schematron file to be used for validation
-  * `String` **schematronProcessingEngine** - The internal engine to be used. Must be one of `pure`, `schematron` or `xslt`. The default is `schematron`.
+  * `String` **schematronProcessingEngine** - The internal engine to be used. Must be one of `pure`, `schematron` or `xslt`. The default is `schematron`. In v5.0.0 `sch` was added as an alias for `schematron`.
   * `File` **svrlDirectory** - An optional directory where the SVRL files should be written to.
   * `String` **phaseName** - The optional Schematron phase to be used. Note: this is only available when using the processing engine `pure` or `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created.
   * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
@@ -218,6 +223,41 @@ Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver
     </schematron>
   </target>
 ```
+
+
+## Preprocess a Schematron file (since 5.0.0)
+
+### Declare the task
+
+There is currently only one task:
+```xml
+<taskdef name="schematron-preprocess" classname="com.helger.schematron.ant.SchematronPreprocess" />
+```
+
+For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
+Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script.
+
+### Execute task
+
+The validation itself looks like this:
+```xml
+  <target name="validate">
+...
+    <schematron-preprocess srcFile="src.sch" dstFile="dst.sch" />
+...
+  </target>
+```
+
+Basically you define source and destination Schematron files and that's it.
+Additionally you can define a few settings controlling the output.
+
+The `schematron` element allows for the following attributes:
+  * `File` **srcFile** - The source Schematron file to be preprocessed. This parameter is required.
+  * `File` **dstFile** - The destination file in which the preprocessed content should be written. This parameter is required.
+  * `boolean` **keepTitles** - `true` to keep `&lt;title&gt;`-elements, `false` to delete them. Default is `false`.
+  * `boolean` **keepDiagnostics** - `true` to keep `&lt;diagnostic&gt;`-elements, `false` to delete them. Default is `false`.
+  * `boolean` **keepReports** - `true` to keep `&lt;report&gt;`-elements, `false` to change them to `&lt;assert&gt;`-elements. Default is `false`.
+  * `boolean` **keepEmptyPatterns** - `true` to keep `&lt;pattern&gt;`-elements without rules, `false` to delete them. Default is `true`.
 
 ---
 
