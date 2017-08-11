@@ -46,6 +46,9 @@ public enum ESchematronMode implements IHasID <String>
   @Nullable
   public static ESchematronMode getFromIDOrNull (@Nullable final String sID)
   {
-    return EnumHelper.getFromIDOrNull (ESchematronMode.class, sID);
+    // Allowing "sch" as synonym for "schematron"
+    if ("sch".equalsIgnoreCase (sID))
+      return SCHEMATRON;
+    return EnumHelper.getFromIDCaseInsensitiveOrNull (ESchematronMode.class, sID);
   }
 }
