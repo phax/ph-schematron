@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  <taskdef name="schematron-preprocess" classname="com.helger.schematron.ant.SchematronPreprocess" />
+  <target name="check">
+    <!-- pre-process -->
+    <schematron-preprocess srcFile="src.sch" dstFile="dst.sch" />
+    <!-- validate -->
+    <schematron schematronFile="dst.sch" 
+                expectSuccess="false"
+                schematronProcessingEngine="sch">
+      <fileset dir=".">
+        <include name="test.xml" />
+      </fileset>
+    </schematron>
+  </target>
+</project>
