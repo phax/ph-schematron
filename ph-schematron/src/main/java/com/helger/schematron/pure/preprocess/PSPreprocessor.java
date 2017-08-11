@@ -93,6 +93,13 @@ public class PSPreprocessor
     return m_bKeepTitles;
   }
 
+  /**
+   * Should &lt;title&gt;-elements be kept?
+   *
+   * @param bKeepTitles
+   *        <code>true</code> to keep titles, <code>false</code> otherwise.
+   * @return this for chaining
+   */
   @Nonnull
   public PSPreprocessor setKeepTitles (final boolean bKeepTitles)
   {
@@ -109,6 +116,13 @@ public class PSPreprocessor
     return m_bKeepDiagnostics;
   }
 
+  /**
+   * Should &lt;diagnostics&gt;-elements be kept?
+   *
+   * @param bKeepDiagnostics
+   *        <code>true</code> to keep diagnostics, <code>false</code> otherwise.
+   * @return this for chaining
+   */
   @Nonnull
   public PSPreprocessor setKeepDiagnostics (final boolean bKeepDiagnostics)
   {
@@ -117,14 +131,24 @@ public class PSPreprocessor
   }
 
   /**
-   * @return <code>true</code> if &lt;report&gt;-elements should be kept.
-   *         Default is {@value #DEFAULT_KEEP_REPORTS}.
+   * @return <code>true</code> if &lt;report&gt;-elements should be kept,
+   *         <code>false</code> if they should be converted to
+   *         &lt;assert&gt;-elements. Default is {@value #DEFAULT_KEEP_REPORTS}.
    */
   public boolean isKeepReports ()
   {
     return m_bKeepReports;
   }
 
+  /**
+   * Should &lt;report&gt;-elements be kept or should they be converted to
+   * &lt;assert&gt;-elements?
+   *
+   * @param bKeepReports
+   *        <code>true</code> to keep &lt;report&gt;-elements,
+   *        <code>false</code> to change them to &lt;assert&gt;-elements
+   * @return this for chaining
+   */
   @Nonnull
   public PSPreprocessor setKeepReports (final boolean bKeepReports)
   {
@@ -141,6 +165,14 @@ public class PSPreprocessor
     return m_bKeepEmptyPatterns;
   }
 
+  /**
+   * Should &lt;pattern&gt;-elements without a single rule be kept or deleted?
+   *
+   * @param bKeepEmptyPatterns
+   *        <code>true</code> to keep &lt;pattern&gt;-elements without a rule,
+   *        <code>false</code> to delete them
+   * @return this for chaining
+   */
   @Nonnull
   public PSPreprocessor setKeepEmptyPatterns (final boolean bKeepEmptyPatterns)
   {
