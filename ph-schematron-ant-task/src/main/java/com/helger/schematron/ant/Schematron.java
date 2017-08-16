@@ -50,7 +50,7 @@ import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
@@ -326,19 +326,19 @@ public class Schematron extends Task
                 log ("Error saving SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_ERR);
             }
 
-            final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSOT);
+            final ICommonsList <AbstractSVRLMessage> aErrorMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
             if (bExpectSuccess)
             {
               // No failed assertions expected
-              if (aFailedAsserts.isNotEmpty ())
+              if (aErrorMessages.isNotEmpty ())
               {
-                final String sMessage = aFailedAsserts.size () +
-                                        " failed Schematron assertions for XML file '" +
+                final String sMessage = aErrorMessages.size () +
+                                        " Schematron errors for XML file '" +
                                         aXMLFile.getPath () +
                                         "'";
                 log (sMessage, Project.MSG_ERR);
-                aFailedAsserts.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
-                                                  Project.MSG_ERR));
+                aErrorMessages.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
+                                             Project.MSG_ERR));
                 throw new BuildException (sMessage);
               }
 
@@ -353,11 +353,9 @@ public class Schematron extends Task
             else
             {
               // At least one failed assertions expected
-              if (aFailedAsserts.isEmpty ())
+              if (aErrorMessages.isEmpty ())
               {
-                final String sMessage = "No failed Schematron assertions for erroneous XML file '" +
-                                        aXMLFile.getPath () +
-                                        "'";
+                final String sMessage = "No Schematron errors for erroneous XML file '" + aXMLFile.getPath () + "'";
                 log (sMessage, Project.MSG_ERR);
                 throw new BuildException (sMessage);
               }
@@ -368,8 +366,8 @@ public class Schematron extends Task
                    "' was validated against Schematron '" +
                    aSch.getResource ().getPath () +
                    "' and " +
-                   aFailedAsserts.size () +
-                   " assertions failed (as expected)",
+                   aErrorMessages.size () +
+                   " errors were found (as expected)",
                    Project.MSG_INFO);
             }
           }
