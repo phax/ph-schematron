@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.svrl;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -40,7 +41,7 @@ import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
  *
  * @author Philip Helger
  */
-public abstract class AbstractSVRLMessage
+public abstract class AbstractSVRLMessage implements Serializable
 {
   protected ICommonsList <DiagnosticReference> m_aDiagnosticReferences;
   protected String m_sText;
@@ -71,9 +72,6 @@ public abstract class AbstractSVRLMessage
     }
     return sResult;
   }
-
-  public AbstractSVRLMessage ()
-  {}
 
   public AbstractSVRLMessage (@Nullable final List <DiagnosticReference> aDiagnosticReferences,
                               @Nullable final String sText,
