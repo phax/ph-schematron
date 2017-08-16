@@ -341,6 +341,14 @@ public class Schematron extends Task
                                                   Project.MSG_ERR));
                 throw new BuildException (sMessage);
               }
+
+              // Success as expected
+              log ("XML file '" +
+                   aXMLFile.getPath () +
+                   "' was validated against Schematron '" +
+                   aSch.getResource ().getPath () +
+                   "' and matches the rules",
+                   Project.MSG_INFO);
             }
             else
             {
@@ -353,6 +361,16 @@ public class Schematron extends Task
                 log (sMessage, Project.MSG_ERR);
                 throw new BuildException (sMessage);
               }
+
+              // Success as expected
+              log ("XML file '" +
+                   aXMLFile.getPath () +
+                   "' was validated against Schematron '" +
+                   aSch.getResource ().getPath () +
+                   "' and " +
+                   aFailedAsserts.size () +
+                   " assertions failed (as expected)",
+                   Project.MSG_INFO);
             }
           }
           catch (final BuildException up)
