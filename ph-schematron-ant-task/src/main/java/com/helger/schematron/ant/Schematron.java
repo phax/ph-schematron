@@ -326,19 +326,25 @@ public class Schematron extends Task
                 log ("Error saving SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_ERR);
             }
 
-            final ICommonsList <AbstractSVRLMessage> aErrorMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
+            final ICommonsList <AbstractSVRLMessage> aMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
+            final int nErrorMessages = aMessages.getCount (x -> x.getFlag ().isError ());
+            final int nWarningMessages = aMessages.size () - nErrorMessages;
+            final String sErrors = nErrorMessages + " Schematron error" + (nErrorMessages == 1 ? "" : "s");
+            final String sWarnings = nWarningMessages + " Schematron warning" + (nWarningMessages == 1 ? "" : "s");
+
             if (bExpectSuccess)
             {
               // No failed assertions expected
-              if (aErrorMessages.isNotEmpty ())
+              if (nErrorMessages > 0)
               {
-                final String sMessage = aErrorMessages.size () +
-                                        " Schematron errors for XML file '" +
+                final String sMessage = sErrors +
+                                        (nWarningMessages > 0 ? " and " + sWarnings : "") +
+                                        " for XML file '" +
                                         aXMLFile.getPath () +
                                         "'";
                 log (sMessage, Project.MSG_ERR);
-                aErrorMessages.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
-                                             Project.MSG_ERR));
+                aMessages.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
+                                             x.getFlag ().isError () ? Project.MSG_ERR : Project.MSG_WARN));
                 throw new BuildException (sMessage);
               }
 
@@ -347,15 +353,19 @@ public class Schematron extends Task
                    aXMLFile.getPath () +
                    "' was validated against Schematron '" +
                    aSch.getResource ().getPath () +
-                   "' and matches the rules",
+                   "' and matches the rules" +
+                   (nWarningMessages > 0 ? " - only " + sWarnings + " are contained" : ""),
                    Project.MSG_INFO);
             }
             else
             {
               // At least one failed assertions expected
-              if (aErrorMessages.isEmpty ())
+              if (nErrorMessages == 0)
               {
-                final String sMessage = "No Schematron errors for erroneous XML file '" + aXMLFile.getPath () + "'";
+                String sMessage = "No Schematron errors for erroneous XML file '" + aXMLFile.getPath () + "'";
+                if (nWarningMessages > 0)
+                  sMessage += " - only " + sWarnings + " are contained";
+
                 log (sMessage, Project.MSG_ERR);
                 throw new BuildException (sMessage);
               }
@@ -365,9 +375,10 @@ public class Schematron extends Task
                    aXMLFile.getPath () +
                    "' was validated against Schematron '" +
                    aSch.getResource ().getPath () +
-                   "' and " +
-                   aErrorMessages.size () +
-                   " errors were found (as expected)",
+                   "' " +
+                   sErrors +
+                   (nWarningMessages > 0 ? " and " + sWarnings : "") +
+                   " were found (as expected)",
                    Project.MSG_INFO);
             }
           }
