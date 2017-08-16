@@ -138,6 +138,29 @@ public final class SVRLHelper
   }
 
   /**
+   * Get a list of all failed assertions and successful reports in a given
+   * schematron output.
+   *
+   * @param aSchematronOutput
+   *        The schematron output to be used. May not be <code>null</code>.
+   * @return A non-<code>null</code> list with all failed assertions and
+   *         successful reports.
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public static ICommonsList <AbstractSVRLMessage> getAllFailedAssertionsAndSuccessfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
+  {
+    final ICommonsList <AbstractSVRLMessage> ret = new CommonsArrayList <> ();
+    for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
+      if (aObj instanceof FailedAssert)
+        ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
+      else
+        if (aObj instanceof SuccessfulReport)
+          ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
+    return ret;
+  }
+
+  /**
    * Get the error level associated with a single failed assertion.
    *
    * @param aFailedAssert
