@@ -81,7 +81,7 @@ public abstract class AbstractSVRLMessage implements Serializable
                               @Nullable final IErrorLevel aFlag)
   {
     m_aDiagnosticReferences = new CommonsArrayList <> (aDiagnosticReferences);
-    m_sText = sText;
+    m_sText = StringHelper.trim (sText);
     m_sLocation = sLocation;
     m_sTest = sTest;
     m_sRole = sRole;
