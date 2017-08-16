@@ -41,6 +41,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.error.ErrorTextProvider;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;
@@ -326,6 +327,9 @@ public class Schematron extends Task
                 log ("Error saving SVRL file '" + aSVRLFile.getPath () + "'", Project.MSG_ERR);
             }
 
+            if (false)
+              System.out.println (new SVRLMarshaller ().getAsString (aSOT));
+
             final ICommonsList <AbstractSVRLMessage> aMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
             final int nErrorMessages = aMessages.getCount (x -> x.getFlag ().isError ());
             final int nWarningMessages = aMessages.size () - nErrorMessages;
@@ -343,8 +347,12 @@ public class Schematron extends Task
                                         aXMLFile.getPath () +
                                         "'";
                 log (sMessage, Project.MSG_ERR);
-                aMessages.forEach (x -> log (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US),
-                                             x.getFlag ().isError () ? Project.MSG_ERR : Project.MSG_WARN));
+
+                for (final AbstractSVRLMessage aMsg : aMessages)
+                {
+                  log (ErrorTextProvider.DEFAULT.getErrorText (aMsg.getAsResourceError (aXMLFile.getPath ()), Locale.US),
+                       aMsg.getFlag ().isError () ? Project.MSG_ERR : Project.MSG_WARN);
+                }
                 throw new BuildException (sMessage);
               }
 

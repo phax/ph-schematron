@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  <target name="check">
+    <!--This is supposed to fail!-->
+    <schematron schematronFile="src.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="pure">
+      <fileset dir=".">
+        <include name="test.xml" />
+      </fileset>
+    </schematron>
+  </target>
+</project>
