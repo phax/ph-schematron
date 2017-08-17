@@ -189,7 +189,7 @@ public final class SchematronResourcePureTest
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      2 paragraphs found", SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      2 paragraphs found".trim (), SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -258,7 +258,7 @@ public final class SchematronResourcePureTest
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node details: para[First para], para[Second para] - end",
+    assertEquals ("\n      Node details: para[First para], para[Second para] - end".trim (),
                   SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
@@ -303,7 +303,8 @@ public final class SchematronResourcePureTest
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node kind: element - end", SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      Node kind: element - end".trim (),
+                  SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
