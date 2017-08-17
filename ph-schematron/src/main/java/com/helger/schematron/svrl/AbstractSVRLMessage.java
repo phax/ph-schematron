@@ -29,7 +29,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.error.location.ErrorLocation;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -130,7 +130,7 @@ public abstract class AbstractSVRLMessage implements Serializable
   {
     return new SVRLErrorBuilder (m_sTest).setErrorLevel (m_aFlag)
                                          .setErrorFieldName (m_sLocation)
-                                         .setErrorLocation (new ErrorLocation (sResourceName))
+                                         .setErrorLocation (new SimpleLocation (sResourceName))
                                          .setErrorText (m_sText)
                                          .build ();
   }

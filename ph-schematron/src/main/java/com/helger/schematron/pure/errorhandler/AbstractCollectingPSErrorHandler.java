@@ -26,9 +26,9 @@ import com.helger.commons.error.SingleError.SingleErrorBuilder;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.error.location.ErrorLocation;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.lang.ClassHelper;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.IPSElement;
@@ -62,7 +62,7 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
     final SingleErrorBuilder aBuilder = SingleError.builder ()
                                                    .setErrorLevel (aErrorLevel)
                                                    .setErrorLocation (aRes == null ? null
-                                                                                   : new ErrorLocation (aRes.getResourceID ()))
+                                                                                   : new SimpleLocation (aRes.getResourceID ()))
                                                    .setErrorText (sMessage)
                                                    .setLinkedException (t);
 

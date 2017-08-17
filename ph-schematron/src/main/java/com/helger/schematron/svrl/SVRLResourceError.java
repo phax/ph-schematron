@@ -24,9 +24,9 @@ import javax.annotation.Nullable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.error.location.IErrorLocation;
 import com.helger.commons.error.text.IHasErrorText;
 import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.location.ILocation;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -61,7 +61,7 @@ public class SVRLResourceError extends SingleError
   public SVRLResourceError (@Nonnull final IErrorLevel aErrorLevel,
                             @Nullable final String sErrorID,
                             @Nullable final String sErrorFieldName,
-                            @Nullable final IErrorLocation aErrorLocation,
+                            @Nullable final ILocation aErrorLocation,
                             @Nullable final IHasErrorText aErrorText,
                             @Nullable final Throwable aLinkedException,
                             @Nonnull final String sTest)
