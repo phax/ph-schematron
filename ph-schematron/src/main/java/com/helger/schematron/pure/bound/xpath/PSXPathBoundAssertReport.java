@@ -22,6 +22,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
@@ -92,6 +93,7 @@ public class PSXPathBoundAssertReport
    *         the source assert/report.
    */
   @Nonnull
+  @ReturnsMutableCopy
   public ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
   {
     return m_aBoundContent.getClone ();

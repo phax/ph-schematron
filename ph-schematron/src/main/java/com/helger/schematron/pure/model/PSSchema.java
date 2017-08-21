@@ -66,6 +66,7 @@ public class PSSchema implements
                       IPSHasRichGroup
 {
   private final IReadableResource m_aResource;
+  private String m_sBaseURI;
   private String m_sID;
   private PSRichGroup m_aRich;
   private String m_sSchemaVersion;
@@ -101,6 +102,7 @@ public class PSSchema implements
   public PSSchema (@Nullable final IReadableResource aResource)
   {
     m_aResource = aResource;
+    m_sBaseURI = aResource == null ? null : m_aResource.getAsURL ().toExternalForm ();
   }
 
   /**
@@ -111,6 +113,22 @@ public class PSSchema implements
   public IReadableResource getResource ()
   {
     return m_aResource;
+  }
+
+  /**
+   * @return The base URI for XPath evaluation or <code>null</code> if none was
+   *         provided and the schema was created in memory.
+   * @see #setBaseURI(String)
+   */
+  @Nullable
+  public String getBaseURI ()
+  {
+    return m_sBaseURI;
+  }
+
+  public void setBaseURI (@Nullable final String sBaseURI)
+  {
+    m_sBaseURI = sBaseURI;
   }
 
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)

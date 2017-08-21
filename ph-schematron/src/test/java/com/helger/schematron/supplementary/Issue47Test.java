@@ -26,12 +26,26 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLWriter;
 
 public final class Issue47Test
 {
+
+  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  {
+    final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
+    aSCH.setFunctionResolver ( (aFunctionName, aArity) -> {
+      System.out.println (aFunctionName + " - " + aArity);
+      return null;
+    });
+
+    // Perform validation
+    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertNotNull (aSVRL);
+    System.out.println (SVRLWriter.createXMLString (aSVRL));
+  }
+
   @Test
   public void testIssue () throws Exception
   {
@@ -39,13 +53,10 @@ public final class Issue47Test
                             new File ("src/test/resources/issues/github47/test.xml"));
   }
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  @Test
+  public void testIssue2 () throws Exception
   {
-    final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
-
-    // Perform validation
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
-    assertNotNull (aSVRL);
-    System.out.println (SVRLWriter.createXMLString (aSVRL));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/github47/schematron2.sch"),
+                            new File ("src/test/resources/issues/github47/test.xml"));
   }
 }

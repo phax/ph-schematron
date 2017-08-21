@@ -56,6 +56,7 @@ import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.PSValidationHandlerDefault;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.xml.XMLHelper;
 
 /**
@@ -184,6 +185,10 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
                                 @Nonnull final Node aSourceNode) throws SchematronValidationException
   {
     final StringBuilder aSB = new StringBuilder ();
+    String sBaseURI = null;
+    if (m_aSchema != null)
+      sBaseURI = m_aSchema.getBaseURI ();
+
     for (final PSXPathBoundElement aBoundElement : aBoundContentElements)
     {
       final Object aContent = aBoundElement.getElement ();
@@ -198,7 +203,10 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
             // XPath present
             try
             {
-              aSB.append ((String) aBoundElement.getBoundExpression ().evaluate (aSourceNode, XPathConstants.STRING));
+              aSB.append ((String) XPathEvaluationHelper.evaluate (aBoundElement.getBoundExpression (),
+                                                                   aSourceNode,
+                                                                   XPathConstants.STRING,
+                                                                   sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -221,7 +229,10 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
             final PSValueOf aValueOf = (PSValueOf) aContent;
             try
             {
-              aSB.append ((String) aBoundElement.getBoundExpression ().evaluate (aSourceNode, XPathConstants.STRING));
+              aSB.append ((String) XPathEvaluationHelper.evaluate (aBoundElement.getBoundExpression (),
+                                                                   aSourceNode,
+                                                                   XPathConstants.STRING,
+                                                                   sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {

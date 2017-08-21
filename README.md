@@ -13,6 +13,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
   * v5.0.0 - work in progress
     * Updated to ph-commons 9.0.0
     * Added new ANT task for preprocessing Schematron files only
+    * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
   * v4.3.4 - 2017-07-27
     * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
   * v4.3.3 - 2017-07-27

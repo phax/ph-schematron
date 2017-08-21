@@ -62,6 +62,7 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
+import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.schematron.xslt.util.PSErrorListener;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.xpath.XPathHelper;
@@ -417,7 +418,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                             m_aXPathFunctionResolver,
                                                             aNamespaceContext);
 
-    if (aXPathContext instanceof XPathEvaluator)
+    if ("net.sf.saxon.xpath.XPathEvaluator".equals (aXPathContext.getClass ().getName ()))
     {
       // Saxon implementation special handling
       final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPathContext;
@@ -516,6 +517,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
+    final String sBaseURI = aSchema.getBaseURI ();
 
     // Call the "start" callback method
     aValidationHandler.onStart (aSchema, aPhase);
@@ -535,7 +537,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         NodeList aRuleMatchingNodes = null;
         try
         {
-          aRuleMatchingNodes = (NodeList) aBoundRule.getBoundRuleExpression ().evaluate (aNode, XPathConstants.NODESET);
+          aRuleMatchingNodes = XPathEvaluationHelper.evaluate (aBoundRule.getBoundRuleExpression (),
+                                                               aNode,
+                                                               XPathConstants.NODESET,
+                                                               sBaseURI);
         }
         catch (final XPathExpressionException ex)
         {
@@ -564,8 +569,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
               final Node aRuleMatchingNode = aRuleMatchingNodes.item (i);
               try
               {
-                final boolean bTestResult = ((Boolean) aTestExpression.evaluate (aRuleMatchingNode,
-                                                                                 XPathConstants.BOOLEAN)).booleanValue ();
+                final boolean bTestResult = ((Boolean) XPathEvaluationHelper.evaluate (aTestExpression,
+                                                                                       aRuleMatchingNode,
+                                                                                       XPathConstants.BOOLEAN,
+                                                                                       sBaseURI)).booleanValue ();
                 if (bIsAssert)
                 {
                   // It's an assert

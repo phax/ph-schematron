@@ -44,7 +44,8 @@ import net.sf.saxon.query.XQueryFunctionLibrary;
 import net.sf.saxon.trans.XPathException;
 
 /**
- * This class loads XQuery modules and provides a list of XPath functions.
+ * This class loads XQuery modules and provides a list of XPath functions. This
+ * class can only be used, if Saxon is on the classpath!
  *
  * @author Philip Helger
  */
