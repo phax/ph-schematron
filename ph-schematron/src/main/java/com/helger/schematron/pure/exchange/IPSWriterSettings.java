@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.exchange;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -26,7 +28,7 @@ import com.helger.xml.serialize.write.IXMLWriterSettings;
  *
  * @author Philip Helger
  */
-public interface IPSWriterSettings
+public interface IPSWriterSettings extends Serializable
 {
   /**
    * @return The current XML writer settings to be used. Never <code>null</code>
