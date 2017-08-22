@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<table>
+  <th data-role="interval">xyz</th>
+  <td data-role="interval">xyz</td>
+  <td data-role="task">xyz</td>
+</table>
