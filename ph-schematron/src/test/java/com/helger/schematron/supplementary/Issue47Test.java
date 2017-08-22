@@ -43,7 +43,8 @@ public final class Issue47Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    System.out.println (SVRLWriter.createXMLString (aSVRL));
+    if (false)
+      System.out.println (SVRLWriter.createXMLString (aSVRL));
   }
 
   @Test

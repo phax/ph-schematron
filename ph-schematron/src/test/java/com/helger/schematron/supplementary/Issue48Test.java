@@ -57,7 +57,8 @@ public final class Issue48Test
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     final String sSCH = new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).getXMLString (aPreprocessedSchema);
 
-    System.out.println (sSCH);
+    if (false)
+      System.out.println (sSCH);
 
     final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH,
                                                                                               StandardCharsets.UTF_8));
@@ -65,6 +66,7 @@ public final class Issue48Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    System.out.println (SVRLWriter.createXMLString (aSVRL));
+    if (false)
+      System.out.println (SVRLWriter.createXMLString (aSVRL));
   }
 }
