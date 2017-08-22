@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.pure.model;
 
+import java.net.URL;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -102,7 +103,8 @@ public class PSSchema implements
   public PSSchema (@Nullable final IReadableResource aResource)
   {
     m_aResource = aResource;
-    m_sBaseURI = aResource == null ? null : m_aResource.getAsURL ().toExternalForm ();
+    final URL aURL = aResource == null ? null : aResource.getAsURL ();
+    m_sBaseURI = aURL == null ? null : aURL.toExternalForm ();
   }
 
   /**
