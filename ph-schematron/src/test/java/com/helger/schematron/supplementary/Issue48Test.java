@@ -41,6 +41,26 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 
 public final class Issue48Test
 {
+  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  {
+    final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematron)).readSchema ();
+    final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
+    final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
+    final String sSCH = new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).getXMLString (aPreprocessedSchema);
+
+    if (true)
+      System.out.println (sSCH);
+
+    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH,
+                                                                                              StandardCharsets.UTF_8));
+
+    // Perform validation
+    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertNotNull (aSVRL);
+    if (true)
+      System.out.println (SVRLWriter.createXMLString (aSVRL));
+  }
+
   @Test
   public void testIssue () throws Exception
   {
@@ -50,23 +70,12 @@ public final class Issue48Test
                             new File ("src/test/resources/issues/github48/test.xml"));
   }
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  @Test
+  public void testIssue2 () throws Exception
   {
-    final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematron)).readSchema ();
-    final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
-    final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
-    final String sSCH = new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).getXMLString (aPreprocessedSchema);
+    SchematronDebug.setSaveIntermediateXSLTFiles (true);
 
-    if (false)
-      System.out.println (sSCH);
-
-    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH,
-                                                                                              StandardCharsets.UTF_8));
-
-    // Perform validation
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
-    assertNotNull (aSVRL);
-    if (false)
-      System.out.println (SVRLWriter.createXMLString (aSVRL));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/github48/schematron2.sch"),
+                            new File ("src/test/resources/issues/github48/test.xml"));
   }
 }
