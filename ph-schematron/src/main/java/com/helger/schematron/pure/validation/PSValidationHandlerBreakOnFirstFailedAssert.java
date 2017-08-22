@@ -30,11 +30,11 @@ import com.helger.schematron.pure.model.PSAssertReport;
  * A simple implementation if {@link IPSValidationHandler} that stops validation
  * upon the first failed assertion. The final validation result can be retrieved
  * by invoking {@link #getValidity()}.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSValidationHandlerBreakOnFirstFailedAssert extends AbstractPSPartialValidationHandler
+public class PSValidationHandlerBreakOnFirstFailedAssert implements IPSPartialValidationHandler
 {
   private EValidity m_eValidity = EValidity.VALID;
 

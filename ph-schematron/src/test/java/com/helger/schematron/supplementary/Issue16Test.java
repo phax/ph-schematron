@@ -98,7 +98,7 @@ public final class Issue16Test
       if (aXMLNode == null)
         return false;
       // Perform the validation
-      return aBoundSchema.validatePartially (aXMLNode).isValid ();
+      return aBoundSchema.validatePartially (aXMLNode, aXMLFile.toURI ().toURL ().toExternalForm ()).isValid ();
     }
 
     public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) throws Exception

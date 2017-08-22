@@ -325,14 +325,15 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+                                          @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
     if (!isValidSchematron ())
       return EValidity.INVALID;
 
-    return getOrCreateBoundSchema ().validatePartially (aXMLNode);
+    return getOrCreateBoundSchema ().validatePartially (aXMLNode, sBaseURI);
   }
 
   /**
@@ -340,16 +341,20 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *
    * @param aXMLNode
    *        The source node to be validated. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Base URI of the XML document to be validated. May be
+   *        <code>null</code>.
    * @return The SVRL document. Never <code>null</code>.
    * @throws SchematronException
    *         in case of a sever error validating the schema
    */
   @Nonnull
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLNode) throws SchematronException
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLNode,
+                                                               @Nullable final String sBaseURI) throws SchematronException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    final SchematronOutputType aSOT = getOrCreateBoundSchema ().validateComplete (aXMLNode);
+    final SchematronOutputType aSOT = getOrCreateBoundSchema ().validateComplete (aXMLNode, sBaseURI);
 
     // Debug print the created SVRL document
     if (SchematronDebug.isShowCreatedSVRL ())
@@ -359,11 +364,12 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
+                                             @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode);
+    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     return aSO == null ? null : SVRLWriter.createXML (aSO);
   }
 

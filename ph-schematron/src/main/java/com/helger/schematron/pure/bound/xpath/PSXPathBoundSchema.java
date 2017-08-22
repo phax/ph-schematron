@@ -29,7 +29,6 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -60,7 +59,6 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
-import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.schematron.xslt.util.PSErrorListener;
@@ -371,9 +369,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   /**
    * Create a new bound schema. All the XPath pre-compilation happens inside
-   * this constructor, so that the {@link #validate(Node, IPSValidationHandler)}
-   * method can be called many times without compiling the XPath statements
-   * again and again.
+   * this constructor, so that the
+   * {@link #validate(Node, String, IPSValidationHandler)} method can be called
+   * many times without compiling the XPath statements again and again.
    *
    * @param aQueryBinding
    *        The query binding to be used. May not be <code>null</code>.
@@ -507,6 +505,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   }
 
   public void validate (@Nonnull final Node aNode,
+                        @Nullable final String sBaseURI,
                         @Nonnull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
   {
     ValueEnforcer.notNull (aNode, "Node");
@@ -517,10 +516,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
-    final String sBaseURI = aSchema.getBaseURI ();
 
     // Call the "start" callback method
-    aValidationHandler.onStart (aSchema, aPhase);
+    aValidationHandler.onStart (aSchema, aPhase, sBaseURI);
 
     // For all bound patterns
     for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
@@ -631,14 +629,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     // Call the "end" callback method
     aValidationHandler.onEnd (aSchema, aPhase);
-  }
-
-  @Nonnull
-  public SchematronOutputType validateComplete (@Nonnull final Node aNode) throws SchematronValidationException
-  {
-    final PSXPathValidationHandlerSVRL aValidationHandler = new PSXPathValidationHandlerSVRL (getErrorHandler ());
-    validate (aNode, aValidationHandler);
-    return aValidationHandler.getSVRL ();
   }
 
   @Override

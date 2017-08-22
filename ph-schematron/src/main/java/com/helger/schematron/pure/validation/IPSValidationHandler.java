@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.validation;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -32,11 +34,11 @@ import com.helger.schematron.pure.model.PSSchema;
  * Base interface for a Schematron validation callback handler. It is only
  * invoked when validating an XML against a Schematron file.
  *
- * @see com.helger.schematron.pure.bound.IPSBoundSchema#validate(Node,
+ * @see com.helger.schematron.pure.bound.IPSBoundSchema#validate(Node,String,
  *      IPSValidationHandler)
  * @author Philip Helger
  */
-public interface IPSValidationHandler
+public interface IPSValidationHandler extends Serializable
 {
   /**
    * This is the first method called.
@@ -46,11 +48,16 @@ public interface IPSValidationHandler
    * @param aActivePhase
    *        The selected phase, if any special phase was selected. May be
    *        <code>null</code>.
+   * @param sBaseURI
+   *        The Base URI of the XML to be validated. May be <code>null</code>.
    * @see #onEnd(PSSchema, PSPhase)
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  void onStart (@Nonnull PSSchema aSchema, @Nullable PSPhase aActivePhase) throws SchematronValidationException;
+  default void onStart (@Nonnull final PSSchema aSchema,
+                        @Nullable final PSPhase aActivePhase,
+                        @Nullable final String sBaseURI) throws SchematronValidationException
+  {}
 
   /**
    * This method is called for every pattern inside the schema.
@@ -60,7 +67,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  void onPattern (@Nonnull PSPattern aPattern) throws SchematronValidationException;
+  default void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
+  {}
 
   /**
    * This method is called for every rule inside the current pattern.
@@ -74,7 +82,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  void onRule (@Nonnull PSRule aRule, @Nonnull String sContext) throws SchematronValidationException;
+  default void onRule (@Nonnull final PSRule aRule, @Nonnull final String sContext) throws SchematronValidationException
+  {}
 
   /**
    * This method is called for every failed assert.
@@ -100,11 +109,14 @@ public interface IPSValidationHandler
    *         In case of validation errors
    */
   @Nonnull
-  EContinue onFailedAssert (@Nonnull PSAssertReport aAssertReport,
-                            @Nonnull String sTestExpression,
-                            @Nonnull Node aRuleMatchingNode,
-                            int nNodeIndex,
-                            @Nullable Object aContext) throws SchematronValidationException;
+  default EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+                                    @Nonnull final String sTestExpression,
+                                    @Nonnull final Node aRuleMatchingNode,
+                                    final int nNodeIndex,
+                                    @Nullable final Object aContext) throws SchematronValidationException
+  {
+    return EContinue.CONTINUE;
+  }
 
   /**
    * This method is called for every failed assert.
@@ -130,11 +142,14 @@ public interface IPSValidationHandler
    *         In case of validation errors
    */
   @Nonnull
-  EContinue onSuccessfulReport (@Nonnull PSAssertReport aAssertReport,
-                                @Nonnull String sTestExpression,
-                                @Nonnull Node aRuleMatchingNode,
-                                int nNodeIndex,
-                                @Nullable Object aContext) throws SchematronValidationException;
+  default EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+                                        @Nonnull final String sTestExpression,
+                                        @Nonnull final Node aRuleMatchingNode,
+                                        final int nNodeIndex,
+                                        @Nullable final Object aContext) throws SchematronValidationException
+  {
+    return EContinue.CONTINUE;
+  }
 
   /**
    * This is the last method called. It indicates that the validation for the
@@ -145,9 +160,11 @@ public interface IPSValidationHandler
    * @param aActivePhase
    *        The selected phase, if any special phase was selected. May be
    *        <code>null</code>.
-   * @see #onStart(PSSchema, PSPhase)
+   * @see #onStart(PSSchema, PSPhase, String)
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  void onEnd (@Nonnull PSSchema aSchema, @Nullable PSPhase aActivePhase) throws SchematronValidationException;
+  default void onEnd (@Nonnull final PSSchema aSchema,
+                      @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  {}
 }

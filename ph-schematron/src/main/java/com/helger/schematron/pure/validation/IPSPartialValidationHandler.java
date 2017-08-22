@@ -17,19 +17,17 @@
 package com.helger.schematron.pure.validation;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.state.EValidity;
 
 /**
- * An extension of {@link PSValidationHandlerDefault} that is used to determine
- * the overall validity of a Schematron validation. The final validation result
- * can be retrieved by invoking {@link #getValidity()}.
- * 
+ * An extension of {@link IPSValidationHandler} that is used to determine the
+ * overall validity of a Schematron validation. The final validation result can
+ * be retrieved by invoking {@link #getValidity()}.
+ *
  * @author Philip Helger
  */
-@NotThreadSafe
-public abstract class AbstractPSPartialValidationHandler extends PSValidationHandlerDefault
+public interface IPSPartialValidationHandler extends IPSValidationHandler
 {
   /**
    * @return The validity of the XML file. {@link EValidity#VALID} if no failed
@@ -37,5 +35,5 @@ public abstract class AbstractPSPartialValidationHandler extends PSValidationHan
    *         {@link EValidity#INVALID} otherwise.
    */
   @Nonnull
-  public abstract EValidity getValidity ();
+  EValidity getValidity ();
 }

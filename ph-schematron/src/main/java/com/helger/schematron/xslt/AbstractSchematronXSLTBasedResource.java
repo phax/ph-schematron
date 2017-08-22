@@ -189,12 +189,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+                                          @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
     // We don't have a short circuit here - apply the full validation
-    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode);
+    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     if (aSO == null)
       return EValidity.INVALID;
 
@@ -203,7 +204,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Node aXMLNode) throws TransformerException
+  public final Document applySchematronValidation (@Nonnull final Node aXMLNode,
+                                                   @Nullable final String sBaseURI) throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -283,9 +285,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLSource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLSource,
+                                                               @Nullable final String sBaseURI) throws Exception
   {
-    final Document aDoc = applySchematronValidation (aXMLSource);
+    final Document aDoc = applySchematronValidation (aXMLSource, sBaseURI);
     if (aDoc == null)
       return null;
 

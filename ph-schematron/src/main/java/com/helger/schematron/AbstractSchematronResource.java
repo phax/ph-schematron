@@ -146,8 +146,20 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return aDRS;
   }
 
+  protected static final class NodeAndBaseURI
+  {
+    private final Document m_aDoc;
+    private final String m_sBaseURI;
+
+    public NodeAndBaseURI (@Nonnull final Document aDoc, @Nullable final String sBaseURI)
+    {
+      m_aDoc = aDoc;
+      m_sBaseURI = sBaseURI;
+    }
+  }
+
   @Nullable
-  protected Node getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  protected NodeAndBaseURI getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
     InputStream aIS = null;
@@ -171,7 +183,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
     s_aLogger.info ("Read XML resource " + aXMLResource);
-    return aDoc;
+    return new NodeAndBaseURI (aDoc, aStreamSrc.getSystemId ());
   }
 
   @Nullable
@@ -190,11 +202,11 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (!isValidSchematron ())
       return EValidity.INVALID;
 
-    final Node aXMLNode = getAsNode (aXMLResource);
+    final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return EValidity.INVALID;
 
-    return getSchematronValidity (aXMLNode);
+    return getSchematronValidity (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
   }
 
   @Nonnull
@@ -207,7 +219,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return EValidity.INVALID;
 
-    return getSchematronValidity (aXMLNode);
+    return getSchematronValidity (aXMLNode, aXMLSource.getSystemId ());
   }
 
   @Nullable
@@ -216,11 +228,11 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (!isValidSchematron ())
       return null;
 
-    final Node aXMLNode = getAsNode (aXMLResource);
+    final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidation (aXMLNode);
+    return applySchematronValidation (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
   }
 
   @Nullable
@@ -233,7 +245,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidation (aXMLNode);
+    return applySchematronValidation (aXMLNode, aXMLSource.getSystemId ());
   }
 
   @Nullable
@@ -242,11 +254,11 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (!isValidSchematron ())
       return null;
 
-    final Node aXMLNode = getAsNode (aXMLResource);
+    final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidationToSVRL (aXMLNode);
+    return applySchematronValidationToSVRL (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
   }
 
   @Nullable
@@ -259,7 +271,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidationToSVRL (aXMLNode);
+    return applySchematronValidationToSVRL (aXMLNode, aXMLSource.getSystemId ());
   }
 
   @Override

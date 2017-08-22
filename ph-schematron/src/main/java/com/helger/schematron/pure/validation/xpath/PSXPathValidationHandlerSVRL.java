@@ -54,7 +54,7 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSSpan;
 import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
-import com.helger.schematron.pure.validation.PSValidationHandlerDefault;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.xml.XMLHelper;
@@ -67,11 +67,12 @@ import com.helger.xml.XMLHelper;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
+public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
 {
   private final IPSErrorHandler m_aErrorHandler;
   private SchematronOutputType m_aSchematronOutput;
   private PSSchema m_aSchema;
+  private String m_sBaseURI;
 
   /**
    * Constructor
@@ -125,7 +126,8 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
 
   @Override
   public void onStart (@Nonnull final PSSchema aSchema,
-                       @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+                       @Nullable final PSPhase aActivePhase,
+                       @Nullable final String sBaseURI) throws SchematronValidationException
   {
     final SchematronOutputType aSchematronOutput = new SchematronOutputType ();
     if (aActivePhase != null)
@@ -145,6 +147,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
     }
     m_aSchematronOutput = aSchematronOutput;
     m_aSchema = aSchema;
+    m_sBaseURI = sBaseURI;
   }
 
   @Override
@@ -185,9 +188,6 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
                                 @Nonnull final Node aSourceNode) throws SchematronValidationException
   {
     final StringBuilder aSB = new StringBuilder ();
-    String sBaseURI = null;
-    if (m_aSchema != null)
-      sBaseURI = m_aSchema.getBaseURI ();
 
     for (final PSXPathBoundElement aBoundElement : aBoundContentElements)
     {
@@ -206,7 +206,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
               aSB.append ((String) XPathEvaluationHelper.evaluate (aBoundElement.getBoundExpression (),
                                                                    aSourceNode,
                                                                    XPathConstants.STRING,
-                                                                   sBaseURI));
+                                                                   m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -232,7 +232,7 @@ public class PSXPathValidationHandlerSVRL extends PSValidationHandlerDefault
               aSB.append ((String) XPathEvaluationHelper.evaluate (aBoundElement.getBoundExpression (),
                                                                    aSourceNode,
                                                                    XPathConstants.STRING,
-                                                                   sBaseURI));
+                                                                   m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {

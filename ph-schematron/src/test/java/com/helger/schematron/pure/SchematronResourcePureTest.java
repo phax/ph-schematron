@@ -184,7 +184,7 @@ public final class SchematronResourcePureTest
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
                                                            .setVariableResolver (aVarResolver)
                                                            .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc);
+                                                           .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
@@ -253,7 +253,7 @@ public final class SchematronResourcePureTest
                                                     "</chapter>");
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
                                                            .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc);
+                                                           .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
@@ -298,7 +298,7 @@ public final class SchematronResourcePureTest
                                                     "</chapter>");
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
                                                            .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc);
+                                                           .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
@@ -341,7 +341,7 @@ public final class SchematronResourcePureTest
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
                                                            .setFunctionResolver (aFunctionResolver)
                                                            .setErrorHandler (aErrorHandler)
-                                                           .applySchematronValidationToSVRL (aTestDoc);
+                                                           .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     // XXX fails :(
     if (false)
@@ -379,7 +379,7 @@ public final class SchematronResourcePureTest
 
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
                                                            .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc);
+                                                           .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     if (SVRLHelper.getAllFailedAssertions (aOT).size () != 0)
     {

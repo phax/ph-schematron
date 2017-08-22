@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
+import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
@@ -38,9 +39,10 @@ import com.helger.schematron.pure.model.PSActive;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSSchema;
-import com.helger.schematron.pure.validation.AbstractPSPartialValidationHandler;
+import com.helger.schematron.pure.validation.IPSPartialValidationHandler;
 import com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstError;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**
@@ -206,22 +208,32 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   /**
    * Override this implementation in a derived class to modify the behavior.
    *
-   * @return An implementation of {@link AbstractPSPartialValidationHandler} to
+   * @return An implementation of {@link IPSPartialValidationHandler} to
    *         use for partial validation. May not be <code>null</code>.
    */
   @Nonnull
   @OverrideOnDemand
-  protected AbstractPSPartialValidationHandler createPartialValidationHandler ()
+  protected IPSPartialValidationHandler createPartialValidationHandler ()
   {
     return new PSValidationHandlerBreakOnFirstError ();
   }
 
   @Nonnull
-  public EValidity validatePartially (@Nonnull final Node aNode) throws SchematronValidationException
+  public EValidity validatePartially (@Nonnull final Node aNode,
+                                      @Nullable final String sBaseURI) throws SchematronValidationException
   {
-    final AbstractPSPartialValidationHandler aValidationHandler = createPartialValidationHandler ();
-    validate (aNode, aValidationHandler);
+    final IPSPartialValidationHandler aValidationHandler = createPartialValidationHandler ();
+    validate (aNode, sBaseURI, aValidationHandler);
     return aValidationHandler.getValidity ();
+  }
+
+  @Nonnull
+  public SchematronOutputType validateComplete (@Nonnull final Node aNode,
+                                                @Nullable final String sBaseURI) throws SchematronValidationException
+  {
+    final PSXPathValidationHandlerSVRL aValidationHandler = new PSXPathValidationHandlerSVRL (getErrorHandler ());
+    validate (aNode, sBaseURI, aValidationHandler);
+    return aValidationHandler.getSVRL ();
   }
 
   @Override

@@ -90,7 +90,8 @@ public final class PSXPathBoundSchemaTest
       final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler);
 
       // Validate completely
-      final SchematronOutputType aSO = aBoundSchema.validateComplete (DOMReader.readXMLDOM (aXmlRes));
+      final SchematronOutputType aSO = aBoundSchema.validateComplete (DOMReader.readXMLDOM (aXmlRes),
+                                                                      aXmlRes.getAsURL ().toExternalForm ());
       assertNotNull (aSO);
 
       if (true)

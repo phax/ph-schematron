@@ -31,11 +31,11 @@ import com.helger.schematron.pure.model.PSAssertReport;
  * upon the first error (the first failed assert or the first successful
  * report). The final validation result can be retrieved by invoking
  * {@link #getValidity()}.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSValidationHandlerBreakOnFirstError extends AbstractPSPartialValidationHandler
+public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidationHandler
 {
   private EValidity m_eValidity = EValidity.VALID;
 

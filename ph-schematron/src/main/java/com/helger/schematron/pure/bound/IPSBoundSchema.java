@@ -109,38 +109,47 @@ public interface IPSBoundSchema
    *
    * @param aNode
    *        The node to be validated. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Base URI of the XML to be validated. May be <code>null</code>.
    * @param aHandler
    *        The validation handler that receives the callback informations. May
    *        not be <code>null</code>.
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
-  void validate (@Nonnull Node aNode, @Nonnull IPSValidationHandler aHandler) throws SchematronValidationException;
+  void validate (@Nonnull Node aNode,
+                 @Nullable String sBaseURI,
+                 @Nonnull IPSValidationHandler aHandler) throws SchematronValidationException;
 
   /**
    * Special validation that breaks on the first error. This is a specialized
-   * call of {@link #validate(Node, IPSValidationHandler)}.
+   * call of {@link #validate(Node, String, IPSValidationHandler)}.
    *
    * @param aNode
    *        The XML node to be validated. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Base URI of the XML to be validated. May be <code>null</code>.
    * @return {@link EValidity#VALID} if the document is valid,
    *         {@link EValidity#INVALID} if it is invalid.
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
   @Nonnull
-  EValidity validatePartially (@Nonnull Node aNode) throws SchematronValidationException;
+  EValidity validatePartially (@Nonnull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
 
   /**
    * Special validation that creates an SVRL document. This is a specialized
-   * call of {@link #validate(Node, IPSValidationHandler)}.
+   * call of {@link #validate(Node, String, IPSValidationHandler)}.
    *
    * @param aNode
    *        The XML node to be validated. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Base URI of the XML to be validated. May be <code>null</code>.
    * @return The SVRL domain object.
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
   @Nonnull
-  SchematronOutputType validateComplete (@Nonnull Node aNode) throws SchematronValidationException;
+  SchematronOutputType validateComplete (@Nonnull Node aNode,
+                                         @Nullable String sBaseURI) throws SchematronValidationException;
 }
