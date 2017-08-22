@@ -34,31 +34,9 @@ import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
-import com.helger.schematron.pure.model.IPSElement;
-import com.helger.schematron.pure.model.PSActive;
-import com.helger.schematron.pure.model.PSAssertReport;
-import com.helger.schematron.pure.model.PSDiagnostic;
-import com.helger.schematron.pure.model.PSDiagnostics;
-import com.helger.schematron.pure.model.PSDir;
+import com.helger.schematron.pure.model.*;
 import com.helger.schematron.pure.model.PSDir.EDirValue;
-import com.helger.schematron.pure.model.PSEmph;
-import com.helger.schematron.pure.model.PSExtends;
-import com.helger.schematron.pure.model.PSInclude;
-import com.helger.schematron.pure.model.PSLet;
-import com.helger.schematron.pure.model.PSLinkableGroup;
-import com.helger.schematron.pure.model.PSNS;
-import com.helger.schematron.pure.model.PSName;
-import com.helger.schematron.pure.model.PSP;
-import com.helger.schematron.pure.model.PSParam;
-import com.helger.schematron.pure.model.PSPattern;
-import com.helger.schematron.pure.model.PSPhase;
-import com.helger.schematron.pure.model.PSRichGroup;
 import com.helger.schematron.pure.model.PSRichGroup.ESpace;
-import com.helger.schematron.pure.model.PSRule;
-import com.helger.schematron.pure.model.PSSchema;
-import com.helger.schematron.pure.model.PSSpan;
-import com.helger.schematron.pure.model.PSTitle;
-import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroText;
@@ -1193,7 +1171,8 @@ public class PSReader
                                                                                     aSettings,
                                                                                     m_aErrorHandler);
     if (aDoc == null || aDoc.getDocumentElement () == null)
-      throw new SchematronReadException (m_aResource, "Failed to resolve includes in resource " + m_aResource);
+      throw new SchematronReadException (m_aResource,
+                                         "Failed to resolve includes in Schematron resource " + m_aResource);
 
     if (SchematronDebug.isShowResolvedSourceSchematron ())
       s_aLogger.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
