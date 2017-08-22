@@ -212,7 +212,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             {
               _error (aName,
                       "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
-                      ex);
+                      ex.getCause () != null ? ex.getCause () : ex);
               // Append the path so that something is present in the output
               aSB.append (aName.getPath ());
             }

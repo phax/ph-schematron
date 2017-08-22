@@ -138,7 +138,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           }
           catch (final XPathExpressionException ex)
           {
-            error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex);
+            error (aName,
+                   "Failed to compile XPath expression in <name>: '" + sPath + "'",
+                   ex.getCause () != null ? ex.getCause () : ex);
             bHasAnyError = true;
           }
         }
@@ -323,7 +325,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         }
         catch (final XPathExpressionException ex)
         {
-          error (aRule, "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'", ex);
+          error (aRule,
+                 "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'",
+                 ex.getCause () != null ? ex.getCause () : ex);
           bHasAnyError = true;
         }
       }
@@ -542,9 +546,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         }
         catch (final XPathExpressionException ex)
         {
+          // Handle the cause, because it is usually a wrapper only
           error (aRule,
                  "Failed to evaluate XPath expression to a nodeset: '" + aBoundRule.getRuleExpression () + "'",
-                 ex);
+                 ex.getCause () != null ? ex.getCause () : ex);
           continue rules;
         }
 
@@ -612,7 +617,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                        "Failed to evaluate XPath expression to a boolean: '" +
                               aBoundAssertReport.getTestExpression () +
                               "'",
-                       ex);
+                       ex.getCause () != null ? ex.getCause () : ex);
               }
             }
           }
