@@ -129,21 +129,24 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Creating XSLT step 1 template");
       s_aStep1 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
-                                                     new ClassPathResource (XSLT2_STEP1));
+                                                     new ClassPathResource (XSLT2_STEP1,
+                                                                            SchematronProviderXSLTFromSCH.class.getClassLoader ()));
     }
     if (s_aStep2 == null)
     {
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Creating XSLT step 2 template");
       s_aStep2 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
-                                                     new ClassPathResource (XSLT2_STEP2));
+                                                     new ClassPathResource (XSLT2_STEP2,
+                                                                            SchematronProviderXSLTFromSCH.class.getClassLoader ()));
     }
     if (s_aStep3 == null)
     {
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Creating XSLT step 3 template");
       s_aStep3 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
-                                                     new ClassPathResource (XSLT2_STEP3));
+                                                     new ClassPathResource (XSLT2_STEP3,
+                                                                            SchematronProviderXSLTFromSCH.class.getClassLoader ()));
     }
   }
 
