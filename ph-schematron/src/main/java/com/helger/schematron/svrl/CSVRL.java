@@ -28,7 +28,6 @@ import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 
 /**
@@ -49,8 +48,8 @@ public final class CSVRL
   public static final String SVRL_XSD_PATH = "schemas/svrl.xsd";
 
   @CodingStyleguideUnaware
-  public static final List <? extends IReadableResource> SVRL_XSDS = new CommonsArrayList <> (new ClassPathResource (SVRL_XSD_PATH,
-                                                                                                                     _getCL ())).getAsUnmodifiable ();
+  public static final List <ClassPathResource> SVRL_XSDS = new CommonsArrayList <> (new ClassPathResource (SVRL_XSD_PATH,
+                                                                                                           _getCL ())).getAsUnmodifiable ();
 
   /** Path to the SVRL RelaxNG Compact file within the class path */
   public static final String SVRL_RNC_PATH = "schemas/svrl.rnc";
