@@ -22,7 +22,7 @@ import org.oclc.purl.dsdl.svrl.ObjectFactory;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.debug.GlobalDebug;
-import com.helger.jaxb.AbstractJAXBMarshaller;
+import com.helger.jaxb.GenericJAXBMarshaller;
 
 /**
  * This is the XML reader and write for Schematron SVRL documents. It reads XML
@@ -32,7 +32,7 @@ import com.helger.jaxb.AbstractJAXBMarshaller;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SVRLMarshaller extends AbstractJAXBMarshaller <SchematronOutputType>
+public class SVRLMarshaller extends GenericJAXBMarshaller <SchematronOutputType>
 {
   public SVRLMarshaller ()
   {

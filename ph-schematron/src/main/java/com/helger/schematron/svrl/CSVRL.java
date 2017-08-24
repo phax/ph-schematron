@@ -18,6 +18,7 @@ package com.helger.schematron.svrl;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.annotation.XmlSchema;
 
@@ -38,12 +39,18 @@ import com.helger.commons.string.StringHelper;
 @Immutable
 public final class CSVRL
 {
+  @Nonnull
+  private static ClassLoader _getCL ()
+  {
+    return CSVRL.class.getClassLoader ();
+  }
+
   /** Path to the SVRL XSD file within the class path */
   public static final String SVRL_XSD_PATH = "schemas/svrl.xsd";
 
   @CodingStyleguideUnaware
   public static final List <? extends IReadableResource> SVRL_XSDS = new CommonsArrayList <> (new ClassPathResource (SVRL_XSD_PATH,
-                                                                                                                     CSVRL.class.getClassLoader ())).getAsUnmodifiable ();
+                                                                                                                     _getCL ())).getAsUnmodifiable ();
 
   /** Path to the SVRL RelaxNG Compact file within the class path */
   public static final String SVRL_RNC_PATH = "schemas/svrl.rnc";
