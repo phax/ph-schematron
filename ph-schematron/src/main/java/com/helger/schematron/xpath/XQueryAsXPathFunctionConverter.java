@@ -27,6 +27,7 @@ import javax.annotation.WillClose;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.iterate.IterableIterator;
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
@@ -77,7 +78,7 @@ public class XQueryAsXPathFunctionConverter
    */
   public XQueryAsXPathFunctionConverter (@Nonnull final File aBasePath) throws MalformedURLException
   {
-    this (aBasePath.toURI ().toURL ().toExternalForm ());
+    this (FileHelper.getAsURLString (aBasePath));
   }
 
   /**

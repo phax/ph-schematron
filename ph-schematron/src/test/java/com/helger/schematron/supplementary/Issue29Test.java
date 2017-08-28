@@ -63,7 +63,6 @@ public final class Issue29Test
       if (aDoc != null)
       {
         final SVRLMarshaller marshaller = new SVRLMarshaller ();
-        marshaller.setClassLoader (SchematronOutputType.class.getClassLoader ());
         ob = marshaller.read (aDoc);
       }
     }

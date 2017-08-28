@@ -28,6 +28,7 @@ import org.oclc.purl.dsdl.svrl.DiagnosticReference;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.ISchematronResource;
@@ -98,7 +99,7 @@ public final class Issue16Test
       if (aXMLNode == null)
         return false;
       // Perform the validation
-      return aBoundSchema.validatePartially (aXMLNode, aXMLFile.toURI ().toURL ().toExternalForm ()).isValid ();
+      return aBoundSchema.validatePartially (aXMLNode, FileHelper.getAsURLString (aXMLFile)).isValid ();
     }
 
     public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) throws Exception
