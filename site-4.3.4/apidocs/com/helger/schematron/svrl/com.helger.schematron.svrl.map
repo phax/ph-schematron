@@ -1,0 +1,16 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SVRLWriter.html" title="com.helger.schematron.svrl.SVRLWriter" alt="" coords="15,20,105,47"/>
+<area shape="rect" id="node2_1" href="./SVRLSuccessfulReport.html" title="com.helger.schematron.svrl.SVRLSuccessfulReport" alt="" coords="61,120,219,147"/>
+<area shape="rect" id="node3_2" href="./SVRLResourceError.html" title="com.helger.schematron.svrl.SVRLResourceError" alt="" coords="362,20,499,47"/>
+<area shape="rect" id="node4_3" href="./SVRLResourceError.SVRLErrorBuilder.html" title="com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder" alt="" coords="545,20,668,47"/>
+<area shape="rect" id="node5_4" href="./SVRLReader.html" title="com.helger.schematron.svrl.SVRLReader" alt="" coords="713,20,809,47"/>
+<area shape="rect" id="node6_5" href="./SVRLMarshaller.html" title="com.helger.schematron.svrl.SVRLMarshaller" alt="" coords="855,20,969,47"/>
+<area shape="rect" id="node7_6" href="./SVRLLocationBeautifierRegistry.html" title="com.helger.schematron.svrl.SVRLLocationBeautifierRegistry" alt="" coords="1015,20,1220,47"/>
+<area shape="rect" id="node8_7" href="./SVRLHelper.html" title="com.helger.schematron.svrl.SVRLHelper" alt="" coords="1266,20,1358,47"/>
+<area shape="rect" id="node9_8" href="./SVRLFailedAssert.html" title="com.helger.schematron.svrl.SVRLFailedAssert" alt="" coords="264,120,392,147"/>
+<area shape="rect" id="node10_9" href="./ISVRLLocationBeautifierSPI.html" title="com.helger.schematron.svrl.ISVRLLocationBeautifierSPI" alt="" coords="1404,11,1585,55"/>
+<area shape="rect" id="node11_10" href="./ISVRLErrorLevelDeterminator.html" title="com.helger.schematron.svrl.ISVRLErrorLevelDeterminator" alt="" coords="1631,11,1820,55"/>
+<area shape="rect" id="node12_11" href="./DefaultSVRLErrorLevelDeterminator.html" title="com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator" alt="" coords="1613,120,1838,147"/>
+<area shape="rect" id="node13_12" href="./CSVRL.html" title="com.helger.schematron.svrl.CSVRL" alt="" coords="1865,20,1929,47"/>
+<area shape="rect" id="node14_13" href="./AbstractSVRLMessage.html" title="com.helger.schematron.svrl.AbstractSVRLMessage" alt="" coords="151,20,316,47"/>
+</map>

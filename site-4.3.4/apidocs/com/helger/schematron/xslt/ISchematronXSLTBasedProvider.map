@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SchematronProviderXSLTPrebuild.html" title="com.helger.schematron.xslt.SchematronProviderXSLTPrebuild" alt="" coords="16,120,229,147"/>
+<area shape="rect" id="node2_1" href="./SchematronProviderXSLTFromSCH.html" title="com.helger.schematron.xslt.SchematronProviderXSLTFromSCH" alt="" coords="275,120,499,147"/>
+<area shape="rect" id="node3_2" href="./ISchematronXSLTBasedProvider.html" title="com.helger.schematron.xslt.ISchematronXSLTBasedProvider" alt="" coords="151,11,358,55"/>
+</map>

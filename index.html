@@ -3,33 +3,23 @@
 <head>
 <meta charset='utf-8'>
 <meta http-equiv="X-UA-Compatible" content="chrome=1">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href='https://fonts.googleapis.com/css?family=Architects+Daughter'
-	rel='stylesheet' type='text/css'>
-<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css"
-	media="screen">
-<link rel="stylesheet" type="text/css"
-	href="stylesheets/pygment_trac.css" media="screen">
-<link rel="stylesheet" type="text/css" href="stylesheets/print.css"
-	media="print">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+<link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 <title>ph-schematron by Philip Helger</title>
 </head>
-
 <body>
 	<header>
 		<div class="inner">
 			<h1>ph-schematron</h1>
-			<h2>Java Schematron library that supports XSLT and native
-				application</h2>
-			<a href="https://github.com/phax/ph-schematron" class="button"><small>View
-					project on</small> GitHub</a>
-		</div>
+			<h2>Java Schematron library that supports XSLT and native application</h2>
+			<a href="https://github.com/phax/ph-schematron" class="button"><small>View project on</small> GitHub</a>
+    </div>
 	</header>
 
 	<div id="content-wrapper">
@@ -234,9 +224,9 @@
 					dependency for ph-schematron looks like this:</p>
 
 				<pre><code>&lt;dependency&gt;
-  &lt;groupId&gt;com.helger&lt;/groupId&gt;
+  &lt;groupId&gt;com.helger&lthttps://github.com/Schematron/schema/blob/master/svrl.rnc;/groupId&gt;
   &lt;artifactId&gt;ph-schematron&lt;/artifactId&gt;
-  &lt;version&gt;4.1.0&lt;/version&gt;
+  &lt;version&gt;4.3.4&lt;/version&gt;
 &lt;/dependency&gt;
 </code></pre>
 
@@ -852,15 +842,16 @@
 					output is</p>
 
 				<div class="highlight highlight-xml">
-					<pre><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
-<span class="nt">&lt;svrl:schematron-output</span> <span class="na">schemaVersion=</span><span
-							class="s">""</span> <span class="na">title=</span><span class="s">"Example of Multi-Lingual Schema"</span> <span
-							class="na">xmlns:iso=</span><span class="s">"http://purl.oclc.org/dsdl/schematron"</span>
-  <span class="na">xmlns:schold=</span><span class="s">"http://www.ascc.net/xml/schematron"</span> <span
-							class="na">xmlns:svrl=</span><span class="s">"http://purl.oclc.org/dsdl/svrl"</span> <span
-							class="na">xmlns:xhtml=</span><span class="s">"http://www.w3.org/1999/xhtml"</span>
-  <span class="na">xmlns:xs=</span><span class="s">"http://www.w3.org/2001/XMLSchema"</span><span
-							class="nt">&gt;</span>
+					<pre>
+<span class="cp">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="nt">&lt;svrl:schematron-output</span> <span class="na">schemaVersion=</span><span class="s">""</span> 
+  <span class="na">title=</span><span class="s">"Example of Multi-Lingual Schema"</span>
+  <span class="na">xmlns:iso=</span><span class="s">"http://purl.oclc.org/dsdl/schematron"</span>
+  <span class="na">xmlns:schold=</span><span class="s">"http://www.ascc.net/xml/schematron"</span> 
+  <span class="na">xmlns:svrl=</span><span class="s">"http://purl.oclc.org/dsdl/svrl"</span> 
+  <span class="na">xmlns:xhtml=</span><span class="s">"http://www.w3.org/1999/xhtml"</span>
+  <span class="na">xmlns:xs=</span><span class="s">"http://www.w3.org/2001/XMLSchema"</span>
+  <span class="nt">&gt;</span>
   <span class="nt">&lt;svrl:active-pattern</span> <span class="na">document=</span><span
 							class="s">"...\ph-schematron\src\test\resources\issues\6\issue6.xml"</span> <span
 							class="nt">/&gt;</span>
@@ -895,20 +886,20 @@
 					<code>diagnostic-reference</code>
 					within the
 					<code>failed-assert</code>
-					is different. According to the SVRL RNC (<a
-						href="http://schematron.com/resource/svrl.rnc">http://schematron.com/resource/svrl.rnc</a>)
+					is different. According to the SVRL RNC 
+          (<a href="https://github.com/Schematron/schema/blob/master/svrl.rnc">https://github.com/Schematron/schema/blob/master/svrl.rnc</a>)
 					the order created by the Pure version is imho correct:
 				</p>
 
 				<pre><code># only failed assertions are reported
-failed-assert =  element failed-assert {
-    attlist.assert-and-report, 
-    diagnostic-reference*, 
-    human-text
-  }
+failed-assert = element failed-assert {
+  attlist.assert-and-report, 
+  diagnostic-reference*,
+  property-reference*,
+  human-text
+}
 </code>
 				</pre>
-
 				<p>So when using the XSLT based version together with diagnostic
 					references the created SVRL does not necessarily comply to the
 					SVRL-XSD file contained in ph-schematron.</p>
@@ -919,8 +910,7 @@ failed-assert =  element failed-assert {
 				<a href="https://github.com/phax/ph-schematron/tarball/master" class="button"> <small>Download</small> .tar.gz file</a>
 
 				<p class="repo-owner">
-					<a href="https://github.com/phax/ph-schematron"></a> is maintained
-					by <a href="https://github.com/phax">Philip Helger</a>.
+					<a href="https://github.com/phax/ph-schematron"></a> is maintained by <a href="https://github.com/phax">Philip Helger</a>.
 				</p>
 
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
@@ -930,6 +920,11 @@ failed-assert =  element failed-assert {
           <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
         </form>
 
+        <a href="site-4.3.4/sitemap.html" class="button">Maven site 4.3.4</a>
+        <a href="site-4.3.4/apidocs" class="button">API Docs 4.3.4</a>
+        <p>
+          Legacy docs:
+        </p>
         <a href="site-4.0.0/sitemap.html" class="button">Maven site 4.0.0</a>
         <a href="site-4.0.0/apidocs" class="button">API Docs 4.0.0</a>
         <a href="site-3.0.1/sitemap.html" class="button">Maven site 3.0.1</a>
