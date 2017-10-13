@@ -92,6 +92,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
+            <Automatic-Module-Name>com.helger.schematron.ant</Automatic-Module-Name>
             <Export-Package>com.helger.schematron.ant.*</Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
