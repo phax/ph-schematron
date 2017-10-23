@@ -168,7 +168,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aRetRule.setContext (sContext);
     aRetRule.setFlag (aRule.getFlag ());
     aRetRule.setId (aRule.getID ());
-    // TODO role
+    if (aRule.hasLinkable ())
+      aRetRule.setRole (aRule.getLinkable ().getRole ());
     m_aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ().add (aRetRule);
   }
 
