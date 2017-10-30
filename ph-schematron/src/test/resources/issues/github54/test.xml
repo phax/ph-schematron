@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<simple>
+  <CCC>
+    <A>This is string A1</A>
+    <B>This is string B1</B>
+  </CCC>
+  <CCC>
+    <A>This is string A2</A>
+  </CCC>
+  <CCC>
+    <B>This is string B2</B>
+  </CCC>
+</simple>
