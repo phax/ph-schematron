@@ -39,7 +39,7 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.serialize.read.DOMReader;
@@ -90,12 +90,12 @@ public final class PSXPathBoundSchemaTest
       final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler);
 
       // Validate completely
-      final SchematronOutputType aSO = aBoundSchema.validateComplete (DOMReader.readXMLDOM (aXmlRes),
-                                                                      aXmlRes.getAsURL ().toExternalForm ());
-      assertNotNull (aSO);
+      final SchematronOutputType aSVRL = aBoundSchema.validateComplete (DOMReader.readXMLDOM (aXmlRes),
+                                                                        aXmlRes.getAsURL ().toExternalForm ());
+      assertNotNull (aSVRL);
 
-      if (true)
-        System.out.println (SVRLWriter.createXMLString (aSO));
+      if (false)
+        System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
     }
   }
 

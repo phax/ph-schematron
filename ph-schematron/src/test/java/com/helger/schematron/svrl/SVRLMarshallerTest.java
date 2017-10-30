@@ -16,30 +16,31 @@
  */
 package com.helger.schematron.svrl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.string.StringHelper;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.XMLFactory;
-import com.helger.xml.serialize.read.DOMReader;
 
 /**
- * Test class for class {@link SVRLReader}.
+ * Test class for class {@link SVRLMarshaller}.
  *
  * @author Philip Helger
  */
-public final class SVRLReaderTest
+public final class SVRLMarshallerTest
 {
   private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
@@ -52,15 +53,15 @@ public final class SVRLReaderTest
     final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
     assertNotNull ("Failed to parse demo XML", aDoc);
 
-    final SchematronOutputType aSO = SVRLReader.readXML (aDoc);
+    final SchematronOutputType aSO = new SVRLMarshaller ().read (aDoc);
     assertNotNull ("Failed to parse Schematron output", aSO);
   }
 
   @Test
-  public void testRead () throws SAXException
+  public void testRead ()
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSVRLFiles ())
-      assertNotNull (aRes.getPath (), SVRLReader.readXML (DOMReader.readXMLDOM (aRes)));
+      assertNotNull (aRes.getPath (), new SVRLMarshaller ().read (aRes));
   }
 
   @Test
@@ -69,7 +70,7 @@ public final class SVRLReaderTest
     try
     {
       // Read null
-      SVRLReader.readXML ((Node) null);
+      new SVRLMarshaller ().read ((Node) null);
       fail ();
     }
     catch (final NullPointerException ex)
@@ -78,14 +79,33 @@ public final class SVRLReaderTest
     try
     {
       // Read empty XML
-      SVRLReader.readXML (XMLFactory.newDocument ());
+      new SVRLMarshaller ().read (XMLFactory.newDocument ());
       fail ();
     }
     catch (final NullPointerException ex)
     {}
 
     // Read XML that is not SVRL
-    final SchematronOutputType aSVRL = SVRLReader.readXML (new ClassPathResource ("test-xml/goodOrder01.xml"));
+    final SchematronOutputType aSVRL = new SVRLMarshaller ().read (new ClassPathResource ("test-xml/goodOrder01.xml"));
     assertNull (aSVRL);
+  }
+
+  @Test
+  public void testWriteValid () throws Exception
+  {
+    final Document aDoc = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON)
+                                               .applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
+    assertNotNull (aDoc);
+    final SchematronOutputType aSO = new SVRLMarshaller ().read (aDoc);
+
+    // Create XML
+    final Document aDoc2 = new SVRLMarshaller ().getAsDocument (aSO);
+    assertNotNull (aDoc2);
+    assertEquals (CSVRL.SVRL_NAMESPACE_URI, aDoc2.getDocumentElement ().getNamespaceURI ());
+
+    // Create String
+    final String sDoc2 = new SVRLMarshaller ().getAsString (aSO);
+    assertTrue (StringHelper.hasText (sDoc2));
+    assertTrue (sDoc2.contains (CSVRL.SVRL_NAMESPACE_URI));
   }
 }

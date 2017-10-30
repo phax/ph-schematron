@@ -35,7 +35,7 @@ import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.exchange.PSWriterSettings;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
@@ -58,7 +58,7 @@ public final class Issue48Test
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
     if (false)
-      System.out.println (SVRLWriter.createXMLString (aSVRL));
+      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
   }
 
   @Test

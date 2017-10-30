@@ -23,6 +23,7 @@ import javax.annotation.concurrent.Immutable;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
+import com.helger.commons.annotation.DevelopersNote;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.io.resource.IReadableResource;
 
@@ -34,6 +35,8 @@ import com.helger.commons.io.resource.IReadableResource;
  * @author Philip Helger
  */
 @Immutable
+@Deprecated
+@DevelopersNote ("Use SVRLMarshaller direct - much more flexibility")
 public final class SVRLReader
 {
   @PresentForCodeCoverage

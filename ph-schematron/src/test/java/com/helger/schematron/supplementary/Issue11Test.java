@@ -29,7 +29,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 
 /**
  * Test class for https://github.com/phax/ph-schematron/issues/11
@@ -54,7 +54,7 @@ public final class Issue11Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    if (true)
-      System.out.println (SVRLWriter.createXMLString (aSVRL));
+    if (false)
+      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
   }
 }

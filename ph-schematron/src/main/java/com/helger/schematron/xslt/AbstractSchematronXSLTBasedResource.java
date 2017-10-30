@@ -46,7 +46,7 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
-import com.helger.schematron.svrl.SVRLReader;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 import com.helger.xml.XMLFactory;
@@ -295,7 +295,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     // Avoid NPE later on
     if (aDoc.getDocumentElement () == null)
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
-    return SVRLReader.readXML (aDoc);
+    return new SVRLMarshaller ().read (aDoc);
   }
 
   @Override

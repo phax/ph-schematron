@@ -28,7 +28,6 @@ import com.helger.commons.id.IHasID;
 import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
-import com.helger.schematron.svrl.SVRLReader;
 
 /**
  * Base interface for a Schematron resource. The implementation can e.g. be a
@@ -118,8 +117,8 @@ public interface ISchematronResource extends IHasID <String>
    *         <code>null</code> SVRL document otherwise.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
-   * @see SVRLReader#readXML(org.w3c.dom.Node) on how to convert the document
-   *      into a domain object
+   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the
+   *      document into a domain object
    */
   @Nullable
   Document applySchematronValidation (@Nonnull IHasInputStream aXMLResource) throws Exception;
@@ -138,8 +137,8 @@ public interface ISchematronResource extends IHasID <String>
    *         <code>null</code> SVRL document otherwise.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
-   * @see SVRLReader#readXML(org.w3c.dom.Node) on how to convert the document
-   *      into a domain object
+   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the
+   *      document into a domain object
    */
   @Nullable
   Document applySchematronValidation (@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
@@ -155,8 +154,8 @@ public interface ISchematronResource extends IHasID <String>
    *         <code>null</code> when interpreting the Schematron failed.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
-   * @see SVRLReader#readXML(org.w3c.dom.Node) on how to convert the document
-   *      into a domain object
+   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the
+   *      document into a domain object
    */
   @Nullable
   Document applySchematronValidation (@Nonnull Source aXMLSource) throws Exception;

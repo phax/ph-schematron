@@ -23,6 +23,7 @@ import javax.annotation.concurrent.Immutable;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 
+import com.helger.commons.annotation.DevelopersNote;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 
 /**
@@ -33,6 +34,8 @@ import com.helger.commons.annotation.PresentForCodeCoverage;
  * @author Philip Helger
  */
 @Immutable
+@Deprecated
+@DevelopersNote ("Use SVRLMarshaller direct - much more flexibility")
 public final class SVRLWriter
 {
   @PresentForCodeCoverage

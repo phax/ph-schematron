@@ -16,14 +16,17 @@
  */
 package com.helger.schematron.supplementary;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 
 import org.junit.Test;
+import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class IssueXsltKeyTest
@@ -40,6 +43,9 @@ public final class IssueXsltKeyTest
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
     final AbstractSchematronResource pure = new SchematronResourceSCH (aSchematron);
-    System.out.println (SVRLWriter.createXMLString (pure.applySchematronValidationToSVRL (anXMLSource)));
+    final SchematronOutputType aSVRL = pure.applySchematronValidationToSVRL (anXMLSource);
+    assertNotNull (aSVRL);
+    if (false)
+      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
   }
 }

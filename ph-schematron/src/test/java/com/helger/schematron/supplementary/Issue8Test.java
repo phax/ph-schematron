@@ -28,7 +28,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriter;
 
@@ -59,6 +59,7 @@ public final class Issue8Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    System.out.println (SVRLWriter.createXMLString (aSVRL));
+    if (false)
+      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
   }
 }

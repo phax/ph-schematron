@@ -31,7 +31,7 @@ import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class Issue44Test
@@ -46,8 +46,8 @@ public final class Issue44Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    if (true)
-      System.out.println (SVRLWriter.createXMLString (aSVRL));
+    if (false)
+      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
 
     assertEquals (3, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }

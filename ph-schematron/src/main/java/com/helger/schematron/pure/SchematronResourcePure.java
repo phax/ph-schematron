@@ -55,7 +55,7 @@ import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.model.PSSchema;
-import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
@@ -358,7 +358,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
     // Debug print the created SVRL document
     if (SchematronDebug.isShowCreatedSVRL ())
-      s_aLogger.info ("Created SVRL:\n" + SVRLWriter.createXMLString (aSOT));
+      s_aLogger.info ("Created SVRL:\n" + new SVRLMarshaller ().getAsString (aSOT));
 
     return aSOT;
   }
@@ -370,7 +370,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
     final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
-    return aSO == null ? null : SVRLWriter.createXML (aSO);
+    return aSO == null ? null : new SVRLMarshaller ().getAsDocument (aSO);
   }
 
   /**
