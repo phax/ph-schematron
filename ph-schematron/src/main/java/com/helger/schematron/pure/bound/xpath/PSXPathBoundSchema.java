@@ -65,7 +65,6 @@ import com.helger.schematron.xslt.util.PSErrorListener;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.xpath.XPathHelper;
 
-import net.sf.saxon.lib.FeatureKeys;
 import net.sf.saxon.xpath.XPathEvaluator;
 
 /**
@@ -424,11 +423,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     {
       // Saxon implementation special handling
       final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPathContext;
-      if (false)
-      {
-        // Enable this to debug Saxon function resolving
-        aSaxonXPath.getConfiguration ().setBooleanProperty (FeatureKeys.TRACE_EXTERNAL_FUNCTIONS, true);
-      }
 
       // Since 9.7.0-4 it must implement NamespaceResolver
       aSaxonXPath.setNamespaceContext (new SaxonNamespaceContext (aNamespaceContext));
