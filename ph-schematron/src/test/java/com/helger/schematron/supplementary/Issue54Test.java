@@ -26,15 +26,16 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLMarshaller;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class Issue54Test
 {
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+    final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
