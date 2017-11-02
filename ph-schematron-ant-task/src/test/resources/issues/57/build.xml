@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  
+  <target name="schematron" description="Schematron rule tests">
+    <schematron svrlDirectory="tmp"
+      schematronProcessingEngine="pure"
+      schematronFile="rules.sch">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+    </schematron>
+  </target>
+  
+</project>

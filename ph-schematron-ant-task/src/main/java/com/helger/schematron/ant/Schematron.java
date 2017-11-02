@@ -461,11 +461,8 @@ public class Schematron extends Task
           if (m_aResCollections.isEmpty ())
             _buildError ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
           else
-            if (m_aSvrlDirectory != null)
-            {
-              if (!m_aSvrlDirectory.exists () && !m_aSvrlDirectory.mkdirs ())
-                _buildError ("Failed to create the SVRL directory " + m_aSvrlDirectory);
-            }
+            if (m_aSvrlDirectory != null && !m_aSvrlDirectory.exists () && !m_aSvrlDirectory.mkdirs ())
+              _buildError ("Failed to create the SVRL directory " + m_aSvrlDirectory);
             else
               bCanRun = true;
 
