@@ -180,7 +180,9 @@ There is currently only one task:
 ```
 
 For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
-Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script. 
+Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script.
+
+A compiled version of the "JAR with dependencies" is [available at the Maven Central Repository](http://repo1.maven.org/maven2/com/helger/ph-schematron-ant-task/).
 
 ### Execute task
 
