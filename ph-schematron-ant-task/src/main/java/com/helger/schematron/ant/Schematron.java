@@ -111,9 +111,15 @@ public class Schematron extends Task
 
   /**
    * <code>true</code> if the XMLs are supposed to be valid, <code>false</code>
-   * otherwise.
+   * otherwise. Defaults to <code>true</code>.
    */
   private boolean m_bExpectSuccess = true;
+
+  /**
+   * <code>true</code> if the build should fail if any error occurs. Defaults to
+   * <code>true</code>. Since v5.0.0.
+   */
+  private boolean m_bFailOnError = true;
 
   /**
    * For resolving entities such as DTDs. This is used both for the Schematron
@@ -188,6 +194,13 @@ public class Schematron extends Task
          Project.MSG_DEBUG);
   }
 
+  public void setFailOnError (final boolean bFailOnError)
+  {
+    m_bFailOnError = bFailOnError;
+
+    log (bFailOnError ? "Will fail on error" : "Will not fail on error", Project.MSG_DEBUG);
+  }
+
   /**
    * Add the catalog to our internal catalog
    *
@@ -238,6 +251,18 @@ public class Schematron extends Task
     return f != null ? f : NULL_FILE_PLACEHOLDER;
   }
 
+  private void _buildError (@Nonnull final String sMsg)
+  {
+    _buildError (sMsg, null);
+  }
+
+  private void _buildError (@Nonnull final String sMsg, @Nullable final Throwable t)
+  {
+    if (m_bFailOnError)
+      throw new BuildException (sMsg, t);
+    log (sMsg, t, Project.MSG_ERR);
+  }
+
   private void _performValidation (@Nonnull final ISchematronResource aSch,
                                    @Nonnull final ICommonsList <ResourceCollection> aResCollections,
                                    @Nullable final File aSVRLDirectory,
@@ -248,35 +273,38 @@ public class Schematron extends Task
     for (final ResourceCollection aResCollection : aResCollections)
     {
       if (!aResCollection.isFilesystemOnly ())
-        throw new BuildException ("Only FileSystem resources are supported.");
-
-      for (final Resource aRes : aResCollection)
-      {
-        if (!aRes.isExists ())
-          throw new BuildException ("Could not find resource " + aRes.toLongString () + " to copy.");
-
-        File baseDir = NULL_FILE_PLACEHOLDER;
-        String name = aRes.getName ();
-        final FileProvider fp = aRes.as (FileProvider.class);
-        if (fp != null)
+        _buildError ("Only FileSystem resources are supported.");
+      else
+        for (final Resource aRes : aResCollection)
         {
-          final FileResource fr = ResourceUtils.asFileResource (fp);
-          baseDir = _getKeyFile (fr.getBaseDir ());
-          if (baseDir == NULL_FILE_PLACEHOLDER)
-            name = fr.getFile ().getAbsolutePath ();
-        }
+          if (!aRes.isExists ())
+          {
+            _buildError ("Could not find resource " + aRes.toLongString () + " to copy.");
+            continue;
+          }
 
-        if ((aRes.isDirectory () || fp != null) && name != null)
-        {
-          final DirectoryData aBaseDir = aFiles.computeIfAbsent (_getKeyFile (baseDir), k -> new DirectoryData (k));
-          if (aRes.isDirectory ())
-            aBaseDir.addDir (name);
+          File baseDir = NULL_FILE_PLACEHOLDER;
+          String name = aRes.getName ();
+          final FileProvider fp = aRes.as (FileProvider.class);
+          if (fp != null)
+          {
+            final FileResource fr = ResourceUtils.asFileResource (fp);
+            baseDir = _getKeyFile (fr.getBaseDir ());
+            if (baseDir == NULL_FILE_PLACEHOLDER)
+              name = fr.getFile ().getAbsolutePath ();
+          }
+
+          if ((aRes.isDirectory () || fp != null) && name != null)
+          {
+            final DirectoryData aBaseDir = aFiles.computeIfAbsent (_getKeyFile (baseDir), k -> new DirectoryData (k));
+            if (aRes.isDirectory ())
+              aBaseDir.addDir (name);
+            else
+              aBaseDir.addFile (name);
+          }
           else
-            aBaseDir.addFile (name);
+            _buildError ("Could not resolve resource " + aRes.toLongString () + " to a file.");
         }
-        else
-          throw new BuildException ("Could not resolve resource " + aRes.toLongString () + " to a file.");
-      }
     }
 
     for (final DirectoryData aBaseDir : aFiles.values ())
@@ -350,10 +378,12 @@ public class Schematron extends Task
 
                 for (final AbstractSVRLMessage aMsg : aMessages)
                 {
-                  log (ErrorTextProvider.DEFAULT.getErrorText (aMsg.getAsResourceError (aXMLFile.getPath ()), Locale.US),
+                  log (ErrorTextProvider.DEFAULT.getErrorText (aMsg.getAsResourceError (aXMLFile.getPath ()),
+                                                               Locale.US),
                        aMsg.getFlag ().isError () ? Project.MSG_ERR : Project.MSG_WARN);
                 }
-                throw new BuildException (sMessage);
+                _buildError (sMessage);
+                continue;
               }
 
               // Success as expected
@@ -375,7 +405,8 @@ public class Schematron extends Task
                   sMessage += " - only " + sWarnings + " are contained";
 
                 log (sMessage, Project.MSG_ERR);
-                throw new BuildException (sMessage);
+                _buildError (sMessage);
+                continue;
               }
 
               // Success as expected
@@ -405,7 +436,8 @@ public class Schematron extends Task
                                     " - " +
                                     ex.getMessage ();
             log (sMessage, ex, Project.MSG_DEBUG);
-            throw new BuildException (sMessage, ex);
+            _buildError (sMessage, ex);
+            continue;
           }
         }
       }
@@ -415,98 +447,111 @@ public class Schematron extends Task
   @Override
   public void execute () throws BuildException
   {
+    boolean bCanRun = false;
     if (m_aSchematronFile == null)
-      throw new BuildException ("No Schematron file specified!");
-    if (m_aSchematronFile.exists () && !m_aSchematronFile.isFile ())
-      throw new BuildException ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
-    if (m_eSchematronProcessingEngine == null)
-      throw new BuildException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                                StringHelper.getImplodedMapped (", ",
-                                                                ESchematronMode.values (),
-                                                                x -> "'" + x.getID () + "'"));
-    if (m_aResCollections.isEmpty ())
-      throw new BuildException ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
-
-    if (m_aSvrlDirectory != null)
-    {
-      if (!m_aSvrlDirectory.exists () && !m_aSvrlDirectory.mkdirs ())
-        throw new BuildException ("Failed to create the SVRL directory " + m_aSvrlDirectory);
-    }
-
-    // 1. Parse Schematron file
-    final Locale aDisplayLocale = Locale.US;
-    ISchematronResource aSch;
-    IErrorList aSCHErrors;
-    switch (m_eSchematronProcessingEngine)
-    {
-      case PURE:
-      {
-        // pure
-        final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-        final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
-        aRealSCH.setPhase (m_sPhaseName);
-        aRealSCH.setErrorHandler (aErrorHdl);
-        aRealSCH.setEntityResolver (getEntityResolver ());
-        aRealSCH.validateCompletely ();
-
-        aSch = aRealSCH;
-        aSCHErrors = aErrorHdl.getAllErrors ();
-        break;
-      }
-      case SCHEMATRON:
-      {
-        // SCH
-        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
-        aRealSCH.setPhase (m_sPhaseName);
-        aRealSCH.setLanguageCode (m_sLanguageCode);
-        aRealSCH.setErrorListener (aErrorHdl);
-        aRealSCH.setURIResolver (getURIResolver ());
-        aRealSCH.setEntityResolver (getEntityResolver ());
-        aRealSCH.isValidSchematron ();
-
-        aSch = aRealSCH;
-        aSCHErrors = aErrorHdl.getErrorList ();
-        break;
-      }
-      case XSLT:
-      {
-        // SCH
-        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
-        // phase and language are ignored because this was decided when the XSLT
-        // was created
-        aRealSCH.setErrorListener (aErrorHdl);
-        aRealSCH.setURIResolver (getURIResolver ());
-        aRealSCH.setEntityResolver (getEntityResolver ());
-        aRealSCH.isValidSchematron ();
-
-        aSch = aRealSCH;
-        aSCHErrors = aErrorHdl.getErrorList ();
-        break;
-      }
-      default:
-        throw new BuildException ("No handler for processing engine '" + m_eSchematronProcessingEngine + "'");
-    }
-    if (aSCHErrors != null)
-    {
-      // Error validating the Schematrons!!
-      boolean bAnyError = false;
-      for (final IError aError : aSCHErrors)
-        if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
-        {
-          log ("Error in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_ERR);
-          bAnyError = true;
-        }
+      _buildError ("No Schematron file specified!");
+    else
+      if (m_aSchematronFile.exists () && !m_aSchematronFile.isFile ())
+        _buildError ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
+      else
+        if (m_eSchematronProcessingEngine == null)
+          _buildError ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
+                       StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
         else
-          if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
-            log ("Warning in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_WARN);
-      if (bAnyError)
-        throw new BuildException ("The provided Schematron file contains errors. See log for details.");
-    }
-    log ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'", Project.MSG_INFO);
+          if (m_aResCollections.isEmpty ())
+            _buildError ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
+          else
+            if (m_aSvrlDirectory != null)
+            {
+              if (!m_aSvrlDirectory.exists () && !m_aSvrlDirectory.mkdirs ())
+                _buildError ("Failed to create the SVRL directory " + m_aSvrlDirectory);
+            }
+            else
+              bCanRun = true;
 
-    // 2. for all XML files that match the pattern
-    _performValidation (aSch, m_aResCollections, m_aSvrlDirectory, m_bExpectSuccess);
+    if (bCanRun)
+    {
+      // 1. Parse Schematron file
+      final Locale aDisplayLocale = Locale.US;
+      ISchematronResource aSch = null;
+      IErrorList aSCHErrors = null;
+      switch (m_eSchematronProcessingEngine)
+      {
+        case PURE:
+        {
+          // pure
+          final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
+          final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
+          aRealSCH.setPhase (m_sPhaseName);
+          aRealSCH.setErrorHandler (aErrorHdl);
+          aRealSCH.setEntityResolver (getEntityResolver ());
+          aRealSCH.validateCompletely ();
+
+          aSch = aRealSCH;
+          aSCHErrors = aErrorHdl.getAllErrors ();
+          break;
+        }
+        case SCHEMATRON:
+        {
+          // SCH
+          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+          final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
+          aRealSCH.setPhase (m_sPhaseName);
+          aRealSCH.setLanguageCode (m_sLanguageCode);
+          aRealSCH.setErrorListener (aErrorHdl);
+          aRealSCH.setURIResolver (getURIResolver ());
+          aRealSCH.setEntityResolver (getEntityResolver ());
+          aRealSCH.isValidSchematron ();
+
+          aSch = aRealSCH;
+          aSCHErrors = aErrorHdl.getErrorList ();
+          break;
+        }
+        case XSLT:
+        {
+          // SCH
+          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+          final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
+          // phase and language are ignored because this was decided when the
+          // XSLT
+          // was created
+          aRealSCH.setErrorListener (aErrorHdl);
+          aRealSCH.setURIResolver (getURIResolver ());
+          aRealSCH.setEntityResolver (getEntityResolver ());
+          aRealSCH.isValidSchematron ();
+
+          aSch = aRealSCH;
+          aSCHErrors = aErrorHdl.getErrorList ();
+          break;
+        }
+        default:
+          _buildError ("No handler for processing engine '" + m_eSchematronProcessingEngine + "'");
+          break;
+      }
+      if (aSCHErrors != null)
+      {
+        // Error validating the Schematrons!!
+        boolean bAnyParsingError = false;
+        for (final IError aError : aSCHErrors)
+          if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
+          {
+            log ("Error in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_ERR);
+            bAnyParsingError = true;
+          }
+          else
+            if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
+              log ("Warning in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_WARN);
+
+        if (bAnyParsingError)
+          _buildError ("The provided Schematron file contains errors. See log for details.");
+        else
+        {
+          log ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'", Project.MSG_INFO);
+
+          // 2. for all XML files that match the pattern
+          _performValidation (aSch, m_aResCollections, m_aSvrlDirectory, m_bExpectSuccess);
+        }
+      }
+    }
   }
 }

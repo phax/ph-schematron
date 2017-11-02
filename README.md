@@ -16,6 +16,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
     * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
     * Updated to Saxon-HE 9.8.0-6
+    * Added ANT task property `failOnError` (#57)
   * v4.3.4 - 2017-07-27
     * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
   * v4.3.3 - 2017-07-27
@@ -211,6 +212,7 @@ The `schematron` element allows for the following attributes:
   * `String` **phaseName** - The optional Schematron phase to be used. Note: this is only available when using the processing engine `pure` or `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created.
   * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
   * `boolean` **expectSuccess** - `true` to expect successful validation, `false` to expect validation errors. If the expectation is incorrect, the build will fail.
+  * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
   
 Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver both for the Schematron and the XML files to be validated! See https://ant.apache.org/manual/Types/xmlcatalog.html for details on the XML catalog. Here is an example that shows how to use an inline XML catalog:
 
@@ -263,6 +265,7 @@ The `schematron` element allows for the following attributes:
   * `boolean` **keepDiagnostics** - `true` to keep `&lt;diagnostic&gt;`-elements, `false` to delete them. Default is `false`.
   * `boolean` **keepReports** - `true` to keep `&lt;report&gt;`-elements, `false` to change them to `&lt;assert&gt;`-elements. Default is `false`.
   * `boolean` **keepEmptyPatterns** - `true` to keep `&lt;pattern&gt;`-elements without rules, `false` to delete them. Default is `true`.
+  * `boolean` **failOnError** - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
 
 ---
 

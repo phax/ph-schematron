@@ -19,6 +19,7 @@ package com.helger.schematron.ant;
 import java.io.File;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -79,6 +80,12 @@ public class SchematronPreprocess extends Task
    */
   private boolean m_bKeepEmptyPatterns = PSPreprocessor.DEFAULT_KEEP_EMPTY_PATTERNS;
 
+  /**
+   * <code>true</code> if the build should fail if any error occurs. Defaults to
+   * <code>true</code>.
+   */
+  private boolean m_bFailOnError = true;
+
   public SchematronPreprocess ()
   {}
 
@@ -124,42 +131,68 @@ public class SchematronPreprocess extends Task
          Project.MSG_DEBUG);
   }
 
+  public void setFailOnError (final boolean bFailOnError)
+  {
+    m_bFailOnError = bFailOnError;
+
+    log (bFailOnError ? "Will fail on error" : "Will not fail on error", Project.MSG_DEBUG);
+  }
+
+  private void _buildError (@Nonnull final String sMsg)
+  {
+    _buildError (sMsg, null);
+  }
+
+  private void _buildError (@Nonnull final String sMsg, @Nullable final Throwable t)
+  {
+    if (m_bFailOnError)
+      throw new BuildException (sMsg, t);
+    log (sMsg, t, Project.MSG_ERR);
+  }
+
   @Override
   public void execute () throws BuildException
   {
+    boolean bCanRun = false;
     if (m_aSrcFile == null)
-      throw new BuildException ("No source Schematron file specified!");
-    if (m_aSrcFile.exists () && !m_aSrcFile.isFile ())
-      throw new BuildException ("The specified source Schematron file " + m_aSrcFile + " is not a file!");
-    if (m_aDstFile == null)
-      throw new BuildException ("No destination Schematron file specified!");
-    if (m_aDstFile.exists () && !m_aDstFile.isFile ())
-      throw new BuildException ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
+      _buildError ("No source Schematron file specified!");
+    else
+      if (m_aSrcFile.exists () && !m_aSrcFile.isFile ())
+        _buildError ("The specified source Schematron file " + m_aSrcFile + " is not a file!");
+      else
+        if (m_aDstFile == null)
+          _buildError ("No destination Schematron file specified!");
+        else
+          if (m_aDstFile.exists () && !m_aDstFile.isFile ())
+            _buildError ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
+          else
+            bCanRun = true;
 
-    try
-    {
-      // Read source
-      final PSSchema aSchema = new PSReader (new FileSystemResource (m_aSrcFile)).readSchema ();
+    if (bCanRun)
+      try
+      {
+        // Read source
+        final PSSchema aSchema = new PSReader (new FileSystemResource (m_aSrcFile)).readSchema ();
 
-      // Setup preprocessor
-      final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
-      aPreprocessor.setKeepTitles (m_bKeepTitles);
-      aPreprocessor.setKeepDiagnostics (m_bKeepDiagnostics);
-      aPreprocessor.setKeepReports (m_bKeepReports);
-      aPreprocessor.setKeepEmptyPatterns (m_bKeepEmptyPatterns);
-      aPreprocessor.setKeepEmptySchema (true);
+        // Setup preprocessor
+        final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
+        aPreprocessor.setKeepTitles (m_bKeepTitles);
+        aPreprocessor.setKeepDiagnostics (m_bKeepDiagnostics);
+        aPreprocessor.setKeepReports (m_bKeepReports);
+        aPreprocessor.setKeepEmptyPatterns (m_bKeepEmptyPatterns);
+        aPreprocessor.setKeepEmptySchema (true);
 
-      // Main pre-processing
-      final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
+        // Main pre-processing
+        final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
 
-      // Write the result file
-      new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).writeToFile (aPreprocessedSchema,
-                                                                                                          m_aDstFile);
-      log ("Successfully pre-processed Schematron " + m_aSrcFile + " to " + m_aDstFile);
-    }
-    catch (final SchematronReadException | SchematronPreprocessException ex)
-    {
-      throw new BuildException (ex);
-    }
+        // Write the result file
+        new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).writeToFile (aPreprocessedSchema,
+                                                                                                            m_aDstFile);
+        log ("Successfully pre-processed Schematron " + m_aSrcFile + " to " + m_aDstFile);
+      }
+      catch (final SchematronReadException | SchematronPreprocessException ex)
+      {
+        _buildError ("Error processing Schemtron " + m_aSrcFile.getAbsolutePath (), ex);
+      }
   }
 }
