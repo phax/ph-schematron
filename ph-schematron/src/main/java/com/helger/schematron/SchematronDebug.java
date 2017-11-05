@@ -69,12 +69,12 @@ public final class SchematronDebug
    * @return <code>true</code> if the intermediate files during XSLT creation.
    *         Applied only in XSTL based modes.
    */
-  public static final boolean isSaveIntermediateXSLTFiles ()
+  public static boolean isSaveIntermediateXSLTFiles ()
   {
     return s_bSaveIntermediateXSLTFiles.get ();
   }
 
-  public static final void setSaveIntermediateXSLTFiles (final boolean bSaveIntermediateFiles)
+  public static void setSaveIntermediateXSLTFiles (final boolean bSaveIntermediateFiles)
   {
     s_bSaveIntermediateXSLTFiles.set (bSaveIntermediateFiles);
   }
@@ -85,12 +85,12 @@ public final class SchematronDebug
    *         {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
    */
   @Nonnull
-  public static final File getIntermediateMinifiedSCHFolder ()
+  public static File getIntermediateMinifiedSCHFolder ()
   {
     return s_aIntermediateMinifiedSCHFolder;
   }
 
-  public static final void setIntermediateMinifiedSCHFolder (@Nonnull final File aIntermediateMinifiedSCHFolder)
+  public static void setIntermediateMinifiedSCHFolder (@Nonnull final File aIntermediateMinifiedSCHFolder)
   {
     ValueEnforcer.notNull (aIntermediateMinifiedSCHFolder, "IntermediateMinifiedSCHFolder");
     s_aIntermediateMinifiedSCHFolder = aIntermediateMinifiedSCHFolder;
@@ -102,12 +102,12 @@ public final class SchematronDebug
    *         {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
    */
   @Nonnull
-  public static final File getIntermediateFinalXSLTFolder ()
+  public static File getIntermediateFinalXSLTFolder ()
   {
     return s_aIntermediateFinalXSLTFolder;
   }
 
-  public static final void setIntermediateFinalXSLTFolder (@Nonnull final File aIntermediateFinalXSLTFolder)
+  public static void setIntermediateFinalXSLTFolder (@Nonnull final File aIntermediateFinalXSLTFolder)
   {
     ValueEnforcer.notNull (aIntermediateFinalXSLTFolder, "IntermediateFinalXSLTFolder");
     s_aIntermediateFinalXSLTFolder = aIntermediateFinalXSLTFolder;

@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javax.annotation.Nonnull;
+
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
@@ -60,7 +62,7 @@ import org.junit.rules.ExternalResource;
  * }
  * </code>
  */
-public class MyBuildFileRule extends ExternalResource
+public final class MyBuildFileRule extends ExternalResource
 {
   private Project project;
   private StringBuffer logBuffer;
@@ -274,7 +276,7 @@ public class MyBuildFileRule extends ExternalResource
      */
     public AntTestListener (final int logLevel)
     {
-      this.m_nLogLevel = logLevel;
+      m_nLogLevel = logLevel;
     }
 
     /**
@@ -350,9 +352,9 @@ public class MyBuildFileRule extends ExternalResource
     }
   }
 
+  @Nonnull
   public File getOutputDir ()
   {
     return new File (getProject ().getProperty ("output"));
   }
-
 }
