@@ -138,12 +138,12 @@ public class SchematronPreprocess extends Task
     log (bFailOnError ? "Will fail on error" : "Will not fail on error", Project.MSG_DEBUG);
   }
 
-  private void _buildError (@Nonnull final String sMsg)
+  private void _error (@Nonnull final String sMsg)
   {
-    _buildError (sMsg, null);
+    _error (sMsg, null);
   }
 
-  private void _buildError (@Nonnull final String sMsg, @Nullable final Throwable t)
+  private void _error (@Nonnull final String sMsg, @Nullable final Throwable t)
   {
     if (m_bFailOnError)
       throw new BuildException (sMsg, t);
@@ -155,16 +155,16 @@ public class SchematronPreprocess extends Task
   {
     boolean bCanRun = false;
     if (m_aSrcFile == null)
-      _buildError ("No source Schematron file specified!");
+      _error ("No source Schematron file specified!");
     else
       if (m_aSrcFile.exists () && !m_aSrcFile.isFile ())
-        _buildError ("The specified source Schematron file " + m_aSrcFile + " is not a file!");
+        _error ("The specified source Schematron file " + m_aSrcFile + " is not a file!");
       else
         if (m_aDstFile == null)
-          _buildError ("No destination Schematron file specified!");
+          _error ("No destination Schematron file specified!");
         else
           if (m_aDstFile.exists () && !m_aDstFile.isFile ())
-            _buildError ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
+            _error ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
           else
             bCanRun = true;
 
@@ -192,7 +192,7 @@ public class SchematronPreprocess extends Task
       }
       catch (final SchematronReadException | SchematronPreprocessException ex)
       {
-        _buildError ("Error processing Schemtron " + m_aSrcFile.getAbsolutePath (), ex);
+        _error ("Error processing Schemtron " + m_aSrcFile.getAbsolutePath (), ex);
       }
   }
 }

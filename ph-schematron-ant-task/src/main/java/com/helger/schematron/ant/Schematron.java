@@ -251,12 +251,12 @@ public class Schematron extends Task
     return f != null ? f : NULL_FILE_PLACEHOLDER;
   }
 
-  private void _buildError (@Nonnull final String sMsg)
+  private void _error (@Nonnull final String sMsg)
   {
-    _buildError (sMsg, null);
+    _error (sMsg, null);
   }
 
-  private void _buildError (@Nonnull final String sMsg, @Nullable final Throwable t)
+  private void _error (@Nonnull final String sMsg, @Nullable final Throwable t)
   {
     if (m_bFailOnError)
       throw new BuildException (sMsg, t);
@@ -273,13 +273,13 @@ public class Schematron extends Task
     for (final ResourceCollection aResCollection : aResCollections)
     {
       if (!aResCollection.isFilesystemOnly ())
-        _buildError ("Only FileSystem resources are supported.");
+        _error ("Only FileSystem resources are supported.");
       else
         for (final Resource aRes : aResCollection)
         {
           if (!aRes.isExists ())
           {
-            _buildError ("Could not find resource " + aRes.toLongString () + " to copy.");
+            _error ("Could not find resource " + aRes.toLongString () + " to copy.");
             continue;
           }
 
@@ -303,7 +303,7 @@ public class Schematron extends Task
               aBaseDir.addFile (name);
           }
           else
-            _buildError ("Could not resolve resource " + aRes.toLongString () + " to a file.");
+            _error ("Could not resolve resource " + aRes.toLongString () + " to a file.");
         }
     }
 
@@ -369,20 +369,23 @@ public class Schematron extends Task
               // No failed assertions expected
               if (nErrorMessages > 0)
               {
-                final String sMessage = sErrors +
-                                        (nWarningMessages > 0 ? " and " + sWarnings : "") +
-                                        " for XML file '" +
-                                        aXMLFile.getPath () +
-                                        "'";
-                log (sMessage, Project.MSG_ERR);
+                final StringBuilder aMessage = new StringBuilder ();
+                aMessage.append (sErrors +
+                                 (nWarningMessages > 0 ? " and " + sWarnings : "") +
+                                 " for XML file '" +
+                                 aXMLFile.getPath () +
+                                 "'");
 
                 for (final AbstractSVRLMessage aMsg : aMessages)
                 {
-                  log (ErrorTextProvider.DEFAULT.getErrorText (aMsg.getAsResourceError (aXMLFile.getPath ()),
-                                                               Locale.US),
-                       aMsg.getFlag ().isError () ? Project.MSG_ERR : Project.MSG_WARN);
+                  aMessage.append ("\n  ")
+                          .append (ErrorTextProvider.DEFAULT.getErrorText (aMsg.getAsResourceError (aXMLFile.getPath ()),
+                                                                           Locale.US));
                 }
-                _buildError (sMessage);
+
+                // As at least one error is contained, it's okay to throw an
+                // exception in case
+                _error (aMessage.toString ());
                 continue;
               }
 
@@ -404,8 +407,7 @@ public class Schematron extends Task
                 if (nWarningMessages > 0)
                   sMessage += " - only " + sWarnings + " are contained";
 
-                log (sMessage, Project.MSG_ERR);
-                _buildError (sMessage);
+                _error (sMessage);
                 continue;
               }
 
@@ -435,8 +437,7 @@ public class Schematron extends Task
                                     ex.getClass ().getSimpleName () +
                                     " - " +
                                     ex.getMessage ();
-            log (sMessage, ex, Project.MSG_DEBUG);
-            _buildError (sMessage, ex);
+            _error (sMessage, ex);
             continue;
           }
         }
@@ -449,20 +450,20 @@ public class Schematron extends Task
   {
     boolean bCanRun = false;
     if (m_aSchematronFile == null)
-      _buildError ("No Schematron file specified!");
+      _error ("No Schematron file specified!");
     else
       if (m_aSchematronFile.exists () && !m_aSchematronFile.isFile ())
-        _buildError ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
+        _error ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
       else
         if (m_eSchematronProcessingEngine == null)
-          _buildError ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                       StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
+          _error ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
+                     StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
         else
           if (m_aResCollections.isEmpty ())
-            _buildError ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
+            _error ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
           else
             if (m_aSvrlDirectory != null && !m_aSvrlDirectory.exists () && !m_aSvrlDirectory.mkdirs ())
-              _buildError ("Failed to create the SVRL directory " + m_aSvrlDirectory);
+              _error ("Failed to create the SVRL directory " + m_aSvrlDirectory);
             else
               bCanRun = true;
 
@@ -522,7 +523,7 @@ public class Schematron extends Task
           break;
         }
         default:
-          _buildError ("No handler for processing engine '" + m_eSchematronProcessingEngine + "'");
+          _error ("No handler for processing engine '" + m_eSchematronProcessingEngine + "'");
           break;
       }
       if (aSCHErrors != null)
@@ -540,7 +541,7 @@ public class Schematron extends Task
               log ("Warning in Schematron: " + aError.getAsString (aDisplayLocale), Project.MSG_WARN);
 
         if (bAnyParsingError)
-          _buildError ("The provided Schematron file contains errors. See log for details.");
+          _error ("The provided Schematron file contains errors. See log for details.");
         else
         {
           log ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'", Project.MSG_INFO);
