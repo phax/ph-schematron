@@ -15,7 +15,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Added new ANT task for preprocessing Schematron files only
     * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
     * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
-    * Updated to Saxon-HE 9.8.0-6
+    * Updated to Saxon-HE 9.8.0-6 - therefore no XLST v1 scripts can be used anymore - this only works up to 9.7.x!
     * Added ANT task property `failOnError` (#57)
   * v4.3.4 - 2017-07-27
     * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
