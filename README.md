@@ -10,69 +10,70 @@ The most common way is to convert the source Schematron file to an XSLT script a
 Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
 
 ## News and noteworthy
-  * v5.0.0 - work in progress
-    * Updated to ph-commons 9.0.0
-    * Added new ANT task for preprocessing Schematron files only
-    * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
-    * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
-    * Updated to Saxon-HE 9.8.0-6 - therefore no XLST v1 scripts can be used anymore - this only works up to 9.7.x!
-    * Added ANT task property `failOnError` (#57)
-  * v4.3.4 - 2017-07-27
-    * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
-  * v4.3.3 - 2017-07-27
-    * Reverted to Saxon-HE 9.7.0_18 because of incompatibilities in production
-  * v4.3.2 - 2017-07-25
-    * Updated to Saxon-HE 9.8.0-3
-    * Changed all XSLT scripts to use and create only XSLT 2.0 (because Saxon 9.8.x does not support XSLT 1.0 anymore)
-    * Updated to ph-commons 8.6.6
-  * v4.3.1 - 2017-05-29
-    * Updated to ph-commons 8.6.5
-    * Fixed too verbose logging of created XSLT
-    * Removed some old deprecated methods
-  * v4.3.0 - 2017-05-15
-    * Updated to Saxon-HE 9.7.0-18
-    * Fixed an error with nested SVRL directories in Maven plugin (#37)
-    * Added possibility to use "negative" tests in Maven plugin (#38)
-    * Added ANT plugin to validate Schematron resources (#39, #40)
-    * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
-    * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
-  * v4.2.2 - 2017-02-22
-    * Updated to Saxon-HE 9.7.0-15
-    * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
-  * v4.2.1 - 2017-01-20
-    * Added WrappedCollectingPSErrorHandler
-  * v4.2.0 - 2017-01-09
-    * Binds to ph-commons 8.6.0
-    * Updated to Saxon-HE 9.7.0-14
-    * Added a new Schematron validation Maven plugin
-  * v4.1.1 - 2016-11-03
-    * Added possibility to use XML EntityResolver (#30)
-    * Updated to Saxon-HE 9.7.0-10
-  * v4.1.0 - 2016-09-09
-    * Binding to ph-commons 8.5.x
-  * v4.0.2 - 2016-07-22
-  * v4.0.1 - 2016-07-05
-    * better integration of sch2xslt Maven plugin into m2e - thanks to @baerrach
-  * v4.0.0 - 2016-06-15
-    * updated to JDK8
-    * updated to Saxon-HE 9.7
-  * v3.0.1 - 2015-10-14
-    * keep diagnostics in Pure version; resource resolving emits to error handler
-  * v3.0.0 - 2015-07-29
-    * because of update to ph-commons 6.0.0; extended XSLT based API 
-  * v2.9.2 - 2015-03-12
-    * because of update to ph-commons 5.6.0 
-  * v2.9.1 - 2015-02-03
-    * fixes a classloader issue added in 2.9.0
-  * v2.9.0 - 2015-01-30
-    * introduced new APIs in several places
-    * updated to Saxon-HE 9.6
-  * v2.8.4 - 2014-10-30    
-  * v2.8.3 - 2014-09-16
-    * An easy way to use XQuery functions (like funcx library) as custom XPath functions was added
-  * v2.8.2 - 2014-09-02
-  * v2.8.1 - 2014-08-29
-  * v2.8.0 - 2014-08-28
+
+* v5.0.0 - 2018-01-02
+  * Updated to ph-commons 9.0.0
+  * Added new ANT task for preprocessing Schematron files only
+  * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
+  * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
+  * Updated to Saxon-HE 9.8.0-6 - therefore no XLST v1 scripts can be used anymore - this only works up to 9.7.x!
+  * Added ANT task property `failOnError` (#57)
+* v4.3.4 - 2017-07-27
+  * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
+* v4.3.3 - 2017-07-27
+  * Reverted to Saxon-HE 9.7.0_18 because of incompatibilities in production
+* v4.3.2 - 2017-07-25
+  * Updated to Saxon-HE 9.8.0-3
+  * Changed all XSLT scripts to use and create only XSLT 2.0 (because Saxon 9.8.x does not support XSLT 1.0 anymore)
+  * Updated to ph-commons 8.6.6
+* v4.3.1 - 2017-05-29
+  * Updated to ph-commons 8.6.5
+  * Fixed too verbose logging of created XSLT
+  * Removed some old deprecated methods
+* v4.3.0 - 2017-05-15
+  * Updated to Saxon-HE 9.7.0-18
+  * Fixed an error with nested SVRL directories in Maven plugin (#37)
+  * Added possibility to use "negative" tests in Maven plugin (#38)
+  * Added ANT plugin to validate Schematron resources (#39, #40)
+  * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
+  * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
+* v4.2.2 - 2017-02-22
+  * Updated to Saxon-HE 9.7.0-15
+  * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
+* v4.2.1 - 2017-01-20
+  * Added WrappedCollectingPSErrorHandler
+* v4.2.0 - 2017-01-09
+  * Binds to ph-commons 8.6.0
+  * Updated to Saxon-HE 9.7.0-14
+  * Added a new Schematron validation Maven plugin
+* v4.1.1 - 2016-11-03
+  * Added possibility to use XML EntityResolver (#30)
+  * Updated to Saxon-HE 9.7.0-10
+* v4.1.0 - 2016-09-09
+  * Binding to ph-commons 8.5.x
+* v4.0.2 - 2016-07-22
+* v4.0.1 - 2016-07-05
+  * better integration of sch2xslt Maven plugin into m2e - thanks to @baerrach
+* v4.0.0 - 2016-06-15
+  * updated to JDK8
+  * updated to Saxon-HE 9.7
+* v3.0.1 - 2015-10-14
+  * keep diagnostics in Pure version; resource resolving emits to error handler
+* v3.0.0 - 2015-07-29
+  * because of update to ph-commons 6.0.0; extended XSLT based API 
+* v2.9.2 - 2015-03-12
+  * because of update to ph-commons 5.6.0 
+* v2.9.1 - 2015-02-03
+  * fixes a classloader issue added in 2.9.0
+* v2.9.0 - 2015-01-30
+  * introduced new APIs in several places
+  * updated to Saxon-HE 9.6
+* v2.8.4 - 2014-10-30    
+* v2.8.3 - 2014-09-16
+  * An easy way to use XQuery functions (like funcx library) as custom XPath functions was added
+* v2.8.2 - 2014-09-02
+* v2.8.1 - 2014-08-29
+* v2.8.0 - 2014-08-28
 
 ## Usage with Maven
 The dependency for ph-schematron looks like this:
@@ -80,7 +81,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>4.3.4</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
@@ -96,7 +97,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>4.3.4</version>
+  <version>5.0.0</version>
   <executions>
     <execution>
       <goals>
@@ -126,7 +127,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>4.3.4</version>
+  <version>5.0.0</version>
   <executions>
     <execution>
       <goals>
@@ -161,7 +162,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>4.3.4</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 
