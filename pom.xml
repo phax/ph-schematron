@@ -73,14 +73,14 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>9.0.0</version>
+        <version>9.0.1-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>9.8.0-6</version>
+        <version>9.8.0-7</version>
       </dependency>
       
       <!-- RelaxNG -->

@@ -39,7 +39,6 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -345,29 +344,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nonnull
   public static XPathFactory createXPathFactorySaxonFirst () throws SchematronBindException
   {
-    // The XPath object used to compile the expressions
-    XPathFactory aXPathFactory;
     try
     {
-      // First try to use Saxon, using the context class loader
-      aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
-                                                "net.sf.saxon.xpath.XPathFactoryImpl",
-                                                ClassLoaderHelper.getContextClassLoader ());
+      return XPathHelper.createXPathFactorySaxonFirst ();
     }
-    catch (final Throwable t)
+    catch (final IllegalStateException ex)
     {
-      // Must be Throwable because of e.g. IllegalAccessError (see issue #19)
-      // Seems like Saxon is not in the class path - fall back to default JAXP
-      try
-      {
-        aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI);
-      }
-      catch (final Exception ex2)
-      {
-        throw new SchematronBindException ("Failed to create JAXP XPathFactory", ex2);
-      }
+      throw new SchematronBindException (ex.getMessage (), ex.getCause ());
     }
-    return aXPathFactory;
   }
 
   /**
