@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.1 - work in progress
+  * Moved `getBeautifiedLocation` to class `SVRLHelper`
 * v5.0.0 - 2018-01-02
   * Updated to ph-commons 9.0.0
   * Added new ANT task for preprocessing Schematron files only

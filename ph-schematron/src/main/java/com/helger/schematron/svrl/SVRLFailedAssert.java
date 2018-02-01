@@ -33,7 +33,7 @@ public class SVRLFailedAssert extends AbstractSVRLMessage
   {
     super (aFailedAssert.getDiagnosticReference (),
            aFailedAssert.getText (),
-           getBeautifiedLocation (aFailedAssert.getLocation ()),
+           SVRLHelper.getBeautifiedLocation (aFailedAssert.getLocation ()),
            aFailedAssert.getTest (),
            aFailedAssert.getRole (),
            SVRLHelper.getErrorLevelFromFailedAssert (aFailedAssert));

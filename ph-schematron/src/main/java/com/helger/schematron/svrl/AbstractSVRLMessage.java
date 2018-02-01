@@ -18,7 +18,6 @@ package com.helger.schematron.svrl;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +29,6 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
@@ -49,29 +47,6 @@ public abstract class AbstractSVRLMessage implements Serializable
   protected String m_sTest;
   protected String m_sRole;
   protected IErrorLevel m_aFlag;
-
-  @Nonnull
-  protected static String getBeautifiedLocation (@Nonnull final String sLocation)
-  {
-    String sResult = sLocation;
-    // Handle namespaces:
-    // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
-    // is the namespace URI
-    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
-                                                     sResult);
-    while (aMatcher.find ())
-    {
-      final String sLocalName = aMatcher.group (1);
-      final String sNamespaceURI = aMatcher.group (2);
-
-      // Check if there is a known beautifier for this pair of namespace and
-      // local name
-      final String sBeautified = SVRLLocationBeautifierRegistry.getBeautifiedLocation (sNamespaceURI, sLocalName);
-      if (sBeautified != null)
-        sResult = StringHelper.replaceAll (sResult, aMatcher.group (), sBeautified);
-    }
-    return sResult;
-  }
 
   public AbstractSVRLMessage (@Nullable final List <DiagnosticReference> aDiagnosticReferences,
                               @Nullable final String sText,

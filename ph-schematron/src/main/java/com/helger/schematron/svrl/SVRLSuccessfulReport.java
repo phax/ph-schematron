@@ -33,7 +33,7 @@ public class SVRLSuccessfulReport extends AbstractSVRLMessage
   {
     super (aSuccessfulReport.getDiagnosticReference (),
            aSuccessfulReport.getText (),
-           getBeautifiedLocation (aSuccessfulReport.getLocation ()),
+           SVRLHelper.getBeautifiedLocation (aSuccessfulReport.getLocation ()),
            aSuccessfulReport.getTest (),
            aSuccessfulReport.getRole (),
            SVRLHelper.getErrorLevelFromSuccessfulReport (aSuccessfulReport));

@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.svrl;
 
+import java.util.regex.Matcher;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -30,6 +32,8 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.level.IErrorLevel;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).
@@ -197,5 +201,40 @@ public final class SVRLHelper
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
     s_aRWLock.readLocked ( () -> s_aELD = aELD);
+  }
+
+  /**
+   * Convert an "unsexy" location string in the for, of
+   * <code>*:xx[namespace-uri()='yy']</code> to something more readable like
+   * <code>prefix:xx</code> by using the mapping registered in the
+   * {@link SVRLLocationBeautifierRegistry}.
+   *
+   * @param sLocation
+   *        The original location string. May not be <code>null</code>.
+   * @return The beautified string. Never <code>null</code>. Might be identical
+   *         to the original string if the pattern was not found.
+   * @since 5.0.1
+   */
+  @Nonnull
+  public static String getBeautifiedLocation (@Nonnull final String sLocation)
+  {
+    String sResult = sLocation;
+    // Handle namespaces:
+    // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
+    // is the namespace URI
+    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
+                                                     sResult);
+    while (aMatcher.find ())
+    {
+      final String sLocalName = aMatcher.group (1);
+      final String sNamespaceURI = aMatcher.group (2);
+
+      // Check if there is a known beautifier for this pair of namespace and
+      // local name
+      final String sBeautified = SVRLLocationBeautifierRegistry.getBeautifiedLocation (sNamespaceURI, sLocalName);
+      if (sBeautified != null)
+        sResult = StringHelper.replaceAll (sResult, aMatcher.group (), sBeautified);
+    }
+    return sResult;
   }
 }
