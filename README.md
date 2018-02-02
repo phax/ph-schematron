@@ -13,6 +13,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 * v5.0.1 - 2018-02-01
   * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
+  * Updated to Saxon-HE 9.8.0-7
   * Requires ph-commons 9.0.1
 * v5.0.0 - 2018-01-02
   * Updated to ph-commons 9.0.0
