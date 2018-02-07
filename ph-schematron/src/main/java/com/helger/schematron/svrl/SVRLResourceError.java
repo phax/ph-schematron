@@ -110,7 +110,7 @@ public class SVRLResourceError extends SingleError
     return ToStringGenerator.getDerived (super.toString ()).append ("test", m_sTest).getToString ();
   }
 
-  public static class SVRLErrorBuilder extends AbstractBuilder <SVRLResourceError, SVRLErrorBuilder>
+  public static class SVRLErrorBuilder extends SingleError.AbstractBuilder <SVRLResourceError, SVRLErrorBuilder>
   {
     private String m_sTest;
 
