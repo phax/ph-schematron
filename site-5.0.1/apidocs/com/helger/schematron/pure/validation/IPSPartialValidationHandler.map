@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSValidationHandlerBreakOnFirstFailedAssert.html" title="com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstFailedAssert" alt="" coords="16,219,304,245"/>
+<area shape="rect" id="node2_1" href="./PSValidationHandlerBreakOnFirstError.html" title="com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstError" alt="" coords="350,219,594,245"/>
+<area shape="rect" id="node3_2" href="./IPSValidationHandler.html" title="com.helger.schematron.pure.validation.IPSValidationHandler" alt="" coords="245,11,387,53"/>
+<area shape="rect" id="node4_3" href="./IPSPartialValidationHandler.html" title="com.helger.schematron.pure.validation.IPSPartialValidationHandler" alt="" coords="227,112,405,155"/>
+</map>

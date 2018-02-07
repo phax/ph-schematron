@@ -1,0 +1,8 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSXPathBoundSchema.html" title="com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema" alt="" coords="16,17,172,42"/>
+<area shape="rect" id="node2_1" href="./PSXPathBoundRule.html" title="com.helger.schematron.pure.bound.xpath.PSXPathBoundRule" alt="" coords="217,17,352,42"/>
+<area shape="rect" id="node3_2" href="./PSXPathBoundPattern.html" title="com.helger.schematron.pure.bound.xpath.PSXPathBoundPattern" alt="" coords="397,17,548,42"/>
+<area shape="rect" id="node4_3" href="./PSXPathBoundElement.html" title="com.helger.schematron.pure.bound.xpath.PSXPathBoundElement" alt="" coords="593,17,749,42"/>
+<area shape="rect" id="node5_4" href="./PSXPathBoundDiagnostic.html" title="com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic" alt="" coords="795,17,964,42"/>
+<area shape="rect" id="node6_5" href="./PSXPathBoundAssertReport.html" title="com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport" alt="" coords="1010,17,1194,42"/>
+</map>

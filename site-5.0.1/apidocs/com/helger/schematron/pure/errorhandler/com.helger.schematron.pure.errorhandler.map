@@ -1,0 +1,9 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./WrappedCollectingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.WrappedCollectingPSErrorHandler" alt="" coords="308,310,527,335"/>
+<area shape="rect" id="node2_1" href="./LoggingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler" alt="" coords="16,214,171,239"/>
+<area shape="rect" id="node3_2" href="./IPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.IPSErrorHandler" alt="" coords="245,11,357,53"/>
+<area shape="rect" id="node6_3" href="./AbstractPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.AbstractPSErrorHandler" alt="" coords="224,118,379,143"/>
+<area shape="rect" id="node4_4" href="./DoNothingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler" alt="" coords="217,214,386,239"/>
+<area shape="rect" id="node5_5" href="./CollectingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler" alt="" coords="573,310,739,335"/>
+<area shape="rect" id="node7_6" href="./AbstractCollectingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.AbstractCollectingPSErrorHandler" alt="" coords="431,214,641,239"/>
+</map>

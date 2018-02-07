@@ -1,0 +1,15 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSSchema.html" title="com.helger.schematron.pure.model.PSSchema" alt="" coords="16,222,101,247"/>
+<area shape="rect" id="node2_1" href="./PSRule.html" title="com.helger.schematron.pure.model.PSRule" alt="" coords="147,222,211,247"/>
+<area shape="rect" id="node3_2" href="./PSPhase.html" title="com.helger.schematron.pure.model.PSPhase" alt="" coords="256,222,331,247"/>
+<area shape="rect" id="node4_3" href="./PSPattern.html" title="com.helger.schematron.pure.model.PSPattern" alt="" coords="376,222,456,247"/>
+<area shape="rect" id="node5_4" href="./PSParam.html" title="com.helger.schematron.pure.model.PSParam" alt="" coords="502,222,578,247"/>
+<area shape="rect" id="node6_5" href="./PSP.html" title="com.helger.schematron.pure.model.PSP" alt="" coords="626,222,673,247"/>
+<area shape="rect" id="node7_6" href="./PSInclude.html" title="com.helger.schematron.pure.model.PSInclude" alt="" coords="721,222,799,247"/>
+<area shape="rect" id="node8_7" href="./PSExtends.html" title="com.helger.schematron.pure.model.PSExtends" alt="" coords="845,222,931,247"/>
+<area shape="rect" id="node9_8" href="./PSDiagnostics.html" title="com.helger.schematron.pure.model.PSDiagnostics" alt="" coords="977,222,1082,247"/>
+<area shape="rect" id="node10_9" href="./PSAssertReport.html" title="com.helger.schematron.pure.model.PSAssertReport" alt="" coords="1127,222,1241,247"/>
+<area shape="rect" id="node11_10" href="./IPSElement.html" title="com.helger.schematron.pure.model.IPSElement" alt="" coords="605,112,693,155"/>
+<area shape="rect" id="node12_11" href="./IPSClonableElement.html" title="com.helger.schematron.pure.model.IPSClonableElement" alt="" coords="1287,213,1759,256"/>
+<area shape="rect" id="node13_12" href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html" title="java.io.Serializable" alt="" coords="606,11,693,53"/>
+</map>

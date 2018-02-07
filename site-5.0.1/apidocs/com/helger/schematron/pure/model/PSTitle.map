@@ -1,0 +1,6 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./PSTitle.html" title="com.helger.schematron.pure.model.PSTitle" alt="" coords="239,118,300,143"/>
+<area shape="rect" id="node2_1" href="./IPSOptionalElement.html" title="com.helger.schematron.pure.model.IPSOptionalElement" alt="" coords="16,11,152,53"/>
+<area shape="rect" id="node3_2" href="./IPSHasMixedContent.html" title="com.helger.schematron.pure.model.IPSHasMixedContent" alt="" coords="197,11,341,53"/>
+<area shape="rect" id="node4_3" href="./IPSClonableElement.html" title="com.helger.schematron.pure.model.IPSClonableElement" alt="" coords="387,11,859,53"/>
+</map>

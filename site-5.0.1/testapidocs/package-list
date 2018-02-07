@@ -1,0 +1,17 @@
+com.helger.maven.sch2xslt
+com.helger.maven.schematron
+com.helger.schematron
+com.helger.schematron.ant
+com.helger.schematron.benchmark
+com.helger.schematron.docs
+com.helger.schematron.pure
+com.helger.schematron.pure.bound.xpath
+com.helger.schematron.pure.exchange
+com.helger.schematron.pure.preprocess
+com.helger.schematron.relaxng
+com.helger.schematron.saxon
+com.helger.schematron.supplementary
+com.helger.schematron.svrl
+com.helger.schematron.testfiles
+com.helger.schematron.validator
+com.helger.schematron.xslt

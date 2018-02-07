@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./LoggingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler" alt="" coords="16,214,171,239"/>
+<area shape="rect" id="node2_1" href="./IPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.IPSErrorHandler" alt="" coords="245,11,357,53"/>
+<area shape="rect" id="node4_2" href="./AbstractPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.AbstractPSErrorHandler" alt="" coords="224,118,379,143"/>
+<area shape="rect" id="node3_3" href="./DoNothingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler" alt="" coords="217,214,386,239"/>
+<area shape="rect" id="node5_4" href="./AbstractCollectingPSErrorHandler.html" title="com.helger.schematron.pure.errorhandler.AbstractCollectingPSErrorHandler" alt="" coords="431,214,641,239"/>
+</map>
