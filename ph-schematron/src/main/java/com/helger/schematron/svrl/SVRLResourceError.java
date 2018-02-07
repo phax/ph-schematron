@@ -120,7 +120,7 @@ public class SVRLResourceError extends SingleError
     }
 
     @Nonnull
-    public SVRLErrorBuilder setTest (@Nonnull final String sTest)
+    public final SVRLErrorBuilder setTest (@Nonnull final String sTest)
     {
       m_sTest = ValueEnforcer.notNull (sTest, "Test");
       return this;
