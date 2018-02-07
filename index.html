@@ -282,13 +282,20 @@
 					and then converted to a
 					<code>SchematronOutputType</code>
 					using the
-					<code>com.helger.schematron.svrl.SVRLReader</code>
+					<code>com.helger.schematron.svrl.SVRLMarshaller</code>
 					class. With Pure Schematron a
 					<code>SchematronOutputType</code>
 					object is directly created and then converted to an XML document
 					node via the class
-					<code>com.helger.schematron.svrl.SVRLWriter</code>
+					<code>com.helger.schematron.svrl.SVRLMarshaller</code>
 					.
+        </p>
+        <p>  
+          Prior to v5 there were classes called <code>SVRLReader</code>
+          to read SVRL documents and <code>SVRLWriter</code> to write
+          SVRL documents, but they only called <code>SVRLMarshaller</code>
+          but didn't offer all the flexibility needed. So they were
+          removed in v5. 
 				</p>
 
 				<p>
