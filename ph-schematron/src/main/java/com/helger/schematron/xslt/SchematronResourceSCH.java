@@ -78,7 +78,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   {
     return new SCHTransformerCustomizer ().setErrorListener (getErrorListener ())
                                           .setURIResolver (getURIResolver ())
-                                          .setParameters (getParameters ())
+                                          .setParameters (parameters ())
                                           .setPhase (m_sPhase)
                                           .setLanguageCode (m_sLanguageCode);
   }

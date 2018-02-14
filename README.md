@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.2 - work in progress
+  * Added new interface `ISchematronXSLTBasedResource` as a common base class for XSLT based validations
 * v5.0.1 - 2018-02-01
   * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
   * Updated to Saxon-HE 9.8.0-7

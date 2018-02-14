@@ -46,7 +46,7 @@ public class SCHTransformerCustomizer
 
   private ErrorListener m_aCustomErrorListener;
   private URIResolver m_aCustomURIResolver;
-  private ICommonsOrderedMap <String, ?> m_aCustomParameters;
+  private ICommonsOrderedMap <String, Object> m_aCustomParameters;
   private String m_sPhase;
   private String m_sLanguageCode;
 

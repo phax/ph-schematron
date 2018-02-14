@@ -22,6 +22,7 @@ import java.io.File;
 
 import org.junit.Test;
 
+import com.helger.schematron.xslt.ISchematronXSLTBasedResource;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class Issue20180214Test
@@ -29,7 +30,8 @@ public final class Issue20180214Test
   @Test
   public void testRead () throws Exception
   {
-    assertTrue (SchematronResourceSCH.fromFile (new File ("src/test/resources/issues/20180214/04-ESPD-Common-BR-rules.sch"))
-                                     .isValidSchematron ());
+    final ISchematronXSLTBasedResource aRes = SchematronResourceSCH.fromFile (new File ("src/test/resources/issues/20180214/04-ESPD-Common-BR-rules.sch"));
+    aRes.setAllowForeignElements (true);
+    assertTrue (aRes.isValidSchematron ());
   }
 }

@@ -95,11 +95,6 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     m_bUseCache = bUseCache;
   }
 
-  /**
-   * @return The XML entity resolver to be used to read the Schematron or XML to
-   *         be validated. May be <code>null</code>.
-   * @since 4.1.1
-   */
   @Nullable
   public EntityResolver getEntityResolver ()
   {

@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 
 import com.helger.commons.id.IHasID;
 import com.helger.commons.io.IHasInputStream;
@@ -44,6 +45,31 @@ public interface ISchematronResource extends IHasID <String>
    */
   @Nonnull
   IReadableResource getResource ();
+
+  /**
+   * @return <code>true</code> to use caching, if applicable.
+   * @since 5.0.2 in this interface
+   */
+  boolean isUseCache ();
+
+  /**
+   * Enable or disable caching.
+   * 
+   * @param bUseCache
+   *        <code>true</code> to use the cache, <code>false</code> to not use
+   *        it.
+   * @since 5.0.2 in this interface
+   */
+  void setUseCache (boolean bUseCache);
+
+  /**
+   * @return The XML entity resolver to be used to read the Schematron or XML to
+   *         be validated. May be <code>null</code>.
+   * @since 4.1.1 in implementation
+   * @since 5.0.2 in this interface
+   */
+  @Nullable
+  EntityResolver getEntityResolver ();
 
   /**
    * @return <code>true</code> if this Schematron can be used to validate XML

@@ -38,6 +38,7 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.io.resource.IReadableResource;
@@ -72,13 +73,14 @@ import net.sf.saxon.trace.XSLTTraceListener;
 public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>>
                                                           extends
                                                           AbstractSchematronResource implements
+                                                          ISchematronXSLTBasedResource,
                                                           IGenericImplTrait <IMPLTYPE>
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
-  protected ICommonsOrderedMap <String, ?> m_aCustomParameters;
+  protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
   private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
 
   public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
@@ -99,23 +101,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return thisAsT ();
   }
 
-  /**
-   * @return The {@link URIResolver} to be used for reading the Schematron. May
-   *         be <code>null</code>.
-   */
   @Nullable
   public URIResolver getURIResolver ()
   {
     return m_aCustomURIResolver;
   }
 
-  /**
-   * Set the {@link URIResolver} to be used for reading Schematron.
-   *
-   * @param aCustomURIResolver
-   *        The {@link URIResolver} to use. May be <code>null</code>,
-   * @return this for chaining
-   */
   @Nonnull
   public IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
@@ -123,22 +114,32 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return thisAsT ();
   }
 
+  @Nonnull
+  @ReturnsMutableObject
+  public ICommonsOrderedMap <String, Object> parameters ()
+  {
+    return m_aCustomParameters;
+  }
+
+  @Deprecated
   public boolean hasParameters ()
   {
-    return m_aCustomParameters != null && m_aCustomParameters.isNotEmpty ();
+    return m_aCustomParameters.isNotEmpty ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, ?> getParameters ()
+  @Deprecated
+  public ICommonsOrderedMap <String, Object> getParameters ()
   {
-    return new CommonsLinkedHashMap <> (m_aCustomParameters);
+    return m_aCustomParameters.getClone ();
   }
 
   @Nonnull
+  @Deprecated
   public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
-    m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
+    m_aCustomParameters.setAll (aCustomParameters);
     return thisAsT ();
   }
 
