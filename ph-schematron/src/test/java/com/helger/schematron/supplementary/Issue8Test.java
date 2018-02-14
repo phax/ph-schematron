@@ -25,8 +25,6 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
@@ -43,15 +41,11 @@ public final class Issue8Test
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    // Create the custom parameters
-    final ICommonsMap <String, Object> aCustomParameters = new CommonsHashMap <> ();
-    aCustomParameters.put ("xyz", "mobile");
-    aCustomParameters.put ("expected", "");
-
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 
     // Assign custom parameters
-    aSCH.setParameters (aCustomParameters);
+    aSCH.parameters ().put ("xyz", "mobile");
+    aSCH.parameters ().put ("expected", "");
 
     if (false)
       System.out.println (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
