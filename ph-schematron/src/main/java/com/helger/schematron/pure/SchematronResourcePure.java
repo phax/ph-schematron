@@ -358,7 +358,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
     // Debug print the created SVRL document
     if (SchematronDebug.isShowCreatedSVRL ())
-      s_aLogger.info ("Created SVRL:\n" + new SVRLMarshaller ().getAsString (aSOT));
+      s_aLogger.info ("Created SVRL:\n" + new SVRLMarshaller (false).getAsString (aSOT));
 
     return aSOT;
   }
