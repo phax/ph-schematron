@@ -66,7 +66,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
   }
 
   @Nonnull
-  public IErrorLevel getErrorLevelFromFlag (@Nullable final String sFlag)
+  public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
   {
     if (sFlag != null)
     {

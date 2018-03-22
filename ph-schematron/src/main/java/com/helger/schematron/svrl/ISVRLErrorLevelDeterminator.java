@@ -23,7 +23,9 @@ import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.DevelopersNote;
 import com.helger.commons.error.level.IErrorLevel;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Interface that helps in determining an error level from SVRL elements.
@@ -42,7 +44,24 @@ public interface ISVRLErrorLevelDeterminator
    * @return The error level and never <code>null</code>.
    */
   @Nonnull
-  IErrorLevel getErrorLevelFromFlag (@Nullable String sFlag);
+  @Deprecated
+  @DevelopersNote ("Use getErrorLevelFromString instead")
+  default IErrorLevel getErrorLevelFromFlag (@Nullable final String sFlag)
+  {
+    return getErrorLevelFromString (sFlag);
+  }
+
+  /**
+   * Get the error level associated with a single failed assertion/successful
+   * report.
+   *
+   * @param sValue
+   *        The value to be queried. May be <code>null</code>.
+   * @return The error level and never <code>null</code>.
+   * @since 5.0.2
+   */
+  @Nonnull
+  IErrorLevel getErrorLevelFromString (@Nullable String sValue);
 
   /**
    * Get the error level associated with a single failed assertion.
@@ -56,7 +75,14 @@ public interface ISVRLErrorLevelDeterminator
   {
     ValueEnforcer.notNull (aFailedAssert, "FailedAssert");
 
-    return getErrorLevelFromFlag (aFailedAssert.getFlag ());
+    // First try "flag" (for backwards compatibility)
+    String sValue = aFailedAssert.getFlag ();
+    if (StringHelper.hasNoText (sValue))
+    {
+      // Fall back to "role"
+      sValue = aFailedAssert.getRole ();
+    }
+    return getErrorLevelFromString (sValue);
   }
 
   /**
@@ -71,6 +97,13 @@ public interface ISVRLErrorLevelDeterminator
   {
     ValueEnforcer.notNull (aSuccessfulReport, "SuccessfulReport");
 
-    return getErrorLevelFromFlag (aSuccessfulReport.getFlag ());
+    // First try "flag" (for backwards compatibility)
+    String sValue = aSuccessfulReport.getFlag ();
+    if (StringHelper.hasNoText (sValue))
+    {
+      // Fall back to "role"
+      sValue = aSuccessfulReport.getRole ();
+    }
+    return getErrorLevelFromString (aSuccessfulReport.getFlag ());
   }
 }
