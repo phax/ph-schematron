@@ -190,12 +190,21 @@ public final class SVRLHelper
     return getErrorLevelDeterminator ().getErrorLevelFromSuccessfulReport (aSuccessfulReport);
   }
 
+  /**
+   * @return The default error level determinator. May not be <code>null</code>.
+   */
   @Nonnull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
     return s_aRWLock.readLocked ( () -> s_aELD);
   }
 
+  /**
+   * Set the global error level determinator.
+   * 
+   * @param aELD
+   *        The determinator to use. May not be <code>null</code>.
+   */
   public static void setErrorLevelDeterminator (@Nonnull final ISVRLErrorLevelDeterminator aELD)
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
