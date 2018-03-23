@@ -14,6 +14,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 * v5.0.2 - work in progress
   * Added new interface `ISchematronXSLTBasedResource` as a common base class for XSLT based validations
   * Improved the `DefaultSVRLErrorLevelDeterminator` implementation to be more flexible and cater for more error levels
+  * Updated to Saxon-HE 9.8.0-10
 * v5.0.1 - 2018-02-01
   * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
   * Updated to Saxon-HE 9.8.0-7
