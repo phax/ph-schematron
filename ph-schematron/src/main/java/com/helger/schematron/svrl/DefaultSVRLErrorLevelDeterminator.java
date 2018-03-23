@@ -84,6 +84,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
 
       if (sFlag.equalsIgnoreCase ("fatal") ||
           sFlag.equalsIgnoreCase ("fatal_error") ||
+          sFlag.equalsIgnoreCase ("fatal-error") ||
           sFlag.equalsIgnoreCase ("fatalerror"))
         return EErrorLevel.FATAL_ERROR;
     }
