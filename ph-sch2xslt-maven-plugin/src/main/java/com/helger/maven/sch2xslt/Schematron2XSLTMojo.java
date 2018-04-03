@@ -38,7 +38,11 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.error.IError;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
@@ -97,8 +101,6 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   /**
    * BuildContext for m2e (it's a pass-though straight to the filesystem when
    * invoked from the Maven cli)
-   *
-   * @component
    */
   @Component
   private BuildContext buildContext;
@@ -106,14 +108,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   /**
    * The Maven Project.
    */
-  @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
-  @Parameter (property = "project", required = true, readonly = true)
+  @Component
   private MavenProject project;
 
   /**
    * The directory where the Schematron files reside.
    */
-  @Parameter (property = "schematronDirectory", defaultValue = "${basedir}/src/main/schematron", required = true)
+  @Parameter (name = "schematronDirectory", defaultValue = "${basedir}/src/main/schematron", required = true)
   private File m_aSchematronDirectory;
 
   /**
@@ -121,46 +122,46 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    * double wildcards. All files that match the pattern will be converted. Files
    * in the schematronDirectory and its subdirectories will be considered.
    */
-  @Parameter (property = "schematronPattern", defaultValue = "**/*.sch", required = true)
+  @Parameter (name = "schematronPattern", defaultValue = "**/*.sch", required = true)
   private String m_sSchematronPattern;
 
   /**
    * The directory where the XSLT files will be saved.
    */
-  @Parameter (property = "xsltDirectory", defaultValue = "${basedir}/src/main/xslt", required = true)
+  @Parameter (name = "xsltDirectory", defaultValue = "${basedir}/src/main/xslt", required = true)
   private File m_aXsltDirectory;
 
   /**
    * The file extension of the created XSLT files.
    */
-  @Parameter (property = "xsltExtension", defaultValue = ".xslt", required = true)
+  @Parameter (name = "xsltExtension", defaultValue = ".xslt", required = true)
   private String m_sXsltExtension;
 
   /**
    * Overwrite existing Schematron files without notice? If this is set to
    * <code>false</code> than existing XSLT files are not overwritten.
    */
-  @Parameter (property = "overwrite", defaultValue = "true")
+  @Parameter (name = "overwriteWithoutQuestion", defaultValue = "true")
   private boolean m_bOverwriteWithoutNotice = true;
 
   /**
    * Define the phase to be used for XSLT creation. By default the
    * <code>defaultPhase</code> attribute of the Schematron file is used.
    */
-  @Parameter (property = "phaseName")
+  @Parameter (name = "phaseName")
   private String m_sPhaseName;
 
   /**
    * Define the language code for the XSLT creation. Default is English.
    * Supported language codes are: cs, de, en, fr, nl.
    */
-  @Parameter (property = "languageCode")
+  @Parameter (name = "languageCode")
   private String m_sLanguageCode;
 
   /**
    * Custom attributes to be used for the SCH to XSLT conversion.
    */
-  @Parameter (property = "parameters")
+  @Parameter (name = "parameters")
   @Since ("5.0.2")
   private Map <String, String> m_aCustomParameters;
 
@@ -226,6 +227,14 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("Using no custom parameters");
     else
       getLog ().debug ("Using custom parameters " + m_aCustomParameters.toString ());
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  @VisibleForTesting
+  ICommonsMap <String, String> getParameters ()
+  {
+    return new CommonsHashMap <> (m_aCustomParameters);
   }
 
   public void execute () throws MojoExecutionException, MojoFailureException
