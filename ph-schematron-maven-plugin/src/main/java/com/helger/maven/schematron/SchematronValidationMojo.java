@@ -25,6 +25,10 @@ import javax.annotation.Nullable;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
@@ -55,11 +59,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Applies Schematron validation onto an XML file
  *
- * @goal validate
- * @phase process-resources
  * @author Philip Helger
  */
 @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
+@Mojo (name = "validate", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
 public final class SchematronValidationMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
@@ -93,27 +96,21 @@ public final class SchematronValidationMojo extends AbstractMojo
   /**
    * BuildContext for m2e (it's a pass-though straight to the filesystem when
    * invoked from the Maven cli)
-   *
-   * @component
    */
+  @Component
   private BuildContext buildContext;
 
   /**
    * The Maven Project.
-   *
-   * @parameter property="project"
-   * @required
-   * @readonly
    */
-  @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
+  @Component
   private MavenProject project;
 
   /**
    * The Schematron file. This may also be an XSLT file if it is precompiled.
-   *
-   * @parameter property="schematronFile"
    */
-  private File schematronFile;
+  @Parameter (name = "schematronFile", required = true)
+  private File m_aSchematronFile;
 
   /**
    * The processing engine to use. Can be one of the following:
@@ -124,188 +121,179 @@ public final class SchematronValidationMojo extends AbstractMojo
    * <li>xslt - apply pre-build XSLT files</li>
    * </ul>
    */
-  private String schematronProcessingEngine = ESchematronMode.PURE.getID ();
+  @Parameter (name = "schematronProcessingEngine", required = true)
+  private String m_sSchematronProcessingEngine = ESchematronMode.PURE.getID ();
 
   /**
    * The directory where the XML files reside that are expected to match the
    * Schematron rules.
-   *
-   * @parameter property="xmlDirectory"
    */
-  private File xmlDirectory;
+  @Parameter (name = "xmlDirectory", required = true)
+  private File m_aXmlDirectory;
 
   /**
    * A pattern for the XML files that should be included. Can contain Ant-style
    * wildcards and double wildcards. All files that match the pattern will be
    * converted. Files in the xmlDirectory and its subdirectories will be
    * considered.
-   *
-   * @parameter property="xmlIncludes" default-value="**\/*.xml"
    */
-  private String xmlIncludes;
+  @Parameter (name = "xmlIncludes", defaultValue = "**/*.xml", required = true)
+  private String m_sXmlIncludes;
 
   /**
    * A pattern for the XML files that should be excluded. Can contain Ant-style
    * wildcards and double wildcards. All files that match the pattern will NOT
    * be converted. Only files in the xmlDirectory and its subdirectories will be
    * considered.
-   *
-   * @parameter property="xmlExcludes"
    */
-  private String xmlExcludes;
+  @Parameter (name = "xmlExcludes")
+  private String m_sXmlExcludes;
 
   /**
    * The SVRL path to write to (for positive tests). The filenames are based on
    * the source XML filenames.
-   *
-   * @parameter property="svrlDirectory"
    */
-  private File svrlDirectory;
+  @Parameter (name = "svrlDirectory")
+  private File m_aSvrlDirectory;
 
   /**
    * The directory where the erroneous XML files reside that are expected to NOT
    * match the Schematron rules.
-   *
-   * @parameter property="xmlErrorDirectory"
    */
-  private File xmlErrorDirectory;
+  @Parameter (name = "xmlErrorDirectory")
+  private File m_aXmlErrorDirectory;
 
   /**
    * A pattern for the erroneous XML files that should be included. Can contain
    * Ant-style wildcards and double wildcards. All files that match the pattern
    * will be converted. Files in the xmlDirectory and its subdirectories will be
    * considered.
-   *
-   * @parameter property="xmlErrorIncludes" default-value="**\/*.xml"
    */
-  private String xmlErrorIncludes;
+  @Parameter (name = "xmlErrorIncludes", defaultValue = "**/*.xml")
+  private String m_sXmlErrorIncludes;
 
   /**
    * A pattern for the erroneous XML files that should be excluded. Can contain
    * Ant-style wildcards and double wildcards. All files that match the pattern
    * will NOT be converted. Only files in the xmlDirectory and its
    * subdirectories will be considered.
-   *
-   * @parameter property="xmlErrorExcludes"
    */
-  private String xmlErrorExcludes;
+  @Parameter (name = "xmlErrorExcludes")
+  private String m_sXmlErrorExcludes;
 
   /**
    * The SVRL path to write to (for negative tests). The filenames are based on
    * the source XML filenames.
-   *
-   * @parameter property="svrlErrorDirectory"
    */
-  private File svrlErrorDirectory;
+  @Parameter (name = "svrlErrorDirectory")
+  private File m_aSvrlErrorDirectory;
 
   /**
    * Define the phase to be used for Schematron validation. By default the
    * <code>defaultPhase</code> attribute of the Schematron file is used. This
    * phase name is only used if the processing engine <code>pure</code> or
    * <code>schematron</code> are used.
-   *
-   * @parameter property="phaseName"
    */
-  private String phaseName;
+  @Parameter (name = "phaseName")
+  private String m_sPhaseName;
 
   /**
    * Define the language code to be used for Schematron validation. Default is
    * English. Supported language codes are: cs, de, en, fr, nl.
-   *
-   * @parameter property="languageCode"
    */
+  @Parameter (name = "languageCode")
   private String languageCode;
 
   public void setSchematronFile (@Nonnull final File aFile)
   {
-    schematronFile = aFile;
-    if (!schematronFile.isAbsolute ())
-      schematronFile = new File (project.getBasedir (), aFile.getPath ());
+    m_aSchematronFile = aFile;
+    if (!m_aSchematronFile.isAbsolute ())
+      m_aSchematronFile = new File (project.getBasedir (), aFile.getPath ());
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Using Schematron file '" + schematronFile + "'");
+      getLog ().debug ("Using Schematron file '" + m_aSchematronFile + "'");
   }
 
   public void setSchematronProcessingEngine (@Nullable final String sEngine)
   {
     final ESchematronMode eMode = ESchematronMode.getFromIDOrNull (sEngine);
-    schematronProcessingEngine = eMode == null ? null : eMode.getID ();
+    m_sSchematronProcessingEngine = eMode == null ? null : eMode.getID ();
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Schematron processing mode set to '" + eMode + "'");
   }
 
   public void setXmlDirectory (@Nonnull final File aDir)
   {
-    xmlDirectory = aDir;
-    if (!xmlDirectory.isAbsolute ())
-      xmlDirectory = new File (project.getBasedir (), aDir.getPath ());
+    m_aXmlDirectory = aDir;
+    if (!m_aXmlDirectory.isAbsolute ())
+      m_aXmlDirectory = new File (project.getBasedir (), aDir.getPath ());
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Searching XML files in the directory '" + xmlDirectory + "'");
+      getLog ().debug ("Searching XML files in the directory '" + m_aXmlDirectory + "'");
   }
 
   public void setXmlIncludes (@Nullable final String sPattern)
   {
-    xmlIncludes = sPattern;
+    m_sXmlIncludes = sPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting XML file includes to '" + sPattern + "'");
   }
 
   public void setXmlExcludes (@Nullable final String sPattern)
   {
-    xmlExcludes = sPattern;
+    m_sXmlExcludes = sPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting XML file excludes to '" + sPattern + "'");
   }
 
   public void setSvrlDirectory (@Nonnull final File aDir)
   {
-    svrlDirectory = aDir;
-    if (!svrlDirectory.isAbsolute ())
-      svrlDirectory = new File (project.getBasedir (), aDir.getPath ());
+    m_aSvrlDirectory = aDir;
+    if (!m_aSvrlDirectory.isAbsolute ())
+      m_aSvrlDirectory = new File (project.getBasedir (), aDir.getPath ());
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Writing SVRL files to directory '" + svrlDirectory + "'");
+      getLog ().debug ("Writing SVRL files to directory '" + m_aSvrlDirectory + "'");
   }
 
   public void setXmlErrorDirectory (@Nonnull final File aDir)
   {
-    xmlErrorDirectory = aDir;
-    if (!xmlErrorDirectory.isAbsolute ())
-      xmlErrorDirectory = new File (project.getBasedir (), aDir.getPath ());
+    m_aXmlErrorDirectory = aDir;
+    if (!m_aXmlErrorDirectory.isAbsolute ())
+      m_aXmlErrorDirectory = new File (project.getBasedir (), aDir.getPath ());
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Searching erroneous XML files in the directory '" + xmlDirectory + "'");
+      getLog ().debug ("Searching erroneous XML files in the directory '" + m_aXmlDirectory + "'");
   }
 
   public void setXmlErrorIncludes (@Nullable final String sPattern)
   {
-    xmlErrorIncludes = sPattern;
+    m_sXmlErrorIncludes = sPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting erroneous XML file includes to '" + sPattern + "'");
   }
 
   public void setXmlErrorExcludes (@Nullable final String sPattern)
   {
-    xmlErrorExcludes = sPattern;
+    m_sXmlErrorExcludes = sPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting erroneous XML file excludes to '" + sPattern + "'");
   }
 
   public void setSvrlErrorDirectory (@Nonnull final File aDir)
   {
-    svrlErrorDirectory = aDir;
-    if (!svrlErrorDirectory.isAbsolute ())
-      svrlErrorDirectory = new File (project.getBasedir (), aDir.getPath ());
+    m_aSvrlErrorDirectory = aDir;
+    if (!m_aSvrlErrorDirectory.isAbsolute ())
+      m_aSvrlErrorDirectory = new File (project.getBasedir (), aDir.getPath ());
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Writing erroneous SVRL files to directory '" + svrlErrorDirectory + "'");
+      getLog ().debug ("Writing erroneous SVRL files to directory '" + m_aSvrlErrorDirectory + "'");
   }
 
   public void setPhaseName (@Nullable final String sPhaseName)
   {
-    phaseName = sPhaseName;
+    m_sPhaseName = sPhaseName;
 
     if (getLog ().isDebugEnabled ())
-      if (phaseName == null)
+      if (m_sPhaseName == null)
         getLog ().debug ("Using default phase");
       else
-        getLog ().debug ("Using the phase '" + phaseName + "'");
+        getLog ().debug ("Using the phase '" + m_sPhaseName + "'");
   }
 
   public void setLanguageCode (@Nullable final String sLanguageCode)
@@ -345,7 +333,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         getLog ().info ("Validating XML file '" +
                         aXMLFile.getPath () +
                         "' against Schematron rules from '" +
-                        schematronFile +
+                        m_aSchematronFile +
                         "' expecting " +
                         (bExpectSuccess ? "success" : "failure"));
         try
@@ -403,7 +391,7 @@ public final class SchematronValidationMojo extends AbstractMojo
           final String sMessage = "Exception validating XML '" +
                                   aXMLFile.getPath () +
                                   "' against Schematron rules from '" +
-                                  schematronFile +
+                                  m_aSchematronFile +
                                   "'";
           getLog ().error (sMessage, ex);
           throw new MojoExecutionException (sMessage, ex);
@@ -415,45 +403,45 @@ public final class SchematronValidationMojo extends AbstractMojo
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
-    if (schematronFile == null)
+    if (m_aSchematronFile == null)
       throw new MojoExecutionException ("No Schematron file specified!");
-    if (schematronFile.exists () && !schematronFile.isFile ())
-      throw new MojoExecutionException ("The specified Schematron file " + schematronFile + " is not a file!");
-    if (schematronProcessingEngine == null)
+    if (m_aSchematronFile.exists () && !m_aSchematronFile.isFile ())
+      throw new MojoExecutionException ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
+    if (m_sSchematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
                                         StringHelper.getImplodedMapped (", ",
                                                                         ESchematronMode.values (),
                                                                         x -> "'" + x.getID () + "'"));
-    if (xmlDirectory == null && xmlErrorDirectory == null)
+    if (m_aXmlDirectory == null && m_aXmlErrorDirectory == null)
       throw new MojoExecutionException ("No XML directory specified - positive or negative directory must be present!");
 
-    if (xmlDirectory != null)
+    if (m_aXmlDirectory != null)
     {
-      if (xmlDirectory.exists () && !xmlDirectory.isDirectory ())
-        throw new MojoExecutionException ("The specified XML directory " + xmlDirectory + " is not a directory!");
-      if (StringHelper.hasNoText (xmlIncludes))
+      if (m_aXmlDirectory.exists () && !m_aXmlDirectory.isDirectory ())
+        throw new MojoExecutionException ("The specified XML directory " + m_aXmlDirectory + " is not a directory!");
+      if (StringHelper.hasNoText (m_sXmlIncludes))
         throw new MojoExecutionException ("No XML include pattern specified!");
 
-      if (svrlDirectory != null)
+      if (m_aSvrlDirectory != null)
       {
-        if (!svrlDirectory.exists () && !svrlDirectory.mkdirs ())
-          throw new MojoExecutionException ("Failed to create the SVRL directory " + svrlDirectory);
+        if (!m_aSvrlDirectory.exists () && !m_aSvrlDirectory.mkdirs ())
+          throw new MojoExecutionException ("Failed to create the SVRL directory " + m_aSvrlDirectory);
       }
     }
 
-    if (xmlErrorDirectory != null)
+    if (m_aXmlErrorDirectory != null)
     {
-      if (xmlErrorDirectory.exists () && !xmlErrorDirectory.isDirectory ())
+      if (m_aXmlErrorDirectory.exists () && !m_aXmlErrorDirectory.isDirectory ())
         throw new MojoExecutionException ("The specified erroneous XML directory " +
-                                          xmlErrorDirectory +
+                                          m_aXmlErrorDirectory +
                                           " is not a directory!");
-      if (StringHelper.hasNoText (xmlErrorIncludes))
+      if (StringHelper.hasNoText (m_sXmlErrorIncludes))
         throw new MojoExecutionException ("No erroneous XML include pattern specified!");
 
-      if (svrlErrorDirectory != null)
+      if (m_aSvrlErrorDirectory != null)
       {
-        if (!svrlErrorDirectory.exists () && !svrlErrorDirectory.mkdirs ())
-          throw new MojoExecutionException ("Failed to create the erroneous SVRL directory " + svrlErrorDirectory);
+        if (!m_aSvrlErrorDirectory.exists () && !m_aSvrlErrorDirectory.mkdirs ())
+          throw new MojoExecutionException ("Failed to create the erroneous SVRL directory " + m_aSvrlErrorDirectory);
       }
     }
 
@@ -461,14 +449,14 @@ public final class SchematronValidationMojo extends AbstractMojo
     final Locale aDisplayLocale = Locale.US;
     ISchematronResource aSch;
     IErrorList aSCHErrors;
-    switch (ESchematronMode.getFromIDOrNull (schematronProcessingEngine))
+    switch (ESchematronMode.getFromIDOrNull (m_sSchematronProcessingEngine))
     {
       case PURE:
       {
         // pure
         final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-        final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (schematronFile));
-        aRealSCH.setPhase (phaseName);
+        final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
+        aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setErrorHandler (aErrorHdl);
         aRealSCH.validateCompletely ();
 
@@ -480,8 +468,8 @@ public final class SchematronValidationMojo extends AbstractMojo
       {
         // SCH
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (schematronFile));
-        aRealSCH.setPhase (phaseName);
+        final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
+        aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (languageCode);
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.isValidSchematron ();
@@ -494,7 +482,7 @@ public final class SchematronValidationMojo extends AbstractMojo
       {
         // SCH
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (schematronFile));
+        final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
         // phase is ignored
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.isValidSchematron ();
@@ -504,7 +492,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         break;
       }
       default:
-        throw new MojoExecutionException ("No handler for processing engine '" + schematronProcessingEngine + "'");
+        throw new MojoExecutionException ("No handler for processing engine '" + m_sSchematronProcessingEngine + "'");
     }
     if (aSCHErrors != null)
     {
@@ -522,12 +510,17 @@ public final class SchematronValidationMojo extends AbstractMojo
       if (bAnyError)
         throw new MojoExecutionException ("The provided Schematron file contains errors. See log for details.");
     }
-    getLog ().info ("Successfully parsed Schematron file '" + schematronFile.getPath () + "'");
+    getLog ().info ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'");
 
     // 2. for all XML files that match the pattern
-    if (xmlDirectory != null)
-      _performValidation (aSch, xmlDirectory, xmlIncludes, xmlExcludes, svrlDirectory, true);
-    if (xmlErrorDirectory != null)
-      _performValidation (aSch, xmlErrorDirectory, xmlErrorIncludes, xmlErrorExcludes, svrlErrorDirectory, false);
+    if (m_aXmlDirectory != null)
+      _performValidation (aSch, m_aXmlDirectory, m_sXmlIncludes, m_sXmlExcludes, m_aSvrlDirectory, true);
+    if (m_aXmlErrorDirectory != null)
+      _performValidation (aSch,
+                          m_aXmlErrorDirectory,
+                          m_sXmlErrorIncludes,
+                          m_sXmlErrorExcludes,
+                          m_aSvrlErrorDirectory,
+                          false);
   }
 }

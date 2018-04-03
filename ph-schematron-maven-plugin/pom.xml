@@ -54,20 +54,26 @@
     </developer>
   </developers>
   
+  <prerequisites>
+    <maven>3.0</maven>  
+  </prerequisites>
+  
   <properties>
-    <maven.version>2.0.9</maven.version>
+    <maven.core.version>3.5.3</maven.core.version>
+    <maven.annot.version>3.5.1</maven.annot.version>
+    <maven.test.version>3.3.0</maven.test.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>${maven.version}</version>
+      <version>${maven.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>${maven.version}</version>
+      <artifactId>maven-core</artifactId>
+      <version>${maven.core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -79,14 +85,28 @@
       <artifactId>ph-schematron</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-      <version>2.1</version>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>${maven.annot.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.sonatype.plexus</groupId>
       <artifactId>plexus-build-api</artifactId>
       <version>0.0.7</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.maven.plugin-testing</groupId>
+      <artifactId>maven-plugin-testing-harness</artifactId>
+      <version>${maven.test.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+      <version>${maven.core.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
