@@ -12,80 +12,82 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 ## News and noteworthy
 
 * v5.0.2 - work in progress
-  * Added new interface `ISchematronXSLTBasedResource` as a common base class for XSLT based validations
-  * Improved the `DefaultSVRLErrorLevelDeterminator` implementation to be more flexible and cater for more error levels
-  * Updated to Saxon-HE 9.8.0-10
-  * The `ph-sch2xslt-maven-plugin` now requires Maven 3.0
+    * Added new interface `ISchematronXSLTBasedResource` as a common base class for XSLT based validations
+    * Improved the `DefaultSVRLErrorLevelDeterminator` implementation to be more flexible and cater for more error levels
+    * Updated to Saxon-HE 9.8.0-10
+    * The `ph-sch2xslt-maven-plugin` now requires Maven 3.0
+    * Added new parameter `parameters` to the `ph-sch2xslt-maven-plugin`
 * v5.0.1 - 2018-02-01
-  * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
-  * Updated to Saxon-HE 9.8.0-7
-  * Requires ph-commons 9.0.1
+    * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
+    * Updated to Saxon-HE 9.8.0-7
+    * Requires ph-commons 9.0.1
 * v5.0.0 - 2018-01-02
-  * Updated to ph-commons 9.0.0
-  * Added new ANT task for preprocessing Schematron files only
-  * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
-  * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
-  * Updated to Saxon-HE 9.8.0-6 - therefore no XLST v1 scripts can be used anymore - this only works up to 9.7.x!
-  * Added ANT task property `failOnError` (#57)
+    * Updated to ph-commons 9.0.0
+    * Added new ANT task for preprocessing Schematron files only
+    * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
+    * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
+    * Updated to Saxon-HE 9.8.0-6 - therefore no XLST v1 scripts can be used anymore - this only works up to 9.7.x!
+    * Added ANT task property `failOnError` (#57)
 * v4.3.4 - 2017-07-27
-  * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
+    * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
 * v4.3.3 - 2017-07-27
-  * Reverted to Saxon-HE 9.7.0_18 because of incompatibilities in production
+    * Reverted to Saxon-HE 9.7.0_18 because of incompatibilities in production
 * v4.3.2 - 2017-07-25
-  * Updated to Saxon-HE 9.8.0-3
-  * Changed all XSLT scripts to use and create only XSLT 2.0 (because Saxon 9.8.x does not support XSLT 1.0 anymore)
-  * Updated to ph-commons 8.6.6
+    * Updated to Saxon-HE 9.8.0-3
+    * Changed all XSLT scripts to use and create only XSLT 2.0 (because Saxon 9.8.x does not support XSLT 1.0 anymore)
+    * Updated to ph-commons 8.6.6
 * v4.3.1 - 2017-05-29
-  * Updated to ph-commons 8.6.5
-  * Fixed too verbose logging of created XSLT
-  * Removed some old deprecated methods
+    * Updated to ph-commons 8.6.5
+    * Fixed too verbose logging of created XSLT
+    * Removed some old deprecated methods
 * v4.3.0 - 2017-05-15
-  * Updated to Saxon-HE 9.7.0-18
-  * Fixed an error with nested SVRL directories in Maven plugin (#37)
-  * Added possibility to use "negative" tests in Maven plugin (#38)
-  * Added ANT plugin to validate Schematron resources (#39, #40)
-  * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
-  * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
+    * Updated to Saxon-HE 9.7.0-18
+    * Fixed an error with nested SVRL directories in Maven plugin (#37)
+    * Added possibility to use "negative" tests in Maven plugin (#38)
+    * Added ANT plugin to validate Schematron resources (#39, #40)
+    * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
+    * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
 * v4.2.2 - 2017-02-22
-  * Updated to Saxon-HE 9.7.0-15
-  * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
+    * Updated to Saxon-HE 9.7.0-15
+    * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
 * v4.2.1 - 2017-01-20
-  * Added WrappedCollectingPSErrorHandler
+    * Added WrappedCollectingPSErrorHandler
 * v4.2.0 - 2017-01-09
-  * Binds to ph-commons 8.6.0
-  * Updated to Saxon-HE 9.7.0-14
-  * Added a new Schematron validation Maven plugin
+    * Binds to ph-commons 8.6.0
+    * Updated to Saxon-HE 9.7.0-14
+    * Added a new Schematron validation Maven plugin
 * v4.1.1 - 2016-11-03
-  * Added possibility to use XML EntityResolver (#30)
-  * Updated to Saxon-HE 9.7.0-10
+    * Added possibility to use XML EntityResolver (#30)
+    * Updated to Saxon-HE 9.7.0-10
 * v4.1.0 - 2016-09-09
-  * Binding to ph-commons 8.5.x
+    * Binding to ph-commons 8.5.x
 * v4.0.2 - 2016-07-22
 * v4.0.1 - 2016-07-05
-  * better integration of sch2xslt Maven plugin into m2e - thanks to @baerrach
+    * better integration of sch2xslt Maven plugin into m2e - thanks to @baerrach
 * v4.0.0 - 2016-06-15
-  * updated to JDK8
-  * updated to Saxon-HE 9.7
+    * updated to JDK8
+    * updated to Saxon-HE 9.7
 * v3.0.1 - 2015-10-14
-  * keep diagnostics in Pure version; resource resolving emits to error handler
+    * keep diagnostics in Pure version; resource resolving emits to error handler
 * v3.0.0 - 2015-07-29
-  * because of update to ph-commons 6.0.0; extended XSLT based API 
+    * because of update to ph-commons 6.0.0; extended XSLT based API 
 * v2.9.2 - 2015-03-12
-  * because of update to ph-commons 5.6.0 
+    * because of update to ph-commons 5.6.0 
 * v2.9.1 - 2015-02-03
-  * fixes a classloader issue added in 2.9.0
+    * fixes a classloader issue added in 2.9.0
 * v2.9.0 - 2015-01-30
-  * introduced new APIs in several places
-  * updated to Saxon-HE 9.6
+    * introduced new APIs in several places
+    * updated to Saxon-HE 9.6
 * v2.8.4 - 2014-10-30    
 * v2.8.3 - 2014-09-16
-  * An easy way to use XQuery functions (like funcx library) as custom XPath functions was added
+    * An easy way to use XQuery functions (like funcx library) as custom XPath functions was added
 * v2.8.2 - 2014-09-02
 * v2.8.1 - 2014-08-29
 * v2.8.0 - 2014-08-28
 
 ## Usage with Maven
 The dependency for ph-schematron looks like this:
+
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
@@ -93,6 +95,7 @@ The dependency for ph-schematron looks like this:
   <version>5.0.1</version>
 </dependency>
 ```
+
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
 
 # ph-sch2xslt-maven-plugin
@@ -102,6 +105,7 @@ Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schem
 The conversion of Schematron to XSLT is quite costly. That’s why this Maven plugin that does the conversion at build time. 
 
 By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
@@ -116,6 +120,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
   </executions>
 </plugin>
 ```
+
 The possible configuration parameters are:
   * `schematronDirectory` - The directory where the Schematron files reside. Defaults to `${basedir}/src/main/schematron`.
   * `schematronPattern` - A pattern for the Schematron files. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be converted. Files in the `schematronDirectory` and its subdirectories will be considered. Default is `**/*.sch`.
@@ -124,6 +129,18 @@ The possible configuration parameters are:
   * `overwriteWithoutQuestion` - Overwrite existing Schematron files without notice? If this is set to `false` than existing XSLT files are not overwritten. Default is `true`.
   * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+  * `parameters` (since v5.0.2) - A map to provide custom parameter for the Schematron XSLTs (as in `allow-foreign`). Example:
+
+```xml
+<configuration>
+  ...
+  <parameters> 
+    <allow-foreign>true</allow-foreign>
+    <anything>else</anything>
+  </parameters>    
+  ...
+</configuration>
+```
 
 # ph-schematron-maven-plugin
 
@@ -132,6 +149,7 @@ Maven plugin to validate XML files against convert Schematron (SCH) at compile t
 This plugin was introduced in version 4.2.0.
 
 By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
@@ -146,6 +164,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
   </executions>
 </plugin>
 ```
+
 The possible configuration parameters are:
   * `schematronFile` - The Schematron file to be applied. This parameter is mandatory.
   * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `pure`.
@@ -167,7 +186,8 @@ A validator for Schematron definitions based on RelaxNG definition.
 
 ## Usage with Maven
 Add the following to your pom.xml to use this artifact:
-```
+
+```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
@@ -186,6 +206,7 @@ ph-schematron 5.0.0 adds a new task for preprocessing Schematron files.
 ### Declare the task
 
 There is currently only one task:
+
 ```xml
 <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
 ```
@@ -198,6 +219,7 @@ A compiled version of the "JAR with dependencies" is [available at the Maven Cen
 ### Execute task
 
 The validation itself looks like this:
+
 ```xml
   <target name="validate">
 ...
@@ -241,12 +263,12 @@ Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver
   </target>
 ```
 
-
 ## Preprocess a Schematron file (since 5.0.0)
 
 ### Declare the task
 
 There is currently only one task:
+
 ```xml
 <taskdef name="schematron-preprocess" classname="com.helger.schematron.ant.SchematronPreprocess" />
 ```
@@ -257,6 +279,7 @@ Alternatively you can use the `classpath` attribute to reference a classpath tha
 ### Execute task
 
 The validation itself looks like this:
+
 ```xml
   <target name="validate">
 ...
