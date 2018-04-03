@@ -299,10 +299,11 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             // No custom URI resolver
             // Specified phase - default = null
             // Specified language code - default = null
+            final SCHTransformerCustomizer aCustomizer = new SCHTransformerCustomizer ().setErrorListener (aMojoErrorListener)
+                                                                                        .setPhase (phaseName)
+                                                                                        .setLanguageCode (languageCode);
             final ISchematronXSLTBasedProvider aXsltProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (aSchematronResource,
-                                                                                                                        new SCHTransformerCustomizer ().setErrorListener (aMojoErrorListener)
-                                                                                                                                                       .setPhase (phaseName)
-                                                                                                                                                       .setLanguageCode (languageCode));
+                                                                                                                        aCustomizer);
             if (aXsltProvider != null)
             {
               // Write the resulting XSLT file to disk
