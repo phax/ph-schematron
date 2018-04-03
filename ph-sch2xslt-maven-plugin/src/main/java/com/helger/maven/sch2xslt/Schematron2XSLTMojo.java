@@ -19,6 +19,7 @@ package com.helger.maven.sch2xslt;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.xml.XMLConstants;
@@ -27,6 +28,10 @@ import javax.xml.transform.ErrorListener;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
@@ -53,11 +58,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Converts one or more Schematron schema files into XSLT scripts.
  *
- * @goal convert
- * @phase generate-resources
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
+@Mojo (name = "convert", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class Schematron2XSLTMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
@@ -94,74 +98,65 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    *
    * @component
    */
+  @Component
   private BuildContext buildContext;
 
   /**
    * The Maven Project.
-   *
-   * @parameter property="project"
-   * @required
-   * @readonly
    */
   @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
+  @Parameter (property = "project", required = true, readonly = true)
   private MavenProject project;
 
   /**
    * The directory where the Schematron files reside.
-   *
-   * @parameter property="schematronDirectory"
-   *            default-value="${basedir}/src/main/schematron"
    */
+  @Parameter (property = "schematronDirectory", defaultValue = "${basedir}/src/main/schematron")
   private File schematronDirectory;
 
   /**
    * A pattern for the Schematron files. Can contain Ant-style wildcards and
    * double wildcards. All files that match the pattern will be converted. Files
    * in the schematronDirectory and its subdirectories will be considered.
-   *
-   * @parameter property="schematronPattern" default-value="**\/*.sch"
    */
+  @Parameter (property = "schematronPattern", defaultValue = "**/*.sch")
   private String schematronPattern;
 
   /**
    * The directory where the XSLT files will be saved.
-   *
-   * @required
-   * @parameter property="xsltDirectory"
-   *            default-value="${basedir}/src/main/xslt"
    */
+  @Parameter (property = "xsltDirectory", defaultValue = "${basedir}/src/main/xslt", required = true)
   private File xsltDirectory;
 
   /**
    * The file extension of the created XSLT files.
-   *
-   * @parameter property="xsltExtension" default-value=".xslt"
    */
+  @Parameter (property = "xsltExtension", defaultValue = ".xslt")
   private String xsltExtension;
 
   /**
    * Overwrite existing Schematron files without notice? If this is set to
    * <code>false</code> than existing XSLT files are not overwritten.
-   *
-   * @parameter property="overwrite" default-value="true"
    */
+  @Parameter (property = "overwrite", defaultValue = "true")
   private boolean overwriteWithoutQuestion = true;
 
   /**
    * Define the phase to be used for XSLT creation. By default the
    * <code>defaultPhase</code> attribute of the Schematron file is used.
-   *
-   * @parameter property="phaseName"
    */
+  @Parameter (property = "phaseName")
   private String phaseName;
 
   /**
    * Define the language code for the XSLT creation. Default is English.
    * Supported language codes are: cs, de, en, fr, nl.
-   *
-   * @parameter property="languageCode"
    */
+  @Parameter (property = "languageCode")
   private String languageCode;
+
+  @Parameter (property = "customAttrs")
+  private Map <String, String> customAttrs;
 
   public void setSchematronDirectory (@Nonnull final File aDir)
   {

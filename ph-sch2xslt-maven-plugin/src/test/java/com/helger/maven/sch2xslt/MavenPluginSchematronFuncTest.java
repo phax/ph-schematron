@@ -51,7 +51,7 @@ public final class MavenPluginSchematronFuncTest
     replay (project);
 
     OUT.setSchematronDirectory (new File ("src/test/resources/schematron"));
-    OUT.setSchematronPattern ("**\\/*.sch");
+    OUT.setSchematronPattern ("**/*.sch");
     OUT.setXsltDirectory (new File ("target/test/schematron-via-maven-plugin"));
     OUT.setXsltExtension (".xslt");
     OUT.execute ();
