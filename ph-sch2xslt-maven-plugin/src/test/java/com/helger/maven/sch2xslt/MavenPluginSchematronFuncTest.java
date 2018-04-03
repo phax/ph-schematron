@@ -21,6 +21,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -50,10 +52,16 @@ public final class MavenPluginSchematronFuncTest
     expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
     replay (project);
 
+    // Note: default values are not used here
     OUT.setSchematronDirectory (new File ("src/test/resources/schematron"));
     OUT.setSchematronPattern ("**/*.sch");
     OUT.setXsltDirectory (new File ("target/test/schematron-via-maven-plugin"));
     OUT.setXsltExtension (".xslt");
+
+    final Map <String, String> aParams = new HashMap <> ();
+    aParams.put ("allow-foreign", "true");
+    OUT.setParameters (aParams);
+
     OUT.execute ();
 
     verify (project);

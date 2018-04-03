@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.XMLConstants;
 import javax.xml.transform.ErrorListener;
 
@@ -37,6 +38,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.commons.annotation.Since;
 import com.helger.commons.error.IError;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
@@ -111,133 +113,146 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   /**
    * The directory where the Schematron files reside.
    */
-  @Parameter (property = "schematronDirectory", defaultValue = "${basedir}/src/main/schematron")
-  private File schematronDirectory;
+  @Parameter (property = "schematronDirectory", defaultValue = "${basedir}/src/main/schematron", required = true)
+  private File m_aSchematronDirectory;
 
   /**
    * A pattern for the Schematron files. Can contain Ant-style wildcards and
    * double wildcards. All files that match the pattern will be converted. Files
    * in the schematronDirectory and its subdirectories will be considered.
    */
-  @Parameter (property = "schematronPattern", defaultValue = "**/*.sch")
-  private String schematronPattern;
+  @Parameter (property = "schematronPattern", defaultValue = "**/*.sch", required = true)
+  private String m_sSchematronPattern;
 
   /**
    * The directory where the XSLT files will be saved.
    */
   @Parameter (property = "xsltDirectory", defaultValue = "${basedir}/src/main/xslt", required = true)
-  private File xsltDirectory;
+  private File m_aXsltDirectory;
 
   /**
    * The file extension of the created XSLT files.
    */
-  @Parameter (property = "xsltExtension", defaultValue = ".xslt")
-  private String xsltExtension;
+  @Parameter (property = "xsltExtension", defaultValue = ".xslt", required = true)
+  private String m_sXsltExtension;
 
   /**
    * Overwrite existing Schematron files without notice? If this is set to
    * <code>false</code> than existing XSLT files are not overwritten.
    */
   @Parameter (property = "overwrite", defaultValue = "true")
-  private boolean overwriteWithoutQuestion = true;
+  private boolean m_bOverwriteWithoutNotice = true;
 
   /**
    * Define the phase to be used for XSLT creation. By default the
    * <code>defaultPhase</code> attribute of the Schematron file is used.
    */
   @Parameter (property = "phaseName")
-  private String phaseName;
+  private String m_sPhaseName;
 
   /**
    * Define the language code for the XSLT creation. Default is English.
    * Supported language codes are: cs, de, en, fr, nl.
    */
   @Parameter (property = "languageCode")
-  private String languageCode;
+  private String m_sLanguageCode;
 
-  @Parameter (property = "customAttrs")
-  private Map <String, String> customAttrs;
+  /**
+   * Custom attributes to be used for the SCH to XSLT conversion.
+   */
+  @Parameter (property = "parameters")
+  @Since ("5.0.2")
+  private Map <String, String> m_aCustomParameters;
 
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
-    schematronDirectory = aDir;
-    if (!schematronDirectory.isAbsolute ())
-      schematronDirectory = new File (project.getBasedir (), aDir.getPath ());
-    getLog ().debug ("Searching Schematron files in the directory '" + schematronDirectory + "'");
+    m_aSchematronDirectory = aDir;
+    if (!m_aSchematronDirectory.isAbsolute ())
+      m_aSchematronDirectory = new File (project.getBasedir (), aDir.getPath ());
+    getLog ().debug ("Searching Schematron files in the directory '" + m_aSchematronDirectory + "'");
   }
 
-  public void setSchematronPattern (final String sPattern)
+  public void setSchematronPattern (@Nonnull final String sPattern)
   {
-    schematronPattern = sPattern;
+    m_sSchematronPattern = sPattern;
     getLog ().debug ("Setting Schematron pattern to '" + sPattern + "'");
   }
 
   public void setXsltDirectory (@Nonnull final File aDir)
   {
-    xsltDirectory = aDir;
-    if (!xsltDirectory.isAbsolute ())
-      xsltDirectory = new File (project.getBasedir (), aDir.getPath ());
-    getLog ().debug ("Writing XSLT files into directory '" + xsltDirectory + "'");
+    m_aXsltDirectory = aDir;
+    if (!m_aXsltDirectory.isAbsolute ())
+      m_aXsltDirectory = new File (project.getBasedir (), aDir.getPath ());
+    getLog ().debug ("Writing XSLT files into directory '" + m_aXsltDirectory + "'");
   }
 
-  public void setXsltExtension (final String sExt)
+  public void setXsltExtension (@Nonnull final String sExt)
   {
-    xsltExtension = sExt;
+    m_sXsltExtension = sExt;
     getLog ().debug ("Setting XSLT file extension to '" + sExt + "'");
   }
 
   public void setOverwriteWithoutQuestion (final boolean bOverwrite)
   {
-    overwriteWithoutQuestion = bOverwrite;
-    if (overwriteWithoutQuestion)
+    m_bOverwriteWithoutNotice = bOverwrite;
+    if (m_bOverwriteWithoutNotice)
       getLog ().debug ("Overwriting XSLT files without notice");
     else
       getLog ().debug ("Ignoring existing Schematron files");
   }
 
-  public void setPhaseName (final String sPhaseName)
+  public void setPhaseName (@Nullable final String sPhaseName)
   {
-    phaseName = sPhaseName;
-    if (phaseName == null)
+    m_sPhaseName = sPhaseName;
+    if (m_sPhaseName == null)
       getLog ().debug ("Using default phase");
     else
-      getLog ().debug ("Using the phase '" + phaseName + "'");
+      getLog ().debug ("Using the phase '" + m_sPhaseName + "'");
   }
 
-  public void setLanguageCode (final String sLanguageCode)
+  public void setLanguageCode (@Nullable final String sLanguageCode)
   {
-    languageCode = sLanguageCode;
-    if (languageCode == null)
+    m_sLanguageCode = sLanguageCode;
+    if (m_sLanguageCode == null)
       getLog ().debug ("Using default language code");
     else
-      getLog ().debug ("Using the language code '" + languageCode + "'");
+      getLog ().debug ("Using the language code '" + m_sLanguageCode + "'");
+  }
+
+  public void setParameters (@Nullable final Map <String, String> aParameters)
+  {
+    m_aCustomParameters = aParameters;
+    if (m_aCustomParameters == null || m_aCustomParameters.isEmpty ())
+      getLog ().debug ("Using no custom parameters");
+    else
+      getLog ().debug ("Using custom parameters " + m_aCustomParameters.toString ());
   }
 
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
-    if (schematronDirectory == null)
+    if (m_aSchematronDirectory == null)
       throw new MojoExecutionException ("No Schematron directory specified!");
-    if (schematronDirectory.exists () && !schematronDirectory.isDirectory ())
+    if (m_aSchematronDirectory.exists () && !m_aSchematronDirectory.isDirectory ())
       throw new MojoExecutionException ("The specified Schematron directory " +
-                                        schematronDirectory +
+                                        m_aSchematronDirectory +
                                         " is not a directory!");
-    if (StringHelper.hasNoText (schematronPattern))
+    if (StringHelper.hasNoText (m_sSchematronPattern))
       throw new MojoExecutionException ("No Schematron pattern specified!");
-    if (xsltDirectory == null)
+    if (m_aXsltDirectory == null)
       throw new MojoExecutionException ("No XSLT directory specified!");
-    if (xsltDirectory.exists () && !xsltDirectory.isDirectory ())
-      throw new MojoExecutionException ("The specified XSLT directory " + xsltDirectory + " is not a directory!");
-    if (StringHelper.hasNoText (xsltExtension) || !xsltExtension.startsWith ("."))
-      throw new MojoExecutionException ("The XSLT extension '" + xsltExtension + "' is invalid!");
+    if (m_aXsltDirectory.exists () && !m_aXsltDirectory.isDirectory ())
+      throw new MojoExecutionException ("The specified XSLT directory " + m_aXsltDirectory + " is not a directory!");
+    if (StringHelper.hasNoText (m_sXsltExtension) || !m_sXsltExtension.startsWith ("."))
+      throw new MojoExecutionException ("The XSLT extension '" + m_sXsltExtension + "' is invalid!");
 
-    if (!xsltDirectory.exists () && !xsltDirectory.mkdirs ())
-      throw new MojoExecutionException ("Failed to create the XSLT directory " + xsltDirectory);
+    if (!m_aXsltDirectory.exists () && !m_aXsltDirectory.mkdirs ())
+      throw new MojoExecutionException ("Failed to create the XSLT directory " + m_aXsltDirectory);
 
     // for all Schematron files that match the pattern
     final DirectoryScanner aScanner = new DirectoryScanner ();
-    aScanner.setBasedir (schematronDirectory);
-    aScanner.setIncludes (new String [] { schematronPattern });
+    aScanner.setBasedir (m_aSchematronDirectory);
+    aScanner.setIncludes (new String [] { m_sSchematronPattern });
     aScanner.setCaseSensitive (true);
     aScanner.scan ();
     final String [] aFilenames = aScanner.getIncludedFiles ();
@@ -245,10 +260,11 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     {
       for (final String sFilename : aFilenames)
       {
-        final File aFile = new File (schematronDirectory, sFilename);
+        final File aFile = new File (m_aSchematronDirectory, sFilename);
 
         // 1. build XSLT file name (outputdir + localpath with new extension)
-        final File aXSLTFile = new File (xsltDirectory, FilenameHelper.getWithoutExtension (sFilename) + xsltExtension);
+        final File aXSLTFile = new File (m_aXsltDirectory,
+                                         FilenameHelper.getWithoutExtension (sFilename) + m_sXsltExtension);
 
         getLog ().info ("Converting Schematron file '" +
                         aFile.getPath () +
@@ -260,7 +276,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
         final IReadableResource aSchematronResource = new FileSystemResource (aFile);
 
         // 3. Check if the XSLT file already exists
-        if (aXSLTFile.exists () && !overwriteWithoutQuestion)
+        if (aXSLTFile.exists () && !m_bOverwriteWithoutNotice)
         {
           // 3.1 Not overwriting the existing file
           getLog ().debug ("Skipping XSLT file '" + aXSLTFile.getPath () + "' because it already exists!");
@@ -295,8 +311,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             // Specified phase - default = null
             // Specified language code - default = null
             final SCHTransformerCustomizer aCustomizer = new SCHTransformerCustomizer ().setErrorListener (aMojoErrorListener)
-                                                                                        .setPhase (phaseName)
-                                                                                        .setLanguageCode (languageCode);
+                                                                                        .setPhase (m_sPhaseName)
+                                                                                        .setLanguageCode (m_sLanguageCode)
+                                                                                        .setParameters (m_aCustomParameters);
             final ISchematronXSLTBasedProvider aXsltProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (aSchematronResource,
                                                                                                                         aCustomizer);
             if (aXsltProvider != null)
@@ -321,6 +338,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 throw new IllegalStateException ("Failed to open output stream for file " +
                                                  aXSLTFile.getAbsolutePath ());
               XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), aOS, aXWS);
+
+              getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
+
               buildContext.refresh (aXsltFileDirectory);
             }
             else

@@ -47,12 +47,10 @@ public final class XlstSchematronFuncTest
     final String outputPath = new File ("target/test/schematron-via-xslt/").getCanonicalPath ();
 
     final String [] step1Commands = { "-xsl:" + step1Path, "-s:" + sourcePath, "-o:" + outputPath + "/step1.sch" };
-    final String [] step2Commands = { "-xsl:" +
-                                      step2Path,
+    final String [] step2Commands = { "-xsl:" + step2Path,
                                       "-s:" + outputPath + "/step1.sch",
                                       "-o:" + outputPath + "/step2.sch" };
-    final String [] step3Commands = { "-xsl:" +
-                                      step3Path,
+    final String [] step3Commands = { "-xsl:" + step3Path,
                                       "-s:" + outputPath + "/step2.sch",
                                       "-o:" + outputPath + "/check-classifications.xslt" };
 
