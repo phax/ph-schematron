@@ -18,6 +18,7 @@ package com.helger.maven.schematron;
 
 import java.io.File;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +36,12 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.annotation.Since;
+import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;
@@ -151,7 +157,8 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   /**
    * The SVRL path to write to (for positive tests). The filenames are based on
-   * the source XML filenames.
+   * the source XML filenames. If this parameter is not set, the SVRL files are
+   * <b>not</b> written.
    */
   @Parameter (name = "svrlDirectory")
   private File m_aSvrlDirectory;
@@ -183,7 +190,8 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   /**
    * The SVRL path to write to (for negative tests). The filenames are based on
-   * the source XML filenames.
+   * the source XML filenames. If this parameter is not set, the SVRL files are
+   * <b>not</b> written.
    */
   @Parameter (name = "svrlErrorDirectory")
   private File m_aSvrlErrorDirectory;
@@ -199,10 +207,20 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   /**
    * Define the language code to be used for Schematron validation. Default is
-   * English. Supported language codes are: cs, de, en, fr, nl.
+   * English. Supported language codes are: cs, de, en, fr, nl. This parameter
+   * takes only effect when using schematronProcessingEngine "schematron".
    */
   @Parameter (name = "languageCode")
-  private String languageCode;
+  private String m_sLanguageCode;
+
+  /**
+   * Custom attributes to be used for the SCH to XSLT conversion. This parameter
+   * takes only effect when using schematronProcessingEngine "schematron" or
+   * "xslt".
+   */
+  @Parameter (name = "parameters")
+  @Since ("5.0.2")
+  private Map <String, String> m_aCustomParameters;
 
   public void setSchematronFile (@Nonnull final File aFile)
   {
@@ -298,13 +316,30 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   public void setLanguageCode (@Nullable final String sLanguageCode)
   {
-    languageCode = sLanguageCode;
+    m_sLanguageCode = sLanguageCode;
 
     if (getLog ().isDebugEnabled ())
-      if (languageCode == null)
+      if (m_sLanguageCode == null)
         getLog ().debug ("Using default language code");
       else
-        getLog ().debug ("Using the language code '" + languageCode + "'");
+        getLog ().debug ("Using the language code '" + m_sLanguageCode + "'");
+  }
+
+  public void setParameters (@Nullable final Map <String, String> aParameters)
+  {
+    m_aCustomParameters = aParameters;
+    if (m_aCustomParameters == null || m_aCustomParameters.isEmpty ())
+      getLog ().debug ("Using no custom parameters");
+    else
+      getLog ().debug ("Using custom parameters " + m_aCustomParameters.toString ());
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  @VisibleForTesting
+  ICommonsMap <String, String> getParameters ()
+  {
+    return new CommonsHashMap <> (m_aCustomParameters);
   }
 
   private void _performValidation (@Nonnull final ISchematronResource aSch,
@@ -457,6 +492,8 @@ public final class SchematronValidationMojo extends AbstractMojo
         final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
         final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
+        // language code is ignored
+        // custom parameters are ignored
         aRealSCH.setErrorHandler (aErrorHdl);
         aRealSCH.validateCompletely ();
 
@@ -470,7 +507,8 @@ public final class SchematronValidationMojo extends AbstractMojo
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
-        aRealSCH.setLanguageCode (languageCode);
+        aRealSCH.setLanguageCode (m_sLanguageCode);
+        aRealSCH.parameters ().setAll (m_aCustomParameters);
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.isValidSchematron ();
 
@@ -484,6 +522,8 @@ public final class SchematronValidationMojo extends AbstractMojo
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
         // phase is ignored
+        // language code is ignored
+        aRealSCH.parameters ().setAll (m_aCustomParameters);
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.isValidSchematron ();
 
