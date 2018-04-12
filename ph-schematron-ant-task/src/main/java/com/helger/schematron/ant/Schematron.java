@@ -44,6 +44,7 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.error.ErrorTextProvider;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
+import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.string.StringHelper;
@@ -52,6 +53,7 @@ import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
+import com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
@@ -67,6 +69,32 @@ import com.helger.xml.transform.TransformSourceFactory;
  */
 public class Schematron extends Task
 {
+  public class ErrorRole
+  {
+    private String m_sRole;
+
+    public ErrorRole ()
+    {}
+
+    public void setRole (@Nullable final String sRole)
+    {
+      m_sRole = sRole;
+      if (sRole != null)
+        log ("Using role '" + sRole + "' to trigger an error");
+    }
+
+    @Nullable
+    public String getRole ()
+    {
+      return m_sRole;
+    }
+
+    public boolean equalsIgnoreCase (@Nonnull final String sValue)
+    {
+      return sValue.equals (m_sRole);
+    }
+  }
+
   /**
    * The Schematron file. This may also be an XSLT file if it is precompiled.
    */
@@ -114,6 +142,12 @@ public class Schematron extends Task
    * otherwise. Defaults to <code>true</code>.
    */
   private boolean m_bExpectSuccess = true;
+
+  /**
+   * List of "role" attribute values that will trigger an error. If combined
+   * with "failOnError" it will break the build.
+   */
+  private final ICommonsList <ErrorRole> m_aErrorRoles = new CommonsArrayList <> ();
 
   /**
    * <code>true</code> if the build should fail if any error occurs. Defaults to
@@ -192,6 +226,14 @@ public class Schematron extends Task
          (bExpectSuccess ? "conform" : "do not conform") +
          " to the provided Schematron file",
          Project.MSG_DEBUG);
+  }
+
+  @Nonnull
+  public ErrorRole createErrorRole ()
+  {
+    final ErrorRole aErrorRole = new ErrorRole ();
+    m_aErrorRoles.add (aErrorRole);
+    return aErrorRole;
   }
 
   public void setFailOnError (final boolean bFailOnError)
@@ -457,7 +499,7 @@ public class Schematron extends Task
       else
         if (m_eSchematronProcessingEngine == null)
           _error ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                     StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
+                  StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
         else
           if (m_aResCollections.isEmpty ())
             _error ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
@@ -469,6 +511,30 @@ public class Schematron extends Task
 
     if (bCanRun)
     {
+      // Set error level
+      if (m_aErrorRoles.isNotEmpty ())
+      {
+        // Set global default error level determinator
+        SVRLHelper.setErrorLevelDeterminator (new DefaultSVRLErrorLevelDeterminator ()
+        {
+          @Override
+          @Nonnull
+          public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
+          {
+            if (sFlag != null)
+            {
+              // Check custom error roles; #66
+              for (final ErrorRole aCustomRole : m_aErrorRoles)
+                if (aCustomRole.equalsIgnoreCase (sFlag))
+                  return EErrorLevel.ERROR;
+            }
+
+            // Fall back to default
+            return super.getErrorLevelFromString (sFlag);
+          }
+        });
+      }
+
       // 1. Parse Schematron file
       final Locale aDisplayLocale = Locale.US;
       ISchematronResource aSch = null;
