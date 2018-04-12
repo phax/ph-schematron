@@ -134,9 +134,9 @@ public final class SVRLHelper
     for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof SuccessfulReport)
       {
-        final SVRLSuccessfulReport aFA = new SVRLSuccessfulReport ((SuccessfulReport) aObj);
-        if (aFA.getFlag ().isGE (aErrorLevel))
-          ret.add (aFA);
+        final SVRLSuccessfulReport aSR = new SVRLSuccessfulReport ((SuccessfulReport) aObj);
+        if (aSR.getFlag ().isGE (aErrorLevel))
+          ret.add (aSR);
       }
     return ret;
   }
