@@ -44,29 +44,40 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
     return DEFAULT_ERROR_LEVEL;
   };
 
-  private final IFunction <String, IErrorLevel> m_aUnknwownErrorLevelHandler;
+  private final IFunction <String, ? extends IErrorLevel> m_aUnknwownErrorLevelHandler;
 
+  /**
+   * Default constructor using {@link #UNKNOWN_ERROR_LEVEL_HANDLER}.
+   */
   public DefaultSVRLErrorLevelDeterminator ()
   {
     this (UNKNOWN_ERROR_LEVEL_HANDLER);
   }
 
-  public DefaultSVRLErrorLevelDeterminator (@Nonnull final IFunction <String, IErrorLevel> aUnknwownErrorLevelHandler)
+  /**
+   * Constructor with a custom error level.
+   *
+   * @param aUnknwownErrorLevelHandler
+   *        Custom error level provider. May not be <code>null</code>.
+   * @since 5.0.2
+   */
+  public DefaultSVRLErrorLevelDeterminator (@Nonnull final IFunction <String, ? extends IErrorLevel> aUnknwownErrorLevelHandler)
   {
     m_aUnknwownErrorLevelHandler = ValueEnforcer.notNull (aUnknwownErrorLevelHandler, "UnknwownErrorLevelHandler");
   }
 
   /**
    * @return The handler for unknown error levels.
+   * @since 5.0.2
    */
   @Nonnull
-  public IFunction <String, IErrorLevel> getUnknwownErrorLevelHandler ()
+  public IFunction <String, ? extends IErrorLevel> getUnknwownErrorLevelHandler ()
   {
     return m_aUnknwownErrorLevelHandler;
   }
 
-  @Nonnull
-  public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
+  @Nullable
+  public static IErrorLevel getDefaultErrorLevelFromString (@Nullable final String sFlag)
   {
     if (sFlag != null)
     {
@@ -88,6 +99,16 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
           sFlag.equalsIgnoreCase ("fatalerror"))
         return EErrorLevel.FATAL_ERROR;
     }
+
+    return null;
+  }
+
+  @Nonnull
+  public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
+  {
+    final IErrorLevel ret = getDefaultErrorLevelFromString (sFlag);
+    if (ret != null)
+      return ret;
 
     return m_aUnknwownErrorLevelHandler.apply (sFlag);
   }
