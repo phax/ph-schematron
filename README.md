@@ -17,6 +17,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Updated to Saxon-HE 9.8.0-11
     * The Maven plugins now require Maven 3.0
     * Added new parameter `parameters` to the `ph-sch2xslt-maven-plugin`
+    * Finally the `role` attribute is copied to a failed assertion when using the pure implementation
+    * The Ant task has the possibility to provide values for `role` and `flag` that are interpreted as error (#66)  
 * v5.0.1 - 2018-02-01
     * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
     * Updated to Saxon-HE 9.8.0-7
@@ -245,6 +247,12 @@ The `schematron` element allows for the following attributes:
   * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
   * `boolean` **expectSuccess** - `true` to expect successful validation, `false` to expect validation errors. If the expectation is incorrect, the build will fail.
   * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
+
+The following child elements are allowed:
+  * `<errorRole>` (since v5.0.2)
+    * The usage of the element is optional.
+    * The `role` attribute allows to define values of `role` and `flag` attributes that are considered as errors.
+    * If this element is combined with the `failOnError` attribute you can break the build if an assertion with the respective `role` or `flag` fails. 
   
 Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver both for the Schematron and the XML files to be validated! See https://ant.apache.org/manual/Types/xmlcatalog.html for details on the XML catalog. Here is an example that shows how to use an inline XML catalog:
 
@@ -259,9 +267,11 @@ Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver
       <xmlcatalog>
         <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
       </xmlcatalog>
+      <errorRole role="fatal" />
     </schematron>
   </target>
 ```
+
 
 ## Preprocess a Schematron file (since 5.0.0)
 

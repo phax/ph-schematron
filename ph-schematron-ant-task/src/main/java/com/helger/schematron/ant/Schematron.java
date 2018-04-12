@@ -69,6 +69,12 @@ import com.helger.xml.transform.TransformSourceFactory;
  */
 public class Schematron extends Task
 {
+  /**
+   * Custom role value that triggers an error.
+   *
+   * @author Philip Helger
+   * @since 5.0.2
+   */
   public class ErrorRole
   {
     private String m_sRole;
