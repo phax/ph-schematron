@@ -16,10 +16,14 @@
  */
 package com.helger.schematron.svrl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
+
+import com.helger.commons.error.level.IErrorLevel;
 
 /**
  * A wrapper around {@link SuccessfulReport} with easier error level handling.
@@ -31,11 +35,24 @@ public class SVRLSuccessfulReport extends AbstractSVRLMessage
 {
   public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
   {
+    this (aSuccessfulReport, SVRLHelper::getErrorLevelFromSuccessfulReport);
+  }
+
+  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport,
+                               @Nonnull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
+  {
+    this (aSuccessfulReport, x -> SVRLHelper.getBeautifiedLocation (x.getLocation ()), aErrLevelProvider);
+  }
+
+  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport,
+                               @Nonnull final Function <? super SuccessfulReport, String> aLocationProvider,
+                               @Nonnull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
+  {
     super (aSuccessfulReport.getDiagnosticReference (),
            aSuccessfulReport.getText (),
-           SVRLHelper.getBeautifiedLocation (aSuccessfulReport.getLocation ()),
+           aLocationProvider.apply (aSuccessfulReport),
            aSuccessfulReport.getTest (),
            aSuccessfulReport.getRole (),
-           SVRLHelper.getErrorLevelFromSuccessfulReport (aSuccessfulReport));
+           aErrLevelProvider.apply (aSuccessfulReport));
   }
 }
