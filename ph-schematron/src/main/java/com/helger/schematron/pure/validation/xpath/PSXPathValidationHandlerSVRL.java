@@ -328,7 +328,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aFailedAssert.setFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
     aFailedAssert.setLocation (_getPathToNode (aRuleMatchingNode));
-    // TODO role
+    if (aAssertReport.hasLinkable ())
+      aFailedAssert.setRole (aAssertReport.getLinkable ().getRole ());
     aFailedAssert.setTest (sTestExpression);
     aFailedAssert.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
@@ -355,7 +356,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aSuccessfulReport.setFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());
     aSuccessfulReport.setLocation (_getPathToNode (aRuleMatchingNode));
-    // TODO role
+    if (aAssertReport.hasLinkable ())
+      aSuccessfulReport.setRole (aAssertReport.getLinkable ().getRole ());
     aSuccessfulReport.setTest (sTestExpression);
     aSuccessfulReport.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
