@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.3 - work in progress
+    * Fixed OSGI ServiceProvider configuration
 * v5.0.2 - 2018-04-12
     * Added new interface `ISchematronXSLTBasedResource` as a common base class for XSLT based validations
     * Improved the `DefaultSVRLErrorLevelDeterminator` implementation to be more flexible and cater for more error levels
