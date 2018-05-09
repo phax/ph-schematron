@@ -11,7 +11,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.0.3 - work in progress
+* v5.0.3 - 2018-05-09
     * Fixed OSGI ServiceProvider configuration
 * v5.0.2 - 2018-04-12
     * Added new interface `ISchematronXSLTBasedResource` as a common base class for XSLT based validations
@@ -96,7 +96,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.0.2</version>
+  <version>5.0.3</version>
 </dependency>
 ```
 
@@ -114,7 +114,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>5.0.2</version>
+  <version>5.0.3</version>
   <executions>
     <execution>
       <goals>
@@ -158,7 +158,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.2</version>
+  <version>5.0.3</version>
   <executions>
     <execution>
       <goals>
@@ -195,7 +195,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.0.2</version>
+  <version>5.0.3</version>
 </dependency>
 ```
 
