@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.4 - work in progress
+    * Really fixed OSGI ServiceProvider configuration
 * v5.0.3 - 2018-05-09
     * Fixed OSGI ServiceProvider configuration
 * v5.0.2 - 2018-04-12
