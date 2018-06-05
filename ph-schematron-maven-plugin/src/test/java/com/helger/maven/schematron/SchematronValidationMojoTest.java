@@ -19,9 +19,11 @@ package com.helger.maven.schematron;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +41,7 @@ public final class SchematronValidationMojoTest
     final File aPOM = new File ("src/test/resources/poms/test1/pom.xml").getAbsoluteFile ();
     assertNotNull (aPOM);
     assertTrue (aPOM.exists ());
+    assertTrue (aPOM.isFile ());
 
     // Use "Configured" to get default values injected
     final SchematronValidationMojo aMojo = (SchematronValidationMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
@@ -58,5 +61,34 @@ public final class SchematronValidationMojoTest
     assertEquals ("else", aParams.get ("anything"));
 
     aMojo.execute ();
+  }
+
+  @Test
+  public void testFailFastDisabled () throws Exception
+  {
+    final File aPOM = new File ("src/test/resources/poms/test2/pom.xml").getAbsoluteFile ();
+    assertNotNull (aPOM);
+    assertTrue (aPOM.exists ());
+    assertTrue (aPOM.isFile ());
+
+    // Use "Configured" to get default values injected
+    final SchematronValidationMojo aMojo = (SchematronValidationMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
+                                                                                                    "validate");
+    assertNotNull (aMojo);
+    // Making the files is essential, otherwise the paths are interpreted
+    // relative to the test POM!
+    aMojo.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch").getAbsoluteFile ());
+    aMojo.setXmlDirectory (new File ("src/test/resources/data2").getAbsoluteFile ());
+    aMojo.setXmlIncludes ("*-invalid.xml");
+
+    try
+    {
+      aMojo.execute ();
+      fail ();
+    }
+    catch (final MojoFailureException ex)
+    {
+      // Expected error
+    }
   }
 }

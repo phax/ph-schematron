@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.5 - work in progress
+    * Added support to disable "fail fast" mode in ph-schematron-maven-plugin (see [issue #69](https://github.com/phax/ph-schematron/issues/69))
 * v5.0.4 - 2018-05-14
     * Really fixed OSGI ServiceProvider configuration
     * Updated to Saxon-HE 9.8.0-12
@@ -185,6 +187,8 @@ The possible configuration parameters are:
   * `svrlErrorDirectory` (since v4.3.0) - The directory where the erroneous SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlErrorDirectory`, `xmlErrorIncludes` and `xmlErrorExcludes`) with the suffix `.svrl`.
   * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+  * `parameters` (since v5.0.2) - Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect when using schematronProcessingEngine "schematron" or "xslt". By default no parameter is present.
+  * `failFast` (since v5.0.5) - If multiple XML files are validated this parameter defines whether the execution should fail at the first error (value `true`) or at the end only (value `false`). The default value is `true`.
 
 
 # ph-schematron-validator

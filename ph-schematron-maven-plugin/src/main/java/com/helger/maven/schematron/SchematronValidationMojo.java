@@ -39,6 +39,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.google.common.annotations.VisibleForTesting;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
+import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
@@ -222,6 +223,15 @@ public final class SchematronValidationMojo extends AbstractMojo
   @Since ("5.0.2")
   private Map <String, String> m_aCustomParameters;
 
+  /**
+   * When validating multiple files, this flag indicates, whether validation
+   * should fail at the first file with an error (this is the default) or at the
+   * end only.
+   */
+  @Parameter (name = "failFast", defaultValue = "true", required = true)
+  @Since ("5.0.5")
+  private boolean m_bFailFast = true;
+
   public void setSchematronFile (@Nonnull final File aFile)
   {
     m_aSchematronFile = aFile;
@@ -334,6 +344,15 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Using custom parameters " + m_aCustomParameters.toString ());
   }
 
+  public void setFailFast (final boolean bFailFast)
+  {
+    m_bFailFast = bFailFast;
+    if (bFailFast)
+      getLog ().debug ("Failing at the first erroneous file");
+    else
+      getLog ().debug ("Failing after validating all files");
+  }
+
   @Nonnull
   @ReturnsMutableCopy
   @VisibleForTesting
@@ -342,12 +361,37 @@ public final class SchematronValidationMojo extends AbstractMojo
     return new CommonsHashMap <> (m_aCustomParameters);
   }
 
+  /**
+   * @param aSch
+   *        Schematron resource to apply on validation artefacts
+   * @param aXMLDirectory
+   *        XML directory to be scanned
+   * @param sXMLIncludes
+   *        XML include mask
+   * @param sXMLExcludes
+   *        XML exclude mask
+   * @param aSVRLDirectory
+   *        SVRL directory to write to (maybe <code>null</code> in which case
+   *        the SVRL is not written)
+   * @param bExpectSuccess
+   *        <code>true</code> if this is a positive validation,
+   *        <code>false</code> if error is expected
+   * @param aErrorMessages
+   *        The list of collected error messages (only used if fail-fast is
+   *        disabled)
+   * @throws MojoExecutionException
+   *         Internal error
+   * @throws MojoFailureException
+   *         Validation error
+   */
   private void _performValidation (@Nonnull final ISchematronResource aSch,
                                    @Nonnull final File aXMLDirectory,
                                    @Nullable final String sXMLIncludes,
                                    @Nullable final String sXMLExcludes,
                                    @Nullable final File aSVRLDirectory,
-                                   final boolean bExpectSuccess) throws MojoExecutionException, MojoFailureException
+                                   final boolean bExpectSuccess,
+                                   @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException,
+                                                                                        MojoFailureException
   {
     final DirectoryScanner aScanner = new DirectoryScanner ();
     aScanner.setBasedir (aXMLDirectory);
@@ -401,7 +445,9 @@ public final class SchematronValidationMojo extends AbstractMojo
               getLog ().error (sMessage);
               aFailedAsserts.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ())
                                                              .getAsString (Locale.US)));
-              throw new MojoFailureException (sMessage);
+              if (m_bFailFast)
+                throw new MojoFailureException (sMessage);
+              aErrorMessages.add (sMessage);
             }
           }
           else
@@ -413,11 +459,13 @@ public final class SchematronValidationMojo extends AbstractMojo
                                       aXMLFile.getPath () +
                                       "'";
               getLog ().error (sMessage);
-              throw new MojoFailureException (sMessage);
+              if (m_bFailFast)
+                throw new MojoFailureException (sMessage);
+              aErrorMessages.add (sMessage);
             }
           }
         }
-        catch (final MojoFailureException | MojoExecutionException up)
+        catch (final MojoExecutionException | MojoFailureException up)
         {
           throw up;
         }
@@ -553,14 +601,34 @@ public final class SchematronValidationMojo extends AbstractMojo
     getLog ().info ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'");
 
     // 2. for all XML files that match the pattern
+    final ICommonsList <String> aErrorMessages = new CommonsArrayList <> ();
     if (m_aXmlDirectory != null)
-      _performValidation (aSch, m_aXmlDirectory, m_sXmlIncludes, m_sXmlExcludes, m_aSvrlDirectory, true);
+    {
+      _performValidation (aSch,
+                          m_aXmlDirectory,
+                          m_sXmlIncludes,
+                          m_sXmlExcludes,
+                          m_aSvrlDirectory,
+                          true,
+                          aErrorMessages);
+    }
     if (m_aXmlErrorDirectory != null)
+    {
       _performValidation (aSch,
                           m_aXmlErrorDirectory,
                           m_sXmlErrorIncludes,
                           m_sXmlErrorExcludes,
                           m_aSvrlErrorDirectory,
-                          false);
+                          false,
+                          aErrorMessages);
+    }
+
+    if (!m_bFailFast && aErrorMessages.isNotEmpty ())
+    {
+      // Build collecting error message
+      aErrorMessages.add (0, aErrorMessages.size () + " errors found:");
+      final String sCollectedErrorMessages = StringHelper.getImploded ("\n  ", aErrorMessages);
+      throw new MojoFailureException (sCollectedErrorMessages);
+    }
   }
 }
