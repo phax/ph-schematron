@@ -25,7 +25,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * The Maven plugins now require Maven 3.0
     * Added new parameter `parameters` to the `ph-sch2xslt-maven-plugin`
     * Finally the `role` attribute is copied to a failed assertion when using the pure implementation
-    * The Ant task has the possibility to provide values for `role` and `flag` that are interpreted as error (#66)  
+    * The Ant task has the possibility to provide values for `role` and `flag` that are interpreted as error ([issue #66](https://github.com/phax/ph-schematron/issues/66))  
 * v5.0.1 - 2018-02-01
     * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
     * Updated to Saxon-HE 9.8.0-7
@@ -33,10 +33,10 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 * v5.0.0 - 2018-01-02
     * Updated to ph-commons 9.0.0
     * Added new ANT task for preprocessing Schematron files only
-    * Improved support for `base-uri()` XPath function when using the pure implementation (#47)
-    * Fixed issue with `role` attribute in SVRL when using pure implementation (#54)
+    * Improved support for `base-uri()` XPath function when using the pure implementation ([issue #47](https://github.com/phax/ph-schematron/issues/47))
+    * Fixed issue with `role` attribute in SVRL when using pure implementation ([issue #54](https://github.com/phax/ph-schematron/issues/54))
     * Updated to Saxon-HE 9.8.0-6 - therefore no XLST v1 scripts can be used anymore - this only works up to 9.7.x!
-    * Added ANT task property `failOnError` (#57)
+    * Added ANT task property `failOnError` ([issue #57](https://github.com/phax/ph-schematron/issues/57))
 * v4.3.4 - 2017-07-27
     * Added new class `SchematronDebug` that centrally manages the debug flags for logging etc. 
 * v4.3.3 - 2017-07-27
@@ -51,14 +51,14 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Removed some old deprecated methods
 * v4.3.0 - 2017-05-15
     * Updated to Saxon-HE 9.7.0-18
-    * Fixed an error with nested SVRL directories in Maven plugin (#37)
-    * Added possibility to use "negative" tests in Maven plugin (#38)
-    * Added ANT plugin to validate Schematron resources (#39, #40)
+    * Fixed an error with nested SVRL directories in Maven plugin ([issue #37](https://github.com/phax/ph-schematron/issues/37))
+    * Added possibility to use "negative" tests in Maven plugin ([issue #38](https://github.com/phax/ph-schematron/issues/38))
+    * Added ANT plugin to validate Schematron resources ([issue #39](https://github.com/phax/ph-schematron/issues/39), [issue #40](https://github.com/phax/ph-schematron/issues/40))
     * Using the EntityResolver also for the XML files to be validated (not just the Schematron)
     * Added a default `EntityResolver` and a default `URIResolver` that tries to resolve includes relative to the base Schematron.
 * v4.2.2 - 2017-02-22
     * Updated to Saxon-HE 9.7.0-15
-    * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation (#36)
+    * Fixed usage of `<let>` in `<extend>`-based rules for the pure implementation ([issue #36](https://github.com/phax/ph-schematron/issues/36))
 * v4.2.1 - 2017-01-20
     * Added WrappedCollectingPSErrorHandler
 * v4.2.0 - 2017-01-09
@@ -66,7 +66,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Updated to Saxon-HE 9.7.0-14
     * Added a new Schematron validation Maven plugin
 * v4.1.1 - 2016-11-03
-    * Added possibility to use XML EntityResolver (#30)
+    * Added possibility to use XML EntityResolver ([issue #30](https://github.com/phax/ph-schematron/issues/30))
     * Updated to Saxon-HE 9.7.0-10
 * v4.1.0 - 2016-09-09
     * Binding to ph-commons 8.5.x
