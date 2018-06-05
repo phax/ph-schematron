@@ -27,7 +27,7 @@
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <name>ph-schemnatron-maven-plugin</name>
+  <name>ph-schematron-maven-plugin</name>
   <description>Maven plugin to apply Schematron rules to XML files on build time</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-maven-plugin</url>
   <inceptionYear>2016</inceptionYear>
