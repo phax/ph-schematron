@@ -41,7 +41,7 @@ import com.helger.xml.serialize.write.XMLWriter;
 @ThreadSafe
 public final class SchematronResourceSCHCache
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
   private static final Lock s_aLock = new ReentrantLock ();
   private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> s_aCache = new CommonsHashMap <> ();
 
@@ -63,19 +63,19 @@ public final class SchematronResourceSCHCache
   public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
                                                                             @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
     final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource,
                                                                                                aTransformerCustomizer);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
       // Schematron is invalid -> parsing failed
-      s_aLogger.warn ("The Schematron resource '" + aSchematronResource.getResourceID () + "' is invalid!");
-      if (s_aLogger.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
+      LOGGER.warn ("The Schematron resource '" + aSchematronResource.getResourceID () + "' is invalid!");
+      if (LOGGER.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
       {
         // Log the created XSLT document for better error tracking
-        s_aLogger.debug ("  Created XSLT document:\n" +
+        LOGGER.debug ("  Created XSLT document:\n" +
                          XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
       }
       return null;
@@ -87,8 +87,8 @@ public final class SchematronResourceSCHCache
                                        aSchematronResource.getResourceID () +
                                        "'!");
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Finished compiling Schematron instance " + aSchematronResource.toString ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Finished compiling Schematron instance " + aSchematronResource.toString ());
 
     // Create the main validator for the schematron
     return aXSLTPreprocessor;
@@ -117,7 +117,7 @@ public final class SchematronResourceSCHCache
 
     if (!aSchematronResource.exists ())
     {
-      s_aLogger.warn ("Schematron resource " + aSchematronResource + " does not exist!");
+      LOGGER.warn ("Schematron resource " + aSchematronResource + " does not exist!");
       return null;
     }
 

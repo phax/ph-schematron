@@ -39,15 +39,15 @@ public final class MainBenchmarkSchematronGetSVRL extends AbstractBenchmarkTask
   {
     logSystemInfo ();
 
-    s_aLogger.info ("Starting");
+    LOGGER.info ("Starting");
 
     final double dTime1 = benchmarkTask (new ValidSchematronPure ());
-    s_aLogger.info ("Time pure: " + BigDecimal.valueOf (dTime1).toString () + " us");
+    LOGGER.info ("Time pure: " + BigDecimal.valueOf (dTime1).toString () + " us");
 
     final double dTime2 = benchmarkTask (new ValidSchematronSCH ());
-    s_aLogger.info ("Time XSLT: " + BigDecimal.valueOf (dTime2).toString () + " us");
+    LOGGER.info ("Time XSLT: " + BigDecimal.valueOf (dTime2).toString () + " us");
 
-    s_aLogger.info ("Time1 is " + BigDecimal.valueOf (dTime1 / dTime2 * 100).toString () + "% of time2");
+    LOGGER.info ("Time1 is " + BigDecimal.valueOf (dTime1 / dTime2 * 100).toString () + "% of time2");
   }
 
   private static final class ValidSchematronPure implements Runnable

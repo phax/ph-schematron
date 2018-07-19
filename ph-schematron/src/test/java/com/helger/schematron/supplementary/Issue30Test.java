@@ -35,7 +35,7 @@ import com.helger.xml.sax.DefaultEntityResolver;
  */
 public final class Issue30Test
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue30Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue30Test.class);
 
   @Test
   public void testOfSchematronPH () throws Exception
@@ -47,7 +47,7 @@ public final class Issue30Test
       @Override
       public void warn (final IReadableResource aRes, final IPSElement aSourceElement, final String sMessage)
       {
-        s_aLogger.info (sMessage);
+        LOGGER.info (sMessage);
       }
 
       @Override
@@ -56,13 +56,13 @@ public final class Issue30Test
                          final String sMessage,
                          final Throwable t)
       {
-        s_aLogger.info (sMessage);
+        LOGGER.info (sMessage);
       }
 
       @Override
       public void error (final IPSElement aSourceElement, final String sMessage)
       {
-        s_aLogger.info (sMessage);
+        LOGGER.info (sMessage);
       }
     };
     aResPure.setErrorHandler (aErrorHandler);

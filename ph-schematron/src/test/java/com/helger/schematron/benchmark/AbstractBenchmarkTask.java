@@ -33,7 +33,7 @@ import com.helger.commons.system.SystemProperties;
 public abstract class AbstractBenchmarkTask
 {
   /** logger to use. */
-  protected static final Logger s_aLogger = LoggerFactory.getLogger (AbstractBenchmarkTask.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger (AbstractBenchmarkTask.class);
 
   /**
    * This constant specifies the minimum number of times that a task to be
@@ -56,7 +56,7 @@ public abstract class AbstractBenchmarkTask
 
   protected static void logSystemInfo ()
   {
-    s_aLogger.info ("Runtime: Date=" +
+    LOGGER.info ("Runtime: Date=" +
                     new Date ().toString () +
                     "; Java=" +
                     SystemProperties.getJavaVersion () +

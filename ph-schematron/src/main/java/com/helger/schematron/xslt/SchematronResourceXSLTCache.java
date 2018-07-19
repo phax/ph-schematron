@@ -45,7 +45,7 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
 @ThreadSafe
 public final class SchematronResourceXSLTCache
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
   private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap <> ();
@@ -58,8 +58,8 @@ public final class SchematronResourceXSLTCache
                                                                              @Nullable final ErrorListener aCustomErrorListener,
                                                                              @Nullable final URIResolver aCustomURIResolver)
   {
-    if (s_aLogger.isInfoEnabled ())
-      s_aLogger.info ("Compiling XSLT instance " + aXSLTResource.toString ());
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
     final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource,
@@ -69,9 +69,9 @@ public final class SchematronResourceXSLTCache
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
       // Schematron is invalid -> parsing failed
-      s_aLogger.warn ("The XSLT resource '" + aXSLTResource.getResourceID () + "' is invalid!");
+      LOGGER.warn ("The XSLT resource '" + aXSLTResource.getResourceID () + "' is invalid!");
       for (final IError aError : aCEH.getErrorList ())
-        s_aLogger.warn ("  " + aError.getAsString (Locale.US));
+        LOGGER.warn ("  " + aError.getAsString (Locale.US));
       return null;
     }
 
@@ -112,7 +112,7 @@ public final class SchematronResourceXSLTCache
 
     if (!aXSLTResource.exists ())
     {
-      s_aLogger.warn ("XSLT resource " + aXSLTResource + " does not exist!");
+      LOGGER.warn ("XSLT resource " + aXSLTResource + " does not exist!");
       return null;
     }
 

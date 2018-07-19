@@ -74,7 +74,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 @NotThreadSafe
 public class SchematronResourcePure extends AbstractSchematronResource
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourcePure.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePure.class);
 
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
@@ -358,7 +358,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
     // Debug print the created SVRL document
     if (SchematronDebug.isShowCreatedSVRL ())
-      s_aLogger.info ("Created SVRL:\n" + new SVRLMarshaller (false).getAsString (aSOT));
+      LOGGER.info ("Created SVRL:\n" + new SVRLMarshaller (false).getAsString (aSOT));
 
     return aSOT;
   }

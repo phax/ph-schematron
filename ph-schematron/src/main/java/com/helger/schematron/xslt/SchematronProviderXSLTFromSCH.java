@@ -53,7 +53,7 @@ import com.helger.xml.transform.XMLTransformerFactory;
 @NotThreadSafe
 public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvider
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTFromSCH.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTFromSCH.class);
 
   /**
    * The classpath directory where the Schematron 2 XSLT files reside.
@@ -126,24 +126,24 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     // prepare all steps
     if (s_aStep1 == null)
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Creating XSLT step 1 template");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Creating XSLT step 1 template");
       s_aStep1 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
                                                      new ClassPathResource (XSLT2_STEP1,
                                                                             SchematronProviderXSLTFromSCH.class.getClassLoader ()));
     }
     if (s_aStep2 == null)
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Creating XSLT step 2 template");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Creating XSLT step 2 template");
       s_aStep2 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
                                                      new ClassPathResource (XSLT2_STEP2,
                                                                             SchematronProviderXSLTFromSCH.class.getClassLoader ()));
     }
     if (s_aStep3 == null)
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Creating XSLT step 3 template");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Creating XSLT step 3 template");
       s_aStep3 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
                                                      new ClassPathResource (XSLT2_STEP3,
                                                                             SchematronProviderXSLTFromSCH.class.getClassLoader ()));
@@ -175,8 +175,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       aTransformerCustomizer.customize (EStep.SCH2XSLT_1, aTransformer1);
       aTransformer1.transform (TransformSourceFactory.create (aSchematronResource), aResult1);
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Finished applying XSLT step 1 on " + aSchematronResource);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished applying XSLT step 1 on " + aSchematronResource);
 
       // perform step 2 (ResultStep1 -> ResultStep2)
       final DOMResult aResult2 = new DOMResult ();
@@ -184,8 +184,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       aTransformerCustomizer.customize (EStep.SCH2XSLT_2, aTransformer2);
       aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Finished applying XSLT step 2 on " + aSchematronResource);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished applying XSLT step 2 on " + aSchematronResource);
 
       if (SchematronDebug.isSaveIntermediateXSLTFiles ())
       {
@@ -203,8 +203,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       aTransformerCustomizer.customize (EStep.SCH2XSLT_3, aTransformer3);
       aTransformer3.transform (TransformSourceFactory.create (aResult2.getNode ()), aResult3);
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Finished applying XSLT step 3 on " + aSchematronResource);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished applying XSLT step 3 on " + aSchematronResource);
 
       // Save the underlying XSLT document....
       // Note: Saxon 6.5.5 does not allow to clone the document node!!!!
@@ -225,7 +225,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     }
     catch (final Throwable t)
     {
-      s_aLogger.error ("Schematron preprocessor error", t);
+      LOGGER.error ("Schematron preprocessor error", t);
     }
   }
 

@@ -64,7 +64,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Immutable
 public final class SchematronHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronHelper.class);
 
   @PresentForCodeCoverage
   private static final SchematronHelper s_aInstance = new SchematronHelper ();
@@ -219,8 +219,8 @@ public final class SchematronHelper
               return ESuccess.FAILURE;
             }
 
-            if (s_aLogger.isDebugEnabled ())
-              s_aLogger.debug ("Resolved '" +
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("Resolved '" +
                                sHref +
                                "' relative to '" +
                                aIncludeResolver.getBaseHref () +

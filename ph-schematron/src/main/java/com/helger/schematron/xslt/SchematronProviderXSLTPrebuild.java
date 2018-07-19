@@ -44,7 +44,7 @@ import com.helger.xml.transform.TransformSourceFactory;
 @NotThreadSafe
 public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvider
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 
@@ -65,7 +65,7 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
     }
     catch (final Exception ex)
     {
-      s_aLogger.error ("XSLT read/compilation error for " + aXSLTResource, ex);
+      LOGGER.error ("XSLT read/compilation error for " + aXSLTResource, ex);
     }
   }
 

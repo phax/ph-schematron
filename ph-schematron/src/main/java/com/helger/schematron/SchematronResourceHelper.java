@@ -48,7 +48,7 @@ import com.helger.xml.serialize.read.DOMReaderSettings;
 @Immutable
 public final class SchematronResourceHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceHelper.class);
 
   @PresentForCodeCoverage
   private static final SchematronResourceHelper s_aInstance = new SchematronResourceHelper ();
@@ -137,7 +137,7 @@ public final class SchematronResourceHelper
       }
 
       // Neither InputStream nor Reader present
-      s_aLogger.error ("StreamSource contains neither InputStream nor Reader nor SystemID - cannot handle!");
+      LOGGER.error ("StreamSource contains neither InputStream nor Reader nor SystemID - cannot handle!");
       return null;
     }
 
@@ -146,7 +146,7 @@ public final class SchematronResourceHelper
                         " with system ID '" +
                         aSource.getSystemId () +
                         "'";
-    s_aLogger.error (sMsg);
+    LOGGER.error (sMsg);
     throw new IllegalArgumentException (sMsg);
   }
 }

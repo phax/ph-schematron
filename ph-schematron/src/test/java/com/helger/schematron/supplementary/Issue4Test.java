@@ -29,7 +29,7 @@ import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 
 public final class Issue4Test
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue4Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue4Test.class);
 
   @Test
   public void testReadFromUNCWithInclude () throws Exception
@@ -43,6 +43,6 @@ public final class Issue4Test
       assertTrue (aResPure.isValidSchematron ());
     }
     else
-      s_aLogger.info ("Test ignored because file does not exist");
+      LOGGER.info ("Test ignored because file does not exist");
   }
 }

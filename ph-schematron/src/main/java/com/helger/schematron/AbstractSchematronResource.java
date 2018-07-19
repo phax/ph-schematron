@@ -52,7 +52,7 @@ import com.helger.xml.transform.TransformSourceFactory;
 @NotThreadSafe
 public abstract class AbstractSchematronResource implements ISchematronResource
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronResource.class);
 
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
@@ -170,14 +170,14 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aIS == null)
     {
       // Resource not found
-      s_aLogger.warn ("XML resource " + aXMLResource + " does not exist!");
+      LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
       return null;
     }
     final Document aDoc = DOMReader.readXMLDOM (aIS, internalCreateDOMReaderSettings ());
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
-    s_aLogger.info ("Read XML resource " + aXMLResource);
+    LOGGER.info ("Read XML resource " + aXMLResource);
     return new NodeAndBaseURI (aDoc, aStreamSrc.getSystemId ());
   }
 

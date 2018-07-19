@@ -47,7 +47,7 @@ import com.helger.xml.transform.CollectingTransformErrorListener;
  */
 public final class SchematronResourceSCHCacheTest
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronResourceSCHCacheTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCacheTest.class);
   private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
 
@@ -66,10 +66,10 @@ public final class SchematronResourceSCHCacheTest
       final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
       assertNotNull (aDoc);
       if (false)
-        s_aLogger.info (XMLWriter.getNodeAsString (aDoc));
+        LOGGER.info (XMLWriter.getNodeAsString (aDoc));
     }
     final long nEnd = System.nanoTime ();
-    s_aLogger.info ("Sync Total: " +
+    LOGGER.info ("Sync Total: " +
                     ((nEnd - nStart) / 1000) +
                     " microsecs btw. " +
                     ((nEnd - nStart) / 1000 / RUNS) +
@@ -105,7 +105,7 @@ public final class SchematronResourceSCHCacheTest
     }
     ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
     final long nEnd = System.nanoTime ();
-    s_aLogger.info ("Async Total: " +
+    LOGGER.info ("Async Total: " +
                     ((nEnd - nStart) / 1000) +
                     " microsecs btw. " +
                     ((nEnd - nStart) / 1000 / RUNS) +
@@ -156,8 +156,8 @@ public final class SchematronResourceSCHCacheTest
         {
           for (final IError aError : aErrorGroup)
             if (aError.isError ())
-              s_aLogger.info ("!!" + aError.getAsString (Locale.US));
-          s_aLogger.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
+              LOGGER.info ("!!" + aError.getAsString (Locale.US));
+          LOGGER.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
         }
       }
   }

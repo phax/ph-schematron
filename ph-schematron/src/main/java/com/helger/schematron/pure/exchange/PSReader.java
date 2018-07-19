@@ -51,7 +51,7 @@ import com.helger.xml.serialize.read.SAXReaderSettings;
 @Immutable
 public class PSReader
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PSReader.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSReader.class);
 
   private final IReadableResource m_aResource;
   private final IPSErrorHandler m_aErrorHandler;
@@ -1175,7 +1175,7 @@ public class PSReader
                                          "Failed to resolve includes in Schematron resource " + m_aResource);
 
     if (SchematronDebug.isShowResolvedSourceSchematron ())
-      s_aLogger.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
+      LOGGER.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
 
     return readSchemaFromXML (aDoc.getDocumentElement ());
   }

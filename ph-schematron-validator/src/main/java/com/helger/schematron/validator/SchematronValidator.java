@@ -55,7 +55,7 @@ public final class SchematronValidator
   /** The readable resource with the RelaxNG compact Schematron rules */
   public static final ClassPathResource SCHEMATRON_RNC = new ClassPathResource (SCHEMATRON_RNC_PATH);
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronValidator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronValidator.class);
 
   @PresentForCodeCoverage
   private static final SchematronValidator s_aInstance = new SchematronValidator ();
@@ -152,7 +152,7 @@ public final class SchematronValidator
     }
     catch (final IOException ex)
     {
-      s_aLogger.warn ("Failed to read source " + aSource, ex);
+      LOGGER.warn ("Failed to read source " + aSource, ex);
     }
     return false;
   }

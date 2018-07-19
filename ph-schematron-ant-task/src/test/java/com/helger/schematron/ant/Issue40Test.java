@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public final class Issue40Test
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue40Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue40Test.class);
 
   @Rule
   public final BuildFileRule m_aBuildRule = new BuildFileRule ();
@@ -48,7 +48,7 @@ public final class Issue40Test
     }
     catch (final BuildException ex)
     {
-      s_aLogger.error ("Ooops", ex);
+      LOGGER.error ("Ooops", ex);
     }
   }
 }

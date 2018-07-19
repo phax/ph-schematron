@@ -46,7 +46,7 @@ import com.helger.xml.transform.ResourceStreamSource;
  */
 public final class Issue29Test
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (Issue29Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue29Test.class);
 
   @Nullable
   static SchematronOutputType validateXmlUsingSchematron (@Nonnull final IReadableResource aRes)
@@ -81,6 +81,6 @@ public final class Issue29Test
     assertNotNull (aSOT);
     final ICommonsList <SVRLFailedAssert> aErrors = SVRLHelper.getAllFailedAssertions (aSOT);
     assertNotNull (aErrors);
-    s_aLogger.info ("Errors found: " + aErrors);
+    LOGGER.info ("Errors found: " + aErrors);
   }
 }

@@ -34,11 +34,11 @@ import com.helger.commons.functional.IFunction;
  */
 public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDeterminator
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultSVRLErrorLevelDeterminator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DefaultSVRLErrorLevelDeterminator.class);
   public static final IErrorLevel DEFAULT_ERROR_LEVEL = EErrorLevel.ERROR;
   public static final IFunction <String, IErrorLevel> UNKNOWN_ERROR_LEVEL_HANDLER = sFlag -> {
     if (sFlag != null)
-      s_aLogger.warn ("Cannot convert the SVRL flag '" +
+      LOGGER.warn ("Cannot convert the SVRL flag '" +
                       sFlag +
                       "' to an error level. Using default error level instead!");
     return DEFAULT_ERROR_LEVEL;

@@ -74,7 +74,7 @@ import net.sf.saxon.xpath.XPathEvaluator;
 @Immutable
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PSXPathBoundSchema.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
 
   private final XPathVariableResolver m_aXPathVariableResolver;
   private final XPathFunctionResolver m_aXPathFunctionResolver;
@@ -420,8 +420,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nonnull
   public PSXPathBoundSchema bind () throws SchematronBindException
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Binding pure Schematron");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Binding pure Schematron");
 
     if (m_aBoundPatterns != null)
       throw new IllegalStateException ("bind must only be called once!");

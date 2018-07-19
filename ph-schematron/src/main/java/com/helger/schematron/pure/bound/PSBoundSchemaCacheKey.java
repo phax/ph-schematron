@@ -54,7 +54,7 @@ import com.helger.xml.microdom.serialize.MicroWriter;
 @Immutable
 public class PSBoundSchemaCacheKey
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PSBoundSchemaCacheKey.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSBoundSchemaCacheKey.class);
 
   private final IReadableResource m_aResource;
   private final String m_sPhase;
@@ -216,7 +216,7 @@ public class PSBoundSchemaCacheKey
                                                " with query binding " +
                                                aQueryBinding);
     if (SchematronDebug.isShowPreprocessedSchematron ())
-      s_aLogger.info ("Preprocessed Schematron:\n" +
+      LOGGER.info ("Preprocessed Schematron:\n" +
                       MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }

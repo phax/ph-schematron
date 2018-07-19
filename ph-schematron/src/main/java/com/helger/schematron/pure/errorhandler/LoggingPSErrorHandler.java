@@ -37,7 +37,7 @@ import com.helger.schematron.pure.model.IPSHasID;
  */
 public class LoggingPSErrorHandler extends AbstractPSErrorHandler
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (LoggingPSErrorHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (LoggingPSErrorHandler.class);
 
   public LoggingPSErrorHandler ()
   {
@@ -70,6 +70,6 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
                          @Nonnull final String sMessage,
                          @Nullable final Throwable t)
   {
-    LogHelper.log (s_aLogger, aErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
+    LogHelper.log (LOGGER, aErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
   }
 }

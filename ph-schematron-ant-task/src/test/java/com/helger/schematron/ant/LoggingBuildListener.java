@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 final class LoggingBuildListener implements BuildListener
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (LoggingBuildListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (LoggingBuildListener.class);
 
   private final boolean m_bDebugMode;
 
@@ -55,20 +55,20 @@ final class LoggingBuildListener implements BuildListener
   public void messageLogged (@Nonnull final BuildEvent aEvent)
   {
     if (aEvent.getPriority () <= Project.MSG_ERR)
-      s_aLogger.error (aEvent.getMessage (), aEvent.getException ());
+      LOGGER.error (aEvent.getMessage (), aEvent.getException ());
     else
       if (aEvent.getPriority () <= Project.MSG_WARN)
-        s_aLogger.warn (aEvent.getMessage (), aEvent.getException ());
+        LOGGER.warn (aEvent.getMessage (), aEvent.getException ());
       else
         if (aEvent.getPriority () <= Project.MSG_INFO)
-          s_aLogger.info (aEvent.getMessage (), aEvent.getException ());
+          LOGGER.info (aEvent.getMessage (), aEvent.getException ());
         else
         {
           // Switch this from "debug" to "info" to get more output
           if (m_bDebugMode)
-            s_aLogger.info (aEvent.getMessage (), aEvent.getException ());
+            LOGGER.info (aEvent.getMessage (), aEvent.getException ());
           else
-            s_aLogger.debug (aEvent.getMessage (), aEvent.getException ());
+            LOGGER.debug (aEvent.getMessage (), aEvent.getException ());
         }
   }
 

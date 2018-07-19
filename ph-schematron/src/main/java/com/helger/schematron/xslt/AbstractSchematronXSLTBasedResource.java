@@ -76,7 +76,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                           ISchematronXSLTBasedResource,
                                                           IGenericImplTrait <IMPLTYPE>
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
@@ -219,7 +219,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
     // Debug print the created XSLT document
     if (SchematronDebug.isShowCreatedXSLT ())
-      s_aLogger.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
+      LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
@@ -244,8 +244,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Applying Schematron XSLT on XML [start]");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Applying Schematron XSLT on XML [start]");
 
     // Enable this for hardcore Saxon debugging only
     if (false)
@@ -253,7 +253,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       {
         final XsltTransformer aXT = ((TransformerImpl) aTransformer).getUnderlyingXsltTransformer ();
 
-        aXT.setMessageListener ( (a, b, c) -> s_aLogger.info ("MessageListener: " + a + ", " + b + ", " + c));
+        aXT.setMessageListener ( (a, b, c) -> LOGGER.info ("MessageListener: " + a + ", " + b + ", " + c));
         aXT.setTraceFunctionDestination (new StandardLogger (System.err));
         if (false)
           aXT.getUnderlyingController ().setTraceListener (new XSLTTraceListener ());
@@ -275,12 +275,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     // Do the main transformation
     aTransformer.transform (new DOMSource (aXMLNode), new DOMResult (ret));
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Applying Schematron XSLT on XML [end]");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Applying Schematron XSLT on XML [end]");
 
     // Debug print the created SVRL document
     if (SchematronDebug.isShowCreatedSVRL ())
-      s_aLogger.info ("Created SVRL:\n" + XMLWriter.getNodeAsString (ret));
+      LOGGER.info ("Created SVRL:\n" + XMLWriter.getNodeAsString (ret));
 
     return ret;
   }

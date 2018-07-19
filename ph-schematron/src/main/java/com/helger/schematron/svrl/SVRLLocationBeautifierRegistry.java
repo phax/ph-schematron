@@ -35,7 +35,7 @@ import com.helger.commons.lang.ServiceLoaderHelper;
 @NotThreadSafe
 public final class SVRLLocationBeautifierRegistry
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SVRLLocationBeautifierRegistry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SVRLLocationBeautifierRegistry.class);
   private static final ICommonsList <ISVRLLocationBeautifierSPI> s_aList = ServiceLoaderHelper.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
 
   @PresentForCodeCoverage
@@ -62,8 +62,8 @@ public final class SVRLLocationBeautifierRegistry
       if (sBeautified != null)
         return sBeautified;
     }
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Unsupported elements for beautification: " + sNamespaceURI + " -- " + sLocalName);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Unsupported elements for beautification: " + sNamespaceURI + " -- " + sLocalName);
     return null;
   }
 }

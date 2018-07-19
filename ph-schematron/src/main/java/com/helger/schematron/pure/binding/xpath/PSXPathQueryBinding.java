@@ -53,7 +53,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
 {
   public static final char PARAM_VARIABLE_PREFIX = '$';
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PSXPathQueryBinding.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathQueryBinding.class);
   private static final PSXPathQueryBinding s_aInstance = new PSXPathQueryBinding ();
 
   private PSXPathQueryBinding ()
@@ -99,7 +99,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     }
     final String ret = StringHelper.replaceMultiple (sText, aStringReplacements);
     if (false && ret.indexOf (PARAM_VARIABLE_PREFIX) >= 0)
-      s_aLogger.warn ("Text still contains variables after replacement: " + ret);
+      LOGGER.warn ("Text still contains variables after replacement: " + ret);
     return ret;
   }
 
