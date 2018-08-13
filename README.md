@@ -11,7 +11,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.0.5 - work in progress
+* v5.0.5 - 2018-08-13
     * Added support to disable "fail fast" mode in ph-schematron-maven-plugin (see [issue #69](https://github.com/phax/ph-schematron/issues/69))
     * Updated to Saxon-HE 9.8.0-14
     * Fixed custom error handling for `report` when using `role` (see [issue #66](https://github.com/phax/ph-schematron/issues/66) again)
@@ -103,7 +103,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.0.4</version>
+  <version>5.0.5</version>
 </dependency>
 ```
 
@@ -121,7 +121,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>5.0.4</version>
+  <version>5.0.5</version>
   <executions>
     <execution>
       <goals>
@@ -165,7 +165,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.4</version>
+  <version>5.0.5</version>
   <executions>
     <execution>
       <goals>
@@ -204,7 +204,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.0.4</version>
+  <version>5.0.5</version>
 </dependency>
 ```
 
