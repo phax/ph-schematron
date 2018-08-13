@@ -14,6 +14,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 * v5.0.5 - work in progress
     * Added support to disable "fail fast" mode in ph-schematron-maven-plugin (see [issue #69](https://github.com/phax/ph-schematron/issues/69))
     * Updated to Saxon-HE 9.8.0-14
+    * Fixed custom error handling for `report` when using `role` (see [issue #66](https://github.com/phax/ph-schematron/issues/66) again)
 * v5.0.4 - 2018-05-14
     * Really fixed OSGI ServiceProvider configuration
     * Updated to Saxon-HE 9.8.0-12

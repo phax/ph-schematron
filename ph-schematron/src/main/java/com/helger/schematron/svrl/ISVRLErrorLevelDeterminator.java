@@ -106,6 +106,6 @@ public interface ISVRLErrorLevelDeterminator extends Serializable
       // Fall back to "role"
       sValue = aSuccessfulReport.getRole ();
     }
-    return getErrorLevelFromString (aSuccessfulReport.getFlag ());
+    return getErrorLevelFromString (sValue);
   }
 }
