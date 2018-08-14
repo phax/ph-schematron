@@ -294,7 +294,8 @@ public class Schematron extends Task
 
   private static final File NULL_FILE_PLACEHOLDER = new File ("/dummy_NULL");
 
-  private static File _getKeyFile (final File f)
+  @Nonnull
+  private static File _getKeyFile (@Nullable final File f)
   {
     return f != null ? f : NULL_FILE_PLACEHOLDER;
   }
@@ -331,41 +332,42 @@ public class Schematron extends Task
             continue;
           }
 
-          File baseDir = NULL_FILE_PLACEHOLDER;
-          String name = aRes.getName ();
-          final FileProvider fp = aRes.as (FileProvider.class);
-          if (fp != null)
+          File aBaseDir = NULL_FILE_PLACEHOLDER;
+          String sName = aRes.getName ();
+          final FileProvider aFP = aRes.as (FileProvider.class);
+          if (aFP != null)
           {
-            final FileResource fr = ResourceUtils.asFileResource (fp);
-            baseDir = _getKeyFile (fr.getBaseDir ());
-            if (baseDir == NULL_FILE_PLACEHOLDER)
-              name = fr.getFile ().getAbsolutePath ();
+            final FileResource aFR = ResourceUtils.asFileResource (aFP);
+            aBaseDir = _getKeyFile (aFR.getBaseDir ());
+            if (aBaseDir == NULL_FILE_PLACEHOLDER)
+              sName = aFR.getFile ().getAbsolutePath ();
           }
 
-          if ((aRes.isDirectory () || fp != null) && name != null)
+          if ((aRes.isDirectory () || aFP != null) && sName != null)
           {
-            final DirectoryData aBaseDir = aFiles.computeIfAbsent (_getKeyFile (baseDir), k -> new DirectoryData (k));
+            final DirectoryData aBaseDirData = aFiles.computeIfAbsent (_getKeyFile (aBaseDir), DirectoryData::new);
             if (aRes.isDirectory ())
-              aBaseDir.addDir (name);
+              aBaseDirData.addDir (sName);
             else
-              aBaseDir.addFile (name);
+              aBaseDirData.addFile (sName);
           }
           else
             _error ("Could not resolve resource " + aRes.toLongString () + " to a file.");
         }
     }
 
-    for (final DirectoryData aBaseDir : aFiles.values ())
+    for (final DirectoryData aBaseDirData : aFiles.values ())
     {
-      log ("Scanning directory " + aBaseDir.getBaseDir () + " for XMLs to be Schematron validated", Project.MSG_DEBUG);
+      log ("Scanning directory " + aBaseDirData.getBaseDir () + " for XMLs to be Schematron validated",
+           Project.MSG_DEBUG);
 
       final ICommonsList <String> aIncludes = new CommonsArrayList <> ();
-      aIncludes.addAll (aBaseDir.getFiles ());
-      for (final String sFile : aBaseDir.getDirs ())
+      aIncludes.addAll (aBaseDirData.getFiles ());
+      for (final String sFile : aBaseDirData.getDirs ())
         aIncludes.add (sFile + "/**");
 
       final DirectoryScanner aScanner = new DirectoryScanner ();
-      aScanner.setBasedir (aBaseDir.getBaseDir ());
+      aScanner.setBasedir (aBaseDirData.getBaseDir ());
       if (aIncludes.isNotEmpty ())
         aScanner.setIncludes (aIncludes.toArray (new String [0]));
       aScanner.setCaseSensitive (true);
@@ -376,7 +378,7 @@ public class Schematron extends Task
       {
         for (final String sXMLFilename : aXMLFilenames)
         {
-          final File aXMLFile = new File (aBaseDir.getBaseDir (), sXMLFilename);
+          final File aXMLFile = new File (aBaseDirData.getBaseDir (), sXMLFilename);
 
           // Validate XML file
           log ("Validating XML file '" +
@@ -583,8 +585,7 @@ public class Schematron extends Task
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
           final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
           // phase and language are ignored because this was decided when the
-          // XSLT
-          // was created
+          // XSLT was created
           aRealSCH.setErrorListener (aErrorHdl);
           aRealSCH.setURIResolver (getURIResolver ());
           aRealSCH.setEntityResolver (getEntityResolver ());
