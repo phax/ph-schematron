@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.6 - work in progress
+    * The Ant task has the possibility to provide custom parameters to XSLT and SCH validations ([issue #62](https://github.com/phax/ph-schematron/issues/62)) 
 * v5.0.5 - 2018-08-13
     * Added support to disable "fail fast" mode in ph-schematron-maven-plugin (see [issue #69](https://github.com/phax/ph-schematron/issues/69))
     * Updated to Saxon-HE 9.8.0-14
@@ -27,7 +29,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * The Maven plugins now require Maven 3.0
     * Added new parameter `parameters` to the `ph-sch2xslt-maven-plugin`
     * Finally the `role` attribute is copied to a failed assertion when using the pure implementation
-    * The Ant task has the possibility to provide values for `role` and `flag` that are interpreted as error ([issue #66](https://github.com/phax/ph-schematron/issues/66))  
+    * The Ant task has the possibility to provide values for `role` and `flag` that are interpreted as error ([issue #66](https://github.com/phax/ph-schematron/issues/66))
 * v5.0.1 - 2018-02-01
     * Moved `getBeautifiedLocation` to class `SVRLHelper` and made it public
     * Updated to Saxon-HE 9.8.0-7
@@ -260,10 +262,15 @@ The `schematron` element allows for the following attributes:
   * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
 
 The following child elements are allowed:
-  * `<errorRole>` (since v5.0.2)
+* `<errorRole>` (since v5.0.2)
     * The usage of the element is optional.
-    * The `role` attribute allows to define values of `role` and `flag` attributes that are considered as errors.
-    * If this element is combined with the `failOnError` attribute you can break the build if an assertion with the respective `role` or `flag` fails. 
+    * The `role` attribute allows to define values of `role` and `flag` attributes in Schematrons that are considered as errors.
+    * If this element is combined with the `failOnError` attribute you can break the build if an assertion with the respective `role` or `flag` fails.
+* `<attribute>` (since v5.0.6)
+    * The usage of the element is optional.
+    * The element is only interpreted for the processing engines `xslt` and `sch`.
+    * The attribute 'name' defines the custom attribute name.
+    * The attribute 'value' defines the custom attribute value. If the value is omitted, an empty String is passed instead. 
   
 Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver both for the Schematron and the XML files to be validated! See https://ant.apache.org/manual/Types/xmlcatalog.html for details on the XML catalog. Here is an example that shows how to use an inline XML catalog:
 
@@ -279,6 +286,7 @@ Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver
         <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
       </xmlcatalog>
       <errorRole role="fatal" />
+      <attribute name="allow-foreign" value="true" />
     </schematron>
   </target>
 ```

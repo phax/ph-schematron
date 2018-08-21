@@ -17,7 +17,9 @@
 package com.helger.schematron.ant;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +39,9 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.annotation.UsedViaReflection;
+import com.helger.commons.collection.attr.IStringMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -46,6 +51,7 @@ import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.list.IErrorList;
+import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.ESchematronMode;
@@ -75,18 +81,17 @@ public class Schematron extends Task
    * @author Philip Helger
    * @since 5.0.2
    */
-  public class ErrorRole
+  public static class ErrorRole implements Serializable
   {
     private String m_sRole;
 
     public ErrorRole ()
     {}
 
+    @UsedViaReflection
     public void setRole (@Nullable final String sRole)
     {
       m_sRole = sRole;
-      if (sRole != null)
-        log ("Using role '" + sRole + "' to trigger an error");
     }
 
     @Nullable
@@ -97,7 +102,54 @@ public class Schematron extends Task
 
     public boolean equalsIgnoreCase (@Nonnull final String sValue)
     {
-      return sValue.equals (m_sRole);
+      return sValue.equalsIgnoreCase (m_sRole);
+    }
+  }
+
+  /**
+   * Custom parameter for SCH/XSLT transformations only.
+   *
+   * @author Philip Helger
+   * @since 5.0.6
+   */
+  public static class Parameter implements Serializable
+  {
+    private String m_sName;
+    private String m_sValue;
+
+    public Parameter ()
+    {}
+
+    @UsedViaReflection
+    public void setName (@Nullable final String sName)
+    {
+      m_sName = sName;
+    }
+
+    @Nullable
+    public String getName ()
+    {
+      return m_sName;
+    }
+
+    @UsedViaReflection
+    public void setValue (@Nullable final String sValue)
+    {
+      m_sValue = sValue;
+    }
+
+    @Nullable
+    public String getValue ()
+    {
+      return m_sValue;
+    }
+
+    void addToMap (@Nonnull final Map <String, String> aMap)
+    {
+      // Only add parameters that have a name
+      // If the value is null it becomes ""
+      if (StringHelper.hasText (m_sName))
+        aMap.put (m_sName, StringHelper.getNotNull (m_sValue));
     }
   }
 
@@ -118,8 +170,7 @@ public class Schematron extends Task
   private ESchematronMode m_eSchematronProcessingEngine = ESchematronMode.SCHEMATRON;
 
   /**
-   * The collection for resources (like FileSets etc.) which are to be
-   * validated.
+   * The collection for resources (like FileSets etc.) which are to be validated.
    */
   private final ICommonsList <ResourceCollection> m_aResCollections = new CommonsArrayList <> ();
 
@@ -150,10 +201,10 @@ public class Schematron extends Task
   private boolean m_bExpectSuccess = true;
 
   /**
-   * List of "role" attribute values that will trigger an error. If combined
-   * with "failOnError" it will break the build.
+   * List of "role" attribute values that will trigger an error. If combined with
+   * "failOnError" it will break the build.
    */
-  private final ICommonsList <ErrorRole> m_aErrorRoles = new CommonsArrayList <> ();
+  private final ICommonsList <Schematron.ErrorRole> m_aErrorRoles = new CommonsArrayList <> ();
 
   /**
    * <code>true</code> if the build should fail if any error occurs. Defaults to
@@ -166,6 +217,11 @@ public class Schematron extends Task
    * file as well as for the XML files to be validated.
    */
   private final XMLCatalog m_aXmlCatalog = new XMLCatalog ();
+
+  /**
+   * Custom parameters for SCH/XSLT version.
+   */
+  private final ICommonsList <Schematron.Parameter> m_aParameters = new CommonsArrayList <> ();
 
   public Schematron ()
   {}
@@ -235,9 +291,9 @@ public class Schematron extends Task
   }
 
   @Nonnull
-  public ErrorRole createErrorRole ()
+  public Schematron.ErrorRole createErrorRole ()
   {
-    final ErrorRole aErrorRole = new ErrorRole ();
+    final Schematron.ErrorRole aErrorRole = new Schematron.ErrorRole ();
     m_aErrorRoles.add (aErrorRole);
     return aErrorRole;
   }
@@ -259,6 +315,14 @@ public class Schematron extends Task
   {
     m_aXmlCatalog.addConfiguredXMLCatalog (aXmlCatalog);
     log ("Added XMLCatalog " + aXmlCatalog, Project.MSG_DEBUG);
+  }
+
+  @Nonnull
+  public Schematron.Parameter createParameter ()
+  {
+    final Schematron.Parameter aParameter = new Schematron.Parameter ();
+    m_aParameters.add (aParameter);
+    return aParameter;
   }
 
   /**
@@ -392,11 +456,12 @@ public class Schematron extends Task
           {
             final SchematronOutputType aSOT = aSch.applySchematronValidationToSVRL (TransformSourceFactory.create (aXMLFile));
 
-            if (aSVRLDirectory != null)
+            // If aSOT == null a different error should be present
+            if (aSVRLDirectory != null && aSOT != null)
             {
               // Save SVRL
               final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
-              if (!aSVRLFile.getParentFile ().mkdirs ())
+              if (FileOperations.createDirIfNotExisting (aSVRLFile.getParentFile ()).isFailure ())
                 log ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!", Project.MSG_ERR);
 
               if (new SVRLMarshaller ().write (aSOT, aSVRLFile).isSuccess ())
@@ -532,7 +597,7 @@ public class Schematron extends Task
             if (sFlag != null)
             {
               // Check custom error roles; #66
-              for (final ErrorRole aCustomRole : m_aErrorRoles)
+              for (final Schematron.ErrorRole aCustomRole : m_aErrorRoles)
                 if (aCustomRole.equalsIgnoreCase (sFlag))
                   return EErrorLevel.ERROR;
             }
@@ -547,6 +612,7 @@ public class Schematron extends Task
       final Locale aDisplayLocale = Locale.US;
       ISchematronResource aSch = null;
       IErrorList aSCHErrors = null;
+
       switch (m_eSchematronProcessingEngine)
       {
         case PURE:
@@ -566,6 +632,11 @@ public class Schematron extends Task
         case SCHEMATRON:
         {
           // SCH
+          final IStringMap aParams = new StringMap ();
+          m_aParameters.forEach (x -> x.addToMap (aParams));
+          if (aParams.isNotEmpty ())
+            log ("Using the following custom parameters: " + aParams, Project.MSG_INFO);
+
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
           final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
           aRealSCH.setPhase (m_sPhaseName);
@@ -573,6 +644,7 @@ public class Schematron extends Task
           aRealSCH.setErrorListener (aErrorHdl);
           aRealSCH.setURIResolver (getURIResolver ());
           aRealSCH.setEntityResolver (getEntityResolver ());
+          aRealSCH.parameters ().setAll (aParams);
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
@@ -581,7 +653,12 @@ public class Schematron extends Task
         }
         case XSLT:
         {
-          // SCH
+          // XSLT
+          final IStringMap aParams = new StringMap ();
+          m_aParameters.forEach (x -> x.addToMap (aParams));
+          if (aParams.isNotEmpty ())
+            log ("Using the following custom parameters: " + aParams, Project.MSG_INFO);
+
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
           final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
           // phase and language are ignored because this was decided when the
@@ -589,6 +666,7 @@ public class Schematron extends Task
           aRealSCH.setErrorListener (aErrorHdl);
           aRealSCH.setURIResolver (getURIResolver ());
           aRealSCH.setEntityResolver (getEntityResolver ());
+          aRealSCH.parameters ().setAll (aParams);
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
@@ -617,6 +695,7 @@ public class Schematron extends Task
           _error ("The provided Schematron file contains errors. See log for details.");
         else
         {
+          // Start validation
           log ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'", Project.MSG_INFO);
 
           // 2. for all XML files that match the pattern

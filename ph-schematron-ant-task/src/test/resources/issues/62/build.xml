@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  
+  <target name="schematron" description="Schematron rule tests">
+    <schematron svrlDirectory="tmp"
+      schematronProcessingEngine="sch"
+      schematronFile="rules.sch">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+      <parameter name="allow-foreign" value="true" />
+      <parameter name="second" value="whatever" />
+    </schematron>
+  </target>
+  
+</project>
