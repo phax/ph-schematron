@@ -17,11 +17,13 @@
 package com.helger.schematron.supplementary;
 
 import java.io.File;
-import java.util.List;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronHelper;
@@ -31,6 +33,8 @@ import com.helger.schematron.svrl.SVRLHelper;
 
 public final class IssueGC5Test
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (IssueGC5Test.class);
+
   @Test
   public void testIssue () throws Exception
   {
@@ -50,8 +54,8 @@ public final class IssueGC5Test
     // final SchematronOutputType svrl = pure.applySchematronValidationToSVRL
     // (anXMLSource);
     final SchematronOutputType aSO = SchematronHelper.applySchematron (pure, anXMLSource);
-    final List <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSO);
-    System.out.println (aFailedAsserts);
+    final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSO);
+    LOGGER.info (aFailedAsserts.toString ());
   }
 
 }
