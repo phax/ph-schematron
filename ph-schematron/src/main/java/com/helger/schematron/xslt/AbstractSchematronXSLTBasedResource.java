@@ -144,8 +144,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the XML to be
-   * validated.
+   * Set the XML entity resolver to be used when reading the XML to be validated.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -273,7 +272,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       }
 
     // Do the main transformation
-    aTransformer.transform (new DOMSource (aXMLNode), new DOMResult (ret));
+    {
+      final DOMSource aSource = new DOMSource (aXMLNode);
+      aSource.setSystemId (sBaseURI);
+      aTransformer.transform (aSource, new DOMResult (ret));
+    }
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Applying Schematron XSLT on XML [end]");
