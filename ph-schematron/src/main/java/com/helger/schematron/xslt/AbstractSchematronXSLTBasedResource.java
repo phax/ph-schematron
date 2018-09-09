@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.xslt;
 
+import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 
@@ -86,6 +87,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
+    // The URI resolver is necessary for the XSLT to resolve URLs relative to
+    // the SCH
+    final URL aBaseURL = aSCHResource.getAsURL ();
+    setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (aBaseURL != null ? aBaseURL.toExternalForm ()
+                                                                                        : null));
   }
 
   @Nullable

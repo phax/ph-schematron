@@ -17,7 +17,6 @@
 package com.helger.schematron.xslt;
 
 import java.io.File;
-import java.net.URL;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,7 +27,6 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.xml.transform.DefaultTransformURIResolver;
 
 /**
  * A Schematron resource that is based on the original SCH file.
@@ -50,11 +48,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
-    // The URI resolver is necessary for the XSLT to resolve URLs relative to
-    // the SCH
-    final URL aBaseURL = aSCHResource.getAsURL ();
-    setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (aBaseURL != null ? aBaseURL.toExternalForm ()
-                                                                                        : null));
   }
 
   @Nullable
