@@ -95,7 +95,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
+  public final IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
     return thisAsT ();
@@ -108,7 +108,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  public final IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
     return thisAsT ();
@@ -116,7 +116,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @Nonnull
   @ReturnsMutableObject
-  public ICommonsOrderedMap <String, Object> parameters ()
+  public final ICommonsOrderedMap <String, Object> parameters ()
   {
     return m_aCustomParameters;
   }
@@ -144,7 +144,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the XML to be validated.
+   * Set the XML entity resolver to be used when reading the XML to be
+   * validated.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -152,7 +153,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * @since 4.2.3
    */
   @Nonnull
-  public IMPLTYPE setEntityResolver (@Nullable final EntityResolver aEntityResolver)
+  public final IMPLTYPE setEntityResolver (@Nullable final EntityResolver aEntityResolver)
   {
     internalSetEntityResolver (aEntityResolver);
     return thisAsT ();
@@ -175,7 +176,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public IMPLTYPE setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
+  public final IMPLTYPE setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
   {
     ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
     m_aXSLTValidator = aXSLTValidator;
