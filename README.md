@@ -15,6 +15,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * The Ant task has the possibility to provide custom parameters to XSLT and SCH validations ([issue #62](https://github.com/phax/ph-schematron/issues/62))
     * Instances of `SchematronResourceSCH` now have a default URI resolver to resolve references relative to the source Schematron
     * Requires ph-commons 9.1.5
+    * `SVRLHelper` can now handle `null` inputs
 * v5.0.5 - 2018-08-13
     * Added support to disable "fail fast" mode in ph-schematron-maven-plugin (see [issue #69](https://github.com/phax/ph-schematron/issues/69))
     * Updated to Saxon-HE 9.8.0-14

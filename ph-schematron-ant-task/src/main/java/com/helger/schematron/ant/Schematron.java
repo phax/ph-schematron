@@ -170,7 +170,8 @@ public class Schematron extends Task
   private ESchematronMode m_eSchematronProcessingEngine = ESchematronMode.SCHEMATRON;
 
   /**
-   * The collection for resources (like FileSets etc.) which are to be validated.
+   * The collection for resources (like FileSets etc.) which are to be
+   * validated.
    */
   private final ICommonsList <ResourceCollection> m_aResCollections = new CommonsArrayList <> ();
 
@@ -201,8 +202,8 @@ public class Schematron extends Task
   private boolean m_bExpectSuccess = true;
 
   /**
-   * List of "role" attribute values that will trigger an error. If combined with
-   * "failOnError" it will break the build.
+   * List of "role" attribute values that will trigger an error. If combined
+   * with "failOnError" it will break the build.
    */
   private final ICommonsList <Schematron.ErrorRole> m_aErrorRoles = new CommonsArrayList <> ();
 

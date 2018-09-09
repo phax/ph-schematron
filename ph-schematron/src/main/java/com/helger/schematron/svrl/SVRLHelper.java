@@ -19,6 +19,7 @@ package com.helger.schematron.svrl;
 import java.util.regex.Matcher;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.oclc.purl.dsdl.svrl.FailedAssert;
@@ -57,17 +58,18 @@ public final class SVRLHelper
    * Get a list of all failed assertions in a given schematron output.
    *
    * @param aSchematronOutput
-   *        The schematron output to be used. May not be <code>null</code>.
+   *        The schematron output to be used. May be <code>null</code>.
    * @return A non-<code>null</code> list with all failed assertions.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static ICommonsList <SVRLFailedAssert> getAllFailedAssertions (@Nonnull final SchematronOutputType aSchematronOutput)
+  public static ICommonsList <SVRLFailedAssert> getAllFailedAssertions (@Nullable final SchematronOutputType aSchematronOutput)
   {
     final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
-    for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof FailedAssert)
-        ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
+    if (aSchematronOutput != null)
+      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
+        if (aObj instanceof FailedAssert)
+          ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
     return ret;
   }
 
@@ -76,24 +78,25 @@ public final class SVRLHelper
    * error level equally or more severe than the passed error level.
    *
    * @param aSchematronOutput
-   *        The schematron output to be used. May not be <code>null</code>.
+   *        The schematron output to be used. May be <code>null</code>.
    * @param aErrorLevel
    *        Minimum error level to be queried
    * @return A non-<code>null</code> list with all failed assertions.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static ICommonsList <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
+  public static ICommonsList <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nullable final SchematronOutputType aSchematronOutput,
                                                                                              @Nonnull final IErrorLevel aErrorLevel)
   {
     final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
-    for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof FailedAssert)
-      {
-        final SVRLFailedAssert aFA = new SVRLFailedAssert ((FailedAssert) aObj);
-        if (aFA.getFlag ().isGE (aErrorLevel))
-          ret.add (aFA);
-      }
+    if (aSchematronOutput != null)
+      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
+        if (aObj instanceof FailedAssert)
+        {
+          final SVRLFailedAssert aFA = new SVRLFailedAssert ((FailedAssert) aObj);
+          if (aFA.getFlag ().isGE (aErrorLevel))
+            ret.add (aFA);
+        }
     return ret;
   }
 
@@ -101,17 +104,18 @@ public final class SVRLHelper
    * Get a list of all successful reports in a given schematron output.
    *
    * @param aSchematronOutput
-   *        The schematron output to be used. May not be <code>null</code>.
+   *        The schematron output to be used. May be <code>null</code>.
    * @return A non-<code>null</code> list with all successful reports.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
+  public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReports (@Nullable final SchematronOutputType aSchematronOutput)
   {
     final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
-    for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof SuccessfulReport)
-        ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
+    if (aSchematronOutput != null)
+      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
+        if (aObj instanceof SuccessfulReport)
+          ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
     return ret;
   }
 
@@ -120,24 +124,25 @@ public final class SVRLHelper
    * error level equally or more severe than the passed error level.
    *
    * @param aSchematronOutput
-   *        The schematron output to be used. May not be <code>null</code>.
+   *        The schematron output to be used. May be <code>null</code>.
    * @param aErrorLevel
    *        Minimum error level to be queried
    * @return A non-<code>null</code> list with all successful reports.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nonnull final SchematronOutputType aSchematronOutput,
+  public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nullable final SchematronOutputType aSchematronOutput,
                                                                                                   @Nonnull final IErrorLevel aErrorLevel)
   {
     final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
-    for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof SuccessfulReport)
-      {
-        final SVRLSuccessfulReport aSR = new SVRLSuccessfulReport ((SuccessfulReport) aObj);
-        if (aSR.getFlag ().isGE (aErrorLevel))
-          ret.add (aSR);
-      }
+    if (aSchematronOutput != null)
+      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
+        if (aObj instanceof SuccessfulReport)
+        {
+          final SVRLSuccessfulReport aSR = new SVRLSuccessfulReport ((SuccessfulReport) aObj);
+          if (aSR.getFlag ().isGE (aErrorLevel))
+            ret.add (aSR);
+        }
     return ret;
   }
 
@@ -146,21 +151,23 @@ public final class SVRLHelper
    * schematron output.
    *
    * @param aSchematronOutput
-   *        The schematron output to be used. May not be <code>null</code>.
+   *        The schematron output to be used. May be <code>null</code>.
    * @return A non-<code>null</code> list with all failed assertions and
-   *         successful reports.
+   *         successful reports. Maybe an empty list if the input is
+   *         <code>null</code>.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static ICommonsList <AbstractSVRLMessage> getAllFailedAssertionsAndSuccessfulReports (@Nonnull final SchematronOutputType aSchematronOutput)
+  public static ICommonsList <AbstractSVRLMessage> getAllFailedAssertionsAndSuccessfulReports (@Nullable final SchematronOutputType aSchematronOutput)
   {
     final ICommonsList <AbstractSVRLMessage> ret = new CommonsArrayList <> ();
-    for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof FailedAssert)
-        ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
-      else
-        if (aObj instanceof SuccessfulReport)
-          ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
+    if (aSchematronOutput != null)
+      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
+        if (aObj instanceof FailedAssert)
+          ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
+        else
+          if (aObj instanceof SuccessfulReport)
+            ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
     return ret;
   }
 
@@ -201,7 +208,7 @@ public final class SVRLHelper
 
   /**
    * Set the global error level determinator.
-   * 
+   *
    * @param aELD
    *        The determinator to use. May not be <code>null</code>.
    */
