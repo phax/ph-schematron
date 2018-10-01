@@ -78,7 +78,7 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
     try
     {
       // Convert the parameters
-      final Sequence [] aSequences = new Sequence [aArgs.size ()];
+      final Sequence <?> [] aSequences = new Sequence [aArgs.size ()];
       if (aArgs.size () > 0)
       {
         // Create a new context per evaluation
