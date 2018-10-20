@@ -67,12 +67,15 @@ import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * ANT task to perform Schematron validation.
  *
  * @author Philip Helger
  * @since 4.2.3
  */
+@SuppressFBWarnings ("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public class Schematron extends Task
 {
   /**

@@ -27,11 +27,14 @@ import org.slf4j.LoggerFactory;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public final class Issue4Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue4Test.class);
 
   @Test
+  @SuppressFBWarnings ("DMI_HARDCODED_ABSOLUTE_FILENAME")
   public void testReadFromUNCWithInclude () throws Exception
   {
     final File aSchematronFile = new File ("\\\\PC61826\\share\\example-8-5.sch");

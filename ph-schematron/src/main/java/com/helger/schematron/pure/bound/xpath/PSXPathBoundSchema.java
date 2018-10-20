@@ -20,7 +20,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -71,7 +71,7 @@ import net.sf.saxon.xpath.XPathEvaluator;
  *
  * @author Philip Helger
  */
-@Immutable
+@NotThreadSafe
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
