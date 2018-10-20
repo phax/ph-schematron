@@ -49,7 +49,7 @@
     </developer>
   </developers>
   <properties>
-    <ant.version>1.9.12</ant.version>
+    <ant.version>1.9.13</ant.version>
   </properties>
   <dependencies>
     <dependency>
