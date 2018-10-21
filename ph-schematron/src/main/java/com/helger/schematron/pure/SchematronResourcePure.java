@@ -370,7 +370,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
     final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
-    return aSO == null ? null : new SVRLMarshaller ().getAsDocument (aSO);
+    return new SVRLMarshaller ().getAsDocument (aSO);
   }
 
   /**

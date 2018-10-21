@@ -38,7 +38,7 @@ import com.helger.schematron.ESchematronMode;
 public final class MavenPluginSchematronFuncTest
 {
   @Rule
-  public EasyMockRule mocks = new EasyMockRule (this);
+  public final EasyMockRule mocks = new EasyMockRule (this);
   @Mock
   private MavenProject project;
   @Mock
