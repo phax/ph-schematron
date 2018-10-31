@@ -13,6 +13,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 * v5.0.7 - work in progress
     * Updated to Saxon-HE 9.9.0-1
+    * Requires ph-commons 9.1.8
 * v5.0.6 - 2018-09-09
     * The Ant task has the possibility to provide custom parameters to XSLT and SCH validations ([issue #62](https://github.com/phax/ph-schematron/issues/62))
     * Instances of `SchematronResourceSCH` now have a default URI resolver to resolve references relative to the source Schematron
