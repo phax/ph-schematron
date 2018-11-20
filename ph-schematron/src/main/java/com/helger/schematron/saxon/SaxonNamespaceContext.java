@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import javax.xml.namespace.NamespaceContext;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.DevelopersNote;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.StringHelper;
@@ -68,7 +69,8 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
   }
 
   @Nonnull
-  public Iterator <?> getPrefixes (@Nonnull final String sNamespaceURI)
+  @DevelopersNote ("Java 8: Iterator; Java 10: Iterator<String>")
+  public Iterator getPrefixes (@Nonnull final String sNamespaceURI)
   {
     return m_aCtx.getPrefixes (sNamespaceURI);
   }
