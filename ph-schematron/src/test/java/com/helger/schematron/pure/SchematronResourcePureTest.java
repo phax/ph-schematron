@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -137,7 +136,7 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  public void testResolveVariables () throws SchematronException, SAXException
+  public void testResolveVariables () throws SchematronException
   {
     final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
@@ -193,7 +192,7 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  public void testResolveFunctions () throws SchematronException, SAXException
+  public void testResolveFunctions () throws SchematronException
   {
     final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +

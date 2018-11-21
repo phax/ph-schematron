@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
-import org.xml.sax.SAXException;
 
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -68,7 +67,7 @@ public final class PSXPathBoundSchemaTest
                                                        "valid01.xml" };
 
   @Test
-  public void testSchematronValidation () throws SAXException, SchematronException
+  public void testSchematronValidation () throws SchematronException
   {
     for (int i = 0; i < SCH.length; ++i)
     {
