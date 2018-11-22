@@ -68,6 +68,10 @@
     </developer>
   </developers>
   
+  <properties>
+    <ant.version>1.9.13</ant.version>
+  </properties>
+  
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -136,6 +140,23 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      
+      <!-- Ant -->
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant</artifactId>
+        <version>${ant.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-apache-resolver</artifactId>
+        <version>${ant.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-testutil</artifactId>
+        <version>${ant.version}</version>
       </dependency>
       
       <dependency>

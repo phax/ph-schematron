@@ -11,9 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.0.7 - work in progress
+* v5.0.7 - 2018-11-22
     * Updated to Saxon-HE 9.9.0-1
-    * Requires ph-commons 9.1.8
+    * Updated to ph-commons 9.2.0
 * v5.0.6 - 2018-09-09
     * The Ant task has the possibility to provide custom parameters to XSLT and SCH validations ([issue #62](https://github.com/phax/ph-schematron/issues/62))
     * Instances of `SchematronResourceSCH` now have a default URI resolver to resolve references relative to the source Schematron
@@ -111,7 +111,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.0.6</version>
+  <version>5.0.7</version>
 </dependency>
 ```
 
@@ -129,7 +129,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>5.0.6</version>
+  <version>5.0.7</version>
   <executions>
     <execution>
       <goals>
@@ -173,7 +173,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.6</version>
+  <version>5.0.7</version>
   <executions>
     <execution>
       <goals>
@@ -212,7 +212,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.0.6</version>
+  <version>5.0.7</version>
 </dependency>
 ```
 
@@ -272,7 +272,7 @@ The following child elements are allowed:
     * The usage of the element is optional.
     * The `role` attribute allows to define values of `role` and `flag` attributes in Schematrons that are considered as errors.
     * If this element is combined with the `failOnError` attribute you can break the build if an assertion with the respective `role` or `flag` fails.
-* `<attribute>` (since v5.0.6)
+* `<parameter>` (since v5.0.6)
     * The usage of the element is optional.
     * The element is only interpreted for the processing engines `xslt` and `sch`.
     * The attribute 'name' defines the custom attribute name.
@@ -292,7 +292,7 @@ Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver
         <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
       </xmlcatalog>
       <errorRole role="fatal" />
-      <attribute name="allow-foreign" value="true" />
+      <parameter name="allow-foreign" value="true" />
     </schematron>
   </target>
 ```
