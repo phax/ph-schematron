@@ -30,6 +30,7 @@
   <description>Library for validating XML documents with Schematron</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron</url>
   <inceptionYear>2014</inceptionYear>
+
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,10 +38,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
   </organization>
+
   <developers>
     <developer>
       <id>philip</id>
@@ -49,6 +52,7 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -62,17 +66,12 @@
       <groupId>com.helger</groupId>
       <artifactId>ph-jaxb</artifactId>
     </dependency>
-    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->    <dependency>
+    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
+    <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>Saxon-HE</artifactId>
     </dependency>
-    <!-- 
-    <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-      <version>1.1.6</version>
-    </dependency>
-     -->
+    
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
@@ -84,6 +83,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>
