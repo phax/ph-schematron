@@ -20,16 +20,11 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.bind.annotation.XmlSchema;
-
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.string.StringHelper;
 
 /**
  * SVRL constants.
@@ -56,20 +51,7 @@ public final class CSVRL
   public static final String SVRL_RNC_PATH = "schemas/svrl.rnc";
 
   /** The namespace of the SVRL files. */
-  public static final String SVRL_NAMESPACE_URI;
-
-  static
-  {
-    final XmlSchema aXmlSchema = SchematronOutputType.class.getPackage ().getAnnotation (XmlSchema.class);
-    if (aXmlSchema == null)
-      throw new InitializationException ("SchematronOutputType.class is missing @XmlSchema annotation!");
-
-    SVRL_NAMESPACE_URI = aXmlSchema.namespace ();
-
-    // Small sanity check :)
-    if (StringHelper.hasNoText (SVRL_NAMESPACE_URI))
-      throw new IllegalStateException ("Failed to determine SVRL namespace");
-  }
+  public static final String SVRL_NAMESPACE_URI = "http://purl.oclc.org/dsdl/svrl";
 
   @PresentForCodeCoverage
   private static final CSVRL s_aInstance = new CSVRL ();
