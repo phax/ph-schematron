@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.9 - work in progress
+    * Updated to Saxon-HE 9.9.1-1
 * v5.0.8 - 2018-11-26
     * Fixed an initialization error in the SCH to XSLT maven plugin in JDK 11
 * v5.0.7 - 2018-11-22
