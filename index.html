@@ -109,6 +109,15 @@
 					that can be used to create the XSLT scripts from Schematron files
 					during build time. It is described in more detail below.
 				</p>
+        
+        <p>
+          Since v4.2.0 another Maven plugin for document validation was added as well:
+          ph-schematron-maven-plugin. It can be used to validate arbitrary XML documents
+          with arbitrary Schematron rules using all of the supported ph-schematron engines. 
+          See
+          <a href="https://github.com/phax/ph-schematron#ph-schematron-maven-plugin">https://github.com/phax/ph-schematron#ph-schematron-maven-plugin</a>
+          for details.
+        </p>
 
 				<h2>
 					<a name="validation-via-pure-schematron" class="anchor"
@@ -116,11 +125,15 @@
 						class="octicon octicon-link"></span></a>Validation via Pure Schematron
 				</h2>
 
-				<p>As an alternative to the XSLT-based approach, ph-schematron
+				<p>
+          As an alternative to the XSLT-based approach, ph-schematron
 					provides a pure Java implementation which will be referred to as
 					"Pure Schematron" within this document. With Pure Schematron the
 					same results can be achieved as with the XSLT approach: basic
-					validity checks and SVRL output documents.</p>
+					validity checks and SVRL output documents.
+          The limitation of the pure approach is, that it works only with
+          XPath expressions as test assertions but not with XSLT functions.
+        </p>
 
 				<p>The advantage of Pure Schematron is that you don't need to
 					apply the timely conversion to XSLT before you can start
@@ -149,6 +162,7 @@
 						XSLT script from above, because the XPath compilation is kind of
 						costly, but by far not as costly as the XSLT creation.</li>
 				</ol>
+        
 				<p>Pure Schematron is designed for maximum extensibility,
 					meaning that you can create your own query binding, configure the
 					reading and pre-processing of Schematron objects etc. The drawbacks
@@ -224,7 +238,7 @@
 					dependency for ph-schematron looks like this:</p>
 
 				<pre><code>&lt;dependency&gt;
-  &lt;groupId&gt;com.helger&lthttps://github.com/Schematron/schema/blob/master/svrl.rnc;/groupId&gt;
+  &lt;groupId&gt;com.helger&lt;/groupId&gt;
   &lt;artifactId&gt;ph-schematron&lt;/artifactId&gt;
   &lt;version&gt;5.0.8&lt;/version&gt;
 &lt;/dependency&gt;
