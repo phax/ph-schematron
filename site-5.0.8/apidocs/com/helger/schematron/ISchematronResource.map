@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./ISchematronResource.html" title="com.helger.schematron.ISchematronResource" alt="" coords="159,112,307,155"/>
+<area shape="rect" id="node2_1" href="./AbstractSchematronResource.html" title="com.helger.schematron.AbstractSchematronResource" alt="" coords="16,222,204,247"/>
+<area shape="rect" id="node3_2" href="./xslt/ISchematronXSLTBasedResource.html" title="com.helger.schematron.xslt.ISchematronXSLTBasedResource" alt="" coords="249,213,464,256"/>
+</map>

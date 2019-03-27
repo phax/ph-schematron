@@ -1,0 +1,13 @@
+<map id="G" name="G">
+<area shape="rect" id="node1_0" href="./SCHTransformerCustomizer.html" title="com.helger.schematron.xslt.SCHTransformerCustomizer" alt="" coords="16,19,196,45"/>
+<area shape="rect" id="node2_1" href="./SCHTransformerCustomizer.EStep.html" title="com.helger.schematron.xslt.SCHTransformerCustomizer.EStep" alt="" coords="242,11,346,53"/>
+<area shape="rect" id="node3_2" href="./SchematronResourceXSLTCache.html" title="com.helger.schematron.xslt.SchematronResourceXSLTCache" alt="" coords="392,19,604,45"/>
+<area shape="rect" id="node4_3" href="./SchematronResourceXSLT.html" title="com.helger.schematron.xslt.SchematronResourceXSLT" alt="" coords="560,214,735,239"/>
+<area shape="rect" id="node5_4" href="./SchematronResourceSCHCache.html" title="com.helger.schematron.xslt.SchematronResourceSCHCache" alt="" coords="1034,19,1242,45"/>
+<area shape="rect" id="node6_5" href="./SchematronResourceSCH.html" title="com.helger.schematron.xslt.SchematronResourceSCH" alt="" coords="780,214,952,239"/>
+<area shape="rect" id="node7_6" href="./SchematronProviderXSLTPrebuild.html" title="com.helger.schematron.xslt.SchematronProviderXSLTPrebuild" alt="" coords="1145,118,1357,143"/>
+<area shape="rect" id="node8_7" href="./SchematronProviderXSLTFromSCH.html" title="com.helger.schematron.xslt.SchematronProviderXSLTFromSCH" alt="" coords="1403,118,1625,143"/>
+<area shape="rect" id="node9_8" href="./ISchematronXSLTBasedResource.html" title="com.helger.schematron.xslt.ISchematronXSLTBasedResource" alt="" coords="649,11,864,53"/>
+<area shape="rect" id="node11_9" href="./AbstractSchematronXSLTBasedResource.html" title="com.helger.schematron.xslt.AbstractSchematronXSLTBasedResource" alt="" coords="414,118,1099,143"/>
+<area shape="rect" id="node10_10" href="./ISchematronXSLTBasedProvider.html" title="com.helger.schematron.xslt.ISchematronXSLTBasedProvider" alt="" coords="1350,11,1555,53"/>
+</map>

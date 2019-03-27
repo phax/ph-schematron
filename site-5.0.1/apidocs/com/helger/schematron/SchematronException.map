@@ -1,8 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node1_0" href="./SchematronException.html" title="com.helger.schematron.SchematronException" alt="" coords="370,113,518,138"/>
-<area shape="rect" id="node2_1" href="./pure/binding/SchematronBindException.html" title="com.helger.schematron.pure.binding.SchematronBindException" alt="" coords="16,209,189,234"/>
-<area shape="rect" id="node3_2" href="./pure/exchange/SchematronReadException.html" title="com.helger.schematron.pure.exchange.SchematronReadException" alt="" coords="235,209,413,234"/>
-<area shape="rect" id="node4_3" href="./pure/preprocess/SchematronPreprocessException.html" title="com.helger.schematron.pure.preprocess.SchematronPreprocessException" alt="" coords="459,209,672,234"/>
-<area shape="rect" id="node5_4" href="./pure/validation/SchematronValidationException.html" title="com.helger.schematron.pure.validation.SchematronValidationException" alt="" coords="718,209,922,234"/>
-<area shape="rect" id="node6_5" href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html" title="java.lang.Exception" alt="" coords="405,17,483,42"/>
-</map>
