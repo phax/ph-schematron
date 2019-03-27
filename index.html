@@ -304,15 +304,27 @@
 					<code>com.helger.schematron.svrl.SVRLMarshaller</code>
 					.
         </p>
+        
+        <p>
+          The created <code>SchematronOutputType</code> contains the SVRL that contains
+          the information about the failed assertions and the successful reports.
+          Remember that both failed assertions as well as successful reports lead to
+          an overall failure of validation.
+          The easiest way to extract both information elements is to use the method
+          <code>ICommonsList &lt;AbstractSVRLMessage&gt;
+          SVRLHelper::getAllFailedAssertionsAndSuccessfulReports
+          (@Nullable SchematronOutputType)</code>.
+          The abstract class <code>AbstractSVRLMessage</code> is the base class for 
+          <code>SVRLFailedAssert</code> and <code>SVRLSuccessfulReport</code> and contains
+          the same set of fields.
+        </p>
+        
         <p>  
-          Prior to v5 there were classes called <code>SVRLReader</code>
+          Legacy: Prior to v5 there were classes called <code>SVRLReader</code>
           to read SVRL documents and <code>SVRLWriter</code> to write
           SVRL documents, but they only called <code>SVRLMarshaller</code>
           but didn't offer all the flexibility needed. So they were
           removed in v5. 
-				</p>
-
-				<p>
 					The classes
 					<code>SVRLReader</code>
 					and
