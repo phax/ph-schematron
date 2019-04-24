@@ -14,6 +14,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 * v5.0.9 - work in progress
     * Updated to Saxon-HE 9.9.1-1
     * Updated to ant 1.9.14
+    * The Maven plugin `ph-sch2xslt-maven-plugin` is now deprecated and will be removed in the next major version. The functionality was moved "as-is" to the `ph-schematron-maven-plugin`
 * v5.0.8 - 2018-11-26
     * Fixed an initialization error in the SCH to XSLT maven plugin in JDK 11
 * v5.0.7 - 2018-11-22
@@ -122,14 +123,33 @@ The dependency for ph-schematron looks like this:
 
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
 
-# ph-sch2xslt-maven-plugin
+# Maven plugin to convert Schematron to XSLT at build time
+
+**The Maven plugin `ph-sch2xslt-maven-plugin` is deprecated since v5.0.9 - the goal was integrated into `ph-schematron-maven-plugin`**
 
 Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the converter.
 
 The conversion of Schematron to XSLT is quite costly. That’s why this Maven plugin that does the conversion at build time. 
 
-By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element).
 
+Starting from version 5.0.9:
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-schematron-maven-plugin</artifactId>
+  <version>5.0.9</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>convert</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+Up to and including version 5.0.8:
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
@@ -166,7 +186,7 @@ The possible configuration parameters are:
 </configuration>
 ```
 
-# ph-schematron-maven-plugin
+# Maven plugin to validate XML instances against Schematron rules
 
 Maven plugin to validate XML files against convert Schematron (SCH) at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the validator.
 

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.maven.sch2xslt;
+package com.helger.maven.schematron;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -62,15 +62,12 @@ import com.helger.xml.transform.AbstractTransformErrorListener;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Converts one or more Schematron schema files into XSLT scripts.<br>
- * Deprecated in this plugin since v5.0.9 - use
- * <code>ph-schematron-maven-plugin</code> instead.
+ * Converts one or more Schematron schema files into XSLT scripts.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
 @Mojo (name = "convert", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
-@Deprecated
 public final class Schematron2XSLTMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
@@ -243,9 +240,6 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
-
-    getLog ().warn ("The `ph-sch2xslt-maven-plugin` plugin is deprecated since v5.0.9 and will be removed in v6. Use 'ph-schematron-maven-plugin' instead - it contains the same goal with the same parameters.");
-
     if (m_aSchematronDirectory == null)
       throw new MojoExecutionException ("No Schematron directory specified!");
     if (m_aSchematronDirectory.exists () && !m_aSchematronDirectory.isDirectory ())

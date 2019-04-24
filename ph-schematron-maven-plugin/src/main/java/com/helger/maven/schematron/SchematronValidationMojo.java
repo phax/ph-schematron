@@ -69,7 +69,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Philip Helger
  */
 @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
-@Mojo (name = "validate", defaultPhase = LifecyclePhase.PROCESS_RESOURCES)
+@Mojo (name = "validate", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public final class SchematronValidationMojo extends AbstractMojo
 {
   public final class PluginErrorListener extends AbstractTransformErrorListener
