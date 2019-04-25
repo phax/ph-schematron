@@ -91,12 +91,32 @@ public final class SchematronPreprocessMojo extends AbstractMojo
   private boolean m_bOverwriteWithoutNotice;
 
   /**
-   * Overwrite existing Schematron files without notice? If this is set to
-   * <code>false</code> than <code>&lt;title&gt;</code> elements will be
-   * removed.
+   * If this is set to <code>false</code> than <code>&lt;title&gt;</code>
+   * elements will be removed.
    */
   @Parameter (name = "keepTitles", defaultValue = "false")
   private boolean m_bKeepTitles;
+
+  /**
+   * If this is set to <code>false</code> than <code>&lt;diagnostics&gt;</code>
+   * elements will be removed.
+   */
+  @Parameter (name = "keepDiagnostics", defaultValue = "false")
+  private boolean m_bKeepDiagnostics;
+
+  /**
+   * Should <code>&lt;report&gt;</code> elements be kept or should they be
+   * converted to &lt;assert&gt;-elements?
+   */
+  @Parameter (name = "keepReports", defaultValue = "false")
+  private boolean m_bKeepReports;
+
+  /**
+   * Should <code>&lt;pattern&gt;</code> elements without a single rule be kept
+   * or deleted?
+   */
+  @Parameter (name = "keepEmptyPatterns", defaultValue = "false")
+  private boolean m_bKeepEmptyPatterns;
 
   public void setSourceFile (@Nonnull final File aFile)
   {
@@ -134,6 +154,33 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       getLog ().debug ("Removing <title> elements");
   }
 
+  public void setKeepDiagnostics (final boolean bKeepDiagnostics)
+  {
+    m_bKeepDiagnostics = bKeepDiagnostics;
+    if (bKeepDiagnostics)
+      getLog ().debug ("Keeping <diagnostic> elements");
+    else
+      getLog ().debug ("Removing <diagnostic> elements");
+  }
+
+  public void setKeepReports (final boolean bKeepReports)
+  {
+    m_bKeepReports = bKeepReports;
+    if (bKeepReports)
+      getLog ().debug ("Keeping <report> elements");
+    else
+      getLog ().debug ("Converting <report> to <assert> elements");
+  }
+
+  public void setKeepEmptyPatterns (final boolean bKeepEmptyPatterns)
+  {
+    m_bKeepEmptyPatterns = bKeepEmptyPatterns;
+    if (bKeepEmptyPatterns)
+      getLog ().debug ("Keeping <pattern> elements without rules");
+    else
+      getLog ().debug ("Removing <pattern> elements without rules");
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
@@ -164,10 +211,10 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       final IPSQueryBinding aQueryBinding = PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());
 
       final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
-      aPreprocessor.setKeepReports (true);
-      aPreprocessor.setKeepDiagnostics (true);
       aPreprocessor.setKeepTitles (m_bKeepTitles);
-      aPreprocessor.setKeepEmptyPatterns (false);
+      aPreprocessor.setKeepDiagnostics (m_bKeepDiagnostics);
+      aPreprocessor.setKeepReports (m_bKeepReports);
+      aPreprocessor.setKeepEmptyPatterns (m_bKeepEmptyPatterns);
 
       // Pre-process
       final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
