@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Applies Schematron preprocessing
  *
  * @author Philip Helger
+ * @since 5.0.9
  */
 @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
 @Mojo (name = "preprocess", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
@@ -85,7 +86,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
 
   /**
    * Overwrite existing Schematron files without notice? If this is set to
-   * <code>false</code> than existing XSLT files are not overwritten.
+   * <code>false</code> than existing Schematron files are not overwritten.
    */
   @Parameter (name = "overwriteWithoutNotice", defaultValue = "true")
   private boolean m_bOverwriteWithoutNotice;
@@ -106,7 +107,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
 
   /**
    * Should <code>&lt;report&gt;</code> elements be kept or should they be
-   * converted to &lt;assert&gt;-elements?
+   * converted to <code>&lt;assert&gt;</code> elements?
    */
   @Parameter (name = "keepReports", defaultValue = "false")
   private boolean m_bKeepReports;

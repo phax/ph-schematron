@@ -11,10 +11,11 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.0.9 - work in progress
+* v5.0.9 - 2019-04-25
     * Updated to Saxon-HE 9.9.1-1
     * Updated to ant 1.9.14
     * The Maven plugin `ph-sch2xslt-maven-plugin` is now deprecated and will be removed in the next major version. The functionality was moved "as-is" to the `ph-schematron-maven-plugin`
+    * The Maven plugin `ph-schematron-maven-plugin` got a new goal `preprocess` to create preprocessed Schematrons ([issue #75](https://github.com/phax/ph-schematron/issues/75))
 * v5.0.8 - 2018-11-26
     * Fixed an initialization error in the SCH to XSLT maven plugin in JDK 11
 * v5.0.7 - 2018-11-22
@@ -111,13 +112,14 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 * v2.8.0 - 2014-08-28
 
 ## Usage with Maven
+
 The dependency for ph-schematron looks like this:
 
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.0.8</version>
+  <version>5.0.9</version>
 </dependency>
 ```
 
@@ -198,7 +200,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.8</version>
+  <version>5.0.9</version>
   <executions>
     <execution>
       <goals>
@@ -226,9 +228,42 @@ The possible configuration parameters are:
   * `failFast` (since v5.0.5) - If multiple XML files are validated this parameter defines whether the execution should fail at the first error (value `true`) or at the end only (value `false`). The default value is `true`.
 
 
+# Maven plugin to preprocess Schematron files
+
+Maven plugin to preprocess a Schematron file and write the resulting file to disk.
+
+This plugin was introduced in version 5.0.9.
+
+By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-schematron-maven-plugin</artifactId>
+  <version>5.0.9</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>preprocess</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+The possible configuration parameters are:
+  * `sourceFile` - The source Schematron file to be preprocessed. This parameter is mandatory.
+  * `targetFile` - The target (preprocessed) Schematron file to be written. This parameter is mandatory.
+  * `overwriteWithoutNotice` - Overwrite existing Schematron files without notice? If this is set to `false` than existing Schematron files are not overwritten. The default value is `true`.
+  * `keepTitles` - If this is set to `false` than `<title>` elements will be removed. The default value is `false`.
+  * `keepDiagnostics` - If this is set to `false` than `<diagnostic>` elements will be removed. The default value is `false`.
+  * `keepReports` - Should `<report>` elements be kept or should they be converted to `<assert>` elements? The default value is `false`.
+  * `keepEmptyPatterns` - Should `<pattern>` elements without a single rule be kept or deleted? The default value is `false`.
+
 # ph-schematron-validator
 
-A validator for Schematron definitions based on RelaxNG definition.
+This submodule is a Java library.
+It is a validator for Schematron definitions based on RelaxNG definition.
 
 ## Usage with Maven
 Add the following to your pom.xml to use this artifact:
@@ -237,7 +272,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.0.8</version>
+  <version>5.0.9</version>
 </dependency>
 ```
 
