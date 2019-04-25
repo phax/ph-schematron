@@ -111,7 +111,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    * <code>false</code> than existing XSLT files are not overwritten.
    */
   @Parameter (name = "overwriteWithoutQuestion", defaultValue = "true")
-  private boolean m_bOverwriteWithoutNotice = true;
+  private boolean m_bOverwriteWithoutQuestion = true;
 
   /**
    * Define the phase to be used for XSLT creation. By default the
@@ -164,8 +164,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
   public void setOverwriteWithoutQuestion (final boolean bOverwrite)
   {
-    m_bOverwriteWithoutNotice = bOverwrite;
-    if (m_bOverwriteWithoutNotice)
+    m_bOverwriteWithoutQuestion = bOverwrite;
+    if (m_bOverwriteWithoutQuestion)
       getLog ().debug ("Overwriting XSLT files without notice");
     else
       getLog ().debug ("Ignoring existing Schematron files");
@@ -254,7 +254,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
         final IReadableResource aSchematronResource = new FileSystemResource (aFile);
 
         // 3. Check if the XSLT file already exists
-        if (aXSLTFile.exists () && !m_bOverwriteWithoutNotice)
+        if (aXSLTFile.exists () && !m_bOverwriteWithoutQuestion)
         {
           // 3.1 Not overwriting the existing file
           getLog ().debug ("Skipping XSLT file '" + aXSLTFile.getPath () + "' because it already exists!");
