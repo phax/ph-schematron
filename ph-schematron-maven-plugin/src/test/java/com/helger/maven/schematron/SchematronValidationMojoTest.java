@@ -38,7 +38,7 @@ public final class SchematronValidationMojoTest
   @Test
   public void testCustomParameters () throws Exception
   {
-    final File aPOM = new File ("src/test/resources/poms/test1/pom.xml").getAbsoluteFile ();
+    final File aPOM = new File ("src/test/resources/poms/test-validate1/pom.xml").getAbsoluteFile ();
     assertNotNull (aPOM);
     assertTrue (aPOM.exists ());
     assertTrue (aPOM.isFile ());
@@ -66,7 +66,7 @@ public final class SchematronValidationMojoTest
   @Test
   public void testFailFastDisabled () throws Exception
   {
-    final File aPOM = new File ("src/test/resources/poms/test2/pom.xml").getAbsoluteFile ();
+    final File aPOM = new File ("src/test/resources/poms/test-validate2/pom.xml").getAbsoluteFile ();
     assertNotNull (aPOM);
     assertTrue (aPOM.exists ());
     assertTrue (aPOM.isFile ());
