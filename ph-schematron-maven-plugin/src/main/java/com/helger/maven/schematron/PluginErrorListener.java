@@ -38,8 +38,9 @@ public class PluginErrorListener extends AbstractTransformErrorListener
     m_aSourceFile = aSource;
   }
 
-  @Override
-  protected void internalLog (@Nonnull final IError aResError)
+  public static void logIError (@Nonnull final BuildContext aBuildContext,
+                                @Nonnull final File aSourceFile,
+                                @Nonnull final IError aResError)
   {
     final int nLine = aResError.getErrorLocation ().getLineNumber ();
     final int nColumn = aResError.getErrorLocation ().getColumnNumber ();
@@ -48,11 +49,17 @@ public class PluginErrorListener extends AbstractTransformErrorListener
                                                               aResError.getLinkedExceptionMessage ());
 
     // 0 means undefined line/column
-    m_aBuildContext.addMessage (m_aSourceFile,
-                                nLine <= 0 ? 0 : nLine,
-                                nColumn <= 0 ? 0 : nColumn,
-                                sMessage,
-                                aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
-                                aResError.getLinkedExceptionCause ());
+    aBuildContext.addMessage (aSourceFile,
+                              nLine <= 0 ? 0 : nLine,
+                              nColumn <= 0 ? 0 : nColumn,
+                              sMessage,
+                              aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
+                              aResError.getLinkedExceptionCause ());
+  }
+
+  @Override
+  protected void internalLog (@Nonnull final IError aResError)
+  {
+    logIError (m_aBuildContext, m_aSourceFile, aResError);
   }
 }

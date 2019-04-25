@@ -500,7 +500,6 @@ public final class SchematronValidationMojo extends AbstractMojo
     }
 
     // 1. Parse Schematron file
-    final Locale aDisplayLocale = Locale.US;
     ISchematronResource aSch;
     IErrorList aSCHErrors;
     switch (ESchematronMode.getFromIDOrNull (m_sSchematronProcessingEngine))
@@ -558,14 +557,11 @@ public final class SchematronValidationMojo extends AbstractMojo
       // Error validating the Schematrons!!
       boolean bAnyError = false;
       for (final IError aError : aSCHErrors)
+      {
         if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
-        {
-          getLog ().error ("Error in Schematron: " + aError.getAsString (aDisplayLocale));
           bAnyError = true;
-        }
-        else
-          if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
-            getLog ().warn ("Warning in Schematron: " + aError.getAsString (aDisplayLocale));
+        PluginErrorListener.logIError (buildContext, m_aSchematronFile, aError);
+      }
       if (bAnyError)
         throw new MojoExecutionException ("The provided Schematron file contains errors. See log for details.");
     }
