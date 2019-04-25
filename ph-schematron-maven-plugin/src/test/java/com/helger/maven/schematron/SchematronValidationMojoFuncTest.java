@@ -35,7 +35,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.schematron.ESchematronMode;
 
-public final class MavenPluginSchematronFuncTest
+public final class SchematronValidationMojoFuncTest
 {
   @Rule
   public final EasyMockRule mocks = new EasyMockRule (this);

@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import com.helger.commons.collection.impl.ICommonsMap;
 
+@Deprecated
 public final class Schematron2XSLTMojoTest
 {
   @Rule

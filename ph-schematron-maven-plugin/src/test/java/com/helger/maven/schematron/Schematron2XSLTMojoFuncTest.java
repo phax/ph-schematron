@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.maven.sch2xslt;
+package com.helger.maven.schematron;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -35,8 +35,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 
-@Deprecated
-public final class MavenPluginSchematronFuncTest
+public final class Schematron2XSLTMojoFuncTest
 {
   @Rule
   public final EasyMockRule mocks = new EasyMockRule (this);
