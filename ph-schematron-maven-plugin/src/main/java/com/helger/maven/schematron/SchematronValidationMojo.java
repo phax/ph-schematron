@@ -57,7 +57,6 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
-import com.helger.xml.transform.AbstractTransformErrorListener;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
 
@@ -72,34 +71,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Mojo (name = "validate", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public final class SchematronValidationMojo extends AbstractMojo
 {
-  public final class PluginErrorListener extends AbstractTransformErrorListener
-  {
-    private final File m_aSourceFile;
-
-    public PluginErrorListener (@Nonnull final File aSource)
-    {
-      m_aSourceFile = aSource;
-    }
-
-    @Override
-    protected void internalLog (@Nonnull final IError aResError)
-    {
-      final int nLine = aResError.getErrorLocation ().getLineNumber ();
-      final int nColumn = aResError.getErrorLocation ().getColumnNumber ();
-      final String sMessage = StringHelper.getImplodedNonEmpty (" - ",
-                                                                aResError.getErrorText (Locale.US),
-                                                                aResError.getLinkedExceptionMessage ());
-
-      // 0 means undefined line/column
-      buildContext.addMessage (m_aSourceFile,
-                               nLine <= 0 ? 0 : nLine,
-                               nColumn <= 0 ? 0 : nColumn,
-                               sMessage,
-                               aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
-                               aResError.getLinkedExceptionCause ());
-    }
-  }
-
   /**
    * BuildContext for m2e (it's a pass-though straight to the filesystem when
    * invoked from the Maven cli)

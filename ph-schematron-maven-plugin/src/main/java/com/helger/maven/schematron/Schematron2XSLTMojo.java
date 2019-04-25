@@ -18,7 +18,6 @@ package com.helger.maven.schematron;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -43,7 +42,6 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.error.IError;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -57,7 +55,6 @@ import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-import com.helger.xml.transform.AbstractTransformErrorListener;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -70,34 +67,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Mojo (name = "convert", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class Schematron2XSLTMojo extends AbstractMojo
 {
-  public final class PluginErrorListener extends AbstractTransformErrorListener
-  {
-    private final File m_aSourceFile;
-
-    public PluginErrorListener (@Nonnull final File aSource)
-    {
-      m_aSourceFile = aSource;
-    }
-
-    @Override
-    protected void internalLog (@Nonnull final IError aResError)
-    {
-      final int nLine = aResError.getErrorLocation ().getLineNumber ();
-      final int nColumn = aResError.getErrorLocation ().getColumnNumber ();
-      final String sMessage = StringHelper.getImplodedNonEmpty (" - ",
-                                                                aResError.getErrorText (Locale.US),
-                                                                aResError.getLinkedExceptionMessage ());
-
-      // 0 means undefined line/column
-      buildContext.addMessage (m_aSourceFile,
-                               nLine <= 0 ? 0 : nLine,
-                               nColumn <= 0 ? 0 : nColumn,
-                               sMessage,
-                               aResError.isError () ? BuildContext.SEVERITY_ERROR : BuildContext.SEVERITY_WARNING,
-                               aResError.getLinkedExceptionCause ());
-    }
-  }
-
   /**
    * BuildContext for m2e (it's a pass-though straight to the filesystem when
    * invoked from the Maven cli)
@@ -313,7 +282,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
           {
             buildContext.removeMessages (aFile);
             // Custom error listener to log to the Mojo logger
-            final ErrorListener aMojoErrorListener = new PluginErrorListener (aFile);
+            final ErrorListener aMojoErrorListener = new PluginErrorListener (buildContext, aFile);
 
             // Custom error listener
             // No custom URI resolver
