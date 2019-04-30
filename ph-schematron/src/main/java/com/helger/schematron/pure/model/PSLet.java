@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
@@ -147,5 +148,15 @@ public class PSLet implements IPSClonableElement <PSLet>
     return new ToStringGenerator (this).appendIfNotNull ("name", m_sName)
                                        .appendIfNotNull ("value", m_sValue)
                                        .getToString ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public static PSLet create (@Nullable final String sName, @Nullable final String sValue)
+  {
+    final PSLet ret = new PSLet ();
+    ret.setName (sName);
+    ret.setValue (sValue);
+    return ret;
   }
 }
