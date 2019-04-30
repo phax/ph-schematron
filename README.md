@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.10 - work in progress
+    * Improved handling of XML elements from other namespaces ([issue #51](https://github.com/phax/ph-schematron/issues/51))
 * v5.0.9 - 2019-04-25
     * Updated to Saxon-HE 9.9.1-1
     * Updated to ant 1.9.14

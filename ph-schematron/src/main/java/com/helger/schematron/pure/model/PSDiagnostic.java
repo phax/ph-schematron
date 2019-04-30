@@ -64,7 +64,6 @@ public class PSDiagnostic implements
   private PSRichGroup m_aRich;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSDiagnostic ()
   {}
@@ -102,21 +101,19 @@ public class PSDiagnostic implements
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -250,14 +247,14 @@ public class PSDiagnostic implements
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
     for (final Object aContent : m_aContent)
-      if (aContent instanceof String)
-        ret.appendText ((String) aContent);
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
       else
-        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+        if (aContent instanceof String)
+          ret.appendText ((String) aContent);
+        else
+          ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -272,25 +269,26 @@ public class PSDiagnostic implements
     ret.setRich (getRichClone ());
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof String)
-        ret.addText ((String) aContent);
+      if (aContent instanceof IMicroElement)
+        ret.addForeignElement (((IMicroElement) aContent).getClone ());
       else
-        if (aContent instanceof PSValueOf)
-          ret.addValueOf (((PSValueOf) aContent).getClone ());
+        if (aContent instanceof String)
+          ret.addText ((String) aContent);
         else
-          if (aContent instanceof PSEmph)
-            ret.addEmph (((PSEmph) aContent).getClone ());
+          if (aContent instanceof PSValueOf)
+            ret.addValueOf (((PSValueOf) aContent).getClone ());
           else
-            if (aContent instanceof PSDir)
-              ret.addDir (((PSDir) aContent).getClone ());
+            if (aContent instanceof PSEmph)
+              ret.addEmph (((PSEmph) aContent).getClone ());
             else
-              if (aContent instanceof PSSpan)
-                ret.addSpan (((PSSpan) aContent).getClone ());
+              if (aContent instanceof PSDir)
+                ret.addDir (((PSDir) aContent).getClone ());
               else
-                throw new IllegalStateException ("Unexpected content element: " + aContent);
+                if (aContent instanceof PSSpan)
+                  ret.addSpan (((PSSpan) aContent).getClone ());
+                else
+                  throw new IllegalStateException ("Unexpected content element: " + aContent);
     }
-    if (hasForeignElements ())
-      ret.addForeignElements (m_aForeignElements);
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);
     return ret;
@@ -303,7 +301,6 @@ public class PSDiagnostic implements
                                        .appendIfNotNull ("rich", m_aRich)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

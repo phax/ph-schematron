@@ -50,9 +50,8 @@ import com.helger.xml.microdom.MicroElement;
 public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, IPSHasForeignElements, IPSHasTexts
 {
   private String m_sClass;
-  private final ICommonsList <String> m_aContent = new CommonsArrayList <> ();
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSSpan ()
   {}
@@ -90,21 +89,19 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -154,7 +151,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
-    return m_aContent.getClone ();
+    return m_aContent.getAllInstanceOf (String.class);
   }
 
   @Nullable
@@ -168,11 +165,11 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_SPAN);
     ret.setAttribute (CSchematronXML.ATTR_CLASS, m_sClass);
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
-    for (final String sContent : m_aContent)
-      ret.appendText (sContent);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
+      else
+        ret.appendText ((String) aContent);
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -184,10 +181,11 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   {
     final PSSpan ret = new PSSpan ();
     ret.setClazz (m_sClass);
-    for (final String sContent : m_aContent)
-      ret.addText (sContent);
-    if (hasForeignElements ())
-      ret.addForeignElements (m_aForeignElements);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.addForeignElement (((IMicroElement) aContent).getClone ());
+      else
+        ret.addText ((String) aContent);
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);
     return ret;
@@ -199,7 +197,6 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return new ToStringGenerator (this).appendIfNotNull ("class", m_sClass)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

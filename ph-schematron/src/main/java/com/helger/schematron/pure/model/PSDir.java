@@ -52,6 +52,11 @@ import com.helger.xml.microdom.MicroElement;
 @NotThreadSafe
 public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IPSHasForeignElements, IPSHasTexts
 {
+  /**
+   * Direction enumeration
+   *
+   * @author Philip Helger
+   */
   public static enum EDirValue implements IHasID <String>
   {
     LTR ("ltr"),
@@ -79,9 +84,8 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
   }
 
   private EDirValue m_eValue;
-  private final ICommonsList <String> m_aContent = new CommonsArrayList <> ();
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSDir ()
   {}
@@ -112,21 +116,19 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -169,14 +171,14 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
 
   public boolean hasAnyText ()
   {
-    return m_aContent.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof String);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
-    return m_aContent.getClone ();
+    return m_aContent.getAllInstanceOf (String.class);
   }
 
   @Nullable
@@ -191,11 +193,11 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_DIR);
     if (m_eValue != null)
       ret.setAttribute (CSchematronXML.ATTR_VALUE, m_eValue.getID ());
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
-    for (final String sContent : m_aContent)
-      ret.appendText (sContent);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
+      else
+        ret.appendText ((String) aContent);
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -207,10 +209,11 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
   {
     final PSDir ret = new PSDir ();
     ret.setValue (m_eValue);
-    for (final String sContent : m_aContent)
-      ret.addText (sContent);
-    if (hasForeignElements ())
-      ret.addForeignElements (m_aForeignElements);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.addForeignElement (((IMicroElement) aContent).getClone ());
+      else
+        ret.addText ((String) aContent);
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);
     return ret;
@@ -222,7 +225,6 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     return new ToStringGenerator (this).appendIfNotNull ("value", m_eValue)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

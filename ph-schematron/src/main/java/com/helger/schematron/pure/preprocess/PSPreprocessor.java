@@ -228,52 +228,6 @@ public class PSPreprocessor
     return ret;
   }
 
-  /**
-   * Resolve all &lt;extends&gt; elements. This method calls itself recursively
-   * until all extends elements are resolved.
-   *
-   * @param aRuleContent
-   *        A list consisting of {@link PSAssertReport} and {@link PSExtends}
-   *        objects. Never <code>null</code>.
-   * @param aLookup
-   *        The rule lookup object
-   * @throws SchematronPreprocessException
-   *         If the base rule of an extends object could not be resolved.
-   */
-  private void _resolveRuleContent (@Nonnull final ICommonsList <IPSElement> aRuleContent,
-                                    @Nonnull final PreprocessorLookup aLookup,
-                                    @Nonnull final PreprocessorIDPool aIDPool,
-                                    @Nullable final ICommonsMap <String, String> aParamValueMap,
-                                    @Nonnull final PSRule aTargetRule) throws SchematronPreprocessException
-  {
-    for (final IPSElement aElement : aRuleContent)
-    {
-      if (aElement instanceof PSAssertReport)
-      {
-        final PSAssertReport aAssertReport = (PSAssertReport) aElement;
-        aTargetRule.addAssertReport (_getPreprocessedAssert (aAssertReport, aIDPool, aParamValueMap));
-      }
-      else
-      {
-        final PSExtends aExtends = (PSExtends) aElement;
-        final String sRuleID = aExtends.getRule ();
-        final PSRule aBaseRule = aLookup.getAbstractRuleOfID (sRuleID);
-        if (aBaseRule == null)
-          throw new SchematronPreprocessException ("Failed to resolve rule ID '" +
-                                                   sRuleID +
-                                                   "' in extends statement. Available rules are: " +
-                                                   aLookup.getAllAbstractRuleIDs ());
-
-        // Recursively resolve the extends of the base rule
-        _resolveRuleContent (aBaseRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, aTargetRule);
-
-        // Copy all lets
-        for (final PSLet aBaseLet : aBaseRule.getAllLets ())
-          aTargetRule.addLet (aBaseLet.getClone ());
-      }
-    }
-  }
-
   @Nonnull
   private PSAssertReport _getPreprocessedAssert (@Nonnull final PSAssertReport aAssertReport,
                                                  @Nonnull final PreprocessorIDPool aIDPool,
@@ -322,6 +276,52 @@ public class PSPreprocessor
     ret.addForeignElements (aAssertReport.getAllForeignElements ());
     ret.addForeignAttributes (aAssertReport.getAllForeignAttributes ());
     return ret;
+  }
+
+  /**
+   * Resolve all &lt;extends&gt; elements. This method calls itself recursively
+   * until all extends elements are resolved.
+   *
+   * @param aRuleContent
+   *        A list consisting of {@link PSAssertReport} and {@link PSExtends}
+   *        objects. Never <code>null</code>.
+   * @param aLookup
+   *        The rule lookup object
+   * @throws SchematronPreprocessException
+   *         If the base rule of an extends object could not be resolved.
+   */
+  private void _resolveRuleContent (@Nonnull final ICommonsList <IPSElement> aRuleContent,
+                                    @Nonnull final PreprocessorLookup aLookup,
+                                    @Nonnull final PreprocessorIDPool aIDPool,
+                                    @Nullable final ICommonsMap <String, String> aParamValueMap,
+                                    @Nonnull final PSRule aTargetRule) throws SchematronPreprocessException
+  {
+    for (final IPSElement aElement : aRuleContent)
+    {
+      if (aElement instanceof PSAssertReport)
+      {
+        final PSAssertReport aAssertReport = (PSAssertReport) aElement;
+        aTargetRule.addAssertReport (_getPreprocessedAssert (aAssertReport, aIDPool, aParamValueMap));
+      }
+      else
+      {
+        final PSExtends aExtends = (PSExtends) aElement;
+        final String sRuleID = aExtends.getRule ();
+        final PSRule aBaseRule = aLookup.getAbstractRuleOfID (sRuleID);
+        if (aBaseRule == null)
+          throw new SchematronPreprocessException ("Failed to resolve rule ID '" +
+                                                   sRuleID +
+                                                   "' in extends statement. Available rules are: " +
+                                                   aLookup.getAllAbstractRuleIDs ());
+
+        // Recursively resolve the extends of the base rule
+        _resolveRuleContent (aBaseRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, aTargetRule);
+
+        // Copy all lets
+        for (final PSLet aBaseLet : aBaseRule.getAllLets ())
+          aTargetRule.addLet (aBaseLet.getClone ());
+      }
+    }
   }
 
   @Nullable
@@ -400,7 +400,7 @@ public class PSPreprocessor
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
-        // params must have be resolved
+        // params must have been resolved
         // ps are ignored
       }
     }
@@ -417,7 +417,7 @@ public class PSPreprocessor
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
-        // params must be resolved
+        // params must beben resolved
         // ps are ignored
       }
     }

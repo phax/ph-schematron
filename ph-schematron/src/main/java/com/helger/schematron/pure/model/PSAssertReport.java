@@ -78,7 +78,6 @@ public class PSAssertReport implements
   private PSLinkableGroup m_aLinkable;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSAssertReport (final boolean bIsAssert)
   {
@@ -124,21 +123,19 @@ public class PSAssertReport implements
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -374,14 +371,14 @@ public class PSAssertReport implements
       m_aRich.fillMicroElement (ret);
     if (m_aLinkable != null)
       m_aLinkable.fillMicroElement (ret);
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
     for (final Object aContent : m_aContent)
-      if (aContent instanceof String)
-        ret.appendText ((String) aContent);
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
       else
-        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+        if (aContent instanceof String)
+          ret.appendText ((String) aContent);
+        else
+          ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -400,7 +397,6 @@ public class PSAssertReport implements
                                        .appendIfNotNull ("linkable", m_aLinkable)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

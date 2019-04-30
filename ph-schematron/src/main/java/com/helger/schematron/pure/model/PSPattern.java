@@ -158,11 +158,8 @@ public class PSPattern implements
   private String m_sID;
   private String m_sIsA;
   private PSRichGroup m_aRich;
-  private final ICommonsList <PSInclude> m_aIncludes = new CommonsArrayList <> ();
-  private PSTitle m_aTitle;
-  private final ICommonsList <IPSElement> m_aContent = new CommonsArrayList <> ();
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSPattern ()
   {}
@@ -184,7 +181,7 @@ public class PSPattern implements
     if (StringHelper.hasNoText (m_sIsA))
     {
       // param only if is-a is set
-      for (final IPSElement aContent : m_aContent)
+      for (final Object aContent : m_aContent)
         if (aContent instanceof PSParam)
         {
           aErrorHandler.error (this, "<pattern> without 'is-a' may not contain <param>s");
@@ -194,7 +191,7 @@ public class PSPattern implements
     else
     {
       // rule and let only if is-a is not set
-      for (final IPSElement aContent : m_aContent)
+      for (final Object aContent : m_aContent)
       {
         if (aContent instanceof PSRule)
         {
@@ -209,14 +206,10 @@ public class PSPattern implements
       }
     }
 
-    for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aErrorHandler))
-        return false;
-    if (m_aTitle != null && !m_aTitle.isValid (aErrorHandler))
-      return false;
-    for (final IPSElement aContent : m_aContent)
-      if (!aContent.isValid (aErrorHandler))
-        return false;
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        if (!((IPSElement) aContent).isValid (aErrorHandler))
+          return false;
     return true;
   }
 
@@ -231,14 +224,14 @@ public class PSPattern implements
     if (StringHelper.hasNoText (m_sIsA))
     {
       // param only if is-a is set
-      for (final IPSElement aContent : m_aContent)
+      for (final Object aContent : m_aContent)
         if (aContent instanceof PSParam)
           aErrorHandler.error (this, "<pattern> without 'is-a' may not contain <param>s");
     }
     else
     {
       // rule and let only if is-a is not set
-      for (final IPSElement aContent : m_aContent)
+      for (final Object aContent : m_aContent)
       {
         if (aContent instanceof PSRule)
           aErrorHandler.error (this, "<pattern> with 'is-a' may not contain <rule>s");
@@ -247,12 +240,9 @@ public class PSPattern implements
       }
     }
 
-    for (final PSInclude aInclude : m_aIncludes)
-      aInclude.validateCompletely (aErrorHandler);
-    if (m_aTitle != null)
-      m_aTitle.validateCompletely (aErrorHandler);
-    for (final IPSElement aContent : m_aContent)
-      aContent.validateCompletely (aErrorHandler);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -261,14 +251,10 @@ public class PSPattern implements
       return false;
     if (StringHelper.hasText (m_sIsA))
       return false;
-    for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isMinimal ())
-        return false;
-    if (m_aTitle != null && !m_aTitle.isMinimal ())
-      return false;
-    for (final IPSElement aContent : m_aContent)
-      if (!aContent.isMinimal ())
-        return false;
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        if (!((IPSElement) aContent).isMinimal ())
+          return false;
     return true;
   }
 
@@ -277,21 +263,19 @@ public class PSPattern implements
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -361,35 +345,54 @@ public class PSPattern implements
   public void addInclude (@Nonnull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
-    m_aIncludes.add (aInclude);
+    m_aContent.add (aInclude);
   }
 
   public boolean hasAnyInclude ()
   {
-    return m_aIncludes.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof PSInclude);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
-    return m_aIncludes.getClone ();
+    return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
   public void setTitle (@Nullable final PSTitle aTitle)
   {
-    m_aTitle = aTitle;
+    // Remove existing
+    m_aContent.removeIf (x -> x instanceof PSTitle);
+
+    if (aTitle != null)
+    {
+      // Add new title after last include (if any)
+      int nLastInclude = -1;
+      int nIndex = 0;
+      for (final Object aContent : m_aContent)
+      {
+        if (aContent instanceof PSInclude)
+          nLastInclude = nIndex;
+        nIndex++;
+      }
+
+      if (nLastInclude < 0)
+        m_aContent.add (0, aTitle);
+      else
+        m_aContent.add (nLastInclude + 1, aTitle);
+    }
   }
 
   @Nullable
   public PSTitle getTitle ()
   {
-    return m_aTitle;
+    return m_aContent.findFirstMapped (x -> x instanceof PSTitle, x -> (PSTitle) x);
   }
 
   public boolean hasTitle ()
   {
-    return m_aTitle != null;
+    return m_aContent.containsAny (x -> x instanceof PSTitle);
   }
 
   public void addRule (@Nonnull final PSRule aRule)
@@ -402,10 +405,10 @@ public class PSPattern implements
   public PSRule getRuleOfID (@Nullable final String sID)
   {
     if (StringHelper.hasText (sID))
-      for (final IPSElement aElement : m_aContent)
-        if (aElement instanceof PSRule)
+      for (final Object aContent : m_aContent)
+        if (aContent instanceof PSRule)
         {
-          final PSRule aRule = (PSRule) aElement;
+          final PSRule aRule = (PSRule) aContent;
           if (sID.equals (aRule.getID ()))
             return aRule;
         }
@@ -479,10 +482,10 @@ public class PSPattern implements
   public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
     final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
-    for (final IPSElement aElement : m_aContent)
-      if (aElement instanceof PSLet)
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof PSLet)
       {
-        final PSLet aLet = (PSLet) aElement;
+        final PSLet aLet = (PSLet) aContent;
         ret.put (aLet.getName (), aLet.getValue ());
       }
     return ret;
@@ -496,7 +499,11 @@ public class PSPattern implements
   @ReturnsMutableCopy
   public ICommonsList <IPSElement> getAllContentElements ()
   {
-    return m_aContent.getClone ();
+    // Remove includes and title
+    return m_aContent.getAllMapped (x -> x instanceof IPSElement &&
+                                         !(x instanceof PSInclude) &&
+                                         !(x instanceof PSTitle),
+                                    x -> (IPSElement) x);
   }
 
   @Nonnull
@@ -509,15 +516,11 @@ public class PSPattern implements
     ret.setAttribute (CSchematronXML.ATTR_IS_A, m_sIsA);
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
-    for (final PSInclude aInclude : m_aIncludes)
-      ret.appendChild (aInclude.getAsMicroElement ());
-    if (m_aTitle != null)
-      ret.appendChild (m_aTitle.getAsMicroElement ());
-    for (final IPSElement aContent : m_aContent)
-      ret.appendChild (aContent.getAsMicroElement ());
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
+      else
+        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -531,11 +534,8 @@ public class PSPattern implements
                                        .appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("is-a", m_sIsA)
                                        .appendIfNotNull ("rich", m_aRich)
-                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
-                                       .appendIfNotNull ("title", m_aTitle)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

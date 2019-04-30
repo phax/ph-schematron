@@ -23,10 +23,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
@@ -34,10 +37,13 @@ import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
+import com.helger.schematron.pure.exchange.PSWriter;
+import com.helger.schematron.pure.exchange.PSWriterSettings;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.serialize.MicroWriter;
+import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
@@ -47,6 +53,8 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  */
 public final class PSPreprocessorTest
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSPreprocessorTest.class);
+
   @Test
   public void testBasic () throws Exception
   {
@@ -100,5 +108,25 @@ public final class PSPreprocessorTest
     assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
     // Because titles are not in minimal mode
     assertFalse (aPreprocessedSchema.isMinimal ());
+  }
+
+  @Test
+  public void testIssue51 () throws SchematronException
+  {
+    final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ()).setKeepTitles (true)
+                                                                                                .setKeepDiagnostics (true);
+    final IReadableResource aRes = new FileSystemResource ("src/test/resources/issues/github51/test51.sch");
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes);
+    final PSReader aReader = new PSReader (aRes);
+    final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
+    final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
+    assertNotNull (aPreprocessedSchema);
+    assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
+
+    final PSWriterSettings aPWS = new PSWriterSettings ();
+    aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
+                                                       .setPutNamespaceContextPrefixesInRoot (true)
+                                                       .setNamespaceContext (PSWriterSettings.createNamespaceMapping (aPreprocessedSchema)));
+    LOGGER.info ("Preprocessed:\n" + new PSWriter (aPWS).getXMLString (aPreprocessedSchema));
   }
 }

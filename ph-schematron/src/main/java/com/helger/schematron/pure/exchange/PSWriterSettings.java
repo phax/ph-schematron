@@ -22,6 +22,10 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.CSchematron;
+import com.helger.schematron.pure.model.PSNS;
+import com.helger.schematron.pure.model.PSSchema;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.IXMLWriterSettings;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -64,6 +68,26 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
   public XMLWriterSettings getXMLWriterSettings ()
   {
     return new XMLWriterSettings (m_aXMLWriterSettings);
+  }
+
+  /**
+   * Helper method to extract the namespace mapping from the provided
+   * Schematron.
+   *
+   * @param aSchema
+   *        The schema to extract the namespace context from. May not be
+   *        <code>null</code>.
+   * @return A non-<code>null</code> but maybe empty namespace context
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public static MapBasedNamespaceContext createNamespaceMapping (@Nonnull final PSSchema aSchema)
+  {
+    final MapBasedNamespaceContext ret = new MapBasedNamespaceContext ();
+    ret.addDefaultNamespaceURI (CSchematron.NAMESPACE_SCHEMATRON);
+    for (final PSNS aItem : aSchema.getAllNSs ())
+      ret.addMapping (aItem.getPrefix (), aItem.getUri ());
+    return ret;
   }
 
   @Nonnull

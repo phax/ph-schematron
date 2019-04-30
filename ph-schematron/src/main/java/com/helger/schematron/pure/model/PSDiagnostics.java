@@ -47,31 +47,26 @@ import com.helger.xml.microdom.MicroElement;
 @NotThreadSafe
 public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasForeignElements, IPSHasIncludes
 {
-  private final ICommonsList <PSInclude> m_aIncludes = new CommonsArrayList <> ();
-  private final ICommonsList <PSDiagnostic> m_aDiagnostics = new CommonsArrayList <> ();
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSDiagnostics ()
   {}
 
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aErrorHandler))
-        return false;
-    for (final PSDiagnostic aDiagnostic : m_aDiagnostics)
-      if (!aDiagnostic.isValid (aErrorHandler))
-        return false;
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        if (!((IPSElement) aContent).isValid (aErrorHandler))
+          return false;
     return true;
   }
 
   public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    for (final PSInclude aInclude : m_aIncludes)
-      aInclude.validateCompletely (aErrorHandler);
-    for (final PSDiagnostic aDiagnostic : m_aDiagnostics)
-      aDiagnostic.validateCompletely (aErrorHandler);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -84,21 +79,19 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -125,34 +118,38 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   public void addInclude (@Nonnull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
-    m_aIncludes.add (aInclude);
+    m_aContent.add (aInclude);
   }
 
   public boolean hasAnyInclude ()
   {
-    return m_aIncludes.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof PSInclude);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
-    return m_aIncludes.getClone ();
+    return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
   public void addDiagnostic (@Nonnull final PSDiagnostic aDiagnostic)
   {
     ValueEnforcer.notNull (aDiagnostic, "Diagnostic");
-    m_aDiagnostics.add (aDiagnostic);
+    m_aContent.add (aDiagnostic);
   }
 
   @Nullable
   public PSDiagnostic getDiagnosticOfID (@Nullable final String sID)
   {
     if (StringHelper.hasText (sID))
-      for (final PSDiagnostic aDiagnostic : m_aDiagnostics)
-        if (sID.equals (aDiagnostic.getID ()))
-          return aDiagnostic;
+      for (final Object aContent : m_aContent)
+        if (aContent instanceof PSDiagnostic)
+        {
+          final PSDiagnostic aDiagnostic = (PSDiagnostic) aContent;
+          if (sID.equals (aDiagnostic.getID ()))
+            return aDiagnostic;
+        }
     return null;
   }
 
@@ -160,20 +157,18 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   @ReturnsMutableCopy
   public ICommonsList <PSDiagnostic> getAllDiagnostics ()
   {
-    return m_aDiagnostics.getClone ();
+    return m_aContent.getAllInstanceOf (PSDiagnostic.class);
   }
 
   @Nonnull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_DIAGNOSTICS);
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
-    for (final PSInclude aInclude : m_aIncludes)
-      ret.appendChild (aInclude.getAsMicroElement ());
-    for (final PSDiagnostic aDiagnostic : m_aDiagnostics)
-      ret.appendChild (aDiagnostic.getAsMicroElement ());
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
+      else
+        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -183,10 +178,8 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
-                                       .appendIf ("diagnostics", m_aDiagnostics, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

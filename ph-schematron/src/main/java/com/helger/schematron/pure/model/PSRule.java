@@ -78,11 +78,8 @@ public class PSRule implements
   private boolean m_bAbstract = DEFAULT_ABSTRACT;
   private String m_sContext;
   private String m_sID;
-  private final ICommonsList <PSInclude> m_aIncludes = new CommonsArrayList <> ();
-  private final ICommonsList <PSLet> m_aLets = new CommonsArrayList <> ();
-  private final ICommonsList <IPSElement> m_aContent = new CommonsArrayList <> ();
+  private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
-  private ICommonsList <IMicroElement> m_aForeignElements;
 
   public PSRule ()
   {}
@@ -113,15 +110,10 @@ public class PSRule implements
       aErrorHandler.error (this, "<rule> has no content");
       return false;
     }
-    for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isValid (aErrorHandler))
-        return false;
-    for (final PSLet aLet : m_aLets)
-      if (!aLet.isValid (aErrorHandler))
-        return false;
-    for (final IPSElement aContent : m_aContent)
-      if (!aContent.isValid (aErrorHandler))
-        return false;
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        if (!((IPSElement) aContent).isValid (aErrorHandler))
+          return false;
     return true;
   }
 
@@ -139,25 +131,17 @@ public class PSRule implements
     // At least one assert, report or extends must be present
     if (m_aContent.isEmpty ())
       aErrorHandler.error (this, "<rule> has no content");
-    for (final PSInclude aInclude : m_aIncludes)
-      aInclude.validateCompletely (aErrorHandler);
-    for (final PSLet aLet : m_aLets)
-      aLet.validateCompletely (aErrorHandler);
-    for (final IPSElement aContent : m_aContent)
-      aContent.validateCompletely (aErrorHandler);
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        ((IPSElement) aContent).validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
   {
-    for (final PSInclude aInclude : m_aIncludes)
-      if (!aInclude.isMinimal ())
-        return false;
-    for (final PSLet aLet : m_aLets)
-      if (!aLet.isMinimal ())
-        return false;
-    for (final IPSElement aContent : m_aContent)
-      if (!aContent.isMinimal ())
-        return false;
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IPSElement)
+        if (!((IPSElement) aContent).isMinimal ())
+          return false;
     return true;
   }
 
@@ -166,21 +150,19 @@ public class PSRule implements
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
       throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    if (m_aForeignElements == null)
-      m_aForeignElements = new CommonsArrayList <> ();
-    m_aForeignElements.add (aForeignElement);
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignElements ()
   {
-    return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof IMicroElement);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
-    return new CommonsArrayList <> (m_aForeignElements);
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -280,37 +262,37 @@ public class PSRule implements
   public void addInclude (@Nonnull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
-    m_aIncludes.add (aInclude);
+    m_aContent.add (aInclude);
   }
 
   public boolean hasAnyInclude ()
   {
-    return m_aIncludes.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof PSInclude);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
-    return m_aIncludes.getClone ();
+    return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
   public void addLet (@Nonnull final PSLet aLet)
   {
     ValueEnforcer.notNull (aLet, "Let");
-    m_aLets.add (aLet);
+    m_aContent.add (aLet);
   }
 
   public boolean hasAnyLet ()
   {
-    return m_aLets.isNotEmpty ();
+    return m_aContent.containsAny (x -> x instanceof PSLet);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <PSLet> getAllLets ()
   {
-    return m_aLets.getClone ();
+    return m_aContent.getAllInstanceOf (PSLet.class);
   }
 
   @Nonnull
@@ -318,8 +300,12 @@ public class PSRule implements
   public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
     final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
-    for (final PSLet aLet : m_aLets)
-      ret.put (aLet.getName (), aLet.getValue ());
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof PSLet)
+      {
+        final PSLet aLet = (PSLet) aContent;
+        ret.put (aLet.getName (), aLet.getValue ());
+      }
     return ret;
   }
 
@@ -368,7 +354,9 @@ public class PSRule implements
   @ReturnsMutableCopy
   public ICommonsList <IPSElement> getAllContentElements ()
   {
-    return m_aContent.getClone ();
+    // All except include and let
+    return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude) && !(x instanceof PSLet),
+                                    x -> (IPSElement) x);
   }
 
   @Nonnull
@@ -384,15 +372,11 @@ public class PSRule implements
       m_aRich.fillMicroElement (ret);
     if (m_aLinkable != null)
       m_aLinkable.fillMicroElement (ret);
-    if (m_aForeignElements != null)
-      for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
-    for (final PSInclude aInclude : m_aIncludes)
-      ret.appendChild (aInclude.getAsMicroElement ());
-    for (final PSLet aLet : m_aLets)
-      ret.appendChild (aLet.getAsMicroElement ());
-    for (final IPSElement aContent : m_aContent)
-      ret.appendChild (aContent.getAsMicroElement ());
+    for (final Object aContent : m_aContent)
+      if (aContent instanceof IMicroElement)
+        ret.appendChild (((IMicroElement) aContent).getClone ());
+      else
+        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -408,11 +392,8 @@ public class PSRule implements
                                        .append ("abstract", m_bAbstract)
                                        .appendIfNotNull ("context", m_sContext)
                                        .appendIfNotNull ("id", m_sID)
-                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
-                                       .appendIf ("lets", m_aLets, CollectionHelper::isNotEmpty)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }
