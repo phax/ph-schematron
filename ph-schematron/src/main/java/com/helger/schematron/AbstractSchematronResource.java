@@ -127,6 +127,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   protected DOMReaderSettings internalCreateDOMReaderSettings ()
   {
     final DOMReaderSettings aDRS = new DOMReaderSettings ();
+    aDRS.setFeatureValues (EXMLParserFeature.AVOID_XML_ATTACKS);
     if (m_aEntityResolver != null)
       aDRS.setEntityResolver (m_aEntityResolver);
     if (false)
