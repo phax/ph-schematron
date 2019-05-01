@@ -93,7 +93,7 @@ public final class SchematronResourceHelper
       if (aIS != null)
       {
         // Byte stream
-        final Document aDoc = DOMReader.readXMLDOM (aIS, aDRS != null ? aDRS : new DOMReaderSettings ());
+        final Document aDoc = DOMReader.readXMLDOM (aIS, aDRS);
         if (aDoc == null)
           throw new IllegalArgumentException ("Failed to read source " + aSource + " as XML from InputStream " + aIS);
         return aDoc;
