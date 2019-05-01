@@ -37,6 +37,7 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
 import com.helger.schematron.pure.exchange.PSReader;
+import com.helger.schematron.pure.model.PSNS;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
@@ -230,6 +231,11 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       aNSCtx.addDefaultNamespaceURI (CSchematron.NAMESPACE_SCHEMATRON);
       aNSCtx.addMapping ("xsl", "http://www.w3.org/1999/XSL/Transform");
       aNSCtx.addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
+
+      // Add all <ns> elements from schema as NS context
+      for (final PSNS aItem : aSchema.getAllNSs ())
+        aNSCtx.setMapping (aItem.getPrefix (), aItem.getUri ());
+
       final IXMLWriterSettings XWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
                                                              .setNamespaceContext (aNSCtx);
       if (MicroWriter.writeToFile (aPreprocessedSchema.getAsMicroElement (), m_aTargetFile, XWS).isSuccess ())
