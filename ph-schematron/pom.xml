@@ -160,7 +160,7 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
           <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-jaxb22-plugin</artifactId>
-            <version>2.3.1.4</version>
+            <version>2.3.1.5</version>
           </dependency>
         </dependencies>
       </plugin>
