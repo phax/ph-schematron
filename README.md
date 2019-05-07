@@ -11,10 +11,11 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.0.10 - work in progress
+* v5.0.10 - 2019-05-07
     * Improved handling of XML elements from other namespaces ([issue #51](https://github.com/phax/ph-schematron/issues/51))
     * The Maven preprocess goal now uses the `<ns>` elements from the Schematron as XML namespace context
     * The ANT task is now build against 1.10.x but is source compatible with ANT 1.9.x
+    * Added Java 12 support for Maven plugins
 * v5.0.9 - 2019-04-25
     * Updated to Saxon-HE 9.9.1-1
     * Updated to ant 1.9.14
@@ -123,7 +124,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.0.9</version>
+  <version>5.0.10</version>
 </dependency>
 ```
 
@@ -144,7 +145,7 @@ Starting from version 5.0.9:
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.9</version>
+  <version>5.0.10</version>
   <executions>
     <execution>
       <goals>
@@ -204,7 +205,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.9</version>
+  <version>5.0.10</version>
   <executions>
     <execution>
       <goals>
@@ -244,7 +245,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.9</version>
+  <version>5.0.10</version>
   <executions>
     <execution>
       <goals>
@@ -276,7 +277,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.0.9</version>
+  <version>5.0.10</version>
 </dependency>
 ```
 
