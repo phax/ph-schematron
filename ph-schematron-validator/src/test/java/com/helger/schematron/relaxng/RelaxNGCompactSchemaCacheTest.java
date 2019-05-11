@@ -64,7 +64,7 @@ public final class RelaxNGCompactSchemaCacheTest
     String [] args = new String [] { "-I",
                                      "rnc",
                                      "-O",
-                                     "rng",
+                                     "xsd",
                                      new File ("src/main/resources/schemas/iso-schematron-2006.rnc").getAbsolutePath (),
                                      new File ("src/test/resources/schemas/iso-schematron-2006.xsd").getAbsolutePath () };
     // Call trang
@@ -108,7 +108,7 @@ public final class RelaxNGCompactSchemaCacheTest
     String [] args = new String [] { "-I",
                                      "rnc",
                                      "-O",
-                                     "rng",
+                                     "xsd",
                                      new File ("src/main/resources/schemas/iso-schematron-2016.rnc").getAbsolutePath (),
                                      new File ("src/test/resources/schemas/iso-schematron-2016.xsd").getAbsolutePath () };
     // Call trang

@@ -29,684 +29,402 @@
   "THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
   AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD".
 -->
-<grammar ns="http://purl.oclc.org/dsdl/schematron" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <start>
-    <ref name="schema"/>
-  </start>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://purl.oclc.org/dsdl/schematron" xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
   <!-- Element declarations -->
-  <define name="schema">
-    <element name="schema">
-      <optional>
-        <attribute name="id">
-          <data type="ID"/>
-        </attribute>
-      </optional>
-      <ref name="rich"/>
-      <optional>
-        <attribute name="schemaVersion">
-          <ref name="non-empty-string"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="defaultPhase">
-          <data type="IDREF"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="queryBinding">
-          <ref name="non-empty-string"/>
-        </attribute>
-      </optional>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <ref name="inclusion"/>
-        </zeroOrMore>
-        <group>
-          <optional>
-            <ref name="title"/>
-          </optional>
-          <zeroOrMore>
-            <ref name="ns"/>
-          </zeroOrMore>
-          <zeroOrMore>
-            <ref name="p"/>
-          </zeroOrMore>
-          <zeroOrMore>
-            <ref name="let"/>
-          </zeroOrMore>
-          <zeroOrMore>
-            <ref name="phase"/>
-          </zeroOrMore>
-          <oneOrMore>
-            <ref name="pattern"/>
-          </oneOrMore>
-          <zeroOrMore>
-            <ref name="p"/>
-          </zeroOrMore>
-          <optional>
-            <ref name="diagnostics"/>
-          </optional>
-          <optional>
-            <ref name="properties"/>
-          </optional>
-        </group>
-      </interleave>
-    </element>
-  </define>
-  <define name="active">
-    <element name="active">
-      <attribute name="pattern">
-        <data type="IDREF"/>
-      </attribute>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <choice>
-            <text/>
-            <ref name="dir"/>
-            <ref name="emph"/>
-            <ref name="span"/>
-          </choice>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="assert">
-    <element name="assert">
-      <attribute name="test">
-        <ref name="exprValue"/>
-      </attribute>
-      <optional>
-        <attribute name="flag">
-          <ref name="flagValue"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="id">
-          <data type="ID"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="diagnostics">
-          <data type="IDREFS"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="properties">
-          <data type="IDREFS"/>
-        </attribute>
-      </optional>
-      <ref name="rich"/>
-      <ref name="linkable"/>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <choice>
-            <text/>
-            <ref name="name"/>
-            <ref name="value-of"/>
-            <ref name="emph"/>
-            <ref name="dir"/>
-            <ref name="span"/>
-          </choice>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="diagnostic">
-    <element name="diagnostic">
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-      <ref name="rich"/>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <choice>
-            <text/>
-            <ref name="value-of"/>
-            <ref name="emph"/>
-            <ref name="dir"/>
-            <ref name="span"/>
-          </choice>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="diagnostics">
-    <element name="diagnostics">
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <ref name="inclusion"/>
-        </zeroOrMore>
-        <zeroOrMore>
-          <ref name="diagnostic"/>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="dir">
-    <element name="dir">
-      <optional>
-        <attribute name="value">
-          <choice>
-            <value>ltr</value>
-            <value>rtl</value>
-          </choice>
-        </attribute>
-      </optional>
-      <interleave>
-        <ref name="foreign"/>
-        <text/>
-      </interleave>
-    </element>
-  </define>
-  <define name="emph">
-    <element name="emph">
-      <text/>
-    </element>
-  </define>
-  <define name="extends">
-    <element name="extends">
-      <choice>
-        <attribute name="rule">
-          <data type="IDREF"/>
-        </attribute>
-        <attribute name="href">
-          <ref name="uriValue"/>
-        </attribute>
-      </choice>
-      <ref name="foreign-empty"/>
-    </element>
-  </define>
-  <define name="let">
-    <element name="let">
-      <attribute name="name">
-        <ref name="nameValue"/>
-      </attribute>
-      <choice>
-        <attribute name="value">
-          <data type="string" datatypeLibrary=""/>
-        </attribute>
-        <oneOrMore>
-          <ref name="foreign-element"/>
-        </oneOrMore>
-      </choice>
-    </element>
-  </define>
-  <define name="name">
-    <element name="name">
-      <optional>
-        <attribute name="path">
-          <ref name="pathValue"/>
-        </attribute>
-      </optional>
-      <ref name="foreign-empty"/>
-    </element>
-  </define>
-  <define name="ns">
-    <element name="ns">
-      <attribute name="uri">
-        <ref name="uriValue"/>
-      </attribute>
-      <attribute name="prefix">
-        <ref name="nameValue"/>
-      </attribute>
-      <ref name="foreign-empty"/>
-    </element>
-  </define>
-  <define name="p">
-    <element name="p">
-      <optional>
-        <attribute name="id">
-          <data type="ID"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="class">
-          <ref name="classValue"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="icon">
-          <ref name="uriValue"/>
-        </attribute>
-      </optional>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <choice>
-            <text/>
-            <ref name="dir"/>
-            <ref name="emph"/>
-            <ref name="span"/>
-          </choice>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="param">
-    <element name="param">
-      <attribute name="name">
-        <ref name="nameValue"/>
-      </attribute>
-      <attribute name="value">
-        <ref name="non-empty-string"/>
-      </attribute>
-    </element>
-  </define>
-  <define name="pattern">
-    <element name="pattern">
-      <optional>
-        <attribute name="documents">
-          <ref name="pathValue"/>
-        </attribute>
-      </optional>
-      <ref name="rich"/>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <ref name="inclusion"/>
-        </zeroOrMore>
-        <choice>
-          <group>
-            <attribute name="abstract">
-              <value>true</value>
-            </attribute>
-            <attribute name="id">
-              <data type="ID"/>
-            </attribute>
-            <optional>
-              <ref name="title"/>
-            </optional>
-            <group>
-              <zeroOrMore>
-                <ref name="p"/>
-              </zeroOrMore>
-              <zeroOrMore>
-                <ref name="let"/>
-              </zeroOrMore>
-              <zeroOrMore>
-                <ref name="rule"/>
-              </zeroOrMore>
-            </group>
-          </group>
-          <group>
-            <optional>
-              <attribute name="abstract">
-                <value>false</value>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="id">
-                <data type="ID"/>
-              </attribute>
-            </optional>
-            <optional>
-              <ref name="title"/>
-            </optional>
-            <group>
-              <zeroOrMore>
-                <ref name="p"/>
-              </zeroOrMore>
-              <zeroOrMore>
-                <ref name="let"/>
-              </zeroOrMore>
-              <zeroOrMore>
-                <ref name="rule"/>
-              </zeroOrMore>
-            </group>
-          </group>
-          <group>
-            <optional>
-              <attribute name="abstract">
-                <value>false</value>
-              </attribute>
-            </optional>
-            <attribute name="is-a">
-              <data type="IDREF"/>
-            </attribute>
-            <optional>
-              <attribute name="id">
-                <data type="ID"/>
-              </attribute>
-            </optional>
-            <optional>
-              <ref name="title"/>
-            </optional>
-            <group>
-              <zeroOrMore>
-                <ref name="p"/>
-              </zeroOrMore>
-              <zeroOrMore>
-                <ref name="param"/>
-              </zeroOrMore>
-            </group>
-          </group>
-        </choice>
-      </interleave>
-    </element>
-  </define>
-  <define name="phase">
-    <element name="phase">
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-      <ref name="rich"/>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <ref name="inclusion"/>
-        </zeroOrMore>
-        <group>
-          <zeroOrMore>
-            <ref name="p"/>
-          </zeroOrMore>
-          <zeroOrMore>
-            <ref name="let"/>
-          </zeroOrMore>
-          <zeroOrMore>
-            <ref name="active"/>
-          </zeroOrMore>
-        </group>
-      </interleave>
-    </element>
-  </define>
-  <define name="properties">
-    <element name="properties">
-      <zeroOrMore>
-        <ref name="property"/>
-      </zeroOrMore>
-    </element>
-  </define>
-  <define name="property">
-    <element name="property">
-      <attribute name="id">
-        <data type="ID"/>
-      </attribute>
-      <optional>
-        <attribute name="role">
-          <ref name="roleValue"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="scheme"/>
-      </optional>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <choice>
-            <text/>
-            <ref name="name"/>
-            <ref name="value-of"/>
-            <ref name="emph"/>
-            <ref name="dir"/>
-            <ref name="span"/>
-          </choice>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="report">
-    <element name="report">
-      <attribute name="test">
-        <ref name="exprValue"/>
-      </attribute>
-      <optional>
-        <attribute name="flag">
-          <ref name="flagValue"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="id">
-          <data type="ID"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="diagnostics">
-          <data type="IDREFS"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="properties">
-          <data type="IDREFS"/>
-        </attribute>
-      </optional>
-      <ref name="rich"/>
-      <ref name="linkable"/>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <choice>
-            <text/>
-            <ref name="name"/>
-            <ref name="value-of"/>
-            <ref name="emph"/>
-            <ref name="dir"/>
-            <ref name="span"/>
-          </choice>
-        </zeroOrMore>
-      </interleave>
-    </element>
-  </define>
-  <define name="rule">
-    <element name="rule">
-      <optional>
-        <attribute name="flag">
-          <ref name="flagValue"/>
-        </attribute>
-      </optional>
-      <ref name="rich"/>
-      <ref name="linkable"/>
-      <interleave>
-        <ref name="foreign"/>
-        <zeroOrMore>
-          <ref name="inclusion"/>
-        </zeroOrMore>
-        <choice>
-          <group>
-            <attribute name="abstract">
-              <value>true</value>
-            </attribute>
-            <attribute name="id">
-              <data type="ID"/>
-            </attribute>
-            <zeroOrMore>
-              <ref name="let"/>
-            </zeroOrMore>
-            <oneOrMore>
-              <choice>
-                <ref name="assert"/>
-                <ref name="report"/>
-                <ref name="extends"/>
-                <ref name="p"/>
-              </choice>
-            </oneOrMore>
-          </group>
-          <group>
-            <attribute name="context">
-              <ref name="pathValue"/>
-            </attribute>
-            <optional>
-              <attribute name="id">
-                <data type="ID"/>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="abstract">
-                <value>false</value>
-              </attribute>
-            </optional>
-            <zeroOrMore>
-              <ref name="let"/>
-            </zeroOrMore>
-            <oneOrMore>
-              <choice>
-                <ref name="assert"/>
-                <ref name="report"/>
-                <ref name="extends"/>
-                <ref name="p"/>
-              </choice>
-            </oneOrMore>
-          </group>
-        </choice>
-      </interleave>
-    </element>
-  </define>
-  <define name="span">
-    <element name="span">
-      <attribute name="class">
-        <ref name="classValue"/>
-      </attribute>
-      <interleave>
-        <ref name="foreign"/>
-        <text/>
-      </interleave>
-    </element>
-  </define>
-  <define name="title">
-    <element name="title">
-      <zeroOrMore>
-        <choice>
-          <text/>
-          <ref name="dir"/>
-        </choice>
-      </zeroOrMore>
-    </element>
-  </define>
-  <define name="value-of">
-    <element name="value-of">
-      <attribute name="select">
-        <ref name="pathValue"/>
-      </attribute>
-      <ref name="foreign-empty"/>
-    </element>
-  </define>
+  <xs:element name="schema">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:element ref="sch:include"/>
+        <xs:choice>
+          <xs:element ref="sch:title"/>
+          <xs:element ref="sch:ns"/>
+          <xs:element ref="sch:p"/>
+          <xs:element ref="sch:let"/>
+          <xs:element ref="sch:phase"/>
+          <xs:element ref="sch:pattern"/>
+          <xs:element ref="sch:p"/>
+          <xs:element ref="sch:diagnostics"/>
+          <xs:element ref="sch:properties"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attribute name="schemaVersion" type="sch:non-empty-string"/>
+      <xs:attribute name="defaultPhase" type="xs:IDREF"/>
+      <xs:attribute name="queryBinding" type="sch:non-empty-string"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="active">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:choice>
+          <xs:element ref="sch:dir"/>
+          <xs:element ref="sch:emph"/>
+          <xs:element ref="sch:span"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="pattern" use="required" type="xs:IDREF"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="assert">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:choice>
+          <xs:element ref="sch:name"/>
+          <xs:element ref="sch:value-of"/>
+          <xs:element ref="sch:emph"/>
+          <xs:element ref="sch:dir"/>
+          <xs:element ref="sch:span"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="test" use="required" type="sch:exprValue"/>
+      <xs:attribute name="flag" type="sch:flagValue"/>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="diagnostics" type="xs:IDREFS"/>
+      <xs:attribute name="properties" type="xs:IDREFS"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attributeGroup ref="sch:linkable"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="diagnostic">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:choice>
+          <xs:element ref="sch:value-of"/>
+          <xs:element ref="sch:emph"/>
+          <xs:element ref="sch:dir"/>
+          <xs:element ref="sch:span"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="diagnostics">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:element ref="sch:include"/>
+        <xs:element ref="sch:diagnostic"/>
+      </xs:choice>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dir">
+    <xs:complexType mixed="true">
+      <xs:group ref="sch:foreign"/>
+      <xs:attribute name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="ltr"/>
+            <xs:enumeration value="rtl"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="emph" type="xs:string"/>
+  <xs:element name="extends">
+    <xs:complexType>
+      <xs:attribute name="rule" type="xs:IDREF"/>
+      <xs:attribute name="href" type="sch:uriValue"/>
+      <xs:attributeGroup ref="sch:foreign-empty"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="let">
+    <xs:complexType>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="sch:foreign-element"/>
+      <xs:attribute name="name" use="required" type="sch:nameValue"/>
+      <xs:attribute name="value" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name">
+    <xs:complexType>
+      <xs:attribute name="path" type="sch:pathValue"/>
+      <xs:attributeGroup ref="sch:foreign-empty"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ns">
+    <xs:complexType>
+      <xs:attribute name="uri" use="required" type="sch:uriValue"/>
+      <xs:attribute name="prefix" use="required" type="sch:nameValue"/>
+      <xs:attributeGroup ref="sch:foreign-empty"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="p">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:choice>
+          <xs:element ref="sch:dir"/>
+          <xs:element ref="sch:emph"/>
+          <xs:element ref="sch:span"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="class" type="sch:classValue"/>
+      <xs:attribute name="icon" type="sch:uriValue"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="param">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" type="sch:nameValue"/>
+      <xs:attribute name="value" use="required" type="sch:non-empty-string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pattern">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:element ref="sch:include"/>
+        <xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:title"/>
+            <xs:choice>
+              <xs:element ref="sch:p"/>
+              <xs:element ref="sch:let"/>
+              <xs:element ref="sch:rule"/>
+            </xs:choice>
+          </xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:title"/>
+            <xs:choice>
+              <xs:element ref="sch:p"/>
+              <xs:element ref="sch:let"/>
+              <xs:element ref="sch:rule"/>
+            </xs:choice>
+          </xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:title"/>
+            <xs:choice>
+              <xs:element ref="sch:p"/>
+              <xs:element ref="sch:param"/>
+            </xs:choice>
+          </xs:choice>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="documents" type="sch:pathValue"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+      <xs:attribute name="abstract">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="is-a" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="phase">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:element ref="sch:include"/>
+        <xs:choice>
+          <xs:element ref="sch:p"/>
+          <xs:element ref="sch:let"/>
+          <xs:element ref="sch:active"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="properties">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="sch:property"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="property">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:choice>
+          <xs:element ref="sch:name"/>
+          <xs:element ref="sch:value-of"/>
+          <xs:element ref="sch:emph"/>
+          <xs:element ref="sch:dir"/>
+          <xs:element ref="sch:span"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="role" type="sch:roleValue"/>
+      <xs:attribute name="scheme"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="report">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:choice>
+          <xs:element ref="sch:name"/>
+          <xs:element ref="sch:value-of"/>
+          <xs:element ref="sch:emph"/>
+          <xs:element ref="sch:dir"/>
+          <xs:element ref="sch:span"/>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="test" use="required" type="sch:exprValue"/>
+      <xs:attribute name="flag" type="sch:flagValue"/>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="diagnostics" type="xs:IDREFS"/>
+      <xs:attribute name="properties" type="xs:IDREFS"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attributeGroup ref="sch:linkable"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rule">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:group ref="sch:foreign"/>
+        <xs:element ref="sch:include"/>
+        <xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:let"/>
+            <xs:choice>
+              <xs:element ref="sch:assert"/>
+              <xs:element ref="sch:report"/>
+              <xs:element ref="sch:extends"/>
+              <xs:element ref="sch:p"/>
+            </xs:choice>
+          </xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:let"/>
+            <xs:choice>
+              <xs:element ref="sch:assert"/>
+              <xs:element ref="sch:report"/>
+              <xs:element ref="sch:extends"/>
+              <xs:element ref="sch:p"/>
+            </xs:choice>
+          </xs:choice>
+        </xs:choice>
+      </xs:choice>
+      <xs:attribute name="flag" type="sch:flagValue"/>
+      <xs:attributeGroup ref="sch:rich"/>
+      <xs:attributeGroup ref="sch:linkable"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+      <xs:attribute name="abstract">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="id" type="xs:ID"/>
+      <xs:attribute name="context" type="sch:pathValue"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="span">
+    <xs:complexType mixed="true">
+      <xs:group ref="sch:foreign"/>
+      <xs:attribute name="class" use="required" type="sch:classValue"/>
+      <xs:attributeGroup ref="sch:foreign"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="sch:dir"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value-of">
+    <xs:complexType>
+      <xs:attribute name="select" use="required" type="sch:pathValue"/>
+      <xs:attributeGroup ref="sch:foreign-empty"/>
+    </xs:complexType>
+  </xs:element>
   <!-- common declarations -->
-  <define name="inclusion">
-    <element name="include">
-      <attribute name="href">
-        <ref name="uriValue"/>
-      </attribute>
-      <ref name="foreign-empty"/>
-    </element>
-  </define>
-  <define name="rich">
-    <optional>
-      <attribute name="icon">
-        <ref name="uriValue"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="see">
-        <ref name="uriValue"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="fpi">
-        <ref name="fpiValue"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="xml:lang">
-        <ref name="langValue"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="xml:space">
-        <choice>
-          <value>preserve</value>
-          <value>default</value>
-        </choice>
-      </attribute>
-    </optional>
-  </define>
-  <define name="linkable">
-    <optional>
-      <attribute name="role">
-        <ref name="roleValue"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="subject">
-        <ref name="pathValue"/>
-      </attribute>
-    </optional>
-  </define>
-  <define name="foreign">
-    <ref name="foreign-attributes"/>
-    <zeroOrMore>
-      <ref name="foreign-element"/>
-    </zeroOrMore>
-  </define>
-  <define name="foreign-empty">
-    <ref name="foreign-attributes"/>
-  </define>
-  <define name="foreign-attributes">
-    <zeroOrMore>
-      <attribute>
-        <anyName>
-          <except>
-            <nsName ns=""/>
-            <nsName ns="http://www.w3.org/XML/1998/namespace"/>
-          </except>
-        </anyName>
-      </attribute>
-    </zeroOrMore>
-  </define>
-  <define name="foreign-element">
-    <element>
-      <anyName>
-        <except>
-          <nsName/>
-        </except>
-      </anyName>
-      <zeroOrMore>
-        <choice>
-          <attribute>
-            <anyName/>
-          </attribute>
-          <ref name="foreign-element"/>
-          <ref name="schema"/>
-          <text/>
-        </choice>
-      </zeroOrMore>
-    </element>
-  </define>
+  <xs:element name="include">
+    <xs:complexType>
+      <xs:attribute name="href" use="required" type="sch:uriValue"/>
+      <xs:attributeGroup ref="sch:foreign-empty"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="rich">
+    <xs:attribute name="icon" type="sch:uriValue"/>
+    <xs:attribute name="see" type="sch:uriValue"/>
+    <xs:attribute name="fpi" type="sch:fpiValue"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attribute ref="xml:space"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="linkable">
+    <xs:attribute name="role" type="sch:roleValue"/>
+    <xs:attribute name="subject" type="sch:pathValue"/>
+  </xs:attributeGroup>
+  <xs:group name="foreign">
+    <xs:sequence>
+      <xs:group minOccurs="0" maxOccurs="unbounded" ref="sch:foreign-element"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:attributeGroup name="foreign">
+    <xs:attributeGroup ref="sch:foreign-attributes"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="foreign-empty">
+    <xs:attributeGroup ref="sch:foreign-attributes"/>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="foreign-attributes">
+    <xs:attributeGroup ref="xml:local"/>
+  </xs:attributeGroup>
+  <xs:group name="foreign-element">
+    <xs:choice>
+      <xs:any namespace="##other" processContents="skip"/>
+      <xs:any namespace="##local" processContents="skip"/>
+    </xs:choice>
+  </xs:group>
   <!-- Data types -->
-  <define name="uriValue">
-    <data type="anyURI"/>
-  </define>
-  <define name="pathValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
-  <define name="exprValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
-  <define name="fpiValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
-  <define name="langValue">
-    <data type="language"/>
-  </define>
-  <define name="roleValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
-  <define name="flagValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
-  <define name="nameValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
+  <xs:simpleType name="uriValue">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="pathValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="exprValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="fpiValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="langValue">
+    <xs:restriction base="xs:language"/>
+  </xs:simpleType>
+  <xs:simpleType name="roleValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="flagValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="nameValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
   <!-- In the default query language binding, xsd:NCNAME -->
-  <define name="classValue">
-    <data type="string" datatypeLibrary=""/>
-  </define>
-  <define name="non-empty-string">
-    <data type="token">
-      <param name="minLength">1</param>
-    </data>
-  </define>
-</grammar>
+  <xs:simpleType name="classValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="non-empty-string">
+    <xs:restriction base="xs:token">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
