@@ -11,6 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.0.11 - work in progress
+    * Fixed created Schematron XSDs ([issue #76](https://github.com/phax/ph-schematron/issues/76))
+    * Updated to ant 1.10.6
 * v5.0.10 - 2019-05-07
     * Improved handling of XML elements from other namespaces ([issue #51](https://github.com/phax/ph-schematron/issues/51))
     * The Maven preprocess goal now uses the `<ns>` elements from the Schematron as XML namespace context
