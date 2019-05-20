@@ -36,9 +36,9 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
+import com.helger.commons.annotation.VisibleForTesting;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;

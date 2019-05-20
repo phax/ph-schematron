@@ -37,9 +37,9 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
+import com.helger.commons.annotation.VisibleForTesting;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.file.FileHelper;
