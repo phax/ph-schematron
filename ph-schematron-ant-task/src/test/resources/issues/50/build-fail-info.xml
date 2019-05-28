@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  
+  <target name="schematron" description="Schematron rule tests">
+    <schematron schematronFile="rule-info.sch" expectSuccess="true" failOnError="false" failOnValidationError="false" failOnValidationWarn="false" failOnValidationInfo="true">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+    </schematron>
+  </target>
+</project>

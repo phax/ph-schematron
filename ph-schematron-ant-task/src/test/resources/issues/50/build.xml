@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  
+  <target name="schematron" description="Schematron rule tests">
+    <schematron schematronFile="rule-error.sch" expectSuccess="false" failOnError="false" failOnValidationError="false" failOnValidationWarn="true" failOnValidationInfo="true">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+    </schematron>
+
+    <schematron schematronFile="rule-fatal.sch" expectSuccess="false" failOnError="false" failOnValidationError="false" failOnValidationWarn="true" failOnValidationInfo="true">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+    </schematron>
+
+    <schematron schematronFile="rule-info.sch" expectSuccess="true" failOnError="false" failOnValidationError="true" failOnValidationWarn="true" failOnValidationInfo="false">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+    </schematron>
+
+    <schematron schematronFile="rule-warn.sch" expectSuccess="true" failOnError="false" failOnValidationError="true" failOnValidationWarn="false" failOnValidationInfo="true">
+      <fileset dir=".">
+        <include name="dog*.xml" />
+      </fileset>
+    </schematron>
+  </target>
+</project>

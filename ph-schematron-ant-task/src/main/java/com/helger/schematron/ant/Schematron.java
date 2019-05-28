@@ -218,6 +218,24 @@ public class Schematron extends Task
   private boolean m_bFailOnError = true;
 
   /**
+   * <code>true</code> if the build should fail if any validation "error"
+   * occurs. Defaults to <code>false</code>. Since v5.0.11.
+   */
+  private boolean m_bFailOnValidationError = false;
+
+  /**
+   * <code>true</code> if the build should fail if any validation "warnings"
+   * occurs. Defaults to <code>false</code>. Since v5.0.11.
+   */
+  private boolean m_bFailOnValidationWarn = false;
+
+  /**
+   * <code>true</code> if the build should fail if any validation "information"
+   * occurs. Defaults to <code>false</code>. Since v5.0.11.
+   */
+  private boolean m_bFailOnValidationInfo = false;
+
+  /**
    * For resolving entities such as DTDs. This is used both for the Schematron
    * file as well as for the XML files to be validated.
    */
@@ -351,6 +369,27 @@ public class Schematron extends Task
     m_bFailOnError = bFailOnError;
 
     _debug (bFailOnError ? "Will fail on error" : "Will not fail on error");
+  }
+
+  public void setFailOnValidationError (final boolean bFail)
+  {
+    m_bFailOnValidationError = bFail;
+
+    _debug (bFail ? "Will fail on validation error" : "Will not fail on validation error");
+  }
+
+  public void setFailOnValidationWarn (final boolean bFail)
+  {
+    m_bFailOnValidationWarn = bFail;
+
+    _debug (bFail ? "Will fail on validation warning" : "Will not fail on validation warning");
+  }
+
+  public void setFailOnValidationInfo (final boolean bFail)
+  {
+    m_bFailOnValidationInfo = bFail;
+
+    _debug (bFail ? "Will fail on validation information" : "Will not fail on validation information");
   }
 
   /**
@@ -508,10 +547,13 @@ public class Schematron extends Task
             _debug ("Created SVRL:\n" + new SVRLMarshaller ().getAsString (aSOT));
 
             final ICommonsList <AbstractSVRLMessage> aMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
-            final int nErrorMessages = aMessages.getCount (x -> x.getFlag ().isError ());
-            final int nWarningMessages = aMessages.size () - nErrorMessages;
+            final int nErrorMessages = aMessages.getCount (x -> x.getFlag ().isGT (EErrorLevel.WARN));
+            final int nWarningMessages = aMessages.getCount (x -> x.getFlag ().isEQ (EErrorLevel.WARN));
+            final int nInfoMessages = aMessages.getCount (x -> x.getFlag ().isLT (EErrorLevel.WARN));
             final String sErrors = nErrorMessages + " Schematron error" + (nErrorMessages == 1 ? "" : "s");
             final String sWarnings = nWarningMessages + " Schematron warning" + (nWarningMessages == 1 ? "" : "s");
+            // No plural - haha
+            final String sInfos = nInfoMessages + " Schematron information";
 
             final boolean bExpectationFulfilled;
             if (bExpectSuccess)
@@ -526,16 +568,19 @@ public class Schematron extends Task
                        "' was validated against Schematron '" +
                        aSch.getResource ().getPath () +
                        "' and matches the rules" +
-                       (nWarningMessages > 0 ? " - only " +
+                       (nWarningMessages > 0 ? " (" +
                                                sWarnings +
                                                (nWarningMessages == 1 ? " is" : " are") +
-                                               " contained"
-                                             : ""));
+                                               " contained)"
+                                             : "") +
+                       (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
+                                          : ""));
               }
               else
               {
                 _error (sErrors +
                         (nWarningMessages > 0 ? " and " + sWarnings : "") +
+                        (nInfoMessages > 0 ? " and " + sInfos : "") +
                         " for XML file '" +
                         aXMLFile.getPath () +
                         "'");
@@ -555,16 +600,22 @@ public class Schematron extends Task
                        "' - " +
                        sErrors +
                        (nWarningMessages > 0 ? " and " + sWarnings : "") +
-                       (nErrorMessages == 1 && nWarningMessages == 0 ? " was" : " were") +
+                       (nInfoMessages > 0 ? " and " + sInfos : "") +
+                       (nErrorMessages == 1 && (nWarningMessages + nInfoMessages) == 0 ? " was" : " were") +
                        " found (as expected)");
               }
               else
               {
-                String sMessage = "No Schematron errors for erroneous XML file '" + aXMLFile.getPath () + "'";
-                if (nWarningMessages > 0)
-                  sMessage += " - only " + sWarnings + (nWarningMessages == 1 ? " is" : " are") + " contained";
-
-                _error (sMessage);
+                _error ("No Schematron errors for erroneous XML file '" +
+                        aXMLFile.getPath () +
+                        "'" +
+                        (nWarningMessages > 0 ? " (" +
+                                                sWarnings +
+                                                (nWarningMessages == 1 ? " is" : " are") +
+                                                " contained)"
+                                              : "") +
+                        (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
+                                           : ""));
               }
             }
 
@@ -585,6 +636,12 @@ public class Schematron extends Task
 
             if (!bExpectationFulfilled)
               _errorOrFail ("The expectations were not fullfilled, therefore the overall result is negative");
+            if (nErrorMessages > 0 && m_bFailOnValidationError)
+              throw new BuildException ("Validation errors are present.");
+            if (nWarningMessages > 0 && m_bFailOnValidationWarn)
+              throw new BuildException ("Validation warnings are present.");
+            if (nInfoMessages > 0 && m_bFailOnValidationInfo)
+              throw new BuildException ("Validation information are present.");
           }
           catch (final BuildException up)
           {
