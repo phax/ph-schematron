@@ -15,7 +15,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Fixed created Schematron XSDs ([issue #76](https://github.com/phax/ph-schematron/issues/76))
     * Updated to ant 1.10.6
     * Updated to Saxon-HE 9.9.1-3
-    * Improved logging results in ANT task ([issue #50](https://github.com/phax/ph-schematron/issues/50))
+    * Improved logging results in ANT task ([issue #71](https://github.com/phax/ph-schematron/issues/71))
+    * Added new ANT task parameters `failOnValidationError`, `failOnValidationWarn` and `failOnValidationInfo` that all default to `false` ([issue #50](https://github.com/phax/ph-schematron/issues/50))
 * v5.0.10 - 2019-05-07
     * Improved handling of XML elements from other namespaces ([issue #51](https://github.com/phax/ph-schematron/issues/51))
     * The Maven preprocess goal now uses the `<ns>` elements from the Schematron as XML namespace context
@@ -335,7 +336,10 @@ The `schematron` element allows for the following attributes:
   * `String` **phaseName** - The optional Schematron phase to be used. Note: this is only available when using the processing engine `pure` or `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created.
   * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
   * `boolean` **expectSuccess** - `true` to expect successful validation, `false` to expect validation errors. If the expectation is incorrect, the build will fail.
-  * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
+  * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error. The default value is `true`.
+  * `boolean` **failOnValidationError** (since v5.0.11) - `true` to break the build, if any Schematron error is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
+  * `boolean` **failOnValidationWarn** (since v5.0.11) - `true` to break the build, if any Schematron warning is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
+  * `boolean` **failOnValidationInfo** (since v5.0.11) - `true` to break the build, if any Schematron information is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
 
 The following child elements are allowed:
 * `<errorRole>` (since v5.0.2)
