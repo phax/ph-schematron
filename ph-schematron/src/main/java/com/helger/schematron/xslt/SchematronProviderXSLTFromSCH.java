@@ -24,6 +24,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 
 import org.slf4j.Logger;
@@ -83,70 +84,39 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 
-  @Deprecated
-  public static final boolean isSaveIntermediateFiles ()
-  {
-    return SchematronDebug.isSaveIntermediateXSLTFiles ();
-  }
-
-  @Deprecated
-  public static final void setSaveIntermediateFiles (final boolean bSaveIntermediateFiles)
-  {
-    SchematronDebug.setSaveIntermediateXSLTFiles (bSaveIntermediateFiles);
-  }
-
-  @Nonnull
-  @Deprecated
-  public static final File getIntermediateMinifiedSCHFolder ()
-  {
-    return SchematronDebug.getIntermediateMinifiedSCHFolder ();
-  }
-
-  @Deprecated
-  public static final void setIntermediateMinifiedSCHFolder (@Nonnull final File aIntermediateMinifiedSCHFolder)
-  {
-    SchematronDebug.setIntermediateMinifiedSCHFolder (aIntermediateMinifiedSCHFolder);
-  }
-
-  @Nonnull
-  @Deprecated
-  public static final File getIntermediateFinalXSLTFolder ()
-  {
-    return SchematronDebug.getIntermediateFinalXSLTFolder ();
-  }
-
-  @Deprecated
-  public static final void setIntermediateFinalXSLTFolder (@Nonnull final File aIntermediateFinalXSLTFolder)
-  {
-    SchematronDebug.setIntermediateFinalXSLTFolder (aIntermediateFinalXSLTFolder);
-  }
-
   public static void cacheXSLTTemplates ()
   {
     // prepare all steps
     if (s_aStep1 == null)
     {
+      final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+
+      // Step 1
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating XSLT step 1 template");
-      s_aStep1 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+      s_aStep1 = XMLTransformerFactory.newTemplates (aTF,
                                                      new ClassPathResource (XSLT2_STEP1,
                                                                             SchematronProviderXSLTFromSCH.class.getClassLoader ()));
-    }
-    if (s_aStep2 == null)
-    {
+      if (s_aStep1 == null)
+        throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP1 + "'");
+
+      // Step 2
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating XSLT step 2 template");
-      s_aStep2 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+      s_aStep2 = XMLTransformerFactory.newTemplates (aTF,
                                                      new ClassPathResource (XSLT2_STEP2,
                                                                             SchematronProviderXSLTFromSCH.class.getClassLoader ()));
-    }
-    if (s_aStep3 == null)
-    {
+      if (s_aStep2 == null)
+        throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP2 + "'");
+
+      // Step 3
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating XSLT step 3 template");
-      s_aStep3 = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+      s_aStep3 = XMLTransformerFactory.newTemplates (aTF,
                                                      new ClassPathResource (XSLT2_STEP3,
                                                                             SchematronProviderXSLTFromSCH.class.getClassLoader ()));
+      if (s_aStep3 == null)
+        throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP3 + "'");
     }
   }
 
@@ -220,7 +190,9 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       }
 
       // compile result of step 3
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (SchematronTransformerFactory.getDefaultSaxonFirst (),
+      final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+      aTransformerCustomizer.customize (aTF);
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Throwable t)

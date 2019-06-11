@@ -18,6 +18,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * Improved logging results in ANT task ([issue #71](https://github.com/phax/ph-schematron/issues/71))
     * Added new ANT task parameters `failOnValidationError`, `failOnValidationWarn` and `failOnValidationInfo` that all default to `false` ([issue #50](https://github.com/phax/ph-schematron/issues/50))
     * Removed deprecated methods
+    * SCH and XSLT based compilers now correctly pass the `URIResolver` to the created XSLT
 * v5.0.10 - 2019-05-07
     * Improved handling of XML elements from other namespaces ([issue #51](https://github.com/phax/ph-schematron/issues/51))
     * The Maven preprocess goal now uses the `<ns>` elements from the Schematron as XML namespace context
