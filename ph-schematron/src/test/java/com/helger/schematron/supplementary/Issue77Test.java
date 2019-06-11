@@ -30,7 +30,7 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
-public final class Issue99Test
+public final class Issue77Test
 {
   private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
                                                @Nonnull final File aXML,
@@ -52,11 +52,11 @@ public final class Issue99Test
   @Test
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github99/schematron.sch"),
-                             new File ("src/test/resources/issues/github99/valid.xml"),
+    _validateAndProduceSVRL (new File ("src/test/resources/issues/github77/schematron.sch"),
+                             new File ("src/test/resources/issues/github77/valid.xml"),
                              true);
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github99/schematron.sch"),
-                             new File ("src/test/resources/issues/github99/invalid.xml"),
+    _validateAndProduceSVRL (new File ("src/test/resources/issues/github77/schematron.sch"),
+                             new File ("src/test/resources/issues/github77/invalid.xml"),
                              false);
   }
 }
