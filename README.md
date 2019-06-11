@@ -11,12 +11,13 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.0.11 - work in progress
+* v5.1.0 - work in progress
     * Fixed created Schematron XSDs ([issue #76](https://github.com/phax/ph-schematron/issues/76))
     * Updated to ant 1.10.6
     * Updated to Saxon-HE 9.9.1-3
     * Improved logging results in ANT task ([issue #71](https://github.com/phax/ph-schematron/issues/71))
     * Added new ANT task parameters `failOnValidationError`, `failOnValidationWarn` and `failOnValidationInfo` that all default to `false` ([issue #50](https://github.com/phax/ph-schematron/issues/50))
+    * Removed deprecated methods
 * v5.0.10 - 2019-05-07
     * Improved handling of XML elements from other namespaces ([issue #51](https://github.com/phax/ph-schematron/issues/51))
     * The Maven preprocess goal now uses the `<ns>` elements from the Schematron as XML namespace context
