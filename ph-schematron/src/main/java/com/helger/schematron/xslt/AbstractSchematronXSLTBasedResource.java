@@ -38,7 +38,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
@@ -125,28 +124,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public final ICommonsOrderedMap <String, Object> parameters ()
   {
     return m_aCustomParameters;
-  }
-
-  @Deprecated
-  public boolean hasParameters ()
-  {
-    return m_aCustomParameters.isNotEmpty ();
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  @Deprecated
-  public ICommonsOrderedMap <String, Object> getParameters ()
-  {
-    return m_aCustomParameters.getClone ();
-  }
-
-  @Nonnull
-  @Deprecated
-  public IMPLTYPE setParameters (@Nullable final Map <String, ?> aCustomParameters)
-  {
-    m_aCustomParameters.setAll (aCustomParameters);
-    return thisAsT ();
   }
 
   /**

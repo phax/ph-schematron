@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -127,6 +128,19 @@ public class SCHTransformerCustomizer
   public boolean canCacheResult ()
   {
     return !hasParameters ();
+  }
+
+  public void customize (@Nonnull final TransformerFactory aTransformer)
+  {
+    // Ensure an error listener is present
+    if (m_aCustomErrorListener != null)
+      aTransformer.setErrorListener (m_aCustomErrorListener);
+    else
+      aTransformer.setErrorListener (new LoggingTransformErrorListener (Locale.US));
+
+    // Set the optional URI Resolver
+    if (m_aCustomURIResolver != null)
+      aTransformer.setURIResolver (m_aCustomURIResolver);
   }
 
   public void customize (@Nonnull final EStep eStep, @Nonnull final Transformer aTransformer)

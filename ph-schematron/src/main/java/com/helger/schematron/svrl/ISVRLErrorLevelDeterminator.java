@@ -25,7 +25,6 @@ import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.DevelopersNote;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.string.StringHelper;
 
@@ -37,22 +36,6 @@ import com.helger.commons.string.StringHelper;
 @FunctionalInterface
 public interface ISVRLErrorLevelDeterminator extends Serializable
 {
-  /**
-   * Get the error level associated with a single failed assertion/successful
-   * report.
-   *
-   * @param sFlag
-   *        The flag to be queried. May be <code>null</code>.
-   * @return The error level and never <code>null</code>.
-   */
-  @Nonnull
-  @Deprecated
-  @DevelopersNote ("Use getErrorLevelFromString instead")
-  default IErrorLevel getErrorLevelFromFlag (@Nullable final String sFlag)
-  {
-    return getErrorLevelFromString (sFlag);
-  }
-
   /**
    * Get the error level associated with a single failed assertion/successful
    * report.
