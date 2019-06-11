@@ -41,6 +41,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
@@ -83,18 +85,33 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
   private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
 
+  @Nullable
+  private static String _findBaseURL (@Nonnull final IReadableResource aRes)
+  {
+    if (aRes instanceof FileSystemResource)
+    {
+      // Use parent file as resolution base
+      return FileHelper.getAsURLString (((FileSystemResource) aRes).getAsFile ().getParentFile ());
+    }
+
+    // Generic URL
+    final URL aBaseURL = aRes.getAsURL ();
+    return aBaseURL != null ? aBaseURL.toExternalForm () : null;
+  }
+
   public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
     // the SCH
-    final URL aBaseURL = aSCHResource.getAsURL ();
-    setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (aBaseURL != null ? aBaseURL.toExternalForm ()
-                                                                                        : null));
+    final String sBaseURL = _findBaseURL (aSCHResource);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Using '" + sBaseURL + "' as base URL for SCH resource " + aSCHResource);
+    setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (sBaseURL));
   }
 
   @Nullable
-  public ErrorListener getErrorListener ()
+  public final ErrorListener getErrorListener ()
   {
     return m_aCustomErrorListener;
   }
@@ -107,7 +124,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public URIResolver getURIResolver ()
+  public final URIResolver getURIResolver ()
   {
     return m_aCustomURIResolver;
   }
@@ -153,7 +170,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * @return The XSLT validator to be used. Never <code>null</code>.
    */
   @Nonnull
-  public ISchematronXSLTValidator getXSLTValidator ()
+  public final ISchematronXSLTValidator getXSLTValidator ()
   {
     return m_aXSLTValidator;
   }
@@ -173,8 +190,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
-                                          @Nullable final String sBaseURI) throws Exception
+  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+                                                @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
