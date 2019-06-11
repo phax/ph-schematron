@@ -11,9 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.1.0 - work in progress
+* v5.1.0 - 2019-06-11
     * Fixed created Schematron XSDs ([issue #76](https://github.com/phax/ph-schematron/issues/76))
-    * Updated to ant 1.10.6
+    * Updated to ANT 1.10.6
     * Updated to Saxon-HE 9.9.1-3
     * Improved logging results in ANT task ([issue #71](https://github.com/phax/ph-schematron/issues/71))
     * Added new ANT task parameters `failOnValidationError`, `failOnValidationWarn` and `failOnValidationInfo` that all default to `false` ([issue #50](https://github.com/phax/ph-schematron/issues/50))
@@ -133,7 +133,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.0.10</version>
+  <version>5.1.0</version>
 </dependency>
 ```
 
@@ -154,7 +154,7 @@ Starting from version 5.0.9:
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.10</version>
+  <version>5.1.0</version>
   <executions>
     <execution>
       <goals>
@@ -214,7 +214,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.10</version>
+  <version>5.1.0</version>
   <executions>
     <execution>
       <goals>
@@ -254,7 +254,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.0.10</version>
+  <version>5.1.0</version>
   <executions>
     <execution>
       <goals>
@@ -286,7 +286,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.0.10</version>
+  <version>5.1.0</version>
 </dependency>
 ```
 

@@ -111,7 +111,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   /**
    * The Maven Project.
    */
-  @Component
+  @Parameter (defaultValue = "${project}", readonly = true)
   private MavenProject project;
 
   /**
