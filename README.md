@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.1.1 - 2019-06-12
+    * Fixed regression in ANT task (see [issue #71](https://github.com/phax/ph-schematron/issues/71))
 * v5.1.0 - 2019-06-11
     * Fixed created Schematron XSDs ([issue #76](https://github.com/phax/ph-schematron/issues/76))
     * Updated to ANT 1.10.6

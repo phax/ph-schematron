@@ -273,8 +273,6 @@ public class Schematron extends Task
 
   private void _error (@Nonnull final String sMsg, @Nullable final Throwable t)
   {
-    if (m_bFailOnError)
-      throw new BuildException (sMsg, t);
     log (sMsg, t, Project.MSG_ERR);
   }
 
