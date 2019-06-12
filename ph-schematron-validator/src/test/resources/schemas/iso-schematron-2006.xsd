@@ -173,6 +173,14 @@
             <xs:element ref="sch:title"/>
             <xs:choice>
               <xs:element ref="sch:p"/>
+              <xs:element ref="sch:let"/>
+              <xs:element ref="sch:rule"/>
+            </xs:choice>
+          </xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:title"/>
+            <xs:choice>
+              <xs:element ref="sch:p"/>
               <xs:element ref="sch:param"/>
             </xs:choice>
           </xs:choice>
@@ -236,11 +244,21 @@
         <xs:group ref="sch:foreign"/>
         <xs:element ref="sch:include"/>
         <xs:choice>
-          <xs:element ref="sch:let"/>
           <xs:choice>
-            <xs:element ref="sch:assert"/>
-            <xs:element ref="sch:report"/>
-            <xs:element ref="sch:extends"/>
+            <xs:element ref="sch:let"/>
+            <xs:choice>
+              <xs:element ref="sch:assert"/>
+              <xs:element ref="sch:report"/>
+              <xs:element ref="sch:extends"/>
+            </xs:choice>
+          </xs:choice>
+          <xs:choice>
+            <xs:element ref="sch:let"/>
+            <xs:choice>
+              <xs:element ref="sch:assert"/>
+              <xs:element ref="sch:report"/>
+              <xs:element ref="sch:extends"/>
+            </xs:choice>
           </xs:choice>
         </xs:choice>
       </xs:choice>
