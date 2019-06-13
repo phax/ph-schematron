@@ -19,11 +19,8 @@ package com.helger.schematron.ant;
 import java.io.File;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -47,7 +44,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * @author Philip Helger
  * @since 5.0.0
  */
-public class SchematronPreprocess extends Task
+public class SchematronPreprocess extends AbstractSchematronTask
 {
   /**
    * The Schematron source file to be pre-processed.
@@ -80,12 +77,6 @@ public class SchematronPreprocess extends Task
    */
   private boolean m_bKeepEmptyPatterns = PSPreprocessor.DEFAULT_KEEP_EMPTY_PATTERNS;
 
-  /**
-   * <code>true</code> if the build should fail if any error occurs. Defaults to
-   * <code>true</code>.
-   */
-  private boolean m_bFailOnError = true;
-
   public SchematronPreprocess ()
   {}
 
@@ -94,7 +85,7 @@ public class SchematronPreprocess extends Task
     m_aSrcFile = aFile;
     if (!m_aSrcFile.isAbsolute ())
       m_aSrcFile = new File (getProject ().getBaseDir (), aFile.getPath ());
-    log ("Using source Schematron file '" + m_aSrcFile + "'", Project.MSG_DEBUG);
+    _debug ("Using source Schematron file '" + m_aSrcFile + "'");
   }
 
   public void setDstFile (@Nonnull final File aFile)
@@ -102,52 +93,32 @@ public class SchematronPreprocess extends Task
     m_aDstFile = aFile;
     if (!m_aDstFile.isAbsolute ())
       m_aDstFile = new File (getProject ().getBaseDir (), aFile.getPath ());
-    log ("Using destination Schematron file '" + m_aDstFile + "'", Project.MSG_DEBUG);
+    _debug ("Using destination Schematron file '" + m_aDstFile + "'");
   }
 
   public void setKeepTitles (final boolean bKeepTitles)
   {
     m_bKeepTitles = bKeepTitles;
-    log (bKeepTitles ? "Keeping <title>-elements." : "Removing <title>-elements.", Project.MSG_DEBUG);
+    _debug (bKeepTitles ? "Keeping <title>-elements." : "Removing <title>-elements.");
   }
 
   public void setKeepDiagnostics (final boolean bKeepDiagnostics)
   {
     m_bKeepDiagnostics = bKeepDiagnostics;
-    log (bKeepDiagnostics ? "Keeping <diagnostic>-elements." : "Removing <diagnostic>-elements.", Project.MSG_DEBUG);
+    _debug (bKeepDiagnostics ? "Keeping <diagnostic>-elements." : "Removing <diagnostic>-elements.");
   }
 
   public void setKeepReports (final boolean bKeepReports)
   {
     m_bKeepReports = bKeepReports;
-    log (bKeepReports ? "Keeping <report>-elements." : "Changing to <assert>-elements.", Project.MSG_DEBUG);
+    _debug (bKeepReports ? "Keeping <report>-elements." : "Changing to <assert>-elements.");
   }
 
   public void setKeepEmptyPatterns (final boolean bKeepEmptyPatterns)
   {
     m_bKeepEmptyPatterns = bKeepEmptyPatterns;
-    log (bKeepEmptyPatterns ? "Keeping <pattern>-elements without rules."
-                            : "Deleting <pattern>-elements without rules.",
-         Project.MSG_DEBUG);
-  }
-
-  public void setFailOnError (final boolean bFailOnError)
-  {
-    m_bFailOnError = bFailOnError;
-
-    log (bFailOnError ? "Will fail on error" : "Will not fail on error", Project.MSG_DEBUG);
-  }
-
-  private void _error (@Nonnull final String sMsg)
-  {
-    _error (sMsg, null);
-  }
-
-  private void _error (@Nonnull final String sMsg, @Nullable final Throwable t)
-  {
-    if (m_bFailOnError)
-      throw new BuildException (sMsg, t);
-    log (sMsg, t, Project.MSG_ERR);
+    _debug (bKeepEmptyPatterns ? "Keeping <pattern>-elements without rules."
+                               : "Deleting <pattern>-elements without rules.");
   }
 
   @Override
@@ -155,16 +126,16 @@ public class SchematronPreprocess extends Task
   {
     boolean bCanRun = false;
     if (m_aSrcFile == null)
-      _error ("No source Schematron file specified!");
+      _errorOrFail ("No source Schematron file specified!");
     else
       if (m_aSrcFile.exists () && !m_aSrcFile.isFile ())
-        _error ("The specified source Schematron file " + m_aSrcFile + " is not a file!");
+        _errorOrFail ("The specified source Schematron file " + m_aSrcFile + " is not a file!");
       else
         if (m_aDstFile == null)
-          _error ("No destination Schematron file specified!");
+          _errorOrFail ("No destination Schematron file specified!");
         else
           if (m_aDstFile.exists () && !m_aDstFile.isFile ())
-            _error ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
+            _errorOrFail ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
           else
             bCanRun = true;
 
@@ -188,11 +159,11 @@ public class SchematronPreprocess extends Task
         // Write the result file
         new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).writeToFile (aPreprocessedSchema,
                                                                                                             m_aDstFile);
-        log ("Successfully pre-processed Schematron " + m_aSrcFile + " to " + m_aDstFile);
+        _info ("Successfully pre-processed Schematron " + m_aSrcFile + " to " + m_aDstFile);
       }
       catch (final SchematronReadException | SchematronPreprocessException ex)
       {
-        _error ("Error processing Schemtron " + m_aSrcFile.getAbsolutePath (), ex);
+        _errorOrFail ("Error processing Schemtron " + m_aSrcFile.getAbsolutePath (), ex);
       }
   }
 }

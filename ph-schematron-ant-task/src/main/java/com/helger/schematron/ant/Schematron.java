@@ -27,8 +27,6 @@ import javax.xml.transform.URIResolver;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.XMLCatalog;
@@ -77,7 +75,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @since 4.2.3
  */
 @SuppressFBWarnings ("DMI_HARDCODED_ABSOLUTE_FILENAME")
-public class Schematron extends Task
+public class Schematron extends AbstractSchematronTask
 {
   /**
    * Custom role value that triggers an error.
@@ -212,12 +210,6 @@ public class Schematron extends Task
   private final ICommonsList <Schematron.ErrorRole> m_aErrorRoles = new CommonsArrayList <> ();
 
   /**
-   * <code>true</code> if the build should fail if any error occurs. Defaults to
-   * <code>true</code>. Since v5.0.0.
-   */
-  private boolean m_bFailOnError = true;
-
-  /**
    * <code>true</code> if the build should fail if any validation "error"
    * occurs. Defaults to <code>false</code>. Since v5.0.11.
    */
@@ -245,48 +237,6 @@ public class Schematron extends Task
    * Custom parameters for SCH/XSLT version.
    */
   private final ICommonsList <Schematron.Parameter> m_aParameters = new CommonsArrayList <> ();
-
-  private void _debug (@Nonnull final String sMsg)
-  {
-    log (sMsg, Project.MSG_DEBUG);
-  }
-
-  private void _info (@Nonnull final String sMsg)
-  {
-    log (sMsg, Project.MSG_INFO);
-  }
-
-  private void _warn (@Nonnull final String sMsg)
-  {
-    _warn (sMsg, null);
-  }
-
-  private void _warn (@Nonnull final String sMsg, @Nullable final Throwable t)
-  {
-    log (sMsg, t, Project.MSG_WARN);
-  }
-
-  private void _error (@Nonnull final String sMsg)
-  {
-    _error (sMsg, null);
-  }
-
-  private void _error (@Nonnull final String sMsg, @Nullable final Throwable t)
-  {
-    log (sMsg, t, Project.MSG_ERR);
-  }
-
-  private void _errorOrFail (@Nonnull final String sMsg)
-  {
-    _errorOrFail (sMsg, null);
-  }
-
-  private void _errorOrFail (@Nonnull final String sMsg, @Nullable final Throwable t)
-  {
-    if (m_bFailOnError)
-      throw new BuildException (sMsg, t);
-    _error (sMsg, t);
-  }
 
   public Schematron ()
   {}
@@ -360,13 +310,6 @@ public class Schematron extends Task
     final Schematron.ErrorRole aErrorRole = new Schematron.ErrorRole ();
     m_aErrorRoles.add (aErrorRole);
     return aErrorRole;
-  }
-
-  public void setFailOnError (final boolean bFailOnError)
-  {
-    m_bFailOnError = bFailOnError;
-
-    _debug (bFailOnError ? "Will fail on error" : "Will not fail on error");
   }
 
   public void setFailOnValidationError (final boolean bFail)
