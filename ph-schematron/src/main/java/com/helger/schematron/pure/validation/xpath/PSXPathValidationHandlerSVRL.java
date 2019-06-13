@@ -32,6 +32,7 @@ import org.oclc.purl.dsdl.svrl.FiredRule;
 import org.oclc.purl.dsdl.svrl.NsPrefixInAttributeValues;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
+import org.oclc.purl.dsdl.svrl.Text;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
@@ -185,8 +186,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    *         In case evaluating an XPath expression fails.
    */
   @Nonnull
-  private String _getErrorText (@Nonnull final List <PSXPathBoundElement> aBoundContentElements,
-                                @Nonnull final Node aSourceNode) throws SchematronValidationException
+  private Text _getErrorText (@Nonnull final List <PSXPathBoundElement> aBoundContentElements,
+                              @Nonnull final Node aSourceNode) throws SchematronValidationException
   {
     final StringBuilder aSB = new StringBuilder ();
 
@@ -256,7 +257,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                 else
                   throw new SchematronValidationException ("Unsupported assert/report content element: " + aContent);
     }
-    return aSB.toString ();
+    final Text ret = new Text ();
+    ret.addContent (aSB.toString ());
+    return ret;
   }
 
   /**

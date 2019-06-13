@@ -25,6 +25,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.oclc.purl.dsdl.svrl.FailedAssert;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.oclc.purl.dsdl.svrl.SuccessfulReport;
+import org.oclc.purl.dsdl.svrl.Text;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
@@ -53,6 +54,18 @@ public final class SVRLHelper
 
   private SVRLHelper ()
   {}
+
+  @Nullable
+  public static String getAsString (@Nullable final Text aText)
+  {
+    if (aText == null)
+      return null;
+
+    final StringBuilder aSB = new StringBuilder ();
+    for (final Object aObj : aText.getContent ())
+      aSB.append (aObj);
+    return aSB.toString ();
+  }
 
   /**
    * Get a list of all failed assertions in a given schematron output.

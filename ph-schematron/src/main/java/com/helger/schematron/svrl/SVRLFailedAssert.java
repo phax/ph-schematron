@@ -49,7 +49,7 @@ public class SVRLFailedAssert extends AbstractSVRLMessage
                            @Nonnull final Function <? super FailedAssert, ? extends IErrorLevel> aErrLevelProvider)
   {
     super (aFailedAssert.getDiagnosticReference (),
-           aFailedAssert.getText (),
+           SVRLHelper.getAsString (aFailedAssert.getText ()),
            aLocationProvider.apply (aFailedAssert),
            aFailedAssert.getTest (),
            aFailedAssert.getRole (),

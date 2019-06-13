@@ -20,6 +20,7 @@
       <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:ns-prefix-in-attribute-values"/>
       <xs:sequence maxOccurs="unbounded">
         <xs:element ref="svrl:active-pattern"/>
+        <!-- [ph] added minOccurs for real life handling -->
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
           <xs:element ref="svrl:fired-rule"/>
           <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -43,8 +44,14 @@
   <!-- only active patterns are reported -->
   <xs:element name="active-pattern">
     <xs:complexType>
+      <!-- [ph] added for real-life handling -->
+      <xs:sequence>
+        <xs:element ref="svrl:text" minOccurs="0" />
+      </xs:sequence>
       <!-- [ph] changed from ID to NCName for real-life handling -->
       <xs:attribute name="id" type="xs:NCName"/>
+      <!-- [ph] Schematron 2016 adds this in favor of "document" -->
+      <xs:attribute name="documents"/>
       <xs:attribute name="name"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="document"/>
@@ -55,6 +62,8 @@
     <xs:complexType>
       <!-- [ph] changed from ID to NCName for real-life handling -->
       <xs:attribute name="id" type="xs:NCName"/>
+      <!-- [ph] Schematron 2016 adds this -->
+      <xs:attribute name="name"/>
       <xs:attribute name="context" use="required"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="flag" type="xs:NMTOKEN"/>
@@ -74,6 +83,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:property-reference"/>
         <xs:element ref="svrl:text"/>
         <!-- Note: XSLT based version may emit the diagnostic-reference here :( -->
       </xs:sequence>
@@ -85,12 +95,75 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:property-reference"/>
         <xs:element ref="svrl:text"/>
       </xs:sequence>
       <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
     </xs:complexType>
   </xs:element>
-  <xs:element name="text" type="xs:string"/>
+  <!-- property-reference -->
+  <xs:element name="property-reference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="svrl:text"/>
+      </xs:sequence>
+      <xs:attribute name="property" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="role"/>
+      <xs:attribute name="scheme"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- human text -->
+  <xs:element name="text">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svrl:rich-text">
+          <xs:attribute name="see"/>
+          <xs:attribute name="icon"/>
+          <xs:attribute name="fpi"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <!-- rich text -->
+  <xs:complexType name="rich-text" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:group ref="svrl:foreign"/>
+      <xs:element ref="svrl:dir"/>
+      <xs:element ref="svrl:span"/>
+      <xs:element ref="svrl:emph"/>
+    </xs:choice>
+  </xs:complexType>
+  <!-- directionality -->
+  <xs:element name="dir">
+    <xs:complexType mixed="true">
+      <xs:attribute name="class"/>
+      <xs:attribute name="dir"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- emphasis -->
+  <xs:element name="emph">
+    <xs:complexType mixed="true">
+      <xs:attribute name="class"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- arbitrary markup -->
+  <xs:element name="span">
+    <xs:complexType mixed="true">
+      <xs:attribute name="class" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- foreign -->
+  <xs:group name="foreign">
+    <xs:sequence>
+      <xs:group minOccurs="0" ref="svrl:foreign-element"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="foreign-element">
+    <xs:choice>
+      <xs:any namespace="##other" processContents="skip"/>
+      <xs:any namespace="##local" processContents="skip"/>
+    </xs:choice>
+  </xs:group>
   <xs:attributeGroup name="attlist.assert-and-report">
     <!-- [ph] changed from ID to NCName for real-life handling -->
     <xs:attribute name="id" type="xs:NCName"/>

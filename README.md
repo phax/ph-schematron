@@ -11,6 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.1.2 - work in progress
+    * Fixed a ClassLoader issues for ANT task (see [issue #78](https://github.com/phax/ph-schematron/issues/78))
+    * Updated the SVRL XSD with the ISO Schematron 2016 changes
 * v5.1.1 - 2019-06-12
     * Fixed regression in ANT task (see [issue #71](https://github.com/phax/ph-schematron/issues/71))
 * v5.1.0 - 2019-06-11

@@ -300,7 +300,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     // Avoid NPE later on
     if (aDoc.getDocumentElement () == null)
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
-    return new SVRLMarshaller ().read (aDoc);
+
+    final SVRLMarshaller aMarshaller = new SVRLMarshaller ();
+    aMarshaller.readExceptionCallbacks ()
+               .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc), ex));
+    return aMarshaller.read (aDoc);
   }
 
   @Override

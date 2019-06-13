@@ -49,7 +49,7 @@ public class SVRLSuccessfulReport extends AbstractSVRLMessage
                                @Nonnull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
   {
     super (aSuccessfulReport.getDiagnosticReference (),
-           aSuccessfulReport.getText (),
+           SVRLHelper.getAsString (aSuccessfulReport.getText ()),
            aLocationProvider.apply (aSuccessfulReport),
            aSuccessfulReport.getTest (),
            aSuccessfulReport.getRole (),
