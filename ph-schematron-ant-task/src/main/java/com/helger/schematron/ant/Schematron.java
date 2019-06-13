@@ -60,6 +60,7 @@ import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.SVRLNamespaceContext;
 import com.helger.schematron.svrl.SVRLResourceError;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
@@ -471,21 +472,29 @@ public class Schematron extends AbstractSchematronTask
             // This is performing the validation
             final SchematronOutputType aSOT = aSch.applySchematronValidationToSVRL (TransformSourceFactory.create (aXMLFile));
 
-            // If aSOT == null a different error should be present
-            if (aSVRLDirectory != null && aSOT != null)
+            if (aSOT != null)
             {
-              // Save SVRL
-              final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
-              if (FileOperations.createDirIfNotExisting (aSVRLFile.getParentFile ()).isFailure ())
-                _error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!");
+              // Beautified SVRL :)
+              final SVRLMarshaller aMarshaller = new SVRLMarshaller (false);
+              aMarshaller.setFormattedOutput (true);
+              aMarshaller.setNamespaceContext (SVRLNamespaceContext.getInstance ());
 
-              if (new SVRLMarshaller ().write (aSOT, aSVRLFile).isSuccess ())
-                _info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
-              else
-                _error ("Error saving SVRL file '" + aSVRLFile.getPath () + "'");
+              // If aSOT == null a different error should be present
+              if (aSVRLDirectory != null)
+              {
+                // Save SVRL
+                final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
+                if (FileOperations.createDirIfNotExisting (aSVRLFile.getParentFile ()).isFailure ())
+                  _error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!");
+
+                if (aMarshaller.write (aSOT, aSVRLFile).isSuccess ())
+                  _info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
+                else
+                  _error ("Error saving SVRL file '" + aSVRLFile.getPath () + "'");
+              }
+
+              _debug ("Created SVRL:\n" + aMarshaller.getAsString (aSOT));
             }
-
-            _debug ("Created SVRL:\n" + new SVRLMarshaller ().getAsString (aSOT));
 
             final ICommonsList <AbstractSVRLMessage> aMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
             final int nErrorMessages = aMessages.getCount (x -> x.getFlag ().isGT (EErrorLevel.WARN));
@@ -722,10 +731,10 @@ public class Schematron extends AbstractSchematronTask
           _errorOrFail ("No handler for processing engine '" + m_eSchematronProcessingEngine + "'");
           break;
       }
+
+      boolean bAnyParsingError = false;
       if (aSCHErrors != null)
-      {
         // Error validating the Schematrons!!
-        boolean bAnyParsingError = false;
         for (final IError aError : aSCHErrors)
           if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
           {
@@ -738,16 +747,15 @@ public class Schematron extends AbstractSchematronTask
             else
               _info ("Information in Schematron: " + aError.getAsString (aDisplayLocale));
 
-        if (bAnyParsingError)
-          _errorOrFail ("The provided Schematron file contains errors. See log for details.");
-        else
-        {
-          // Start validation
-          _info ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'");
+      if (bAnyParsingError)
+        _errorOrFail ("The provided Schematron file contains errors. See log for details.");
+      else
+      {
+        // Schematron is okay
+        _info ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'");
 
-          // 2. for all XML files that match the pattern
-          _performValidation (aSch, m_aResCollections, m_aSvrlDirectory, m_bExpectSuccess);
-        }
+        // Start validation
+        _performValidation (aSch, m_aResCollections, m_aSvrlDirectory, m_bExpectSuccess);
       }
     }
   }

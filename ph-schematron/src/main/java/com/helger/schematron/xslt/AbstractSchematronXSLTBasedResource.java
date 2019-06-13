@@ -41,6 +41,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -302,8 +303,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
 
     final SVRLMarshaller aMarshaller = new SVRLMarshaller ();
-    aMarshaller.readExceptionCallbacks ()
-               .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc), ex));
+    if (GlobalDebug.isDebugMode ())
+    {
+      // Set an exception callback that logs the source node as well
+      aMarshaller.readExceptionCallbacks ()
+                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc),
+                                           ex));
+    }
     return aMarshaller.read (aDoc);
   }
 

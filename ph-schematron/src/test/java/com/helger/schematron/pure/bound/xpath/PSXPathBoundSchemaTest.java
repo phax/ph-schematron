@@ -23,6 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -50,6 +52,7 @@ import com.helger.xml.serialize.read.DOMReader;
  */
 public final class PSXPathBoundSchemaTest
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchemaTest.class);
   @Rule
   public final TestRule m_aRule = new DebugModeTestRule ();
 
@@ -94,7 +97,7 @@ public final class PSXPathBoundSchemaTest
       assertNotNull (aSVRL);
 
       if (false)
-        System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
+        LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
     }
   }
 
@@ -125,7 +128,7 @@ public final class PSXPathBoundSchemaTest
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllInvalidSchematronFiles ())
     {
-      System.out.println (aRes);
+      LOGGER.info (aRes.toString ());
       try
       {
         // Parse the schema
@@ -137,7 +140,7 @@ public final class PSXPathBoundSchemaTest
       }
       catch (final SchematronException ex)
       {
-        System.out.println ("  " + ex.getMessage ());
+        LOGGER.error ("  " + ex.getMessage ());
       }
     }
   }
