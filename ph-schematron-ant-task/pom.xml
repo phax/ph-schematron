@@ -25,7 +25,7 @@
     <version>5.1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-ant-task</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-schematron-ant-task</name>
   <url>https://github.com/phax/ph-schematron/ph-schematron-ant-task</url>
   <inceptionYear>2017</inceptionYear>
@@ -83,6 +83,7 @@
 
   <build>
     <plugins>
+<!--
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -95,6 +96,9 @@
           </instructions>
         </configuration>
       </plugin>
+-->
+<!--
+-->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
