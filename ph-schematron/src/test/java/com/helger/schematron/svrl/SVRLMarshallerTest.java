@@ -24,6 +24,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -42,6 +44,7 @@ import com.helger.xml.XMLFactory;
  */
 public final class SVRLMarshallerTest
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SVRLMarshallerTest.class);
   private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
 
@@ -61,7 +64,10 @@ public final class SVRLMarshallerTest
   public void testRead ()
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSVRLFiles ())
+    {
+      LOGGER.info ("Reading " + aRes.getPath ());
       assertNotNull (aRes.getPath (), new SVRLMarshaller ().read (aRes));
+    }
   }
 
   @Test

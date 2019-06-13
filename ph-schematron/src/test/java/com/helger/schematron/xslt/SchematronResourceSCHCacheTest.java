@@ -70,10 +70,10 @@ public final class SchematronResourceSCHCacheTest
     }
     final long nEnd = System.nanoTime ();
     LOGGER.info ("Sync Total: " +
-                    ((nEnd - nStart) / 1000) +
-                    " microsecs btw. " +
-                    ((nEnd - nStart) / 1000 / RUNS) +
-                    " microsecs/run");
+                 ((nEnd - nStart) / 1000) +
+                 " microsecs btw. " +
+                 ((nEnd - nStart) / 1000 / RUNS) +
+                 " microsecs/run");
   }
 
   @Test
@@ -106,10 +106,10 @@ public final class SchematronResourceSCHCacheTest
     ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
     final long nEnd = System.nanoTime ();
     LOGGER.info ("Async Total: " +
-                    ((nEnd - nStart) / 1000) +
-                    " microsecs btw. " +
-                    ((nEnd - nStart) / 1000 / RUNS) +
-                    " microsecs/run");
+                 ((nEnd - nStart) / 1000) +
+                 " microsecs btw. " +
+                 ((nEnd - nStart) / 1000 / RUNS) +
+                 " microsecs/run");
   }
 
   @Test
@@ -141,7 +141,7 @@ public final class SchematronResourceSCHCacheTest
           !aRes.getPath ().endsWith ("/schematron-svrl.sch"))
       {
         if (true)
-          System.out.println (aRes.toString ());
+          LOGGER.info (aRes.toString ());
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,

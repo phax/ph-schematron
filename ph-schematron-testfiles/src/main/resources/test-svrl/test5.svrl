@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svrl:schematron-output xmlns:svrl="http://purl.oclc.org/dsdl/svrl" title="" schemaVersion="">
+  <svrl:active-pattern id="sampleValidation" name="PatternTitle" document="file:/C:/dev/ant/xml/test.xml">
+    <svrl:text>A paragraph</svrl:text>
+  </svrl:active-pattern>
+  <svrl:fired-rule context="/" />
+  <svrl:fired-rule context="X" />
+</svrl:schematron-output>

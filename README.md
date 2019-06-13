@@ -11,9 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.1.2 - work in progress
-    * Fixed a ClassLoader issues for ANT task (see [issue #78](https://github.com/phax/ph-schematron/issues/78))
-    * Updated the SVRL XSD with the ISO Schematron 2016 changes
+* v5.2.0 - 2019-06-13
+    * Fixed a ClassLoader issues for ANT task ([issue #78](https://github.com/phax/ph-schematron/issues/78))
+    * Updated the SVRL XSD with the ISO Schematron 2016 changes (incompatible change)
 * v5.1.1 - 2019-06-12
     * Fixed regression in ANT task (see [issue #71](https://github.com/phax/ph-schematron/issues/71))
 * v5.1.0 - 2019-06-11
@@ -138,7 +138,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
 </dependency>
 ```
 
@@ -159,7 +159,7 @@ Starting from version 5.0.9:
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
   <executions>
     <execution>
       <goals>
@@ -219,7 +219,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
   <executions>
     <execution>
       <goals>
@@ -259,7 +259,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
   <executions>
     <execution>
       <goals>
@@ -291,7 +291,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.1.0</version>
+  <version>5.2.0</version>
 </dependency>
 ```
 

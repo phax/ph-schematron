@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>5.1.2-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-testfiles</artifactId>
   <packaging>bundle</packaging>
@@ -30,6 +30,7 @@
   <description>Schematron test files</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-testfiles</url>
   <inceptionYear>2014</inceptionYear>
+
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,10 +38,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
   </organization>
+
   <developers>
     <developer>
       <id>philip</id>
@@ -49,6 +52,7 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -64,6 +68,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -89,10 +94,10 @@
           </excludes>
         </configuration>
       </plugin>
-<!--  
       <plugin>
         <groupId>com.helger.maven</groupId>
         <artifactId>ph-dirindex-maven-plugin</artifactId>
+        <version>3.0.1</version><!--$NO-MVN-MAN-VER$-->
         <executions>
           <execution>
             <id>sch</id>
@@ -132,6 +137,7 @@
           </execution>
         </executions>
       </plugin>
+<!--  
 -->
     </plugins>
   </build>
