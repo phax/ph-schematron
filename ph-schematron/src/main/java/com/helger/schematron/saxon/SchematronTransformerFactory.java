@@ -16,6 +16,9 @@
  */
 package com.helger.schematron.saxon;
 
+import java.net.URL;
+import java.util.Enumeration;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -24,6 +27,9 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.CGlobal;
 import com.helger.commons.exception.InitializationException;
@@ -45,11 +51,12 @@ import net.sf.saxon.lib.FeatureKeys;
 public final class SchematronTransformerFactory
 {
   public static final String SAXON_TRANSFORMER_FACTORY_CLASS = "net.sf.saxon.TransformerFactoryImpl";
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTransformerFactory.class);
   private static final TransformerFactory s_aDefaultFactory;
 
   static
   {
-    s_aDefaultFactory = createTransformerFactorySaxonFirst ((ClassLoader) null,
+    s_aDefaultFactory = createTransformerFactorySaxonFirst (SchematronTransformerFactory.class.getClassLoader (),
                                                             new LoggingTransformErrorListener (CGlobal.DEFAULT_LOCALE),
                                                             new DefaultTransformURIResolver ());
   }
@@ -88,13 +95,20 @@ public final class SchematronTransformerFactory
                                                                        @Nullable final ErrorListener aErrorListener,
                                                                        @Nullable final URIResolver aURIResolver)
   {
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Calling createTransformerFactorySaxonFirst");
+
+    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
+                                                                   : ClassLoaderHelper.getContextClassLoader ();
+
     TransformerFactory aFactory;
     try
     {
       // Try Saxon first
-      final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
-                                                                     : ClassLoaderHelper.getContextClassLoader ();
       aFactory = TransformerFactory.newInstance (SAXON_TRANSFORMER_FACTORY_CLASS, aEffectiveClassLoader);
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Created TransformerFactory with Saxon using '" + SAXON_TRANSFORMER_FACTORY_CLASS + "'");
 
       // Debug/testing only
       if (false)
@@ -106,6 +120,25 @@ public final class SchematronTransformerFactory
     }
     catch (final TransformerFactoryConfigurationError | TransformerConfigurationException ex)
     {
+      if (LOGGER.isDebugEnabled ())
+      {
+        LOGGER.debug ("Failed to create TransformerFactory with Saxon.", ex);
+        try
+        {
+          LOGGER.debug ("Done checking implementations using classloader " + aEffectiveClassLoader);
+          final Enumeration <URL> x = aEffectiveClassLoader.getResources ("META-INF/services/javax.xml.transform.TransformerFactory");
+          while (x.hasMoreElements ())
+          {
+            LOGGER.debug ("  " + x.nextElement ().toExternalForm ());
+          }
+          LOGGER.debug ("Done checking implementations");
+        }
+        catch (final Exception ex2)
+        {
+          LOGGER.error ("Error determining implementations", ex2);
+        }
+      }
+
       try
       {
         // Try default afterwards
@@ -121,6 +154,10 @@ public final class SchematronTransformerFactory
       aFactory.setErrorListener (aErrorListener);
     if (aURIResolver != null)
       aFactory.setURIResolver (aURIResolver);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Created TransformerFactory is " + aFactory);
+
     return aFactory;
   }
 }
