@@ -221,12 +221,12 @@ public final class SchematronHelper
 
             if (LOGGER.isDebugEnabled ())
               LOGGER.debug ("Resolved '" +
-                               sHref +
-                               "' relative to '" +
-                               aIncludeResolver.getBaseHref () +
-                               "' as '" +
-                               aIncludeRes.getPath () +
-                               "'");
+                            sHref +
+                            "' relative to '" +
+                            aIncludeResolver.getBaseHref () +
+                            "' as '" +
+                            aIncludeRes.getPath () +
+                            "'");
 
             // Read XML to be included
             final IMicroDocument aIncludedDoc = MicroReader.readMicroXML (aIncludeRes, aSettings);
@@ -283,24 +283,29 @@ public final class SchematronHelper
             // Important to detach from parent!
             aIncludedContent.detachFromParent ();
 
-            // Check for correct namespace URI of included content
-            if (!CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()))
+            // It is okay to include sthg else
+            if (false)
             {
-              aErrorHandler.error (aResource,
-                                   null,
-                                   "The included resource " +
-                                         aIncludeRes +
-                                         " contains the wrong XML namespace URI '" +
-                                         aIncludedContent.getNamespaceURI () +
-                                         "' but was expected to have '" +
-                                         CSchematron.NAMESPACE_SCHEMATRON +
-                                         "'",
-                                   null);
-              return ESuccess.FAILURE;
+              // Check for correct namespace URI of included content
+              if (!CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()))
+              {
+                aErrorHandler.error (aResource,
+                                     null,
+                                     "The included resource " +
+                                           aIncludeRes +
+                                           " contains the wrong XML namespace URI '" +
+                                           aIncludedContent.getNamespaceURI () +
+                                           "' but was expected to have '" +
+                                           CSchematron.NAMESPACE_SCHEMATRON +
+                                           "'",
+                                     null);
+                return ESuccess.FAILURE;
+              }
             }
 
             // Check that not a whole Schema but only a part is included
-            if (CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
+            if (CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()) &&
+                CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
             {
               aErrorHandler.warn (aResource,
                                   null,
