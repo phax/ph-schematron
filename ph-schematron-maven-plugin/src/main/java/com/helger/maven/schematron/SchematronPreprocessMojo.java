@@ -42,6 +42,8 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.schematron.svrl.CSVRL;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.MicroDocument;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
@@ -238,7 +240,9 @@ public final class SchematronPreprocessMojo extends AbstractMojo
 
       final IXMLWriterSettings XWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
                                                              .setNamespaceContext (aNSCtx);
-      if (MicroWriter.writeToFile (aPreprocessedSchema.getAsMicroElement (), m_aTargetFile, XWS).isSuccess ())
+      final IMicroDocument aDoc = new MicroDocument ();
+      aDoc.appendChild (aPreprocessedSchema.getAsMicroElement ());
+      if (MicroWriter.writeToFile (aDoc, m_aTargetFile, XWS).isSuccess ())
         getLog ().info ("Successfully wrote preprocessed Schematron file '" + m_aTargetFile.getPath () + "'");
       else
         getLog ().error ("Error writing preprocessed Schematron file to '" + m_aTargetFile.getPath () + "'");
