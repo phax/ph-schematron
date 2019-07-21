@@ -221,7 +221,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       aPreprocessor.setKeepEmptyPatterns (m_bKeepEmptyPatterns);
 
       // Pre-process
-      final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
+      final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
       if (aPreprocessedSchema == null)
         throw new SchematronPreprocessException ("Failed to preprocess schema " +
                                                  aSchema +
