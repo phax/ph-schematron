@@ -40,14 +40,24 @@ import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 public final class PSQueryBindingRegistry
 {
   /**
-   * Name of the query binding for which the default binding is registered.
+   * Name of a query binding for which the default binding is registered.
    */
   public static final String QUERY_BINDING_XSLT = "xslt";
 
   /**
-   * Name of the query binding for which the default binding is registered.
+   * Name of a query binding for which the default binding is registered.
    */
   public static final String QUERY_BINDING_XSLT2 = "xslt2";
+
+  /**
+   * Name of a query binding for which the default binding is registered.
+   */
+  public static final String QUERY_BINDING_XPATH = "xpath";
+
+  /**
+   * Name of a query binding for which the default binding is registered.
+   */
+  public static final String QUERY_BINDING_XPATH2 = "xpath2";
 
   /**
    * The default XPath binding object to be used
@@ -63,6 +73,8 @@ public final class PSQueryBindingRegistry
     {
       registerQueryBinding (QUERY_BINDING_XSLT, DEFAULT_QUERY_BINDING);
       registerQueryBinding (QUERY_BINDING_XSLT2, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XPATH, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XPATH2, DEFAULT_QUERY_BINDING);
     }
     catch (final SchematronBindException ex)
     {
