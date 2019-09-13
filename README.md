@@ -13,9 +13,10 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 * v5.2.1 - work in progress
     * The default include handler of the pure version, now allows to include non-Schematron XMLs
-    * Updated to Saxon-HE 9.9.1-4
+    * Updated to Saxon-HE 9.9.1-45
     * The Maven plugin `preprocess` Mojo now emits the XML declaration as well
     * Added support for the Schematron query bindings `xpath` and `xpath2` ([issue #80](https://github.com/phax/ph-schematron/issues/80))
+    * Updated to ANT 1.10.7
 * v5.2.0 - 2019-06-13
     * Fixed a ClassLoader issues for ANT task ([issue #78](https://github.com/phax/ph-schematron/issues/78))
     * Updated the SVRL XSD with the ISO Schematron 2016 changes (incompatible change)

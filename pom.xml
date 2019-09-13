@@ -69,7 +69,7 @@
   </developers>
   
   <properties>
-    <ant.version>1.10.6</ant.version>
+    <ant.version>1.10.7</ant.version>
   </properties>
   
   <dependencyManagement>
@@ -84,7 +84,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>9.9.1-4</version>
+        <version>9.9.1-5</version>
       </dependency>
       
       <!-- RelaxNG -->
