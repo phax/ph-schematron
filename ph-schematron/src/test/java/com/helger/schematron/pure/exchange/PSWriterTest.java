@@ -20,15 +20,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
+import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.model.PSNS;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
+import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * Test class for class {@link PSSchema} and {@link PSReader} and
@@ -62,5 +67,29 @@ public final class PSWriterTest
       // Originally created XML and re-created-written XML must match
       assertEquals (sXML1, sXML2);
     }
+  }
+
+  @Test
+  public void testWriteWithNamespacePrefix () throws SchematronReadException
+  {
+    final IReadableResource aRes = SchematronTestHelper.getAllValidSchematronFiles ().getFirst ();
+    // Read existing Schematron
+    final PSSchema aSchema = new PSReader (aRes).readSchema ();
+
+    // Create the XML namespace context
+    final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
+    aNSCtx.addMapping ("sch", CSchematron.NAMESPACE_SCHEMATRON);
+    aNSCtx.addMapping ("xsl", CSchematron.NAMESPACE_URI_XSL);
+    // Add all mappings from the PSSchema as well
+    for (final PSNS aItem : aSchema.getAllNSs ())
+      aNSCtx.addMapping (aItem.getPrefix (), aItem.getUri ());
+
+    // Create the PSWriter settings
+    final PSWriterSettings aPSWS = new PSWriterSettings ();
+    aPSWS.setXMLWriterSettings (new XMLWriterSettings ().setNamespaceContext (aNSCtx)
+                                                        .setPutNamespaceContextPrefixesInRoot (true));
+
+    // Write the Schematron
+    new PSWriter (aPSWS).writeToFile (aSchema, new File ("target/test-with-nsprefix.xml"));
   }
 }
