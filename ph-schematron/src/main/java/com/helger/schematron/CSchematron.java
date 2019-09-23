@@ -31,6 +31,9 @@ public final class CSchematron
   /** The namespace URL for Schematron documents */
   public static final String NAMESPACE_SCHEMATRON = "http://purl.oclc.org/dsdl/schematron";
 
+  /** The namespace URL for XSLT transformation */
+  public static final String NAMESPACE_URI_XSL = "http://www.w3.org/1999/XSL/Transform";
+
   /** Special phase name denoting that all patterns are active */
   public static final String PHASE_ALL = "#ALL";
 

@@ -231,7 +231,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       // Convert to XML string
       final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
       aNSCtx.addDefaultNamespaceURI (CSchematron.NAMESPACE_SCHEMATRON);
-      aNSCtx.addMapping ("xsl", "http://www.w3.org/1999/XSL/Transform");
+      aNSCtx.addMapping ("xsl", CSchematron.NAMESPACE_URI_XSL);
       aNSCtx.addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
 
       // Add all <ns> elements from schema as NS context

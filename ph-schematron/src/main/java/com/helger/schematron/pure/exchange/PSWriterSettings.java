@@ -85,6 +85,7 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
   {
     final MapBasedNamespaceContext ret = new MapBasedNamespaceContext ();
     ret.addDefaultNamespaceURI (CSchematron.NAMESPACE_SCHEMATRON);
+    ret.addMapping ("xsl", CSchematron.NAMESPACE_URI_XSL);
     for (final PSNS aItem : aSchema.getAllNSs ())
       ret.addMapping (aItem.getPrefix (), aItem.getUri ());
     return ret;
