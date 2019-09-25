@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd"
+    Version="3.3" Serie="SX" Folio="2495" Fecha="2019-09-23T17:29:56"
+    Sello="Hssq2E7KeNs0z=="
+    FormaPago="99" NoCertificado="00001000000400000000"
+    Certificado="MLOPbDCCBFSgAwIBAgIUMDAwMDEwMDAwMD=="
+    CondicionesDePago="09" SubTotal="6270.93" Moneda="MXN" TipoCambio="1" Total="6321.20"
+    TipoDeComprobante="I" MetodoPago="PPD" LugarExpedicion="42080">
+    <cfdi:Emisor Nombre="AASASAS" Rfc="CAAK090911P85"
+        RegimenFiscal="601"/>
+    <cfdi:Receptor Rfc="CAAK090911P85" Nombre="AASASAS"
+        UsoCFDI="G01"/>
+    <cfdi:Conceptos>
+        <cfdi:Concepto ClaveProdServ="50192300" Cantidad="6" ClaveUnidad="XBX" Unidad="CAJ"
+            Descripcion="MIX WAFFLE" ValorUnitario="108.13" Importe="648.78">
+            <cfdi:Impuestos>
+                <cfdi:Traslados>
+                    <cfdi:Traslado Base="648.78" Impuesto="002" TipoFactor="Tasa"
+                        TasaOCuota="0.000000" Importe="0.00"/>
+                    <cfdi:Traslado Base="600.72" Impuesto="003" TipoFactor="Tasa"
+                        TasaOCuota="0.080000" Importe="48.06"/>
+                </cfdi:Traslados>
+            </cfdi:Impuestos>
+        </cfdi:Concepto>
+    </cfdi:Conceptos>
+    <cfdi:Impuestos TotalImpuestosTrasladados="50.27">
+        <cfdi:Traslados>
+            <cfdi:Traslado Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.000000" Importe="0.00"/>
+        </cfdi:Traslados>
+    </cfdi:Impuestos>
+</cfdi:Comprobante>
