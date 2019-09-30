@@ -143,7 +143,7 @@ public class SCHTransformerCustomizer
 
   /**
    * Force the caching of results.
-   * 
+   *
    * @param bForceCacheResult
    *        <code>true</code> to force result caching, <code>false</code> to
    *        cache only if no parameters are present.
@@ -158,6 +158,10 @@ public class SCHTransformerCustomizer
   }
 
   /**
+   * Can the results of the XSLT transformation be cached? By default results
+   * cannot be cached if custom parameters are present, but since v.5.2.1 this
+   * can be manually overridden.
+   * 
    * @return <code>true</code> if the result can be cached, <code>false</code>
    *         if not.
    * @see #setForceCacheResult(boolean) to force result caching

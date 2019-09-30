@@ -17,6 +17,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * The Maven plugin `preprocess` Mojo now emits the XML declaration as well
     * Added support for the Schematron query bindings `xpath` and `xpath2` ([issue #80](https://github.com/phax/ph-schematron/issues/80))
     * Updated to ANT 1.10.7
+    * Extended API of `SCHTransformerCustomizer` for forcing result caching ([issue #87](https://github.com/phax/ph-schematron/issues/87))
 * v5.2.0 - 2019-06-13
     * Fixed a ClassLoader issues for ANT task ([issue #78](https://github.com/phax/ph-schematron/issues/78))
     * Updated the SVRL XSD with the ISO Schematron 2016 changes (incompatible change)
