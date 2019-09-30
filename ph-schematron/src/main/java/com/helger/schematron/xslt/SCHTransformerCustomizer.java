@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -36,6 +37,7 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class SCHTransformerCustomizer
 {
   public static enum EStep
@@ -45,11 +47,14 @@ public class SCHTransformerCustomizer
     SCH2XSLT_3;
   }
 
+  public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
+
   private ErrorListener m_aCustomErrorListener;
   private URIResolver m_aCustomURIResolver;
   private ICommonsOrderedMap <String, Object> m_aCustomParameters;
   private String m_sPhase;
   private String m_sLanguageCode;
+  private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
 
   public SCHTransformerCustomizer ()
   {}
@@ -125,9 +130,41 @@ public class SCHTransformerCustomizer
     return this;
   }
 
+  /**
+   * @return <code>true</code> if internal caching of the result should be
+   *         forced, <code>false</code> if not. The default is
+   *         {@link #DEFAULT_FORCE_CACHE_RESULT}.
+   * @since 5.2.1
+   */
+  public boolean isForceCacheResult ()
+  {
+    return m_bForceCacheResult;
+  }
+
+  /**
+   * Force the caching of results.
+   * 
+   * @param bForceCacheResult
+   *        <code>true</code> to force result caching, <code>false</code> to
+   *        cache only if no parameters are present.
+   * @return this for chaining
+   * @since 5.2.1
+   */
+  @Nonnull
+  public SCHTransformerCustomizer setForceCacheResult (final boolean bForceCacheResult)
+  {
+    m_bForceCacheResult = bForceCacheResult;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if the result can be cached, <code>false</code>
+   *         if not.
+   * @see #setForceCacheResult(boolean) to force result caching
+   */
   public boolean canCacheResult ()
   {
-    return !hasParameters ();
+    return !hasParameters () || m_bForceCacheResult;
   }
 
   public void customize (@Nonnull final TransformerFactory aTransformer)
