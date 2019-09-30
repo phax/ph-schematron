@@ -62,6 +62,7 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.SVRLNamespaceContext;
 import com.helger.schematron.svrl.SVRLResourceError;
+import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.CollectingTransformErrorListener;
@@ -199,6 +200,13 @@ public class Schematron extends AbstractSchematronTask
   private String m_sLanguageCode;
 
   /**
+   * <code>true</code> if internal caching of the result should be forced,
+   * <code>false</code> if not. This only applies when Schematron to XSLT
+   * conversion is performed.
+   */
+  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+
+  /**
    * <code>true</code> if the XMLs are supposed to be valid, <code>false</code>
    * otherwise. Defaults to <code>true</code>.
    */
@@ -294,6 +302,15 @@ public class Schematron extends AbstractSchematronTask
       _debug ("Using default language code");
     else
       _debug ("Using the language code '" + m_sLanguageCode + "'");
+  }
+
+  public void setForceCacheResult (final boolean bForceCacheResult)
+  {
+    m_bForceCacheResult = bForceCacheResult;
+    if (m_bForceCacheResult)
+      _debug ("Results are forcebly cached");
+    else
+      _debug ("Results not not forcebly cached");
   }
 
   public void setExpectSuccess (final boolean bExpectSuccess)
@@ -695,6 +712,7 @@ public class Schematron extends AbstractSchematronTask
           final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
           aRealSCH.setPhase (m_sPhaseName);
           aRealSCH.setLanguageCode (m_sLanguageCode);
+          aRealSCH.setForceCacheResult (m_bForceCacheResult);
           aRealSCH.setErrorListener (aErrorHdl);
           aRealSCH.setURIResolver (getURIResolver ());
           aRealSCH.setEntityResolver (getEntityResolver ());

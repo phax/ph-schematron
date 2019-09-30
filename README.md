@@ -17,7 +17,7 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
     * The Maven plugin `preprocess` Mojo now emits the XML declaration as well
     * Added support for the Schematron query bindings `xpath` and `xpath2` ([issue #80](https://github.com/phax/ph-schematron/issues/80))
     * Updated to ANT 1.10.7
-    * Extended API of `SCHTransformerCustomizer` for forcing result caching ([issue #87](https://github.com/phax/ph-schematron/issues/87))
+    * Extended API of `SCHTransformerCustomizer` for forcing result caching ([issue #87](https://github.com/phax/ph-schematron/issues/87)), added new parameters in Maven plugin and ANT task for this setting (`forceCacheResult`)
 * v5.2.0 - 2019-06-13
     * Fixed a ClassLoader issues for ANT task ([issue #78](https://github.com/phax/ph-schematron/issues/78))
     * Updated the SVRL XSD with the ISO Schematron 2016 changes (incompatible change)
@@ -201,6 +201,7 @@ The possible configuration parameters are:
   * `overwriteWithoutQuestion` - Overwrite existing Schematron files without notice? If this is set to `false` than existing XSLT files are not overwritten. Default is `true`.
   * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+  * `forceCacheResult` (since v.5.2.1) - Force the caching of results from SCH to XSLT.
   * `parameters` (since v5.0.2) - A map to provide custom parameter for the Schematron XSLTs (as in `allow-foreign`). Example:
 
 ```xml
@@ -252,6 +253,7 @@ The possible configuration parameters are:
   * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
   * `parameters` (since v5.0.2) - Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect when using schematronProcessingEngine "schematron" or "xslt". By default no parameter is present.
   * `failFast` (since v5.0.5) - If multiple XML files are validated this parameter defines whether the execution should fail at the first error (value `true`) or at the end only (value `false`). The default value is `true`.
+  * `forceCacheResult` (since v5.2.1) - Force the caching of results of the conversion from SCH to XSLT (the default is `false`)
 
 
 # Maven plugin to preprocess Schematron files

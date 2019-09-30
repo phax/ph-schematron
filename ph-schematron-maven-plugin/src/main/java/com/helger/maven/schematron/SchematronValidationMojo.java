@@ -55,6 +55,7 @@ import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.CollectingTransformErrorListener;
@@ -203,6 +204,14 @@ public final class SchematronValidationMojo extends AbstractMojo
   @Since ("5.0.5")
   private boolean m_bFailFast = true;
 
+  /**
+   * Force the results to be cached. This only applies when Schematron to XSLT
+   * conversion is performed.
+   */
+  @Parameter (name = "forceCacheResult", defaultValue = "false")
+  @Since ("5.2.1")
+  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+
   public void setSchematronFile (@Nonnull final File aFile)
   {
     m_aSchematronFile = aFile;
@@ -322,6 +331,15 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Failing at the first erroneous file");
     else
       getLog ().debug ("Failing after validating all files");
+  }
+
+  public void setForceCacheResult (final boolean bForceCacheResult)
+  {
+    m_bForceCacheResult = bForceCacheResult;
+    if (m_bForceCacheResult)
+      getLog ().debug ("Results are forcebly cached");
+    else
+      getLog ().debug ("Results not not forcebly cached");
   }
 
   @Nonnull
@@ -526,6 +544,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (m_sLanguageCode);
+        aRealSCH.setForceCacheResult (m_bForceCacheResult);
         aRealSCH.parameters ().setAll (m_aCustomParameters);
         aRealSCH.setErrorListener (aErrorHdl);
         aRealSCH.isValidSchematron ();

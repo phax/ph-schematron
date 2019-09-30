@@ -38,6 +38,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 {
   private String m_sPhase;
   private String m_sLanguageCode;
+  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * Constructor
@@ -72,6 +73,30 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     m_sLanguageCode = sLanguageCode;
   }
 
+  /**
+   * @return <code>true</code> if internal caching of the result should be
+   *         forced, <code>false</code> if not.
+   * @since 5.2.1
+   */
+  public boolean isForceCacheResult ()
+  {
+    return m_bForceCacheResult;
+  }
+
+  /**
+   * Force the caching of results. This only applies when Schematron to XSLT
+   * conversion is performed.
+   *
+   * @param bForceCacheResult
+   *        <code>true</code> to force result caching, <code>false</code> to
+   *        cache only if no parameters are present.
+   * @since 5.2.1
+   */
+  public void setForceCacheResult (final boolean bForceCacheResult)
+  {
+    m_bForceCacheResult = bForceCacheResult;
+  }
+
   @Nonnull
   @OverrideOnDemand
   protected SCHTransformerCustomizer createTransformerCustomizer ()
@@ -80,7 +105,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
                                           .setURIResolver (getURIResolver ())
                                           .setParameters (parameters ())
                                           .setPhase (m_sPhase)
-                                          .setLanguageCode (m_sLanguageCode);
+                                          .setLanguageCode (m_sLanguageCode)
+                                          .setForceCacheResult (m_bForceCacheResult);
   }
 
   @Override

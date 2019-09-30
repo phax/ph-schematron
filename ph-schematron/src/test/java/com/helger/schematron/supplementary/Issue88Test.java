@@ -27,8 +27,8 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class Issue88Test
 {
@@ -36,7 +36,7 @@ public final class Issue88Test
                                                @Nonnull final File aXML,
                                                final boolean bValid) throws Exception
   {
-    final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
     // aSCH.setAllowForeignElements (true);
 
     // Perform validation

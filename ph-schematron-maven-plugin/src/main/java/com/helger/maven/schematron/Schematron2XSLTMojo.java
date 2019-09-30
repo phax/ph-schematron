@@ -134,6 +134,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("5.0.2")
   private Map <String, String> m_aCustomParameters;
 
+  /**
+   * Force the results to be cached.
+   */
+  @Parameter (name = "forceCacheResult", defaultValue = "false")
+  @Since ("5.2.1")
+  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -204,6 +211,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   ICommonsMap <String, String> getParameters ()
   {
     return new CommonsHashMap <> (m_aCustomParameters);
+  }
+
+  public void setForceCacheResult (final boolean bForceCacheResult)
+  {
+    m_bForceCacheResult = bForceCacheResult;
+    if (m_bForceCacheResult)
+      getLog ().debug ("Results are forcebly cached");
+    else
+      getLog ().debug ("Results not not forcebly cached");
   }
 
   public void execute () throws MojoExecutionException, MojoFailureException
@@ -291,7 +307,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             final SCHTransformerCustomizer aCustomizer = new SCHTransformerCustomizer ().setErrorListener (aMojoErrorListener)
                                                                                         .setPhase (m_sPhaseName)
                                                                                         .setLanguageCode (m_sLanguageCode)
-                                                                                        .setParameters (m_aCustomParameters);
+                                                                                        .setParameters (m_aCustomParameters)
+                                                                                        .setForceCacheResult (m_bForceCacheResult);
             final ISchematronXSLTBasedProvider aXsltProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (aSchematronResource,
                                                                                                                         aCustomizer);
             if (aXsltProvider != null)
