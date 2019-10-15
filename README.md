@@ -11,13 +11,15 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.2.1 - work in progress
+* v5.3.0 - work in progress
     * The default include handler of the pure version, now allows to include non-Schematron XMLs
     * Updated to Saxon-HE 9.9.1-45
     * The Maven plugin `preprocess` Mojo now emits the XML declaration as well
     * Added support for the Schematron query bindings `xpath` and `xpath2` ([issue #80](https://github.com/phax/ph-schematron/issues/80))
     * Updated to ANT 1.10.7
     * Extended API of `SCHTransformerCustomizer` for forcing result caching ([issue #87](https://github.com/phax/ph-schematron/issues/87)), added new parameters in Maven plugin and ANT task for this setting (`forceCacheResult`)
+    * Renamed method `IPSValidationHandler.onRule` to `onFiredRule` (incompatible change)
+    * Added methods `IPSValidationHandler.onRuleStart` and `and` for chaining
 * v5.2.0 - 2019-06-13
     * Fixed a ClassLoader issues for ANT task ([issue #78](https://github.com/phax/ph-schematron/issues/78))
     * Updated the SVRL XSD with the ISO Schematron 2016 changes (incompatible change)
