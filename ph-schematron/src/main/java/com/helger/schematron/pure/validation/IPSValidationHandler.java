@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.helger.commons.state.EContinue;
 import com.helger.schematron.pure.model.PSAssertReport;
@@ -71,7 +72,22 @@ public interface IPSValidationHandler extends Serializable
   {}
 
   /**
-   * This method is called for every rule inside the current pattern.
+   * Called once for each rule, even if the context list is empty.
+   *
+   * @param aRule
+   *        The rule that is to be executed.
+   * @param aContextList
+   *        The list of context nodes. Never <code>null</code> but maybe empty.
+   * @throws SchematronValidationException
+   *         In case of errors
+   */
+  default void onRuleStart (@Nonnull final PSRule aRule,
+                            @Nonnull final NodeList aContextList) throws SchematronValidationException
+  {}
+
+  /**
+   * This method is called for every rule inside the current pattern. Was called
+   * "onRule" previously.
    *
    * @param aRule
    *        The current rule. Never <code>null</code>.
@@ -82,7 +98,8 @@ public interface IPSValidationHandler extends Serializable
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onRule (@Nonnull final PSRule aRule, @Nonnull final String sContext) throws SchematronValidationException
+  default void onFiredRule (@Nonnull final PSRule aRule,
+                            @Nonnull final String sContext) throws SchematronValidationException
   {}
 
   /**
@@ -167,4 +184,104 @@ public interface IPSValidationHandler extends Serializable
   default void onEnd (@Nonnull final PSSchema aSchema,
                       @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {}
+
+  /**
+   * Create a new validation handler that first invokes all methods from this
+   * handler, and than later on from the passed validation handler.
+   *
+   * @param rhs
+   *        The validation handler to be invoked after this one. May not be
+   *        <code>null</code>.
+   * @return The new validation handler that invokes this and the passed on
+   */
+  @Nonnull
+  default IPSValidationHandler and (@Nonnull final IPSValidationHandler rhs)
+  {
+    return and (this, rhs);
+  }
+
+  /**
+   * Create a new validation handler that first invokes all methods from the
+   * first handler and second from the second handler.
+   *
+   * @param lhs
+   *        The first validation handler to be invoked. May not be
+   *        <code>null</code>.
+   * @param rhs
+   *        The second validation handler to be invoked. May not be
+   *        <code>null</code>.
+   * @return The new validation handler that invokes both handlers. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  static IPSValidationHandler and (@Nonnull final IPSValidationHandler lhs, @Nonnull final IPSValidationHandler rhs)
+  {
+    return new IPSValidationHandler ()
+    {
+      public void onStart (@Nonnull final PSSchema aSchema,
+                           @Nullable final PSPhase aActivePhase,
+                           @Nullable final String sBaseURI) throws SchematronValidationException
+      {
+        lhs.onStart (aSchema, aActivePhase, sBaseURI);
+        rhs.onStart (aSchema, aActivePhase, sBaseURI);
+      }
+
+      public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
+      {
+        lhs.onPattern (aPattern);
+        rhs.onPattern (aPattern);
+      }
+
+      public void onRuleStart (@Nonnull final PSRule aRule,
+                               @Nonnull final NodeList aContextList) throws SchematronValidationException
+      {
+        lhs.onRuleStart (aRule, aContextList);
+        rhs.onRuleStart (aRule, aContextList);
+      }
+
+      public void onFiredRule (@Nonnull final PSRule aRule,
+                               @Nonnull final String sContext) throws SchematronValidationException
+      {
+        lhs.onFiredRule (aRule, sContext);
+        rhs.onFiredRule (aRule, sContext);
+      }
+
+      @Nonnull
+      public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+                                       @Nonnull final String sTestExpression,
+                                       @Nonnull final Node aRuleMatchingNode,
+                                       final int nNodeIndex,
+                                       @Nullable final Object aContext) throws SchematronValidationException
+      {
+        EContinue eCtd = lhs.onFailedAssert (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+        if (eCtd.isContinue ())
+          eCtd = rhs.onFailedAssert (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+        return eCtd;
+      }
+
+      @Nonnull
+      public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+                                           @Nonnull final String sTestExpression,
+                                           @Nonnull final Node aRuleMatchingNode,
+                                           final int nNodeIndex,
+                                           @Nullable final Object aContext) throws SchematronValidationException
+      {
+        EContinue eCtd = lhs.onSuccessfulReport (aAssertReport,
+                                                 sTestExpression,
+                                                 aRuleMatchingNode,
+                                                 nNodeIndex,
+                                                 aContext);
+        if (eCtd.isContinue ())
+          eCtd = rhs.onSuccessfulReport (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+        return eCtd;
+      }
+
+      public void onEnd (@Nonnull final PSSchema aSchema,
+                         @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+      {
+        lhs.onEnd (aSchema, aActivePhase);
+        rhs.onEnd (aSchema, aActivePhase);
+      }
+    };
+  }
 }

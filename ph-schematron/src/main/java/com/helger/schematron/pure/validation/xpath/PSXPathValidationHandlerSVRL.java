@@ -163,7 +163,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  public void onRule (@Nonnull final PSRule aRule, @Nonnull final String sContext)
+  public void onFiredRule (@Nonnull final PSRule aRule, @Nonnull final String sContext)
   {
     final FiredRule aRetRule = new FiredRule ();
     aRetRule.setContext (sContext);

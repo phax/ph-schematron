@@ -35,23 +35,23 @@ import com.helger.schematron.pure.model.PSRule;
 public class PSXPathBoundRule
 {
   private final PSRule m_aRule;
-  private final String m_sRuleExpression;
-  private final XPathExpression m_aBoundRuleExpression;
+  private final String m_sRuleContext;
+  private final XPathExpression m_aBoundRuleContext;
 
   private final ICommonsList <PSXPathBoundAssertReport> m_aBoundAssertReports;
 
   public PSXPathBoundRule (@Nonnull final PSRule aRule,
-                           @Nonnull final String sRuleExpression,
-                           @Nonnull final XPathExpression aBoundRuleExpression,
+                           @Nonnull final String sRuleContext,
+                           @Nonnull final XPathExpression aBoundRuleContext,
                            @Nonnull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports)
   {
     ValueEnforcer.notNull (aRule, "Rule");
-    ValueEnforcer.notEmpty (sRuleExpression, "RuleExpression");
-    ValueEnforcer.notNull (aBoundRuleExpression, "BoundRuleExpression");
+    ValueEnforcer.notEmpty (sRuleContext, "RuleContext");
+    ValueEnforcer.notNull (aBoundRuleContext, "BoundRuleContext");
     ValueEnforcer.notNull (aBoundAssertReports, "BoundAssertReports");
     m_aRule = aRule;
-    m_sRuleExpression = sRuleExpression;
-    m_aBoundRuleExpression = aBoundRuleExpression;
+    m_sRuleContext = sRuleContext;
+    m_aBoundRuleContext = aBoundRuleContext;
     m_aBoundAssertReports = aBoundAssertReports;
   }
 
@@ -62,15 +62,15 @@ public class PSXPathBoundRule
   }
 
   @Nonnull
-  public String getRuleExpression ()
+  public String getRuleContext ()
   {
-    return m_sRuleExpression;
+    return m_sRuleContext;
   }
 
   @Nonnull
-  public XPathExpression getBoundRuleExpression ()
+  public XPathExpression getBoundRuleContext ()
   {
-    return m_aBoundRuleExpression;
+    return m_aBoundRuleContext;
   }
 
   @Nonnull
@@ -84,8 +84,8 @@ public class PSXPathBoundRule
   public String toString ()
   {
     return new ToStringGenerator (this).append ("rule", m_aRule)
-                                       .append ("ruleExpression", m_sRuleExpression)
-                                       .append ("boundRuleExpression", m_aBoundRuleExpression)
+                                       .append ("ruleExpression", m_sRuleContext)
+                                       .append ("boundRuleExpression", m_aBoundRuleContext)
                                        .append ("boundAssertReports", m_aBoundAssertReports)
                                        .getToString ();
   }

@@ -514,31 +514,33 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         final PSRule aRule = aBoundRule.getRule ();
 
         // Find all nodes matching the rules
-        NodeList aRuleMatchingNodes = null;
+        NodeList aRuleContextNodes = null;
         try
         {
-          aRuleMatchingNodes = XPathEvaluationHelper.evaluate (aBoundRule.getBoundRuleExpression (),
-                                                               aNode,
-                                                               XPathConstants.NODESET,
-                                                               sBaseURI);
+          aRuleContextNodes = XPathEvaluationHelper.evaluate (aBoundRule.getBoundRuleContext (),
+                                                              aNode,
+                                                              XPathConstants.NODESET,
+                                                              sBaseURI);
         }
         catch (final XPathExpressionException ex)
         {
           // Handle the cause, because it is usually a wrapper only
           error (aRule,
-                 "Failed to evaluate XPath expression to a nodeset: '" + aBoundRule.getRuleExpression () + "'",
+                 "Failed to evaluate XPath expression to a nodeset: '" + aBoundRule.getRuleContext () + "'",
                  ex.getCause () != null ? ex.getCause () : ex);
           continue rules;
         }
 
-        final int nRuleMatchingNodes = aRuleMatchingNodes.getLength ();
+        aValidationHandler.onRuleStart (aRule, aRuleContextNodes);
+
+        final int nRuleMatchingNodes = aRuleContextNodes.getLength ();
         if (nRuleMatchingNodes > 0)
         {
           // For all contained assert and report elements
           for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.getAllBoundAssertReports ())
           {
             // XSLT does "fired-rule" for each node
-            aValidationHandler.onRule (aRule, aBoundRule.getRuleExpression ());
+            aValidationHandler.onFiredRule (aRule, aBoundRule.getRuleContext ());
 
             final PSAssertReport aAssertReport = aBoundAssertReport.getAssertReport ();
             final boolean bIsAssert = aAssertReport.isAssert ();
@@ -547,7 +549,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             // Check each node, if it matches the assert/report
             for (int i = 0; i < nRuleMatchingNodes; ++i)
             {
-              final Node aRuleMatchingNode = aRuleMatchingNodes.item (i);
+              final Node aRuleMatchingNode = aRuleContextNodes.item (i);
               try
               {
                 final boolean bTestResult = ((Boolean) XPathEvaluationHelper.evaluate (aTestExpression,
