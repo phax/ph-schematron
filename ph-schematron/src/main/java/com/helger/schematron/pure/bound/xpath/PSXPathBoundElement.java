@@ -53,6 +53,8 @@ public class PSXPathBoundElement
                               @Nullable final XPathExpression aBoundExpression)
   {
     ValueEnforcer.notNull (aElement, "Element");
+    ValueEnforcer.isTrue (aElement instanceof String || aElement instanceof IPSElement,
+                          "Element must be a String of a PS element");
     m_aElement = aElement;
     m_sExpression = sExpression;
     m_aBoundExpression = aBoundExpression;
@@ -63,7 +65,7 @@ public class PSXPathBoundElement
    *         <code>null</code>.
    */
   @Nonnull
-  public Object getElement ()
+  public final Object getElement ()
   {
     return m_aElement;
   }
@@ -76,7 +78,7 @@ public class PSXPathBoundElement
    *         {@link #getExpression()} is <code>null</code>.
    */
   @Nullable
-  public String getExpression ()
+  public final String getExpression ()
   {
     return m_sExpression;
   }
@@ -85,7 +87,7 @@ public class PSXPathBoundElement
    * @return The compiled {@link XPathExpression} - may be <code>null</code>.
    */
   @Nullable
-  public XPathExpression getBoundExpression ()
+  public final XPathExpression getBoundExpression ()
   {
     return m_aBoundExpression;
   }

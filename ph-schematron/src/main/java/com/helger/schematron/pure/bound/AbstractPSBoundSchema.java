@@ -40,6 +40,7 @@ import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.IPSPartialValidationHandler;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstError;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
@@ -58,14 +59,16 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   private final IPSErrorHandler m_aErrorHandler;
   private final boolean m_bDefaultErrorHandler;
   private final MapBasedNamespaceContext m_aNamespaceContext;
-  private final String m_sPhase;
+  private final String m_sPhaseID;
   private final PSPhase m_aPhase;
   private final ICommonsList <PSPattern> m_aPatterns = new CommonsArrayList <> ();
+  private final IPSValidationHandler m_aCustomValidationHandler;
 
   public AbstractPSBoundSchema (@Nonnull final IPSQueryBinding aQueryBinding,
                                 @Nonnull final PSSchema aOrigSchema,
-                                @Nullable final String sPhase,
-                                @Nullable final IPSErrorHandler aCustomErrorHandler)
+                                @Nullable final String sPhaseID,
+                                @Nullable final IPSErrorHandler aCustomErrorHandler,
+                                @Nullable final IPSValidationHandler aCustomValidationHandler)
   {
     ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
     ValueEnforcer.notNull (aOrigSchema, "OrigSchema");
@@ -79,22 +82,22 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     m_aNamespaceContext = aOrigSchema.getAsNamespaceContext ();
 
     // Determine the phase ID to use
-    String sRealPhase = sPhase != null ? sPhase : CSchematron.PHASE_DEFAULT;
-    if (sRealPhase.equals (CSchematron.PHASE_DEFAULT))
+    String sRealPhaseID = sPhaseID != null ? sPhaseID : CSchematron.PHASE_DEFAULT;
+    if (sRealPhaseID.equals (CSchematron.PHASE_DEFAULT))
     {
-      sRealPhase = aOrigSchema.getDefaultPhase ();
-      if (sRealPhase == null)
-        sRealPhase = CSchematron.PHASE_ALL;
+      sRealPhaseID = aOrigSchema.getDefaultPhase ();
+      if (sRealPhaseID == null)
+        sRealPhaseID = CSchematron.PHASE_ALL;
     }
-    if (!sRealPhase.equals (CSchematron.PHASE_ALL))
+    if (!sRealPhaseID.equals (CSchematron.PHASE_ALL))
     {
-      m_aPhase = aOrigSchema.getPhaseOfID (sRealPhase);
+      m_aPhase = aOrigSchema.getPhaseOfID (sRealPhaseID);
       if (m_aPhase == null)
-        warn (aOrigSchema, "Failed to resolve phase with ID '" + sRealPhase + "' - default to all patterns");
+        warn (aOrigSchema, "Failed to resolve phase with ID '" + sRealPhaseID + "' - default to all patterns");
     }
     else
       m_aPhase = null;
-    m_sPhase = sRealPhase;
+    m_sPhaseID = sRealPhaseID;
 
     // Determine all patterns of the phase to use
     if (m_aPhase == null)
@@ -115,7 +118,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                 "Failed to resolve pattern with ID '" +
                              sActivePatternID +
                              "' - ignoring this pattern in phase '" +
-                             sRealPhase +
+                             sRealPhaseID +
                              "'");
         }
         else
@@ -130,15 +133,17 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
         error (aOrigSchema, "No patterns found in schema!");
       else
         error (aOrigSchema, "No patterns found in schema for phase '" + m_aPhase.getID () + "!");
+
+    m_aCustomValidationHandler = aCustomValidationHandler;
   }
 
   @Nonnull
-  protected IPSErrorHandler getErrorHandler ()
+  public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
   }
 
-  protected boolean isDefaultErrorHandler ()
+  public final boolean isDefaultErrorHandler ()
   {
     return m_bDefaultErrorHandler;
   }
@@ -184,7 +189,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   @Nonnull
   public final String getPhaseID ()
   {
-    return m_sPhase;
+    return m_sPhaseID;
   }
 
   @Nullable
@@ -205,11 +210,17 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     return m_aPatterns.getClone ();
   }
 
+  @Nullable
+  public final IPSValidationHandler getCustomValidationHandler ()
+  {
+    return m_aCustomValidationHandler;
+  }
+
   /**
    * Override this implementation in a derived class to modify the behavior.
    *
-   * @return An implementation of {@link IPSPartialValidationHandler} to
-   *         use for partial validation. May not be <code>null</code>.
+   * @return An implementation of {@link IPSPartialValidationHandler} to use for
+   *         partial validation. May not be <code>null</code>.
    */
   @Nonnull
   @OverrideOnDemand
@@ -223,7 +234,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                                       @Nullable final String sBaseURI) throws SchematronValidationException
   {
     final IPSPartialValidationHandler aValidationHandler = createPartialValidationHandler ();
-    validate (aNode, sBaseURI, aValidationHandler);
+    validate (aNode, sBaseURI, aValidationHandler.and (m_aCustomValidationHandler));
     return aValidationHandler.getValidity ();
   }
 
@@ -232,7 +243,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                                                 @Nullable final String sBaseURI) throws SchematronValidationException
   {
     final PSXPathValidationHandlerSVRL aValidationHandler = new PSXPathValidationHandlerSVRL (getErrorHandler ());
-    validate (aNode, sBaseURI, aValidationHandler);
+    validate (aNode, sBaseURI, aValidationHandler.and (m_aCustomValidationHandler));
     return aValidationHandler.getSVRL ();
   }
 
@@ -243,7 +254,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                                        .append ("origSchema", m_aOrigSchema)
                                        .appendIfNotNull ("errorHandler", m_aErrorHandler)
                                        .append ("namespaceContext", m_aNamespaceContext)
-                                       .appendIfNotNull ("phase", m_sPhase)
+                                       .appendIfNotNull ("phaseID", m_sPhaseID)
                                        .appendIfNotNull ("phase", m_aPhase)
                                        .append ("patterns", m_aPatterns)
                                        .getToString ();

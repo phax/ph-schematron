@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -79,6 +78,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private final XPathVariableResolver m_aXPathVariableResolver;
   private final XPathFunctionResolver m_aXPathFunctionResolver;
   private final XPathFactory m_aXPathFactory;
+  // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
 
   /**
@@ -115,10 +115,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nullable
   private ICommonsList <PSXPathBoundElement> _createBoundElements (@Nonnull final IPSHasMixedContent aMixedContent,
                                                                    @Nonnull final XPath aXPathContext,
-                                                                   @Nonnull final IPSXPathVariables aVariables)
+                                                                   @Nonnull final PSXPathVariables aVariables)
   {
     final ICommonsList <PSXPathBoundElement> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
+
+    // Create a local copy
+    final IPSXPathVariables aLocalVariables = aVariables.getClone ();
 
     for (final Object aContentElement : aMixedContent.getAllContentElements ())
     {
@@ -184,7 +187,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   @Nullable
   private ICommonsMap <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@Nonnull final XPath aXPathContext,
-                                                                                @Nonnull final IPSXPathVariables aGlobalVariables)
+                                                                                @Nonnull final PSXPathVariables aGlobalVariables)
   {
     final ICommonsMap <String, PSXPathBoundDiagnostic> ret = new CommonsHashMap <> ();
     boolean bHasAnyError = false;
@@ -225,7 +228,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * Pre-compile all patterns incl. their content
    *
    * @param aXPathContext
-   * @param aXPathContext
    *        Global XPath object to use. May not be <code>null</code>.
    * @param aBoundDiagnostics
    *        A map from DiagnosticID to its mapped counterpart. May not be
@@ -237,7 +239,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nullable
   private ICommonsList <PSXPathBoundPattern> _createBoundPatterns (@Nonnull final XPath aXPathContext,
                                                                    @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
-                                                                   @Nonnull final IPSXPathVariables aGlobalVariables)
+                                                                   @Nonnull final PSXPathVariables aGlobalVariables)
   {
     final ICommonsList <PSXPathBoundPattern> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
@@ -246,31 +248,36 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     for (final PSPattern aPattern : getAllRelevantPatterns ())
     {
       // Handle pattern specific variables
-      final PSXPathVariables aPatternVariables = aGlobalVariables.getClone ();
-
+      final PSXPathVariables aPatternVariables;
       if (aPattern.hasAnyLet ())
       {
         // The pattern has special variables, so we need to extend the variable
         // map
+        aPatternVariables = aGlobalVariables.getClone ();
         for (final Map.Entry <String, String> aEntry : aPattern.getAllLetsAsMap ().entrySet ())
           if (aPatternVariables.add (aEntry).isUnchanged ())
             error (aPattern, "Duplicate <let> with name '" + aEntry.getKey () + "' in <pattern>");
       }
+      else
+        aPatternVariables = aGlobalVariables;
 
       // For all rules of the current pattern
       final ICommonsList <PSXPathBoundRule> aBoundRules = new CommonsArrayList <> ();
       for (final PSRule aRule : aPattern.getAllRules ())
       {
         // Handle rule specific variables
-        final PSXPathVariables aRuleVariables = aPatternVariables.getClone ();
+        final PSXPathVariables aRuleVariables;
         if (aRule.hasAnyLet ())
         {
           // The rule has special variables, so we need to extend the
           // variable map
+          aRuleVariables = aPatternVariables.getClone ();
           for (final Map.Entry <String, String> aEntry : aRule.getAllLetsAsMap ().entrySet ())
             if (aRuleVariables.add (aEntry).isUnchanged ())
               error (aRule, "Duplicate <let> with name '" + aEntry.getKey () + "' in <rule>");
         }
+        else
+          aRuleVariables = aPatternVariables;
 
         // For all contained assert and reports within the current rule
         final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList <> ();
@@ -374,6 +381,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *        which case a
    *        {@link com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler}
    *        is used internally.
+   * @param aCustomValidationHandler
+   *        The custom PS validation handler. May be <code>null</code>.
    * @param aXPathVariableResolver
    *        Custom XPath variable resolver. May be <code>null</code>.
    * @param aXPathFunctionResolver
@@ -385,10 +394,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                              @Nonnull final PSSchema aOrigSchema,
                              @Nullable final String sPhase,
                              @Nullable final IPSErrorHandler aCustomErrorListener,
+                             @Nullable final IPSValidationHandler aCustomValidationHandler,
                              @Nullable final XPathVariableResolver aXPathVariableResolver,
                              @Nullable final XPathFunctionResolver aXPathFunctionResolver) throws SchematronBindException
   {
-    super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener);
+    super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener, aCustomValidationHandler);
     m_aXPathVariableResolver = aXPathVariableResolver;
     m_aXPathFunctionResolver = aXPathFunctionResolver;
     m_aXPathFactory = createXPathFactorySaxonFirst ();
@@ -517,10 +527,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         NodeList aRuleContextNodes = null;
         try
         {
-          aRuleContextNodes = XPathEvaluationHelper.evaluate (aBoundRule.getBoundRuleContext (),
-                                                              aNode,
-                                                              XPathConstants.NODESET,
-                                                              sBaseURI);
+          aRuleContextNodes = XPathEvaluationHelper.evaluateAsNodeList (aBoundRule.getBoundRuleContext (),
+                                                                        aNode,
+                                                                        sBaseURI);
         }
         catch (final XPathExpressionException ex)
         {
@@ -533,72 +542,68 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
         aValidationHandler.onRuleStart (aRule, aRuleContextNodes);
 
+        // Check each node, if it matches the assert/report
         final int nRuleMatchingNodes = aRuleContextNodes.getLength ();
-        if (nRuleMatchingNodes > 0)
+        for (int nMatchedNode = 0; nMatchedNode < nRuleMatchingNodes; ++nMatchedNode)
         {
+          // XSLT does "fired-rule" for each node
+          aValidationHandler.onFiredRule (aRule, aBoundRule.getRuleContext (), nMatchedNode, nRuleMatchingNodes);
+
           // For all contained assert and report elements
           for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.getAllBoundAssertReports ())
           {
-            // XSLT does "fired-rule" for each node
-            aValidationHandler.onFiredRule (aRule, aBoundRule.getRuleContext ());
-
             final PSAssertReport aAssertReport = aBoundAssertReport.getAssertReport ();
             final boolean bIsAssert = aAssertReport.isAssert ();
             final XPathExpression aTestExpression = aBoundAssertReport.getBoundTestExpression ();
 
-            // Check each node, if it matches the assert/report
-            for (int i = 0; i < nRuleMatchingNodes; ++i)
+            final Node aRuleMatchingNode = aRuleContextNodes.item (nMatchedNode);
+            try
             {
-              final Node aRuleMatchingNode = aRuleContextNodes.item (i);
-              try
+              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExpression,
+                                                                                   aRuleMatchingNode,
+                                                                                   sBaseURI);
+              if (bIsAssert)
               {
-                final boolean bTestResult = ((Boolean) XPathEvaluationHelper.evaluate (aTestExpression,
-                                                                                       aRuleMatchingNode,
-                                                                                       XPathConstants.BOOLEAN,
-                                                                                       sBaseURI)).booleanValue ();
-                if (bIsAssert)
+                // It's an assert
+                if (!bTestResult)
                 {
-                  // It's an assert
-                  if (!bTestResult)
+                  // Assert failed
+                  if (aValidationHandler.onFailedAssert (aAssertReport,
+                                                         aBoundAssertReport.getTestExpression (),
+                                                         aRuleMatchingNode,
+                                                         nMatchedNode,
+                                                         aBoundAssertReport)
+                                        .isBreak ())
                   {
-                    // Assert failed
-                    if (aValidationHandler.onFailedAssert (aAssertReport,
-                                                           aBoundAssertReport.getTestExpression (),
-                                                           aRuleMatchingNode,
-                                                           i,
-                                                           aBoundAssertReport)
-                                          .isBreak ())
-                    {
-                      return;
-                    }
-                  }
-                }
-                else
-                {
-                  // It's a report
-                  if (bTestResult)
-                  {
-                    // Successful report
-                    if (aValidationHandler.onSuccessfulReport (aAssertReport,
-                                                               aBoundAssertReport.getTestExpression (),
-                                                               aRuleMatchingNode,
-                                                               i,
-                                                               aBoundAssertReport)
-                                          .isBreak ())
-                    {
-                      return;
-                    }
+                    return;
                   }
                 }
               }
-              catch (final XPathExpressionException ex)
+              else
               {
-                error (aRule,
-                       "Failed to evaluate XPath expression to a boolean: '" +
-                              aBoundAssertReport.getTestExpression () +
-                              "'",
-                       ex.getCause () != null ? ex.getCause () : ex);
+                // It's a report
+                if (bTestResult)
+                {
+                  // Successful report
+                  if (aValidationHandler.onSuccessfulReport (aAssertReport,
+                                                             aBoundAssertReport.getTestExpression (),
+                                                             aRuleMatchingNode,
+                                                             nMatchedNode,
+                                                             aBoundAssertReport)
+                                        .isBreak ())
+                  {
+                    return;
+                  }
+                }
               }
+            }
+            catch (final XPathExpressionException ex)
+            {
+              error (aRule,
+                     "Failed to evaluate XPath expression to a boolean: '" +
+                            aBoundAssertReport.getTestExpression () +
+                            "'",
+                     ex.getCause () != null ? ex.getCause () : ex);
             }
           }
 

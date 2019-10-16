@@ -42,6 +42,7 @@ import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
@@ -59,6 +60,7 @@ public class PSBoundSchemaCacheKey
   private final IReadableResource m_aResource;
   private final String m_sPhase;
   private final IPSErrorHandler m_aErrorHandler;
+  private final IPSValidationHandler m_aCustomValidationHandler;
   private final XPathVariableResolver m_aVariableResolver;
   private final XPathFunctionResolver m_aFunctionResolver;
   private final EntityResolver m_aEntityResolver;
@@ -68,6 +70,7 @@ public class PSBoundSchemaCacheKey
   public PSBoundSchemaCacheKey (@Nonnull final IReadableResource aResource,
                                 @Nullable final String sPhase,
                                 @Nullable final IPSErrorHandler aErrorHandler,
+                                @Nullable final IPSValidationHandler aCustomValidationHandler,
                                 @Nullable final XPathVariableResolver aVariableResolver,
                                 @Nullable final XPathFunctionResolver aFunctionResolver,
                                 @Nullable final EntityResolver aEntityResolver)
@@ -77,6 +80,7 @@ public class PSBoundSchemaCacheKey
     m_aResource = aResource;
     m_sPhase = sPhase;
     m_aErrorHandler = aErrorHandler;
+    m_aCustomValidationHandler = aCustomValidationHandler;
     m_aVariableResolver = aVariableResolver;
     m_aFunctionResolver = aFunctionResolver;
     m_aEntityResolver = aEntityResolver;
@@ -108,6 +112,16 @@ public class PSBoundSchemaCacheKey
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
+  }
+
+  /**
+   * @return The custom validation handler. May be <code>null</code>.
+   * @since 5.3.0
+   */
+  @Nullable
+  public final IPSValidationHandler getCustomValidationHandler ()
+  {
+    return m_aCustomValidationHandler;
   }
 
   /**
@@ -217,7 +231,7 @@ public class PSBoundSchemaCacheKey
                                                aQueryBinding);
     if (SchematronDebug.isShowPreprocessedSchematron ())
       LOGGER.info ("Preprocessed Schematron:\n" +
-                      MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
+                   MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }
 
@@ -231,7 +245,7 @@ public class PSBoundSchemaCacheKey
    * <li>pre-process the schema -
    * {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}</li>
    * <li>and finally bind it -
-   * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler, javax.xml.xpath.XPathVariableResolver, javax.xml.xpath.XPathFunctionResolver)}
+   * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler, IPSValidationHandler, javax.xml.xpath.XPathVariableResolver, javax.xml.xpath.XPathFunctionResolver)}
    * </li>
    * </ol>
    *
@@ -253,10 +267,11 @@ public class PSBoundSchemaCacheKey
 
     // And finally bind the pre-processed schema
     return aQueryBinding.bind (aPreprocessedSchema,
-                               getPhase (),
-                               getErrorHandler (),
-                               getVariableResolver (),
-                               getFunctionResolver ());
+                               m_sPhase,
+                               m_aErrorHandler,
+                               m_aCustomValidationHandler,
+                               m_aVariableResolver,
+                               m_aFunctionResolver);
   }
 
   @Override

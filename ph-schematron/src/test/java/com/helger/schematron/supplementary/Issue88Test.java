@@ -25,35 +25,42 @@ import javax.annotation.Nonnull;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.validation.LoggingPSValidationHandler;
 import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.schematron.svrl.SVRLMarshaller;
 
 public final class Issue88Test
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue88Test.class);
+
   private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
-                                               @Nonnull final File aXML,
-                                               final boolean bValid) throws Exception
+                                               @Nonnull final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
-    // aSCH.setAllowForeignElements (true);
+    SchematronDebug.setSaveIntermediateXSLTFiles (true);
+    final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
+    if (aSCH instanceof SchematronResourcePure)
+      ((SchematronResourcePure) aSCH).setCustomValidationHandler (new LoggingPSValidationHandler ());
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
 
-    if (bValid)
-      assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
-    else
-      assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isNotEmpty ());
+    LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
+
+    assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
   }
 
   @Test
   public void testIssue () throws Exception
   {
     _validateAndProduceSVRL (new File ("src/test/resources/issues/github88/schematron.sch"),
-                             new File ("src/test/resources/issues/github88/test.xml"),
-                             true);
+                             new File ("src/test/resources/issues/github88/test.xml"));
   }
 }

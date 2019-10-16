@@ -55,6 +55,7 @@ import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.model.PSSchema;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
@@ -78,6 +79,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
+  private IPSValidationHandler m_aCustomValidationHandler;
   private XPathVariableResolver m_aVariableResolver;
   private XPathFunctionResolver m_aFunctionResolver;
   // Status var
@@ -101,7 +103,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The phase to be used. May be <code>null</code>.
    */
   @Nullable
-  public String getPhase ()
+  public final String getPhase ()
   {
     return m_sPhase;
   }
@@ -116,7 +118,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    */
   @Nonnull
-  public SchematronResourcePure setPhase (@Nullable final String sPhase)
+  public final SchematronResourcePure setPhase (@Nullable final String sPhase)
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
@@ -129,7 +131,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *         <code>null</code>.
    */
   @Nullable
-  public IPSErrorHandler getErrorHandler ()
+  public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
   }
@@ -142,7 +144,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    */
   @Nonnull
-  public SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
+  public final SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
@@ -151,10 +153,38 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
+   * @return The custom validation handler to be used to bind the schema. May be
+   *         <code>null</code>.
+   * @since 5.3.0
+   */
+  @Nullable
+  public final IPSValidationHandler getCustomValidationHandler ()
+  {
+    return m_aCustomValidationHandler;
+  }
+
+  /**
+   * Set the custom validation handler to be used during binding.
+   *
+   * @param aCustomValidationHandler
+   *        The validation handler. May be <code>null</code>.
+   * @return this
+   * @since 5.3.0
+   */
+  @Nonnull
+  public final SchematronResourcePure setCustomValidationHandler (@Nullable final IPSValidationHandler aCustomValidationHandler)
+  {
+    if (m_aBoundSchema != null)
+      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
+    m_aCustomValidationHandler = aCustomValidationHandler;
+    return this;
+  }
+
+  /**
    * @return The variable resolver to be used. May be <code>null</code>.
    */
   @Nullable
-  public XPathVariableResolver getVariableResolver ()
+  public final XPathVariableResolver getVariableResolver ()
   {
     return m_aVariableResolver;
   }
@@ -169,7 +199,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    */
   @Nonnull
-  public SchematronResourcePure setVariableResolver (@Nullable final XPathVariableResolver aVariableResolver)
+  public final SchematronResourcePure setVariableResolver (@Nullable final XPathVariableResolver aVariableResolver)
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
@@ -181,7 +211,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The function resolver to be used. May be <code>null</code>.
    */
   @Nullable
-  public XPathFunctionResolver getFunctionResolver ()
+  public final XPathFunctionResolver getFunctionResolver ()
   {
     return m_aFunctionResolver;
   }
@@ -196,7 +226,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    */
   @Nonnull
-  public SchematronResourcePure setFunctionResolver (@Nullable final XPathFunctionResolver aFunctionResolver)
+  public final SchematronResourcePure setFunctionResolver (@Nullable final XPathFunctionResolver aFunctionResolver)
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
@@ -228,12 +258,12 @@ public class SchematronResourcePure extends AbstractSchematronResource
   protected IPSBoundSchema createBoundSchema ()
   {
     final IReadableResource aResource = getResource ();
-    final IPSErrorHandler aErrorHandler = getErrorHandler ();
     final PSBoundSchemaCacheKey aCacheKey = new PSBoundSchemaCacheKey (aResource,
-                                                                       getPhase (),
-                                                                       aErrorHandler,
-                                                                       getVariableResolver (),
-                                                                       getFunctionResolver (),
+                                                                       m_sPhase,
+                                                                       m_aErrorHandler,
+                                                                       m_aCustomValidationHandler,
+                                                                       m_aVariableResolver,
+                                                                       m_aFunctionResolver,
                                                                        getEntityResolver ());
     if (aResource instanceof AbstractMemoryReadableResource || !isUseCache ())
     {

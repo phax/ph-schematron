@@ -18,6 +18,7 @@ package com.helger.schematron.pure.validation;
 
 import java.io.Serializable;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -95,11 +96,17 @@ public interface IPSValidationHandler extends Serializable
    *        The real context to be used in validation. May differ from the
    *        result of {@link PSRule#getContext()} because of replaced variables
    *        from &lt;let&gt; elements.
+   * @param nNodeIndex
+   *        0-based node index currently fired
+   * @param nNodeCount
+   *        The total number of nodes for this rule. Always &gt; 0.
    * @throws SchematronValidationException
    *         In case of validation errors
    */
   default void onFiredRule (@Nonnull final PSRule aRule,
-                            @Nonnull final String sContext) throws SchematronValidationException
+                            @Nonnull final String sContext,
+                            @Nonnegative final int nNodeIndex,
+                            @Nonnegative final int nNodeCount) throws SchematronValidationException
   {}
 
   /**
@@ -190,13 +197,15 @@ public interface IPSValidationHandler extends Serializable
    * handler, and than later on from the passed validation handler.
    *
    * @param rhs
-   *        The validation handler to be invoked after this one. May not be
+   *        The validation handler to be invoked after this one. May be
    *        <code>null</code>.
    * @return The new validation handler that invokes this and the passed on
    */
   @Nonnull
-  default IPSValidationHandler and (@Nonnull final IPSValidationHandler rhs)
+  default IPSValidationHandler and (@Nullable final IPSValidationHandler rhs)
   {
+    if (rhs == null)
+      return this;
     return and (this, rhs);
   }
 
@@ -205,17 +214,23 @@ public interface IPSValidationHandler extends Serializable
    * first handler and second from the second handler.
    *
    * @param lhs
-   *        The first validation handler to be invoked. May not be
+   *        The first validation handler to be invoked. May be
    *        <code>null</code>.
    * @param rhs
-   *        The second validation handler to be invoked. May not be
+   *        The second validation handler to be invoked. May be
    *        <code>null</code>.
-   * @return The new validation handler that invokes both handlers. Never
-   *         <code>null</code>.
+   * @return The new validation handler that invokes both handlers. May be
+   *         <code>null</code> if both are null.
    */
   @Nonnull
-  static IPSValidationHandler and (@Nonnull final IPSValidationHandler lhs, @Nonnull final IPSValidationHandler rhs)
+  static IPSValidationHandler and (@Nullable final IPSValidationHandler lhs, @Nullable final IPSValidationHandler rhs)
   {
+    if (lhs == null)
+      return rhs;
+
+    if (rhs == null)
+      return lhs;
+
     return new IPSValidationHandler ()
     {
       public void onStart (@Nonnull final PSSchema aSchema,
@@ -240,10 +255,12 @@ public interface IPSValidationHandler extends Serializable
       }
 
       public void onFiredRule (@Nonnull final PSRule aRule,
-                               @Nonnull final String sContext) throws SchematronValidationException
+                               @Nonnull final String sContext,
+                               @Nonnegative final int nNodeIndex,
+                               @Nonnegative final int nNodeCount) throws SchematronValidationException
       {
-        lhs.onFiredRule (aRule, sContext);
-        rhs.onFiredRule (aRule, sContext);
+        lhs.onFiredRule (aRule, sContext, nNodeIndex, nNodeCount);
+        rhs.onFiredRule (aRule, sContext, nNodeIndex, nNodeCount);
       }
 
       @Nonnull

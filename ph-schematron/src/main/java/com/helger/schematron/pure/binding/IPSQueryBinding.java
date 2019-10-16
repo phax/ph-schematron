@@ -35,6 +35,7 @@ import com.helger.schematron.pure.model.PSParam;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 
 /**
  * Base interface for a single query binding.
@@ -95,6 +96,25 @@ public interface IPSQueryBinding extends Serializable
 
   // --- requirements for compilation ---
 
+  @Nonnull
+  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema) throws SchematronException
+  {
+    return bind (aSchema, (String) null, (IPSErrorHandler) null);
+  }
+
+  @Nonnull
+  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
+                               @Nullable final String sPhase,
+                               @Nullable final IPSErrorHandler aCustomErrorListener) throws SchematronException
+  {
+    return bind (aSchema,
+                 sPhase,
+                 aCustomErrorListener,
+                 (IPSValidationHandler) null,
+                 (XPathVariableResolver) null,
+                 (XPathFunctionResolver) null);
+  }
+
   /**
    * Create a bound schema, which is like a precompiled schema.
    *
@@ -107,6 +127,8 @@ public interface IPSQueryBinding extends Serializable
    *        evaluated.
    * @param aCustomErrorHandler
    *        An optional custom error handler to use. May be <code>null</code>.
+   * @param aCustomValidationHandler
+   *        A custom PS validation handler to use. May be <code>null</code>.
    * @param aVariableResolver
    *        Custom variable resolver. May be <code>null</code>.
    * @param aFunctionResolver
@@ -119,6 +141,7 @@ public interface IPSQueryBinding extends Serializable
   IPSBoundSchema bind (@Nonnull PSSchema aSchema,
                        @Nullable String sPhase,
                        @Nullable IPSErrorHandler aCustomErrorHandler,
+                       @Nullable IPSValidationHandler aCustomValidationHandler,
                        @Nullable XPathVariableResolver aVariableResolver,
                        @Nullable XPathFunctionResolver aFunctionResolver) throws SchematronException;
 }

@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.oclc.purl.dsdl.svrl.ActivePattern;
@@ -163,7 +162,10 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  public void onFiredRule (@Nonnull final PSRule aRule, @Nonnull final String sContext)
+  public void onFiredRule (@Nonnull final PSRule aRule,
+                           @Nonnull final String sContext,
+                           @Nonnull final int nNodeIndex,
+                           @Nonnull final int nNodeCount)
   {
     final FiredRule aRetRule = new FiredRule ();
     aRetRule.setContext (sContext);
@@ -205,10 +207,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // XPath present
             try
             {
-              aSB.append ((String) XPathEvaluationHelper.evaluate (aBoundElement.getBoundExpression (),
-                                                                   aSourceNode,
-                                                                   XPathConstants.STRING,
-                                                                   m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
+                                                                  aSourceNode,
+                                                                  m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -231,10 +232,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             final PSValueOf aValueOf = (PSValueOf) aContent;
             try
             {
-              aSB.append ((String) XPathEvaluationHelper.evaluate (aBoundElement.getBoundExpression (),
-                                                                   aSourceNode,
-                                                                   XPathConstants.STRING,
-                                                                   m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
+                                                                  aSourceNode,
+                                                                  m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -339,7 +339,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                  aFailedAssert.getDiagnosticReference (),
                                  aBoundAssertReport,
                                  aRuleMatchingNode);
-    m_aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ().add (aFailedAssert);
+    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aFailedAssert);
     return EContinue.CONTINUE;
   }
 
@@ -367,7 +367,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                  aSuccessfulReport.getDiagnosticReference (),
                                  aBoundAssertReport,
                                  aRuleMatchingNode);
-    m_aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ().add (aSuccessfulReport);
+    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aSuccessfulReport);
     return EContinue.CONTINUE;
   }
 

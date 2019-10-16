@@ -64,7 +64,7 @@ public class PSXPathBoundAssertReport
    * @return The original assert/report element. Never <code>null</code>.
    */
   @Nonnull
-  public PSAssertReport getAssertReport ()
+  public final PSAssertReport getAssertReport ()
   {
     return m_aAssertReport;
   }
@@ -74,7 +74,7 @@ public class PSXPathBoundAssertReport
    *         <code>null</code>.
    */
   @Nonnull
-  public String getTestExpression ()
+  public final String getTestExpression ()
   {
     return m_sTestExpression;
   }
@@ -83,7 +83,7 @@ public class PSXPathBoundAssertReport
    * @return The pre-compiled XPath expression. Never <code>null</code>.
    */
   @Nonnull
-  public XPathExpression getBoundTestExpression ()
+  public final XPathExpression getBoundTestExpression ()
   {
     return m_aBoundTestExpression;
   }
@@ -94,7 +94,7 @@ public class PSXPathBoundAssertReport
    */
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
+  public final ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
   {
     return m_aBoundContent.getClone ();
   }
@@ -107,9 +107,21 @@ public class PSXPathBoundAssertReport
    * @return <code>null</code> if the passed ID could not be resolved.
    */
   @Nullable
-  public PSXPathBoundDiagnostic getBoundDiagnosticOfID (@Nullable final String sID)
+  public final PSXPathBoundDiagnostic getBoundDiagnosticOfID (@Nullable final String sID)
   {
     return m_aBoundDiagnostics.get (sID);
+  }
+
+  /**
+   * Get all bound diagnostics
+   *
+   * @return A copy of all bound diagnostics. Never <code>null</code> but maybe
+   *         empty.
+   */
+  @Nullable
+  public final ICommonsMap <String, PSXPathBoundDiagnostic> getAllBoundDiagnostics ()
+  {
+    return m_aBoundDiagnostics.getClone ();
   }
 
   @Override

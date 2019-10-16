@@ -43,6 +43,7 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.PSParam;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 
 /**
  * Default XPath/XSLT query binding
@@ -113,15 +114,8 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   @Nonnull
   public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
                               @Nullable final String sPhase,
-                              @Nullable final IPSErrorHandler aCustomErrorListener) throws SchematronException
-  {
-    return bind (aSchema, sPhase, aCustomErrorListener, null, null);
-  }
-
-  @Nonnull
-  public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
-                              @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener,
+                              @Nullable final IPSValidationHandler aCustomValidationHandler,
                               @Nullable final XPathVariableResolver aVariableResolver,
                               @Nullable final XPathFunctionResolver aFunctionResolver) throws SchematronException
   {
@@ -150,6 +144,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                                                            aSchemaToUse,
                                                            sPhase,
                                                            aCustomErrorListener,
+                                                           aCustomValidationHandler,
                                                            aVariableResolver,
                                                            aFunctionResolver);
     ret.bind ();

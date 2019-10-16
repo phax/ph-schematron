@@ -22,6 +22,7 @@ import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSRule;
@@ -37,7 +38,6 @@ public class PSXPathBoundRule
   private final PSRule m_aRule;
   private final String m_sRuleContext;
   private final XPathExpression m_aBoundRuleContext;
-
   private final ICommonsList <PSXPathBoundAssertReport> m_aBoundAssertReports;
 
   public PSXPathBoundRule (@Nonnull final PSRule aRule,
@@ -56,26 +56,33 @@ public class PSXPathBoundRule
   }
 
   @Nonnull
-  public PSRule getRule ()
+  public final PSRule getRule ()
   {
     return m_aRule;
   }
 
   @Nonnull
-  public String getRuleContext ()
+  public final String getRuleContext ()
   {
     return m_sRuleContext;
   }
 
   @Nonnull
-  public XPathExpression getBoundRuleContext ()
+  public final XPathExpression getBoundRuleContext ()
   {
     return m_aBoundRuleContext;
   }
 
   @Nonnull
+  @ReturnsMutableObject
+  public final ICommonsList <PSXPathBoundAssertReport> boundAssertReports ()
+  {
+    return m_aBoundAssertReports;
+  }
+
+  @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <PSXPathBoundAssertReport> getAllBoundAssertReports ()
+  public final ICommonsList <PSXPathBoundAssertReport> getAllBoundAssertReports ()
   {
     return m_aBoundAssertReports.getClone ();
   }

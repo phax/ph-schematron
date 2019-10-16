@@ -186,10 +186,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   protected Node getAsNode (@Nonnull final Source aXMLSource) throws Exception
   {
     // Convert to Node
-    final Node aNode = SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
-    if (aNode == null)
-      return null;
-    return aNode;
+    return SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
   }
 
   @Nonnull
