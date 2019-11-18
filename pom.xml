@@ -160,6 +160,12 @@
       </dependency>
       
       <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>4.1</version>
+      </dependency>    
+      
+      <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-schematron-testfiles</artifactId>
         <version>${project.version}</version>
