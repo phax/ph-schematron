@@ -14,8 +14,9 @@ hs_err_pid*
 target/
 .pmd
 *.iml
-.settings/ 
-.project 
-.classpath 
+.settings/
+.project
+.classpath
+.factorypath
 ph-schematron/test-final/
 ph-schematron/test-minified/
