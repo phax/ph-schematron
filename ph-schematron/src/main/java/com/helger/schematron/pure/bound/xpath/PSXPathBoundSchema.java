@@ -41,7 +41,6 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
-import com.helger.schematron.pure.binding.xpath.IPSXPathVariables;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.bound.AbstractPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -119,9 +118,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   {
     final ICommonsList <PSXPathBoundElement> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
-
-    // Create a local copy
-    final IPSXPathVariables aLocalVariables = aVariables.getClone ();
 
     for (final Object aContentElement : aMixedContent.getAllContentElements ())
     {
@@ -259,7 +255,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             error (aPattern, "Duplicate <let> with name '" + aEntry.getKey () + "' in <pattern>");
       }
       else
+      {
+        // Use global variables map as-is
         aPatternVariables = aGlobalVariables;
+      }
 
       // For all rules of the current pattern
       final ICommonsList <PSXPathBoundRule> aBoundRules = new CommonsArrayList <> ();
@@ -277,7 +276,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
               error (aRule, "Duplicate <let> with name '" + aEntry.getKey () + "' in <rule>");
         }
         else
+        {
+          // Use pattern variables map as-is
           aRuleVariables = aPatternVariables;
+        }
 
         // For all contained assert and reports within the current rule
         final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList <> ();

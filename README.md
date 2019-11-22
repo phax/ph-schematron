@@ -11,9 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
-* v5.3.0 - work in progress
+* v5.3.0 - 2019-11-22
     * The default include handler of the pure version, now allows to include non-Schematron XMLs
-    * Updated to Saxon-HE 9.9.1-45
+    * Updated to Saxon-HE 9.9.1-5
     * The Maven plugin `preprocess` Mojo now emits the XML declaration as well
     * Added support for the Schematron query bindings `xpath` and `xpath2` ([issue #80](https://github.com/phax/ph-schematron/issues/80))
     * Updated to ANT 1.10.7
@@ -147,7 +147,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
 </dependency>
 ```
 
@@ -168,7 +168,7 @@ Starting from version 5.0.9:
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
   <executions>
     <execution>
       <goals>
@@ -229,7 +229,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
   <executions>
     <execution>
       <goals>
@@ -270,7 +270,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
   <executions>
     <execution>
       <goals>
@@ -302,7 +302,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
 </dependency>
 ```
 
