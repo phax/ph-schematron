@@ -182,11 +182,6 @@
       </dependency>
       <dependency>
         <groupId>com.helger.maven</groupId>
-        <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.helger.maven</groupId>
         <artifactId>ph-schematron-maven-plugin</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -210,7 +205,6 @@
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron</module>
     <module>ph-schematron-validator</module>
-    <module>ph-sch2xslt-maven-plugin</module>
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>
   </modules>
