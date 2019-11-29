@@ -27,7 +27,6 @@ import java.util.List;
 import javax.xml.validation.Schema;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -39,6 +38,7 @@ import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.xml.schema.XMLSchemaCache;

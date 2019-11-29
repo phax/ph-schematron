@@ -23,13 +23,13 @@ import java.io.File;
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 public final class Issue54Test
 {

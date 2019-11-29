@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -33,6 +32,7 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.XMLFactory;

@@ -19,7 +19,6 @@ package com.helger.schematron.supplementary;
 import java.io.File;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +29,7 @@ import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 public final class IssueGC5Test
 {

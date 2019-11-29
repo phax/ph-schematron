@@ -18,11 +18,10 @@ package com.helger.schematron.svrl;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.oclc.purl.dsdl.svrl.ObjectFactory;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
-
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.jaxb.GenericJAXBMarshaller;
+import com.helger.schematron.svrl.jaxb.ObjectFactory;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
  * This is the XML reader and write for Schematron SVRL documents. It reads XML

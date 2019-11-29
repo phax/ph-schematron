@@ -24,14 +24,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.oclc.purl.dsdl.svrl.ActivePattern;
-import org.oclc.purl.dsdl.svrl.DiagnosticReference;
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.FiredRule;
-import org.oclc.purl.dsdl.svrl.NsPrefixInAttributeValues;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
-import org.oclc.purl.dsdl.svrl.SuccessfulReport;
-import org.oclc.purl.dsdl.svrl.Text;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
@@ -56,6 +48,14 @@ import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.svrl.jaxb.ActivePattern;
+import com.helger.schematron.svrl.jaxb.DiagnosticReference;
+import com.helger.schematron.svrl.jaxb.FailedAssert;
+import com.helger.schematron.svrl.jaxb.FiredRule;
+import com.helger.schematron.svrl.jaxb.NsPrefixInAttributeValues;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.xml.XMLHelper;
 

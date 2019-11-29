@@ -30,7 +30,6 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -51,6 +50,7 @@ import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
 import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 import com.helger.xml.XMLFactory;

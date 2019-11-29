@@ -19,7 +19,6 @@ package com.helger.schematron.pure.bound;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -32,6 +31,7 @@ import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**

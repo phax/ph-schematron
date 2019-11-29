@@ -24,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
@@ -36,6 +35,7 @@ import com.helger.schematron.pure.exchange.PSWriterSettings;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 

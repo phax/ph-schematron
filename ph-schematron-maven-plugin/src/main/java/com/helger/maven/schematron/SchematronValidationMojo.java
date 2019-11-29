@@ -32,7 +32,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
@@ -55,6 +54,7 @@ import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;

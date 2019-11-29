@@ -24,7 +24,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -46,6 +45,7 @@ import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLResourceError;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroNode;

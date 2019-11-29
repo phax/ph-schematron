@@ -27,7 +27,7 @@ import com.helger.xml.microdom.IMicroDocument;
 
 /**
  * Test class for class {@link SchematronValidator}.
- * 
+ *
  * @author Philip Helger
  */
 public final class SchematronValidatorTest

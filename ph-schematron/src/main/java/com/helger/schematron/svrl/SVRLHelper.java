@@ -22,11 +22,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
-import org.oclc.purl.dsdl.svrl.SuccessfulReport;
-import org.oclc.purl.dsdl.svrl.Text;
-
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -36,6 +31,10 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.svrl.jaxb.FailedAssert;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.Text;
 
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).

@@ -93,8 +93,7 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.*,
-              org.oclc.purl.dsdl.svrl.*</Export-Package>
+            <Export-Package>com.helger.schematron.*</Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
 osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",

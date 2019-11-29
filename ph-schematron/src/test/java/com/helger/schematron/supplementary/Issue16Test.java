@@ -24,8 +24,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.DiagnosticReference;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 
 import com.helger.commons.io.file.FileHelper;
@@ -44,6 +42,8 @@ import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLSuccessfulReport;
+import com.helger.schematron.svrl.jaxb.DiagnosticReference;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;

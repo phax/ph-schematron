@@ -24,7 +24,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -37,6 +36,7 @@ import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.EXMLParserFeature;
 import com.helger.xml.sax.DefaultEntityResolver;
 import com.helger.xml.serialize.read.DOMReader;

@@ -20,12 +20,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
  * Test code for issue #36

@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -37,6 +36,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.transform.ResourceStreamSource;
 
 /**

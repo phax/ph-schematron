@@ -23,12 +23,12 @@ import java.io.File;
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 public final class Issue64Test
 {

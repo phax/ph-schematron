@@ -21,12 +21,11 @@ import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SuccessfulReport;
-
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.svrl.jaxb.FailedAssert;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
  * Interface that helps in determining an error level from SVRL elements.

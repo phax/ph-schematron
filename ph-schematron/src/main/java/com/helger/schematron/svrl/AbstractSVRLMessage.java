@@ -22,8 +22,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.oclc.purl.dsdl.svrl.DiagnosticReference;
-
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -32,6 +30,7 @@ import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
+import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 
 /**
  * A wrapper around FailedAssert and SuccessfulReport with easier error level

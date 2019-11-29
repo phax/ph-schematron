@@ -33,7 +33,6 @@ import org.apache.tools.ant.types.XMLCatalog;
 import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.ResourceUtils;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -62,6 +61,7 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.SVRLNamespaceContext;
 import com.helger.schematron.svrl.SVRLResourceError;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SCHTransformerCustomizer;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.schematron.xslt.SchematronResourceXSLT;

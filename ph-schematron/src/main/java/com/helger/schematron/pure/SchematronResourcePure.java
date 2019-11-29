@@ -28,7 +28,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -57,6 +56,7 @@ import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**

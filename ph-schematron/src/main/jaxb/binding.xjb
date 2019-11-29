@@ -24,7 +24,7 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
   <jaxb:bindings schemaLocation="../resources/schemas/svrl.xsd" node="/xs:schema">
     <jaxb:schemaBindings>
-      <jaxb:package name="org.oclc.purl.dsdl.svrl" />
+      <jaxb:package name="com.helger.schematron.svrl.jaxb" />
     </jaxb:schemaBindings>
   </jaxb:bindings>
 </jaxb:bindings>

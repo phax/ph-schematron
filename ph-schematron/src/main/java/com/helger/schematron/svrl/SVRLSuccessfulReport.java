@@ -21,9 +21,8 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import org.oclc.purl.dsdl.svrl.SuccessfulReport;
-
 import com.helger.commons.error.level.IErrorLevel;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
  * A wrapper around {@link SuccessfulReport} with easier error level handling.

@@ -11,6 +11,9 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.4.0 - work in progress
+    * Changed the package of the generated SVRL classes from `org.oclc.purl.dsdl.svrl` to `com.helger.schematron.svrl.jaxb` to avoid incompatibilities with other Schematron solutions.
+    * Removed `ph-sch2xslt-maven-plugin` which was deprecated long time ago. Use `ph-schematron-maven-plugin` instead.
 * v5.3.0 - 2019-11-22
     * The default include handler of the pure version, now allows to include non-Schematron XMLs
     * Updated to Saxon-HE 9.9.1-5

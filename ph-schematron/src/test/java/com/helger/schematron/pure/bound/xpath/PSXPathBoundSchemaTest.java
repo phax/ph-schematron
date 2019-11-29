@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +40,7 @@ import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.serialize.read.DOMReader;

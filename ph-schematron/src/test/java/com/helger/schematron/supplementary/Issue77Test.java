@@ -24,10 +24,10 @@ import java.io.File;
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 
 public final class Issue77Test

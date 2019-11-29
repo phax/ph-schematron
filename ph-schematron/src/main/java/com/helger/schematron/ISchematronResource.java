@@ -20,7 +20,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.Source;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -29,6 +28,7 @@ import com.helger.commons.id.IHasID;
 import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
  * Base interface for a Schematron resource. The implementation can e.g. be a

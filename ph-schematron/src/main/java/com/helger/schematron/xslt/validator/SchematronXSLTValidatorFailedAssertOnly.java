@@ -18,10 +18,9 @@ package com.helger.schematron.xslt.validator;
 
 import javax.annotation.Nonnull;
 
-import org.oclc.purl.dsdl.svrl.FailedAssert;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
-
 import com.helger.commons.state.EValidity;
+import com.helger.schematron.svrl.jaxb.FailedAssert;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
  * A special implementation of {@link ISchematronXSLTValidator} that only

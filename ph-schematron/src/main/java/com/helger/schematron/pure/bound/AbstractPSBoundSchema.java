@@ -20,7 +20,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
@@ -44,6 +43,7 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.PSValidationHandlerBreakOnFirstError;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**

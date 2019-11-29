@@ -20,13 +20,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 public final class Issue25Test
 {
