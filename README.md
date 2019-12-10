@@ -11,6 +11,8 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## News and noteworthy
 
+* v5.4.1 - work in progress
+    * Updated to Saxon-HE 9.9.1-6
 * v5.4.0 - 2019-11-29
     * Changed the package of the generated SVRL classes from `org.oclc.purl.dsdl.svrl` to `com.helger.schematron.svrl.jaxb` to avoid incompatibilities with other Schematron solutions (incompatible change)
     * Removed `ph-sch2xslt-maven-plugin` which was deprecated long time ago. Use `ph-schematron-maven-plugin` instead.
