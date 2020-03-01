@@ -190,7 +190,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aActiveChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
@@ -297,7 +297,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aAssertReportChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
@@ -364,7 +364,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aDiagnosticChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
@@ -413,7 +413,7 @@ public class PSReader
     });
 
     eDiagnostics.forAllChildElements (eDiagnosticsChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eDiagnosticsChild.getNamespaceURI ()))
+      if (schematronNS (eDiagnosticsChild.getNamespaceURI ()))
       {
         if (eDiagnosticsChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (eDiagnosticsChild));
@@ -457,7 +457,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aDirChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
           }
@@ -500,7 +500,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aEmphChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
           }
@@ -539,7 +539,7 @@ public class PSReader
     });
 
     eExtends.forAllChildElements (eChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eChild.getNamespaceURI ()))
+      if (schematronNS (eChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eChild.getLocalName () + "'");
       }
@@ -570,7 +570,7 @@ public class PSReader
     });
 
     eInclude.forAllChildElements (eValueOfChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eValueOfChild.getNamespaceURI ()))
+      if (schematronNS (eValueOfChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eValueOfChild.getLocalName () + "'");
       }
@@ -604,7 +604,7 @@ public class PSReader
     });
 
     eLet.forAllChildElements (eLetChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eLetChild.getNamespaceURI ()))
+      if (schematronNS (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
@@ -635,7 +635,7 @@ public class PSReader
     });
 
     eName.forAllChildElements (eNameChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eNameChild.getNamespaceURI ()))
+      if (schematronNS (eNameChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eNameChild.getLocalName () + "'");
       }
@@ -669,7 +669,7 @@ public class PSReader
     });
 
     eNS.forAllChildElements (eLetChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eLetChild.getNamespaceURI ()))
+      if (schematronNS (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
@@ -712,7 +712,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
@@ -764,7 +764,7 @@ public class PSReader
     });
 
     eParam.forAllChildElements (eParamChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eParamChild.getNamespaceURI ()))
+      if (schematronNS (eParamChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eParamChild.getLocalName () + "'");
       }
@@ -806,7 +806,7 @@ public class PSReader
     ret.setRich (aRichGroup);
 
     ePattern.forAllChildElements (ePatternChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (ePatternChild.getNamespaceURI ()))
+      if (schematronNS (ePatternChild.getNamespaceURI ()))
       {
         if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (ePatternChild));
@@ -864,7 +864,7 @@ public class PSReader
     ret.setRich (aRichGroup);
 
     ePhase.forAllChildElements (ePhaseChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (ePhaseChild.getNamespaceURI ()))
+      if (schematronNS (ePhaseChild.getNamespaceURI ()))
       {
         if (ePhaseChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (ePhaseChild));
@@ -926,7 +926,7 @@ public class PSReader
     ret.setLinkable (aLinkableGroup);
 
     eRule.forAllChildElements (eRuleChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eRuleChild.getNamespaceURI ()))
+      if (schematronNS (eRuleChild.getNamespaceURI ()))
       {
         final String sLocalName = eRuleChild.getLocalName ();
         if (sLocalName.equals (CSchematronXML.ELEMENT_INCLUDE))
@@ -949,6 +949,12 @@ public class PSReader
     return ret;
   }
 
+  public static boolean schematronNS(String nsURI) {
+    boolean nsRight = CSchematron.NAMESPACE_SCHEMATRON.equals (nsURI);
+    boolean nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals (nsURI);
+    return nsRight || nsOld;
+  }
+
   /**
    * Parse the Schematron into a pure Java object. This method makes no
    * assumptions on the validity of the document!
@@ -964,7 +970,14 @@ public class PSReader
   public PSSchema readSchemaFromXML (@Nonnull final IMicroElement eSchema) throws SchematronReadException
   {
     ValueEnforcer.notNull (eSchema, "Schema");
-    if (!CSchematron.NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ()))
+    boolean nsRight = CSchematron.NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ());
+    boolean nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ());
+
+    if (nsOld)
+      LOGGER.warn("OLD schematron NS '" + CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON + "' is deprecated, use '" +
+              CSchematron.NAMESPACE_SCHEMATRON + "' instead");
+
+    if (!(nsRight || nsOld))
       throw new SchematronReadException (m_aResource, "The passed element is not an ISO Schematron element!");
 
     final PSSchema ret = new PSSchema (m_aResource);
@@ -991,7 +1004,7 @@ public class PSReader
     ret.setRich (aRichGroup);
 
     eSchema.forAllChildElements (eSchemaChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eSchemaChild.getNamespaceURI ()))
+      if (schematronNS (eSchemaChild.getNamespaceURI ()))
       {
         if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (eSchemaChild));
@@ -1059,7 +1072,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aSpanChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
           }
@@ -1102,7 +1115,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aTitleChild;
-          if (CSchematron.NAMESPACE_SCHEMATRON.equals (eElement.getNamespaceURI ()))
+          if (schematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
@@ -1145,7 +1158,7 @@ public class PSReader
     });
 
     eValueOf.forAllChildElements (eValueOfChild -> {
-      if (CSchematron.NAMESPACE_SCHEMATRON.equals (eValueOfChild.getNamespaceURI ()))
+      if (schematronNS (eValueOfChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eValueOfChild.getLocalName () + "'");
       }

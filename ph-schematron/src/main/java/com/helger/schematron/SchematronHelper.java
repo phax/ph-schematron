@@ -24,6 +24,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
+import com.helger.schematron.pure.exchange.PSReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -198,7 +199,7 @@ public final class SchematronHelper
       final DefaultSchematronIncludeResolver aIncludeResolver = new DefaultSchematronIncludeResolver (aResource);
 
       for (final IMicroElement aElement : eRoot.getAllChildElementsRecursive ())
-        if (CSchematron.NAMESPACE_SCHEMATRON.equals (aElement.getNamespaceURI ()) &&
+        if (PSReader.schematronNS (aElement.getNamespaceURI ()) &&
             aElement.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
         {
           String sHref = aElement.getAttributeValue (CSchematronXML.ATTR_HREF);
@@ -287,7 +288,7 @@ public final class SchematronHelper
             if (false)
             {
               // Check for correct namespace URI of included content
-              if (!CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()))
+              if (!PSReader.schematronNS (aIncludedContent.getNamespaceURI ()))
               {
                 aErrorHandler.error (aResource,
                                      null,
@@ -304,7 +305,7 @@ public final class SchematronHelper
             }
 
             // Check that not a whole Schema but only a part is included
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()) &&
+            if (PSReader.schematronNS (aIncludedContent.getNamespaceURI ()) &&
                 CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
             {
               aErrorHandler.warn (aResource,
