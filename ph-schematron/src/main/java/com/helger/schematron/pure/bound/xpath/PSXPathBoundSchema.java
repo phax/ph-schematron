@@ -403,7 +403,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener, aCustomValidationHandler);
     m_aXPathVariableResolver = aXPathVariableResolver;
     m_aXPathFunctionResolver = aXPathFunctionResolver;
-    m_aXPathFactory = createXPathFactorySaxonFirst ();
+    // m_aXPathFactory = createXPathFactorySaxonFirst ();
+    m_aXPathFactory = XPathHelper.getDefaultXPathFactory();
   }
 
   @Nonnull

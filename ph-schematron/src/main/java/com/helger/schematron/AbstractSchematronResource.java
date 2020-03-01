@@ -198,8 +198,10 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nullable
   protected Node getAsNode (@Nonnull final Source aXMLSource) throws Exception
   {
+    DOMReaderSettings settings = internalCreateDOMReaderSettings ();
+    settings.setFeatureValue(EXMLParserFeature.DISALLOW_DOCTYPE_DECL, false);
     // Convert to Node
-    return SchematronResourceHelper.getNodeOfSource (aXMLSource, internalCreateDOMReaderSettings ());
+    return SchematronResourceHelper.getNodeOfSource (aXMLSource, settings);
   }
 
   @Nonnull
