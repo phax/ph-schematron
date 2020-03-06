@@ -23,13 +23,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
+import javax.xml.XMLConstants;
+
 import org.junit.Test;
 
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.pure.model.PSNS;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -51,7 +52,7 @@ public final class PSWriterTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Parse the schema
-      final PSSchema aSchema1 = new PSReader (aRes, false).readSchema ();
+      final PSSchema aSchema1 = new PSReader (aRes).readSchema ();
       assertNotNull (aSchema1);
       final CollectingPSErrorHandler aLogger = new CollectingPSErrorHandler ();
       assertTrue (aRes.getPath (), aSchema1.isValid (aLogger));
@@ -61,7 +62,7 @@ public final class PSWriterTest
       final String sXML1 = aWriter.getXMLStringNotNull (aSchema1);
 
       // Re-read the created XML and re-create it
-      final PSSchema aSchema2 = new PSReader (new ReadableResourceString (sXML1, StandardCharsets.UTF_8), false).readSchema ();
+      final PSSchema aSchema2 = new PSReader (new ReadableResourceString (sXML1, StandardCharsets.UTF_8)).readSchema ();
       final String sXML2 = aWriter.getXMLStringNotNull (aSchema2);
 
       // Originally created XML and re-created-written XML must match
@@ -74,15 +75,12 @@ public final class PSWriterTest
   {
     final IReadableResource aRes = SchematronTestHelper.getAllValidSchematronFiles ().getFirst ();
     // Read existing Schematron
-    final PSSchema aSchema = new PSReader (aRes, false).readSchema ();
+    final PSSchema aSchema = new PSReader (aRes).readSchema ();
 
     // Create the XML namespace context
-    final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
+    final MapBasedNamespaceContext aNSCtx = PSWriterSettings.createNamespaceMapping (aSchema);
+    aNSCtx.removeMapping (XMLConstants.DEFAULT_NS_PREFIX);
     aNSCtx.addMapping ("sch", CSchematron.NAMESPACE_SCHEMATRON);
-    aNSCtx.addMapping ("xsl", CSchematron.NAMESPACE_URI_XSL);
-    // Add all mappings from the PSSchema as well
-    for (final PSNS aItem : aSchema.getAllNSs ())
-      aNSCtx.addMapping (aItem.getPrefix (), aItem.getUri ());
 
     // Create the PSWriter settings
     final PSWriterSettings aPSWS = new PSWriterSettings ();

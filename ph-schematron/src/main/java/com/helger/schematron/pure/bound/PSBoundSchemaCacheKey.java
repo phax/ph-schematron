@@ -75,7 +75,7 @@ public class PSBoundSchemaCacheKey
                                 @Nullable final XPathVariableResolver aVariableResolver,
                                 @Nullable final XPathFunctionResolver aFunctionResolver,
                                 @Nullable final EntityResolver aEntityResolver,
-                                boolean bLenient)
+                                final boolean bLenient)
   {
     ValueEnforcer.notNull (aResource, "Resource");
 
@@ -89,7 +89,8 @@ public class PSBoundSchemaCacheKey
     m_bLenient = bLenient;
   }
 
-  public boolean isLenient() {
+  public boolean isLenient ()
+  {
     return m_bLenient;
   }
 
@@ -177,7 +178,7 @@ public class PSBoundSchemaCacheKey
                               @Nullable final IPSErrorHandler aErrorHandler,
                               @Nullable final EntityResolver aEntityResolver) throws SchematronException
   {
-    return new PSReader (aResource, aErrorHandler, aEntityResolver, isLenient()).readSchema ();
+    return new PSReader (aResource, aErrorHandler, aEntityResolver).setLenient (isLenient ()).readSchema ();
   }
 
   /**

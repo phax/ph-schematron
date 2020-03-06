@@ -31,7 +31,16 @@ public final class CSchematron
   /** The namespace URL for Schematron documents */
   public static final String NAMESPACE_SCHEMATRON = "http://purl.oclc.org/dsdl/schematron";
 
+  /**
+   * The namespace URL for an old version of Schematron documents. Don't use it
+   * explicitly
+   */
   public static final String DEPRECATED_NAMESPACE_SCHEMATRON = "http://www.ascc.net/xml/schematron";
+
+  /**
+   * By default deprecated namespaces are not supported.
+   */
+  public static final boolean DEFAULT_ALLOW_DEPRECATED_NAMESPACES = false;
 
   /** The namespace URL for XSLT transformation */
   public static final String NAMESPACE_URI_XSL = "http://www.w3.org/1999/XSL/Transform";

@@ -24,14 +24,17 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
-import com.helger.schematron.pure.exchange.PSReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.PresentForCodeCoverage;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.hierarchy.visit.ChildrenProviderHierarchyVisitor;
@@ -39,6 +42,7 @@ import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
 import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.ESuccess;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.wrapper.Wrapper;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
@@ -72,6 +76,67 @@ public final class SchematronHelper
 
   private SchematronHelper ()
   {}
+
+  /**
+   * Check if the passed namespace URI is deprecated.
+   *
+   * @param sNamespaceURI
+   *        The namespace URI to check. May be <code>null</code>.
+   * @return <code>true</code> if the passed namespace URI is a deprecated
+   *         Schematron namespace URI, <code>false</code> if not.
+   * @since 5.4.1
+   */
+  public static boolean isDeprecatedSchematronNS (@Nullable final String sNamespaceURI)
+  {
+    if (CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals (sNamespaceURI))
+      return true;
+    // null or whatever
+    return false;
+  }
+
+  /**
+   * Check if the passed namespace URI is supported.
+   *
+   * @param sNamespaceURI
+   *        The namespace URI to check. May be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> to support old namespace URIs, <code>false</code>
+   *        if not.
+   * @return <code>true</code> if the passed namespace URI is a valid Schematron
+   *         namespace URI, <code>false</code> if not.
+   * @since 5.4.1
+   */
+  public static boolean isValidSchematronNS (@Nullable final String sNamespaceURI, final boolean bLenient)
+  {
+    if (CSchematron.NAMESPACE_SCHEMATRON.equals (sNamespaceURI))
+      return true;
+    if (bLenient && isDeprecatedSchematronNS (sNamespaceURI))
+      return true;
+    // null or whatever
+    return false;
+  }
+
+  /**
+   * Get a list of all supported namespaces.
+   *
+   * @param bLenient
+   *        <code>true</code> to support old namespace URIs, <code>false</code>
+   *        if not.
+   * @return The non-<code>null</code> and non-empty list of all supported
+   *         schematron namespace URIs.
+   * @since 5.4.1
+   */
+  @Nonnull
+  @Nonempty
+  @ReturnsMutableCopy
+  public static ICommonsList <String> getAllValidSchematronNS (final boolean bLenient)
+  {
+    final ICommonsList <String> ret = new CommonsArrayList <> (2);
+    ret.add (CSchematron.NAMESPACE_SCHEMATRON);
+    if (bLenient)
+      ret.add (CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON);
+    return ret;
+  }
 
   /**
    * Apply the passed schematron on the passed XML resource using a custom error
@@ -193,14 +258,14 @@ public final class SchematronHelper
                                                                   @Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @Nonnull final IPSErrorHandler aErrorHandler,
-                                                                  boolean bLenient)
+                                                                  final boolean bLenient)
   {
     if (eRoot != null)
     {
       final DefaultSchematronIncludeResolver aIncludeResolver = new DefaultSchematronIncludeResolver (aResource);
 
       for (final IMicroElement aElement : eRoot.getAllChildElementsRecursive ())
-        if (PSReader.schematronNS (aElement.getNamespaceURI (), bLenient) &&
+        if (isValidSchematronNS (aElement.getNamespaceURI (), bLenient) &&
             aElement.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
         {
           String sHref = aElement.getAttributeValue (CSchematronXML.ATTR_HREF);
@@ -289,7 +354,7 @@ public final class SchematronHelper
             if (false)
             {
               // Check for correct namespace URI of included content
-              if (!PSReader.schematronNS (aIncludedContent.getNamespaceURI (), bLenient))
+              if (!isValidSchematronNS (aIncludedContent.getNamespaceURI (), bLenient))
               {
                 aErrorHandler.error (aResource,
                                      null,
@@ -297,16 +362,17 @@ public final class SchematronHelper
                                            aIncludeRes +
                                            " contains the wrong XML namespace URI '" +
                                            aIncludedContent.getNamespaceURI () +
-                                           "' but was expected to have '" +
-                                           CSchematron.NAMESPACE_SCHEMATRON +
-                                           "'",
+                                           "' but was expected to have: " +
+                                           StringHelper.getImplodedMapped (", ",
+                                                                           getAllValidSchematronNS (bLenient),
+                                                                           x -> "'" + x + "'"),
                                      null);
                 return ESuccess.FAILURE;
               }
             }
 
             // Check that not a whole Schema but only a part is included
-            if (PSReader.schematronNS (aIncludedContent.getNamespaceURI (), bLenient) &&
+            if (isValidSchematronNS (aIncludedContent.getNamespaceURI (), bLenient) &&
                 CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
             {
               aErrorHandler.warn (aResource,
@@ -342,17 +408,61 @@ public final class SchematronHelper
    *
    * @param aResource
    *        The Schematron resource to read. May not be <code>null</code>.
+   * @return <code>null</code> if the passed resource could not be read as XML
+   *         document
+   */
+  @Nullable
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource)
+  {
+    return getWithResolvedSchematronIncludes (aResource,
+                                              (ISAXReaderSettings) null,
+                                              new LoggingPSErrorHandler (),
+                                              CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
+  }
+
+  /**
+   * Resolve all Schematron includes of the passed resource.
+   *
+   * @param aResource
+   *        The Schematron resource to read. May not be <code>null</code>.
    * @param bLenient
    *        <code>true</code> if 'old' schematron NS is tolerated.
+   * @return <code>null</code> if the passed resource could not be read as XML
+   *         document
+   * @since 5.4.1
+   */
+  @Nullable
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+                                                                  final boolean bLenient)
+  {
+    return getWithResolvedSchematronIncludes (aResource,
+                                              (ISAXReaderSettings) null,
+                                              new LoggingPSErrorHandler (),
+                                              bLenient);
+  }
+
+  /**
+   * Resolve all Schematron includes of the passed resource.
+   *
+   * @param aResource
+   *        The Schematron resource to read. May not be <code>null</code>.
+   * @param aSettings
+   *        The SAX reader settings to be used. May be <code>null</code> to use
+   *        the default settings.
+   * @param aErrorHandler
+   *        The error handler to be used. May not be <code>null</code>.
    * @return <code>null</code> if the passed resource could not be read as XML
    *         document
    */
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
-                                                                  boolean bLenient)
+                                                                  @Nullable final ISAXReaderSettings aSettings,
+                                                                  @Nonnull final IPSErrorHandler aErrorHandler)
   {
-    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler (),
-            bLenient);
+    return getWithResolvedSchematronIncludes (aResource,
+                                              aSettings,
+                                              aErrorHandler,
+                                              CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
 
   /**
@@ -366,15 +476,16 @@ public final class SchematronHelper
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
    * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
+   *        <code>true</code> if 'old' Schematron NS is tolerated.
    * @return <code>null</code> if the passed resource could not be read as XML
    *         document
+   * @since 5.4.1
    */
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @Nonnull final IPSErrorHandler aErrorHandler,
-                                                                  boolean bLenient)
+                                                                  final boolean bLenient)
   {
     final InputSource aIS = InputSourceFactory.create (aResource);
     final IMicroDocument aDoc = MicroReader.readMicroXML (aIS, aSettings);

@@ -41,7 +41,7 @@ public final class PSReaderTest
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
-      final PSReader aReader = new PSReader (aRes, false);
+      final PSReader aReader = new PSReader (aRes);
 
       // Parse the schema
       final PSSchema aSchema1 = aReader.readSchema ();

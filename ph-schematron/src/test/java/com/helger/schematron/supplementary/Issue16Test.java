@@ -83,7 +83,7 @@ public final class Issue16Test
                                                          @Nonnull final File aXMLFile) throws Exception
     {
       // Read the schematron from file
-      final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile), false).readSchema ();
+      final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
       if (!aSchema.isValid (new DoNothingPSErrorHandler ()))
         throw new IllegalArgumentException ("Invalid Schematron!");
       // Resolve the query binding to use
@@ -104,7 +104,7 @@ public final class Issue16Test
 
     public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) throws Exception
     {
-      final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile), false).readSchema ();
+      final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
       final PSTitle aTitle = new PSTitle ();
       aTitle.addText ("Created by ph-schematron");
       aSchema.setTitle (aTitle);

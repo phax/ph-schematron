@@ -43,7 +43,7 @@ public final class Issue48Test
 {
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematron), false).readSchema ();
+    final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematron)).readSchema ();
     final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     final String sSCH = new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).getXMLString (aPreprocessedSchema);

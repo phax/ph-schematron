@@ -82,7 +82,7 @@ public final class PSXPathBoundSchemaTest
       assertNotNull (aDoc);
 
       // Read to domain object
-      final PSReader aReader = new PSReader (aSchRes, false);
+      final PSReader aReader = new PSReader (aSchRes);
       final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
       assertNotNull (aSchema);
 
@@ -107,7 +107,7 @@ public final class PSXPathBoundSchemaTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Parse the schema
-      final PSSchema aSchema = new PSReader (aRes, false).readSchema ();
+      final PSSchema aSchema = new PSReader (aRes).readSchema ();
       assertNotNull (aSchema);
       CommonsTestHelper.testToStringImplementation (aSchema);
 
@@ -132,7 +132,7 @@ public final class PSXPathBoundSchemaTest
       try
       {
         // Parse the schema
-        final PSSchema aSchema = new PSReader (aRes, false).readSchema ();
+        final PSSchema aSchema = new PSReader (aRes).readSchema ();
         final CollectingPSErrorHandler aCEH = new CollectingPSErrorHandler ();
         PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH);
         // Either an ERROR was collected or an exception was thrown

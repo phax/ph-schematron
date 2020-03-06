@@ -59,7 +59,7 @@ public class PSReader
   private final IReadableResource m_aResource;
   private final IPSErrorHandler m_aErrorHandler;
   private final EntityResolver m_aEntityResolver;
-  private final boolean m_bLenient;
+  private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
 
   /**
    * Constructor without an error handler
@@ -67,31 +67,10 @@ public class PSReader
    * @param aResource
    *        The resource to read the Schematron from. May not be
    *        <code>null</code>.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
    */
-  public PSReader (@Nonnull final IReadableResource aResource, boolean bLenient)
+  public PSReader (@Nonnull final IReadableResource aResource)
   {
-    this (aResource, null, null, bLenient);
-  }
-
-  /**
-   * Constructor with an error handler
-   *
-   * @param aResource
-   *        The resource to read the Schematron from. May not be
-   *        <code>null</code>.
-   * @param aErrorHandler
-   *        The error handler to use. May be <code>null</code>. If the error
-   *        handler is <code>null</code> a {@link LoggingPSErrorHandler} is
-   *        automatically created and used.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
-   */
-  public PSReader (@Nonnull final IReadableResource aResource, @Nullable final IPSErrorHandler aErrorHandler,
-                   boolean bLenient)
-  {
-    this (aResource, aErrorHandler, null, bLenient);
+    this (aResource, null, null);
   }
 
   /**
@@ -106,24 +85,16 @@ public class PSReader
    *        automatically created and used.
    * @param aEntityResolver
    *        The XML entity resolver to be used. May be <code>null</code>.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
    * @since 4.1.1
    */
   public PSReader (@Nonnull final IReadableResource aResource,
                    @Nullable final IPSErrorHandler aErrorHandler,
-                   @Nullable final EntityResolver aEntityResolver,
-                   boolean bLenient)
+                   @Nullable final EntityResolver aEntityResolver)
   {
     ValueEnforcer.notNull (aResource, "Resource");
     m_aResource = aResource;
     m_aErrorHandler = aErrorHandler != null ? aErrorHandler : new LoggingPSErrorHandler ();
     m_aEntityResolver = aEntityResolver;
-    this.m_bLenient = bLenient;
-  }
-
-  public boolean isLenient() {
-    return m_bLenient;
   }
 
   /**
@@ -131,7 +102,7 @@ public class PSReader
    *         <code>null</code>.
    */
   @Nonnull
-  public IReadableResource getResource ()
+  public final IReadableResource getResource ()
   {
     return m_aResource;
   }
@@ -142,9 +113,35 @@ public class PSReader
    *         used.
    */
   @Nonnull
-  public IPSErrorHandler getErrorHandler ()
+  public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
+  }
+
+  /**
+   * @return <code>true</code> if the old Schematron namespace is supported,
+   *         <code>false</code> if not.
+   * @since 5.4.1
+   */
+  public final boolean isLenient ()
+  {
+    return m_bLenient;
+  }
+
+  /**
+   * Allow or disallow the support for old namespace prefix. By default this is
+   * deprecated.
+   *
+   * @param bLenient
+   *        <code>true</code> to enable support for old namespace URIs.
+   * @return this for chaining
+   * @since 5.4.1
+   */
+  @Nonnull
+  public final PSReader setLenient (final boolean bLenient)
+  {
+    m_bLenient = bLenient;
+    return this;
   }
 
   /**
@@ -204,7 +201,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aActiveChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
@@ -311,7 +308,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aAssertReportChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
@@ -378,7 +375,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aDiagnosticChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
@@ -427,7 +424,7 @@ public class PSReader
     });
 
     eDiagnostics.forAllChildElements (eDiagnosticsChild -> {
-      if (schematronNS (eDiagnosticsChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eDiagnosticsChild.getNamespaceURI ()))
       {
         if (eDiagnosticsChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (eDiagnosticsChild));
@@ -471,7 +468,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aDirChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
           }
@@ -514,7 +511,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aEmphChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
           }
@@ -553,7 +550,7 @@ public class PSReader
     });
 
     eExtends.forAllChildElements (eChild -> {
-      if (schematronNS (eChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eChild.getLocalName () + "'");
       }
@@ -584,7 +581,7 @@ public class PSReader
     });
 
     eInclude.forAllChildElements (eValueOfChild -> {
-      if (schematronNS (eValueOfChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eValueOfChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eValueOfChild.getLocalName () + "'");
       }
@@ -618,7 +615,7 @@ public class PSReader
     });
 
     eLet.forAllChildElements (eLetChild -> {
-      if (schematronNS (eLetChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
@@ -649,7 +646,7 @@ public class PSReader
     });
 
     eName.forAllChildElements (eNameChild -> {
-      if (schematronNS (eNameChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eNameChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eNameChild.getLocalName () + "'");
       }
@@ -683,7 +680,7 @@ public class PSReader
     });
 
     eNS.forAllChildElements (eLetChild -> {
-      if (schematronNS (eLetChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
@@ -726,7 +723,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
@@ -778,7 +775,7 @@ public class PSReader
     });
 
     eParam.forAllChildElements (eParamChild -> {
-      if (schematronNS (eParamChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eParamChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eParamChild.getLocalName () + "'");
       }
@@ -820,7 +817,7 @@ public class PSReader
     ret.setRich (aRichGroup);
 
     ePattern.forAllChildElements (ePatternChild -> {
-      if (schematronNS (ePatternChild.getNamespaceURI ()))
+      if (isValidSchematronNS (ePatternChild.getNamespaceURI ()))
       {
         if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (ePatternChild));
@@ -878,7 +875,7 @@ public class PSReader
     ret.setRich (aRichGroup);
 
     ePhase.forAllChildElements (ePhaseChild -> {
-      if (schematronNS (ePhaseChild.getNamespaceURI ()))
+      if (isValidSchematronNS (ePhaseChild.getNamespaceURI ()))
       {
         if (ePhaseChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (ePhaseChild));
@@ -940,7 +937,7 @@ public class PSReader
     ret.setLinkable (aLinkableGroup);
 
     eRule.forAllChildElements (eRuleChild -> {
-      if (schematronNS (eRuleChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eRuleChild.getNamespaceURI ()))
       {
         final String sLocalName = eRuleChild.getLocalName ();
         if (sLocalName.equals (CSchematronXML.ELEMENT_INCLUDE))
@@ -963,17 +960,9 @@ public class PSReader
     return ret;
   }
 
-  public boolean schematronNS(String nsURI) {
-    return schematronNS(nsURI, isLenient());
-  }
-
-  public static boolean schematronNS(String nsURI, boolean bLenient) {
-    boolean nsRight = CSchematron.NAMESPACE_SCHEMATRON.equals (nsURI);
-    boolean nsOld = false;
-    if (bLenient) {
-      nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals(nsURI);
-    }
-    return nsRight || nsOld;
+  public boolean isValidSchematronNS (@Nullable final String sNamespaceURI)
+  {
+    return SchematronHelper.isValidSchematronNS (sNamespaceURI, isLenient ());
   }
 
   /**
@@ -991,14 +980,15 @@ public class PSReader
   public PSSchema readSchemaFromXML (@Nonnull final IMicroElement eSchema) throws SchematronReadException
   {
     ValueEnforcer.notNull (eSchema, "Schema");
-    boolean nsRight = CSchematron.NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ());
-    boolean nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ());
 
-    if (nsOld && !isLenient())
-      LOGGER.warn("OLD schematron NS '" + CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON + "' is deprecated, use '" +
-              CSchematron.NAMESPACE_SCHEMATRON + "' instead");
+    if (!isLenient () && SchematronHelper.isDeprecatedSchematronNS (eSchema.getNamespaceURI ()))
+      LOGGER.warn ("OLD Schematron NS '" +
+                   eSchema.getNamespaceURI () +
+                   "' is deprecated, use '" +
+                   CSchematron.NAMESPACE_SCHEMATRON +
+                   "' instead");
 
-    if (!(schematronNS (eSchema.getNamespaceURI())))
+    if (!isValidSchematronNS (eSchema.getNamespaceURI ()))
       throw new SchematronReadException (m_aResource, "The passed element is not an ISO Schematron element!");
 
     final PSSchema ret = new PSSchema (m_aResource);
@@ -1025,7 +1015,7 @@ public class PSReader
     ret.setRich (aRichGroup);
 
     eSchema.forAllChildElements (eSchemaChild -> {
-      if (schematronNS (eSchemaChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eSchemaChild.getNamespaceURI ()))
       {
         if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (eSchemaChild));
@@ -1093,7 +1083,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aSpanChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
           }
@@ -1136,7 +1126,7 @@ public class PSReader
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aTitleChild;
-          if (schematronNS (eElement.getNamespaceURI ()))
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
             final String sLocalName = eElement.getLocalName ();
             if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
@@ -1179,7 +1169,7 @@ public class PSReader
     });
 
     eValueOf.forAllChildElements (eValueOfChild -> {
-      if (schematronNS (eValueOfChild.getNamespaceURI ()))
+      if (isValidSchematronNS (eValueOfChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eValueOfChild.getLocalName () + "'");
       }
