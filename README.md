@@ -304,7 +304,8 @@ The `schematron` element allows for the following attributes:
 
 * v5.4.1 - work in progress
     * Updated to Saxon-HE 9.9.1-6
-    * Added a "lenient" setting to the pure Schematron implementation to allow reading Schematrons with an old namespace URI.
+    * Added a "lenient" setting to the pure Schematron implementation to allow reading Schematrons with an old namespace URI (see [PR #97](https://github.com/phax/ph-schematron/pull/97)) - thanks [@aanno](https://github.com/aanno)
+    * Added the "lenient" flag to the Maven plugin for validating documents
 * v5.4.0 - 2019-11-29
     * Changed the package of the generated SVRL classes from `org.oclc.purl.dsdl.svrl` to `com.helger.schematron.svrl.jaxb` to avoid incompatibilities with other Schematron solutions (incompatible change)
     * Removed `ph-sch2xslt-maven-plugin` which was deprecated long time ago. Use `ph-schematron-maven-plugin` instead.
