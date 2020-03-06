@@ -47,6 +47,7 @@ import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.CSchematron;
 import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
@@ -212,6 +213,15 @@ public final class SchematronValidationMojo extends AbstractMojo
   @Since ("5.2.1")
   private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
 
+  /**
+   * Define if old namespace URIs should be supported or not. By default this is
+   * disabled. This parameter takes only effect when using
+   * schematronProcessingEngine "pure".
+   */
+  @Parameter (name = "lenient", defaultValue = "false")
+  @Since ("5.4.1")
+  private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+
   public void setSchematronFile (@Nonnull final File aFile)
   {
     m_aSchematronFile = aFile;
@@ -340,6 +350,15 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Results are forcebly cached");
     else
       getLog ().debug ("Results not not forcebly cached");
+  }
+
+  public void setLenient (final boolean bLenient)
+  {
+    m_bLenient = bLenient;
+    if (m_bLenient)
+      getLog ().debug ("Old deprecated namespace URIs are supported");
+    else
+      getLog ().debug ("Old deprecated namespace URIs are not supported");
   }
 
   @Nonnull
@@ -528,6 +547,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
         final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
+        aRealSCH.setLenient (m_bLenient);
         // language code is ignored
         // custom parameters are ignored
         aRealSCH.setErrorHandler (aErrorHdl);
