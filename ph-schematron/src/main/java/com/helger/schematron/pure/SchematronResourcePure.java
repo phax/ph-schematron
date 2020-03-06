@@ -45,6 +45,7 @@ import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.CSchematron;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
@@ -87,22 +88,30 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource)
   {
-    this (aResource, (String) null, (IPSErrorHandler) null, false);
+    this (aResource, (String) null, (IPSErrorHandler) null, CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
 
-  public SchematronResourcePure (@Nonnull final IReadableResource aResource, boolean bLenient)
+  public SchematronResourcePure (@Nonnull final IReadableResource aResource, final boolean bLenient)
   {
     this (aResource, (String) null, (IPSErrorHandler) null, bLenient);
   }
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource,
                                  @Nullable final String sPhase,
-                                 @Nullable final IPSErrorHandler aErrorHandler,
-                                 boolean bLenient)
+                                 @Nullable final IPSErrorHandler aErrorHandler)
   {
-    super (aResource, bLenient);
+    this (aResource, sPhase, aErrorHandler, CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
+  }
+
+  public SchematronResourcePure (@Nonnull final IReadableResource aResource,
+                                 @Nullable final String sPhase,
+                                 @Nullable final IPSErrorHandler aErrorHandler,
+                                 final boolean bLenient)
+  {
+    super (aResource);
     setPhase (sPhase);
     setErrorHandler (aErrorHandler);
+    setLenient (bLenient);
   }
 
   /**
@@ -271,7 +280,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
                                                                        m_aVariableResolver,
                                                                        m_aFunctionResolver,
                                                                        getEntityResolver (),
-                                                                       isLenient());
+                                                                       isLenient ());
     if (aResource instanceof AbstractMemoryReadableResource || !isUseCache ())
     {
       // No need to cache anything for memory resources

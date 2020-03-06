@@ -52,12 +52,14 @@ import com.helger.xml.transform.TransformSourceFactory;
 @NotThreadSafe
 public abstract class AbstractSchematronResource implements ISchematronResource
 {
+  public static final boolean DEFAULT_USE_CACHE = true;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronResource.class);
 
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
-  private boolean m_bUseCache = true;
-  private boolean m_bLenient = false;
+  private boolean m_bUseCache = DEFAULT_USE_CACHE;
+  private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
   private EntityResolver m_aEntityResolver;
 
   /**
@@ -65,16 +67,13 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    *
    * @param aResource
    *        The Schematron resource. May not be <code>null</code>.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
    */
-  public AbstractSchematronResource (@Nonnull final IReadableResource aResource, boolean bLenient)
+  public AbstractSchematronResource (@Nonnull final IReadableResource aResource)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
     // Set a default entity resolver
     m_aEntityResolver = DefaultEntityResolver.createOnDemand (aResource);
-    m_bLenient = bLenient;
   }
 
   @Nonnull
@@ -89,26 +88,28 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return m_aResource;
   }
 
-  public boolean isUseCache ()
+  public final boolean isUseCache ()
   {
     return m_bUseCache;
   }
 
-  public void setUseCache (final boolean bUseCache)
+  public final void setUseCache (final boolean bUseCache)
   {
     m_bUseCache = bUseCache;
   }
 
-  public boolean isLenient() {
+  public final boolean isLenient ()
+  {
     return m_bLenient;
   }
 
-  public void setLenient(boolean bLenient) {
-    this.m_bLenient = bLenient;
+  public final void setLenient (final boolean bLenient)
+  {
+    m_bLenient = bLenient;
   }
 
   @Nullable
-  public EntityResolver getEntityResolver ()
+  public final EntityResolver getEntityResolver ()
   {
     return m_aEntityResolver;
   }

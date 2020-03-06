@@ -48,40 +48,27 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    */
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
   {
-    this (aSCHResource, false);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
-   */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource, boolean bLenient)
-  {
-    super (aSCHResource, bLenient);
+    super (aSCHResource);
   }
 
   @Nullable
-  public String getPhase ()
+  public final String getPhase ()
   {
     return m_sPhase;
   }
 
-  public void setPhase (@Nullable final String sPhase)
+  public final void setPhase (@Nullable final String sPhase)
   {
     m_sPhase = sPhase;
   }
 
   @Nullable
-  public String getLanguageCode ()
+  public final String getLanguageCode ()
   {
     return m_sLanguageCode;
   }
 
-  public void setLanguageCode (@Nullable final String sLanguageCode)
+  public final void setLanguageCode (@Nullable final String sLanguageCode)
   {
     m_sLanguageCode = sLanguageCode;
   }
@@ -91,7 +78,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *         forced, <code>false</code> if not.
    * @since 5.2.1
    */
-  public boolean isForceCacheResult ()
+  public final boolean isForceCacheResult ()
   {
     return m_bForceCacheResult;
   }
@@ -105,7 +92,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        cache only if no parameters are present.
    * @since 5.2.1
    */
-  public void setForceCacheResult (final boolean bForceCacheResult)
+  public final void setForceCacheResult (final boolean bForceCacheResult)
   {
     m_bForceCacheResult = bForceCacheResult;
   }

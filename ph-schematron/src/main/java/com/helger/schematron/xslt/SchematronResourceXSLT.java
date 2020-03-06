@@ -43,20 +43,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    */
   public SchematronResourceXSLT (@Nonnull final IReadableResource aXSLTResource)
   {
-    this (aXSLTResource, false);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param aXSLTResource
-   *        The XSLT resource. May not be <code>null</code>.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
-   */
-  public SchematronResourceXSLT (@Nonnull final IReadableResource aXSLTResource, boolean bLenient)
-  {
-    super (aXSLTResource, bLenient);
+    super (aXSLTResource);
   }
 
   @Override

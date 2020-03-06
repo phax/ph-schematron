@@ -100,9 +100,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return aBaseURL != null ? aBaseURL.toExternalForm () : null;
   }
 
-  public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource, boolean bLenient)
+  public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
   {
-    super (aSCHResource, bLenient);
+    super (aSCHResource);
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
     // the SCH
     final String sBaseURL = _findBaseURL (aSCHResource);
