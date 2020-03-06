@@ -63,6 +63,21 @@ public interface ISchematronResource extends IHasID <String>
   void setUseCache (boolean bUseCache);
 
   /**
+   * @return <code>true</code> if 'old' schematron NS is tolerated.
+   * @since 5.4.1 in this interface
+   */
+  boolean isLenient();
+
+  /**
+   * Allow use of 'old' schematron NS.
+   *
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
+   * @since 5.4.1 in this interface
+   */
+  void setLenient(boolean bLenient);
+
+  /**
    * @return The XML entity resolver to be used to read the Schematron or XML to
    *         be validated. May be <code>null</code>.
    * @since 4.1.1 in implementation

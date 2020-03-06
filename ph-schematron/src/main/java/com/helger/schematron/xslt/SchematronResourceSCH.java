@@ -48,7 +48,20 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    */
   public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
   {
-    super (aSCHResource);
+    this (aSCHResource, false);
+  }
+
+  /**
+   * Constructor
+   *
+   * @param aSCHResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
+   */
+  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource, boolean bLenient)
+  {
+    super (aSCHResource, bLenient);
   }
 
   @Nullable

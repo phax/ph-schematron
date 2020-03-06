@@ -59,6 +59,7 @@ public class PSReader
   private final IReadableResource m_aResource;
   private final IPSErrorHandler m_aErrorHandler;
   private final EntityResolver m_aEntityResolver;
+  private final boolean m_bLenient;
 
   /**
    * Constructor without an error handler
@@ -66,10 +67,12 @@ public class PSReader
    * @param aResource
    *        The resource to read the Schematron from. May not be
    *        <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
    */
-  public PSReader (@Nonnull final IReadableResource aResource)
+  public PSReader (@Nonnull final IReadableResource aResource, boolean bLenient)
   {
-    this (aResource, null, null);
+    this (aResource, null, null, bLenient);
   }
 
   /**
@@ -82,10 +85,13 @@ public class PSReader
    *        The error handler to use. May be <code>null</code>. If the error
    *        handler is <code>null</code> a {@link LoggingPSErrorHandler} is
    *        automatically created and used.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
    */
-  public PSReader (@Nonnull final IReadableResource aResource, @Nullable final IPSErrorHandler aErrorHandler)
+  public PSReader (@Nonnull final IReadableResource aResource, @Nullable final IPSErrorHandler aErrorHandler,
+                   boolean bLenient)
   {
-    this (aResource, aErrorHandler, null);
+    this (aResource, aErrorHandler, null, bLenient);
   }
 
   /**
@@ -100,16 +106,24 @@ public class PSReader
    *        automatically created and used.
    * @param aEntityResolver
    *        The XML entity resolver to be used. May be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
    * @since 4.1.1
    */
   public PSReader (@Nonnull final IReadableResource aResource,
                    @Nullable final IPSErrorHandler aErrorHandler,
-                   @Nullable final EntityResolver aEntityResolver)
+                   @Nullable final EntityResolver aEntityResolver,
+                   boolean bLenient)
   {
     ValueEnforcer.notNull (aResource, "Resource");
     m_aResource = aResource;
     m_aErrorHandler = aErrorHandler != null ? aErrorHandler : new LoggingPSErrorHandler ();
     m_aEntityResolver = aEntityResolver;
+    this.m_bLenient = bLenient;
+  }
+
+  public boolean isLenient() {
+    return m_bLenient;
   }
 
   /**
@@ -949,9 +963,16 @@ public class PSReader
     return ret;
   }
 
-  public static boolean schematronNS(String nsURI) {
+  public boolean schematronNS(String nsURI) {
+    return schematronNS(nsURI, isLenient());
+  }
+
+  public static boolean schematronNS(String nsURI, boolean bLenient) {
     boolean nsRight = CSchematron.NAMESPACE_SCHEMATRON.equals (nsURI);
-    boolean nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals (nsURI);
+    boolean nsOld = false;
+    if (bLenient) {
+      nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals(nsURI);
+    }
     return nsRight || nsOld;
   }
 
@@ -973,11 +994,11 @@ public class PSReader
     boolean nsRight = CSchematron.NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ());
     boolean nsOld = CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON.equals (eSchema.getNamespaceURI ());
 
-    if (nsOld)
+    if (nsOld && !isLenient())
       LOGGER.warn("OLD schematron NS '" + CSchematron.DEPRECATED_NAMESPACE_SCHEMATRON + "' is deprecated, use '" +
               CSchematron.NAMESPACE_SCHEMATRON + "' instead");
 
-    if (!(nsRight || nsOld))
+    if (!(schematronNS (eSchema.getNamespaceURI())))
       throw new SchematronReadException (m_aResource, "The passed element is not an ISO Schematron element!");
 
     final PSSchema ret = new PSSchema (m_aResource);
@@ -1185,7 +1206,8 @@ public class PSReader
 
     final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
                                                                                     aSettings,
-                                                                                    m_aErrorHandler);
+                                                                                    m_aErrorHandler,
+                                                                                    m_bLenient);
     if (aDoc == null || aDoc.getDocumentElement () == null)
       throw new SchematronReadException (m_aResource,
                                          "Failed to resolve includes in Schematron resource " + m_aResource);
