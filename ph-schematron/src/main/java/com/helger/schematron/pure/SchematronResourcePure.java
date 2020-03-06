@@ -87,14 +87,20 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource)
   {
-    this (aResource, (String) null, (IPSErrorHandler) null);
+    this (aResource, (String) null, (IPSErrorHandler) null, false);
+  }
+
+  public SchematronResourcePure (@Nonnull final IReadableResource aResource, boolean bLenient)
+  {
+    this (aResource, (String) null, (IPSErrorHandler) null, bLenient);
   }
 
   public SchematronResourcePure (@Nonnull final IReadableResource aResource,
                                  @Nullable final String sPhase,
-                                 @Nullable final IPSErrorHandler aErrorHandler)
+                                 @Nullable final IPSErrorHandler aErrorHandler,
+                                 boolean bLenient)
   {
-    super (aResource);
+    super (aResource, bLenient);
     setPhase (sPhase);
     setErrorHandler (aErrorHandler);
   }
@@ -264,7 +270,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
                                                                        m_aCustomValidationHandler,
                                                                        m_aVariableResolver,
                                                                        m_aFunctionResolver,
-                                                                       getEntityResolver ());
+                                                                       getEntityResolver (),
+                                                                       isLenient());
     if (aResource instanceof AbstractMemoryReadableResource || !isUseCache ())
     {
       // No need to cache anything for memory resources

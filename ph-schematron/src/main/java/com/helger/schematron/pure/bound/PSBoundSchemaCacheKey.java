@@ -64,6 +64,7 @@ public class PSBoundSchemaCacheKey
   private final XPathVariableResolver m_aVariableResolver;
   private final XPathFunctionResolver m_aFunctionResolver;
   private final EntityResolver m_aEntityResolver;
+  private final boolean m_bLenient;
   // Status vars
   private transient int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
@@ -73,7 +74,8 @@ public class PSBoundSchemaCacheKey
                                 @Nullable final IPSValidationHandler aCustomValidationHandler,
                                 @Nullable final XPathVariableResolver aVariableResolver,
                                 @Nullable final XPathFunctionResolver aFunctionResolver,
-                                @Nullable final EntityResolver aEntityResolver)
+                                @Nullable final EntityResolver aEntityResolver,
+                                boolean bLenient)
   {
     ValueEnforcer.notNull (aResource, "Resource");
 
@@ -84,6 +86,11 @@ public class PSBoundSchemaCacheKey
     m_aVariableResolver = aVariableResolver;
     m_aFunctionResolver = aFunctionResolver;
     m_aEntityResolver = aEntityResolver;
+    m_bLenient = bLenient;
+  }
+
+  public boolean isLenient() {
+    return m_bLenient;
   }
 
   /**
@@ -170,7 +177,7 @@ public class PSBoundSchemaCacheKey
                               @Nullable final IPSErrorHandler aErrorHandler,
                               @Nullable final EntityResolver aEntityResolver) throws SchematronException
   {
-    return new PSReader (aResource, aErrorHandler, aEntityResolver).readSchema ();
+    return new PSReader (aResource, aErrorHandler, aEntityResolver, isLenient()).readSchema ();
   }
 
   /**

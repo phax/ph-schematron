@@ -51,7 +51,7 @@ public final class PSWriterTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Parse the schema
-      final PSSchema aSchema1 = new PSReader (aRes).readSchema ();
+      final PSSchema aSchema1 = new PSReader (aRes, false).readSchema ();
       assertNotNull (aSchema1);
       final CollectingPSErrorHandler aLogger = new CollectingPSErrorHandler ();
       assertTrue (aRes.getPath (), aSchema1.isValid (aLogger));
@@ -61,7 +61,7 @@ public final class PSWriterTest
       final String sXML1 = aWriter.getXMLStringNotNull (aSchema1);
 
       // Re-read the created XML and re-create it
-      final PSSchema aSchema2 = new PSReader (new ReadableResourceString (sXML1, StandardCharsets.UTF_8)).readSchema ();
+      final PSSchema aSchema2 = new PSReader (new ReadableResourceString (sXML1, StandardCharsets.UTF_8), false).readSchema ();
       final String sXML2 = aWriter.getXMLStringNotNull (aSchema2);
 
       // Originally created XML and re-created-written XML must match
@@ -74,7 +74,7 @@ public final class PSWriterTest
   {
     final IReadableResource aRes = SchematronTestHelper.getAllValidSchematronFiles ().getFirst ();
     // Read existing Schematron
-    final PSSchema aSchema = new PSReader (aRes).readSchema ();
+    final PSSchema aSchema = new PSReader (aRes, false).readSchema ();
 
     // Create the XML namespace context
     final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();

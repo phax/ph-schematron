@@ -57,6 +57,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
   private boolean m_bUseCache = true;
+  private boolean m_bLenient = false;
   private EntityResolver m_aEntityResolver;
 
   /**
@@ -64,13 +65,16 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    *
    * @param aResource
    *        The Schematron resource. May not be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
    */
-  public AbstractSchematronResource (@Nonnull final IReadableResource aResource)
+  public AbstractSchematronResource (@Nonnull final IReadableResource aResource, boolean bLenient)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
     // Set a default entity resolver
     m_aEntityResolver = DefaultEntityResolver.createOnDemand (aResource);
+    m_bLenient = bLenient;
   }
 
   @Nonnull
@@ -93,6 +97,14 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   public void setUseCache (final boolean bUseCache)
   {
     m_bUseCache = bUseCache;
+  }
+
+  public boolean isLenient() {
+    return m_bLenient;
+  }
+
+  public void setLenient(boolean bLenient) {
+    this.m_bLenient = bLenient;
   }
 
   @Nullable

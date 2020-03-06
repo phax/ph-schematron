@@ -24,6 +24,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
+import com.helger.schematron.pure.exchange.PSReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -191,14 +192,15 @@ public final class SchematronHelper
   private static ESuccess _recursiveResolveAllSchematronIncludes (@Nonnull final IMicroElement eRoot,
                                                                   @Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final IPSErrorHandler aErrorHandler)
+                                                                  @Nonnull final IPSErrorHandler aErrorHandler,
+                                                                  boolean bLenient)
   {
     if (eRoot != null)
     {
       final DefaultSchematronIncludeResolver aIncludeResolver = new DefaultSchematronIncludeResolver (aResource);
 
       for (final IMicroElement aElement : eRoot.getAllChildElementsRecursive ())
-        if (CSchematron.NAMESPACE_SCHEMATRON.equals (aElement.getNamespaceURI ()) &&
+        if (PSReader.schematronNS (aElement.getNamespaceURI (), bLenient) &&
             aElement.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
         {
           String sHref = aElement.getAttributeValue (CSchematronXML.ATTR_HREF);
@@ -287,7 +289,7 @@ public final class SchematronHelper
             if (false)
             {
               // Check for correct namespace URI of included content
-              if (!CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()))
+              if (!PSReader.schematronNS (aIncludedContent.getNamespaceURI (), bLenient))
               {
                 aErrorHandler.error (aResource,
                                      null,
@@ -304,7 +306,7 @@ public final class SchematronHelper
             }
 
             // Check that not a whole Schema but only a part is included
-            if (CSchematron.NAMESPACE_SCHEMATRON.equals (aIncludedContent.getNamespaceURI ()) &&
+            if (PSReader.schematronNS (aIncludedContent.getNamespaceURI (), bLenient) &&
                 CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
             {
               aErrorHandler.warn (aResource,
@@ -318,7 +320,8 @@ public final class SchematronHelper
             if (_recursiveResolveAllSchematronIncludes (aIncludedContent,
                                                         aIncludeRes,
                                                         aSettings,
-                                                        aErrorHandler).isFailure ())
+                                                        aErrorHandler,
+                                                        bLenient).isFailure ())
               return ESuccess.FAILURE;
 
             // Now replace "include" element with content in MicroDOM
@@ -339,13 +342,17 @@ public final class SchematronHelper
    *
    * @param aResource
    *        The Schematron resource to read. May not be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
    * @return <code>null</code> if the passed resource could not be read as XML
    *         document
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource)
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+                                                                  boolean bLenient)
   {
-    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler ());
+    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler (),
+            bLenient);
   }
 
   /**
@@ -358,13 +365,16 @@ public final class SchematronHelper
    *        the default settings.
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' schematron NS is tolerated.
    * @return <code>null</code> if the passed resource could not be read as XML
    *         document
    */
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final IPSErrorHandler aErrorHandler)
+                                                                  @Nonnull final IPSErrorHandler aErrorHandler,
+                                                                  boolean bLenient)
   {
     final InputSource aIS = InputSourceFactory.create (aResource);
     final IMicroDocument aDoc = MicroReader.readMicroXML (aIS, aSettings);
@@ -374,7 +384,8 @@ public final class SchematronHelper
       if (_recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (),
                                                   aResource,
                                                   aSettings,
-                                                  aErrorHandler).isFailure ())
+                                                  aErrorHandler,
+                                                  bLenient).isFailure ())
       {
         // Error resolving includes
         return null;

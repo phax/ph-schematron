@@ -62,11 +62,11 @@ public final class PSPreprocessorTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Resolve all includes
-      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes);
+      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, false);
       assertNotNull (aDoc);
 
       // Read to domain object
-      final PSReader aReader = new PSReader (aRes);
+      final PSReader aReader = new PSReader (aRes, false);
       final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
       assertNotNull (aSchema);
 
@@ -100,8 +100,8 @@ public final class PSPreprocessorTest
     final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ()).setKeepTitles (true)
                                                                                                 .setKeepDiagnostics (true);
     final IReadableResource aRes = new ClassPathResource ("test-sch/example-3-5.sch");
-    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes);
-    final PSReader aReader = new PSReader (aRes);
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, false);
+    final PSReader aReader = new PSReader (aRes, false);
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     assertNotNull (aPreprocessedSchema);
@@ -116,8 +116,8 @@ public final class PSPreprocessorTest
     final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ()).setKeepTitles (true)
                                                                                                 .setKeepDiagnostics (true);
     final IReadableResource aRes = new FileSystemResource ("src/test/resources/issues/github51/test51.sch");
-    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes);
-    final PSReader aReader = new PSReader (aRes);
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, true);
+    final PSReader aReader = new PSReader (aRes, true);
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     assertNotNull (aPreprocessedSchema);
