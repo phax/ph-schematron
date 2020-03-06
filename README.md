@@ -9,10 +9,302 @@ The most common way is to convert the source Schematron file to an XSLT script a
 
 Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
 
+## Usage with Maven
+
+The dependency for ph-schematron looks like this:
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-schematron</artifactId>
+  <version>5.4.0</version>
+</dependency>
+```
+
+It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
+
+# Maven plugin to convert Schematron to XSLT at build time
+
+**The Maven plugin `ph-sch2xslt-maven-plugin` is deprecated since v5.0.9 - the goal was integrated into `ph-schematron-maven-plugin`**
+
+Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the converter.
+
+The conversion of Schematron to XSLT is quite costly. That’s why this Maven plugin that does the conversion at build time. 
+
+By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element).
+
+Starting from version 5.0.9:
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-schematron-maven-plugin</artifactId>
+  <version>5.4.0</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>convert</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+Up to and including version 5.0.8:
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-sch2xslt-maven-plugin</artifactId>
+  <version>5.0.8</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>convert</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+The possible configuration parameters are:
+  * `schematronDirectory` - The directory where the Schematron files reside. Defaults to `${basedir}/src/main/schematron`.
+  * `schematronPattern` - A pattern for the Schematron files. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be converted. Files in the `schematronDirectory` and its subdirectories will be considered. Default is `**/*.sch`.
+  * `xsltDirectory` - The directory where the XSLT files will be saved. Default is `${basedir}/src/main/xslt`.
+  * `xsltExtension` - The file extension of the created XSLT files. Default is `.xslt`.
+  * `overwriteWithoutQuestion` - Overwrite existing Schematron files without notice? If this is set to `false` than existing XSLT files are not overwritten. Default is `true`.
+  * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
+  * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+  * `forceCacheResult` (since v.5.2.1) - Force the caching of results from SCH to XSLT.
+  * `parameters` (since v5.0.2) - A map to provide custom parameter for the Schematron XSLTs (as in `allow-foreign`). Example:
+
+```xml
+<configuration>
+  ...
+  <parameters> 
+    <allow-foreign>true</allow-foreign>
+    <anything>else</anything>
+  </parameters>    
+  ...
+</configuration>
+```
+
+# Maven plugin to validate XML instances against Schematron rules
+
+Maven plugin to validate XML files against convert Schematron (SCH) at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the validator.
+
+This plugin was introduced in version 4.2.0.
+
+By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-schematron-maven-plugin</artifactId>
+  <version>5.4.0</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>validate</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+The possible configuration parameters are:
+  * `schematronFile` - The Schematron file to be applied. This parameter is mandatory.
+  * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `pure`.
+  * `xmlDirectory` - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory match the Schematron rules. Either this parameter or `xmlErrorDirectory` parameter are mandatory.
+  * `xmlIncludes` - A pattern for the XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
+  * `xmlExcludes` - A pattern for the XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
+  * `svrlDirectory` - The directory where the SVRL (Schematron Validation Report Language) files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlDirectory`, `xmlIncludes` and `xmlExcludes`) with the suffix `.svrl`.
+  * `xmlErrorDirectory` (since v4.3.0) - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory do **not** match the Schematron rules. Either this parameter or `xmlDirectory` parameter are mandatory.
+  * `xmlErrorIncludes` (since v4.3.0) - A pattern for the erroneous XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
+  * `xmlErrorExcludes` (since v4.3.0) - A pattern for the erroneous XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
+  * `svrlErrorDirectory` (since v4.3.0) - The directory where the erroneous SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlErrorDirectory`, `xmlErrorIncludes` and `xmlErrorExcludes`) with the suffix `.svrl`.
+  * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
+  * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
+  * `parameters` (since v5.0.2) - Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect when using schematronProcessingEngine "schematron" or "xslt". By default no parameter is present.
+  * `failFast` (since v5.0.5) - If multiple XML files are validated this parameter defines whether the execution should fail at the first error (value `true`) or at the end only (value `false`). The default value is `true`.
+  * `forceCacheResult` (since v5.2.1) - Force the caching of results of the conversion from SCH to XSLT (the default is `false`)
+  * `lenient` (since v5.4.1) - If enabled, old deprecated Schematron namespace URIs can be read. This only has an affect when used with the "pure" engine (the default is `false`)
+
+
+# Maven plugin to preprocess Schematron files
+
+Maven plugin to preprocess a Schematron file and write the resulting file to disk.
+
+This plugin was introduced in version 5.0.9.
+
+By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+
+```xml
+<plugin>
+  <groupId>com.helger.maven</groupId>
+  <artifactId>ph-schematron-maven-plugin</artifactId>
+  <version>5.4.0</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>preprocess</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+The possible configuration parameters are:
+  * `sourceFile` - The source Schematron file to be preprocessed. This parameter is mandatory.
+  * `targetFile` - The target (preprocessed) Schematron file to be written. This parameter is mandatory.
+  * `overwriteWithoutNotice` - Overwrite existing Schematron files without notice? If this is set to `false` than existing Schematron files are not overwritten. The default value is `true`.
+  * `keepTitles` - If this is set to `false` than `<title>` elements will be removed. The default value is `false`.
+  * `keepDiagnostics` - If this is set to `false` than `<diagnostic>` elements will be removed. The default value is `false`.
+  * `keepReports` - Should `<report>` elements be kept or should they be converted to `<assert>` elements? The default value is `false`.
+  * `keepEmptyPatterns` - Should `<pattern>` elements without a single rule be kept or deleted? The default value is `false`.
+
+# ph-schematron-validator
+
+This submodule is a Java library.
+It is a validator for Schematron definitions based on RelaxNG definition.
+
+## Usage with Maven
+Add the following to your pom.xml to use this artifact:
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-schematron-validator</artifactId>
+  <version>5.4.0</version>
+</dependency>
+```
+
+# Ant tasks
+
+Since ph-schematron 4.3.0 there is an Apache Ant task that enables you to validate XML files against Schematron rules.
+As I'm not an Ant expert please forgive me if some of the explanations are not 100% accurate.
+ph-schematron 5.0.0 adds a new task for preprocessing Schematron files. 
+
+## Validate documents with Schematron (since 4.3.0)
+
+### Declare the task
+
+There is currently only one task:
+
+```xml
+<taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+```
+
+For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
+Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script.
+
+A compiled version of the "JAR with dependencies" is [available at the Maven Central Repository](https://repo1.maven.org/maven2/com/helger/ph-schematron-ant-task/).
+
+### Execute task
+
+The validation itself looks like this:
+
+```xml
+  <target name="validate">
+...
+    <schematron schematronFile="sample_schematron.sch" expectSuccess="true">
+      <fileset dir="xml">
+        <include name="*.xml" />
+        <exclude name="err*.xml" />
+      </fileset>
+    </schematron>
+...
+  </target>
+```
+
+Basically you declare the Schematron file (relative to the project's base directory),
+define whether you expect a successful validation or failures,
+and finally you name the XML files to be validated (as resource collections - e.g. Filesets).
+
+The `schematron` element allows for the following attributes:
+  * `File` **schematronFile** - The Schematron file to be used for validation
+  * `String` **schematronProcessingEngine** - The internal engine to be used. Must be one of `pure`, `schematron` or `xslt`. The default is `schematron`. In v5.0.0 `sch` was added as an alias for `schematron`.
+  * `File` **svrlDirectory** - An optional directory where the SVRL files should be written to.
+  * `String` **phaseName** - The optional Schematron phase to be used. Note: this is only available when using the processing engine `pure` or `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created.
+  * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
+  * `boolean` **expectSuccess** - `true` to expect successful validation, `false` to expect validation errors. If the expectation is incorrect, the build will fail.
+  * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error. The default value is `true`.
+  * `boolean` **failOnValidationError** (since v5.0.11) - `true` to break the build, if any Schematron error is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
+  * `boolean` **failOnValidationWarn** (since v5.0.11) - `true` to break the build, if any Schematron warning is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
+  * `boolean` **failOnValidationInfo** (since v5.0.11) - `true` to break the build, if any Schematron information is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
+
+The following child elements are allowed:
+* `<errorRole>` (since v5.0.2)
+    * The usage of the element is optional.
+    * The `role` attribute allows to define values of `role` and `flag` attributes in Schematrons that are considered as errors.
+    * If this element is combined with the `failOnError` attribute you can break the build if an assertion with the respective `role` or `flag` fails.
+* `<parameter>` (since v5.0.6)
+    * The usage of the element is optional.
+    * The element is only interpreted for the processing engines `xslt` and `sch`.
+    * The attribute 'name' defines the custom attribute name.
+    * The attribute 'value' defines the custom attribute value. If the value is omitted, an empty String is passed instead. 
+  
+Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver both for the Schematron and the XML files to be validated! See https://ant.apache.org/manual/Types/xmlcatalog.html for details on the XML catalog. Here is an example that shows how to use an inline XML catalog:
+
+```xml
+  <target name="validate">
+    <schematron schematronFile="../sch/test.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="pure">
+      <fileset dir=".">
+        <include name="test.xml" />
+      </fileset>
+      <xmlcatalog>
+        <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
+      </xmlcatalog>
+      <errorRole role="fatal" />
+      <parameter name="allow-foreign" value="true" />
+    </schematron>
+  </target>
+```
+
+
+## Preprocess a Schematron file (since 5.0.0)
+
+### Declare the task
+
+There is currently only one task:
+
+```xml
+<taskdef name="schematron-preprocess" classname="com.helger.schematron.ant.SchematronPreprocess" />
+```
+
+For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
+Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script.
+
+### Execute task
+
+The validation itself looks like this:
+
+```xml
+  <target name="validate">
+...
+    <schematron-preprocess srcFile="src.sch" dstFile="dst.sch" />
+...
+  </target>
+```
+
+Basically you define source and destination Schematron files and that's it.
+Additionally you can define a few settings controlling the output.
+
+The `schematron` element allows for the following attributes:
+  * `File` **srcFile** - The source Schematron file to be preprocessed. This parameter is required.
+  * `File` **dstFile** - The destination file in which the preprocessed content should be written. This parameter is required.
+  * `boolean` **keepTitles** - `true` to keep `&lt;title&gt;`-elements, `false` to delete them. Default is `false`.
+  * `boolean` **keepDiagnostics** - `true` to keep `&lt;diagnostic&gt;`-elements, `false` to delete them. Default is `false`.
+  * `boolean` **keepReports** - `true` to keep `&lt;report&gt;`-elements, `false` to change them to `&lt;assert&gt;`-elements. Default is `false`.
+  * `boolean` **keepEmptyPatterns** - `true` to keep `&lt;pattern&gt;`-elements without rules, `false` to delete them. Default is `true`.
+  * `boolean` **failOnError** - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
+
+
 ## News and noteworthy
 
 * v5.4.1 - work in progress
     * Updated to Saxon-HE 9.9.1-6
+    * Added a "lenient" setting to the pure Schematron implementation to allow reading Schematrons with an old namespace URI.
 * v5.4.0 - 2019-11-29
     * Changed the package of the generated SVRL classes from `org.oclc.purl.dsdl.svrl` to `com.helger.schematron.svrl.jaxb` to avoid incompatibilities with other Schematron solutions (incompatible change)
     * Removed `ph-sch2xslt-maven-plugin` which was deprecated long time ago. Use `ph-schematron-maven-plugin` instead.
@@ -143,295 +435,6 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 * v2.8.2 - 2014-09-02
 * v2.8.1 - 2014-08-29
 * v2.8.0 - 2014-08-28
-
-## Usage with Maven
-
-The dependency for ph-schematron looks like this:
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>ph-schematron</artifactId>
-  <version>5.3.0</version>
-</dependency>
-```
-
-It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
-
-# Maven plugin to convert Schematron to XSLT at build time
-
-**The Maven plugin `ph-sch2xslt-maven-plugin` is deprecated since v5.0.9 - the goal was integrated into `ph-schematron-maven-plugin`**
-
-Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the converter.
-
-The conversion of Schematron to XSLT is quite costly. That’s why this Maven plugin that does the conversion at build time. 
-
-By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element).
-
-Starting from version 5.0.9:
-```xml
-<plugin>
-  <groupId>com.helger.maven</groupId>
-  <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.3.0</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>convert</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
-```
-
-Up to and including version 5.0.8:
-```xml
-<plugin>
-  <groupId>com.helger.maven</groupId>
-  <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>5.0.8</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>convert</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
-```
-
-The possible configuration parameters are:
-  * `schematronDirectory` - The directory where the Schematron files reside. Defaults to `${basedir}/src/main/schematron`.
-  * `schematronPattern` - A pattern for the Schematron files. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be converted. Files in the `schematronDirectory` and its subdirectories will be considered. Default is `**/*.sch`.
-  * `xsltDirectory` - The directory where the XSLT files will be saved. Default is `${basedir}/src/main/xslt`.
-  * `xsltExtension` - The file extension of the created XSLT files. Default is `.xslt`.
-  * `overwriteWithoutQuestion` - Overwrite existing Schematron files without notice? If this is set to `false` than existing XSLT files are not overwritten. Default is `true`.
-  * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
-  * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
-  * `forceCacheResult` (since v.5.2.1) - Force the caching of results from SCH to XSLT.
-  * `parameters` (since v5.0.2) - A map to provide custom parameter for the Schematron XSLTs (as in `allow-foreign`). Example:
-
-```xml
-<configuration>
-  ...
-  <parameters> 
-    <allow-foreign>true</allow-foreign>
-    <anything>else</anything>
-  </parameters>    
-  ...
-</configuration>
-```
-
-# Maven plugin to validate XML instances against Schematron rules
-
-Maven plugin to validate XML files against convert Schematron (SCH) at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the validator.
-
-This plugin was introduced in version 4.2.0.
-
-By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
-
-```xml
-<plugin>
-  <groupId>com.helger.maven</groupId>
-  <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.3.0</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>validate</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
-```
-
-The possible configuration parameters are:
-  * `schematronFile` - The Schematron file to be applied. This parameter is mandatory.
-  * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `pure`.
-  * `xmlDirectory` - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory match the Schematron rules. Either this parameter or `xmlErrorDirectory` parameter are mandatory.
-  * `xmlIncludes` - A pattern for the XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
-  * `xmlExcludes` - A pattern for the XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
-  * `svrlDirectory` - The directory where the SVRL (Schematron Validation Report Language) files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlDirectory`, `xmlIncludes` and `xmlExcludes`) with the suffix `.svrl`.
-  * `xmlErrorDirectory` (since v4.3.0) - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory do **not** match the Schematron rules. Either this parameter or `xmlDirectory` parameter are mandatory.
-  * `xmlErrorIncludes` (since v4.3.0) - A pattern for the erroneous XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
-  * `xmlErrorExcludes` (since v4.3.0) - A pattern for the erroneous XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
-  * `svrlErrorDirectory` (since v4.3.0) - The directory where the erroneous SVRL files will be saved. If this property is not specified, no SVRL files will be written. By default the name of the SVRL file corresponds to the XML file that is validated (defined by the parameters `xmlErrorDirectory`, `xmlErrorIncludes` and `xmlErrorExcludes`) with the suffix `.svrl`.
-  * `phaseName` - Define the phase to be used for XSLT creation. By default the `defaultPhase` attribute of the Schematron file is used.
-  * `languageCode` - Define the language code for the XSLT creation. Default is `null` which means English. Supported language codes are: cs, de, en, fr, nl.
-  * `parameters` (since v5.0.2) - Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect when using schematronProcessingEngine "schematron" or "xslt". By default no parameter is present.
-  * `failFast` (since v5.0.5) - If multiple XML files are validated this parameter defines whether the execution should fail at the first error (value `true`) or at the end only (value `false`). The default value is `true`.
-  * `forceCacheResult` (since v5.2.1) - Force the caching of results of the conversion from SCH to XSLT (the default is `false`)
-
-
-# Maven plugin to preprocess Schematron files
-
-Maven plugin to preprocess a Schematron file and write the resulting file to disk.
-
-This plugin was introduced in version 5.0.9.
-
-By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
-
-```xml
-<plugin>
-  <groupId>com.helger.maven</groupId>
-  <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.3.0</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>preprocess</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
-```
-
-The possible configuration parameters are:
-  * `sourceFile` - The source Schematron file to be preprocessed. This parameter is mandatory.
-  * `targetFile` - The target (preprocessed) Schematron file to be written. This parameter is mandatory.
-  * `overwriteWithoutNotice` - Overwrite existing Schematron files without notice? If this is set to `false` than existing Schematron files are not overwritten. The default value is `true`.
-  * `keepTitles` - If this is set to `false` than `<title>` elements will be removed. The default value is `false`.
-  * `keepDiagnostics` - If this is set to `false` than `<diagnostic>` elements will be removed. The default value is `false`.
-  * `keepReports` - Should `<report>` elements be kept or should they be converted to `<assert>` elements? The default value is `false`.
-  * `keepEmptyPatterns` - Should `<pattern>` elements without a single rule be kept or deleted? The default value is `false`.
-
-# ph-schematron-validator
-
-This submodule is a Java library.
-It is a validator for Schematron definitions based on RelaxNG definition.
-
-## Usage with Maven
-Add the following to your pom.xml to use this artifact:
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>ph-schematron-validator</artifactId>
-  <version>5.3.0</version>
-</dependency>
-```
-
-# Ant tasks
-
-Since ph-schematron 4.3.0 there is an Apache Ant task that enables you to validate XML files against Schematron rules.
-As I'm not an Ant expert please forgive me if some of the explanations are not 100% accurate.
-ph-schematron 5.0.0 adds a new task for preprocessing Schematron files. 
-
-## Validate documents with Schematron (since 4.3.0)
-
-### Declare the task
-
-There is currently only one task:
-
-```xml
-<taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
-```
-
-For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
-Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script.
-
-A compiled version of the "JAR with dependencies" is [available at the Maven Central Repository](https://repo1.maven.org/maven2/com/helger/ph-schematron-ant-task/).
-
-### Execute task
-
-The validation itself looks like this:
-
-```xml
-  <target name="validate">
-...
-    <schematron schematronFile="sample_schematron.sch" expectSuccess="true">
-      <fileset dir="xml">
-        <include name="*.xml" />
-        <exclude name="err*.xml" />
-      </fileset>
-    </schematron>
-...
-  </target>
-```
-
-Basically you declare the Schematron file (relative to the project's base directory),
-define whether you expect a successful validation or failures,
-and finally you name the XML files to be validated (as resource collections - e.g. Filesets).
-
-The `schematron` element allows for the following attributes:
-  * `File` **schematronFile** - The Schematron file to be used for validation
-  * `String` **schematronProcessingEngine** - The internal engine to be used. Must be one of `pure`, `schematron` or `xslt`. The default is `schematron`. In v5.0.0 `sch` was added as an alias for `schematron`.
-  * `File` **svrlDirectory** - An optional directory where the SVRL files should be written to.
-  * `String` **phaseName** - The optional Schematron phase to be used. Note: this is only available when using the processing engine `pure` or `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created.
-  * `String` **languageCode** - The optional language code to be used. Note: this is only available when using the processing engine `schematron`. For engine `xslt` this is not available because this was defined when the XSLT was created. Default is English (en). Supported language codes are: cs, de, en, fr, nl.
-  * `boolean` **expectSuccess** - `true` to expect successful validation, `false` to expect validation errors. If the expectation is incorrect, the build will fail.
-  * `boolean` **failOnError** (since v5.0.0) - `true` to break the build if an error occurred, `false` to continue with the following tasks on error. The default value is `true`.
-  * `boolean` **failOnValidationError** (since v5.0.11) - `true` to break the build, if any Schematron error is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
-  * `boolean` **failOnValidationWarn** (since v5.0.11) - `true` to break the build, if any Schematron warning is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
-  * `boolean` **failOnValidationInfo** (since v5.0.11) - `true` to break the build, if any Schematron information is reported. This setting has lower precedence than `expectSuccess`. The default value is `false`.
-
-The following child elements are allowed:
-* `<errorRole>` (since v5.0.2)
-    * The usage of the element is optional.
-    * The `role` attribute allows to define values of `role` and `flag` attributes in Schematrons that are considered as errors.
-    * If this element is combined with the `failOnError` attribute you can break the build if an assertion with the respective `role` or `flag` fails.
-* `<parameter>` (since v5.0.6)
-    * The usage of the element is optional.
-    * The element is only interpreted for the processing engines `xslt` and `sch`.
-    * The attribute 'name' defines the custom attribute name.
-    * The attribute 'value' defines the custom attribute value. If the value is omitted, an empty String is passed instead. 
-  
-Additionally you can use an `XMLCatalog` that acts as an Entity and URI resolver both for the Schematron and the XML files to be validated! See https://ant.apache.org/manual/Types/xmlcatalog.html for details on the XML catalog. Here is an example that shows how to use an inline XML catalog:
-
-```xml
-  <target name="validate">
-    <schematron schematronFile="../sch/test.sch" 
-                expectSuccess="true"
-                schematronProcessingEngine="pure">
-      <fileset dir=".">
-        <include name="test.xml" />
-      </fileset>
-      <xmlcatalog>
-        <dtd publicId="-//bla//DTD XML test//EN" location="../dtd/test.dtd"/>
-      </xmlcatalog>
-      <errorRole role="fatal" />
-      <parameter name="allow-foreign" value="true" />
-    </schematron>
-  </target>
-```
-
-
-## Preprocess a Schematron file (since 5.0.0)
-
-### Declare the task
-
-There is currently only one task:
-
-```xml
-<taskdef name="schematron-preprocess" classname="com.helger.schematron.ant.SchematronPreprocess" />
-```
-
-For this Ant Task to be available you need to include the `ph-schematron-ant-task` "JAR with dependencies" in your classpath.
-Alternatively you can use the `classpath` attribute to reference a classpath that is defined internally in the build script.
-
-### Execute task
-
-The validation itself looks like this:
-
-```xml
-  <target name="validate">
-...
-    <schematron-preprocess srcFile="src.sch" dstFile="dst.sch" />
-...
-  </target>
-```
-
-Basically you define source and destination Schematron files and that's it.
-Additionally you can define a few settings controlling the output.
-
-The `schematron` element allows for the following attributes:
-  * `File` **srcFile** - The source Schematron file to be preprocessed. This parameter is required.
-  * `File` **dstFile** - The destination file in which the preprocessed content should be written. This parameter is required.
-  * `boolean` **keepTitles** - `true` to keep `&lt;title&gt;`-elements, `false` to delete them. Default is `false`.
-  * `boolean` **keepDiagnostics** - `true` to keep `&lt;diagnostic&gt;`-elements, `false` to delete them. Default is `false`.
-  * `boolean` **keepReports** - `true` to keep `&lt;report&gt;`-elements, `false` to change them to `&lt;assert&gt;`-elements. Default is `false`.
-  * `boolean` **keepEmptyPatterns** - `true` to keep `&lt;pattern&gt;`-elements without rules, `false` to delete them. Default is `true`.
-  * `boolean` **failOnError** - `true` to break the build if an error occurred, `false` to continue with the following tasks on error.
 
 ---
 
