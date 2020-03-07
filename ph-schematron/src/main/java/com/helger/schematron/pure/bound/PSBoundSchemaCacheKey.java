@@ -22,6 +22,7 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import com.helger.schematron.config.XPathConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -61,8 +62,7 @@ public class PSBoundSchemaCacheKey
   private final String m_sPhase;
   private final IPSErrorHandler m_aErrorHandler;
   private final IPSValidationHandler m_aCustomValidationHandler;
-  private final XPathVariableResolver m_aVariableResolver;
-  private final XPathFunctionResolver m_aFunctionResolver;
+  private final XPathConfig m_aXPathConfig;
   private final EntityResolver m_aEntityResolver;
   private final boolean m_bLenient;
   // Status vars
@@ -72,8 +72,7 @@ public class PSBoundSchemaCacheKey
                                 @Nullable final String sPhase,
                                 @Nullable final IPSErrorHandler aErrorHandler,
                                 @Nullable final IPSValidationHandler aCustomValidationHandler,
-                                @Nullable final XPathVariableResolver aVariableResolver,
-                                @Nullable final XPathFunctionResolver aFunctionResolver,
+                                @Nonnull final XPathConfig aXPathConfig,
                                 @Nullable final EntityResolver aEntityResolver,
                                 final boolean bLenient)
   {
@@ -83,8 +82,7 @@ public class PSBoundSchemaCacheKey
     m_sPhase = sPhase;
     m_aErrorHandler = aErrorHandler;
     m_aCustomValidationHandler = aCustomValidationHandler;
-    m_aVariableResolver = aVariableResolver;
-    m_aFunctionResolver = aFunctionResolver;
+    m_aXPathConfig = aXPathConfig;
     m_aEntityResolver = aEntityResolver;
     m_bLenient = bLenient;
   }
@@ -138,7 +136,7 @@ public class PSBoundSchemaCacheKey
   @Nullable
   public final XPathVariableResolver getVariableResolver ()
   {
-    return m_aVariableResolver;
+    return m_aXPathConfig.getXPathVariableResolver();
   }
 
   /**
@@ -147,7 +145,7 @@ public class PSBoundSchemaCacheKey
   @Nullable
   public final XPathFunctionResolver getFunctionResolver ()
   {
-    return m_aFunctionResolver;
+    return m_aXPathConfig.getXPathFunctionResolver();
   }
 
   /**
@@ -278,8 +276,7 @@ public class PSBoundSchemaCacheKey
                                m_sPhase,
                                m_aErrorHandler,
                                m_aCustomValidationHandler,
-                               m_aVariableResolver,
-                               m_aFunctionResolver);
+                               m_aXPathConfig);
   }
 
   @Override
@@ -292,8 +289,7 @@ public class PSBoundSchemaCacheKey
     final PSBoundSchemaCacheKey rhs = (PSBoundSchemaCacheKey) o;
     return m_aResource.equals (rhs.m_aResource) &&
            EqualsHelper.equals (m_sPhase, rhs.m_sPhase) &&
-           EqualsHelper.equals (m_aVariableResolver, rhs.m_aVariableResolver) &&
-           EqualsHelper.equals (m_aFunctionResolver, rhs.m_aFunctionResolver);
+           EqualsHelper.equals (m_aXPathConfig, rhs.m_aXPathConfig);
   }
 
   @Override
@@ -303,8 +299,7 @@ public class PSBoundSchemaCacheKey
     if (ret == IHashCodeGenerator.ILLEGAL_HASHCODE)
       ret = m_nHashCode = new HashCodeGenerator (this).append (m_aResource)
                                                       .append (m_sPhase)
-                                                      .append (m_aVariableResolver)
-                                                      .append (m_aFunctionResolver)
+                                                      .append (m_aXPathConfig)
                                                       .getHashCode ();
     return ret;
   }
@@ -315,8 +310,7 @@ public class PSBoundSchemaCacheKey
     return new ToStringGenerator (this).append ("resource", m_aResource)
                                        .append ("phase", m_sPhase)
                                        .appendIfNotNull ("errorHandler", m_aErrorHandler)
-                                       .appendIfNotNull ("variableResolver", m_aVariableResolver)
-                                       .appendIfNotNull ("functionResolver", m_aFunctionResolver)
+                                       .appendIfNotNull ("XPathConfig", m_aXPathConfig)
                                        .getToString ();
   }
 }

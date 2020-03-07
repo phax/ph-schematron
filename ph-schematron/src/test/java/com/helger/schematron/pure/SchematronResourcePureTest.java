@@ -25,7 +25,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.validation.Schema;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -136,8 +139,7 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  public void testResolveVariables () throws SchematronException
-  {
+  public void testResolveVariables () throws SchematronException, XPathFactoryConfigurationException {
     final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
                          "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \n" +
@@ -179,10 +181,13 @@ public final class SchematronResourcePureTest
       final List <?> aArg = (List <?>) args.get (0);
       return Integer.valueOf (aArg.size ());
     });
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathVariableResolver(aVarResolver)
+            .setXPathFunctionResolver(aFunctionResolver).build();
+
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><chapter><title /><para>First para</para><para>Second para</para></chapter>");
     final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
-                                                           .setVariableResolver (aVarResolver)
-                                                           .setFunctionResolver (aFunctionResolver)
+                                                           .setXPathConfig (aXPathConfig)
                                                            .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
@@ -192,8 +197,7 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  public void testResolveFunctions () throws SchematronException
-  {
+  public void testResolveFunctions () throws SchematronException, XPathFactoryConfigurationException {
     final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
                          "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \n" +
@@ -250,9 +254,12 @@ public final class SchematronResourcePureTest
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
-                                                           .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc, null);
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathFunctionResolver(aFunctionResolver)
+            .build();
+    final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+            .setXPathConfig(aXPathConfig)
+            .applySchematronValidationToSVRL(aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
@@ -295,9 +302,12 @@ public final class SchematronResourcePureTest
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
-                                                           .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc, null);
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathFunctionResolver(aFunctionResolver)
+            .build();
+    final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+            .setXPathConfig(aXPathConfig)
+            .applySchematronValidationToSVRL(aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
@@ -337,10 +347,13 @@ public final class SchematronResourcePureTest
                                                     "<para>200</para>" +
                                                     "</chapter>");
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler (new LoggingPSErrorHandler ());
-    final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
-                                                           .setFunctionResolver (aFunctionResolver)
-                                                           .setErrorHandler (aErrorHandler)
-                                                           .applySchematronValidationToSVRL (aTestDoc, null);
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathFunctionResolver(aFunctionResolver)
+            .build();
+    final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+            .setXPathConfig(aXPathConfig)
+            .setErrorHandler(aErrorHandler)
+            .applySchematronValidationToSVRL(aTestDoc, null);
     assertNotNull (aOT);
     // XXX fails :(
     if (false)
@@ -376,9 +389,12 @@ public final class SchematronResourcePureTest
                                                     "</chapter>",
                                                     new DOMReaderSettings ().setSchema (aSchema));
 
-    final SchematronOutputType aOT = SchematronResourcePure.fromString (sTest, StandardCharsets.UTF_8)
-                                                           .setFunctionResolver (aFunctionResolver)
-                                                           .applySchematronValidationToSVRL (aTestDoc, null);
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathFunctionResolver(aFunctionResolver)
+            .build();
+    final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+            .setXPathConfig(aXPathConfig)
+            .applySchematronValidationToSVRL(aTestDoc, null);
     assertNotNull (aOT);
     if (SVRLHelper.getAllFailedAssertions (aOT).size () != 0)
     {

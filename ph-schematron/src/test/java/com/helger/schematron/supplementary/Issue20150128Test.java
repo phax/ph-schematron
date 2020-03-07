@@ -21,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
+import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.ClassPathResource;
@@ -53,7 +55,10 @@ public final class Issue20150128Test
     final SchematronResourcePure resource = SchematronResourcePure.fromString (sTest2, StandardCharsets.ISO_8859_1);
 
     resource.setErrorHandler (aErrorHandler);
-    resource.setFunctionResolver (aFunctionResolver);
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathFunctionResolver(aFunctionResolver)
+            .build();
+    resource.setXPathConfig (aXPathConfig);
     assertTrue (resource.isValidSchematron ());
     assertEquals (1, aErrorHandler.getErrorList ().size ());
   }

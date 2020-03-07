@@ -22,6 +22,8 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
+import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.FileSystemResource;
@@ -34,11 +36,14 @@ public final class Issue47Test
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
-    aSCH.setFunctionResolver ( (aFunctionName, aArity) -> {
-      System.out.println (aFunctionName + " - " + aArity);
-      return null;
-    });
+    XPathConfig aXPathConfig = new XPathConfigBuilder()
+            .setXPathFunctionResolver( (aFunctionName, aArity) -> {
+              System.out.println (aFunctionName + " - " + aArity);
+              return null;
+            })
+            .build();
+    final SchematronResourcePure aSCH = new SchematronResourcePure (new FileSystemResource (aSchematron))
+            .setXPathConfig(aXPathConfig);
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

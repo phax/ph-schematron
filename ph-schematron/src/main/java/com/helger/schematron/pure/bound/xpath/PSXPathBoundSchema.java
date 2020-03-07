@@ -28,6 +28,7 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import com.helger.schematron.config.XPathConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -74,9 +75,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
 
-  private final XPathVariableResolver m_aXPathVariableResolver;
-  private final XPathFunctionResolver m_aXPathFunctionResolver;
-  private final XPathFactory m_aXPathFactory;
+  private final XPathConfig m_aXPathConfig;
+
   // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
 
@@ -385,10 +385,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *        is used internally.
    * @param aCustomValidationHandler
    *        The custom PS validation handler. May be <code>null</code>.
-   * @param aXPathVariableResolver
-   *        Custom XPath variable resolver. May be <code>null</code>.
-   * @param aXPathFunctionResolver
-   *        Custom XPath function resolver. May be <code>null</code>.
+   * @param aXPathConfig
+   *        Used {@link XPathConfig}.
    * @throws SchematronBindException
    *         In case XPath expressions are incorrect and pre-compilation fails
    */
@@ -397,24 +395,17 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                              @Nullable final String sPhase,
                              @Nullable final IPSErrorHandler aCustomErrorListener,
                              @Nullable final IPSValidationHandler aCustomValidationHandler,
-                             @Nullable final XPathVariableResolver aXPathVariableResolver,
-                             @Nullable final XPathFunctionResolver aXPathFunctionResolver) throws SchematronBindException
+                             @Nonnull final XPathConfig aXPathConfig) throws SchematronBindException
   {
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener, aCustomValidationHandler);
-    m_aXPathVariableResolver = aXPathVariableResolver;
-    m_aXPathFunctionResolver = aXPathFunctionResolver;
-    // m_aXPathFactory = createXPathFactorySaxonFirst ();
-    m_aXPathFactory = XPathHelper.getDefaultXPathFactory();
+    this.m_aXPathConfig = aXPathConfig;
   }
 
   @Nonnull
   private XPath _createXPathContext ()
   {
     final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
-    final XPath aXPathContext = XPathHelper.createNewXPath (m_aXPathFactory,
-                                                            m_aXPathVariableResolver,
-                                                            m_aXPathFunctionResolver,
-                                                            aNamespaceContext);
+    final XPath aXPathContext = createXPath();
 
     if ("net.sf.saxon.xpath.XPathEvaluator".equals (aXPathContext.getClass ().getName ()))
     {
@@ -428,6 +419,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));
     }
     return aXPathContext;
+  }
+
+  private XPath createXPath() {
+    return XPathHelper.createNewXPath (m_aXPathConfig.getXPathFactory(),
+            m_aXPathConfig.getXPathVariableResolver(),
+            m_aXPathConfig.getXPathFunctionResolver(),
+            getNamespaceContext());
   }
 
   @Nonnull
@@ -479,13 +477,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nullable
   public XPathVariableResolver getXPathVariableResolver ()
   {
-    return m_aXPathVariableResolver;
+    return m_aXPathConfig.getXPathVariableResolver();
   }
 
   @Nullable
   public XPathFunctionResolver getXPathFunctionResolver ()
   {
-    return m_aXPathFunctionResolver;
+    return m_aXPathConfig.getXPathFunctionResolver();
   }
 
   @Nonnull

@@ -22,6 +22,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
+import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -92,8 +94,9 @@ public final class Issue16Test
       final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
       aPreprocessor.setKeepTitles (true);
       final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
+      XPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Bind the pre-processed schema
-      final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema);
+      final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema, aXPathConfig);
       // Read the XML file
       final Document aXMLNode = DOMReader.readXMLDOM (aXMLFile);
       if (aXMLNode == null)

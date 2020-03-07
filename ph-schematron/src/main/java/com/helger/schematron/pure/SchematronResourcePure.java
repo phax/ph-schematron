@@ -28,6 +28,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import com.helger.schematron.config.XPathConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -81,8 +82,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
   private IPSValidationHandler m_aCustomValidationHandler;
-  private XPathVariableResolver m_aVariableResolver;
-  private XPathFunctionResolver m_aFunctionResolver;
+  private XPathConfig m_aXPathConfig;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
@@ -201,24 +201,24 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nullable
   public final XPathVariableResolver getVariableResolver ()
   {
-    return m_aVariableResolver;
+    return m_aXPathConfig.getXPathVariableResolver();
   }
 
   /**
-   * Set the variable resolver to be used in the XPath statements. This can only
+   * Set the {@link XPathConfig} to be used in the XPath statements. This can only
    * be set before the Schematron is bound. If it is already bound an exception
    * is thrown to indicate the unnecessity of the call.
    *
-   * @param aVariableResolver
-   *        The variable resolver to set. May be <code>null</code>.
+   * @param aXPathConfig
+   *        The xpath config to set. May be <code>null</code>.
    * @return this
    */
   @Nonnull
-  public final SchematronResourcePure setVariableResolver (@Nullable final XPathVariableResolver aVariableResolver)
+  public final SchematronResourcePure setXPathConfig (@Nonnull final XPathConfig aXPathConfig)
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aVariableResolver = aVariableResolver;
+    m_aXPathConfig = aXPathConfig;
     return this;
   }
 
@@ -228,25 +228,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nullable
   public final XPathFunctionResolver getFunctionResolver ()
   {
-    return m_aFunctionResolver;
-  }
-
-  /**
-   * Set the function resolver to be used in the XPath statements. This can only
-   * be set before the Schematron is bound. If it is already bound an exception
-   * is thrown to indicate the unnecessity of the call.
-   *
-   * @param aFunctionResolver
-   *        The function resolver to set. May be <code>null</code>.
-   * @return this
-   */
-  @Nonnull
-  public final SchematronResourcePure setFunctionResolver (@Nullable final XPathFunctionResolver aFunctionResolver)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aFunctionResolver = aFunctionResolver;
-    return this;
+    return m_aXPathConfig.getXPathFunctionResolver();
   }
 
   /**
@@ -277,8 +259,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
                                                                        m_sPhase,
                                                                        m_aErrorHandler,
                                                                        m_aCustomValidationHandler,
-                                                                       m_aVariableResolver,
-                                                                       m_aFunctionResolver,
+                                                                       m_aXPathConfig,
                                                                        getEntityResolver (),
                                                                        isLenient ());
     if (aResource instanceof AbstractMemoryReadableResource || !isUseCache ())
