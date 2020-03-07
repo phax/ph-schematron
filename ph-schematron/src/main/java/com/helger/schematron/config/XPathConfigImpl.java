@@ -1,10 +1,14 @@
 package com.helger.schematron.config;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 import java.util.Objects;
 
+@Immutable
 public class XPathConfigImpl implements XPathConfig {
 
     private final XPathFactory xPathFactory;
@@ -13,8 +17,8 @@ public class XPathConfigImpl implements XPathConfig {
 
     private final XPathFunctionResolver xPathFunctionResolver;
 
-    XPathConfigImpl(XPathFactory xPathFactory, XPathVariableResolver xPathVariableResolver,
-                           XPathFunctionResolver xPathFunctionResolver) {
+    XPathConfigImpl(@Nonnull XPathFactory xPathFactory, @Nullable XPathVariableResolver xPathVariableResolver,
+                    @Nullable XPathFunctionResolver xPathFunctionResolver) {
         this.xPathFactory = xPathFactory;
         this.xPathVariableResolver = xPathVariableResolver;
         this.xPathFunctionResolver = xPathFunctionResolver;

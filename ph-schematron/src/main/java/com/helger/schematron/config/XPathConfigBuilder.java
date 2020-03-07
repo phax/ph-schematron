@@ -1,5 +1,7 @@
 package com.helger.schematron.config;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathFunctionResolver;
@@ -33,17 +35,17 @@ public class XPathConfigBuilder {
         return xPathFunctionResolver;
     }
 
-    public XPathConfigBuilder setXPathFactoryClass(Class<? extends XPathFactory> xPathFactoryClass) {
+    public XPathConfigBuilder setXPathFactoryClass(@Nonnull Class<? extends XPathFactory> xPathFactoryClass) {
         this.xPathFactoryClass = xPathFactoryClass;
         return this;
     }
 
-    public XPathConfigBuilder setXPathVariableResolver(XPathVariableResolver xPathVariableResolver) {
+    public XPathConfigBuilder setXPathVariableResolver(@Nullable XPathVariableResolver xPathVariableResolver) {
         this.xPathVariableResolver = xPathVariableResolver;
         return this;
     }
 
-    public XPathConfigBuilder setXPathFunctionResolver(XPathFunctionResolver xPathFunctionResolver) {
+    public XPathConfigBuilder setXPathFunctionResolver(@Nullable XPathFunctionResolver xPathFunctionResolver) {
         this.xPathFunctionResolver = xPathFunctionResolver;
         return this;
     }
