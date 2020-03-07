@@ -49,24 +49,25 @@ public class XPathConfigBuilder {
     }
 
     public XPathConfig build() throws XPathFactoryConfigurationException {
-        try {
-            /*
-            XPathFactory aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
-                    "net.sf.saxon.xpath.XPathFactoryImpl",
-                    ClassLoaderHelper.getContextClassLoader ());
-                    */
-            XPathFactory aXPathFactory = xPathFactoryClass.getConstructor(EMPTY_CLASS_ARRAY)
-                    .newInstance(EMPTY_OBJECT_ARRAY);
-            XPathConfig result = new XPathConfigImpl(aXPathFactory, xPathVariableResolver, xPathFunctionResolver);
-            return result;
-        } catch (InstantiationException e) {
-            throw new XPathFactoryConfigurationException(e);
-        } catch (IllegalAccessException e) {
-            throw new XPathFactoryConfigurationException(e);
-        } catch (InvocationTargetException e) {
-            throw new XPathFactoryConfigurationException(e.getCause());
-        } catch (NoSuchMethodException e) {
-            throw new XPathFactoryConfigurationException(e);
+        XPathFactory aXPathFactory = null;
+        if (xPathFactoryClass != null) {
+            try {
+                aXPathFactory = xPathFactoryClass.getConstructor(EMPTY_CLASS_ARRAY)
+                        .newInstance(EMPTY_OBJECT_ARRAY);
+            } catch (InstantiationException e) {
+                throw new XPathFactoryConfigurationException(e);
+            } catch (IllegalAccessException e) {
+                throw new XPathFactoryConfigurationException(e);
+            } catch (InvocationTargetException e) {
+                throw new XPathFactoryConfigurationException(e.getCause());
+            } catch (NoSuchMethodException e) {
+                throw new XPathFactoryConfigurationException(e);
+            }
+        } else {
+            // DEFAULT as fallback
+            aXPathFactory = XPathConfigs.SAXON_FIRST;
         }
+        XPathConfig result = new XPathConfigImpl(aXPathFactory, xPathVariableResolver, xPathFunctionResolver);
+        return result;
     }
 }

@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathVariableResolver;
 
 public class XPathConfigs {
 
-    private static final XPathFactory SAXON_FIRST = XPathHelper.createXPathFactorySaxonFirst ();
+    static final XPathFactory SAXON_FIRST = XPathHelper.createXPathFactorySaxonFirst ();
 
     public static final XPathConfig DEFAULT = new XPathConfigImpl(SAXON_FIRST, null, null);
 }
