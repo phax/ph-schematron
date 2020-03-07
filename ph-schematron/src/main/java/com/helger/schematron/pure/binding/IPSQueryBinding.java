@@ -22,13 +22,12 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigImpl;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.PSAssertReport;
@@ -132,7 +131,7 @@ public interface IPSQueryBinding extends Serializable
    * @param aCustomValidationHandler
    *        A custom PS validation handler to use. May be <code>null</code>.
    * @param aXPathConfig
-   *        Use {@link XPathConfig}.
+   *        Use {@link XPathConfigImpl}.
    * @return The precompiled, bound schema. Never <code>null</code>.
    * @throws SchematronException
    *         In case of a binding error

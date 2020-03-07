@@ -50,9 +50,14 @@ public class XPathConfigBuilder {
 
     public XPathConfig build() throws XPathFactoryConfigurationException {
         try {
-            XPathFactory xPathFactory = xPathFactoryClass.getConstructor(EMPTY_CLASS_ARRAY)
+            /*
+            XPathFactory aXPathFactory = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
+                    "net.sf.saxon.xpath.XPathFactoryImpl",
+                    ClassLoaderHelper.getContextClassLoader ());
+                    */
+            XPathFactory aXPathFactory = xPathFactoryClass.getConstructor(EMPTY_CLASS_ARRAY)
                     .newInstance(EMPTY_OBJECT_ARRAY);
-            XPathConfig result = new XPathConfig(xPathFactory, xPathVariableResolver, xPathFunctionResolver);
+            XPathConfig result = new XPathConfigImpl(aXPathFactory, xPathVariableResolver, xPathFunctionResolver);
             return result;
         } catch (InstantiationException e) {
             throw new XPathFactoryConfigurationException(e);

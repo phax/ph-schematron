@@ -29,6 +29,8 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigImpl;
+import com.helger.schematron.config.XPathConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -386,7 +388,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @param aCustomValidationHandler
    *        The custom PS validation handler. May be <code>null</code>.
    * @param aXPathConfig
-   *        Used {@link XPathConfig}.
+   *        Used {@link XPathConfigImpl}.
    * @throws SchematronBindException
    *         In case XPath expressions are incorrect and pre-compilation fails
    */

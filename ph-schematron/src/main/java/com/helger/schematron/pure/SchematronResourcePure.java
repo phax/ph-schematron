@@ -29,6 +29,8 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigImpl;
+import com.helger.schematron.config.XPathConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -82,7 +84,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
   private IPSValidationHandler m_aCustomValidationHandler;
-  private XPathConfig m_aXPathConfig;
+  private XPathConfig m_aXPathConfig = XPathConfigs.DEFAULT;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
@@ -205,7 +207,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Set the {@link XPathConfig} to be used in the XPath statements. This can only
+   * Set the {@link XPathConfigImpl} to be used in the XPath statements. This can only
    * be set before the Schematron is bound. If it is already bound an exception
    * is thrown to indicate the unnecessity of the call.
    *
