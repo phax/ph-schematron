@@ -16,6 +16,8 @@ public class XPathConfigBuilder {
 
     private Class<? extends XPathFactory> xPathFactoryClass;
 
+    private String globalXPathFactory;
+
     private XPathVariableResolver xPathVariableResolver;
 
     private XPathFunctionResolver xPathFunctionResolver;
@@ -25,6 +27,10 @@ public class XPathConfigBuilder {
 
     public Class<? extends XPathFactory> getxPathFactoryClass() {
         return xPathFactoryClass;
+    }
+
+    public String getGlobalXPathFactory() {
+        return globalXPathFactory;
     }
 
     public XPathVariableResolver getxPathVariableResolver() {
@@ -40,6 +46,24 @@ public class XPathConfigBuilder {
         return this;
     }
 
+    /**
+     * With Java 11+ module path system, you can't access
+     * @link{com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl} as
+     * 'package com.sun.org.apache.xpath.internal.jaxp is declared in module java.xml, which does not export it'.
+     * <p>
+     * The only way to use it, is to set/alter the 'javax.xml.xpath.XPathFactory' system property. However, this change is
+     * <emph>global</emph> to the application.
+     * </p>
+     *
+     * @param globalXPathFactory
+     *        Fully qualified class name of the 'default' {@link XPathFactory}. Most commonly set to
+     *        'com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl'.
+     */
+    public XPathConfigBuilder setGlobalXPathFactory(String globalXPathFactory) {
+        this.globalXPathFactory = globalXPathFactory;
+        return this;
+    }
+
     public XPathConfigBuilder setXPathVariableResolver(@Nullable XPathVariableResolver xPathVariableResolver) {
         this.xPathVariableResolver = xPathVariableResolver;
         return this;
@@ -51,6 +75,9 @@ public class XPathConfigBuilder {
     }
 
     public XPathConfig build() throws XPathFactoryConfigurationException {
+        if (globalXPathFactory != null) {
+            System.setProperty("javax.xml.xpath.XPathFactory", globalXPathFactory);
+        }
         XPathFactory aXPathFactory = null;
         if (xPathFactoryClass != null) {
             try {
@@ -65,6 +92,8 @@ public class XPathConfigBuilder {
             } catch (NoSuchMethodException e) {
                 throw new XPathFactoryConfigurationException(e);
             }
+        } else if (globalXPathFactory != null) {
+            aXPathFactory = XPathFactory.newInstance();
         } else {
             // DEFAULT as fallback
             aXPathFactory = XPathConfigs.SAXON_FIRST;
