@@ -19,6 +19,8 @@ package com.helger.schematron.pure.bound.xpath;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -45,6 +47,8 @@ import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.serialize.read.DOMReader;
 
+import javax.xml.xpath.XPathFactoryConfigurationException;
+
 /**
  * Test class for class {@link PSPreprocessor}.
  *
@@ -70,8 +74,7 @@ public final class PSXPathBoundSchemaTest
                                                        "valid01.xml" };
 
   @Test
-  public void testSchematronValidation () throws SchematronException
-  {
+  public void testSchematronValidation () throws SchematronException, XPathFactoryConfigurationException {
     for (int i = 0; i < SCH.length; ++i)
     {
       final IReadableResource aSchRes = new ClassPathResource ("test-sch/" + SCH[i]);
@@ -86,10 +89,11 @@ public final class PSXPathBoundSchemaTest
       final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
       assertNotNull (aSchema);
 
+      XPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Create a compiled schema
       final String sPhaseID = null;
       final IPSErrorHandler aErrorHandler = null;
-      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler);
+      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler, aXPathConfig);
 
       // Validate completely
       final SchematronOutputType aSVRL = aBoundSchema.validateComplete (DOMReader.readXMLDOM (aXmlRes),
@@ -102,8 +106,7 @@ public final class PSXPathBoundSchemaTest
   }
 
   @Test
-  public void testBindAllValidSchematrons () throws SchematronException
-  {
+  public void testBindAllValidSchematrons () throws SchematronException, XPathFactoryConfigurationException {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Parse the schema
@@ -115,17 +118,17 @@ public final class PSXPathBoundSchemaTest
       assertTrue (aRes.getPath (), aSchema.isValid (aLogger));
       assertTrue (aLogger.isEmpty ());
 
+      XPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Create a compiled schema
       final String sPhaseID = null;
       final IPSErrorHandler aErrorHandler = null;
-      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler);
+      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler, aXPathConfig);
       assertNotNull (aBoundSchema);
     }
   }
 
   @Test
-  public void testBindAllInvalidSchematrons ()
-  {
+  public void testBindAllInvalidSchematrons () throws XPathFactoryConfigurationException {
     for (final IReadableResource aRes : SchematronTestHelper.getAllInvalidSchematronFiles ())
     {
       LOGGER.info (aRes.toString ());
@@ -134,7 +137,8 @@ public final class PSXPathBoundSchemaTest
         // Parse the schema
         final PSSchema aSchema = new PSReader (aRes).readSchema ();
         final CollectingPSErrorHandler aCEH = new CollectingPSErrorHandler ();
-        PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH);
+        XPathConfig aXPathConfig = new XPathConfigBuilder().build();
+        PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH, aXPathConfig);
         // Either an ERROR was collected or an exception was thrown
         assertTrue (aCEH.getErrorList ().getMostSevereErrorLevel ().isGE (EErrorLevel.ERROR));
       }

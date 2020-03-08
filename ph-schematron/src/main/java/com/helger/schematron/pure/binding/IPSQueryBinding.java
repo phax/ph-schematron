@@ -22,12 +22,12 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
+import com.helger.schematron.config.XPathConfig;
+import com.helger.schematron.config.XPathConfigImpl;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.PSAssertReport;
@@ -97,22 +97,23 @@ public interface IPSQueryBinding extends Serializable
   // --- requirements for compilation ---
 
   @Nonnull
-  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema) throws SchematronException
+  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
+                               @Nonnull final XPathConfig aXPathConfig) throws SchematronException
   {
-    return bind (aSchema, (String) null, (IPSErrorHandler) null);
+    return bind (aSchema, (String) null, (IPSErrorHandler) null, aXPathConfig);
   }
 
   @Nonnull
   default IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
                                @Nullable final String sPhase,
-                               @Nullable final IPSErrorHandler aCustomErrorListener) throws SchematronException
+                               @Nullable final IPSErrorHandler aCustomErrorListener,
+                               @Nonnull final XPathConfig aXPathConfig) throws SchematronException
   {
     return bind (aSchema,
                  sPhase,
                  aCustomErrorListener,
                  (IPSValidationHandler) null,
-                 (XPathVariableResolver) null,
-                 (XPathFunctionResolver) null);
+                 (XPathConfig) aXPathConfig);
   }
 
   /**
@@ -129,10 +130,8 @@ public interface IPSQueryBinding extends Serializable
    *        An optional custom error handler to use. May be <code>null</code>.
    * @param aCustomValidationHandler
    *        A custom PS validation handler to use. May be <code>null</code>.
-   * @param aVariableResolver
-   *        Custom variable resolver. May be <code>null</code>.
-   * @param aFunctionResolver
-   *        Custom function resolver. May be <code>null</code>.
+   * @param aXPathConfig
+   *        Use {@link XPathConfigImpl}.
    * @return The precompiled, bound schema. Never <code>null</code>.
    * @throws SchematronException
    *         In case of a binding error
@@ -142,6 +141,5 @@ public interface IPSQueryBinding extends Serializable
                        @Nullable String sPhase,
                        @Nullable IPSErrorHandler aCustomErrorHandler,
                        @Nullable IPSValidationHandler aCustomValidationHandler,
-                       @Nullable XPathVariableResolver aVariableResolver,
-                       @Nullable XPathFunctionResolver aFunctionResolver) throws SchematronException;
+                       @Nonnull XPathConfig aXPathConfig) throws SchematronException;
 }

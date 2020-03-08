@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import com.helger.schematron.config.XPathConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +117,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                               @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener,
                               @Nullable final IPSValidationHandler aCustomValidationHandler,
-                              @Nullable final XPathVariableResolver aVariableResolver,
-                              @Nullable final XPathFunctionResolver aFunctionResolver) throws SchematronException
+                              @Nonnull final XPathConfig aXPathConfig) throws SchematronException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
@@ -145,8 +145,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                                                            sPhase,
                                                            aCustomErrorListener,
                                                            aCustomValidationHandler,
-                                                           aVariableResolver,
-                                                           aFunctionResolver);
+                                                           aXPathConfig);
     ret.bind ();
     return ret;
   }
