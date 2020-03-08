@@ -107,6 +107,10 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <excludes>
+            <exclude>**/LICENSE</exclude>
+            <exclude>**/notice</exclude>
+            <exclude>test-final/**</exclude>
+            <exclude>test-minified/**</exclude>
             <exclude>src/main/resources/schemas/**</exclude>
             <exclude>src/main/resources/schematron/**</exclude>
             <exclude>src/test/resources/issues/**</exclude>
