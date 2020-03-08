@@ -22,21 +22,21 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigBuilder;
 
 public final class Issue47Test
 {
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathFunctionResolver( (aFunctionName, aArity) -> {
               System.out.println (aFunctionName + " - " + aArity);
               return null;

@@ -27,8 +27,6 @@ import java.util.List;
 import javax.xml.validation.Schema;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -43,6 +41,8 @@ import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.xml.schema.XMLSchemaCache;
 import com.helger.xml.serialize.read.DOMReader;
@@ -181,7 +181,7 @@ public final class SchematronResourcePureTest
       final List <?> aArg = (List <?>) args.get (0);
       return Integer.valueOf (aArg.size ());
     });
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathVariableResolver(aVarResolver)
             .setXPathFunctionResolver(aFunctionResolver).build();
 
@@ -254,7 +254,7 @@ public final class SchematronResourcePureTest
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathFunctionResolver(aFunctionResolver)
             .build();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
@@ -302,7 +302,7 @@ public final class SchematronResourcePureTest
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathFunctionResolver(aFunctionResolver)
             .build();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
@@ -347,7 +347,7 @@ public final class SchematronResourcePureTest
                                                     "<para>200</para>" +
                                                     "</chapter>");
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler (new LoggingPSErrorHandler ());
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathFunctionResolver(aFunctionResolver)
             .build();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
@@ -389,7 +389,7 @@ public final class SchematronResourcePureTest
                                                     "</chapter>",
                                                     new DOMReaderSettings ().setSchema (aSchema));
 
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathFunctionResolver(aFunctionResolver)
             .build();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))

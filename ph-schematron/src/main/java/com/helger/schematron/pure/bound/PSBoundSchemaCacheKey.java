@@ -22,8 +22,6 @@ import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -45,6 +43,7 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
+import com.helger.schematron.xpath.IXPathConfig;
 import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
@@ -63,7 +62,7 @@ public class PSBoundSchemaCacheKey
   private final String m_sPhase;
   private final IPSErrorHandler m_aErrorHandler;
   private final IPSValidationHandler m_aCustomValidationHandler;
-  private final XPathConfig m_aXPathConfig;
+  private final IXPathConfig m_aXPathConfig;
   private final EntityResolver m_aEntityResolver;
   private final boolean m_bLenient;
   // Status vars
@@ -73,7 +72,7 @@ public class PSBoundSchemaCacheKey
                                 @Nullable final String sPhase,
                                 @Nullable final IPSErrorHandler aErrorHandler,
                                 @Nullable final IPSValidationHandler aCustomValidationHandler,
-                                @Nonnull final XPathConfig aXPathConfig,
+                                @Nonnull final IXPathConfig aXPathConfig,
                                 @Nullable final EntityResolver aEntityResolver,
                                 final boolean bLenient)
   {

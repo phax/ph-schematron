@@ -19,8 +19,6 @@ package com.helger.schematron.pure.bound.xpath;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -44,6 +42,8 @@ import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.serialize.read.DOMReader;
 
@@ -89,7 +89,7 @@ public final class PSXPathBoundSchemaTest
       final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
       assertNotNull (aSchema);
 
-      XPathConfig aXPathConfig = new XPathConfigBuilder().build();
+      IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Create a compiled schema
       final String sPhaseID = null;
       final IPSErrorHandler aErrorHandler = null;
@@ -118,7 +118,7 @@ public final class PSXPathBoundSchemaTest
       assertTrue (aRes.getPath (), aSchema.isValid (aLogger));
       assertTrue (aLogger.isEmpty ());
 
-      XPathConfig aXPathConfig = new XPathConfigBuilder().build();
+      IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Create a compiled schema
       final String sPhaseID = null;
       final IPSErrorHandler aErrorHandler = null;
@@ -137,7 +137,7 @@ public final class PSXPathBoundSchemaTest
         // Parse the schema
         final PSSchema aSchema = new PSReader (aRes).readSchema ();
         final CollectingPSErrorHandler aCEH = new CollectingPSErrorHandler ();
-        XPathConfig aXPathConfig = new XPathConfigBuilder().build();
+        IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
         PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH, aXPathConfig);
         // Either an ERROR was collected or an exception was thrown
         assertTrue (aCEH.getErrorList ().getMostSevereErrorLevel ().isGE (EErrorLevel.ERROR));

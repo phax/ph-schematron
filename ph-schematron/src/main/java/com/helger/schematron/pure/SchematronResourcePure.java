@@ -28,9 +28,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigImpl;
-import com.helger.schematron.config.XPathConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -61,6 +58,9 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigBuilder;
+import com.helger.schematron.xpath.XPathConfigImpl;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
@@ -84,7 +84,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler;
   private IPSValidationHandler m_aCustomValidationHandler;
-  private XPathConfig m_aXPathConfig = XPathConfigs.DEFAULT;
+  private IXPathConfig m_aXPathConfig = XPathConfigBuilder.DEFAULT;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
@@ -203,20 +203,20 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nullable
   public final XPathVariableResolver getVariableResolver ()
   {
-    return m_aXPathConfig.getXPathVariableResolver();
+    return m_aXPathConfig.getXPathVariableResolver ();
   }
 
   /**
-   * Set the {@link XPathConfigImpl} to be used in the XPath statements. This can only
-   * be set before the Schematron is bound. If it is already bound an exception
-   * is thrown to indicate the unnecessity of the call.
+   * Set the {@link XPathConfigImpl} to be used in the XPath statements. This
+   * can only be set before the Schematron is bound. If it is already bound an
+   * exception is thrown to indicate the unnecessity of the call.
    *
    * @param aXPathConfig
    *        The xpath config to set. May be <code>null</code>.
    * @return this
    */
   @Nonnull
-  public final SchematronResourcePure setXPathConfig (@Nonnull final XPathConfig aXPathConfig)
+  public final SchematronResourcePure setXPathConfig (@Nonnull final IXPathConfig aXPathConfig)
   {
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
@@ -230,7 +230,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nullable
   public final XPathFunctionResolver getFunctionResolver ()
   {
-    return m_aXPathConfig.getXPathFunctionResolver();
+    return m_aXPathConfig.getXPathFunctionResolver ();
   }
 
   /**

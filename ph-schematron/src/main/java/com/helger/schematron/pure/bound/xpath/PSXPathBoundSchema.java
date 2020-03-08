@@ -28,9 +28,6 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigImpl;
-import com.helger.schematron.config.XPathConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -60,6 +57,8 @@ import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigImpl;
 import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.schematron.xslt.util.PSErrorListener;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -77,7 +76,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
 
-  private final XPathConfig m_aXPathConfig;
+  private final IXPathConfig m_aXPathConfig;
 
   // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
@@ -397,7 +396,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                              @Nullable final String sPhase,
                              @Nullable final IPSErrorHandler aCustomErrorListener,
                              @Nullable final IPSValidationHandler aCustomValidationHandler,
-                             @Nonnull final XPathConfig aXPathConfig) throws SchematronBindException
+                             @Nonnull final IXPathConfig aXPathConfig) throws SchematronBindException
   {
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener, aCustomValidationHandler);
     this.m_aXPathConfig = aXPathConfig;

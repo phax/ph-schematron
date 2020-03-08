@@ -21,10 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.schematron.config.XPathConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +42,7 @@ import com.helger.schematron.pure.model.PSParam;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
+import com.helger.schematron.xpath.IXPathConfig;
 
 /**
  * Default XPath/XSLT query binding
@@ -117,7 +115,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                               @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener,
                               @Nullable final IPSValidationHandler aCustomValidationHandler,
-                              @Nonnull final XPathConfig aXPathConfig) throws SchematronException
+                              @Nonnull final IXPathConfig aXPathConfig) throws SchematronException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 

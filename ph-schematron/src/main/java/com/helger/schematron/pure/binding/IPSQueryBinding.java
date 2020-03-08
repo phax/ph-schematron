@@ -26,8 +26,6 @@ import javax.annotation.Nullable;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigImpl;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.model.PSAssertReport;
@@ -36,6 +34,8 @@ import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigImpl;
 
 /**
  * Base interface for a single query binding.
@@ -96,26 +96,6 @@ public interface IPSQueryBinding extends Serializable
 
   // --- requirements for compilation ---
 
-  @Nonnull
-  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
-                               @Nonnull final XPathConfig aXPathConfig) throws SchematronException
-  {
-    return bind (aSchema, (String) null, (IPSErrorHandler) null, aXPathConfig);
-  }
-
-  @Nonnull
-  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
-                               @Nullable final String sPhase,
-                               @Nullable final IPSErrorHandler aCustomErrorListener,
-                               @Nonnull final XPathConfig aXPathConfig) throws SchematronException
-  {
-    return bind (aSchema,
-                 sPhase,
-                 aCustomErrorListener,
-                 (IPSValidationHandler) null,
-                 (XPathConfig) aXPathConfig);
-  }
-
   /**
    * Create a bound schema, which is like a precompiled schema.
    *
@@ -135,11 +115,12 @@ public interface IPSQueryBinding extends Serializable
    * @return The precompiled, bound schema. Never <code>null</code>.
    * @throws SchematronException
    *         In case of a binding error
+   * @since 5.5.0
    */
   @Nonnull
   IPSBoundSchema bind (@Nonnull PSSchema aSchema,
                        @Nullable String sPhase,
                        @Nullable IPSErrorHandler aCustomErrorHandler,
                        @Nullable IPSValidationHandler aCustomValidationHandler,
-                       @Nonnull XPathConfig aXPathConfig) throws SchematronException;
+                       @Nonnull IXPathConfig aXPathConfig) throws SchematronException;
 }

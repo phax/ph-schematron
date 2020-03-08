@@ -21,13 +21,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
-import com.helger.schematron.config.XPathConfig;
-import com.helger.schematron.config.XPathConfigBuilder;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
@@ -55,7 +55,7 @@ public final class Issue20150128Test
     final SchematronResourcePure resource = SchematronResourcePure.fromString (sTest2, StandardCharsets.ISO_8859_1);
 
     resource.setErrorHandler (aErrorHandler);
-    XPathConfig aXPathConfig = new XPathConfigBuilder()
+    IXPathConfig aXPathConfig = new XPathConfigBuilder()
             .setXPathFunctionResolver(aFunctionResolver)
             .build();
     resource.setXPathConfig (aXPathConfig);
