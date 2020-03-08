@@ -17,7 +17,7 @@ The dependency for ph-schematron looks like this:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.4.0</version>
+  <version>5.4.1</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ Starting from version 5.0.9:
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.4.0</version>
+  <version>5.4.1</version>
   <executions>
     <execution>
       <goals>
@@ -99,7 +99,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.4.0</version>
+  <version>5.4.1</version>
   <executions>
     <execution>
       <goals>
@@ -141,7 +141,7 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.4.0</version>
+  <version>5.4.1</version>
   <executions>
     <execution>
       <goals>
@@ -173,7 +173,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.4.0</version>
+  <version>5.4.1</version>
 </dependency>
 ```
 
@@ -302,7 +302,7 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
-* v5.4.1 - work in progress
+* v5.4.1 - 2020-03-08
     * Updated to Saxon-HE 9.9.1-6
     * Added a "lenient" setting to the pure Schematron implementation to allow reading Schematrons with an old namespace URI (see [PR #97](https://github.com/phax/ph-schematron/pull/97)) - thanks [@aanno](https://github.com/aanno)
     * Added the "lenient" flag to the Maven plugin for validating documents
