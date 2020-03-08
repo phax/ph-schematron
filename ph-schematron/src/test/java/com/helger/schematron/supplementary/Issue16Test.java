@@ -44,8 +44,6 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLSuccessfulReport;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
@@ -94,9 +92,8 @@ public final class Issue16Test
       final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
       aPreprocessor.setKeepTitles (true);
       final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
-      final IXPathConfig aXPathConfig = new XPathConfigBuilder ().build ();
       // Bind the pre-processed schema
-      final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema, aXPathConfig);
+      final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema);
       // Read the XML file
       final Document aXMLNode = DOMReader.readXMLDOM (aXMLFile);
       if (aXMLNode == null)

@@ -24,7 +24,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
@@ -58,7 +58,7 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigImpl;
+import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.schematron.xslt.util.PSErrorListener;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -351,19 +351,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     return ret;
   }
 
-  @Nonnull
-  public static XPathFactory createXPathFactorySaxonFirst () throws SchematronBindException
-  {
-    try
-    {
-      return XPathHelper.createXPathFactorySaxonFirst ();
-    }
-    catch (final IllegalStateException ex)
-    {
-      throw new SchematronBindException (ex.getMessage (), ex.getCause ());
-    }
-  }
-
   /**
    * Create a new bound schema. All the XPath pre-compilation happens inside
    * this constructor, so that the
@@ -387,7 +374,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @param aCustomValidationHandler
    *        The custom PS validation handler. May be <code>null</code>.
    * @param aXPathConfig
-   *        Used {@link XPathConfigImpl}.
+   *        The XPath configuration to be used. May be <code>null</code>.
    * @throws SchematronBindException
    *         In case XPath expressions are incorrect and pre-compilation fails
    */
@@ -396,17 +383,32 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                              @Nullable final String sPhase,
                              @Nullable final IPSErrorHandler aCustomErrorListener,
                              @Nullable final IPSValidationHandler aCustomValidationHandler,
-                             @Nonnull final IXPathConfig aXPathConfig) throws SchematronBindException
+                             @Nullable final IXPathConfig aXPathConfig) throws SchematronBindException
   {
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener, aCustomValidationHandler);
-    this.m_aXPathConfig = aXPathConfig;
+
+    // Create a default if none is present
+    if (aXPathConfig != null)
+      m_aXPathConfig = aXPathConfig;
+    else
+      try
+      {
+        m_aXPathConfig = new XPathConfigBuilder ().build ();
+      }
+      catch (final XPathFactoryConfigurationException ex)
+      {
+        throw new SchematronBindException ("Failed to create XPath configuration", ex);
+      }
   }
 
   @Nonnull
   private XPath _createXPathContext ()
   {
     final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
-    final XPath aXPathContext = createXPath();
+    final XPath aXPathContext = XPathHelper.createNewXPath (m_aXPathConfig.getXPathFactory (),
+                                                            m_aXPathConfig.getXPathVariableResolver (),
+                                                            m_aXPathConfig.getXPathFunctionResolver (),
+                                                            aNamespaceContext);
 
     if ("net.sf.saxon.xpath.XPathEvaluator".equals (aXPathContext.getClass ().getName ()))
     {
@@ -420,13 +422,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));
     }
     return aXPathContext;
-  }
-
-  private XPath createXPath() {
-    return XPathHelper.createNewXPath (m_aXPathConfig.getXPathFactory(),
-            m_aXPathConfig.getXPathVariableResolver(),
-            m_aXPathConfig.getXPathFunctionResolver(),
-            getNamespaceContext());
   }
 
   @Nonnull
@@ -478,13 +473,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nullable
   public XPathVariableResolver getXPathVariableResolver ()
   {
-    return m_aXPathConfig.getXPathVariableResolver();
+    return m_aXPathConfig.getXPathVariableResolver ();
   }
 
   @Nullable
   public XPathFunctionResolver getXPathFunctionResolver ()
   {
-    return m_aXPathConfig.getXPathFunctionResolver();
+    return m_aXPathConfig.getXPathFunctionResolver ();
   }
 
   @Nonnull

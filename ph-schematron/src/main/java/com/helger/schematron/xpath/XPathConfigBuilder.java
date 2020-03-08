@@ -18,10 +18,16 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.xml.xpath.XPathHelper;
 
+/**
+ * Builder class for {@link IXPathConfig}.
+ *
+ * @author Thomas Pasch
+ * @since 5.5.0
+ */
 public class XPathConfigBuilder
 {
   public static final XPathFactory XPATH_FACTORY_SAXON_FIRST = XPathHelper.createXPathFactorySaxonFirst ();
-  public static final IXPathConfig DEFAULT = new XPathConfigImpl (XPATH_FACTORY_SAXON_FIRST, null, null);
+  public static final IXPathConfig DEFAULT = new XPathConfig (XPATH_FACTORY_SAXON_FIRST, null, null);
 
   private static final Logger LOGGER = LoggerFactory.getLogger (XPathConfigBuilder.class);
   private static final Class <?> [] EMPTY_CLASS_ARRAY = new Class <?> [0];
@@ -143,6 +149,6 @@ public class XPathConfigBuilder
         aXPathFactory = XPATH_FACTORY_SAXON_FIRST;
       }
 
-    return new XPathConfigImpl (aXPathFactory, m_aXPathVariableResolver, m_aXPathFunctionResolver);
+    return new XPathConfig (aXPathFactory, m_aXPathVariableResolver, m_aXPathFunctionResolver);
   }
 }

@@ -35,7 +35,6 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigImpl;
 
 /**
  * Base interface for a single query binding.
@@ -96,6 +95,12 @@ public interface IPSQueryBinding extends Serializable
 
   // --- requirements for compilation ---
 
+  @Nonnull
+  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema) throws SchematronException
+  {
+    return bind (aSchema, null, null, null, null);
+  }
+
   /**
    * Create a bound schema, which is like a precompiled schema.
    *
@@ -111,8 +116,7 @@ public interface IPSQueryBinding extends Serializable
    * @param aCustomValidationHandler
    *        A custom PS validation handler to use. May be <code>null</code>.
    * @param aXPathConfig
-   *        Use {@link XPathConfigImpl}.
-   * @return The precompiled, bound schema. Never <code>null</code>.
+   *        The XPath configuration to be used. May be <code>null</code>.
    * @throws SchematronException
    *         In case of a binding error
    * @since 5.5.0
@@ -122,5 +126,5 @@ public interface IPSQueryBinding extends Serializable
                        @Nullable String sPhase,
                        @Nullable IPSErrorHandler aCustomErrorHandler,
                        @Nullable IPSValidationHandler aCustomValidationHandler,
-                       @Nonnull IXPathConfig aXPathConfig) throws SchematronException;
+                       @Nullable IXPathConfig aXPathConfig) throws SchematronException;
 }

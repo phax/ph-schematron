@@ -19,6 +19,8 @@ import javax.xml.xpath.XPathVariableResolver;
  * with Java).
  * </p>
  *
+ * @author Thomas Pasch
+ * @since 5.5.0
  * @see com.helger.schematron.pure.SchematronResourcePure
  * @see com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema
  * @see com.helger.schematron.pure.bound.PSBoundSchemaCacheKey

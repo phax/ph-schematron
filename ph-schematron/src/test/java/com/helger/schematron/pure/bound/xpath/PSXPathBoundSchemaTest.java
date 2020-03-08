@@ -35,19 +35,14 @@ import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.serialize.read.DOMReader;
-
-import javax.xml.xpath.XPathFactoryConfigurationException;
 
 /**
  * Test class for class {@link PSPreprocessor}.
@@ -74,7 +69,8 @@ public final class PSXPathBoundSchemaTest
                                                        "valid01.xml" };
 
   @Test
-  public void testSchematronValidation () throws SchematronException, XPathFactoryConfigurationException {
+  public void testSchematronValidation () throws SchematronException
+  {
     for (int i = 0; i < SCH.length; ++i)
     {
       final IReadableResource aSchRes = new ClassPathResource ("test-sch/" + SCH[i]);
@@ -89,11 +85,8 @@ public final class PSXPathBoundSchemaTest
       final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
       assertNotNull (aSchema);
 
-      IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Create a compiled schema
-      final String sPhaseID = null;
-      final IPSErrorHandler aErrorHandler = null;
-      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler, aXPathConfig);
+      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema);
 
       // Validate completely
       final SchematronOutputType aSVRL = aBoundSchema.validateComplete (DOMReader.readXMLDOM (aXmlRes),
@@ -106,7 +99,8 @@ public final class PSXPathBoundSchemaTest
   }
 
   @Test
-  public void testBindAllValidSchematrons () throws SchematronException, XPathFactoryConfigurationException {
+  public void testBindAllValidSchematrons () throws SchematronException
+  {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Parse the schema
@@ -118,17 +112,15 @@ public final class PSXPathBoundSchemaTest
       assertTrue (aRes.getPath (), aSchema.isValid (aLogger));
       assertTrue (aLogger.isEmpty ());
 
-      IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
       // Create a compiled schema
-      final String sPhaseID = null;
-      final IPSErrorHandler aErrorHandler = null;
-      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema, sPhaseID, aErrorHandler, aXPathConfig);
+      final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema);
       assertNotNull (aBoundSchema);
     }
   }
 
   @Test
-  public void testBindAllInvalidSchematrons () throws XPathFactoryConfigurationException {
+  public void testBindAllInvalidSchematrons ()
+  {
     for (final IReadableResource aRes : SchematronTestHelper.getAllInvalidSchematronFiles ())
     {
       LOGGER.info (aRes.toString ());
@@ -137,8 +129,7 @@ public final class PSXPathBoundSchemaTest
         // Parse the schema
         final PSSchema aSchema = new PSReader (aRes).readSchema ();
         final CollectingPSErrorHandler aCEH = new CollectingPSErrorHandler ();
-        IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
-        PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH, aXPathConfig);
+        PSXPathQueryBinding.getInstance ().bind (aSchema, null, aCEH, null, null);
         // Either an ERROR was collected or an exception was thrown
         assertTrue (aCEH.getErrorList ().getMostSevereErrorLevel ().isGE (EErrorLevel.ERROR));
       }

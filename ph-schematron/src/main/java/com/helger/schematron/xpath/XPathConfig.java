@@ -12,16 +12,22 @@ import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * The immutable default implementation of {@link IXPathConfig}
+ *
+ * @author Thomas Pasch
+ * @since 5.5.0
+ */
 @Immutable
-public class XPathConfigImpl implements IXPathConfig
+public class XPathConfig implements IXPathConfig
 {
   private final XPathFactory m_aXPathFactory;
   private final XPathVariableResolver m_aXPathVariableResolver;
   private final XPathFunctionResolver m_aXPathFunctionResolver;
 
-  public XPathConfigImpl (@Nonnull final XPathFactory aXPathFactory,
-                          @Nullable final XPathVariableResolver aXPathVariableResolver,
-                          @Nullable final XPathFunctionResolver aXPathFunctionResolver)
+  public XPathConfig (@Nonnull final XPathFactory aXPathFactory,
+                      @Nullable final XPathVariableResolver aXPathVariableResolver,
+                      @Nullable final XPathFunctionResolver aXPathFunctionResolver)
   {
     ValueEnforcer.notNull (aXPathFactory, "XPathFactory");
     m_aXPathFactory = aXPathFactory;
@@ -54,7 +60,7 @@ public class XPathConfigImpl implements IXPathConfig
       return true;
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final XPathConfigImpl rhs = (XPathConfigImpl) o;
+    final XPathConfig rhs = (XPathConfig) o;
     return m_aXPathFactory.equals (rhs.m_aXPathFactory) &&
            EqualsHelper.equals (m_aXPathVariableResolver, rhs.m_aXPathVariableResolver) &&
            EqualsHelper.equals (m_aXPathFunctionResolver, rhs.m_aXPathFunctionResolver);

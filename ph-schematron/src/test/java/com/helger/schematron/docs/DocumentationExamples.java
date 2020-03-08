@@ -36,8 +36,6 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
@@ -89,11 +87,8 @@ public final class DocumentationExamples
     final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
     aPreprocessor.setKeepTitles (true);
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
-
-    IXPathConfig aXPathConfig = new XPathConfigBuilder().build();
     // Bind the pre-processed schema
-    final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema, null, null,
-            aXPathConfig);
+    final IPSBoundSchema aBoundSchema = aQueryBinding.bind (aPreprocessedSchema);
     // Read the XML file
     final Document aXMLNode = DOMReader.readXMLDOM (aXMLFile);
     if (aXMLNode == null)

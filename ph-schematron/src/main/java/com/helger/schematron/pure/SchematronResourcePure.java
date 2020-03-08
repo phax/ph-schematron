@@ -59,8 +59,8 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.xpath.XPathConfig;
 import com.helger.schematron.xpath.XPathConfigBuilder;
-import com.helger.schematron.xpath.XPathConfigImpl;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
@@ -207,8 +207,17 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Set the {@link XPathConfigImpl} to be used in the XPath statements. This
-   * can only be set before the Schematron is bound. If it is already bound an
+   * @return The function resolver to be used. May be <code>null</code>.
+   */
+  @Nullable
+  public final XPathFunctionResolver getFunctionResolver ()
+  {
+    return m_aXPathConfig.getXPathFunctionResolver ();
+  }
+
+  /**
+   * Set the {@link XPathConfig} to be used in the XPath statements. This can
+   * only be set before the Schematron is bound. If it is already bound an
    * exception is thrown to indicate the unnecessity of the call.
    *
    * @param aXPathConfig
@@ -218,19 +227,11 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nonnull
   public final SchematronResourcePure setXPathConfig (@Nonnull final IXPathConfig aXPathConfig)
   {
+    ValueEnforcer.notNull (aXPathConfig, "XPathConfig");
     if (m_aBoundSchema != null)
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
     m_aXPathConfig = aXPathConfig;
     return this;
-  }
-
-  /**
-   * @return The function resolver to be used. May be <code>null</code>.
-   */
-  @Nullable
-  public final XPathFunctionResolver getFunctionResolver ()
-  {
-    return m_aXPathConfig.getXPathFunctionResolver ();
   }
 
   /**

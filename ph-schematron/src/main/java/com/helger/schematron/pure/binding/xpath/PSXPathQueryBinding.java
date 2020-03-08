@@ -115,7 +115,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                               @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener,
                               @Nullable final IPSValidationHandler aCustomValidationHandler,
-                              @Nonnull final IXPathConfig aXPathConfig) throws SchematronException
+                              @Nullable final IXPathConfig aXPathConfig) throws SchematronException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
