@@ -36,14 +36,11 @@ public final class Issue47Test
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    IXPathConfig aXPathConfig = new XPathConfigBuilder()
-            .setXPathFunctionResolver( (aFunctionName, aArity) -> {
-              System.out.println (aFunctionName + " - " + aArity);
-              return null;
-            })
-            .build();
-    final SchematronResourcePure aSCH = new SchematronResourcePure (new FileSystemResource (aSchematron))
-            .setXPathConfig(aXPathConfig);
+    IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver ( (aFunctionName, aArity) -> {
+      System.out.println (aFunctionName + " - " + aArity);
+      return null;
+    }).build ();
+    final SchematronResourcePure aSCH = new SchematronResourcePure (new FileSystemResource (aSchematron)).setXPathConfig (aXPathConfig);
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

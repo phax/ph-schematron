@@ -39,8 +39,8 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
   public static final IFunction <String, IErrorLevel> UNKNOWN_ERROR_LEVEL_HANDLER = sFlag -> {
     if (sFlag != null)
       LOGGER.warn ("Cannot convert the SVRL flag '" +
-                      sFlag +
-                      "' to an error level. Using default error level instead!");
+                   sFlag +
+                   "' to an error level. Using default error level instead!");
     return DEFAULT_ERROR_LEVEL;
   };
 

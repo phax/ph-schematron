@@ -55,9 +55,7 @@ public final class Issue20150128Test
     final SchematronResourcePure resource = SchematronResourcePure.fromString (sTest2, StandardCharsets.ISO_8859_1);
 
     resource.setErrorHandler (aErrorHandler);
-    IXPathConfig aXPathConfig = new XPathConfigBuilder()
-            .setXPathFunctionResolver(aFunctionResolver)
-            .build();
+    IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
     resource.setXPathConfig (aXPathConfig);
     assertTrue (resource.isValidSchematron ());
     assertEquals (1, aErrorHandler.getErrorList ().size ());

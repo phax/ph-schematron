@@ -117,6 +117,7 @@ public interface IPSQueryBinding extends Serializable
    *        A custom PS validation handler to use. May be <code>null</code>.
    * @param aXPathConfig
    *        The XPath configuration to be used. May be <code>null</code>.
+   * @return The bound schema and never <code>null</code>.
    * @throws SchematronException
    *         In case of a binding error
    * @since 5.5.0

@@ -77,6 +77,7 @@ public class PSBoundSchemaCacheKey
                                 final boolean bLenient)
   {
     ValueEnforcer.notNull (aResource, "Resource");
+    ValueEnforcer.notNull (aXPathConfig, "XPathConfig");
 
     m_aResource = aResource;
     m_sPhase = sPhase;
@@ -131,21 +132,35 @@ public class PSBoundSchemaCacheKey
   }
 
   /**
+   * @return The XPath configuration to be used. May be <code>null</code>.
+   * @since 5.5.0
+   */
+  @Nonnull
+  public final IXPathConfig getXPathConfig ()
+  {
+    return m_aXPathConfig;
+  }
+
+  /**
    * @return The variable resolver to be used. May be <code>null</code>.
+   * @deprecated Since 5.5.0; use indirection via {@link #getXPathConfig()}
    */
   @Nullable
+  @Deprecated
   public final XPathVariableResolver getVariableResolver ()
   {
-    return m_aXPathConfig.getXPathVariableResolver();
+    return getXPathConfig ().getXPathVariableResolver ();
   }
 
   /**
    * @return The function resolver to be used. May be <code>null</code>.
+   * @deprecated Since 5.5.0; use indirection via {@link #getXPathConfig()}
    */
+  @Deprecated
   @Nullable
   public final XPathFunctionResolver getFunctionResolver ()
   {
-    return m_aXPathConfig.getXPathFunctionResolver();
+    return getXPathConfig ().getXPathFunctionResolver ();
   }
 
   /**
@@ -251,7 +266,7 @@ public class PSBoundSchemaCacheKey
    * <li>pre-process the schema -
    * {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}</li>
    * <li>and finally bind it -
-   * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler, IPSValidationHandler, javax.xml.xpath.XPathVariableResolver, javax.xml.xpath.XPathFunctionResolver)}
+   * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler, IPSValidationHandler, IXPathConfig)}
    * </li>
    * </ol>
    *
@@ -307,9 +322,9 @@ public class PSBoundSchemaCacheKey
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("resource", m_aResource)
-                                       .append ("phase", m_sPhase)
-                                       .appendIfNotNull ("errorHandler", m_aErrorHandler)
+    return new ToStringGenerator (this).append ("Resource", m_aResource)
+                                       .append ("Phase", m_sPhase)
+                                       .appendIfNotNull ("ErrorHandler", m_aErrorHandler)
                                        .appendIfNotNull ("XPathConfig", m_aXPathConfig)
                                        .getToString ();
   }

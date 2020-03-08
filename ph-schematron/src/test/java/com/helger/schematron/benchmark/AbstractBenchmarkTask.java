@@ -57,15 +57,15 @@ public abstract class AbstractBenchmarkTask
   protected static void logSystemInfo ()
   {
     LOGGER.info ("Runtime: Date=" +
-                    new Date ().toString () +
-                    "; Java=" +
-                    SystemProperties.getJavaVersion () +
-                    "; OS=" +
-                    SystemHelper.getOperatingSystemName () +
-                    "; User=" +
-                    SystemProperties.getUserName () +
-                    "; Procs=" +
-                    SystemHelper.getNumberOfProcessors ());
+                 new Date ().toString () +
+                 "; Java=" +
+                 SystemProperties.getJavaVersion () +
+                 "; OS=" +
+                 SystemHelper.getOperatingSystemName () +
+                 "; User=" +
+                 SystemProperties.getUserName () +
+                 "; Procs=" +
+                 SystemHelper.getNumberOfProcessors ());
   }
 
   /**

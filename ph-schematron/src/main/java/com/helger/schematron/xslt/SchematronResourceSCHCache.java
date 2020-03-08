@@ -75,8 +75,7 @@ public final class SchematronResourceSCHCache
       if (LOGGER.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
       {
         // Log the created XSLT document for better error tracking
-        LOGGER.debug ("  Created XSLT document:\n" +
-                         XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
+        LOGGER.debug ("  Created XSLT document:\n" + XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
       }
       return null;
     }
