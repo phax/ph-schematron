@@ -302,6 +302,9 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
+* v5.5.0 - 2020-03-08
+    * Updated to Saxon-HE 9.9.1-7
+    * Improved XPath configuration for the pure Schematron implementation (see [PR #98](https://github.com/phax/ph-schematron/pull/98)) - thanks [@aanno](https://github.com/aanno)
 * v5.4.1 - 2020-03-08
     * Updated to Saxon-HE 9.9.1-6
     * Added a "lenient" setting to the pure Schematron implementation to allow reading Schematrons with an old namespace URI (see [PR #97](https://github.com/phax/ph-schematron/pull/97)) - thanks [@aanno](https://github.com/aanno)
