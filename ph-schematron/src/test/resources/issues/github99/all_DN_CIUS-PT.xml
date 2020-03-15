@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../schematron/urn_feap.gov.pt_CIUS-PT_1.0.6.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron" phase="#ALL" title="Main schema"?>
+<Invoice xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 ../oasis/maindoc/UBL-Invoice-2.1.xsd" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+    <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:feap.gov.pt:CIUS-PT:1.0.6</cbc:CustomizationID>
+    <cbc:ProfileID>FR</cbc:ProfileID>
+    <cbc:ID>$%()*</cbc:ID>
+    <cbc:IssueDate>2019-02-28</cbc:IssueDate>
+    <cbc:DueDate>2019-02-28</cbc:DueDate>
+    <cbc:InvoiceTypeCode>ND</cbc:InvoiceTypeCode>
+    <cbc:Note>$%()*</cbc:Note>
+    <cbc:Note>#ID@PAYMENTTERMS#Z005#</cbc:Note>
+    <cbc:Note>#SOURCECURRENCYCODE#EUR#</cbc:Note>
+    <cbc:Note>#CALCULATIONRATE#123456789.12345#</cbc:Note>
+    <cbc:Note>#DESCRIPTION@INVOICEPERIOD#$%()*+,-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€ÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜàáâãäçèéêëìíîïñòóôõöùúûüýÿ!$%()*+,-./#</cbc:Note>
+    <cbc:Note>#ADDITIONALPROPERTY#$%()*+,-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWX#$%()*+,-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWX#</cbc:Note>
+    <cbc:Note>#NUMBER@ATCERTIFIEDPROGRAM#$%()*+,-./ 012345678#</cbc:Note>
+    <cbc:Note>#HASHCODE@ATCERTIFIEDPROGRAM#$%()*+,-./ 012345678#</cbc:Note>
+    <cbc:Note>#DESCRIPTION@ATCERTIFIEDPROGRAM#$%()*+,-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€ÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜàáâãäçèéêëìíîïñòóôõöùúûüýÿ!$%()*+,-./#</cbc:Note>
+    <cbc:Note>#WITHHOLDINGTAXDESCRIPTION@WITHHOLDINGTAX-001#$%()*+,-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€ÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜàáâãäçèéêëìíîïñòóôõöùúûüýÿ!$%()*+,-./#</cbc:Note>
+    <cbc:Note>#WITHHOLDINGTAXAMOUNT@WITHHOLDINGTAX-001#0123456789012.01#</cbc:Note>
+    <cbc:Note>#WITHHOLDINGTAXTYPE@WITHHOLDINGTAX-001#IRF#</cbc:Note>
+    <cbc:Note>#ENTITY@ATMPAYMENT-001#$%()*+,-./ 012345678#</cbc:Note>
+    <cbc:Note>#REFERENCE@ATMPAYMENT-001#$%()*+,-./ 012345678#</cbc:Note>
+    <cbc:Note>#AMOUNT@ATMPAYMENT-001#0123456789012.01#</cbc:Note>
+    <cbc:Note>#DESCRIPTION@ATMPAYMENT-001#$%()*+,-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€ÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜàáâãäçèéêëìíîïñòóôõöùúûüýÿ!$%()*+,-./#</cbc:Note>
+    <cbc:TaxPointDate>2019-02-28</cbc:TaxPointDate>
+    <cbc:DocumentCurrencyCode>BAM</cbc:DocumentCurrencyCode>
+    <cbc:TaxCurrencyCode>BAM</cbc:TaxCurrencyCode>
+    <cbc:AccountingCost>$%()*</cbc:AccountingCost>
+    <cbc:BuyerReference>$%()*</cbc:BuyerReference>
+    <cac:InvoicePeriod>
+        <cbc:StartDate>2019-02-28</cbc:StartDate>
+        <cbc:EndDate>2019-02-28</cbc:EndDate>
+    </cac:InvoicePeriod>
+    <cac:OrderReference>
+        <cbc:ID>$%()*</cbc:ID>
+        <cbc:SalesOrderID>$%()*</cbc:SalesOrderID>
+    </cac:OrderReference>
+    <cac:BillingReference>
+        <cac:InvoiceDocumentReference>
+            <cbc:ID>$%()*</cbc:ID>
+            <cbc:IssueDate>2019-02-28</cbc:IssueDate>
+        </cac:InvoiceDocumentReference>
+    </cac:BillingReference>
+    <cac:DespatchDocumentReference>
+        <cbc:ID>$%()*</cbc:ID>
+    </cac:DespatchDocumentReference>
+    <cac:ReceiptDocumentReference>
+        <cbc:ID>$%()*</cbc:ID>
+    </cac:ReceiptDocumentReference>
+    <cac:OriginatorDocumentReference>
+        <cbc:ID>$%()*</cbc:ID>
+    </cac:OriginatorDocumentReference>
+    <cac:ContractDocumentReference>
+        <cbc:ID>$%()*</cbc:ID>
+    </cac:ContractDocumentReference>
+    <cac:AdditionalDocumentReference>
+        <cbc:ID schemeID="AAA">$%()*</cbc:ID>
+        <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+        <cbc:DocumentDescription>$%()*</cbc:DocumentDescription>
+        <cac:Attachment>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/csv" filename="$%()*">c29tZSB0ZXh0</cbc:EmbeddedDocumentBinaryObject>
+            <cac:ExternalReference>
+                <cbc:URI>$%()*</cbc:URI>
+            </cac:ExternalReference>
+        </cac:Attachment>
+    </cac:AdditionalDocumentReference>
+    <cac:ProjectReference>
+        <cbc:ID>$%()*</cbc:ID>
+    </cac:ProjectReference>
+    <cac:AccountingSupplierParty>
+        <cac:Party>
+            <cbc:EndpointID schemeID="$%()*">$%()*</cbc:EndpointID>
+            <cac:PartyIdentification>
+                <cbc:ID schemeID="0001">$%()*</cbc:ID>
+            </cac:PartyIdentification>
+            <cac:PartyName>
+                <cbc:Name>$%()*</cbc:Name>
+            </cac:PartyName>
+            <cac:PostalAddress>
+                <cbc:StreetName>$%()*</cbc:StreetName>
+                <cbc:AdditionalStreetName>$%()*</cbc:AdditionalStreetName>
+                <cbc:CityName>$%()*</cbc:CityName>
+                <cbc:PostalZone>$%()*</cbc:PostalZone>
+                <cbc:CountrySubentity>$%()*</cbc:CountrySubentity>
+                <cac:AddressLine>
+                    <cbc:Line>$%()*</cbc:Line>
+                </cac:AddressLine>
+                <cac:Country>
+                    <cbc:IdentificationCode>BH</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>AX$%()*</cbc:CompanyID>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName>$%()*</cbc:RegistrationName>
+                <cbc:CompanyID schemeID="0001">$%()*</cbc:CompanyID>
+                <cbc:CompanyLegalForm>$%()*</cbc:CompanyLegalForm>
+            </cac:PartyLegalEntity>
+            <cac:Contact>
+                <cbc:Name>$%()*</cbc:Name>
+                <cbc:Telephone>$%()*</cbc:Telephone>
+                <cbc:ElectronicMail>$%()*</cbc:ElectronicMail>
+            </cac:Contact>
+        </cac:Party>
+    </cac:AccountingSupplierParty>
+    <cac:AccountingCustomerParty>
+        <cac:Party>
+            <cbc:EndpointID schemeID="$%()*">$%()*</cbc:EndpointID>
+            <cac:PartyIdentification>
+                <cbc:ID schemeID="0001">$%()*</cbc:ID>
+            </cac:PartyIdentification>
+            <cac:PartyName>
+                <cbc:Name>$%()*</cbc:Name>
+            </cac:PartyName>
+            <cac:PostalAddress>
+                <cbc:StreetName>$%()*</cbc:StreetName>
+                <cbc:AdditionalStreetName>$%()*</cbc:AdditionalStreetName>
+                <cbc:CityName>$%()*</cbc:CityName>
+                <cbc:PostalZone>$%()*</cbc:PostalZone>
+                <cbc:CountrySubentity>$%()*</cbc:CountrySubentity>
+                <cac:AddressLine>
+                    <cbc:Line>$%()*</cbc:Line>
+                </cac:AddressLine>
+                <cac:Country>
+                    <cbc:IdentificationCode>FM</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>FO$%()*</cbc:CompanyID>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName>$%()*</cbc:RegistrationName>
+                <cbc:CompanyID schemeID="0001">$%()*</cbc:CompanyID>
+            </cac:PartyLegalEntity>
+            <cac:Contact>
+                <cbc:Name>$%()*</cbc:Name>
+                <cbc:Telephone>$%()*</cbc:Telephone>
+                <cbc:ElectronicMail>$%()*</cbc:ElectronicMail>
+            </cac:Contact>
+        </cac:Party>
+    </cac:AccountingCustomerParty>
+    <cac:PayeeParty>
+        <cac:PartyIdentification>
+            <cbc:ID schemeID="0001">1$%()*</cbc:ID>
+        </cac:PartyIdentification>
+        <cac:PartyName>
+            <cbc:Name>1$%()*</cbc:Name>
+        </cac:PartyName>
+        <cac:PartyLegalEntity>
+            <cbc:CompanyID schemeID="0001">1$%()*</cbc:CompanyID>
+        </cac:PartyLegalEntity>
+    </cac:PayeeParty>
+    <cac:TaxRepresentativeParty>
+        <cac:PartyName>
+            <cbc:Name>$%()*</cbc:Name>
+        </cac:PartyName>
+        <cac:PostalAddress>
+            <cbc:StreetName>$%()*</cbc:StreetName>
+            <cbc:AdditionalStreetName>$%()*</cbc:AdditionalStreetName>
+            <cbc:CityName>$%()*</cbc:CityName>
+            <cbc:PostalZone>$%()*</cbc:PostalZone>
+            <cbc:CountrySubentity>$%()*</cbc:CountrySubentity>
+            <cac:AddressLine>
+                <cbc:Line>$%()*</cbc:Line>
+            </cac:AddressLine>
+            <cac:Country>
+                <cbc:IdentificationCode>GY</cbc:IdentificationCode>
+            </cac:Country>
+        </cac:PostalAddress>
+        <cac:PartyTaxScheme>
+            <cbc:CompanyID>GW$%()*</cbc:CompanyID>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:PartyTaxScheme>
+    </cac:TaxRepresentativeParty>
+    <cac:Delivery>
+        <cbc:ActualDeliveryDate>2019-02-28</cbc:ActualDeliveryDate>
+        <cac:DeliveryLocation>
+            <cbc:ID schemeID="0001">$%()*</cbc:ID>
+            <cac:Address>
+                <cbc:StreetName>$%()*</cbc:StreetName>
+                <cbc:AdditionalStreetName>$%()*</cbc:AdditionalStreetName>
+                <cbc:CityName>$%()*</cbc:CityName>
+                <cbc:PostalZone>$%()*</cbc:PostalZone>
+                <cbc:CountrySubentity>$%()*</cbc:CountrySubentity>
+                <cac:AddressLine>
+                    <cbc:Line>$%()*</cbc:Line>
+                </cac:AddressLine>
+                <cac:Country>
+                    <cbc:IdentificationCode>HK</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:Address>
+        </cac:DeliveryLocation>
+        <cac:DeliveryParty>
+            <cac:PartyName>
+                <cbc:Name>$%()*</cbc:Name>
+            </cac:PartyName>
+        </cac:DeliveryParty>
+    </cac:Delivery>
+    <cac:PaymentMeans>
+        <cbc:PaymentMeansCode name="#DESCRIPTION@ATMPAYMENT#1%()*+,266-./ 0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~€ÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖ0123456789:;=#">CO</cbc:PaymentMeansCode>
+        <cbc:PaymentID>#REFERENCE@ATMPAYMENT#!#$%()*+,-./ 0123456#</cbc:PaymentID>
+        <cac:CardAccount>
+            <cbc:PrimaryAccountNumberID>$%()*</cbc:PrimaryAccountNumberID>
+            <cbc:NetworkID>$%()*</cbc:NetworkID>
+            <cbc:HolderName>$%()*</cbc:HolderName>
+        </cac:CardAccount>
+        <cac:PayeeFinancialAccount>
+            <cbc:ID>$%()*</cbc:ID>
+            <cbc:Name>$%()*</cbc:Name>
+            <cac:FinancialInstitutionBranch>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:FinancialInstitutionBranch>
+        </cac:PayeeFinancialAccount>
+        <cac:PaymentMandate>
+            <cbc:ID>$%()*</cbc:ID>
+            <cac:PayerFinancialAccount>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:PayerFinancialAccount>
+        </cac:PaymentMandate>
+    </cac:PaymentMeans>
+    <cac:PaymentTerms>
+        <cbc:Note>$%()*</cbc:Note>
+    </cac:PaymentTerms>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">1.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>AA</cbc:ID>
+            <cbc:Percent>6.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">2.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>S</cbc:ID>
+            <cbc:Percent>23.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">3.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>E</cbc:ID>
+            <cbc:Percent>0.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">4.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>AA</cbc:ID>
+            <cbc:Percent>14.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>AEK</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">4.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>AA</cbc:ID>
+            <cbc:Percent>6.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>AEK</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">5.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>S</cbc:ID>
+            <cbc:Percent>23.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>AEK</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">6.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>E</cbc:ID>
+            <cbc:Percent>0.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:AllowanceChargeReasonCode>AEK</cbc:AllowanceChargeReasonCode>
+        <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+        <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+        <cbc:Amount currencyID="BAM">7.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        <cac:TaxCategory>
+            <cbc:ID>AA</cbc:ID>
+            <cbc:Percent>14.00</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+        </cac:TaxCategory>
+    </cac:AllowanceCharge>
+    <cac:TaxTotal>
+        <cbc:TaxAmount currencyID="BAM">0.15</cbc:TaxAmount>
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="BAM">1.88</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="BAM">0.11</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID>AA</cbc:ID>
+                <cbc:Percent>6.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="BAM">-1.12</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="BAM">-0.16</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID>AA</cbc:ID>
+                <cbc:Percent>14.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="BAM">0.88</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="BAM">0.20</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID>S</cbc:ID>
+                <cbc:Percent>23.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="BAM">-0.12</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="BAM">0.00</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID>E</cbc:ID>
+                <cbc:Percent>0.00</cbc:Percent>
+                <cbc:TaxExemptionReasonCode>$%()*</cbc:TaxExemptionReasonCode>
+                <cbc:TaxExemptionReason>$%()*</cbc:TaxExemptionReason>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:LegalMonetaryTotal>
+        <cbc:LineExtensionAmount currencyID="BAM">-10.49</cbc:LineExtensionAmount>
+        <cbc:TaxExclusiveAmount currencyID="BAM">1.51</cbc:TaxExclusiveAmount>
+        <cbc:TaxInclusiveAmount currencyID="BAM">1.66</cbc:TaxInclusiveAmount>
+        <cbc:AllowanceTotalAmount currencyID="BAM">10.00</cbc:AllowanceTotalAmount>
+        <cbc:ChargeTotalAmount currencyID="BAM">22.00</cbc:ChargeTotalAmount>
+        <cbc:PrepaidAmount currencyID="BAM">3.00</cbc:PrepaidAmount>
+        <cbc:PayableRoundingAmount currencyID="BAM">1.34</cbc:PayableRoundingAmount>
+        <cbc:PayableAmount currencyID="BAM">0.00</cbc:PayableAmount>
+    </cac:LegalMonetaryTotal>
+    <cac:InvoiceLine>
+        <cbc:ID>1$%()*</cbc:ID>
+        <cbc:Note>$%()*</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="C62">-0123456789012.012</cbc:InvoicedQuantity><!--AQUI-->
+        <cbc:LineExtensionAmount currencyID="BAM">-1.12345678</cbc:LineExtensionAmount>
+        <cbc:AccountingCost>$%()*</cbc:AccountingCost>
+        <cac:InvoicePeriod>
+            <cbc:StartDate>2019-02-28</cbc:StartDate>
+            <cbc:EndDate>2019-02-28</cbc:EndDate>
+        </cac:InvoicePeriod>
+        <cac:OrderLineReference>
+            <cbc:LineID>$%()*</cbc:LineID>
+        </cac:OrderLineReference>
+        <cac:DocumentReference>
+            <cbc:ID schemeID="AAA">$%()*</cbc:ID>
+        </cac:DocumentReference>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>ABB</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:Item>
+            <cbc:Description>$%()*</cbc:Description>
+            <cbc:Name>$%()*</cbc:Name>
+            <cac:BuyersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:BuyersItemIdentification>
+            <cac:SellersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:SellersItemIdentification>
+            <cac:StandardItemIdentification>
+                <cbc:ID schemeID="0003">$%()*</cbc:ID>
+            </cac:StandardItemIdentification>
+            <cac:OriginCountry>
+                <cbc:IdentificationCode>EC</cbc:IdentificationCode>
+            </cac:OriginCountry>
+            <cac:CommodityClassification>
+                <cbc:ItemClassificationCode listID="AK">$%()*</cbc:ItemClassificationCode>
+            </cac:CommodityClassification>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>AA</cbc:ID>
+                <cbc:Percent>6.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>$%()*</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="BAM">0123456789012.01234567</cbc:PriceAmount><!--AQUI-->
+            <cbc:BaseQuantity>0123456789012.012</cbc:BaseQuantity><!--AQUI-->
+            <cac:AllowanceCharge>
+                <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+                <cbc:Amount currencyID="BAM">0123456789012.01234567</cbc:Amount><!--AQUI-->
+                <cbc:BaseAmount currencyID="BAM">0123456789012.01234567</cbc:BaseAmount><!--AQUI-->
+            </cac:AllowanceCharge>
+        </cac:Price>
+    </cac:InvoiceLine>
+    <cac:InvoiceLine>
+        <cbc:ID>2$%()*</cbc:ID>
+        <cbc:Note>$%()*</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="C62">-0123456789012.012</cbc:InvoicedQuantity><!--AQUI-->
+        <cbc:LineExtensionAmount currencyID="BAM">-2.12345678</cbc:LineExtensionAmount>
+        <cbc:AccountingCost>$%()*</cbc:AccountingCost>
+        <cac:InvoicePeriod>
+            <cbc:StartDate>2019-02-28</cbc:StartDate>
+            <cbc:EndDate>2019-02-28</cbc:EndDate>
+        </cac:InvoicePeriod>
+        <cac:OrderLineReference>
+            <cbc:LineID>$%()*</cbc:LineID>
+        </cac:OrderLineReference>
+        <cac:DocumentReference>
+            <cbc:ID>$%()*</cbc:ID>
+        </cac:DocumentReference>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>ABB</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason><!--AQUI-->
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:Item>
+            <cbc:Description>$%()*</cbc:Description>
+            <cbc:Name>$%()*</cbc:Name>
+            <cac:BuyersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:BuyersItemIdentification>
+            <cac:SellersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:SellersItemIdentification>
+            <cac:StandardItemIdentification>
+                <cbc:ID schemeID="0003">$%()*</cbc:ID>
+            </cac:StandardItemIdentification>
+            <cac:OriginCountry>
+                <cbc:IdentificationCode>EC</cbc:IdentificationCode>
+            </cac:OriginCountry>
+            <cac:CommodityClassification>
+                <cbc:ItemClassificationCode listID="AK">$%()*</cbc:ItemClassificationCode>
+            </cac:CommodityClassification>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>S</cbc:ID>
+                <cbc:Percent>23.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>$%()*</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>#ID@INVOICEDOCUMENTREFERENCE@BILLINGREFERENCE-001#</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>#RESPONSABILITYCENTER#</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>#LINEID@COMMITMENTLINEREFERENCE#</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="BAM">0123456789012.01234567</cbc:PriceAmount><!--AQUI-->
+            <cbc:BaseQuantity>0123456789012.012</cbc:BaseQuantity><!--AQUI-->
+            <cac:AllowanceCharge>
+                <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+                <cbc:Amount currencyID="BAM">0123456789012.01234567</cbc:Amount><!--AQUI-->
+                <cbc:BaseAmount currencyID="BAM">0123456789012.01234567</cbc:BaseAmount><!--AQUI-->
+            </cac:AllowanceCharge>
+        </cac:Price>
+    </cac:InvoiceLine>
+    <cac:InvoiceLine>
+        <cbc:ID>3$%()*</cbc:ID>
+        <cbc:Note>$%()*</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="C62">-0123456789012.012</cbc:InvoicedQuantity><!--AQUI-->
+        <cbc:LineExtensionAmount currencyID="BAM">-3.12345678</cbc:LineExtensionAmount>
+        <cbc:AccountingCost>$%()*</cbc:AccountingCost>
+        <cac:InvoicePeriod>
+            <cbc:StartDate>2019-02-28</cbc:StartDate>
+            <cbc:EndDate>2019-02-28</cbc:EndDate>
+        </cac:InvoicePeriod>
+        <cac:OrderLineReference>
+            <cbc:LineID>$%()*</cbc:LineID>
+        </cac:OrderLineReference>
+        <cac:DocumentReference>
+            <cbc:ID>$%()*</cbc:ID>
+        </cac:DocumentReference>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>ABB</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:Item>
+            <cbc:Description>$%()*</cbc:Description>
+            <cbc:Name>$%()*</cbc:Name>
+            <cac:BuyersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:BuyersItemIdentification>
+            <cac:SellersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:SellersItemIdentification>
+            <cac:StandardItemIdentification>
+                <cbc:ID schemeID="0003">$%()*</cbc:ID>
+            </cac:StandardItemIdentification>
+            <cac:OriginCountry>
+                <cbc:IdentificationCode>EC</cbc:IdentificationCode>
+            </cac:OriginCountry>
+            <cac:CommodityClassification>
+                <cbc:ItemClassificationCode listID="AK" listVersionID="$%()*">$%()*</cbc:ItemClassificationCode>
+            </cac:CommodityClassification>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>E</cbc:ID>
+                <cbc:Percent>0.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>$%()*</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>#TAXEXEMPTIONREASONCODE@CLASSIFIEDTAXCATEGORY#</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>#TAXEXEMPTIONREASON@CLASSIFIEDTAXCATEGORY#</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="BAM">0123456789012.01234567</cbc:PriceAmount><!--AQUI-->
+            <cbc:BaseQuantity unitCode="C62">0123456789012.012</cbc:BaseQuantity><!--AQUI-->
+            <cac:AllowanceCharge>
+                <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+                <cbc:Amount currencyID="BAM">0123456789012.01234567</cbc:Amount><!--AQUI-->
+                <cbc:BaseAmount currencyID="BAM">0123456789012.01234567</cbc:BaseAmount><!--AQUI-->
+            </cac:AllowanceCharge>
+        </cac:Price>
+    </cac:InvoiceLine>
+    <cac:InvoiceLine>
+        <cbc:ID>4$%()*</cbc:ID>
+        <cbc:Note>$%()*</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="C62">-0123456789012.012</cbc:InvoicedQuantity><!--AQUI-->
+        <cbc:LineExtensionAmount currencyID="BAM">-4.12345678</cbc:LineExtensionAmount>
+        <cbc:AccountingCost>$%()*</cbc:AccountingCost>
+        <cac:InvoicePeriod>
+            <cbc:StartDate>2019-02-28</cbc:StartDate>
+            <cbc:EndDate>2019-02-28</cbc:EndDate>
+        </cac:InvoicePeriod>
+        <cac:OrderLineReference>
+            <cbc:LineID>$%()*</cbc:LineID>
+        </cac:OrderLineReference>
+        <cac:DocumentReference>
+            <cbc:ID schemeID="AAA">$%()*</cbc:ID>
+        </cac:DocumentReference>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>41</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:AllowanceCharge>
+            <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+            <cbc:AllowanceChargeReasonCode>ABB</cbc:AllowanceChargeReasonCode>
+            <cbc:AllowanceChargeReason>$%()*</cbc:AllowanceChargeReason>
+            <cbc:MultiplierFactorNumeric>012.01</cbc:MultiplierFactorNumeric><!--AQUI-->
+            <cbc:Amount currencyID="BAM">0123456789012.01</cbc:Amount><!--AQUI-->
+            <cbc:BaseAmount currencyID="BAM">0123456789012.01</cbc:BaseAmount><!--AQUI-->
+        </cac:AllowanceCharge>
+        <cac:Item>
+            <cbc:Description>$%()*</cbc:Description>
+            <cbc:Name>$%()*</cbc:Name>
+            <cac:BuyersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:BuyersItemIdentification>
+            <cac:SellersItemIdentification>
+                <cbc:ID>$%()*</cbc:ID>
+            </cac:SellersItemIdentification>
+            <cac:StandardItemIdentification>
+                <cbc:ID schemeID="0003">$%()*</cbc:ID>
+            </cac:StandardItemIdentification>
+            <cac:OriginCountry>
+                <cbc:IdentificationCode>EC</cbc:IdentificationCode>
+            </cac:OriginCountry>
+            <cac:CommodityClassification>
+                <cbc:ItemClassificationCode listID="AK">$%()*</cbc:ItemClassificationCode>
+            </cac:CommodityClassification>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>AA</cbc:ID>
+                <cbc:Percent>14.00</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+            <cac:AdditionalItemProperty>
+                <cbc:Name>$%()*</cbc:Name>
+                <cbc:Value>$%()*</cbc:Value>
+            </cac:AdditionalItemProperty>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="BAM">0123456789012.01234567</cbc:PriceAmount><!--AQUI-->
+            <cbc:BaseQuantity>0123456789012.012</cbc:BaseQuantity><!--AQUI-->
+            <cac:AllowanceCharge>
+                <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+                <cbc:Amount currencyID="BAM">0123456789012.01234567</cbc:Amount><!--AQUI-->
+                <cbc:BaseAmount currencyID="BAM">0123456789012.01234567</cbc:BaseAmount><!--AQUI-->
+            </cac:AllowanceCharge>
+        </cac:Price>
+    </cac:InvoiceLine>
+</Invoice>
