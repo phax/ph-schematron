@@ -254,7 +254,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       {
         final XsltTransformer aXT = ((TransformerImpl) aTransformer).getUnderlyingXsltTransformer ();
 
-        aXT.setMessageListener ( (a, b, c) -> LOGGER.info ("MessageListener: " + a + ", " + b + ", " + c));
+        aXT.setMessageListener ( (a,
+                                  b,
+                                  c,
+                                  d) -> LOGGER.info ("MessageListener2: " + a + ", " + b + ", " + c + ", " + d));
         aXT.setTraceFunctionDestination (new StandardLogger (System.err));
         if (false)
           aXT.getUnderlyingController ().setTraceListener (new XSLTTraceListener ());

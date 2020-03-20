@@ -17,6 +17,7 @@
 package com.helger.schematron.pure.bound.xpath;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,10 +61,12 @@ import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.schematron.xpath.IXPathConfig;
 import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.schematron.xpath.XPathEvaluationHelper;
-import com.helger.schematron.xslt.util.PSErrorListener;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.xpath.XPathHelper;
 
+import net.sf.saxon.Configuration;
+import net.sf.saxon.lib.ErrorReporter;
+import net.sf.saxon.s9api.XmlProcessingError;
 import net.sf.saxon.xpath.XPathEvaluator;
 
 /**
@@ -419,7 +422,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       aSaxonXPath.setNamespaceContext (new SaxonNamespaceContext (aNamespaceContext));
 
       // Wrap the PSErrorHandler to a ErrorListener
-      aSaxonXPath.getConfiguration ().setErrorListener (new PSErrorListener (getErrorHandler ()));
+      final Function <Configuration, ? extends ErrorReporter> factory = cfg -> {
+        final IPSErrorHandler aErrHdl = getErrorHandler ();
+        return (final XmlProcessingError error) -> {
+          String sMessage = error.getMessage ();
+          if (error.getErrorCode () != null)
+            sMessage = "[" + error.getErrorCode ().toString () + "] " + sMessage;
+
+          if (error.isWarning ())
+            aErrHdl.warn (null, null, sMessage);
+          else
+            aErrHdl.error (null, null, sMessage, error.getCause ());
+        };
+      };
+      aSaxonXPath.getConfiguration ().setErrorReporterFactory (factory);
     }
     return aXPathContext;
   }

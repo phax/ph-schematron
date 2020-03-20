@@ -34,6 +34,7 @@ The conversion of Schematron to XSLT is quite costly. That’s why this Maven pl
 By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element).
 
 Starting from version 5.0.9:
+
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
@@ -50,6 +51,7 @@ Starting from version 5.0.9:
 ```
 
 Up to and including version 5.0.8:
+
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
@@ -302,6 +304,8 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
+* v5.6.0 - work in progress
+    * Updated to Saxon-HE 10.0
 * v5.5.0 - 2020-03-08
     * Updated to Saxon-HE 9.9.1-7
     * Improved XPath configuration for the pure Schematron implementation (see [PR #98](https://github.com/phax/ph-schematron/pull/98)) - thanks [@aanno](https://github.com/aanno)
