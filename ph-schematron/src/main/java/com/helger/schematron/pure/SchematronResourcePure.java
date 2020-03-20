@@ -36,6 +36,7 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.error.SingleError;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -43,6 +44,7 @@ import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.inmemory.AbstractMemoryReadableResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.CSchematron;
@@ -300,7 +302,11 @@ public class SchematronResourcePure extends AbstractSchematronResource
       catch (final RuntimeException ex)
       {
         if (m_aErrorHandler != null)
-          m_aErrorHandler.error (getResource (), null, "Error creating bound schema", ex);
+          m_aErrorHandler.handleError (SingleError.builderError ()
+                                                  .setErrorLocation (new SimpleLocation (getResource ().getPath ()))
+                                                  .setErrorText ("Error creating bound schema")
+                                                  .setLinkedException (ex)
+                                                  .build ());
         throw ex;
       }
 

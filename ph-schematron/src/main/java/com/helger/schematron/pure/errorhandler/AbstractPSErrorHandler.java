@@ -19,11 +19,8 @@ package com.helger.schematron.pure.errorhandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.error.IError;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.schematron.pure.model.IPSElement;
 
 /**
  * Abstract implementation of {@link IPSErrorHandler}.
@@ -55,55 +52,26 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
   }
 
   /**
-   * The abstract method that is called for both warnings and errors.
+   * The internal method to handle warnings and errors.
    *
-   * @param aRes
-   *        The resource in which the error occurred.
-   * @param aErrorLevel
-   *        The error level. Never <code>null</code>.
-   * @param aSourceElement
-   *        The source schematron element, in which the error occurred. Maybe
-   *        <code>null</code> for XPath errors.
-   * @param sMessage
-   *        The error message. Never <code>null</code>.
-   * @param t
-   *        The optional exception that might have occurred. May be
-   *        <code>null</code>.
+   * @param aError
+   *        The structured error. May not be <code>null</code>.
    */
-  protected abstract void handle (@Nullable IReadableResource aRes,
-                                  @Nonnull IErrorLevel aErrorLevel,
-                                  @Nullable IPSElement aSourceElement,
-                                  @Nonnull String sMessage,
-                                  @Nullable Throwable t);
+  protected abstract void handleInternally (@Nonnull IError aError);
 
-  public final void warn (@Nullable final IReadableResource aRes,
-                          @Nullable final IPSElement aSourceElement,
-                          @Nonnull final String sMessage)
+  public final void handleError (@Nonnull final IError aError)
   {
-    handle (aRes, EErrorLevel.WARN, aSourceElement, sMessage, (Throwable) null);
+    handleInternally (aError);
 
     // Do we have a nested error handler?
     final IPSErrorHandler aNestedErrorHandler = getNestedErrorHandler ();
     if (aNestedErrorHandler != null)
-      aNestedErrorHandler.warn (aRes, aSourceElement, sMessage);
-  }
-
-  public final void error (@Nullable final IReadableResource aRes,
-                           @Nullable final IPSElement aSourceElement,
-                           @Nonnull final String sMessage,
-                           @Nullable final Throwable t)
-  {
-    handle (aRes, EErrorLevel.ERROR, aSourceElement, sMessage, t);
-
-    // Do we have a nested error handler?
-    final IPSErrorHandler aNestedErrorHandler = getNestedErrorHandler ();
-    if (aNestedErrorHandler != null)
-      aNestedErrorHandler.error (aRes, aSourceElement, sMessage, t);
+      aNestedErrorHandler.handleError (aError);
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("nestedErrorHandler", m_aNestedErrorHandler).getToString ();
+    return new ToStringGenerator (this).appendIfNotNull ("NestedErrorHandler", m_aNestedErrorHandler).getToString ();
   }
 }

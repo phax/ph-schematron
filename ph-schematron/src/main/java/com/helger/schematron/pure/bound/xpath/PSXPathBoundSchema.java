@@ -39,6 +39,10 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.error.SingleError;
+import com.helger.commons.error.level.EErrorLevel;
+import com.helger.commons.location.ILocation;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -425,14 +429,21 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       final Function <Configuration, ? extends ErrorReporter> factory = cfg -> {
         final IPSErrorHandler aErrHdl = getErrorHandler ();
         return (final XmlProcessingError error) -> {
-          String sMessage = error.getMessage ();
-          if (error.getErrorCode () != null)
-            sMessage = "[" + error.getErrorCode ().toString () + "] " + sMessage;
-
-          if (error.isWarning ())
-            aErrHdl.warn (null, null, sMessage);
-          else
-            aErrHdl.error (null, null, sMessage, error.getCause ());
+          final ILocation aLocation = error.getLocation () == null ? null
+                                                                   : new SimpleLocation (error.getLocation ()
+                                                                                              .getSystemId (),
+                                                                                         error.getLocation ()
+                                                                                              .getLineNumber (),
+                                                                                         error.getLocation ()
+                                                                                              .getColumnNumber ());
+          aErrHdl.handleError (SingleError.builder ()
+                                          .setErrorLevel (error.isWarning () ? EErrorLevel.WARN : EErrorLevel.ERROR)
+                                          .setErrorID (error.getErrorCode () != null ? error.getErrorCode ().toString ()
+                                                                                     : null)
+                                          .setErrorLocation (aLocation)
+                                          .setErrorText (error.getMessage ())
+                                          .setLinkedException (error.getCause ())
+                                          .build ());
         };
       };
       aSaxonXPath.getConfiguration ().setErrorReporterFactory (factory);

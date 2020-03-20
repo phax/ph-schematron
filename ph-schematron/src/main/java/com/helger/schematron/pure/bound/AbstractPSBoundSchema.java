@@ -27,6 +27,8 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.error.SingleError;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
@@ -151,7 +153,12 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   @OverridingMethodsMustInvokeSuper
   protected void warn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
   {
-    getErrorHandler ().warn (m_aOrigSchema.getResource (), aSourceElement, sMsg);
+    getErrorHandler ().handleError (SingleError.builderWarn ()
+                                               .setErrorLocation (new SimpleLocation (m_aOrigSchema.getResource ()
+                                                                                                   .getPath ()))
+                                               .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                               .setErrorText (sMsg)
+                                               .build ());
   }
 
   @OverridingMethodsMustInvokeSuper
@@ -165,7 +172,13 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                         @Nonnull final String sMsg,
                         @Nullable final Throwable t)
   {
-    getErrorHandler ().error (m_aOrigSchema.getResource (), aSourceElement, sMsg, t);
+    getErrorHandler ().handleError (SingleError.builderError ()
+                                               .setErrorLocation (new SimpleLocation (m_aOrigSchema.getResource ()
+                                                                                                   .getPath ()))
+                                               .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                               .setErrorText (sMsg)
+                                               .setLinkedException (t)
+                                               .build ());
   }
 
   @Nonnull

@@ -19,62 +19,44 @@ package com.helger.schematron.pure.errorhandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.error.IError;
+import com.helger.commons.error.SingleError;
+import com.helger.commons.lang.ClassHelper;
 import com.helger.schematron.pure.model.IPSElement;
+import com.helger.schematron.pure.model.IPSHasID;
 
 /**
- * Base interface for a Pure Schematron error handler.
+ * Base interface for a Pure Schematron error handler.<br>
+ * Rewritten in v5.6.0
  *
  * @author Philip Helger
  */
 public interface IPSErrorHandler
 {
   /**
-   * Emit a warning
+   * Handle a warning or error
    *
-   * @param aRes
-   *        The resource in which the error occurred. May be <code>null</code>.
-   * @param aSourceElement
-   *        The source element where the warning is encountered. Maybe
-   *        <code>null</code> for XPath errors.
-   * @param sMessage
-   *        The main warning message. Never <code>null</code>.
+   * @param aError
+   *        The structured error. May not be <code>null</code>.
    */
-  void warn (@Nullable IReadableResource aRes, @Nullable IPSElement aSourceElement, @Nonnull String sMessage);
+  void handleError (@Nonnull IError aError);
 
-  /**
-   * Emit an error. Shortcut for
-   * {@link #error(IReadableResource, IPSElement, String, Throwable)} with
-   * <code>null</code> {@link IReadableResource} and <code>null</code>
-   * {@link Throwable}.
-   *
-   * @param aSourceElement
-   *        The source element where the warning is encountered. Maybe
-   *        <code>null</code> for XPath errors.
-   * @param sMessage
-   *        The main warning message. Never <code>null</code>.
-   */
-  default void error (@Nullable final IPSElement aSourceElement, @Nonnull final String sMessage)
+  default void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMessage)
   {
-    error ((IReadableResource) null, aSourceElement, sMessage, (Throwable) null);
+    handleError (SingleError.builderError ()
+                            .setErrorFieldName (getErrorFieldName (aSourceElement))
+                            .setErrorText (sMessage)
+                            .build ());
   }
 
-  /**
-   * Emit an error
-   *
-   * @param aRes
-   *        The resource in which the error occurred. May be <code>null</code>.
-   * @param aSourceElement
-   *        The source element where the warning is encountered. Maybe
-   *        <code>null</code> for XPath errors.
-   * @param sMessage
-   *        The main warning message. Never <code>null</code>.
-   * @param t
-   *        An optional exception that is the source of the error. May be
-   *        <code>null</code>.
-   */
-  void error (@Nullable IReadableResource aRes,
-              @Nullable IPSElement aSourceElement,
-              @Nonnull String sMessage,
-              @Nullable Throwable t);
+  @Nullable
+  static String getErrorFieldName (@Nullable final IPSElement aSourceElement)
+  {
+    if (aSourceElement == null)
+      return null;
+    String sField = ClassHelper.getClassLocalName (aSourceElement);
+    if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
+      sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
+    return sField;
+  }
 }

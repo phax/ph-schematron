@@ -21,18 +21,11 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.error.SingleError.SingleErrorBuilder;
-import com.helger.commons.error.level.IErrorLevel;
+import com.helger.commons.error.IError;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
-import com.helger.schematron.pure.model.IPSElement;
-import com.helger.schematron.pure.model.IPSHasID;
 
 /**
  * Abstract collecting {@link IPSErrorHandler} that collects all error messages
@@ -53,27 +46,9 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
   }
 
   @Override
-  protected void handle (@Nullable final IReadableResource aRes,
-                         @Nonnull final IErrorLevel aErrorLevel,
-                         @Nullable final IPSElement aSourceElement,
-                         @Nonnull final String sMessage,
-                         @Nullable final Throwable t)
+  protected void handleInternally (@Nonnull final IError aError)
   {
-    final SingleErrorBuilder aBuilder = SingleError.builder ()
-                                                   .setErrorLevel (aErrorLevel)
-                                                   .setErrorLocation (aRes == null ? null
-                                                                                   : new SimpleLocation (aRes.getResourceID ()))
-                                                   .setErrorText (sMessage)
-                                                   .setLinkedException (t);
-
-    if (aSourceElement != null)
-    {
-      String sField = ClassHelper.getClassLocalName (aSourceElement);
-      if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
-        sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";
-      aBuilder.setErrorFieldName (sField);
-    }
-    m_aErrorList.add (aBuilder.build ());
+    m_aErrorList.add (aError);
   }
 
   @Nonnull

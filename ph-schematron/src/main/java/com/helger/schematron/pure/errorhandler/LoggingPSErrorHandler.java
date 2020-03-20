@@ -16,19 +16,20 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
+import java.util.Locale;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.lang.ClassHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.error.ErrorTextProvider;
+import com.helger.commons.error.ErrorTextProvider.EField;
+import com.helger.commons.error.IError;
+import com.helger.commons.error.IErrorTextProvider;
 import com.helger.commons.log.LogHelper;
-import com.helger.commons.string.StringHelper;
-import com.helger.schematron.pure.model.IPSElement;
-import com.helger.schematron.pure.model.IPSHasID;
 
 /**
  * An implementation if {@link IPSErrorHandler} that logs to an SLF4J logger.
@@ -37,7 +38,20 @@ import com.helger.schematron.pure.model.IPSHasID;
  */
 public class LoggingPSErrorHandler extends AbstractPSErrorHandler
 {
+  public static final IErrorTextProvider DEFAULT_PS = new ErrorTextProvider ().addItem (EField.ERROR_LEVEL, "[$]")
+                                                                              .addItem (EField.ERROR_ID, "[$]")
+                                                                              .addItem (EField.ERROR_FIELD_NAME, "[$]")
+                                                                              .addItem (EField.ERROR_LOCATION, "@ $")
+                                                                              .addItem (EField.ERROR_TEXT, "$")
+                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_CLASS,
+                                                                                        "($:")
+                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_MESSAGE,
+                                                                                        "$)")
+                                                                              .setFieldSeparator (" ");
+
   private static final Logger LOGGER = LoggerFactory.getLogger (LoggingPSErrorHandler.class);
+
+  private IErrorTextProvider m_aETP = DEFAULT_PS;
 
   public LoggingPSErrorHandler ()
   {
@@ -50,26 +64,25 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
   }
 
   @Nonnull
-  public static String getLogMessage (@Nullable final IReadableResource aRes,
-                                      @Nullable final IPSElement aSourceElement,
-                                      @Nonnull final String sMessage)
+  public final IErrorTextProvider getErrorTextProvider ()
   {
-    return StringHelper.getImplodedNonEmpty (" - ",
-                                             aRes == null ? null : aRes.getPath (),
-                                             aSourceElement == null ? null
-                                                                    : ClassHelper.getClassLocalName (aSourceElement),
-                                             aSourceElement instanceof IPSHasID &&
-                                                                                                                      ((IPSHasID) aSourceElement).hasID () ? "ID " + ((IPSHasID) aSourceElement).getID () : null,
-                                             sMessage);
+    return m_aETP;
+  }
+
+  @Nonnull
+  public final LoggingPSErrorHandler setErrorTextProvider (@Nonnull final IErrorTextProvider aETP)
+  {
+    ValueEnforcer.notNull (aETP, "ErrorTextProvider");
+    m_aETP = aETP;
+    return this;
   }
 
   @Override
-  protected void handle (@Nullable final IReadableResource aRes,
-                         @Nonnull final IErrorLevel aErrorLevel,
-                         @Nullable final IPSElement aSourceElement,
-                         @Nonnull final String sMessage,
-                         @Nullable final Throwable t)
+  protected void handleInternally (@Nonnull final IError aError)
   {
-    LogHelper.log (LOGGER, aErrorLevel, getLogMessage (aRes, aSourceElement, sMessage), t);
+    LogHelper.log (LOGGER,
+                   aError.getErrorLevel (),
+                   m_aETP.getErrorText (aError, Locale.US),
+                   aError.getLinkedException ());
   }
 }

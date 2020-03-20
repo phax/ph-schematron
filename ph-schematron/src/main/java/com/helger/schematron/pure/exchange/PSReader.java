@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.error.SingleError;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
@@ -171,7 +173,11 @@ public class PSReader
     ValueEnforcer.notNull (aSourceElement, "SourceElement");
     ValueEnforcer.notNull (sMessage, "Message");
 
-    m_aErrorHandler.warn (m_aResource, aSourceElement, sMessage);
+    m_aErrorHandler.handleError (SingleError.builderWarn ()
+                                            .setErrorLocation (new SimpleLocation (m_aResource.getPath ()))
+                                            .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                            .setErrorText (sMessage)
+                                            .build ());
   }
 
   /**

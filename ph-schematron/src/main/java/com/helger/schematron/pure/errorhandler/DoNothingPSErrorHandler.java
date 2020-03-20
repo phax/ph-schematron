@@ -17,11 +17,8 @@
 package com.helger.schematron.pure.errorhandler;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.schematron.pure.model.IPSElement;
+import com.helger.commons.error.IError;
 
 /**
  * An implementation if {@link IPSErrorHandler} that does nothing and swallows
@@ -32,11 +29,7 @@ import com.helger.schematron.pure.model.IPSElement;
 public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
 {
   @Override
-  protected void handle (@Nullable final IReadableResource aRes,
-                         @Nonnull final IErrorLevel aErrorLevel,
-                         @Nullable final IPSElement aSourceElement,
-                         @Nonnull final String sMessage,
-                         @Nullable final Throwable t)
+  protected void handleInternally (@Nonnull final IError aError)
   {
     // Do nothing :)
   }

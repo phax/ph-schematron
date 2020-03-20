@@ -18,14 +18,15 @@ package com.helger.schematron.supplementary;
 
 import static org.junit.Assert.assertFalse;
 
+import java.util.Locale;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
-import com.helger.schematron.pure.model.IPSElement;
+import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.xml.sax.DefaultEntityResolver;
 
 /**
@@ -42,29 +43,8 @@ public final class Issue30Test
   {
     final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github30/ph-test.sch");
     aResPure.setEntityResolver (DefaultEntityResolver.createOnDemand (aResPure.getResource ()));
-    final IPSErrorHandler aErrorHandler = new IPSErrorHandler ()
-    {
-      @Override
-      public void warn (final IReadableResource aRes, final IPSElement aSourceElement, final String sMessage)
-      {
-        LOGGER.info (sMessage);
-      }
-
-      @Override
-      public void error (final IReadableResource aRes,
-                         final IPSElement aSourceElement,
-                         final String sMessage,
-                         final Throwable t)
-      {
-        LOGGER.info (sMessage);
-      }
-
-      @Override
-      public void error (final IPSElement aSourceElement, final String sMessage)
-      {
-        LOGGER.info (sMessage);
-      }
-    };
+    final IPSErrorHandler aErrorHandler = (aError) -> LOGGER.info (LoggingPSErrorHandler.DEFAULT_PS.getErrorText (aError,
+                                                                                                                  Locale.US));
     aResPure.setErrorHandler (aErrorHandler);
 
     aResPure.validateCompletely ();

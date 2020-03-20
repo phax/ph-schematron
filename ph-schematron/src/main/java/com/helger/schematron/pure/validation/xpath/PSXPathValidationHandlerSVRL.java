@@ -28,6 +28,8 @@ import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.error.SingleError;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EContinue;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
@@ -86,12 +88,23 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     m_aErrorHandler = aErrorHandler;
   }
 
+  @Nonnull
+  public final IPSErrorHandler getErrorHandler ()
+  {
+    return m_aErrorHandler;
+  }
+
   private void _warn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
 
-    m_aErrorHandler.warn (m_aSchema.getResource (), aSourceElement, sMsg);
+    getErrorHandler ().handleError (SingleError.builderWarn ()
+                                               .setErrorLocation (new SimpleLocation (m_aSchema.getResource ()
+                                                                                               .getPath ()))
+                                               .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                               .setErrorText (sMsg)
+                                               .build ());
   }
 
   private void _error (@Nonnull final IPSElement aSourceElement,
@@ -101,7 +114,13 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
 
-    m_aErrorHandler.error (m_aSchema.getResource (), aSourceElement, sMsg, t);
+    getErrorHandler ().handleError (SingleError.builderError ()
+                                               .setErrorLocation (new SimpleLocation (m_aSchema.getResource ()
+                                                                                               .getPath ()))
+                                               .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                               .setErrorText (sMsg)
+                                               .setLinkedException (t)
+                                               .build ());
   }
 
   @Nullable

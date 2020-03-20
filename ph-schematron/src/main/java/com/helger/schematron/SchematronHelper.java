@@ -35,12 +35,14 @@ import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.error.SingleError;
 import com.helger.commons.error.list.ErrorList;
 import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.hierarchy.visit.ChildrenProviderHierarchyVisitor;
 import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
 import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.wrapper.Wrapper;
@@ -282,7 +284,10 @@ public final class SchematronHelper
             final IReadableResource aIncludeRes = aIncludeResolver.getResolvedSchematronResource (sHref);
             if (aIncludeRes == null)
             {
-              aErrorHandler.error (aResource, null, "Failed to resolve include '" + sHref + "'", null);
+              aErrorHandler.handleError (SingleError.builderError ()
+                                                    .setErrorLocation (new SimpleLocation (aResource.getPath ()))
+                                                    .setErrorText ("Failed to resolve include '" + sHref + "'")
+                                                    .build ());
               return ESuccess.FAILURE;
             }
 
@@ -299,7 +304,10 @@ public final class SchematronHelper
             final IMicroDocument aIncludedDoc = MicroReader.readMicroXML (aIncludeRes, aSettings);
             if (aIncludedDoc == null)
             {
-              aErrorHandler.error (aResource, null, "Failed to parse include " + aIncludeRes, null);
+              aErrorHandler.handleError (SingleError.builderError ()
+                                                    .setErrorLocation (new SimpleLocation (aResource.getPath ()))
+                                                    .setErrorText ("Failed to parse include " + aIncludeRes)
+                                                    .build ());
               return ESuccess.FAILURE;
             }
 
@@ -336,13 +344,14 @@ public final class SchematronHelper
               aIncludedContent = aMatch.get ();
               if (aIncludedContent == null)
               {
-                aErrorHandler.warn (aResource,
-                                    null,
-                                    "Failed to resolve an element with the ID '" +
-                                          sAnchor +
-                                          "' in " +
-                                          aIncludeRes +
-                                          "! Therefore including the whole document!");
+                aErrorHandler.handleError (SingleError.builderWarn ()
+                                                      .setErrorLocation (new SimpleLocation (aResource.getPath ()))
+                                                      .setErrorText ("Failed to resolve an element with the ID '" +
+                                                                     sAnchor +
+                                                                     "' in " +
+                                                                     aIncludeRes +
+                                                                     "! Therefore including the whole document!")
+                                                      .build ());
                 aIncludedContent = aIncludedDoc.getDocumentElement ();
               }
             }
@@ -356,17 +365,19 @@ public final class SchematronHelper
               // Check for correct namespace URI of included content
               if (!isValidSchematronNS (aIncludedContent.getNamespaceURI (), bLenient))
               {
-                aErrorHandler.error (aResource,
-                                     null,
-                                     "The included resource " +
-                                           aIncludeRes +
-                                           " contains the wrong XML namespace URI '" +
-                                           aIncludedContent.getNamespaceURI () +
-                                           "' but was expected to have: " +
-                                           StringHelper.getImplodedMapped (", ",
-                                                                           getAllValidSchematronNS (bLenient),
-                                                                           x -> "'" + x + "'"),
-                                     null);
+                aErrorHandler.handleError (SingleError.builderError ()
+                                                      .setErrorLocation (new SimpleLocation (aResource.getPath ()))
+                                                      .setErrorText ("The included resource " +
+                                                                     aIncludeRes +
+                                                                     " contains the wrong XML namespace URI '" +
+                                                                     aIncludedContent.getNamespaceURI () +
+                                                                     "' but was expected to have: " +
+                                                                     StringHelper.getImplodedMapped (", ",
+                                                                                                     getAllValidSchematronNS (bLenient),
+                                                                                                     x -> "'" +
+                                                                                                          x +
+                                                                                                          "'"))
+                                                      .build ());
                 return ESuccess.FAILURE;
               }
             }
@@ -375,11 +386,12 @@ public final class SchematronHelper
             if (isValidSchematronNS (aIncludedContent.getNamespaceURI (), bLenient) &&
                 CSchematronXML.ELEMENT_SCHEMA.equals (aIncludedContent.getLocalName ()))
             {
-              aErrorHandler.warn (aResource,
-                                  null,
-                                  "The included resource " +
-                                        aIncludeRes +
-                                        " seems to be a complete schema. To includes parts of a schema the respective element must be the root element of the included resource.");
+              aErrorHandler.handleError (SingleError.builderWarn ()
+                                                    .setErrorLocation (new SimpleLocation (aResource.getPath ()))
+                                                    .setErrorText ("The included resource " +
+                                                                   aIncludeRes +
+                                                                   " seems to be a complete schema. To includes parts of a schema the respective element must be the root element of the included resource.")
+                                                    .build ());
             }
 
             // Recursive resolve includes
@@ -395,7 +407,11 @@ public final class SchematronHelper
           }
           catch (final IOException ex)
           {
-            aErrorHandler.error (aResource, null, "Failed to read include '" + sHref + "'", ex);
+            aErrorHandler.handleError (SingleError.builderError ()
+                                                  .setErrorLocation (new SimpleLocation (aResource.getPath ()))
+                                                  .setErrorText ("Failed to read include '" + sHref + "'")
+                                                  .setLinkedException (ex)
+                                                  .build ());
             return ESuccess.FAILURE;
           }
         }
