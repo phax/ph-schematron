@@ -120,11 +120,11 @@ public final class SchematronResourceXSLTCache
     final String sResourceID = aXSLTResource.getResourceID ();
 
     // Validator already in the cache?
-    final SchematronProviderXSLTPrebuild aProvider = s_aRWLock.readLocked ( () -> s_aCache.get (sResourceID));
+    final SchematronProviderXSLTPrebuild aProvider = s_aRWLock.readLockedGet ( () -> s_aCache.get (sResourceID));
     if (aProvider != null)
       return aProvider;
 
-    return s_aRWLock.writeLocked ( () -> {
+    return s_aRWLock.writeLockedGet ( () -> {
       // Check again in write lock
       SchematronProviderXSLTPrebuild aProvider2 = s_aCache.get (sResourceID);
       if (aProvider2 == null)

@@ -116,7 +116,7 @@ public final class PSQueryBindingRegistry
     if (sName == null)
       return DEFAULT_QUERY_BINDING;
 
-    return s_aRWLock.readLocked ( () -> s_aMap.get (sName));
+    return s_aRWLock.readLockedGet ( () -> s_aMap.get (sName));
   }
 
   /**
@@ -145,6 +145,6 @@ public final class PSQueryBindingRegistry
   @ReturnsMutableCopy
   public static ICommonsMap <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
   {
-    return s_aRWLock.readLocked ( () -> s_aMap.getClone ());
+    return s_aRWLock.readLockedGet (s_aMap::getClone);
   }
 }

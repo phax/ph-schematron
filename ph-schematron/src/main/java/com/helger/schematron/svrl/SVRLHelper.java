@@ -215,7 +215,7 @@ public final class SVRLHelper
   @Nonnull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
-    return s_aRWLock.readLocked ( () -> s_aELD);
+    return s_aRWLock.readLockedGet ( () -> s_aELD);
   }
 
   /**
@@ -228,7 +228,7 @@ public final class SVRLHelper
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
-    s_aRWLock.readLocked ( () -> s_aELD = aELD);
+    s_aRWLock.writeLockedGet ( () -> s_aELD = aELD);
   }
 
   /**

@@ -307,6 +307,7 @@ The `schematron` element allows for the following attributes:
 * v5.6.0 - work in progress
     * Updated to Saxon-HE 10.0
     * Changed the internal error handler to use `IError` and therefore also improve the error handling quality
+    * Updated to ph-commons 9.4.0
 * v5.5.0 - 2020-03-08
     * Updated to Saxon-HE 9.9.1-7
     * Improved XPath configuration for the pure Schematron implementation (see [PR #98](https://github.com/phax/ph-schematron/pull/98)) - thanks [@aanno](https://github.com/aanno)
