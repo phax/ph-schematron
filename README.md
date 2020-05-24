@@ -304,6 +304,9 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
+* v5.6.1 - work in progress
+    * Updated to Saxon-HE 10.1
+    * Updated to an 1.10.8
 * v5.6.0 - 2020-03-29
     * Updated to Saxon-HE 10.0
     * Changed the internal error handler to use `IError` and therefore also improve the error handling quality
