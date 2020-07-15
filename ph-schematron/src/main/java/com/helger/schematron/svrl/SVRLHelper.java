@@ -250,8 +250,7 @@ public final class SVRLHelper
     // Handle namespaces:
     // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
     // is the namespace URI
-    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
-                                                     sResult);
+    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E", sResult);
     while (aMatcher.find ())
     {
       final String sLocalName = aMatcher.group (1);

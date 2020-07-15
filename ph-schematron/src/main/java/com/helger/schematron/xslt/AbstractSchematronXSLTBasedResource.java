@@ -73,8 +73,7 @@ import net.sf.saxon.trace.XSLTTraceListener;
  *        Implementation type
  */
 @NotThreadSafe
-public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>>
-                                                          extends
+public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>> extends
                                                           AbstractSchematronResource implements
                                                           ISchematronXSLTBasedResource,
                                                           IGenericImplTrait <IMPLTYPE>
@@ -191,8 +190,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
-                                                @Nullable final String sBaseURI) throws Exception
+  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -254,10 +252,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       {
         final XsltTransformer aXT = ((TransformerImpl) aTransformer).getUnderlyingXsltTransformer ();
 
-        aXT.setMessageListener ( (a,
-                                  b,
-                                  c,
-                                  d) -> LOGGER.info ("MessageListener2: " + a + ", " + b + ", " + c + ", " + d));
+        aXT.setMessageListener ( (a, b, c, d) -> LOGGER.info ("MessageListener2: " + a + ", " + b + ", " + c + ", " + d));
         aXT.setTraceFunctionDestination (new StandardLogger (System.err));
         if (false)
           aXT.getUnderlyingController ().setTraceListener (new XSLTTraceListener ());
@@ -310,8 +305,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     {
       // Set an exception callback that logs the source node as well
       aMarshaller.readExceptionCallbacks ()
-                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc),
-                                           ex));
+                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc), ex));
     }
     return aMarshaller.read (aDoc);
   }

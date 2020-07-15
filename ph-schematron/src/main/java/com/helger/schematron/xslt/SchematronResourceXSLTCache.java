@@ -81,9 +81,7 @@ public final class SchematronResourceXSLTCache
       // Note: this should never occur, as it is in the Prebuild implementation
       // the same as "isValidSchematron" but to be implementation agnostic, we
       // leave the check anyway.
-      throw new IllegalStateException ("No XSLT document retrieved from XSLT resource '" +
-                                       aXSLTResource.getResourceID () +
-                                       "'!");
+      throw new IllegalStateException ("No XSLT document retrieved from XSLT resource '" + aXSLTResource.getResourceID () + "'!");
     }
 
     // Create the main validator for the schematron

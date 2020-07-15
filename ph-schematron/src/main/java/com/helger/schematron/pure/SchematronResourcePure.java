@@ -361,8 +361,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
-                                          @Nullable final String sBaseURI) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -400,8 +399,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
-                                             @Nullable final String sBaseURI) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 

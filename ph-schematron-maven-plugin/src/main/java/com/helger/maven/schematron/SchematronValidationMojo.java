@@ -398,8 +398,7 @@ public final class SchematronValidationMojo extends AbstractMojo
                                    @Nullable final String sXMLExcludes,
                                    @Nullable final File aSVRLDirectory,
                                    final boolean bExpectSuccess,
-                                   @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException,
-                                                                                        MojoFailureException
+                                   @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException, MojoFailureException
   {
     final DirectoryScanner aScanner = new DirectoryScanner ();
     aScanner.setBasedir (aXMLDirectory);
@@ -446,13 +445,9 @@ public final class SchematronValidationMojo extends AbstractMojo
             // No failed assertions expected
             if (aFailedAsserts.isNotEmpty ())
             {
-              final String sMessage = aFailedAsserts.size () +
-                                      " failed Schematron assertions for XML file '" +
-                                      aXMLFile.getPath () +
-                                      "'";
+              final String sMessage = aFailedAsserts.size () + " failed Schematron assertions for XML file '" + aXMLFile.getPath () + "'";
               getLog ().error (sMessage);
-              aFailedAsserts.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ())
-                                                             .getAsString (Locale.US)));
+              aFailedAsserts.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US)));
               if (m_bFailFast)
                 throw new MojoFailureException (sMessage);
               aErrorMessages.add (sMessage);
@@ -463,9 +458,7 @@ public final class SchematronValidationMojo extends AbstractMojo
             // At least one failed assertions expected
             if (aFailedAsserts.isEmpty ())
             {
-              final String sMessage = "No failed Schematron assertions for erroneous XML file '" +
-                                      aXMLFile.getPath () +
-                                      "'";
+              final String sMessage = "No failed Schematron assertions for erroneous XML file '" + aXMLFile.getPath () + "'";
               getLog ().error (sMessage);
               if (m_bFailFast)
                 throw new MojoFailureException (sMessage);
@@ -500,9 +493,7 @@ public final class SchematronValidationMojo extends AbstractMojo
       throw new MojoExecutionException ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
     if (m_sSchematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                                        StringHelper.getImplodedMapped (", ",
-                                                                        ESchematronMode.values (),
-                                                                        x -> "'" + x.getID () + "'"));
+                                        StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
     if (m_aXmlDirectory == null && m_aXmlErrorDirectory == null)
       throw new MojoExecutionException ("No XML directory specified - positive or negative directory must be present!");
 
@@ -523,9 +514,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (m_aXmlErrorDirectory != null)
     {
       if (m_aXmlErrorDirectory.exists () && !m_aXmlErrorDirectory.isDirectory ())
-        throw new MojoExecutionException ("The specified erroneous XML directory " +
-                                          m_aXmlErrorDirectory +
-                                          " is not a directory!");
+        throw new MojoExecutionException ("The specified erroneous XML directory " + m_aXmlErrorDirectory + " is not a directory!");
       if (StringHelper.hasNoText (m_sXmlErrorIncludes))
         throw new MojoExecutionException ("No erroneous XML include pattern specified!");
 
@@ -610,13 +599,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     final ICommonsList <String> aErrorMessages = new CommonsArrayList <> ();
     if (m_aXmlDirectory != null)
     {
-      _performValidation (aSch,
-                          m_aXmlDirectory,
-                          m_sXmlIncludes,
-                          m_sXmlExcludes,
-                          m_aSvrlDirectory,
-                          true,
-                          aErrorMessages);
+      _performValidation (aSch, m_aXmlDirectory, m_sXmlIncludes, m_sXmlExcludes, m_aSvrlDirectory, true, aErrorMessages);
     }
     if (m_aXmlErrorDirectory != null)
     {

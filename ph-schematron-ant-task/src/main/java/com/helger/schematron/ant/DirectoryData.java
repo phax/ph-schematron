@@ -74,9 +74,6 @@ final class DirectoryData
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (null).append ("BaseDir", m_aBaseDir)
-                                       .append ("Dirs", m_aDirs)
-                                       .append ("Files", m_aFiles)
-                                       .getToString ();
+    return new ToStringGenerator (null).append ("BaseDir", m_aBaseDir).append ("Dirs", m_aDirs).append ("Files", m_aFiles).getToString ();
   }
 }

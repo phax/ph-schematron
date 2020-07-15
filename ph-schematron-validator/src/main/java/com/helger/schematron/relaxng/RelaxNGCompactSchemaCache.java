@@ -43,8 +43,7 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
   static
   {
     // Ensure to use the JING RelaxNG Compact factory
-    SystemProperties.setPropertyValue ("javax.xml.validation.SchemaFactory:" +
-                                       XMLConstants.RELAXNG_NS_URI,
+    SystemProperties.setPropertyValue ("javax.xml.validation.SchemaFactory:" + XMLConstants.RELAXNG_NS_URI,
                                        com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory.class.getName ());
   }
 
@@ -70,8 +69,7 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
     this (null, aResourceResolver);
   }
 
-  public RelaxNGCompactSchemaCache (@Nullable final ErrorHandler aErrorHandler,
-                                    @Nullable final LSResourceResolver aResourceResolver)
+  public RelaxNGCompactSchemaCache (@Nullable final ErrorHandler aErrorHandler, @Nullable final LSResourceResolver aResourceResolver)
   {
     super ("RelaxNGCompact", SchemaFactory.newInstance (XMLConstants.RELAXNG_NS_URI), aErrorHandler, aResourceResolver);
   }

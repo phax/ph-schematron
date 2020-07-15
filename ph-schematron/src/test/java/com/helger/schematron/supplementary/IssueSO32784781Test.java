@@ -54,8 +54,7 @@ public final class IssueSO32784781Test
                         "    </diagnostic>\r\n" +
                         "  </diagnostics>\r\n" +
                         "</schema>";
-    final ISchematronResource isr = new SchematronResourceSCH (new ReadableResourceString (sSCH,
-                                                                                           StandardCharsets.UTF_8));
+    final ISchematronResource isr = new SchematronResourceSCH (new ReadableResourceString (sSCH, StandardCharsets.UTF_8));
     assertTrue (isr.isValidSchematron ());
   }
 }

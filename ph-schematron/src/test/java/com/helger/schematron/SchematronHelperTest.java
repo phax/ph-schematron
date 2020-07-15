@@ -65,8 +65,7 @@ public final class SchematronHelperTest
   public void testReadValidSchematronInvalidXML ()
   {
     final SchematronOutputType aSO = SchematronHelper.applySchematron (SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON),
-                                                                       new ClassPathResource (VALID_XMLINSTANCE +
-                                                                                              ".does.not.exist"));
+                                                                       new ClassPathResource (VALID_XMLINSTANCE + ".does.not.exist"));
     assertNull ("Invalid XML", aSO);
   }
 
@@ -84,8 +83,7 @@ public final class SchematronHelperTest
   {
     final SchematronOutputType aSO = SchematronHelper.applySchematron (SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON +
                                                                                                             ".does.not.exist"),
-                                                                       new ClassPathResource (VALID_XMLINSTANCE +
-                                                                                              ".does.not.exist"));
+                                                                       new ClassPathResource (VALID_XMLINSTANCE + ".does.not.exist"));
     assertNull ("Invalid Schematron and XML", aSO);
   }
 
@@ -106,8 +104,7 @@ public final class SchematronHelperTest
     try
     {
       // null-XML not allowed
-      SchematronHelper.applySchematron (SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON),
-                                        (IReadableResource) null);
+      SchematronHelper.applySchematron (SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON), (IReadableResource) null);
       fail ();
     }
     catch (final NullPointerException ex)

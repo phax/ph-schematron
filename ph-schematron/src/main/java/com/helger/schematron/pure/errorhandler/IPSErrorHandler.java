@@ -43,10 +43,7 @@ public interface IPSErrorHandler
 
   default void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMessage)
   {
-    handleError (SingleError.builderError ()
-                            .setErrorFieldName (getErrorFieldName (aSourceElement))
-                            .setErrorText (sMessage)
-                            .build ());
+    handleError (SingleError.builderError ().setErrorFieldName (getErrorFieldName (aSourceElement)).setErrorText (sMessage).build ());
   }
 
   @Nullable

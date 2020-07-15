@@ -69,11 +69,7 @@ public final class SchematronResourceSCHCacheTest
         LOGGER.info (XMLWriter.getNodeAsString (aDoc));
     }
     final long nEnd = System.nanoTime ();
-    LOGGER.info ("Sync Total: " +
-                 ((nEnd - nStart) / 1000) +
-                 " microsecs btw. " +
-                 ((nEnd - nStart) / 1000 / RUNS) +
-                 " microsecs/run");
+    LOGGER.info ("Sync Total: " + ((nEnd - nStart) / 1000) + " microsecs btw. " + ((nEnd - nStart) / 1000 / RUNS) + " microsecs/run");
   }
 
   @Test
@@ -83,9 +79,7 @@ public final class SchematronResourceSCHCacheTest
     SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
 
     // Create Thread pool with fixed number of threads
-    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ()
-                                                                                   .availableProcessors () *
-                                                                            2);
+    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ().availableProcessors () * 2);
 
     final long nStart = System.nanoTime ();
     for (int i = 0; i < RUNS; ++i)
@@ -105,11 +99,7 @@ public final class SchematronResourceSCHCacheTest
     }
     ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
     final long nEnd = System.nanoTime ();
-    LOGGER.info ("Async Total: " +
-                 ((nEnd - nStart) / 1000) +
-                 " microsecs btw. " +
-                 ((nEnd - nStart) / 1000 / RUNS) +
-                 " microsecs/run");
+    LOGGER.info ("Async Total: " + ((nEnd - nStart) / 1000) + " microsecs btw. " + ((nEnd - nStart) / 1000 / RUNS) + " microsecs/run");
   }
 
   @Test

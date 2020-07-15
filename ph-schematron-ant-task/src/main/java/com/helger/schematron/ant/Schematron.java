@@ -317,9 +317,7 @@ public class Schematron extends AbstractSchematronTask
   {
     m_bExpectSuccess = bExpectSuccess;
 
-    _debug ("Expecting that XML files " +
-            (bExpectSuccess ? "conform" : "do not conform") +
-            " to the provided Schematron file");
+    _debug ("Expecting that XML files " + (bExpectSuccess ? "conform" : "do not conform") + " to the provided Schematron file");
   }
 
   @Nonnull
@@ -535,13 +533,8 @@ public class Schematron extends AbstractSchematronTask
                        "' was validated against Schematron '" +
                        aSch.getResource ().getPath () +
                        "' and matches the rules" +
-                       (nWarningMessages > 0 ? " (" +
-                                               sWarnings +
-                                               (nWarningMessages == 1 ? " is" : " are") +
-                                               " contained)"
-                                             : "") +
-                       (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
-                                          : ""));
+                       (nWarningMessages > 0 ? " (" + sWarnings + (nWarningMessages == 1 ? " is" : " are") + " contained)" : "") +
+                       (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)" : ""));
               }
               else
               {
@@ -576,13 +569,8 @@ public class Schematron extends AbstractSchematronTask
                 _error ("No Schematron errors for erroneous XML file '" +
                         aXMLFile.getPath () +
                         "'" +
-                        (nWarningMessages > 0 ? " (" +
-                                                sWarnings +
-                                                (nWarningMessages == 1 ? " is" : " are") +
-                                                " contained)"
-                                              : "") +
-                        (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
-                                           : ""));
+                        (nWarningMessages > 0 ? " (" + sWarnings + (nWarningMessages == 1 ? " is" : " are") + " contained)" : "") +
+                        (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)" : ""));
               }
             }
 

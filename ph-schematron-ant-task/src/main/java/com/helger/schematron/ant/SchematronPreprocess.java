@@ -117,8 +117,7 @@ public class SchematronPreprocess extends AbstractSchematronTask
   public void setKeepEmptyPatterns (final boolean bKeepEmptyPatterns)
   {
     m_bKeepEmptyPatterns = bKeepEmptyPatterns;
-    _debug (bKeepEmptyPatterns ? "Keeping <pattern>-elements without rules."
-                               : "Deleting <pattern>-elements without rules.");
+    _debug (bKeepEmptyPatterns ? "Keeping <pattern>-elements without rules." : "Deleting <pattern>-elements without rules.");
   }
 
   @Override

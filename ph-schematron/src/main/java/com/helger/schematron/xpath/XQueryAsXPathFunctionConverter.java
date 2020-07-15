@@ -123,8 +123,7 @@ public class XQueryAsXPathFunctionConverter
    *         if a failure occurs reading the supplied input.
    */
   @Nonnull
-  public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException,
-                                                                                                    IOException
+  public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException, IOException
   {
     ValueEnforcer.notNull (aXQueryIS, "XQueryIS");
 
@@ -163,9 +162,7 @@ public class XQueryAsXPathFunctionConverter
                 aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
                                                      aUserFunc.getFunctionName ().getLocalPart (),
                                                      aUserFunc.getArity (),
-                                                     new XPathFunctionFromUserFunction (aConfiguration,
-                                                                                        aXQController,
-                                                                                        aUserFunc));
+                                                     new XPathFunctionFromUserFunction (aConfiguration, aXQController, aUserFunc));
               }
           }
         }

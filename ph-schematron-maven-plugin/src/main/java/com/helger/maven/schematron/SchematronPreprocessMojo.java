@@ -223,10 +223,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       // Pre-process
       final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
       if (aPreprocessedSchema == null)
-        throw new SchematronPreprocessException ("Failed to preprocess schema " +
-                                                 aSchema +
-                                                 " with query binding " +
-                                                 aQueryBinding);
+        throw new SchematronPreprocessException ("Failed to preprocess schema " + aSchema + " with query binding " + aQueryBinding);
 
       // Convert to XML string
       final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
@@ -238,8 +235,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       for (final PSNS aItem : aSchema.getAllNSs ())
         aNSCtx.setMapping (aItem.getPrefix (), aItem.getUri ());
 
-      final IXMLWriterSettings XWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
-                                                             .setNamespaceContext (aNSCtx);
+      final IXMLWriterSettings XWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN).setNamespaceContext (aNSCtx);
       final IMicroDocument aDoc = new MicroDocument ();
       aDoc.appendChild (aPreprocessedSchema.getAsMicroElement ());
       if (MicroWriter.writeToFile (aDoc, m_aTargetFile, XWS).isSuccess ())

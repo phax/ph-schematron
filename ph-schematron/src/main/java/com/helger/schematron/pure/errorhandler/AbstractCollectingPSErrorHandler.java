@@ -38,8 +38,7 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
 {
   private final ErrorList m_aErrorList;
 
-  public AbstractCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList,
-                                           @Nullable final IPSErrorHandler aNestedErrorHandler)
+  public AbstractCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList, @Nullable final IPSErrorHandler aNestedErrorHandler)
   {
     super (aNestedErrorHandler);
     m_aErrorList = ValueEnforcer.notNull (aErrorList, "ErrorList");

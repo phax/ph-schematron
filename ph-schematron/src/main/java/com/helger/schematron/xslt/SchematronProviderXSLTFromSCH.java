@@ -161,8 +161,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       {
         final String sXML = XMLWriter.getNodeAsString (aResult2.getNode ());
         final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                                                                      ".min-xslt.sch");
+                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".min-xslt.sch");
         if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
           LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
         else
@@ -186,8 +185,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       {
         final String sXML = XMLWriter.getNodeAsString (m_aSchematronXSLTDoc);
         final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                                                                    ".xslt");
+                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt");
         if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
           LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
         else
@@ -197,8 +195,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       // compile result of step 3
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       aTransformerCustomizer.customize (aTF);
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
-                                                                       TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Throwable t)
     {

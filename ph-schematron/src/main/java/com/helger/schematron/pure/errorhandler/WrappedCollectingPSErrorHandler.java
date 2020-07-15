@@ -35,8 +35,7 @@ public class WrappedCollectingPSErrorHandler extends AbstractCollectingPSErrorHa
     super (aErrorList, null);
   }
 
-  public WrappedCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList,
-                                          @Nullable final IPSErrorHandler aNestedErrorHandler)
+  public WrappedCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList, @Nullable final IPSErrorHandler aNestedErrorHandler)
   {
     super (aErrorList, aNestedErrorHandler);
   }

@@ -43,10 +43,8 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
                                                                               .addItem (EField.ERROR_FIELD_NAME, "[$]")
                                                                               .addItem (EField.ERROR_LOCATION, "@ $")
                                                                               .addItem (EField.ERROR_TEXT, "$")
-                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_CLASS,
-                                                                                        "($:")
-                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_MESSAGE,
-                                                                                        "$)")
+                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_CLASS, "($:")
+                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_MESSAGE, "$)")
                                                                               .setFieldSeparator (" ");
 
   private static final Logger LOGGER = LoggerFactory.getLogger (LoggingPSErrorHandler.class);
@@ -80,9 +78,6 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
   @Override
   protected void handleInternally (@Nonnull final IError aError)
   {
-    LogHelper.log (LOGGER,
-                   aError.getErrorLevel (),
-                   m_aETP.getErrorText (aError, Locale.US),
-                   aError.getLinkedException ());
+    LogHelper.log (LOGGER, aError.getErrorLevel (), m_aETP.getErrorText (aError, Locale.US), aError.getLinkedException ());
   }
 }

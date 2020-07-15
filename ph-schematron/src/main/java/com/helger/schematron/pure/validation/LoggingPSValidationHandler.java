@@ -142,8 +142,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     _log ("onPattern (" + aPattern + ")");
   }
 
-  public void onRuleStart (@Nonnull final PSRule aRule,
-                           @Nonnull final NodeList aContextList) throws SchematronValidationException
+  public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
   }
@@ -198,8 +197,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     return EContinue.CONTINUE;
   }
 
-  public void onEnd (@Nonnull final PSSchema aSchema,
-                     @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     _log ("onEnd (" + aSchema + ", " + aActivePhase + ")");
   }

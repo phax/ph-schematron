@@ -228,9 +228,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     if (m_aSchematronDirectory == null)
       throw new MojoExecutionException ("No Schematron directory specified!");
     if (m_aSchematronDirectory.exists () && !m_aSchematronDirectory.isDirectory ())
-      throw new MojoExecutionException ("The specified Schematron directory " +
-                                        m_aSchematronDirectory +
-                                        " is not a directory!");
+      throw new MojoExecutionException ("The specified Schematron directory " + m_aSchematronDirectory + " is not a directory!");
     if (StringHelper.hasNoText (m_sSchematronPattern))
       throw new MojoExecutionException ("No Schematron pattern specified!");
     if (m_aXsltDirectory == null)
@@ -257,14 +255,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
         final File aFile = new File (m_aSchematronDirectory, sFilename);
 
         // 1. build XSLT file name (outputdir + localpath with new extension)
-        final File aXSLTFile = new File (m_aXsltDirectory,
-                                         FilenameHelper.getWithoutExtension (sFilename) + m_sXsltExtension);
+        final File aXSLTFile = new File (m_aXsltDirectory, FilenameHelper.getWithoutExtension (sFilename) + m_sXsltExtension);
 
-        getLog ().info ("Converting Schematron file '" +
-                        aFile.getPath () +
-                        "' to XSLT file '" +
-                        aXSLTFile.getPath () +
-                        "'");
+        getLog ().info ("Converting Schematron file '" + aFile.getPath () + "' to XSLT file '" + aXSLTFile.getPath () + "'");
 
         // 2. The Schematron resource
         final IReadableResource aSchematronResource = new FileSystemResource (aFile);
@@ -314,24 +307,20 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             if (aXsltProvider != null)
             {
               // Write the resulting XSLT file to disk
-              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl",
-                                                                                                      CSVRL.SVRL_NAMESPACE_URI);
+              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
               // Add all namespaces from XSLT document root
               final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
-              XMLHelper.forAllAttributes (aXsltProvider.getXSLTDocument ().getDocumentElement (),
-                                          (sAttrName, sAttrValue) -> {
-                                            if (sAttrName.startsWith (sNSPrefix))
-                                              aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()),
-                                                                     sAttrValue);
-                                          });
+              XMLHelper.forAllAttributes (aXsltProvider.getXSLTDocument ().getDocumentElement (), (sAttrName, sAttrValue) -> {
+                if (sAttrName.startsWith (sNSPrefix))
+                  aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
+              });
 
               final XMLWriterSettings aXWS = new XMLWriterSettings ();
               aXWS.setNamespaceContext (aNSContext).setPutNamespaceContextPrefixesInRoot (true);
 
               final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
               if (aOS == null)
-                throw new IllegalStateException ("Failed to open output stream for file " +
-                                                 aXSLTFile.getAbsolutePath ());
+                throw new IllegalStateException ("Failed to open output stream for file " + aXSLTFile.getAbsolutePath ());
               XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), aOS, aXWS);
 
               getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
@@ -351,11 +340,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
           }
           catch (final Exception ex)
           {
-            final String sMessage = "Failed to convert '" +
-                                    aFile.getPath () +
-                                    "' to XSLT file '" +
-                                    aXSLTFile.getPath () +
-                                    "'";
+            final String sMessage = "Failed to convert '" + aFile.getPath () + "' to XSLT file '" + aXSLTFile.getPath () + "'";
             getLog ().error (sMessage, ex);
             throw new MojoExecutionException (sMessage, ex);
           }

@@ -360,8 +360,7 @@ public class PSAssertReport implements
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON,
-                                                m_bIsAssert ? CSchematronXML.ELEMENT_ASSERT
-                                                            : CSchematronXML.ELEMENT_REPORT);
+                                                m_bIsAssert ? CSchematronXML.ELEMENT_ASSERT : CSchematronXML.ELEMENT_REPORT);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);

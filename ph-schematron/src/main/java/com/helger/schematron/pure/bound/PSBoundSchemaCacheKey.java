@@ -246,13 +246,9 @@ public class PSBoundSchemaCacheKey
     final PSPreprocessor aPreprocessor = createPreprocessor (aQueryBinding);
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     if (aPreprocessedSchema == null)
-      throw new SchematronPreprocessException ("Failed to preprocess schema " +
-                                               aSchema +
-                                               " with query binding " +
-                                               aQueryBinding);
+      throw new SchematronPreprocessException ("Failed to preprocess schema " + aSchema + " with query binding " + aQueryBinding);
     if (SchematronDebug.isShowPreprocessedSchematron ())
-      LOGGER.info ("Preprocessed Schematron:\n" +
-                   MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
+      LOGGER.info ("Preprocessed Schematron:\n" + MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }
 
@@ -287,11 +283,7 @@ public class PSBoundSchemaCacheKey
     final PSSchema aPreprocessedSchema = createPreprocessedSchema (aSchema, aQueryBinding);
 
     // And finally bind the pre-processed schema
-    return aQueryBinding.bind (aPreprocessedSchema,
-                               m_sPhase,
-                               m_aErrorHandler,
-                               m_aCustomValidationHandler,
-                               m_aXPathConfig);
+    return aQueryBinding.bind (aPreprocessedSchema, m_sPhase, m_aErrorHandler, m_aCustomValidationHandler, m_aXPathConfig);
   }
 
   @Override
@@ -312,10 +304,7 @@ public class PSBoundSchemaCacheKey
   {
     int ret = m_nHashCode;
     if (ret == IHashCodeGenerator.ILLEGAL_HASHCODE)
-      ret = m_nHashCode = new HashCodeGenerator (this).append (m_aResource)
-                                                      .append (m_sPhase)
-                                                      .append (m_aXPathConfig)
-                                                      .getHashCode ();
+      ret = m_nHashCode = new HashCodeGenerator (this).append (m_aResource).append (m_sPhase).append (m_aXPathConfig).getHashCode ();
     return ret;
   }
 

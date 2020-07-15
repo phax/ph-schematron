@@ -40,10 +40,6 @@ import org.slf4j.spi.LoggerFactoryBinder;
  *   }
  * }
  * 
- * 
- * 
- * 
- * 
  * </pre>
  * <p>
  * All SLF4J calls will be forwarded to Maven Log.

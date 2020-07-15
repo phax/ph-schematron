@@ -146,13 +146,7 @@ import com.helger.xml.microdom.MicroElement;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSPattern implements
-                       IPSElement,
-                       IPSHasID,
-                       IPSHasForeignElements,
-                       IPSHasIncludes,
-                       IPSHasLets,
-                       IPSHasRichGroup
+public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup
 {
   private boolean m_bAbstract = false;
   private String m_sID;
@@ -500,9 +494,7 @@ public class PSPattern implements
   public ICommonsList <IPSElement> getAllContentElements ()
   {
     // Remove includes and title
-    return m_aContent.getAllMapped (x -> x instanceof IPSElement &&
-                                         !(x instanceof PSInclude) &&
-                                         !(x instanceof PSTitle),
+    return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude) && !(x instanceof PSTitle),
                                     x -> (IPSElement) x);
   }
 

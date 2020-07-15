@@ -56,9 +56,7 @@ public class SchematronReadException extends SchematronException
    * @param t
    *        Nested exception
    */
-  public SchematronReadException (@Nonnull final IReadableResource aRes,
-                                  @Nonnull final String sMsg,
-                                  @Nullable final Throwable t)
+  public SchematronReadException (@Nonnull final IReadableResource aRes, @Nonnull final String sMsg, @Nullable final Throwable t)
   {
     super (aRes.getPath () + ": " + sMsg, t);
     m_aRes = aRes;

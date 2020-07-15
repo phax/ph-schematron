@@ -111,8 +111,6 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("role", m_sRole)
-                                       .appendIfNotNull ("subject", m_sSubject)
-                                       .getToString ();
+    return new ToStringGenerator (this).appendIfNotNull ("role", m_sRole).appendIfNotNull ("subject", m_sSubject).getToString ();
   }
 }

@@ -154,8 +154,7 @@ public final class SchematronHelper
    *         if the processing throws an unexpected exception.
    */
   @Nullable
-  public static SchematronOutputType applySchematron (@Nonnull final ISchematronResource aSchematron,
-                                                      @Nonnull final IReadableResource aXML)
+  public static SchematronOutputType applySchematron (@Nonnull final ISchematronResource aSchematron, @Nonnull final IReadableResource aXML)
   {
     ValueEnforcer.notNull (aSchematron, "SchematronResource");
     ValueEnforcer.notNull (aXML, "XMLSource");
@@ -188,8 +187,7 @@ public final class SchematronHelper
    *         if the processing throws an unexpected exception.
    */
   @Nullable
-  public static SchematronOutputType applySchematron (@Nonnull final ISchematronResource aSchematron,
-                                                      @Nonnull final Source aXML)
+  public static SchematronOutputType applySchematron (@Nonnull final ISchematronResource aSchematron, @Nonnull final Source aXML)
   {
     ValueEnforcer.notNull (aSchematron, "SchematronResource");
     ValueEnforcer.notNull (aXML, "XMLSource");
@@ -201,11 +199,7 @@ public final class SchematronHelper
     }
     catch (final Exception ex)
     {
-      throw new IllegalArgumentException ("Failed to apply Schematron " +
-                                          aSchematron.getID () +
-                                          " onto XML source " +
-                                          aXML,
-                                          ex);
+      throw new IllegalArgumentException ("Failed to apply Schematron " + aSchematron.getID () + " onto XML source " + aXML, ex);
     }
   }
 
@@ -222,8 +216,7 @@ public final class SchematronHelper
    *         if the processing throws an unexpected exception.
    */
   @Nullable
-  public static SchematronOutputType applySchematron (@Nonnull final ISchematronResource aSchematron,
-                                                      @Nonnull final Node aNode)
+  public static SchematronOutputType applySchematron (@Nonnull final ISchematronResource aSchematron, @Nonnull final Node aNode)
   {
     ValueEnforcer.notNull (aSchematron, "SchematronResource");
     ValueEnforcer.notNull (aNode, "Node");
@@ -243,8 +236,7 @@ public final class SchematronHelper
    *         objects.
    */
   @Nonnull
-  public static IErrorList convertToErrorList (@Nonnull final SchematronOutputType aSchematronOutput,
-                                               @Nullable final String sResourceName)
+  public static IErrorList convertToErrorList (@Nonnull final SchematronOutputType aSchematronOutput, @Nullable final String sResourceName)
   {
     ValueEnforcer.notNull (aSchematronOutput, "SchematronOutput");
 
@@ -267,8 +259,7 @@ public final class SchematronHelper
       final DefaultSchematronIncludeResolver aIncludeResolver = new DefaultSchematronIncludeResolver (aResource);
 
       for (final IMicroElement aElement : eRoot.getAllChildElementsRecursive ())
-        if (isValidSchematronNS (aElement.getNamespaceURI (), bLenient) &&
-            aElement.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
+        if (isValidSchematronNS (aElement.getNamespaceURI (), bLenient) && aElement.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
         {
           String sHref = aElement.getAttributeValue (CSchematronXML.ATTR_HREF);
           try
@@ -374,9 +365,7 @@ public final class SchematronHelper
                                                                      "' but was expected to have: " +
                                                                      StringHelper.getImplodedMapped (", ",
                                                                                                      getAllValidSchematronNS (bLenient),
-                                                                                                     x -> "'" +
-                                                                                                          x +
-                                                                                                          "'"))
+                                                                                                     x -> "'" + x + "'"))
                                                       .build ());
                 return ESuccess.FAILURE;
               }
@@ -395,11 +384,7 @@ public final class SchematronHelper
             }
 
             // Recursive resolve includes
-            if (_recursiveResolveAllSchematronIncludes (aIncludedContent,
-                                                        aIncludeRes,
-                                                        aSettings,
-                                                        aErrorHandler,
-                                                        bLenient).isFailure ())
+            if (_recursiveResolveAllSchematronIncludes (aIncludedContent, aIncludeRes, aSettings, aErrorHandler, bLenient).isFailure ())
               return ESuccess.FAILURE;
 
             // Now replace "include" element with content in MicroDOM
@@ -448,13 +433,9 @@ public final class SchematronHelper
    * @since 5.4.1
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
-                                                                  final boolean bLenient)
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource, final boolean bLenient)
   {
-    return getWithResolvedSchematronIncludes (aResource,
-                                              (ISAXReaderSettings) null,
-                                              new LoggingPSErrorHandler (),
-                                              bLenient);
+    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler (), bLenient);
   }
 
   /**
@@ -475,10 +456,7 @@ public final class SchematronHelper
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @Nonnull final IPSErrorHandler aErrorHandler)
   {
-    return getWithResolvedSchematronIncludes (aResource,
-                                              aSettings,
-                                              aErrorHandler,
-                                              CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
+    return getWithResolvedSchematronIncludes (aResource, aSettings, aErrorHandler, CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
 
   /**
@@ -508,11 +486,7 @@ public final class SchematronHelper
     if (aDoc != null)
     {
       // Resolve all Schematron includes
-      if (_recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (),
-                                                  aResource,
-                                                  aSettings,
-                                                  aErrorHandler,
-                                                  bLenient).isFailure ())
+      if (_recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (), aResource, aSettings, aErrorHandler, bLenient).isFailure ())
       {
         // Error resolving includes
         return null;

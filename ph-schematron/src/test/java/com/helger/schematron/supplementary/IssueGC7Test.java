@@ -34,8 +34,7 @@ public final class IssueGC7Test
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/gc7/schematron.sch"),
-                            new File ("src/test/resources/issues/gc7/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/issues/gc7/schematron.sch"), new File ("src/test/resources/issues/gc7/test.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception

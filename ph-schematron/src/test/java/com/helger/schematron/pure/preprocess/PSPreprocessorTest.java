@@ -82,8 +82,7 @@ public final class PSPreprocessorTest
       if (false)
       {
         final String sXML = MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ());
-        SimpleFileIO.writeFile (new File ("test-minified",
-                                          FilenameHelper.getWithoutPath (aRes.getPath ()) + ".min-pure.sch"),
+        SimpleFileIO.writeFile (new File ("test-minified", FilenameHelper.getWithoutPath (aRes.getPath ()) + ".min-pure.sch"),
                                 sXML,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
       }

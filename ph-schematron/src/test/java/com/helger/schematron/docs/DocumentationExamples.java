@@ -47,8 +47,7 @@ import com.helger.xml.serialize.read.DOMReader;
  */
 public final class DocumentationExamples
 {
-  public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile,
-                                                      @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
     if (!aResSCH.isValidSchematron ())
@@ -65,8 +64,7 @@ public final class DocumentationExamples
     return aResSCH.applySchematronValidationToSVRL (new StreamSource (aXMLFile));
   }
 
-  public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile,
-                                                      @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResPure = SchematronResourcePure.fromFile (aSchematronFile);
     if (!aResPure.isValidSchematron ())
@@ -74,8 +72,7 @@ public final class DocumentationExamples
     return aResPure.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
   }
 
-  public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile,
-                                                       @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
   {
     // Read the schematron from file
     final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();

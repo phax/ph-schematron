@@ -41,8 +41,7 @@ public final class Schematron2XSLTMojoTest
     assertTrue (aPOM.exists ());
 
     // Use "Configured" to get default values injected
-    final Schematron2XSLTMojo aMojo = (Schematron2XSLTMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
-                                                                                          "convert");
+    final Schematron2XSLTMojo aMojo = (Schematron2XSLTMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (), "convert");
     assertNotNull (aMojo);
     // Making the files is essential, otherwise the paths are interpreted
     // relative to the test POM!

@@ -342,9 +342,7 @@ public final class MyBuildFileRule extends ExternalResource
         return;
       }
 
-      if (event.getPriority () == Project.MSG_INFO ||
-          event.getPriority () == Project.MSG_WARN ||
-          event.getPriority () == Project.MSG_ERR)
+      if (event.getPriority () == Project.MSG_INFO || event.getPriority () == Project.MSG_WARN || event.getPriority () == Project.MSG_ERR)
       {
         logBuffer.append (event.getMessage ()).append ('\n');
       }

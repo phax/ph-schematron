@@ -131,9 +131,7 @@ public class XPathConfigBuilder
     {
       if (SystemProperties.setPropertyValue ("javax.xml.xpath.XPathFactory", m_sGlobalXPathFactory).isChanged ())
       {
-        LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" +
-                     m_sGlobalXPathFactory +
-                     "'");
+        LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" + m_sGlobalXPathFactory + "'");
       }
     }
 
@@ -142,8 +140,7 @@ public class XPathConfigBuilder
     {
       try
       {
-        aXPathFactory = m_aXPathFactoryClass.getConstructor (EMPTY_CLASS_ARRAY)
-                                            .newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
+        aXPathFactory = m_aXPathFactoryClass.getConstructor (EMPTY_CLASS_ARRAY).newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
       }
       catch (final InvocationTargetException e)
       {

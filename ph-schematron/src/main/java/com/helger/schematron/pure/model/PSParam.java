@@ -109,8 +109,6 @@ public class PSParam implements IPSElement
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("name", m_sName)
-                                       .appendIfNotNull ("value", m_sValue)
-                                       .getToString ();
+    return new ToStringGenerator (this).appendIfNotNull ("name", m_sName).appendIfNotNull ("value", m_sValue).getToString ();
   }
 }

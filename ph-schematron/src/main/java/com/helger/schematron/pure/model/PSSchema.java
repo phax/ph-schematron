@@ -57,13 +57,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSSchema implements
-                      IPSElement,
-                      IPSHasID,
-                      IPSHasForeignElements,
-                      IPSHasIncludes,
-                      IPSHasLets,
-                      IPSHasRichGroup
+public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup
 {
   private final IReadableResource m_aResource;
   private String m_sID;

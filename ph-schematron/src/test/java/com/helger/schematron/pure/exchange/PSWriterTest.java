@@ -84,8 +84,7 @@ public final class PSWriterTest
 
     // Create the PSWriter settings
     final PSWriterSettings aPSWS = new PSWriterSettings ();
-    aPSWS.setXMLWriterSettings (new XMLWriterSettings ().setNamespaceContext (aNSCtx)
-                                                        .setPutNamespaceContextPrefixesInRoot (true));
+    aPSWS.setXMLWriterSettings (new XMLWriterSettings ().setNamespaceContext (aNSCtx).setPutNamespaceContextPrefixesInRoot (true));
 
     // Write the Schematron
     new PSWriter (aPSWS).writeToFile (aSchema, new File ("target/test-with-nsprefix.xml"));

@@ -100,23 +100,19 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       throw new IllegalStateException ("No schema is present!");
 
     getErrorHandler ().handleError (SingleError.builderWarn ()
-                                               .setErrorLocation (new SimpleLocation (m_aSchema.getResource ()
-                                                                                               .getPath ()))
+                                               .setErrorLocation (new SimpleLocation (m_aSchema.getResource ().getPath ()))
                                                .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
                                                .setErrorText (sMsg)
                                                .build ());
   }
 
-  private void _error (@Nonnull final IPSElement aSourceElement,
-                       @Nonnull final String sMsg,
-                       @Nullable final Throwable t)
+  private void _error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg, @Nullable final Throwable t)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
 
     getErrorHandler ().handleError (SingleError.builderError ()
-                                               .setErrorLocation (new SimpleLocation (m_aSchema.getResource ()
-                                                                                               .getPath ()))
+                                               .setErrorLocation (new SimpleLocation (m_aSchema.getResource ().getPath ()))
                                                .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
                                                .setErrorText (sMsg)
                                                .setLinkedException (t)
@@ -155,9 +151,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aSchematronOutput.setTitle (_getTitleAsString (aSchema.getTitle ()));
 
     // Add namespace prefixes
-    for (final Map.Entry <String, String> aEntry : aSchema.getAsNamespaceContext ()
-                                                          .getPrefixToNamespaceURIMap ()
-                                                          .entrySet ())
+    for (final Map.Entry <String, String> aEntry : aSchema.getAsNamespaceContext ().getPrefixToNamespaceURIMap ().entrySet ())
     {
       final NsPrefixInAttributeValues aNsPrefix = new NsPrefixInAttributeValues ();
       aNsPrefix.setPrefix (aEntry.getKey ());
@@ -226,9 +220,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // XPath present
             try
             {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                  aSourceNode,
-                                                                  m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aSourceNode, m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -251,15 +243,11 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             final PSValueOf aValueOf = (PSValueOf) aContent;
             try
             {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                  aSourceNode,
-                                                                  m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aSourceNode, m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
-              _error (aValueOf,
-                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
-                      ex);
+              _error (aValueOf, "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'", ex);
               // Append the path so that something is present in the output
               aSB.append (aValueOf.getSelect ());
             }

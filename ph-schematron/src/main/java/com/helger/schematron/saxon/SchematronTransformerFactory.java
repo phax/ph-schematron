@@ -98,8 +98,7 @@ public final class SchematronTransformerFactory
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calling createTransformerFactorySaxonFirst");
 
-    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
-                                                                   : ClassLoaderHelper.getContextClassLoader ();
+    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader : ClassLoaderHelper.getContextClassLoader ();
 
     TransformerFactory aFactory;
     try

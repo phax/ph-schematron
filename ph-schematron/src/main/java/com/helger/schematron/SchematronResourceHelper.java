@@ -71,8 +71,7 @@ public final class SchematronResourceHelper
    *         in case an unsupported {@link Source} implementation is provided.
    */
   @Nullable
-  public static Node getNodeOfSource (@Nonnull final Source aSource,
-                                      @Nonnull final DOMReaderSettings aDRS) throws SAXException
+  public static Node getNodeOfSource (@Nonnull final Source aSource, @Nonnull final DOMReaderSettings aDRS) throws SAXException
   {
     ValueEnforcer.notNull (aSource, "Source");
     ValueEnforcer.notNull (aDRS, "DOMReaderSettings");
@@ -118,11 +117,7 @@ public final class SchematronResourceHelper
           final URLResource aURL = new URLResource (sSystemID);
           final Document aDoc = DOMReader.readXMLDOM (aURL, aDRS);
           if (aDoc == null)
-            throw new IllegalArgumentException ("Failed to read source " +
-                                                aSource +
-                                                " as XML from SystemID '" +
-                                                sSystemID +
-                                                "'");
+            throw new IllegalArgumentException ("Failed to read source " + aSource + " as XML from SystemID '" + sSystemID + "'");
           return aDoc;
         }
         catch (final MalformedURLException ex)

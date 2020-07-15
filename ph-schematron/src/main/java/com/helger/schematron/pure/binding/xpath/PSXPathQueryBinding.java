@@ -104,8 +104,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   }
 
   @Nullable
-  public String getWithParamTextsReplaced (@Nullable final String sText,
-                                           @Nullable final Map <String, String> aStringReplacements)
+  public String getWithParamTextsReplaced (@Nullable final String sText, @Nullable final Map <String, String> aStringReplacements)
   {
     return getWithParamTextsReplacedStatic (sText, aStringReplacements);
   }
@@ -119,8 +118,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
-    final IPSErrorHandler aErrorHandler = aCustomErrorListener != null ? aCustomErrorListener
-                                                                       : new CollectingPSErrorHandler ();
+    final IPSErrorHandler aErrorHandler = aCustomErrorListener != null ? aCustomErrorListener : new CollectingPSErrorHandler ();
     if (!aSchema.isValid (aErrorHandler))
       throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
                                          (aErrorHandler == aCustomErrorListener ? ". Errors are in the provided error handler."

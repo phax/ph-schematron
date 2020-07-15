@@ -38,9 +38,7 @@ public class PluginErrorListener extends AbstractTransformErrorListener
     m_aSourceFile = aSource;
   }
 
-  public static void logIError (@Nonnull final BuildContext aBuildContext,
-                                @Nonnull final File aSourceFile,
-                                @Nonnull final IError aResError)
+  public static void logIError (@Nonnull final BuildContext aBuildContext, @Nonnull final File aSourceFile, @Nonnull final IError aResError)
   {
     final int nLine = aResError.getErrorLocation ().getLineNumber ();
     final int nColumn = aResError.getErrorLocation ().getColumnNumber ();

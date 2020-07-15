@@ -82,8 +82,7 @@ public interface IPSValidationHandler extends Serializable
    * @throws SchematronValidationException
    *         In case of errors
    */
-  default void onRuleStart (@Nonnull final PSRule aRule,
-                            @Nonnull final NodeList aContextList) throws SchematronValidationException
+  default void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
   {}
 
   /**
@@ -188,8 +187,7 @@ public interface IPSValidationHandler extends Serializable
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onEnd (@Nonnull final PSSchema aSchema,
-                      @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  default void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {}
 
   /**
@@ -247,8 +245,7 @@ public interface IPSValidationHandler extends Serializable
         rhs.onPattern (aPattern);
       }
 
-      public void onRuleStart (@Nonnull final PSRule aRule,
-                               @Nonnull final NodeList aContextList) throws SchematronValidationException
+      public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
       {
         lhs.onRuleStart (aRule, aContextList);
         rhs.onRuleStart (aRule, aContextList);
@@ -283,18 +280,13 @@ public interface IPSValidationHandler extends Serializable
                                            final int nNodeIndex,
                                            @Nullable final Object aContext) throws SchematronValidationException
       {
-        EContinue eCtd = lhs.onSuccessfulReport (aAssertReport,
-                                                 sTestExpression,
-                                                 aRuleMatchingNode,
-                                                 nNodeIndex,
-                                                 aContext);
+        EContinue eCtd = lhs.onSuccessfulReport (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
         if (eCtd.isContinue ())
           eCtd = rhs.onSuccessfulReport (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
         return eCtd;
       }
 
-      public void onEnd (@Nonnull final PSSchema aSchema,
-                         @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+      public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
       {
         lhs.onEnd (aSchema, aActivePhase);
         rhs.onEnd (aSchema, aActivePhase);

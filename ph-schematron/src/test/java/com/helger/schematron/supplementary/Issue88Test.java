@@ -40,8 +40,7 @@ public final class Issue88Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue88Test.class);
 
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
-                                               @Nonnull final File aXML) throws Exception
+  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
     final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);

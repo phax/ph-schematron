@@ -150,6 +150,5 @@ public interface IPSBoundSchema
    *         In case a validation exception occurs
    */
   @Nonnull
-  SchematronOutputType validateComplete (@Nonnull Node aNode,
-                                         @Nullable String sBaseURI) throws SchematronValidationException;
+  SchematronOutputType validateComplete (@Nonnull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
 }

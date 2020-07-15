@@ -102,31 +102,27 @@ public final class SchematronTestHelper
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidSVRLFiles ()
   {
-    return s_aSVRLs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"),
-                                  SchematronTestFile::getResource);
+    return s_aSVRLs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidSVRLFiles ()
   {
-    return s_aSVRLs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"),
-                                  SchematronTestFile::getResource);
+    return s_aSVRLs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidXMLFiles ()
   {
-    return s_aXMLs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"),
-                                 SchematronTestFile::getResource);
+    return s_aXMLs.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidXMLFiles ()
   {
-    return s_aXMLs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"),
-                                 SchematronTestFile::getResource);
+    return s_aXMLs.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
   }
 }

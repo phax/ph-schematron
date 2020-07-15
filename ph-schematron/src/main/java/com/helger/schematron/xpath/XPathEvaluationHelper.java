@@ -57,9 +57,7 @@ public final class XPathEvaluationHelper
       // Saxon specific handling
       // This is trick needed for #47 - "base-uri()"
       final XPathExpressionImpl aImpl = (XPathExpressionImpl) aXPath;
-      aRealItem = new DocumentWrapper (XMLHelper.getOwnerDocument (aItem),
-                                       sBaseURI,
-                                       aImpl.getConfiguration ()).wrap (aItem);
+      aRealItem = new DocumentWrapper (XMLHelper.getOwnerDocument (aItem), sBaseURI, aImpl.getConfiguration ()).wrap (aItem);
     }
 
     return GenericReflection.uncheckedCast (aXPath.evaluate (aRealItem, aReturnType));

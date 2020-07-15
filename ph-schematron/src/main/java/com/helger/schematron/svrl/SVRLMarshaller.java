@@ -40,9 +40,7 @@ public class SVRLMarshaller extends GenericJAXBMarshaller <SchematronOutputType>
 
   public SVRLMarshaller (final boolean bValidationEnabled)
   {
-    super (SchematronOutputType.class,
-           bValidationEnabled ? CSVRL.SVRL_XSDS : null,
-           x -> new ObjectFactory ().createSchematronOutput (x));
+    super (SchematronOutputType.class, bValidationEnabled ? CSVRL.SVRL_XSDS : null, x -> new ObjectFactory ().createSchematronOutput (x));
     setFormattedOutput (GlobalDebug.isDebugMode ());
   }
 }

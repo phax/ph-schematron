@@ -43,8 +43,7 @@ public final class Issue30Test
   {
     final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github30/ph-test.sch");
     aResPure.setEntityResolver (DefaultEntityResolver.createOnDemand (aResPure.getResource ()));
-    final IPSErrorHandler aErrorHandler = (aError) -> LOGGER.info (LoggingPSErrorHandler.DEFAULT_PS.getErrorText (aError,
-                                                                                                                  Locale.US));
+    final IPSErrorHandler aErrorHandler = (aError) -> LOGGER.info (LoggingPSErrorHandler.DEFAULT_PS.getErrorText (aError, Locale.US));
     aResPure.setErrorHandler (aErrorHandler);
 
     aResPure.validateCompletely ();

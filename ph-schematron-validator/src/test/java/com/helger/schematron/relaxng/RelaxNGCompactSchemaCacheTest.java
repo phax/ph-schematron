@@ -131,8 +131,7 @@ public final class RelaxNGCompactSchemaCacheTest
     try
     {
       // Get a validator from the schema.
-      final Validator aValidator = RelaxNGCompactSchemaCache.getInstance ()
-                                                            .getValidator (new ClassPathResource ("schemas/svrl-2006.rnc"));
+      final Validator aValidator = RelaxNGCompactSchemaCache.getInstance ().getValidator (new ClassPathResource ("schemas/svrl-2006.rnc"));
 
       aValidator.validate (TransformSourceFactory.create (new ClassPathResource ("test-svrl/test1.svrl")));
       // Success

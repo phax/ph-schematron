@@ -66,8 +66,7 @@ public final class SchematronResourceSCHCache
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
-    final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource,
-                                                                                               aTransformerCustomizer);
+    final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource, aTransformerCustomizer);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
       // Schematron is invalid -> parsing failed

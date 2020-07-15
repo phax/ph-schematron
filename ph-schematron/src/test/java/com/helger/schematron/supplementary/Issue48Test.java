@@ -51,8 +51,7 @@ public final class Issue48Test
     if (false)
       System.out.println (sSCH);
 
-    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH,
-                                                                                              StandardCharsets.UTF_8));
+    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH, StandardCharsets.UTF_8));
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
