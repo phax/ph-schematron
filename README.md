@@ -11,13 +11,13 @@ Continue reading the **full documentation** at http://phax.github.io/ph-schematr
 
 ## Usage with Maven
 
-The dependency for ph-schematron looks like this:
+The dependency for ph-schematron looks like this, replacing `x.y.z` with the latest version number:
 
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron</artifactId>
-  <version>5.6.0</version>
+  <version>x.y.z</version>
 </dependency>
 ```
 
@@ -31,15 +31,13 @@ Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schem
 
 The conversion of Schematron to XSLT is quite costly. That’s why this Maven plugin that does the conversion at build time. 
 
-By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element).
-
-Starting from version 5.0.9:
+By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element), replacing `x.y.z` with the latest version number.
 
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.6.0</version>
+  <version>x.y.z</version>
   <executions>
     <execution>
       <goals>
@@ -50,7 +48,7 @@ Starting from version 5.0.9:
 </plugin>
 ```
 
-Up to and including version 5.0.8:
+Up to and including version 5.0.8 the Maven artifact Id was different:
 
 ```xml
 <plugin>
@@ -95,13 +93,13 @@ Maven plugin to validate XML files against convert Schematron (SCH) at compile t
 
 This plugin was introduced in version 4.2.0.
 
-By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+By default the plugin is run in the Maven lifecycle phase *process-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element), replacing `x.y.z` with the latest version number:
 
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.6.0</version>
+  <version>x.y.z</version>
   <executions>
     <execution>
       <goals>
@@ -137,13 +135,13 @@ Maven plugin to preprocess a Schematron file and write the resulting file to dis
 
 This plugin was introduced in version 5.0.9.
 
-By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element):
+By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element), replacing `x.y.z` with the latest version number:
 
 ```xml
 <plugin>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
-  <version>5.6.0</version>
+  <version>x.y.z</version>
   <executions>
     <execution>
       <goals>
@@ -169,13 +167,14 @@ This submodule is a Java library.
 It is a validator for Schematron definitions based on RelaxNG definition.
 
 ## Usage with Maven
-Add the following to your pom.xml to use this artifact:
+
+Add the following to your pom.xml to use this artifact, replacing `x.y.z` with the latest version number:
 
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>ph-schematron-validator</artifactId>
-  <version>5.6.0</version>
+  <version>x.y.z</version>
 </dependency>
 ```
 
@@ -304,9 +303,9 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
-* v5.6.1 - work in progress
-    * Updated to Saxon-HE 10.1
-    * Updated to an 1.10.8
+* v5.6.1 - 2020-08-30
+    * Updated to Saxon-HE 10.2
+    * Updated to ant 1.10.8
 * v5.6.0 - 2020-03-29
     * Updated to Saxon-HE 10.0
     * Changed the internal error handler to use `IError` and therefore also improve the error handling quality
