@@ -16,15 +16,21 @@
     limitations under the License.
 
 -->
-<jaxb:bindings 
-  version="2.0" 
-  xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
-  <jaxb:bindings schemaLocation="../resources/schemas/svrl.xsd" node="/xs:schema">
-    <jaxb:schemaBindings>
-      <jaxb:package name="com.helger.schematron.svrl.jaxb" />
-    </jaxb:schemaBindings>
-  </jaxb:bindings>
-</jaxb:bindings>
+<bindings version="2.1" 
+          xmlns="http://java.sun.com/xml/ns/jaxb" 
+          xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
+          xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
+  <globalBindings typesafeEnumMaxMembers="2000" typesafeEnumMemberName="generateError">
+    <xjc:javaType name="java.time.LocalDateTime" xmlType="xsd:dateTime" adapter="com.helger.jaxb.adapter.AdapterLocalDateTime" />
+    <xjc:javaType name="java.time.LocalDate" xmlType="xsd:date" adapter="com.helger.jaxb.adapter.AdapterLocalDate" />
+    <xjc:javaType name="java.time.LocalTime" xmlType="xsd:time" adapter="com.helger.jaxb.adapter.AdapterLocalTime" />
+    <xjc:javaType name="java.time.Duration" xmlType="xsd:duration" adapter="com.helger.jaxb.adapter.AdapterDuration" />
+  </globalBindings>
+  <bindings schemaLocation="../resources/schemas/svrl.xsd">
+    <schemaBindings>
+      <package name="com.helger.schematron.svrl.jaxb" />
+    </schemaBindings>
+  </bindings>
+</bindings>
