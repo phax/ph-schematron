@@ -17,6 +17,10 @@
 package com.helger.schematron.xslt;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,6 +30,9 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.URLResource;
+import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
+import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 
 /**
  * A Schematron resource that is based on an existing, pre-compiled XSLT script.
@@ -73,5 +80,83 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   public static SchematronResourceXSLT fromFile (@Nonnull final File aXSLTFile)
   {
     return new SchematronResourceXSLT (new FileSystemResource (aXSLTFile));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided
+   * at a URL
+   *
+   * @param sSCHURL
+   *        The URL to the XSLT Schematron rules. May neither be <code>null</code>
+   *        nor empty.
+   * @return Never <code>null</code>.
+   * @throws MalformedURLException
+   *         In case an invalid URL is provided
+   */
+  @Nonnull
+  public static SchematronResourceXSLT fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  {
+    return new SchematronResourceXSLT (new URLResource (sSCHURL));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided
+   * at a URL
+   *
+   * @param aSCHURL
+   *        The URL to the XSLT Schematron rules. May not be <code>null</code>.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourceXSLT fromURL (@Nonnull final URL aSCHURL)
+  {
+    return new SchematronResourceXSLT (new URLResource(aSCHURL));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided
+   * by an arbitrary {@link InputStream}.<br>
+   *
+   * @param aSchematronIS
+   *        The {@link InputStream} to read the XSLT Schematron rules from. May not
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourceXSLT fromInputStream (@Nonnull final InputStream aSchematronIS)
+  {
+    return new SchematronResourceXSLT (new ReadableResourceInputStream(aSchematronIS));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided
+   * by an arbitrary byte array.<br>
+   *
+   * @param aSchematron
+   *        The byte array representing the XSLT Schematron. May not be
+   *        <code>null</code>.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourceXSLT fromByteArray (@Nonnull final byte [] aSchematron)
+  {
+    return new SchematronResourceXSLT (new ReadableResourceByteArray (aSchematron));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided
+   * by an arbitrary String.<br>
+   *
+   * @param sSchematron
+   *        The String representing the XSLT Schematron. May not be <code>null</code>
+   *        .
+   * @param aCharset
+   *        The charset to be used to convert the String to a byte array.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourceXSLT fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  {
+    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 }
