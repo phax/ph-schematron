@@ -18,5 +18,6 @@ target/
 .project
 .classpath
 .factorypath
+zz
 ph-schematron/test-final/
 ph-schematron/test-minified/
