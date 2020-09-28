@@ -303,6 +303,8 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
+* v5.6.3 - 2020-09-28
+    * Extended SchematronResourceXSLT API (see [PR #107](https://github.com/phax/ph-schematron/pull/107)) - thanks [@jw3](https://github.com/jw3)
 * v5.6.2 - 2020-09-17
     * Updated to Jakarta JAXB 2.3.3
 * v5.6.1 - 2020-08-30
