@@ -304,7 +304,7 @@ The `schematron` element allows for the following attributes:
 ## News and noteworthy
 
 
-* v5.6.4 - work in progress
+* v5.6.4 - 2020-10-13
     * Updated to ANT 1.10.9
     * The Maven plugin now also complains on "successful reports" (see [#108](https://github.com/phax/ph-schematron/issues/108)) - thanks [@lueck](https://github.com/lueck)
 * v5.6.3 - 2020-09-28
