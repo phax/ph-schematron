@@ -31,7 +31,7 @@ public enum ESchematronMode implements IHasID <String>
 
   private final String m_sID;
 
-  private ESchematronMode (@Nonnull @Nonempty final String sID)
+  ESchematronMode (@Nonnull @Nonempty final String sID)
   {
     m_sID = sID;
   }
