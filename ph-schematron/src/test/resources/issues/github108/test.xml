@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc>
+    <h1>Antibeispiel</h1>
+    <p>Ich bin ein Antibeispiel eines XML-Dokuments, das Konventionen der Hierarchisierung von Überschriften einfach missachtet. Denn ich gönne mir die Freiheit hier einfach eine</p>
+    <h3>Überschrift auf dritter Ebene</h3>
+    <p>einzufügen, obwohl der Konvention nach eigentlich nur eine</p>
+    <h2>Überschrift auf zweiter Ebene</h2>
+    <p>stehen sollte.</p>
+    <h3>Aufgabe</h3>
+    <p>ist es nun als <a href="https://www.data2type.de/xml-xslt-xslfo/schematron/">Einführung in Schematron</a> zu entwickeln, welches genau diesen Knoventionsbruch aufspürt.</p>
+    <p>Am Ende kann man eine<a href="https://www.oxygenxml.com/demo/Schematron_Validation.html">Validierung in Schematron im oXygen durchführen.</a></p>
+    <h1>Ende</h1>
+</doc>
