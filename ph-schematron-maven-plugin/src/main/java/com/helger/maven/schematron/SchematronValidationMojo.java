@@ -45,6 +45,8 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.list.IErrorList;
+import com.helger.commons.io.file.FileIOError;
+import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.CSchematron;
@@ -430,8 +432,9 @@ public final class SchematronValidationMojo extends AbstractMojo
           {
             // Save SVRL
             final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
-            if (!aSVRLFile.getParentFile ().mkdirs ())
-              getLog ().error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!");
+            final FileIOError aIOErr = FileOperationManager.INSTANCE.createDirRecursiveIfNotExisting (aSVRLFile.getParentFile ());
+            if (aIOErr.isFailure ())
+              getLog ().error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "': " + aIOErr.toString ());
 
             if (new SVRLMarshaller ().write (aSOT, aSVRLFile).isSuccess ())
               getLog ().info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
