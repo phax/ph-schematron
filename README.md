@@ -306,6 +306,7 @@ The `schematron` element allows for the following attributes:
 
 * v5.6.4 - work in progress
     * Updated to ANT 1.10.9
+    * The Maven plugin now also complains on "successful reports" (see [#108](https://github.com/phax/ph-schematron/issues/108)) - thanks [@lueck](https://github.com/lueck)
 * v5.6.3 - 2020-09-28
     * Extended SchematronResourceXSLT API (see [PR #107](https://github.com/phax/ph-schematron/pull/107)) - thanks [@jw3](https://github.com/jw3)
 * v5.6.2 - 2020-09-17

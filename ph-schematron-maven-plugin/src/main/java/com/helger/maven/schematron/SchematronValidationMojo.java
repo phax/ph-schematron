@@ -52,7 +52,7 @@ import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -439,15 +439,16 @@ public final class SchematronValidationMojo extends AbstractMojo
               getLog ().error ("Error saving SVRL file '" + aSVRLFile.getPath () + "'");
           }
 
-          final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSOT);
+          // Failed asserts and Successful reports
+          final ICommonsList <AbstractSVRLMessage> aSVRLErrors = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
           if (bExpectSuccess)
           {
             // No failed assertions expected
-            if (aFailedAsserts.isNotEmpty ())
+            if (aSVRLErrors.isNotEmpty ())
             {
-              final String sMessage = aFailedAsserts.size () + " failed Schematron assertions for XML file '" + aXMLFile.getPath () + "'";
+              final String sMessage = aSVRLErrors.size () + " failed Schematron assertions for XML file '" + aXMLFile.getPath () + "'";
               getLog ().error (sMessage);
-              aFailedAsserts.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US)));
+              aSVRLErrors.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US)));
               if (m_bFailFast)
                 throw new MojoFailureException (sMessage);
               aErrorMessages.add (sMessage);
@@ -456,7 +457,7 @@ public final class SchematronValidationMojo extends AbstractMojo
           else
           {
             // At least one failed assertions expected
-            if (aFailedAsserts.isEmpty ())
+            if (aSVRLErrors.isEmpty ())
             {
               final String sMessage = "No failed Schematron assertions for erroneous XML file '" + aXMLFile.getPath () + "'";
               getLog ().error (sMessage);
@@ -599,10 +600,12 @@ public final class SchematronValidationMojo extends AbstractMojo
     final ICommonsList <String> aErrorMessages = new CommonsArrayList <> ();
     if (m_aXmlDirectory != null)
     {
+      // Expect success
       _performValidation (aSch, m_aXmlDirectory, m_sXmlIncludes, m_sXmlExcludes, m_aSvrlDirectory, true, aErrorMessages);
     }
     if (m_aXmlErrorDirectory != null)
     {
+      // Expect error
       _performValidation (aSch,
                           m_aXmlErrorDirectory,
                           m_sXmlErrorIncludes,
