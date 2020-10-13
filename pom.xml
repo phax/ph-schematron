@@ -69,7 +69,7 @@
   </developers>
   
   <properties>
-    <ant.version>1.10.8</ant.version>
+    <ant.version>1.10.9</ant.version>
   </properties>
   
   <dependencyManagement>
