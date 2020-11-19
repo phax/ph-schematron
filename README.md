@@ -5,7 +5,9 @@ It is licensed under Apache 2.0 license.
 
 Schematron is now also on GitHub: https://github.com/Schematron 
 It offers several different possibilities to perform this task where each solution offers its own advantages and disadvantages that are outlined below in more detail. ph-schematron only supports ISO Schematron and no other Schematron version.
-The most common way is to convert the source Schematron file to an XSLT script and apply this XSLT on the XML document to be validated. Alternatively ph-schematron offers a native implementation for the Schematron XPath binding which offers superior performance over the XSLT approach but can only be used, if the Schematron rules consist purely of XPath expressions and don't contain any XSLT.
+The most common way is to convert the source Schematron file to an XSLT script and apply this XSLT on the XML document to be validated.
+
+Alternatively `ph-schematron-pure` offers a native implementation for the Schematron XPath binding which offers superior performance over the XSLT approach but can only be used, if the Schematron rules consist purely of XPath expressions and don't contain any XSLT. Since v6 there is a separate submodule for this.
 
 Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
 
