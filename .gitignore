@@ -21,3 +21,5 @@ target/
 zz
 ph-schematron/test-final/
 ph-schematron/test-minified/
+ph-schematron-pure/test-final/
+ph-schematron-pure/test-minified/

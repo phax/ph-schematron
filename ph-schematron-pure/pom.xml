@@ -96,6 +96,9 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
           <excludes>
             <exclude>**/LICENSE</exclude>
             <exclude>**/NOTICE</exclude>
+            <exclude>src/test/resources/issues/**</exclude>
+            <exclude>test-final/**</exclude>
+            <exclude>test-minified/**</exclude>
           </excludes>
         </configuration>
       </plugin>
