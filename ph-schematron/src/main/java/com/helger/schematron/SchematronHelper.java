@@ -46,8 +46,6 @@ import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.wrapper.Wrapper;
-import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
-import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
@@ -251,7 +249,7 @@ public final class SchematronHelper
   private static ESuccess _recursiveResolveAllSchematronIncludes (@Nonnull final IMicroElement eRoot,
                                                                   @Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final IPSErrorHandler aErrorHandler,
+                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler,
                                                                   final boolean bLenient)
   {
     if (eRoot != null)
@@ -409,33 +407,16 @@ public final class SchematronHelper
    *
    * @param aResource
    *        The Schematron resource to read. May not be <code>null</code>.
+   * @param aErrorHandler
+   *        The error handler to be used. May not be <code>null</code>.
    * @return <code>null</code> if the passed resource could not be read as XML
    *         document
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource)
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler)
   {
-    return getWithResolvedSchematronIncludes (aResource,
-                                              (ISAXReaderSettings) null,
-                                              new LoggingPSErrorHandler (),
-                                              CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
-  }
-
-  /**
-   * Resolve all Schematron includes of the passed resource.
-   *
-   * @param aResource
-   *        The Schematron resource to read. May not be <code>null</code>.
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated.
-   * @return <code>null</code> if the passed resource could not be read as XML
-   *         document
-   * @since 5.4.1
-   */
-  @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource, final boolean bLenient)
-  {
-    return getWithResolvedSchematronIncludes (aResource, (ISAXReaderSettings) null, new LoggingPSErrorHandler (), bLenient);
+    return getWithResolvedSchematronIncludes (aResource, null, aErrorHandler, CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
 
   /**
@@ -454,7 +435,7 @@ public final class SchematronHelper
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final IPSErrorHandler aErrorHandler)
+                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler)
   {
     return getWithResolvedSchematronIncludes (aResource, aSettings, aErrorHandler, CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
@@ -478,7 +459,7 @@ public final class SchematronHelper
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final IPSErrorHandler aErrorHandler,
+                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler,
                                                                   final boolean bLenient)
   {
     final InputSource aIS = InputSourceFactory.create (aResource);

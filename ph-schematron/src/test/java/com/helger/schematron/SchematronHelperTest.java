@@ -20,18 +20,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-
 import javax.xml.transform.Source;
 
 import org.junit.Test;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceSCH;
-import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * Test class for class {@link SchematronHelper}.
@@ -49,15 +45,6 @@ public final class SchematronHelperTest
     final ISchematronResource aSchematron = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
     final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
     final SchematronOutputType aSO = SchematronHelper.applySchematron (aSchematron, aXML);
-    assertNotNull ("Failed to parse Schematron output", aSO);
-  }
-
-  @Test
-  public void testReadValidSchematronValidXMLFromFile ()
-  {
-    final ISchematronResource aSchematron = SchematronResourcePure.fromClassPath (VALID_SCHEMATRON);
-    final SchematronOutputType aSO = SchematronHelper.applySchematron (aSchematron,
-                                                                       TransformSourceFactory.create (new File ("src/test/resources/xml-files/valid01.xml")));
     assertNotNull ("Failed to parse Schematron output", aSO);
   }
 

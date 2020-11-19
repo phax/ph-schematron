@@ -85,6 +85,10 @@
       <artifactId>ph-schematron</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-pure</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
       <version>${maven.annot.version}</version>

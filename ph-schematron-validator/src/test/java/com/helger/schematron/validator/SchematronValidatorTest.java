@@ -18,7 +18,11 @@ package com.helger.schematron.validator;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Locale;
+
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronHelper;
@@ -32,13 +36,15 @@ import com.helger.xml.microdom.IMicroDocument;
  */
 public final class SchematronValidatorTest
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronValidatorTest.class);
+
   @Test
   public void testSchematron ()
   {
     // Check all documents
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
-      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes);
+      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, x -> LOGGER.error (x.getAsString (Locale.US)));
       final boolean bIsValid = SchematronValidator.isValidSchematron (aDoc);
       assertTrue (aRes.getPath (), bIsValid);
     }

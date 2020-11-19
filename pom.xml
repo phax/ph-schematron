@@ -178,6 +178,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.schematron</groupId>
+        <artifactId>ph-schematron-pure</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.schematron</groupId>
         <artifactId>ph-schematron-validator</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -195,6 +200,7 @@
   <modules>
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron</module>
+    <module>ph-schematron-pure</module>
     <module>ph-schematron-validator</module>
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>
