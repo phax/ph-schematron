@@ -32,7 +32,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  *
  * @author Philip Helger
  */
-public final class Issue36Test
+public final class Issue036Test
 {
   @Test
   public void test () throws Exception

@@ -28,7 +28,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class Issue25Test
+public final class Issue025Test
 {
   @Test
   public void testIssue25Valid () throws Exception

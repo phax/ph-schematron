@@ -25,41 +25,35 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
+import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.xml.serialize.write.XMLWriter;
 
-public final class Issue47Test
+public final class Issue008Test
 {
+  @Test
+  public void testIssue () throws Exception
+  {
+    validateAndProduceSVRL (new File ("src/test/resources/issues/github8/schematron.sch"),
+                            new File ("src/test/resources/issues/github8/test.xml"));
+  }
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver ( (aFunctionName, aArity) -> {
-      System.out.println (aFunctionName + " - " + aArity);
-      return null;
-    }).build ();
-    final SchematronResourcePure aSCH = new SchematronResourcePure (new FileSystemResource (aSchematron)).setXPathConfig (aXPathConfig);
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+
+    // Assign custom parameters
+    aSCH.parameters ().put ("xyz", "mobile");
+    aSCH.parameters ().put ("expected", "");
+
+    if (false)
+      System.out.println (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
     if (false)
       System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
-  }
-
-  @Test
-  public void testIssue () throws Exception
-  {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github47/schematron.sch"),
-                            new File ("src/test/resources/issues/github47/test.xml"));
-  }
-
-  @Test
-  public void testIssue2 () throws Exception
-  {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github47/schematron2.sch"),
-                            new File ("src/test/resources/issues/github47/test.xml"));
   }
 }

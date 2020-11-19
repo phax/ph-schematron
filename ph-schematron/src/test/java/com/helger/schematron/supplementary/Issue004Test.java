@@ -16,37 +16,36 @@
  */
 package com.helger.schematron.supplementary;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Locale;
+import java.io.File;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
-import com.helger.xml.sax.DefaultEntityResolver;
 
-/**
- * Test code for issue #30
- *
- * @author Philip Helger
- */
-public final class Issue30Test
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+public final class Issue004Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue30Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue004Test.class);
 
   @Test
-  public void testOfSchematronPH () throws Exception
+  @SuppressFBWarnings ("DMI_HARDCODED_ABSOLUTE_FILENAME")
+  public void testReadFromUNCWithInclude () throws Exception
   {
-    final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github30/ph-test.sch");
-    aResPure.setEntityResolver (DefaultEntityResolver.createOnDemand (aResPure.getResource ()));
-    final IPSErrorHandler aErrorHandler = (aError) -> LOGGER.info (LoggingPSErrorHandler.DEFAULT_PS.getErrorText (aError, Locale.US));
-    aResPure.setErrorHandler (aErrorHandler);
-
-    aResPure.validateCompletely ();
-    assertFalse (aResPure.isValidSchematron ());
+    final File aSchematronFile = new File ("\\\\PC61826\\share\\example-8-5.sch");
+    if (aSchematronFile.exists ())
+    {
+      final SchematronResourcePure aResPure = SchematronResourcePure.fromFile (aSchematronFile);
+      aResPure.setErrorHandler (new LoggingPSErrorHandler ());
+      aResPure.validateCompletely ();
+      assertTrue (aResPure.isValidSchematron ());
+    }
+    else
+      LOGGER.info ("Test ignored because file does not exist");
   }
 }

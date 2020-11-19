@@ -44,9 +44,9 @@ import com.helger.xml.transform.ResourceStreamSource;
  *
  * @author Philip Helger
  */
-public final class Issue29Test
+public final class Issue029Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue29Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue029Test.class);
 
   @Nullable
   static SchematronOutputType validateXmlUsingSchematron (@Nonnull final IReadableResource aRes)

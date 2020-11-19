@@ -25,35 +25,35 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
-import com.helger.xml.serialize.write.XMLWriter;
 
-public final class Issue8Test
+public final class Issue064Test
 {
-  @Test
-  public void testIssue () throws Exception
-  {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github8/schematron.sch"),
-                            new File ("src/test/resources/issues/github8/test.xml"));
-  }
-
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
-
-    // Assign custom parameters
-    aSCH.parameters ().put ("xyz", "mobile");
-    aSCH.parameters ().put ("expected", "");
-
-    if (false)
-      System.out.println (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
+    final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
+    aSCH.setErrorHandler (new LoggingPSErrorHandler ());
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    if (false)
-      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
+  }
+
+  @Test
+  public void testIssue () throws Exception
+  {
+    SchematronDebug.setShowCreatedSVRL (true);
+    try
+    {
+      validateAndProduceSVRL (new File ("src/test/resources/issues/github64/schematron.sch"),
+                              new File ("src/test/resources/issues/github64/test.xml"));
+    }
+    finally
+    {
+      SchematronDebug.setShowCreatedSVRL (false);
+    }
   }
 }

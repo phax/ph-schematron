@@ -17,6 +17,7 @@
 package com.helger.schematron.supplementary;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -25,35 +26,35 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class Issue64Test
+/**
+ * Test class for https://github.com/phax/ph-schematron/issues/11
+ *
+ * @author Philip Helger
+ */
+public final class Issue011Test
 {
+  @Test
+  public void testIssue () throws Exception
+  {
+    validateAndProduceSVRL (new File ("src/test/resources/issues/github11/schematron.sch"),
+                            new File ("src/test/resources/issues/github11/test.xml"));
+  }
+
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
     aSCH.setErrorHandler (new LoggingPSErrorHandler ());
+    assertTrue (aSCH.isValidSchematron ());
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-  }
-
-  @Test
-  public void testIssue () throws Exception
-  {
-    SchematronDebug.setShowCreatedSVRL (true);
-    try
-    {
-      validateAndProduceSVRL (new File ("src/test/resources/issues/github64/schematron.sch"),
-                              new File ("src/test/resources/issues/github64/test.xml"));
-    }
-    finally
-    {
-      SchematronDebug.setShowCreatedSVRL (false);
-    }
+    if (false)
+      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
   }
 }

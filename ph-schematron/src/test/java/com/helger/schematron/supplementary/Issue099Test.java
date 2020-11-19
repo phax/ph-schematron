@@ -38,9 +38,9 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class Issue99Test
+public final class Issue099Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue99Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue099Test.class);
 
   private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
   {

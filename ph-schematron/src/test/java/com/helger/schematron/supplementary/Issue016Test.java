@@ -48,7 +48,7 @@ import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
 
-public final class Issue16Test
+public final class Issue016Test
 {
   public static final class SchematronUtil
   {

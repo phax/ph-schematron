@@ -16,36 +16,37 @@
  */
 package com.helger.schematron.supplementary;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-import java.io.File;
+import java.util.Locale;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.xml.sax.DefaultEntityResolver;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-public final class Issue4Test
+/**
+ * Test code for issue #30
+ *
+ * @author Philip Helger
+ */
+public final class Issue030Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue4Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue030Test.class);
 
   @Test
-  @SuppressFBWarnings ("DMI_HARDCODED_ABSOLUTE_FILENAME")
-  public void testReadFromUNCWithInclude () throws Exception
+  public void testOfSchematronPH () throws Exception
   {
-    final File aSchematronFile = new File ("\\\\PC61826\\share\\example-8-5.sch");
-    if (aSchematronFile.exists ())
-    {
-      final SchematronResourcePure aResPure = SchematronResourcePure.fromFile (aSchematronFile);
-      aResPure.setErrorHandler (new LoggingPSErrorHandler ());
-      aResPure.validateCompletely ();
-      assertTrue (aResPure.isValidSchematron ());
-    }
-    else
-      LOGGER.info ("Test ignored because file does not exist");
+    final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github30/ph-test.sch");
+    aResPure.setEntityResolver (DefaultEntityResolver.createOnDemand (aResPure.getResource ()));
+    final IPSErrorHandler aErrorHandler = (aError) -> LOGGER.info (LoggingPSErrorHandler.DEFAULT_PS.getErrorText (aError, Locale.US));
+    aResPure.setErrorHandler (aErrorHandler);
+
+    aResPure.validateCompletely ();
+    assertFalse (aResPure.isValidSchematron ());
   }
 }

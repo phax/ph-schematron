@@ -17,39 +17,49 @@
 package com.helger.schematron.supplementary;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import javax.annotation.Nonnull;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.validation.LoggingPSValidationHandler;
+import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class Issue54Test
+public final class Issue088Test
 {
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue088Test.class);
+
+  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
   {
+    SchematronDebug.setSaveIntermediateXSLTFiles (true);
     final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
+    if (aSCH instanceof SchematronResourcePure)
+      ((SchematronResourcePure) aSCH).setCustomValidationHandler (new LoggingPSValidationHandler ());
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    if (false)
-      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
+
+    LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
+
+    assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
   }
 
   @Test
   public void testIssue () throws Exception
   {
-    SchematronDebug.setSaveIntermediateXSLTFiles (true);
-
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github54/schematron.sch"),
-                            new File ("src/test/resources/issues/github54/test.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/issues/github88/schematron.sch"),
+                             new File ("src/test/resources/issues/github88/test.xml"));
   }
 }
