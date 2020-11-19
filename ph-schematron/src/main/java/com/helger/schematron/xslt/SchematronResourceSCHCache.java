@@ -16,11 +16,9 @@
  */
 package com.helger.schematron.xslt;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.slf4j.Logger;
@@ -29,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -42,8 +41,9 @@ import com.helger.xml.serialize.write.XMLWriter;
 public final class SchematronResourceSCHCache
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
-  private static final Lock s_aLock = new ReentrantLock ();
-  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> s_aCache = new CommonsHashMap <> ();
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
+  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> CACHE = new CommonsHashMap <> ();
 
   private SchematronResourceSCHCache ()
   {}
@@ -132,23 +132,32 @@ public final class SchematronResourceSCHCache
                                                                 StringHelper.getNotNull (aTransformerCustomizer.getPhase ()),
                                                                 StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
 
-    s_aLock.lock ();
-    try
-    {
+    // Validator already in the cache?
+    final SchematronProviderXSLTFromSCH aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
+    if (aProvider != null)
+      return aProvider;
+
+    return RW_LOCK.writeLockedGet ( () -> {
       // Validator already in the cache?
-      SchematronProviderXSLTFromSCH aProvider = s_aCache.get (sCacheKey);
-      if (aProvider == null)
+      SchematronProviderXSLTFromSCH aProvider2 = CACHE.get (sCacheKey);
+      if (aProvider2 == null)
       {
         // Create new object and put in cache
-        aProvider = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
-        if (aProvider != null)
-          s_aCache.put (sCacheKey, aProvider);
+        aProvider2 = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
+        if (aProvider2 != null)
+          CACHE.put (sCacheKey, aProvider2);
       }
-      return aProvider;
-    }
-    finally
-    {
-      s_aLock.unlock ();
-    }
+      return aProvider2;
+    });
+  }
+
+  /**
+   * Clear the internal cache.
+   *
+   * @since 5.6.5
+   */
+  public static void clearCache ()
+  {
+    RW_LOCK.writeLocked ( () -> CACHE.clear ());
   }
 }

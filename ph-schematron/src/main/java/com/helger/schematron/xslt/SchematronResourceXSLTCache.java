@@ -46,9 +46,9 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
 public final class SchematronResourceXSLTCache
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
-  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  @GuardedBy ("s_aRWLock")
-  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> s_aCache = new CommonsHashMap <> ();
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
+  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> CACHE = new CommonsHashMap <> ();
 
   private SchematronResourceXSLTCache ()
   {}
@@ -118,22 +118,31 @@ public final class SchematronResourceXSLTCache
     final String sResourceID = aXSLTResource.getResourceID ();
 
     // Validator already in the cache?
-    final SchematronProviderXSLTPrebuild aProvider = s_aRWLock.readLockedGet ( () -> s_aCache.get (sResourceID));
+    final SchematronProviderXSLTPrebuild aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sResourceID));
     if (aProvider != null)
       return aProvider;
 
-    return s_aRWLock.writeLockedGet ( () -> {
+    return RW_LOCK.writeLockedGet ( () -> {
       // Check again in write lock
-      SchematronProviderXSLTPrebuild aProvider2 = s_aCache.get (sResourceID);
+      SchematronProviderXSLTPrebuild aProvider2 = CACHE.get (sResourceID);
       if (aProvider2 == null)
       {
         // Create new object and put in cache
         aProvider2 = createSchematronXSLTProvider (aXSLTResource, aCustomErrorListener, aCustomURIResolver);
         if (aProvider2 != null)
-          s_aCache.put (sResourceID, aProvider2);
+          CACHE.put (sResourceID, aProvider2);
       }
       return aProvider2;
     });
   }
 
+  /**
+   * Clear the internal cache.
+   *
+   * @since 5.6.5
+   */
+  public static void clearCache ()
+  {
+    RW_LOCK.writeLocked ( () -> CACHE.clear ());
+  }
 }

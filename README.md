@@ -303,8 +303,9 @@ The `schematron` element allows for the following attributes:
 
 ## News and noteworthy
 
-* v5.6.5 - work in progress
+* v5.6.5 - 2020-11-19
     * Updated to Saxon-HE 10.3
+    * Added `SchematronResourceXSLTCache.clearCache()` and `SchematronResourceSCHCache.clearCache()` (see [#109](https://github.com/phax/ph-schematron/issues/109)) - thanks [@SnowMakerDemo](https://github.com/SnowMakerDemo)
 * v5.6.4 - 2020-10-13
     * Updated to ANT 1.10.9
     * The Maven plugin now also complains on "successful reports" (see [#108](https://github.com/phax/ph-schematron/issues/108)) - thanks [@lueck](https://github.com/lueck)
