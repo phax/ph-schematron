@@ -171,5 +171,6 @@
     <xs:attribute name="test" use="required"/>
     <xs:attribute name="role" type="xs:NMTOKEN"/>
     <xs:attribute name="flag" type="xs:NMTOKEN"/>
+    <xs:attribute name="see" />
   </xs:attributeGroup>
 </xs:schema>
