@@ -14,24 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.supplementary;
-
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
+package com.helger.schematron.schxslt;
 
 import org.junit.Test;
 
-import com.helger.schematron.api.xslt.ISchematronXSLTBasedResource;
-import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.commons.mock.SPITestHelper;
 
-public final class Issue20180214Test
+/**
+ * Test SPI definitions
+ * 
+ * @author Philip Helger
+ */
+public final class SPITest
 {
   @Test
-  public void testRead () throws Exception
+  public void testBasic () throws Exception
   {
-    final ISchematronXSLTBasedResource aRes = SchematronResourceSCH.fromFile (new File ("src/test/resources/issues/20180214/04-ESPD-Common-BR-rules.sch"));
-    aRes.setAllowForeignElements (true);
-    assertTrue (aRes.isValidSchematron ());
+    SPITestHelper.testIfAllSPIImplementationsAreValid ();
   }
 }

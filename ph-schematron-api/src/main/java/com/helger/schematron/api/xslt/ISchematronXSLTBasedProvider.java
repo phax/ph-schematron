@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.api.xslt;
 
 import javax.annotation.Nullable;
 import javax.xml.transform.Transformer;

@@ -14,27 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt.validator;
+package com.helger.schematron.api.xslt.validator;
 
 import javax.annotation.Nonnull;
 
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
- * A special implementation of {@link ISchematronXSLTValidator} that only
- * handles failed asserts as failures, but not successful reports.
- * 
+ * The default implementation of {@link ISchematronXSLTValidator} that
+ * interprets both failed asserts and successful reports as errors.
+ *
  * @author Philip Helger
  */
-public class SchematronXSLTValidatorFailedAssertOnly implements ISchematronXSLTValidator
+public class SchematronXSLTValidatorDefault implements ISchematronXSLTValidator
 {
   @Nonnull
   public EValidity getSchematronValidity (@Nonnull final SchematronOutputType aSO)
   {
     for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof FailedAssert)
+      if (aObj instanceof FailedAssert || aObj instanceof SuccessfulReport)
         return EValidity.INVALID;
     return EValidity.VALID;
   }

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.transform.DefaultTransformURIResolver;

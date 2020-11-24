@@ -24,5 +24,7 @@ zz
 
 ph-schematron-xslt/test-final/
 ph-schematron-xslt/test-minified/
+ph-schematron-schxslt/test-final/
+ph-schematron-schxslt/test-minified/
 ph-schematron-pure/test-final/
 ph-schematron-pure/test-minified/

@@ -36,8 +36,8 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.testfiles.SchematronTestHelper;
-import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 

@@ -27,8 +27,8 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.schematron.xslt.AbstractSchematronXSLTBasedResource;
-import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
 /**
  * A Schematron resource that is based on the original SCH file.

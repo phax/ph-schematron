@@ -14,31 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt.validator;
+package com.helger.schematron.api.xslt.validator;
 
 import javax.annotation.Nonnull;
 
 import com.helger.commons.state.EValidity;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
- * Base interface for objects that determine the validity of a Schematron
- * validation result. By default a Schematron validation is determined valid if
- * no failed-assert is present and no successful-report is present.
- * 
+ * A special implementation of {@link ISchematronXSLTValidator} that only
+ * handles successful reports as failures, but not failed asserts.
+ *
  * @author Philip Helger
+ * @since 6.0.0
  */
-public interface ISchematronXSLTValidator
+public class SchematronXSLTValidatorSuccessfulReportOnly implements ISchematronXSLTValidator
 {
-  /**
-   * Determine the overall validity of a Schematron validation result.
-   * 
-   * @param aSO
-   *        The Schematron validation result. Never <code>null</code>.
-   * @return {@link EValidity#VALID} if the Schematron validation was
-   *         successful, {@link EValidity#INVALID} if the validation failed.
-   *         Never <code>null</code>.
-   */
   @Nonnull
-  EValidity getSchematronValidity (@Nonnull SchematronOutputType aSO);
+  public EValidity getSchematronValidity (@Nonnull final SchematronOutputType aSO)
+  {
+    for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
+      if (aObj instanceof SuccessfulReport)
+        return EValidity.INVALID;
+    return EValidity.VALID;
+  }
 }

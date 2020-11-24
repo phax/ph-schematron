@@ -42,9 +42,9 @@ import com.helger.xml.XMLFactory;
  *
  * @author Philip Helger
  */
-public final class SVRLMarshallerTest
+public final class SVRLMarshallerFuncTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SVRLMarshallerTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SVRLMarshallerFuncTest.class);
   private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
 
@@ -92,7 +92,9 @@ public final class SVRLMarshallerTest
     {}
 
     // Read XML that is not SVRL
-    final SchematronOutputType aSVRL = new SVRLMarshaller ().read (new ClassPathResource ("test-xml/goodOrder01.xml"));
+    final ClassPathResource aRes = new ClassPathResource ("test-xml/goodOrder01.xml");
+    assertTrue (aRes.exists ());
+    final SchematronOutputType aSVRL = new SVRLMarshaller ().read (aRes);
     assertNull (aSVRL);
   }
 

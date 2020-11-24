@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.schxslt_xslt2;
+package com.helger.schematron.schxslt.xslt2;
 
 import java.io.File;
 
@@ -37,8 +37,8 @@ import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
-import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;

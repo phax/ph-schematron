@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.api.xslt;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +26,7 @@ import org.xml.sax.EntityResolver;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
+import com.helger.schematron.api.xslt.validator.ISchematronXSLTValidator;
 
 /**
  * Special Schematron resource for XSLT based implementations.

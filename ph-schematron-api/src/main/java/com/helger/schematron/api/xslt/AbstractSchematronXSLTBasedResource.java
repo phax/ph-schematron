@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.api.xslt;
 
 import java.net.URL;
 import java.util.Locale;
@@ -49,10 +49,10 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.api.xslt.validator.ISchematronXSLTValidator;
+import com.helger.schematron.api.xslt.validator.SchematronXSLTValidatorDefault;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.validator.ISchematronXSLTValidator;
-import com.helger.schematron.xslt.validator.SchematronXSLTValidatorDefault;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;

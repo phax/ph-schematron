@@ -33,6 +33,8 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.resource.URLResource;
 import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
+import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
 /**
  * A Schematron resource that is based on an existing, pre-compiled XSLT script.
