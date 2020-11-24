@@ -175,7 +175,7 @@ public class TransformerCustomizerSchXslt_XSLT2
       aTransformer.setURIResolver (m_aCustomURIResolver);
   }
 
-  public void customize (@Nonnull final ESchXslt_XSLT2Step eStep, @Nonnull final Transformer aTransformer)
+  public void customize (@Nonnull final EStepSchXslt_XSLT2 eStep, @Nonnull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -192,7 +192,7 @@ public class TransformerCustomizerSchXslt_XSLT2
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
-    if (eStep == ESchXslt_XSLT2Step.SCH2XSLT_3)
+    if (eStep == EStepSchXslt_XSLT2.SCH2XSLT_3)
     {
       // On the last step, set the respective Schematron parameters as the
       // last action to avoid they are overwritten by a custom parameter.

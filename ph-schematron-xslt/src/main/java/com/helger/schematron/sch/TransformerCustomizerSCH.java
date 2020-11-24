@@ -177,7 +177,7 @@ public class TransformerCustomizerSCH
       aTransformer.setURIResolver (m_aCustomURIResolver);
   }
 
-  public void customize (@Nonnull final ESCHStep eStep, @Nonnull final Transformer aTransformer)
+  public void customize (@Nonnull final EStepSCH eStep, @Nonnull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -194,7 +194,7 @@ public class TransformerCustomizerSCH
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
-    if (eStep == ESCHStep.SCH2XSLT_3)
+    if (eStep == EStepSCH.SCH2XSLT_3)
     {
       // On the last step, set the respective Schematron parameters as the
       // last action to avoid they are overwritten by a custom parameter.

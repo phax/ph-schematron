@@ -21,7 +21,7 @@ package com.helger.schematron.schxslt.xslt2;
  *
  * @author Philip Helger
  */
-public enum ESchXslt_XSLT2Step
+public enum EStepSchXslt_XSLT2
 {
   SCH2XSLT_1,
   SCH2XSLT_2,
