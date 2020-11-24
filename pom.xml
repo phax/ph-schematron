@@ -173,6 +173,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.schematron</groupId>
+        <artifactId>ph-schematron-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.schematron</groupId>
         <artifactId>ph-schematron</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -199,6 +204,7 @@
   
   <modules>
     <module>ph-schematron-testfiles</module>
+    <module>ph-schematron-api</module>
     <module>ph-schematron</module>
     <module>ph-schematron-pure</module>
     <module>ph-schematron-validator</module>

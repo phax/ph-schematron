@@ -24,11 +24,11 @@
     <artifactId>ph-schematron-parent-pom</artifactId>
     <version>6.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>ph-schematron</artifactId>
+  <artifactId>ph-schematron-api</artifactId>
   <packaging>bundle</packaging>
-  <name>ph-schematron</name>
-  <description>Library for validating XML documents with Schematron</description>
-  <url>https://github.com/phax/ph-schematron/ph-schematron</url>
+  <name>ph-schematron-api</name>
+  <description>Base API for the library for validating XML documents with Schematron</description>
+  <url>https://github.com/phax/ph-schematron/ph-schematron-api</url>
   <inceptionYear>2014</inceptionYear>
 
   <licenses>
@@ -55,15 +55,23 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-api</artifactId>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-jaxb</artifactId>
+    </dependency>
+    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
     </dependency>
     
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-testfiles</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
