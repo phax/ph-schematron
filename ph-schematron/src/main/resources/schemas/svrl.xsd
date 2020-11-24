@@ -30,15 +30,15 @@
         </xs:sequence>
       </xs:sequence>
     </xs:sequence>
-    <xs:attribute name="title"/>
+    <xs:attribute name="title" type="xs:string"/>
     <xs:attribute name="phase" type="xs:NMTOKEN"/>
-    <xs:attribute name="schemaVersion"/>
+    <xs:attribute name="schemaVersion" type="xs:string"/>
   </xs:complexType>
   <!-- only namespaces from sch:ns need to be reported -->
   <xs:element name="ns-prefix-in-attribute-values">
     <xs:complexType>
-      <xs:attribute name="prefix" use="required" type="xs:NMTOKEN"/>
-      <xs:attribute name="uri" use="required"/>
+      <xs:attribute name="prefix" type="xs:NMTOKEN" use="required"/>
+      <xs:attribute name="uri" type="xs:string" use="required"/>
     </xs:complexType>
   </xs:element>
   <!-- only active patterns are reported -->
@@ -51,10 +51,10 @@
       <!-- [ph] changed from ID to NCName for real-life handling -->
       <xs:attribute name="id" type="xs:NCName"/>
       <!-- [ph] Schematron 2016 adds this in favor of "document" -->
-      <xs:attribute name="documents"/>
-      <xs:attribute name="name"/>
+      <xs:attribute name="documents" type="xs:string"/>
+      <xs:attribute name="name" type="xs:string"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
-      <xs:attribute name="document"/>
+      <xs:attribute name="document" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <!-- only rules that are fired are reported, -->
@@ -63,10 +63,14 @@
       <!-- [ph] changed from ID to NCName for real-life handling -->
       <xs:attribute name="id" type="xs:NCName"/>
       <!-- [ph] Schematron 2016 adds this -->
-      <xs:attribute name="name"/>
-      <xs:attribute name="context" use="required"/>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="context" type="xs:string" use="required"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="flag" type="xs:NMTOKEN"/>
+      <!-- [ph] if 'allowForeignElements' is enabled the following three can occur: -->
+      <xs:attribute name="see" type="xs:string" use="optional"/>
+      <xs:attribute name="icon" type="xs:string" use="optional"/>
+      <xs:attribute name="fpi" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
   <!-- only references are reported, not the diagnostic -->
@@ -171,5 +175,9 @@
     <xs:attribute name="test" use="required"/>
     <xs:attribute name="role" type="xs:NMTOKEN"/>
     <xs:attribute name="flag" type="xs:NMTOKEN"/>
+    <!-- [ph] if 'allowForeignElements' is enabled the following three can occur: -->
+    <xs:attribute name="see" type="xs:string" use="optional"/>
+    <xs:attribute name="icon" type="xs:string" use="optional"/>
+    <xs:attribute name="fpi" type="xs:string" use="optional"/>
   </xs:attributeGroup>
 </xs:schema>
