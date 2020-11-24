@@ -102,11 +102,11 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   protected TransformerCustomizerSchXslt_XSLT2 createTransformerCustomizer ()
   {
     return new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (getErrorListener ())
-                                              .setURIResolver (getURIResolver ())
-                                              .setParameters (parameters ())
-                                              .setPhase (m_sPhase)
-                                              .setLanguageCode (m_sLanguageCode)
-                                              .setForceCacheResult (m_bForceCacheResult);
+                                                    .setURIResolver (getURIResolver ())
+                                                    .setParameters (parameters ())
+                                                    .setPhase (m_sPhase)
+                                                    .setLanguageCode (m_sLanguageCode)
+                                                    .setForceCacheResult (m_bForceCacheResult);
   }
 
   @Override

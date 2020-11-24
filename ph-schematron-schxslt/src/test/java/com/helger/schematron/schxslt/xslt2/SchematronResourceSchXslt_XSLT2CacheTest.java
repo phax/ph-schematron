@@ -46,9 +46,9 @@ import com.helger.xml.transform.CollectingTransformErrorListener;
  *
  * @author Philip Helger
  */
-public final class SchematronResourceSchXsltCacheTest
+public final class SchematronResourceSchXslt_XSLT2CacheTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSchXsltCacheTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSchXslt_XSLT2CacheTest.class);
   private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
 
