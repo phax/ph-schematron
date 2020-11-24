@@ -1,5 +1,9 @@
 # ph-schematron
 
+![Travis CI Status](https://travis-ci.com/phax/ph-schematron.svg?branch=master)
+[![javadoc](https://javadoc.io/badge2/com.helger.schematron/ph-schematron-api/javadoc.svg)](https://javadoc.io/doc/com.helger.schematron/ph-schematron-api)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.schematron/ph-schematron-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.schematron/ph-schematron-api) 
+
 ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com).
 
 Schematron is an XML based validation language to validate XML documents.
