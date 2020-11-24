@@ -123,25 +123,18 @@ public final class SchematronResourceSchXsltCacheTest
       // BIICORE-UBL-*.sch works but takes forever
       // EUGEN-UBL-*.sch has a StackOverflow
       // The others have errors (required parameters etc.)
-      if (!aRes.getPath ().endsWith ("/BIICORE-UBL-T01.sch") &&
-          !aRes.getPath ().endsWith ("/BIICORE-UBL-T10.sch") &&
-          !aRes.getPath ().endsWith ("/BIICORE-UBL-T14.sch") &&
-          !aRes.getPath ().endsWith ("/BIICORE-UBL-T15.sch") &&
-          !aRes.getPath ().endsWith ("/EUGEN-UBL-T14.sch") &&
-          !aRes.getPath ().endsWith ("/EUGEN-UBL-T15.sch") &&
-          !aRes.getPath ().endsWith ("/CellarBook.sch") &&
+      if (!aRes.getPath ().endsWith ("/example-8-5.sch") &&
           !aRes.getPath ().endsWith ("/pattern-example-with-includes.sch") &&
-          !aRes.getPath ().endsWith ("/pattern-example.sch") &&
-          !aRes.getPath ().endsWith ("/schematron-svrl.sch"))
+          !aRes.getPath ().endsWith ("/pattern-example.sch"))
       {
         if (true)
-          LOGGER.info (aRes.toString ());
+          LOGGER.info (aRes.getPath ());
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXsltCache.createSchematronXSLTProvider (aRes,
                                                                                                                         new SchXsltTransformerCustomizer ().setErrorListener (aCEH)
                                                                                                                                                            .setLanguageCode ("de"));
-        assertNotNull ("Failed to parse: " + aRes.toString (), aPreprocessor);
+        assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());
 

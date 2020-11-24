@@ -14,8 +14,7 @@
 <iso:pattern id="doc.checks">
   <iso:title>checking an XXX document</iso:title>
   <iso:rule context="doc">
-    <iso:report 
-test="chapter">Report date.<iso:value-of select="fn:current-dateTime()"/></iso:report>
+    <iso:report test="chapter">Report date.<iso:value-of select="fn:current-dateTime()"/></iso:report>
   </iso:rule>
 </iso:pattern>
 
@@ -23,7 +22,7 @@ test="chapter">Report date.<iso:value-of select="fn:current-dateTime()"/></iso:r
     <iso:title>Basic Chapter checks</iso:title>
     <iso:p>All chapter level checks. </iso:p>
 
- <iso:include href='example-8-5.incl'/>                                   
+    <iso:include href='example-8-5.incl'/>                                   
 
   </iso:pattern>
 </iso:schema>

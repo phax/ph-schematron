@@ -6,7 +6,7 @@
  -->
 <sch:schema 
     xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
-    xml:lang="en" >
+    xml:lang="en" queryBinding="xslt2">
     <sch:title>Schema for Schematron Validation Report Language</sch:title>
     <sch:ns prefix="svrl" uri="http://purl.oclc.org/dsdl/svrl" />    
     <sch:ns prefix="fn" uri="http://www.w3.org/2005/xpath-functions" />
@@ -141,11 +141,11 @@ count(svrl:active-pattern)+
         <sch:param name="attribute" value="@diagnostic" />
     </sch:pattern>    
     <sch:pattern is-a="requiredAttribute">
-        <sch:param name="context" value="svrl:failed-assert or svrl:successful-report" />
+        <sch:param name="context" value="svrl:failed-assert | svrl:successful-report" />
         <sch:param name="attribute" value="@location" />
     </sch:pattern>    
     <sch:pattern is-a="requiredAttribute">
-        <sch:param name="context" value="svrl:failed-assert or svrl:successful-report" />
+        <sch:param name="context" value="svrl:failed-assert | svrl:successful-report" />
         <sch:param name="attribute" value="@test" />
     </sch:pattern>    
     <sch:pattern is-a="requiredAttribute">
