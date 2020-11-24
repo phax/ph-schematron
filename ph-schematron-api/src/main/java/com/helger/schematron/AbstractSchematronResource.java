@@ -143,15 +143,6 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     aDRS.setFeatureValues (EXMLParserFeature.AVOID_XML_ATTACKS);
     if (m_aEntityResolver != null)
       aDRS.setEntityResolver (m_aEntityResolver);
-    if (false)
-    {
-      final boolean m_bLoadExternalSchemas = false;
-      aDRS.setFeatureValue (EXMLParserFeature.EXTERNAL_GENERAL_ENTITIES, m_bLoadExternalSchemas);
-      aDRS.setFeatureValue (EXMLParserFeature.EXTERNAL_PARAMETER_ENTITIES, m_bLoadExternalSchemas);
-      aDRS.setFeatureValue (EXMLParserFeature.LOAD_EXTERNAL_DTD, m_bLoadExternalSchemas);
-      aDRS.setFeatureValue (EXMLParserFeature.VALIDATION, true);
-      aDRS.setFeatureValue (EXMLParserFeature.NAMESPACES, true);
-    }
     return aDRS;
   }
 
@@ -198,10 +189,10 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nullable
   protected Node getAsNode (@Nonnull final Source aXMLSource) throws Exception
   {
-    DOMReaderSettings settings = internalCreateDOMReaderSettings ();
-    settings.setFeatureValue (EXMLParserFeature.DISALLOW_DOCTYPE_DECL, false);
+    final DOMReaderSettings aDRS = internalCreateDOMReaderSettings ();
+    aDRS.setFeatureValue (EXMLParserFeature.DISALLOW_DOCTYPE_DECL, false);
     // Convert to Node
-    return SchematronResourceHelper.getNodeOfSource (aXMLSource, settings);
+    return SchematronResourceHelper.getNodeOfSource (aXMLSource, aDRS);
   }
 
   @Nonnull
@@ -286,7 +277,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   public String toString ()
   {
     return new ToStringGenerator (this).append ("Resource", m_aResource)
+                                       .append ("ResourceID", m_sResourceID)
                                        .append ("UseCache", m_bUseCache)
+                                       .append ("Lenient", m_bLenient)
                                        .appendIfNotNull ("EntityResolver", m_aEntityResolver)
                                        .getToString ();
   }
