@@ -42,7 +42,7 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 
 /**
- * Test class for class {@link SchematronResourceSchXsltCache}
+ * Test class for class {@link SchematronResourceSchXslt_XSLT2Cache}
  *
  * @author Philip Helger
  */
@@ -58,12 +58,12 @@ public final class SchematronResourceSchXsltCacheTest
   public void testValidSynchronous () throws Exception
   {
     // Ensure that the Schematron is cached
-    SchematronResourceSchXslt.fromClassPath (VALID_SCHEMATRON);
+    SchematronResourceSchXslt_XSLT2.fromClassPath (VALID_SCHEMATRON);
 
     final long nStart = System.nanoTime ();
     for (int i = 0; i < RUNS; ++i)
     {
-      final ISchematronResource aSV = SchematronResourceSchXslt.fromClassPath (VALID_SCHEMATRON);
+      final ISchematronResource aSV = SchematronResourceSchXslt_XSLT2.fromClassPath (VALID_SCHEMATRON);
       final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
       assertNotNull (aDoc);
       if (false)
@@ -77,7 +77,7 @@ public final class SchematronResourceSchXsltCacheTest
   public void testValidAsynchronous () throws Exception
   {
     // Ensure that the Schematron is cached
-    SchematronResourceSchXslt.fromClassPath (VALID_SCHEMATRON);
+    SchematronResourceSchXslt_XSLT2.fromClassPath (VALID_SCHEMATRON);
 
     // Create Thread pool with fixed number of threads
     final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ().availableProcessors () * 2);
@@ -88,7 +88,7 @@ public final class SchematronResourceSchXsltCacheTest
       aSenderThreadPool.submit ( () -> {
         try
         {
-          final ISchematronResource aSV = SchematronResourceSchXslt.fromClassPath (VALID_SCHEMATRON);
+          final ISchematronResource aSV = SchematronResourceSchXslt_XSLT2.fromClassPath (VALID_SCHEMATRON);
           final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
           assertNotNull (aDoc);
         }
@@ -106,11 +106,11 @@ public final class SchematronResourceSchXsltCacheTest
   @Test
   public void testInvalidSchematron ()
   {
-    assertFalse (new SchematronResourceSchXslt (new ClassPathResource ("test-sch/invalid01.sch")).isValidSchematron ());
-    assertFalse (new SchematronResourceSchXslt (new ClassPathResource ("test-sch/this.file.does.not.exists")).isValidSchematron ());
+    assertFalse (new SchematronResourceSchXslt_XSLT2 (new ClassPathResource ("test-sch/invalid01.sch")).isValidSchematron ());
+    assertFalse (new SchematronResourceSchXslt_XSLT2 (new ClassPathResource ("test-sch/this.file.does.not.exists")).isValidSchematron ());
 
-    assertFalse (new SchematronResourceSchXslt (new FileSystemResource ("src/test/resources/test-sch/invalid01.sch")).isValidSchematron ());
-    assertFalse (new SchematronResourceSchXslt (new FileSystemResource ("src/test/resources/test-sch/this.file.does.not.exists")).isValidSchematron ());
+    assertFalse (new SchematronResourceSchXslt_XSLT2 (new FileSystemResource ("src/test/resources/test-sch/invalid01.sch")).isValidSchematron ());
+    assertFalse (new SchematronResourceSchXslt_XSLT2 (new FileSystemResource ("src/test/resources/test-sch/this.file.does.not.exists")).isValidSchematron ());
   }
 
   @Test
@@ -135,8 +135,8 @@ public final class SchematronResourceSchXsltCacheTest
           LOGGER.info (aRes.getPath ());
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
-        final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXsltCache.createSchematronXSLTProvider (aRes,
-                                                                                                                        new SchXsltTransformerCustomizer ().setErrorListener (aCEH)
+        final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (aRes,
+                                                                                                                        new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aCEH)
                                                                                                                                                            .setLanguageCode ("de"));
         assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());

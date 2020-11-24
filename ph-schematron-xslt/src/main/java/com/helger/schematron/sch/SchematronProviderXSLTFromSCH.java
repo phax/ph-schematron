@@ -130,7 +130,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
    *        <code>null</code>.
    */
   public SchematronProviderXSLTFromSCH (@Nonnull final IReadableResource aSchematronResource,
-                                        @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
+                                        @Nonnull final TransformerCustomizerSCH aTransformerCustomizer)
   {
     m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");

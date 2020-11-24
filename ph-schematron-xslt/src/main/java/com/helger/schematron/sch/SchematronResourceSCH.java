@@ -40,7 +40,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 {
   private String m_sPhase;
   private String m_sLanguageCode;
-  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * Constructor
@@ -101,9 +101,9 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 
   @Nonnull
   @OverrideOnDemand
-  protected SCHTransformerCustomizer createTransformerCustomizer ()
+  protected TransformerCustomizerSCH createTransformerCustomizer ()
   {
-    return new SCHTransformerCustomizer ().setErrorListener (getErrorListener ())
+    return new TransformerCustomizerSCH ().setErrorListener (getErrorListener ())
                                           .setURIResolver (getURIResolver ())
                                           .setParameters (parameters ())
                                           .setPhase (m_sPhase)
@@ -115,7 +115,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
-    final SCHTransformerCustomizer aTransformerCustomizer = createTransformerCustomizer ();
+    final TransformerCustomizerSCH aTransformerCustomizer = createTransformerCustomizer ();
     if (isUseCache ())
       return SchematronResourceSCHCache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
 

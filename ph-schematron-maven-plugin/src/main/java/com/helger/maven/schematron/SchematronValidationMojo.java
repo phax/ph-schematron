@@ -54,9 +54,9 @@ import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.sch.SCHTransformerCustomizer;
+import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.sch.SchematronResourceSCH;
-import com.helger.schematron.schxslt_xslt2.SchematronResourceSchXslt;
+import com.helger.schematron.schxslt_xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -214,7 +214,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    */
   @Parameter (name = "forceCacheResult", defaultValue = "false")
   @Since ("5.2.1")
-  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * Define if old namespace URIs should be supported or not. By default this is
@@ -571,7 +571,7 @@ public final class SchematronValidationMojo extends AbstractMojo
       {
         // SchXslt
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceSchXslt aRealSCH = new SchematronResourceSchXslt (new FileSystemResource (m_aSchematronFile));
+        final SchematronResourceSchXslt_XSLT2 aRealSCH = new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (m_sLanguageCode);
         aRealSCH.setForceCacheResult (m_bForceCacheResult);

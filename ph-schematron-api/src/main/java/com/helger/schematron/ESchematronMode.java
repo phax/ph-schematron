@@ -32,6 +32,7 @@ public enum ESchematronMode implements IHasID <String>
 {
   PURE ("pure"),
   SCHEMATRON ("schematron"),
+  SCHXSLT_XSLT1 ("schxslt-xslt1"),
   SCHXSLT_XSLT2 ("schxslt-xslt2"),
   XSLT ("xslt");
 

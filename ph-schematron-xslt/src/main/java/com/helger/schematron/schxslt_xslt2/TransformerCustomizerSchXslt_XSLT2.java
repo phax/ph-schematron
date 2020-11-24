@@ -38,7 +38,7 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchXsltTransformerCustomizer
+public class TransformerCustomizerSchXslt_XSLT2
 {
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
 
@@ -49,7 +49,7 @@ public class SchXsltTransformerCustomizer
   private String m_sLanguageCode;
   private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
 
-  public SchXsltTransformerCustomizer ()
+  public TransformerCustomizerSchXslt_XSLT2 ()
   {}
 
   @Nullable
@@ -59,7 +59,7 @@ public class SchXsltTransformerCustomizer
   }
 
   @Nonnull
-  public SchXsltTransformerCustomizer setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
+  public TransformerCustomizerSchXslt_XSLT2 setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
     return this;
@@ -72,7 +72,7 @@ public class SchXsltTransformerCustomizer
   }
 
   @Nonnull
-  public SchXsltTransformerCustomizer setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  public TransformerCustomizerSchXslt_XSLT2 setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
     return this;
@@ -91,7 +91,7 @@ public class SchXsltTransformerCustomizer
   }
 
   @Nonnull
-  public SchXsltTransformerCustomizer setParameters (@Nullable final Map <String, ?> aCustomParameters)
+  public TransformerCustomizerSchXslt_XSLT2 setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
     m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
     return this;
@@ -104,7 +104,7 @@ public class SchXsltTransformerCustomizer
   }
 
   @Nonnull
-  public SchXsltTransformerCustomizer setPhase (@Nullable final String sPhase)
+  public TransformerCustomizerSchXslt_XSLT2 setPhase (@Nullable final String sPhase)
   {
     m_sPhase = sPhase;
     return this;
@@ -117,7 +117,7 @@ public class SchXsltTransformerCustomizer
   }
 
   @Nonnull
-  public SchXsltTransformerCustomizer setLanguageCode (@Nullable final String sLanguageCode)
+  public TransformerCustomizerSchXslt_XSLT2 setLanguageCode (@Nullable final String sLanguageCode)
   {
     m_sLanguageCode = sLanguageCode;
     return this;
@@ -142,7 +142,7 @@ public class SchXsltTransformerCustomizer
    * @return this for chaining
    */
   @Nonnull
-  public SchXsltTransformerCustomizer setForceCacheResult (final boolean bForceCacheResult)
+  public TransformerCustomizerSchXslt_XSLT2 setForceCacheResult (final boolean bForceCacheResult)
   {
     m_bForceCacheResult = bForceCacheResult;
     return this;
@@ -175,7 +175,7 @@ public class SchXsltTransformerCustomizer
       aTransformer.setURIResolver (m_aCustomURIResolver);
   }
 
-  public void customize (@Nonnull final ESchXsltStep eStep, @Nonnull final Transformer aTransformer)
+  public void customize (@Nonnull final ESchXslt_XSLT2Step eStep, @Nonnull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -192,7 +192,7 @@ public class SchXsltTransformerCustomizer
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
-    if (eStep == ESchXsltStep.SCH2XSLT_3)
+    if (eStep == ESchXslt_XSLT2Step.SCH2XSLT_3)
     {
       // On the last step, set the respective Schematron parameters as the
       // last action to avoid they are overwritten by a custom parameter.

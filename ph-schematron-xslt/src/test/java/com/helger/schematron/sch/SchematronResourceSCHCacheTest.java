@@ -136,7 +136,7 @@ public final class SchematronResourceSCHCacheTest
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
-                                                                                                                    new SCHTransformerCustomizer ().setErrorListener (aCEH)
+                                                                                                                    new TransformerCustomizerSCH ().setErrorListener (aCEH)
                                                                                                                                                    .setLanguageCode ("de"));
         assertNotNull ("Failed to parse: " + aRes.toString (), aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());

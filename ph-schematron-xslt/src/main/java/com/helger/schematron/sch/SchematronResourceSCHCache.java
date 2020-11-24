@@ -61,7 +61,7 @@ public final class SchematronResourceSCHCache
    */
   @Nullable
   public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                            @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
+                                                                            @Nonnull final TransformerCustomizerSCH aTransformerCustomizer)
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
@@ -108,7 +108,7 @@ public final class SchematronResourceSCHCache
    */
   @Nullable
   public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                         @Nonnull final SCHTransformerCustomizer aTransformerCustomizer)
+                                                                         @Nonnull final TransformerCustomizerSCH aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");

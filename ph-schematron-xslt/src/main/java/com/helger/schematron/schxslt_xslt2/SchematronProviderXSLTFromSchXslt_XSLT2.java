@@ -52,9 +52,9 @@ import com.helger.xml.transform.XMLTransformerFactory;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedProvider
+public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTBasedProvider
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTFromSchXslt.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTFromSchXslt_XSLT2.class);
 
   /**
    * The classpath directory where the Schematron 2 XSLT files reside.
@@ -96,7 +96,7 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
         LOGGER.debug ("Creating SchXslt step 1 template");
       s_aStep1 = XMLTransformerFactory.newTemplates (aTF,
                                                      new ClassPathResource (XSLT2_STEP1,
-                                                                            SchematronProviderXSLTFromSchXslt.class.getClassLoader ()));
+                                                                            SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ()));
       if (s_aStep1 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP1 + "'");
 
@@ -105,7 +105,7 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
         LOGGER.debug ("Creating SchXslt step 2 template");
       s_aStep2 = XMLTransformerFactory.newTemplates (aTF,
                                                      new ClassPathResource (XSLT2_STEP2,
-                                                                            SchematronProviderXSLTFromSchXslt.class.getClassLoader ()));
+                                                                            SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ()));
       if (s_aStep2 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP2 + "'");
 
@@ -114,7 +114,7 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
         LOGGER.debug ("Creating SchXslt step 3 template");
       s_aStep3 = XMLTransformerFactory.newTemplates (aTF,
                                                      new ClassPathResource (XSLT2_STEP3,
-                                                                            SchematronProviderXSLTFromSchXslt.class.getClassLoader ()));
+                                                                            SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ()));
       if (s_aStep3 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP3 + "'");
     }
@@ -129,8 +129,8 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
    *        The customizer for XSLT {@link Transformer} objects. May not be
    *        <code>null</code>.
    */
-  public SchematronProviderXSLTFromSchXslt (@Nonnull final IReadableResource aSchematronResource,
-                                            @Nonnull final SchXsltTransformerCustomizer aTransformerCustomizer)
+  public SchematronProviderXSLTFromSchXslt_XSLT2 (@Nonnull final IReadableResource aSchematronResource,
+                                                  @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
     m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
@@ -142,7 +142,7 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
       // perform step 1 (Schematron -> ResultStep1)
       final DOMResult aResult1 = new DOMResult ();
       final Transformer aTransformer1 = s_aStep1.newTransformer ();
-      aTransformerCustomizer.customize (ESchXsltStep.SCH2XSLT_1, aTransformer1);
+      aTransformerCustomizer.customize (ESchXslt_XSLT2Step.SCH2XSLT_1, aTransformer1);
       aTransformer1.transform (TransformSourceFactory.create (aSchematronResource), aResult1);
 
       if (LOGGER.isDebugEnabled ())
@@ -151,7 +151,7 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
       // perform step 2 (ResultStep1 -> ResultStep2)
       final DOMResult aResult2 = new DOMResult ();
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
-      aTransformerCustomizer.customize (ESchXsltStep.SCH2XSLT_2, aTransformer2);
+      aTransformerCustomizer.customize (ESchXslt_XSLT2Step.SCH2XSLT_2, aTransformer2);
       aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
 
       if (LOGGER.isDebugEnabled ())
@@ -171,7 +171,7 @@ public class SchematronProviderXSLTFromSchXslt implements ISchematronXSLTBasedPr
       // perform step 3 (ResultStep2 -> ResultStep3XSL)
       final DOMResult aResult3 = new DOMResult ();
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
-      aTransformerCustomizer.customize (ESchXsltStep.SCH2XSLT_3, aTransformer3);
+      aTransformerCustomizer.customize (ESchXslt_XSLT2Step.SCH2XSLT_3, aTransformer3);
       aTransformer3.transform (TransformSourceFactory.create (aResult2.getNode ()), aResult3);
 
       if (LOGGER.isDebugEnabled ())

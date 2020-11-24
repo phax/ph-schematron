@@ -47,7 +47,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
-import com.helger.schematron.sch.SCHTransformerCustomizer;
+import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.sch.SchematronResourceSCHCache;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
@@ -139,7 +139,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    */
   @Parameter (name = "forceCacheResult", defaultValue = "false")
   @Since ("5.2.1")
-  private boolean m_bForceCacheResult = SCHTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
@@ -297,7 +297,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             // No custom URI resolver
             // Specified phase - default = null
             // Specified language code - default = null
-            final SCHTransformerCustomizer aCustomizer = new SCHTransformerCustomizer ().setErrorListener (aMojoErrorListener)
+            final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
                                                                                         .setPhase (m_sPhaseName)
                                                                                         .setLanguageCode (m_sLanguageCode)
                                                                                         .setParameters (m_aCustomParameters)

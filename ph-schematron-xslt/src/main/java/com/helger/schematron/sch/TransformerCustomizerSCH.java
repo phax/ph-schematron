@@ -38,7 +38,7 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SCHTransformerCustomizer
+public class TransformerCustomizerSCH
 {
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
 
@@ -49,7 +49,7 @@ public class SCHTransformerCustomizer
   private String m_sLanguageCode;
   private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
 
-  public SCHTransformerCustomizer ()
+  public TransformerCustomizerSCH ()
   {}
 
   @Nullable
@@ -59,7 +59,7 @@ public class SCHTransformerCustomizer
   }
 
   @Nonnull
-  public SCHTransformerCustomizer setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
+  public TransformerCustomizerSCH setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
     return this;
@@ -72,7 +72,7 @@ public class SCHTransformerCustomizer
   }
 
   @Nonnull
-  public SCHTransformerCustomizer setURIResolver (@Nullable final URIResolver aCustomURIResolver)
+  public TransformerCustomizerSCH setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
     return this;
@@ -91,7 +91,7 @@ public class SCHTransformerCustomizer
   }
 
   @Nonnull
-  public SCHTransformerCustomizer setParameters (@Nullable final Map <String, ?> aCustomParameters)
+  public TransformerCustomizerSCH setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
     m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
     return this;
@@ -104,7 +104,7 @@ public class SCHTransformerCustomizer
   }
 
   @Nonnull
-  public SCHTransformerCustomizer setPhase (@Nullable final String sPhase)
+  public TransformerCustomizerSCH setPhase (@Nullable final String sPhase)
   {
     m_sPhase = sPhase;
     return this;
@@ -117,7 +117,7 @@ public class SCHTransformerCustomizer
   }
 
   @Nonnull
-  public SCHTransformerCustomizer setLanguageCode (@Nullable final String sLanguageCode)
+  public TransformerCustomizerSCH setLanguageCode (@Nullable final String sLanguageCode)
   {
     m_sLanguageCode = sLanguageCode;
     return this;
@@ -144,7 +144,7 @@ public class SCHTransformerCustomizer
    * @since 5.2.1
    */
   @Nonnull
-  public SCHTransformerCustomizer setForceCacheResult (final boolean bForceCacheResult)
+  public TransformerCustomizerSCH setForceCacheResult (final boolean bForceCacheResult)
   {
     m_bForceCacheResult = bForceCacheResult;
     return this;

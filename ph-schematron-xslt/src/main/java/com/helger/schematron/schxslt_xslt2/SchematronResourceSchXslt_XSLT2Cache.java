@@ -33,19 +33,19 @@ import com.helger.commons.string.StringHelper;
 import com.helger.xml.serialize.write.XMLWriter;
 
 /**
- * Factory for creating {@link SchematronProviderXSLTFromSchXslt} objects.
+ * Factory for creating {@link SchematronProviderXSLTFromSchXslt_XSLT2} objects.
  *
  * @author Philip Helger
  */
 @ThreadSafe
-public final class SchematronResourceSchXsltCache
+public final class SchematronResourceSchXslt_XSLT2Cache
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSchXsltCache.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSchXslt_XSLT2Cache.class);
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
   @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, SchematronProviderXSLTFromSchXslt> CACHE = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTFromSchXslt_XSLT2> CACHE = new CommonsHashMap <> ();
 
-  private SchematronResourceSchXsltCache ()
+  private SchematronResourceSchXslt_XSLT2Cache ()
   {}
 
   /**
@@ -60,13 +60,13 @@ public final class SchematronResourceSchXsltCache
    *         or is invalid.
    */
   @Nullable
-  public static SchematronProviderXSLTFromSchXslt createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                                @Nonnull final SchXsltTransformerCustomizer aTransformerCustomizer)
+  public static SchematronProviderXSLTFromSchXslt_XSLT2 createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
+                                                                                @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
-    final SchematronProviderXSLTFromSchXslt aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt (aSchematronResource,
+    final SchematronProviderXSLTFromSchXslt_XSLT2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt_XSLT2 (aSchematronResource,
                                                                                                        aTransformerCustomizer);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
@@ -108,8 +108,8 @@ public final class SchematronResourceSchXsltCache
    *         or is invalid.
    */
   @Nullable
-  public static SchematronProviderXSLTFromSchXslt getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                             @Nonnull final SchXsltTransformerCustomizer aTransformerCustomizer)
+  public static SchematronProviderXSLTFromSchXslt_XSLT2 getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
+                                                                             @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
@@ -134,13 +134,13 @@ public final class SchematronResourceSchXsltCache
                                                                 StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
 
     // Validator already in the cache?
-    final SchematronProviderXSLTFromSchXslt aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
+    final SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
     if (aProvider != null)
       return aProvider;
 
     return RW_LOCK.writeLockedGet ( () -> {
       // Validator already in the cache?
-      SchematronProviderXSLTFromSchXslt aProvider2 = CACHE.get (sCacheKey);
+      SchematronProviderXSLTFromSchXslt_XSLT2 aProvider2 = CACHE.get (sCacheKey);
       if (aProvider2 == null)
       {
         // Create new object and put in cache

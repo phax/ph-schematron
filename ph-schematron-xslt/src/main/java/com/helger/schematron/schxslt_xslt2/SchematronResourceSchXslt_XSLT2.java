@@ -36,11 +36,11 @@ import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResource <SchematronResourceSchXslt>
+public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBasedResource <SchematronResourceSchXslt_XSLT2>
 {
   private String m_sPhase;
   private String m_sLanguageCode;
-  private boolean m_bForceCacheResult = SchXsltTransformerCustomizer.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = TransformerCustomizerSchXslt_XSLT2.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * Constructor
@@ -48,7 +48,7 @@ public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResour
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    */
-  public SchematronResourceSchXslt (@Nonnull final IReadableResource aSCHResource)
+  public SchematronResourceSchXslt_XSLT2 (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
   }
@@ -99,9 +99,9 @@ public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResour
 
   @Nonnull
   @OverrideOnDemand
-  protected SchXsltTransformerCustomizer createTransformerCustomizer ()
+  protected TransformerCustomizerSchXslt_XSLT2 createTransformerCustomizer ()
   {
-    return new SchXsltTransformerCustomizer ().setErrorListener (getErrorListener ())
+    return new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (getErrorListener ())
                                               .setURIResolver (getURIResolver ())
                                               .setParameters (parameters ())
                                               .setPhase (m_sPhase)
@@ -113,12 +113,12 @@ public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResour
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
-    final SchXsltTransformerCustomizer aTransformerCustomizer = createTransformerCustomizer ();
+    final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer = createTransformerCustomizer ();
     if (isUseCache ())
-      return SchematronResourceSchXsltCache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
+      return SchematronResourceSchXslt_XSLT2Cache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
 
     // Always create a new one
-    return SchematronResourceSchXsltCache.createSchematronXSLTProvider (getResource (), aTransformerCustomizer);
+    return SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (getResource (), aTransformerCustomizer);
   }
 
   /**
@@ -130,9 +130,9 @@ public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResour
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceSchXslt fromClassPath (@Nonnull @Nonempty final String sSCHPath)
+  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@Nonnull @Nonempty final String sSCHPath)
   {
-    return new SchematronResourceSchXslt (new ClassPathResource (sSCHPath));
+    return new SchematronResourceSchXslt_XSLT2 (new ClassPathResource (sSCHPath));
   }
 
   /**
@@ -144,9 +144,9 @@ public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResour
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceSchXslt fromFile (@Nonnull @Nonempty final String sSCHPath)
+  public static SchematronResourceSchXslt_XSLT2 fromFile (@Nonnull @Nonempty final String sSCHPath)
   {
-    return new SchematronResourceSchXslt (new FileSystemResource (sSCHPath));
+    return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (sSCHPath));
   }
 
   /**
@@ -157,8 +157,8 @@ public class SchematronResourceSchXslt extends AbstractSchematronXSLTBasedResour
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceSchXslt fromFile (@Nonnull final File aSCHFile)
+  public static SchematronResourceSchXslt_XSLT2 fromFile (@Nonnull final File aSCHFile)
   {
-    return new SchematronResourceSchXslt (new FileSystemResource (aSCHFile));
+    return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (aSCHFile));
   }
 }
