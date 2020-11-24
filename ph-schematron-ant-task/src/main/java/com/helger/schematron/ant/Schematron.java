@@ -57,6 +57,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.sch.SCHTransformerCustomizer;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.schxslt_xslt2.SchematronResourceSchXslt;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator;
 import com.helger.schematron.svrl.SVRLHelper;
@@ -698,6 +699,29 @@ public class Schematron extends AbstractSchematronTask
 
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
           final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
+          aRealSCH.setPhase (m_sPhaseName);
+          aRealSCH.setLanguageCode (m_sLanguageCode);
+          aRealSCH.setForceCacheResult (m_bForceCacheResult);
+          aRealSCH.setErrorListener (aErrorHdl);
+          aRealSCH.setURIResolver (getURIResolver ());
+          aRealSCH.setEntityResolver (getEntityResolver ());
+          aRealSCH.parameters ().setAll (aParams);
+          aRealSCH.isValidSchematron ();
+
+          aSch = aRealSCH;
+          aSCHErrors = aErrorHdl.getErrorList ();
+          break;
+        }
+        case SCHXSLT_XSLT2:
+        {
+          // SchXslt
+          final IStringMap aParams = new StringMap ();
+          m_aParameters.forEach (x -> x.addToMap (aParams));
+          if (aParams.isNotEmpty ())
+            _info ("Using the following custom parameters: " + aParams);
+
+          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+          final SchematronResourceSchXslt aRealSCH = new SchematronResourceSchXslt (new FileSystemResource (m_aSchematronFile));
           aRealSCH.setPhase (m_sPhaseName);
           aRealSCH.setLanguageCode (m_sLanguageCode);
           aRealSCH.setForceCacheResult (m_bForceCacheResult);

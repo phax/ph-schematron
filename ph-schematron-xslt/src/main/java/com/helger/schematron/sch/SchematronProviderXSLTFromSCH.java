@@ -197,9 +197,9 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
-    catch (final Throwable t)
+    catch (final Exception ex)
     {
-      LOGGER.error ("Schematron preprocessor error", t);
+      LOGGER.error ("Schematron preprocessor error", ex);
     }
   }
 

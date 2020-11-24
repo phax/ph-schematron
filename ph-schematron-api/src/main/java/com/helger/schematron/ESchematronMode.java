@@ -23,10 +23,16 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.id.IHasID;
 import com.helger.commons.lang.EnumHelper;
 
+/**
+ * What ways do we have to create SVRL from Schematron rules?
+ *
+ * @author Philip Helger
+ */
 public enum ESchematronMode implements IHasID <String>
 {
   PURE ("pure"),
   SCHEMATRON ("schematron"),
+  SCHXSLT_XSLT2 ("schxslt-xslt2"),
   XSLT ("xslt");
 
   private final String m_sID;

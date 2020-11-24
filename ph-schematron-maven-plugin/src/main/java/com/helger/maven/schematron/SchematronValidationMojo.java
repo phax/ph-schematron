@@ -56,6 +56,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.sch.SCHTransformerCustomizer;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.schxslt_xslt2.SchematronResourceSchXslt;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -555,6 +556,22 @@ public final class SchematronValidationMojo extends AbstractMojo
         // SCH
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
+        aRealSCH.setPhase (m_sPhaseName);
+        aRealSCH.setLanguageCode (m_sLanguageCode);
+        aRealSCH.setForceCacheResult (m_bForceCacheResult);
+        aRealSCH.parameters ().setAll (m_aCustomParameters);
+        aRealSCH.setErrorListener (aErrorHdl);
+        aRealSCH.isValidSchematron ();
+
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getErrorList ();
+        break;
+      }
+      case SCHXSLT_XSLT2:
+      {
+        // SchXslt
+        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+        final SchematronResourceSchXslt aRealSCH = new SchematronResourceSchXslt (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (m_sLanguageCode);
         aRealSCH.setForceCacheResult (m_bForceCacheResult);
