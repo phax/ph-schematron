@@ -58,8 +58,8 @@
       <artifactId>ph-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron</artifactId>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-xml</artifactId>
     </dependency>
     
     <!-- RelaxNG -->
@@ -81,6 +81,11 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

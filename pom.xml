@@ -178,7 +178,7 @@
       </dependency>
       <dependency>
         <groupId>com.helger.schematron</groupId>
-        <artifactId>ph-schematron</artifactId>
+        <artifactId>ph-schematron-xslt</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -205,7 +205,7 @@
   <modules>
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron-api</module>
-    <module>ph-schematron</module>
+    <module>ph-schematron-xslt</module>
     <module>ph-schematron-pure</module>
     <module>ph-schematron-validator</module>
     <module>ph-schematron-maven-plugin</module>

@@ -24,11 +24,11 @@
     <artifactId>ph-schematron-parent-pom</artifactId>
     <version>6.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>ph-schematron</artifactId>
+  <artifactId>ph-schematron-xslt</artifactId>
   <packaging>bundle</packaging>
-  <name>ph-schematron</name>
-  <description>Library for validating XML documents with Schematron</description>
-  <url>https://github.com/phax/ph-schematron/ph-schematron</url>
+  <name>ph-schematron-xslt</name>
+  <description>Library for validating XML documents using the original Schematron implementation</description>
+  <url>https://github.com/phax/ph-schematron/ph-schematron-xslt</url>
   <inceptionYear>2014</inceptionYear>
 
   <licenses>
@@ -79,13 +79,9 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Automatic-Module-Name>com.helger.schematron</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.*</Export-Package>
+            <Automatic-Module-Name>com.helger.schematron.xslt</Automatic-Module-Name>
+            <Export-Package>com.helger.schematron.xslt.*</Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
-osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
-osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVRLLocationBeautifierSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
@@ -103,56 +99,6 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
             <exclude>test-minified/**</exclude>
           </excludes>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.14.0</version>
-        <executions>
-          <execution>
-            <id>svrl</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <bindingDirectory>${basedir}/src/main/jaxb</bindingDirectory>
-              <bindingIncludes>
-                <bindingInclude>binding.xjb</bindingInclude>
-              </bindingIncludes>
-              <schemaDirectory>${basedir}/src/main/resources/schemas</schemaDirectory>
-              <schemaIncludes>
-                <schemaInclude>svrl.xsd</schemaInclude>
-              </schemaIncludes>
-              <generateDirectory>${project.build.directory}/generated-sources/svrl</generateDirectory>
-              <staleFile>${project.build.directory}/stale/.stale-svrl</staleFile>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <extension>true</extension>
-          <args>
-            <arg>-no-header</arg>
-            <arg>-Xph-default-locale</arg>
-            <arg>en_US</arg>
-            <arg>-Xph-annotate</arg>
-            <arg>-Xph-fields-private</arg>
-            <arg>-Xph-code-quality</arg>
-            <arg>-Xph-implements</arg>
-            <arg>java.io.Serializable</arg>
-            <arg>-Xph-equalshashcode</arg>
-            <arg>-Xph-tostring</arg>
-            <arg>-Xph-list-extension</arg>
-            <arg>-Xph-csu</arg>
-            <arg>-Xph-cloneable2</arg>
-          </args>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-jaxb22-plugin</artifactId>
-            <version>2.3.3.1</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
