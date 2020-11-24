@@ -1,29 +1,44 @@
 # ph-schematron
 
 ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com).
+
+Schematron is an XML based validation language to validate XML documents.
+
+Schematron is part of the ISO 19757 standard "Information technology — Document Schema Definition Languages (DSDL)", Part 3 "Rule-based validation — Schematron".
+
+The most common way is to convert the source Schematron file to an XSLT script and apply this XSLT on the XML document to be validated. The submodule `ph-schematron-xslt` provides the tools to do this.
+
+Alternatively `ph-schematron-pure` offers a Java-native implementation for the Schematron XPath binding which offers superior performance over the XSLT approach but can only be used, if the Schematron rules consist purely of XPath expressions and don't contain any XSLT. The separate submodule was introduced in v6 of this library.
+
 It is licensed under Apache 2.0 license.
 
-Schematron is now also on GitHub: https://github.com/Schematron 
-It offers several different possibilities to perform this task where each solution offers its own advantages and disadvantages that are outlined below in more detail. ph-schematron only supports ISO Schematron and no other Schematron version.
-The most common way is to convert the source Schematron file to an XSLT script and apply this XSLT on the XML document to be validated.
-
-Alternatively `ph-schematron-pure` offers a native implementation for the Schematron XPath binding which offers superior performance over the XSLT approach but can only be used, if the Schematron rules consist purely of XPath expressions and don't contain any XSLT. Since v6 there is a separate submodule for this.
-
-Continue reading the **full documentation** at http://phax.github.io/ph-schematron/.
+(to be updated: Continue reading the **full documentation** at http://phax.github.io/ph-schematron/ )
 
 ## Usage with Maven
 
 The dependency for ph-schematron looks like this, replacing `x.y.z` with the latest version number:
 
+**For the XSLT based approach**
+
 ```xml
 <dependency>
   <groupId>com.helger.schematron</groupId>
-  <artifactId>ph-schematron</artifactId>
+  <artifactId>ph-schematron-xslt</artifactId>
   <version>x.y.z</version>
 </dependency>
 ```
 
-It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
+**For the Java pure approach**
+
+```xml
+<dependency>
+  <groupId>com.helger.schematron</groupId>
+  <artifactId>ph-schematron-pure</artifactId>
+  <version>x.y.z</version>
+</dependency>
+```
+
+It transitively contains [ph-commons, ph-xml, ph-jaxb](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
 
 Note: up to and including v5.x the Maven groupId was `com.helger`.
 
@@ -31,9 +46,9 @@ Note: up to and including v5.x the Maven groupId was `com.helger`.
 
 **The Maven plugin `ph-sch2xslt-maven-plugin` is deprecated since v5.0.9 - the goal was integrated into `ph-schematron-maven-plugin`**
 
-Maven plugin to convert Schematron (SCH) to XSLT at compile time using [ph-schematron](https://github.com/phax/ph-schematron) as the converter.
+Maven plugin to convert Schematron (SCH) to XSLT at compile time using `ph-schematron-xslt` as the converter.
 
-The conversion of Schematron to XSLT is quite costly. That’s why this Maven plugin that does the conversion at build time. 
+The conversion of Schematron to XSLT may be quite time consuming. That’s why this Maven plugin that does the conversion at build time to avoid perfoming the conversion every time.
 
 By default the plugin is run in the Maven lifecycle phase *generate-resources*. The basic configuration of the plugin in the `pom.xml` looks like this (inside the `<build>/<plugins>` element), replacing `x.y.z` with the latest version number.
 
