@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sch:schema xmlns="http://purl.oclc.org/dsdl/schematron" xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-  queryBinding="xslt2" schemaVersion="ISO19757-3">
+  queryBinding="xpath2" schemaVersion="ISO19757-3">
   <sch:ns prefix="v3" uri="urn:hl7-org:v3"/>
   <sch:pattern name="473">
     <sch:rule id="a473" context="//v3:subject">

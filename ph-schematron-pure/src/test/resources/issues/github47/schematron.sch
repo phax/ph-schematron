@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sch:schema xmlns="http://purl.oclc.org/dsdl/schematron" xmlns:sch="http://purl.oclc.org/dsdl/schematron"
   xmlns:sqf="urn:anything"
-  queryBinding="xslt2" schemaVersion="ISO19757-3">
+  queryBinding="xpath" schemaVersion="ISO19757-3">
   
   <sch:pattern name="Customer">
     <sch:rule context="/file/Customer">

@@ -2,7 +2,7 @@
 <iso:schema xmlns="http://purl.oclc.org/dsdl/schematron" 
     xmlns:iso="http://purl.oclc.org/dsdl/schematron" 
     xmlns:ppn="http://ppn.lspi.uni-bamberg.de" 
-    queryBinding="xslt2" schemaVersion="ISO19757-3">
+    queryBinding="xpath2" schemaVersion="ISO19757-3">
     <iso:title>ISO schematron validation file for descriptive extended constraints</iso:title>
         
     <iso:pattern name="Outgoing">

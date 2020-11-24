@@ -45,9 +45,16 @@ public final class PSQueryBindingRegistry
   public static final String QUERY_BINDING_XSLT = "xslt";
 
   /**
-   * Name of a query binding for which the default binding is registered.
+   * Name of a query binding in the ISO standard for which the default binding
+   * is registered.
    */
   public static final String QUERY_BINDING_XSLT2 = "xslt2";
+
+  /**
+   * Name of a query binding in the ISO standard for which the default binding
+   * is registered.
+   */
+  public static final String QUERY_BINDING_XSLT3 = "xslt3";
 
   /**
    * Name of a query binding for which the default binding is registered.
@@ -55,9 +62,26 @@ public final class PSQueryBindingRegistry
   public static final String QUERY_BINDING_XPATH = "xpath";
 
   /**
-   * Name of a query binding for which the default binding is registered.
+   * Name of a query binding in the ISO standard for which the default binding
+   * is registered.
    */
   public static final String QUERY_BINDING_XPATH2 = "xpath2";
+
+  /**
+   * Name of a query binding in the ISO standard for which the default binding
+   * is registered.
+   */
+  public static final String QUERY_BINDING_XPATH3 = "xpath3";
+
+  /**
+   * Name of a query binding in the ISO standard.
+   */
+  public static final String QUERY_BINDING_EXSLT = "exslt";
+
+  /**
+   * Name of a query binding in the ISO standard.
+   */
+  public static final String QUERY_BINDING_STX = "stx";
 
   /**
    * The default XPath binding object to be used
@@ -71,10 +95,14 @@ public final class PSQueryBindingRegistry
   {
     try
     {
-      registerQueryBinding (QUERY_BINDING_XSLT, DEFAULT_QUERY_BINDING);
-      registerQueryBinding (QUERY_BINDING_XSLT2, DEFAULT_QUERY_BINDING);
+      // This is more or less fully supported
       registerQueryBinding (QUERY_BINDING_XPATH, DEFAULT_QUERY_BINDING);
       registerQueryBinding (QUERY_BINDING_XPATH2, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XPATH3, DEFAULT_QUERY_BINDING);
+      // This is only supported so that custom functions can be provided
+      registerQueryBinding (QUERY_BINDING_XSLT, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XSLT2, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XSLT3, DEFAULT_QUERY_BINDING);
     }
     catch (final SchematronBindException ex)
     {

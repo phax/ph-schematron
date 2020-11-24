@@ -81,7 +81,7 @@ public final class SchematronResourcePureTest
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
                          "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \n" +
                          "         xmlns:sch=\"http://www.ascc.net/xml/schematron\"\n" +
-                         "         queryBinding='xslt2'\n" +
+                         "         queryBinding='xpath2'\n" +
                          "         schemaVersion=\"ISO19757-3\">\n" +
                          "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n" +
                          "  <iso:ns prefix=\"dp\" uri=\"http://www.dpawson.co.uk/ns#\" />\n" +
@@ -106,7 +106,7 @@ public final class SchematronResourcePureTest
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
                          "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \n" +
                          "         xmlns:sch=\"http://www.ascc.net/xml/schematron\"\n" +
-                         "         queryBinding='xslt2'\n" +
+                         "         queryBinding='xpath2'\n" +
                          "         schemaVersion=\"ISO19757-3\">\n" +
                          "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n" +
                          "  <iso:ns prefix=\"dp\" uri=\"http://www.dpawson.co.uk/ns#\" />\n" +

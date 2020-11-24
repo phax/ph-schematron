@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2"
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xpath2"
     xmlns:sqf="http://www.schematron-quickfix.com/validator/process">
 
     <sch:let name="id" value="//*[1]/@id"/>

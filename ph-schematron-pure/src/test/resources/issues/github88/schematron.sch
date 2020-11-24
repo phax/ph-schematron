@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sch:schema xmlns="http://purl.oclc.org/dsdl/schematron"
             xmlns:sch="http://purl.oclc.org/dsdl/schematron"
-            queryBinding="xslt2" schemaVersion="ISO19757-3">
+            queryBinding="xpath2" schemaVersion="ISO19757-3">
   <sch:ns prefix="cfdi" uri="http://www.sat.gob.mx/cfd/3" />
  
   <sch:pattern name="bla">
