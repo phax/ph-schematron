@@ -58,12 +58,6 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
-import net.sf.saxon.jaxp.TransformerImpl;
-import net.sf.saxon.lib.StandardLogger;
-import net.sf.saxon.s9api.XsltTransformer;
-import net.sf.saxon.trace.TraceEventMulticaster;
-import net.sf.saxon.trace.XSLTTraceListener;
-
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT
  * transformations.
@@ -245,31 +239,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Applying Schematron XSLT on XML [start]");
-
-    // Enable this for hardcore Saxon debugging only
-    if (false)
-      if (aTransformer.getClass ().getName ().equals ("net.sf.saxon.jaxp.TransformerImpl"))
-      {
-        final XsltTransformer aXT = ((TransformerImpl) aTransformer).getUnderlyingXsltTransformer ();
-
-        aXT.setMessageListener ( (a, b, c, d) -> LOGGER.info ("MessageListener2: " + a + ", " + b + ", " + c + ", " + d));
-        aXT.setTraceFunctionDestination (new StandardLogger (System.err));
-        if (false)
-          aXT.getUnderlyingController ().setTraceListener (new XSLTTraceListener ());
-        if (false)
-        {
-          final XSLTTraceListener aTL = new XSLTTraceListener ();
-          aTL.setOutputDestination (new StandardLogger (System.err));
-          aXT.getUnderlyingController ().setTraceListener (TraceEventMulticaster.add (aTL, null));
-        }
-
-        if (false)
-          System.out.println ("mode=" + aXT.getInitialMode ());
-        if (false)
-          System.out.println ("temp=" + aXT.getInitialTemplate ());
-        if (false)
-          System.out.println (aTransformer.getOutputProperties ());
-      }
 
     // Do the main transformation
     {
