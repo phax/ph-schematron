@@ -25,9 +25,9 @@ import javax.annotation.Nonnull;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriter;
 
 public final class Issue008Test

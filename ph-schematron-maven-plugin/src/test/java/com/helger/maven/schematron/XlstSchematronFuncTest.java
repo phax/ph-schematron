@@ -23,7 +23,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.schematron.xslt.SchematronProviderXSLTFromSCH;
+import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 
 import net.sf.saxon.Transform;
 

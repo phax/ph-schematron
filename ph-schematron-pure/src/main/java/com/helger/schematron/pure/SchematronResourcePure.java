@@ -73,7 +73,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no
  * XSLT functions in Schematron asserts and reports! If your Schematrons use
  * XSLT functionality you're better off using the
- * {@link com.helger.schematron.xslt.SchematronResourceSCH} or
+ * {@link com.helger.schematron.sch.SchematronResourceSCH} or
  * {@link com.helger.schematron.xslt.SchematronResourceXSLT} classes instead!
  *
  * @author Philip Helger

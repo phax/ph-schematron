@@ -34,9 +34,9 @@ import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.exchange.PSWriterSettings;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 public final class Issue048Test

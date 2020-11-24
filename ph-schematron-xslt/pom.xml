@@ -58,6 +58,10 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>name.dmaus.schxslt</groupId>
+      <artifactId>schxslt</artifactId>
+    </dependency>
     
     <dependency>
       <groupId>com.helger.schematron</groupId>

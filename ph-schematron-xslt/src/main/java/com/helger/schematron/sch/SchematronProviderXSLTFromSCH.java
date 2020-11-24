@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.sch;
 
 import java.io.File;
 
@@ -38,7 +38,7 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
-import com.helger.schematron.xslt.SCHTransformerCustomizer.EStep;
+import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
@@ -142,7 +142,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       // perform step 1 (Schematron -> ResultStep1)
       final DOMResult aResult1 = new DOMResult ();
       final Transformer aTransformer1 = s_aStep1.newTransformer ();
-      aTransformerCustomizer.customize (EStep.SCH2XSLT_1, aTransformer1);
+      aTransformerCustomizer.customize (ESCHStep.SCH2XSLT_1, aTransformer1);
       aTransformer1.transform (TransformSourceFactory.create (aSchematronResource), aResult1);
 
       if (LOGGER.isDebugEnabled ())
@@ -151,7 +151,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       // perform step 2 (ResultStep1 -> ResultStep2)
       final DOMResult aResult2 = new DOMResult ();
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
-      aTransformerCustomizer.customize (EStep.SCH2XSLT_2, aTransformer2);
+      aTransformerCustomizer.customize (ESCHStep.SCH2XSLT_2, aTransformer2);
       aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
 
       if (LOGGER.isDebugEnabled ())
@@ -171,7 +171,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       // perform step 3 (ResultStep2 -> ResultStep3XSL)
       final DOMResult aResult3 = new DOMResult ();
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
-      aTransformerCustomizer.customize (EStep.SCH2XSLT_3, aTransformer3);
+      aTransformerCustomizer.customize (ESCHStep.SCH2XSLT_3, aTransformer3);
       aTransformer3.transform (TransformSourceFactory.create (aResult2.getNode ()), aResult3);
 
       if (LOGGER.isDebugEnabled ())

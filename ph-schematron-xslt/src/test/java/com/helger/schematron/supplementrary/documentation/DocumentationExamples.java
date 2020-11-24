@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.docs;
+package com.helger.schematron.supplementrary.documentation;
 
 import java.io.File;
 
@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 
 /**
  * This class contains code examples that are used in the documentation.

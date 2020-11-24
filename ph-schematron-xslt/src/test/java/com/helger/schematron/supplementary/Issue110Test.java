@@ -25,7 +25,7 @@ import org.junit.Test;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resourceresolver.DefaultResourceResolver;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.schematron.sch.SchematronResourceSCH;
 
 public final class Issue110Test
 {

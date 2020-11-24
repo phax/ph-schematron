@@ -26,15 +26,15 @@ import org.junit.Test;
 
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 
 /**
  * Test class for class {@link SchematronHelper}.
  *
  * @author Philip Helger
  */
-public final class SchematronHelperTest
+public final class SchematronHelperFuncTest
 {
   private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";

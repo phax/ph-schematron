@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.sch;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,6 +37,7 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 

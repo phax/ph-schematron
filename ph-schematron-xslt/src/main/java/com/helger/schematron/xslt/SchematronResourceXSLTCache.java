@@ -38,7 +38,7 @@ import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
- * Factory for creating {@link ISchematronXSLTBasedProvider} objects.
+ * Factory for creating {@link SchematronProviderXSLTPrebuild} objects.
  *
  * @author Philip Helger
  */

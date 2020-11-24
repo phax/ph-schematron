@@ -32,9 +32,9 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.XMLFactory;
 
 /**

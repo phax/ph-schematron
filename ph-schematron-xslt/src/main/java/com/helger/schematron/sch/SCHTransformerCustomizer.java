@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.sch;
 
 import java.util.Locale;
 import java.util.Map;
@@ -40,13 +40,6 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
 @NotThreadSafe
 public class SCHTransformerCustomizer
 {
-  public static enum EStep
-  {
-    SCH2XSLT_1,
-    SCH2XSLT_2,
-    SCH2XSLT_3;
-  }
-
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
 
   private ErrorListener m_aCustomErrorListener;
@@ -184,7 +177,7 @@ public class SCHTransformerCustomizer
       aTransformer.setURIResolver (m_aCustomURIResolver);
   }
 
-  public void customize (@Nonnull final EStep eStep, @Nonnull final Transformer aTransformer)
+  public void customize (@Nonnull final ESCHStep eStep, @Nonnull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -201,7 +194,7 @@ public class SCHTransformerCustomizer
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
 
-    if (eStep == EStep.SCH2XSLT_3)
+    if (eStep == ESCHStep.SCH2XSLT_3)
     {
       // On the last step, set the respective Schematron parameters as the
       // last action to avoid they are overwritten by a custom parameter.

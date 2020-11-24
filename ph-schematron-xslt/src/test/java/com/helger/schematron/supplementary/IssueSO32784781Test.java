@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import com.helger.commons.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.xslt.SchematronResourceSCH;
+import com.helger.schematron.sch.SchematronResourceSCH;
 
 /**
  * Test for StackOverflow

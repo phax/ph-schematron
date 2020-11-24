@@ -27,9 +27,9 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceSCH;
 import com.helger.xml.serialize.write.XMLWriter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

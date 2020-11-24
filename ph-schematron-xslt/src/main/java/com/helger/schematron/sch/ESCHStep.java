@@ -14,24 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.supplementary;
+package com.helger.schematron.sch;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
-import org.junit.Test;
-
-import com.helger.schematron.sch.SchematronResourceSCH;
-import com.helger.schematron.xslt.ISchematronXSLTBasedResource;
-
-public final class Issue20180214Test
+/**
+ * Contains all the steps for using the schematron.com XSLTs
+ *
+ * @author Philip Helger
+ */
+public enum ESCHStep
 {
-  @Test
-  public void testRead () throws Exception
-  {
-    final ISchematronXSLTBasedResource aRes = SchematronResourceSCH.fromFile (new File ("src/test/resources/issues/20180214/04-ESPD-Common-BR-rules.sch"));
-    aRes.setAllowForeignElements (true);
-    assertTrue (aRes.isValidSchematron ());
-  }
+  SCH2XSLT_1,
+  SCH2XSLT_2,
+  SCH2XSLT_3;
 }

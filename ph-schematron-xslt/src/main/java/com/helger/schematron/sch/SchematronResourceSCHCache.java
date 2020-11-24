@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.xslt;
+package com.helger.schematron.sch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +33,7 @@ import com.helger.commons.string.StringHelper;
 import com.helger.xml.serialize.write.XMLWriter;
 
 /**
- * Factory for creating {@link ISchematronXSLTBasedProvider} objects.
+ * Factory for creating {@link SchematronProviderXSLTFromSCH} objects.
  *
  * @author Philip Helger
  */
