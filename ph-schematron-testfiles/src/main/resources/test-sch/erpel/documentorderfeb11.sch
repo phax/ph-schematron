@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://purl.oclc.org/dsdl/schematron" schemaVersion="iso">
+<schema xmlns="http://purl.oclc.org/dsdl/schematron" schemaVersion="iso" queryBinding="xslt2">
   <title>Schematron for DocumentOrder</title>
   <ns uri="http://erpel.at/schemas/1p0/documents" prefix="p1"/>
   <ns uri="http://erpel.at/schemas/1p0/documents/ext" prefix="ext"/>

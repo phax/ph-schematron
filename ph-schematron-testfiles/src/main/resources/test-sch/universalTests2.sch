@@ -2,7 +2,7 @@
 
 <?xml-stylesheet type="text/xsl" href="../../iso_schematron_skeleton_for_xslt1.xsl"?>
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
-   queryBinding="xslt" >
+   queryBinding="xslt2" >
   <sch:title>Universal Tests</sch:title>
   <sch:p>This schema gives the most basic tests for checking an ISO Schematron implementation.
   It does not test the XPath implementation in any significant way, just the basics of assertions,

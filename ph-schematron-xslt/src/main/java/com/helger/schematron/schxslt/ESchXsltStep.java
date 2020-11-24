@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.sch;
+package com.helger.schematron.schxslt;
 
 /**
- * Contains all the steps for using the schematron.com XSLTs
+ * Contains all the steps for using the SchXslt XSLTs
  *
  * @author Philip Helger
  */
-public enum ESCHStep
+public enum ESchXsltStep
 {
   SCH2XSLT_1,
   SCH2XSLT_2,

@@ -1,5 +1,5 @@
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
-     xml:lang="en" >
+     xml:lang="en" queryBinding="xslt2" >
     <sch:title>Example of Multi-Lingual Schema</sch:title>
     <sch:pattern>
         <sch:rule context="dog">

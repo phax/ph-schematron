@@ -5,7 +5,7 @@
        provided this notice is included in all copies.
  -->
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
-     xml:lang="en" >
+     xml:lang="en" queryBinding="xslt2" >
     <sch:title>Schema for Additional Constraints in Schematron</sch:title>
     <sch:ns prefix="sch" uri="http://purl.oclc.org/dsdl/schematron" />
     <sch:p>This schema supplies some constraints in addition to those

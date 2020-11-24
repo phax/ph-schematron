@@ -18,6 +18,7 @@ package com.helger.schematron.pure.bound.xpath;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -104,14 +105,18 @@ public final class PSXPathBoundSchemaTest
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
+      if (true)
+        LOGGER.info ("Binding " + aRes.getPath ());
+
       // Parse the schema
       final PSSchema aSchema = new PSReader (aRes).readSchema ();
       assertNotNull (aSchema);
       CommonsTestHelper.testToStringImplementation (aSchema);
 
-      final CollectingPSErrorHandler aLogger = new CollectingPSErrorHandler ();
-      assertTrue (aRes.getPath (), aSchema.isValid (aLogger));
-      assertTrue (aLogger.isEmpty ());
+      final CollectingPSErrorHandler aErrHdl = new CollectingPSErrorHandler ();
+      if (!aSchema.isValid (aErrHdl))
+        fail (aRes.getPath () + " - " + aErrHdl.getAllErrors ());
+      assertTrue (aRes.getPath () + " - " + aErrHdl.getAllErrors (), aErrHdl.isEmpty ());
 
       // Create a compiled schema
       final IPSBoundSchema aBoundSchema = PSXPathQueryBinding.getInstance ().bind (aSchema);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
     <sch:ns prefix="ead" uri="urn:isbn:1-931666-22-9"/>
     <sch:ns prefix="mets" uri="http://www.loc.gov/METS/"/>
     <!-- ################################################################## -->
@@ -16,6 +16,13 @@
         <sch:rule id="LOCTYPE-OTHER" abstract="true">
             <sch:assert test="(contains(string(@LOCTYPE), 'OTHER')) and (normalize-space(@OTHERLOCTYPE))">If the value of a LOCTYPE attribute is
                 "OTHER", then the OTHERLOCTYPE attribute must be used </sch:assert>
+        </sch:rule>
+        <sch:rule context="mets:mdWrap">
+            <sch:extends rule="MDTYPE-OTHER"/>
+        </sch:rule>
+        <sch:rule context="mets:mdRef">
+            <sch:extends rule="LOCTYPE-OTHER"/>
+            <sch:extends rule="MDTYPE-OTHER"/>
         </sch:rule>
     </sch:pattern>
     <sch:pattern id="DMDID-IDIDREF">
@@ -34,17 +41,6 @@
                 ] )
                 = string-length(normalize-space(@DMDID)) - string-length(translate(normalize-space(@DMDID), ' ','')) + 1"
                 diagnostics="DMDID-en"/>
-        </sch:rule>
-    </sch:pattern>
-    <sch:pattern id="mdWrap">
-        <sch:rule context="mets:mdWrap">
-            <sch:extends rule="MDTYPE-OTHER"/>
-        </sch:rule>
-    </sch:pattern>
-    <sch:pattern id="mdRef">
-    <sch:rule context="mets:mdRef">
-            <sch:extends rule="LOCTYPE-OTHER"/>
-            <sch:extends rule="MDTYPE-OTHER"/>
         </sch:rule>
     </sch:pattern>
     

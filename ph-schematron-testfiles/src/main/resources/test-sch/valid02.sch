@@ -1,4 +1,4 @@
-<schema  xmlns="http://purl.oclc.org/dsdl/schematron" >
+<schema  xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
      <pattern>
           <rule context="AAA">
                <assert test="BBB"><name /> element is <dir>missing</dir>.</assert>
