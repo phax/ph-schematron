@@ -104,7 +104,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * </ul>
    */
   @Parameter (name = "schematronProcessingEngine", required = true)
-  private String m_sSchematronProcessingEngine = ESchematronMode.PURE.getID ();
+  private String m_sSchematronProcessingEngine = ESchematronMode.SCHEMATRON.getID ();
 
   /**
    * The directory where the XML files reside that are expected to match the

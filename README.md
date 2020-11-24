@@ -17,13 +17,15 @@ The dependency for ph-schematron looks like this, replacing `x.y.z` with the lat
 
 ```xml
 <dependency>
-  <groupId>com.helger</groupId>
+  <groupId>com.helger.schematron</groupId>
   <artifactId>ph-schematron</artifactId>
   <version>x.y.z</version>
 </dependency>
 ```
 
 It transitively contains [ph-commons](https://github.com/phax/ph-commons), [SLF4J](http://www.slf4j.org/) and [Saxon HE](http://saxon.sourceforge.net/).
+
+Note: up to and including v5.x the Maven groupId was `com.helger`.
 
 # Maven plugin to convert Schematron to XSLT at build time
 
@@ -40,23 +42,6 @@ By default the plugin is run in the Maven lifecycle phase *generate-resources*. 
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
   <version>x.y.z</version>
-  <executions>
-    <execution>
-      <goals>
-        <goal>convert</goal>
-      </goals>
-    </execution>
-  </executions>
-</plugin>
-```
-
-Up to and including version 5.0.8 the Maven artifact Id was different:
-
-```xml
-<plugin>
-  <groupId>com.helger.maven</groupId>
-  <artifactId>ph-sch2xslt-maven-plugin</artifactId>
-  <version>5.0.8</version>
   <executions>
     <execution>
       <goals>
@@ -114,7 +99,7 @@ By default the plugin is run in the Maven lifecycle phase *process-resources*. T
 
 The possible configuration parameters are:
   * `schematronFile` - The Schematron file to be applied. This parameter is mandatory.
-  * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `pure`.
+  * `schematronProcessingEngine` - The Schematron processing engine to be used. Can be one of `pure` (pure implementation), `schematron` (Schematron to XSLT engine) and `xslt` (pre-compiled XSLT files available). Default is `schematron` since v6 (was previously `pure`).
   * `xmlDirectory` - The directory where the XML files to be validated are contained. It is expected that the XML files in this directory match the Schematron rules. Either this parameter or `xmlErrorDirectory` parameter are mandatory.
   * `xmlIncludes` - A pattern for the XML files to be included. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will be validated. Files in the `xmlDirectory` and its subdirectories will be considered. Default is `**/*.xml`.
   * `xmlExcludes` - A pattern for the XML files to be excluded. Can contain Ant-style wildcards and double wildcards. All files that match the pattern will **NOT** be validated. Files in the `xmlDirectory` and its subdirectories will be considered.
@@ -307,8 +292,12 @@ The `schematron` element allows for the following attributes:
 
 * v6.0.0 - work in progress
     * Using the new Maven group ID `com.helger.schematron` (the group ID of the Maven plugin stays untouched: `com.helger.maven`)
+    * Created a new submodule `ph-schematron-api` that contains the shared implementation parts
     * Created a new submodule `ph-schematron-pure` that contains the pure implementation
+    * Created a new submodule `ph-schematron-xslt` that contains the XSLT based implementation
+    * Dropped the submodule `ph-schematron` - pick one of `ph-schematron-xslt` or `ph-schematron-pure` instead
     * Extended the SVRL XSD to also work if foreign elements are allowed see [#111](https://github.com/phax/ph-schematron/issues/111) (thanks [@flowrider3000](https://github.com/flowrider3000)) and [#101](https://github.com/phax/ph-schematron/issues/101) (thanks [@Michiel-s](https://github.com/Michiel-s))
+    * The default processing engine for the Schematron validation changed from `pure` to `schematron`
 * v5.6.5 - 2020-11-19
     * Updated to Saxon-HE 10.3
     * Added `SchematronResourceXSLTCache.clearCache()` and `SchematronResourceSCHCache.clearCache()` (see [#109](https://github.com/phax/ph-schematron/issues/109)) - thanks [@SnowMakerDemo](https://github.com/SnowMakerDemo)
