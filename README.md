@@ -308,6 +308,7 @@ The `schematron` element allows for the following attributes:
 * v6.0.0 - work in progress
     * Using the new Maven group ID `com.helger.schematron` (the group ID of the Maven plugin stays untouched: `com.helger.maven`)
     * Created a new submodule `ph-schematron-pure` that contains the pure implementation
+    * Extended the SVRL XSD to also work if foreign elements are allowed see [#111](https://github.com/phax/ph-schematron/issues/111) (thanks [@flowrider3000](https://github.com/flowrider3000)) and [#101](https://github.com/phax/ph-schematron/issues/101) (thanks [@Michiel-s](https://github.com/Michiel-s))
 * v5.6.5 - 2020-11-19
     * Updated to Saxon-HE 10.3
     * Added `SchematronResourceXSLTCache.clearCache()` and `SchematronResourceSCHCache.clearCache()` (see [#109](https://github.com/phax/ph-schematron/issues/109)) - thanks [@SnowMakerDemo](https://github.com/SnowMakerDemo)
