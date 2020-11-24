@@ -34,7 +34,7 @@ import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
-import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.pure.xpath.IXPathConfig;
 
 /**
  * Base interface for a single query binding.

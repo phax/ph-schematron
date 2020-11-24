@@ -42,7 +42,7 @@ import com.helger.schematron.pure.model.PSParam;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
-import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.pure.xpath.IXPathConfig;
 
 /**
  * Default XPath/XSLT query binding

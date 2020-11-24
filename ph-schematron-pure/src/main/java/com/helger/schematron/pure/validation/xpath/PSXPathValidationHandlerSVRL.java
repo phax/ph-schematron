@@ -50,6 +50,7 @@ import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.pure.xpath.XPathEvaluationHelper;
 import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
@@ -58,7 +59,6 @@ import com.helger.schematron.svrl.jaxb.NsPrefixInAttributeValues;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
-import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.xml.XMLHelper;
 
 /**

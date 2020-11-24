@@ -56,12 +56,17 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron</artifactId>
+      <artifactId>ph-schematron-api</artifactId>
     </dependency>
     
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

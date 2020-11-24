@@ -58,11 +58,11 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.exchange.PSWriter;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
+import com.helger.schematron.pure.xpath.IXPathConfig;
+import com.helger.schematron.pure.xpath.XPathConfig;
+import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**

@@ -61,10 +61,10 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.pure.xpath.IXPathConfig;
+import com.helger.schematron.pure.xpath.XPathConfigBuilder;
+import com.helger.schematron.pure.xpath.XPathEvaluationHelper;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
-import com.helger.schematron.xpath.XPathEvaluationHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.xpath.XPathHelper;
 

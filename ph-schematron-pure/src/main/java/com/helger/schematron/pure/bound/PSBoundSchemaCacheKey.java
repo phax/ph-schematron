@@ -43,7 +43,7 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
-import com.helger.schematron.xpath.IXPathConfig;
+import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**

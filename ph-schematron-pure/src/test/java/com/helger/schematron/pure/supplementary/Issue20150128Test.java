@@ -26,9 +26,9 @@ import org.junit.Test;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.xpath.IXPathConfig;
-import com.helger.schematron.xpath.XPathConfigBuilder;
-import com.helger.schematron.xpath.XQueryAsXPathFunctionConverter;
+import com.helger.schematron.pure.xpath.IXPathConfig;
+import com.helger.schematron.pure.xpath.XPathConfigBuilder;
+import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
 public final class Issue20150128Test
