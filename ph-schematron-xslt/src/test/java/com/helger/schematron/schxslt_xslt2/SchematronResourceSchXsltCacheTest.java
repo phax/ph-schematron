@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.schxslt;
+package com.helger.schematron.schxslt_xslt2;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,9 +36,6 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.schxslt_xslt2.SchXsltTransformerCustomizer;
-import com.helger.schematron.schxslt_xslt2.SchematronResourceSchXslt;
-import com.helger.schematron.schxslt_xslt2.SchematronResourceSchXsltCache;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.schematron.xslt.ISchematronXSLTBasedProvider;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -120,10 +117,17 @@ public final class SchematronResourceSchXsltCacheTest
   public void testXSLTPreprocessor ()
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
-      // BIICORE-UBL-*.sch works but takes forever
-      // EUGEN-UBL-*.sch has a StackOverflow
-      // The others have errors (required parameters etc.)
-      if (!aRes.getPath ().endsWith ("/example-8-5.sch") &&
+      if (!aRes.getPath ().contains ("/ATGOV-UBL-") &&
+          !aRes.getPath ().contains ("/ATNAT-UBL-") &&
+          !aRes.getPath ().contains ("/BIICORE-UBL-") &&
+          !aRes.getPath ().contains ("/BIIPROFILES-UBL-") &&
+          !aRes.getPath ().contains ("/BIIRULES-") &&
+          !aRes.getPath ().contains ("/DKNAT-") &&
+          !aRes.getPath ().contains ("/EUGEN-UBL-") &&
+          !aRes.getPath ().contains ("/ITNAT-UBL-") &&
+          !aRes.getPath ().contains ("/NOGOV-") &&
+          !aRes.getPath ().contains ("/NONAT-") &&
+          !aRes.getPath ().endsWith ("/example-8-5.sch") &&
           !aRes.getPath ().endsWith ("/pattern-example-with-includes.sch") &&
           !aRes.getPath ().endsWith ("/pattern-example.sch"))
       {
