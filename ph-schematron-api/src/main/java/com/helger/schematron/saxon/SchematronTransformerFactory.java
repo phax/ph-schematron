@@ -111,6 +111,8 @@ public final class SchematronTransformerFactory
 
       // Maintain position #52
       aFactory.setFeature (FeatureKeys.LINE_NUMBERING, true);
+      // Allow XInclude #86
+      aFactory.setFeature (FeatureKeys.XINCLUDE, true);
 
       // Debug/testing only
       if (false)
