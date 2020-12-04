@@ -42,12 +42,14 @@ public abstract class AbstractSVRLMessage implements Serializable
 {
   protected ICommonsList <DiagnosticReference> m_aDiagnosticReferences;
   protected String m_sText;
+  protected String m_sID;
   protected String m_sLocation;
   protected String m_sTest;
   protected String m_sRole;
   protected IErrorLevel m_aFlag;
 
   public AbstractSVRLMessage (@Nullable final List <DiagnosticReference> aDiagnosticReferences,
+                              @Nullable final String sID,
                               @Nullable final String sText,
                               @Nullable final String sLocation,
                               @Nullable final String sTest,
@@ -55,6 +57,7 @@ public abstract class AbstractSVRLMessage implements Serializable
                               @Nullable final IErrorLevel aFlag)
   {
     m_aDiagnosticReferences = new CommonsArrayList <> (aDiagnosticReferences);
+    m_sID = StringHelper.trim (sID);
     m_sText = StringHelper.trim (sText);
     m_sLocation = sLocation;
     m_sTest = sTest;
@@ -64,37 +67,43 @@ public abstract class AbstractSVRLMessage implements Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <DiagnosticReference> getDiagnisticReferences ()
+  public final ICommonsList <DiagnosticReference> getDiagnisticReferences ()
   {
     return m_aDiagnosticReferences.getClone ();
   }
 
   @Nullable
-  public String getText ()
+  public final String getID ()
+  {
+    return m_sID;
+  }
+
+  @Nullable
+  public final String getText ()
   {
     return m_sText;
   }
 
   @Nullable
-  public String getLocation ()
+  public final String getLocation ()
   {
     return m_sLocation;
   }
 
   @Nullable
-  public String getTest ()
+  public final String getTest ()
   {
     return m_sTest;
   }
 
   @Nullable
-  public String getRole ()
+  public final String getRole ()
   {
     return m_sRole;
   }
 
   @Nonnull
-  public IErrorLevel getFlag ()
+  public final IErrorLevel getFlag ()
   {
     return m_aFlag;
   }
@@ -103,6 +112,7 @@ public abstract class AbstractSVRLMessage implements Serializable
   public SVRLResourceError getAsResourceError (@Nullable final String sResourceName)
   {
     return new SVRLErrorBuilder (m_sTest).setErrorLevel (m_aFlag)
+                                         .setErrorID (m_sID)
                                          .setErrorFieldName (m_sLocation)
                                          .setErrorLocation (new SimpleLocation (sResourceName))
                                          .setErrorText (m_sText)
@@ -112,12 +122,13 @@ public abstract class AbstractSVRLMessage implements Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("diagnosticRefs", m_aDiagnosticReferences)
-                                       .append ("text", m_sText)
-                                       .append ("location", m_sLocation)
-                                       .append ("test", m_sTest)
-                                       .appendIfNotNull ("role", m_sRole)
-                                       .append ("flag", m_aFlag)
+    return new ToStringGenerator (this).append ("DiagnosticRefs", m_aDiagnosticReferences)
+                                       .append ("ID", m_sID)
+                                       .append ("Text", m_sText)
+                                       .append ("Location", m_sLocation)
+                                       .append ("Test", m_sTest)
+                                       .appendIfNotNull ("Role", m_sRole)
+                                       .append ("Flag", m_aFlag)
                                        .getToString ();
   }
 }
