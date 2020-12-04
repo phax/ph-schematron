@@ -11,6 +11,9 @@
   
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://purl.oclc.org/dsdl/svrl" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+  
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+
   <!-- The root element -->
   <xs:element name="schematron-output" type="svrl:SchematronOutputType" />
 
@@ -75,33 +78,35 @@
   </xs:element>
   <!-- only references are reported, not the diagnostic -->
   <xs:element name="diagnostic-reference">
-    <xs:complexType>
+    <xs:complexType mixed="true">
       <xs:sequence>
-        <xs:element ref="svrl:text"/>
+        <xs:element ref="svrl:text" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
       <xs:attribute name="diagnostic" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute ref="xml:lang" use="optional" />
     </xs:complexType>
   </xs:element>
   <!-- only failed assertions are reported -->
   <xs:element name="failed-assert">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:property-reference"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="svrl:diagnostic-reference"/>
+        <xs:element ref="svrl:property-reference"/>
         <xs:element ref="svrl:text"/>
         <!-- Note: XSLT based version may emit the diagnostic-reference here :( -->
-      </xs:sequence>
+      </xs:choice>
       <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
     </xs:complexType>
   </xs:element>
   <!-- only successful asserts are reported -->
   <xs:element name="successful-report">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:diagnostic-reference"/>
-        <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:property-reference"/>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="svrl:diagnostic-reference"/>
+        <xs:element ref="svrl:property-reference"/>
         <xs:element ref="svrl:text"/>
-      </xs:sequence>
+        <!-- Note: XSLT based version may emit the diagnostic-reference here :( -->
+      </xs:choice>
       <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
     </xs:complexType>
   </xs:element>

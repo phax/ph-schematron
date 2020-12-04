@@ -25,13 +25,16 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
+import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
+import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
@@ -263,5 +266,49 @@ public final class SVRLHelper
         sResult = StringHelper.replaceAll (sResult, aMatcher.group (), sBeautified);
     }
     return sResult;
+  }
+
+  @Nonnull
+  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@Nonnull final FailedAssert aFA)
+  {
+    return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                            x -> x instanceof DiagnosticReference,
+                                            (final Object x) -> (DiagnosticReference) x);
+  }
+
+  @Nonnull
+  public static ICommonsList <PropertyReference> getAllPropertyReferences (@Nonnull final FailedAssert aFA)
+  {
+    return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                            x -> x instanceof PropertyReference,
+                                            (final Object x) -> (PropertyReference) x);
+  }
+
+  @Nonnull
+  public static Text getText (@Nonnull final FailedAssert aFA)
+  {
+    return CollectionHelper.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (), x -> x instanceof Text, x -> (Text) x);
+  }
+
+  @Nonnull
+  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@Nonnull final SuccessfulReport aSR)
+  {
+    return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                            x -> x instanceof DiagnosticReference,
+                                            (final Object x) -> (DiagnosticReference) x);
+  }
+
+  @Nonnull
+  public static ICommonsList <PropertyReference> getAllPropertyReferences (@Nonnull final SuccessfulReport aSR)
+  {
+    return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                            x -> x instanceof PropertyReference,
+                                            (final Object x) -> (PropertyReference) x);
+  }
+
+  @Nonnull
+  public static Text getText (@Nonnull final SuccessfulReport aSR)
+  {
+    return CollectionHelper.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (), x -> x instanceof Text, x -> (Text) x);
   }
 }

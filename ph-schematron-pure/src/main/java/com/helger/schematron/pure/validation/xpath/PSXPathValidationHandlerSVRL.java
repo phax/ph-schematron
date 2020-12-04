@@ -287,7 +287,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    * @throws SchematronValidationException
    */
   private void _handleDiagnosticReferences (@Nullable final List <String> aSrcDiagnostics,
-                                            @Nonnull final List <DiagnosticReference> aDstList,
+                                            @Nonnull final List <? super DiagnosticReference> aDstList,
                                             @Nonnull final PSXPathBoundAssertReport aBoundAssertReport,
                                             @Nonnull final Node aRuleMatchingNode) throws SchematronValidationException
   {
@@ -306,7 +306,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // Create the SVRL diagnostic-reference element
             final DiagnosticReference aDR = new DiagnosticReference ();
             aDR.setDiagnostic (sDiagnosticID);
-            aDR.setText (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode));
+            aDR.getContent ().add (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode));
             aDstList.add (aDR);
           }
         }
@@ -341,9 +341,10 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     if (aAssertReport.hasLinkable ())
       aFailedAssert.setRole (aAssertReport.getLinkable ().getRole ());
     aFailedAssert.setTest (sTestExpression);
-    aFailedAssert.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
+    aFailedAssert.getDiagnosticReferenceOrPropertyReferenceOrText ()
+                 .add (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
-                                 aFailedAssert.getDiagnosticReference (),
+                                 aFailedAssert.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                  aBoundAssertReport,
                                  aRuleMatchingNode);
     m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aFailedAssert);
@@ -369,9 +370,10 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     if (aAssertReport.hasLinkable ())
       aSuccessfulReport.setRole (aAssertReport.getLinkable ().getRole ());
     aSuccessfulReport.setTest (sTestExpression);
-    aSuccessfulReport.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
+    aSuccessfulReport.getDiagnosticReferenceOrPropertyReferenceOrText ()
+                     .add (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
-                                 aSuccessfulReport.getDiagnosticReference (),
+                                 aSuccessfulReport.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                  aBoundAssertReport,
                                  aRuleMatchingNode);
     m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aSuccessfulReport);

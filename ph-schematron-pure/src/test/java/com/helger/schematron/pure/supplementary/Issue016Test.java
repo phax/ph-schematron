@@ -137,7 +137,7 @@ public final class Issue016Test
       for (final DiagnosticReference diagnisticRef : diagnisticReferences)
       {
         System.out.println ("Diag ref: " + diagnisticRef.getDiagnostic ());
-        System.out.println ("Diag text: " + diagnisticRef.getText ());
+        System.out.println ("Diag text: " + diagnisticRef.getContentAtIndex (0));
       }
     }
 
