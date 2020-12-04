@@ -109,13 +109,14 @@ public final class SchematronTransformerFactory
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Created TransformerFactory with Saxon using '" + SAXON_TRANSFORMER_FACTORY_CLASS + "'");
 
+      // Maintain position #52
+      aFactory.setFeature (FeatureKeys.LINE_NUMBERING, true);
+
       // Debug/testing only
       if (false)
         aFactory.setFeature (FeatureKeys.TRACE_OPTIMIZER_DECISIONS, true);
       if (false)
         aFactory.setFeature (FeatureKeys.COMPILE_WITH_TRACING, true);
-      if (false)
-        aFactory.setAttribute (FeatureKeys.XSLT_VERSION, "2.0");
     }
     catch (final TransformerFactoryConfigurationError | TransformerConfigurationException ex)
     {
