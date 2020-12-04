@@ -48,6 +48,7 @@ public class XPathConfigBuilder
   private static final Logger LOGGER = LoggerFactory.getLogger (XPathConfigBuilder.class);
   private static final Class <?> [] EMPTY_CLASS_ARRAY = new Class <?> [0];
 
+  private XPathFactory m_aXPathFactory;
   private Class <? extends XPathFactory> m_aXPathFactoryClass;
   private String m_sGlobalXPathFactory;
   private XPathVariableResolver m_aXPathVariableResolver;
@@ -57,13 +58,27 @@ public class XPathConfigBuilder
   {}
 
   @Nullable
-  public Class <? extends XPathFactory> getXPathFactoryClass ()
+  public final XPathFactory getXPathFactory ()
+  {
+    return m_aXPathFactory;
+  }
+
+  @Nonnull
+  public final XPathConfigBuilder setXPathFactory (@Nonnull final XPathFactory aXPathFactory)
+  {
+    ValueEnforcer.notNull (aXPathFactory, "XPathFactoryClass");
+    m_aXPathFactory = aXPathFactory;
+    return this;
+  }
+
+  @Nullable
+  public final Class <? extends XPathFactory> getXPathFactoryClass ()
   {
     return m_aXPathFactoryClass;
   }
 
   @Nonnull
-  public XPathConfigBuilder setXPathFactoryClass (@Nonnull final Class <? extends XPathFactory> aXPathFactoryClass)
+  public final XPathConfigBuilder setXPathFactoryClass (@Nonnull final Class <? extends XPathFactory> aXPathFactoryClass)
   {
     ValueEnforcer.notNull (aXPathFactoryClass, "XPathFactoryClass");
     m_aXPathFactoryClass = aXPathFactoryClass;
@@ -71,7 +86,7 @@ public class XPathConfigBuilder
   }
 
   @Nullable
-  public String getGlobalXPathFactory ()
+  public final String getGlobalXPathFactory ()
   {
     return m_sGlobalXPathFactory;
   }
@@ -92,33 +107,33 @@ public class XPathConfigBuilder
    * @return this for chaining
    */
   @Nonnull
-  public XPathConfigBuilder setGlobalXPathFactory (@Nullable final String sGlobalXPathFactory)
+  public final XPathConfigBuilder setGlobalXPathFactory (@Nullable final String sGlobalXPathFactory)
   {
     m_sGlobalXPathFactory = sGlobalXPathFactory;
     return this;
   }
 
   @Nullable
-  public XPathVariableResolver getXPathVariableResolver ()
+  public final XPathVariableResolver getXPathVariableResolver ()
   {
     return m_aXPathVariableResolver;
   }
 
   @Nonnull
-  public XPathConfigBuilder setXPathVariableResolver (@Nullable final XPathVariableResolver xPathVariableResolver)
+  public final XPathConfigBuilder setXPathVariableResolver (@Nullable final XPathVariableResolver xPathVariableResolver)
   {
     m_aXPathVariableResolver = xPathVariableResolver;
     return this;
   }
 
   @Nullable
-  public XPathFunctionResolver getXPathFunctionResolver ()
+  public final XPathFunctionResolver getXPathFunctionResolver ()
   {
     return m_aXPathFunctionResolver;
   }
 
   @Nonnull
-  public XPathConfigBuilder setXPathFunctionResolver (@Nullable final XPathFunctionResolver xPathFunctionResolver)
+  public final XPathConfigBuilder setXPathFunctionResolver (@Nullable final XPathFunctionResolver xPathFunctionResolver)
   {
     m_aXPathFunctionResolver = xPathFunctionResolver;
     return this;
@@ -127,41 +142,41 @@ public class XPathConfigBuilder
   @Nonnull
   public IXPathConfig build () throws XPathFactoryConfigurationException
   {
-    if (StringHelper.hasText (m_sGlobalXPathFactory))
+    // Check if a predefined XPathFactory is present
+    XPathFactory aXPathFactory = m_aXPathFactory;
+    if (aXPathFactory == null)
     {
-      if (SystemProperties.setPropertyValue ("javax.xml.xpath.XPathFactory", m_sGlobalXPathFactory).isChanged ())
-      {
-        LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" + m_sGlobalXPathFactory + "'");
-      }
-    }
-
-    final XPathFactory aXPathFactory;
-    if (m_aXPathFactoryClass != null)
-    {
-      try
-      {
-        aXPathFactory = m_aXPathFactoryClass.getConstructor (EMPTY_CLASS_ARRAY).newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
-      }
-      catch (final InvocationTargetException e)
-      {
-        throw new XPathFactoryConfigurationException (e.getCause ());
-      }
-      catch (final Exception e)
-      {
-        throw new XPathFactoryConfigurationException (e);
-      }
-    }
-    else
       if (StringHelper.hasText (m_sGlobalXPathFactory))
+        if (SystemProperties.setPropertyValue ("javax.xml.xpath.XPathFactory", m_sGlobalXPathFactory).isChanged ())
+          LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" + m_sGlobalXPathFactory + "'");
+
+      if (m_aXPathFactoryClass != null)
       {
-        // Fall back to the global XPath factory
-        aXPathFactory = XPathFactory.newInstance ();
+        try
+        {
+          aXPathFactory = m_aXPathFactoryClass.getConstructor (EMPTY_CLASS_ARRAY).newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
+        }
+        catch (final InvocationTargetException e)
+        {
+          throw new XPathFactoryConfigurationException (e.getCause ());
+        }
+        catch (final Exception e)
+        {
+          throw new XPathFactoryConfigurationException (e);
+        }
       }
       else
-      {
-        // DEFAULT as fallback
-        aXPathFactory = XPATH_FACTORY_SAXON_FIRST;
-      }
+        if (StringHelper.hasText (m_sGlobalXPathFactory))
+        {
+          // Fall back to the global XPath factory
+          aXPathFactory = XPathFactory.newInstance ();
+        }
+        else
+        {
+          // DEFAULT as fallback
+          aXPathFactory = XPATH_FACTORY_SAXON_FIRST;
+        }
+    }
 
     return new XPathConfig (aXPathFactory, m_aXPathVariableResolver, m_aXPathFunctionResolver);
   }
