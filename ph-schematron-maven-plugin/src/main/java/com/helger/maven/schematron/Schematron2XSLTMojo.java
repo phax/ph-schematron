@@ -47,9 +47,9 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
-import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.sch.SchematronResourceSCHCache;
+import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -315,8 +315,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                   aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
               });
 
-              final XMLWriterSettings aXWS = new XMLWriterSettings ();
-              aXWS.setNamespaceContext (aNSContext).setPutNamespaceContextPrefixesInRoot (true);
+              final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
+                                                                     .setPutNamespaceContextPrefixesInRoot (true);
 
               final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
               if (aOS == null)
