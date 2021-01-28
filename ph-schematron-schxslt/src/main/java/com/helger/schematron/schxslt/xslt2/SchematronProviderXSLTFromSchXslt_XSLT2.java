@@ -156,6 +156,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
       aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_2, aTransformer2);
       final DOMSource aSrc2 = TransformSourceFactory.create (aResult1.getNode ());
+      // SystemId is required for "base-uri(.)" to work
       if (aSrc2.getSystemId () == null)
         aSrc2.setSystemId (aSrc1.getSystemId ());
       aTransformer2.transform (aSrc2, aResult2);
@@ -179,6 +180,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
       aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_3, aTransformer3);
       final DOMSource aSrc3 = TransformSourceFactory.create (aResult2.getNode ());
+      // SystemId is required for "base-uri(.)" to work
       if (aSrc3.getSystemId () == null)
         aSrc3.setSystemId (aSrc1.getSystemId ());
       aTransformer3.transform (aSrc3, aResult3);
