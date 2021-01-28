@@ -118,22 +118,27 @@ public final class SchematronResourceXSLTCache
     final String sResourceID = aXSLTResource.getResourceID ();
 
     // Validator already in the cache?
-    final SchematronProviderXSLTPrebuild aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sResourceID));
-    if (aProvider != null)
-      return aProvider;
-
-    return RW_LOCK.writeLockedGet ( () -> {
+    SchematronProviderXSLTPrebuild aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sResourceID));
+    if (aProvider == null)
+    {
       // Check again in write lock
-      SchematronProviderXSLTPrebuild aProvider2 = CACHE.get (sResourceID);
-      if (aProvider2 == null)
+      aProvider = RW_LOCK.writeLockedGet ( () -> CACHE.get (sResourceID));
+
+      if (aProvider == null)
       {
-        // Create new object and put in cache
-        aProvider2 = createSchematronXSLTProvider (aXSLTResource, aCustomErrorListener, aCustomURIResolver);
-        if (aProvider2 != null)
-          CACHE.put (sResourceID, aProvider2);
+        // Create new object outside of the write lock
+        final SchematronProviderXSLTPrebuild aProviderNew = createSchematronXSLTProvider (aXSLTResource,
+                                                                                          aCustomErrorListener,
+                                                                                          aCustomURIResolver);
+        if (aProviderNew != null)
+        {
+          // Put in the cache
+          RW_LOCK.writeLockedGet ( () -> CACHE.put (sResourceID, aProviderNew));
+        }
+        aProvider = aProviderNew;
       }
-      return aProvider2;
-    });
+    }
+    return aProvider;
   }
 
   /**

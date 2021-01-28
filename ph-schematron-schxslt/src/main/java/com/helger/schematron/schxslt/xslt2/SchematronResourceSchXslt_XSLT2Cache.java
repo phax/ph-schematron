@@ -134,22 +134,25 @@ public final class SchematronResourceSchXslt_XSLT2Cache
                                                                 StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
 
     // Validator already in the cache?
-    final SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
-    if (aProvider != null)
-      return aProvider;
-
-    return RW_LOCK.writeLockedGet ( () -> {
-      // Validator already in the cache?
-      SchematronProviderXSLTFromSchXslt_XSLT2 aProvider2 = CACHE.get (sCacheKey);
-      if (aProvider2 == null)
+    SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
+    if (aProvider == null)
+    {
+      // Check again in write lock
+      aProvider = RW_LOCK.writeLockedGet ( () -> CACHE.get (sCacheKey));
+      if (aProvider == null)
       {
-        // Create new object and put in cache
-        aProvider2 = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
-        if (aProvider2 != null)
-          CACHE.put (sCacheKey, aProvider2);
+        // Create new object outside of the write lock
+        final SchematronProviderXSLTFromSchXslt_XSLT2 aProviderNew = createSchematronXSLTProvider (aSchematronResource,
+                                                                                                   aTransformerCustomizer);
+        if (aProviderNew != null)
+        {
+          // Put in cache
+          RW_LOCK.writeLockedGet ( () -> CACHE.put (sCacheKey, aProviderNew));
+        }
+        aProvider = aProviderNew;
       }
-      return aProvider2;
-    });
+    }
+    return aProvider;
   }
 
   /**
