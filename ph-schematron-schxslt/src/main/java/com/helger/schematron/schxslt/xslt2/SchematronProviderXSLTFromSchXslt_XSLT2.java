@@ -26,6 +26,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.xml.transform.ResourceStreamSource;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
@@ -143,7 +145,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final DOMResult aResult1 = new DOMResult ();
       final Transformer aTransformer1 = s_aStep1.newTransformer ();
       aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_1, aTransformer1);
-      aTransformer1.transform (TransformSourceFactory.create (aSchematronResource), aResult1);
+      final ResourceStreamSource aSrc1 = TransformSourceFactory.create (aSchematronResource);
+      aTransformer1.transform (aSrc1, aResult1);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished applying SchXslt step 1 on " + aSchematronResource);
@@ -152,7 +155,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final DOMResult aResult2 = new DOMResult ();
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
       aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_2, aTransformer2);
-      aTransformer2.transform (TransformSourceFactory.create (aResult1.getNode ()), aResult2);
+      final DOMSource aSrc2 = TransformSourceFactory.create (aResult1.getNode ());
+      if (aSrc2.getSystemId () == null)
+        aSrc2.setSystemId (aSrc1.getSystemId ());
+      aTransformer2.transform (aSrc2, aResult2);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished applying SchXslt step 2 on " + aSchematronResource);
@@ -172,7 +178,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final DOMResult aResult3 = new DOMResult ();
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
       aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_3, aTransformer3);
-      aTransformer3.transform (TransformSourceFactory.create (aResult2.getNode ()), aResult3);
+      final DOMSource aSrc3 = TransformSourceFactory.create (aResult2.getNode ());
+      if (aSrc3.getSystemId () == null)
+        aSrc3.setSystemId (aSrc1.getSystemId ());
+      aTransformer3.transform (aSrc3, aResult3);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished applying SchXslt step 3 on " + aSchematronResource);
