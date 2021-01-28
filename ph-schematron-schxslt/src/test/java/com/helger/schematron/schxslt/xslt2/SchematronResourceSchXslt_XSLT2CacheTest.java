@@ -136,8 +136,8 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (aRes,
-                                                                                                                        new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aCEH)
-                                                                                                                                                           .setLanguageCode ("de"));
+                                                                                                                              new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aCEH)
+                                                                                                                                                                       .setLanguageCode ("de"));
         assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());
