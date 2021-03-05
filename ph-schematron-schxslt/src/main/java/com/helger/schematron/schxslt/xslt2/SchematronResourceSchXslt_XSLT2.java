@@ -139,6 +139,25 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
    * Create a new Schematron resource.
    *
    * @param sSCHPath
+   *        The classpath relative path to the Schematron file. May neither be
+   *        <code>null</code> nor empty.
+   * @param aClassLoader
+   *        The class loader to be used to retrieve the classpath resource. May
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.0.4
+   */
+  @Nonnull
+  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@Nonnull @Nonempty final String sSCHPath,
+                                                               @Nullable final ClassLoader aClassLoader)
+  {
+    return new SchematronResourceSchXslt_XSLT2 (new ClassPathResource (sSCHPath, aClassLoader));
+  }
+
+  /**
+   * Create a new Schematron resource.
+   *
+   * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.

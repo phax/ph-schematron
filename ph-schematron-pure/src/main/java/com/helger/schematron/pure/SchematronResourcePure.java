@@ -422,6 +422,24 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
+   * Create a new {@link SchematronResourcePure} from a Classpath Schematron
+   * rules
+   *
+   * @param sSCHPath
+   *        The classpath relative path to the Schematron rules.
+   * @param aClassLoader
+   *        The class loader to be used to retrieve the classpath resource. May
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.0.4
+   */
+  @Nonnull
+  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath, @Nullable final ClassLoader aClassLoader)
+  {
+    return new SchematronResourcePure (new ClassPathResource (sSCHPath, aClassLoader));
+  }
+
+  /**
    * Create a new {@link SchematronResourcePure} from file system Schematron
    * rules
    *
