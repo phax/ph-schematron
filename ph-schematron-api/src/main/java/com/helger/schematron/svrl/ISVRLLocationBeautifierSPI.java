@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.svrl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.commons.annotation.IsSPIInterface;
 
 /**
@@ -28,24 +25,7 @@ import com.helger.commons.annotation.IsSPIInterface;
  * @author Philip Helger
  */
 @IsSPIInterface
-public interface ISVRLLocationBeautifierSPI
+public interface ISVRLLocationBeautifierSPI extends ISVRLLocationBeautifier
 {
-  /**
-   * Beautify the passed combination.
-   *
-   * @param sNamespaceURI
-   *        Namespace URI
-   * @param sLocalName
-   *        Element local name
-   * @return <code>null</code> to indicate that this object does not know how to
-   *         handle the namespace. Otherwise the replacement text should be
-   *         returned.<br>
-   *         Example for UBL: Input parameters
-   *         <code>urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2</code>
-   *         and <code>Party</code>. The result may be <code>cac:Party</code> as
-   *         <i>cac</i> is the common namespace prefix for the passed namespace
-   *         URI.
-   */
-  @Nullable
-  String getReplacementText (@Nonnull String sNamespaceURI, @Nonnull String sLocalName);
+  /* nothing additional */
 }

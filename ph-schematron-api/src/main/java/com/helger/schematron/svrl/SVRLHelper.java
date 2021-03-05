@@ -249,6 +249,29 @@ public final class SVRLHelper
   @Nonnull
   public static String getBeautifiedLocation (@Nonnull final String sLocation)
   {
+    return getBeautifiedLocation (sLocation, SVRLLocationBeautifierRegistry::getBeautifiedLocation);
+  }
+
+  /**
+   * Convert an "unsexy" location string in the for, of
+   * <code>*:xx[namespace-uri()='yy']</code> to something more readable like
+   * <code>prefix:xx</code> by using the mapping registered in the
+   * {@link SVRLLocationBeautifierRegistry}.
+   *
+   * @param sLocation
+   *        The original location string. May not be <code>null</code>.
+   * @param aLocationBeautifier
+   *        The location beautifier to be used. May not be <code>null</code>.
+   * @return The beautified string. Never <code>null</code>. Might be identical
+   *         to the original string if the pattern was not found.
+   * @since 6.0.4
+   */
+  @Nonnull
+  public static String getBeautifiedLocation (@Nonnull final String sLocation, @Nonnull final ISVRLLocationBeautifier aLocationBeautifier)
+  {
+    ValueEnforcer.notNull (sLocation, "Location");
+    ValueEnforcer.notNull (aLocationBeautifier, "LocationBeautifier");
+
     String sResult = sLocation;
     // Handle namespaces:
     // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
@@ -261,7 +284,7 @@ public final class SVRLHelper
 
       // Check if there is a known beautifier for this pair of namespace and
       // local name
-      final String sBeautified = SVRLLocationBeautifierRegistry.getBeautifiedLocation (sNamespaceURI, sLocalName);
+      final String sBeautified = aLocationBeautifier.getReplacementText (sNamespaceURI, sLocalName);
       if (sBeautified != null)
         sResult = StringHelper.replaceAll (sResult, aMatcher.group (), sBeautified);
     }
