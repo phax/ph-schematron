@@ -110,11 +110,11 @@ public abstract class AbstractSVRLMessage implements Serializable
   @Nonnull
   public SVRLResourceError getAsResourceError (@Nullable final String sResourceName)
   {
-    return new SVRLErrorBuilder (m_sTest).setErrorLevel (m_aFlag)
-                                         .setErrorID (m_sID)
-                                         .setErrorFieldName (m_sLocation)
-                                         .setErrorLocation (sResourceName)
-                                         .setErrorText (m_sText)
+    return new SVRLErrorBuilder (m_sTest).errorLevel (m_aFlag)
+                                         .errorID (m_sID)
+                                         .errorFieldName (m_sLocation)
+                                         .errorLocation (sResourceName)
+                                         .errorText (m_sText)
                                          .build ();
   }
 

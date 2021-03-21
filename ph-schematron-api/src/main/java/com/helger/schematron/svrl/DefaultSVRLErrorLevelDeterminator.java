@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.svrl;
 
+import java.util.function.Function;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -25,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.functional.IFunction;
 
 /**
  * The default implementation of {@link ISVRLErrorLevelDeterminator}.
@@ -36,13 +37,15 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (DefaultSVRLErrorLevelDeterminator.class);
   public static final IErrorLevel DEFAULT_ERROR_LEVEL = EErrorLevel.ERROR;
-  public static final IFunction <String, IErrorLevel> UNKNOWN_ERROR_LEVEL_HANDLER = sFlag -> {
+  public static final Function <String, IErrorLevel> UNKNOWN_ERROR_LEVEL_HANDLER = sFlag -> {
     if (sFlag != null)
-      LOGGER.warn ("Cannot convert the SVRL flag '" + sFlag + "' to an error level. Using default error level instead!");
+      LOGGER.warn ("Cannot convert the SVRL flag '" +
+                   sFlag +
+                   "' to an error level. Using default error level instead!");
     return DEFAULT_ERROR_LEVEL;
   };
 
-  private final IFunction <String, ? extends IErrorLevel> m_aUnknwownErrorLevelHandler;
+  private final Function <String, ? extends IErrorLevel> m_aUnknwownErrorLevelHandler;
 
   /**
    * Default constructor using {@link #UNKNOWN_ERROR_LEVEL_HANDLER}.
@@ -59,7 +62,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
    *        Custom error level provider. May not be <code>null</code>.
    * @since 5.0.2
    */
-  public DefaultSVRLErrorLevelDeterminator (@Nonnull final IFunction <String, ? extends IErrorLevel> aUnknwownErrorLevelHandler)
+  public DefaultSVRLErrorLevelDeterminator (@Nonnull final Function <String, ? extends IErrorLevel> aUnknwownErrorLevelHandler)
   {
     m_aUnknwownErrorLevelHandler = ValueEnforcer.notNull (aUnknwownErrorLevelHandler, "UnknwownErrorLevelHandler");
   }
@@ -69,7 +72,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
    * @since 5.0.2
    */
   @Nonnull
-  public IFunction <String, ? extends IErrorLevel> getUnknwownErrorLevelHandler ()
+  public Function <String, ? extends IErrorLevel> getUnknwownErrorLevelHandler ()
   {
     return m_aUnknwownErrorLevelHandler;
   }

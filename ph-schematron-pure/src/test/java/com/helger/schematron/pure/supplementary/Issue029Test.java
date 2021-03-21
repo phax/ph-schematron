@@ -37,7 +37,6 @@ import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.xml.transform.ResourceStreamSource;
 
 /**
  * Test code for issue #29
@@ -59,7 +58,7 @@ public final class Issue029Test
       throw new IllegalArgumentException ("Invalid Schematron!");
     try
     {
-      final Document aDoc = aResSCH.applySchematronValidation (new ResourceStreamSource (aRes));
+      final Document aDoc = aResSCH.applySchematronValidation (aRes);
       if (aDoc != null)
       {
         final SVRLMarshaller marshaller = new SVRLMarshaller ();

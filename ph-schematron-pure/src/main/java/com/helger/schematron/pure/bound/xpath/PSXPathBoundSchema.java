@@ -143,7 +143,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           }
           catch (final XPathExpressionException ex)
           {
-            error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex.getCause () != null ? ex.getCause () : ex);
+            error (aName,
+                   "Failed to compile XPath expression in <name>: '" + sPath + "'",
+                   ex.getCause () != null ? ex.getCause () : ex);
             bHasAnyError = true;
           }
         }
@@ -200,7 +202,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // For all contained diagnostic elements
       for (final PSDiagnostic aDiagnostic : aSchema.getDiagnostics ().getAllDiagnostics ())
       {
-        final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic, aXPathContext, aGlobalVariables);
+        final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic,
+                                                                                        aXPathContext,
+                                                                                        aGlobalVariables);
         if (aBoundElements == null)
         {
           // error already emitted
@@ -293,7 +297,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           try
           {
             final XPathExpression aTestExpr = _compileXPath (aXPathContext, sTest);
-            final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport, aXPathContext, aRuleVariables);
+            final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport,
+                                                                                            aXPathContext,
+                                                                                            aRuleVariables);
             if (aBoundElements == null)
             {
               // Error already emitted
@@ -424,15 +430,19 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         final IPSErrorHandler aErrHdl = getErrorHandler ();
         return (final XmlProcessingError error) -> {
           final ILocation aLocation = error.getLocation () == null ? null
-                                                                   : new SimpleLocation (error.getLocation ().getSystemId (),
-                                                                                         error.getLocation ().getLineNumber (),
-                                                                                         error.getLocation ().getColumnNumber ());
+                                                                   : new SimpleLocation (error.getLocation ()
+                                                                                              .getSystemId (),
+                                                                                         error.getLocation ()
+                                                                                              .getLineNumber (),
+                                                                                         error.getLocation ()
+                                                                                              .getColumnNumber ());
           aErrHdl.handleError (SingleError.builder ()
-                                          .setErrorLevel (error.isWarning () ? EErrorLevel.WARN : EErrorLevel.ERROR)
-                                          .setErrorID (error.getErrorCode () != null ? error.getErrorCode ().toString () : null)
-                                          .setErrorLocation (aLocation)
-                                          .setErrorText (error.getMessage ())
-                                          .setLinkedException (error.getCause ())
+                                          .errorLevel (error.isWarning () ? EErrorLevel.WARN : EErrorLevel.ERROR)
+                                          .errorID (error.getErrorCode () != null ? error.getErrorCode ().toString ()
+                                                                                  : null)
+                                          .errorLocation (aLocation)
+                                          .errorText (error.getMessage ())
+                                          .linkedException (error.getCause ())
                                           .build ());
         };
       };
@@ -465,13 +475,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // Get all variables that are defined in the specified phase
       for (final Map.Entry <String, String> aEntry : aPhase.getAllLetsAsMap ().entrySet ())
         if (aGlobalVariables.add (aEntry).isUnchanged ())
-          error (aSchema, "Duplicate <let> with name '" + aEntry.getKey () + "' in <phase> with name '" + getPhaseID () + "'");
+          error (aSchema,
+                 "Duplicate <let> with name '" + aEntry.getKey () + "' in <phase> with name '" + getPhaseID () + "'");
     }
 
     final XPath aXPathContext = _createXPathContext ();
 
     // Pre-compile all diagnostics first
-    final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext, aGlobalVariables);
+    final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext,
+                                                                                                    aGlobalVariables);
     if (aBoundDiagnostics == null)
       throw new SchematronBindException ("Failed to precompile the diagnostics of the supplied schema. Check the " +
                                          (isDefaultErrorHandler () ? "log output" : "error listener") +
@@ -539,7 +551,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         NodeList aRuleContextNodes = null;
         try
         {
-          aRuleContextNodes = XPathEvaluationHelper.evaluateAsNodeList (aBoundRule.getBoundRuleContext (), aNode, sBaseURI);
+          aRuleContextNodes = XPathEvaluationHelper.evaluateAsNodeList (aBoundRule.getBoundRuleContext (),
+                                                                        aNode,
+                                                                        sBaseURI);
         }
         catch (final XPathExpressionException ex)
         {
@@ -569,7 +583,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             final Node aRuleMatchingNode = aRuleContextNodes.item (nMatchedNode);
             try
             {
-              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExpression, aRuleMatchingNode, sBaseURI);
+              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExpression,
+                                                                                   aRuleMatchingNode,
+                                                                                   sBaseURI);
               if (bIsAssert)
               {
                 // It's an assert
@@ -608,7 +624,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             catch (final XPathExpressionException ex)
             {
               error (aRule,
-                     "Failed to evaluate XPath expression to a boolean: '" + aBoundAssertReport.getTestExpression () + "'",
+                     "Failed to evaluate XPath expression to a boolean: '" +
+                            aBoundAssertReport.getTestExpression () +
+                            "'",
                      ex.getCause () != null ? ex.getCause () : ex);
             }
           }

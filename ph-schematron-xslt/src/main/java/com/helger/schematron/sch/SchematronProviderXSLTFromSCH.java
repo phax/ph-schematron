@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-import com.helger.xml.transform.ResourceStreamSource;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
@@ -145,7 +145,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       final DOMResult aResult1 = new DOMResult ();
       final Transformer aTransformer1 = s_aStep1.newTransformer ();
       aTransformerCustomizer.customize (EStepSCH.SCH2XSLT_1, aTransformer1);
-      final ResourceStreamSource aSrc1 = TransformSourceFactory.create (aSchematronResource);
+      final StreamSource aSrc1 = TransformSourceFactory.create (aSchematronResource);
       aTransformer1.transform (aSrc1, aResult1);
 
       if (LOGGER.isDebugEnabled ())
@@ -168,7 +168,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       {
         final String sXML = XMLWriter.getNodeAsString (aResult2.getNode ());
         final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".min-xslt.sch");
+                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
+                                                                                                      ".min-xslt.sch");
         if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
           LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
         else
@@ -196,7 +197,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       {
         final String sXML = XMLWriter.getNodeAsString (m_aSchematronXSLTDoc);
         final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt");
+                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
+                                                                                                    ".xslt");
         if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
           LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
         else
@@ -206,7 +208,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       // compile result of step 3
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       aTransformerCustomizer.customize (aTF);
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
+                                                                       TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)
     {

@@ -117,7 +117,11 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
         if (aPattern == null)
         {
           warn (aOrigSchema,
-                "Failed to resolve pattern with ID '" + sActivePatternID + "' - ignoring this pattern in phase '" + sRealPhaseID + "'");
+                "Failed to resolve pattern with ID '" +
+                             sActivePatternID +
+                             "' - ignoring this pattern in phase '" +
+                             sRealPhaseID +
+                             "'");
         }
         else
         {
@@ -150,9 +154,10 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   protected void warn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
   {
     getErrorHandler ().handleError (SingleError.builderWarn ()
-                                               .setErrorLocation (new SimpleLocation (m_aOrigSchema.getResource ().getPath ()))
-                                               .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
-                                               .setErrorText (sMsg)
+                                               .errorLocation (new SimpleLocation (m_aOrigSchema.getResource ()
+                                                                                                .getPath ()))
+                                               .errorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                               .errorText (sMsg)
                                                .build ());
   }
 
@@ -163,13 +168,16 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   }
 
   @OverridingMethodsMustInvokeSuper
-  protected void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg, @Nullable final Throwable t)
+  protected void error (@Nonnull final IPSElement aSourceElement,
+                        @Nonnull final String sMsg,
+                        @Nullable final Throwable t)
   {
     getErrorHandler ().handleError (SingleError.builderError ()
-                                               .setErrorLocation (new SimpleLocation (m_aOrigSchema.getResource ().getPath ()))
-                                               .setErrorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
-                                               .setErrorText (sMsg)
-                                               .setLinkedException (t)
+                                               .errorLocation (new SimpleLocation (m_aOrigSchema.getResource ()
+                                                                                                .getPath ()))
+                                               .errorFieldName (IPSErrorHandler.getErrorFieldName (aSourceElement))
+                                               .errorText (sMsg)
+                                               .linkedException (t)
                                                .build ());
   }
 
@@ -235,7 +243,8 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   }
 
   @Nonnull
-  public EValidity validatePartially (@Nonnull final Node aNode, @Nullable final String sBaseURI) throws SchematronValidationException
+  public EValidity validatePartially (@Nonnull final Node aNode,
+                                      @Nullable final String sBaseURI) throws SchematronValidationException
   {
     final IPSPartialValidationHandler aValidationHandler = createPartialValidationHandler ();
     validate (aNode, sBaseURI, aValidationHandler.and (m_aCustomValidationHandler));

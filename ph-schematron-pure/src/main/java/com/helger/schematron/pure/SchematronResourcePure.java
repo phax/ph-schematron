@@ -303,9 +303,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
       {
         if (m_aErrorHandler != null)
           m_aErrorHandler.handleError (SingleError.builderError ()
-                                                  .setErrorLocation (new SimpleLocation (getResource ().getPath ()))
-                                                  .setErrorText ("Error creating bound schema")
-                                                  .setLinkedException (ex)
+                                                  .errorLocation (new SimpleLocation (getResource ().getPath ()))
+                                                  .errorText ("Error creating bound schema")
+                                                  .linkedException (ex)
                                                   .build ());
         throw ex;
       }
@@ -361,7 +361,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+                                          @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -399,7 +400,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
+                                             @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -434,7 +436,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @since 6.0.4
    */
   @Nonnull
-  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath, @Nullable final ClassLoader aClassLoader)
+  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath,
+                                                      @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourcePure (new ClassPathResource (sSCHPath, aClassLoader));
   }

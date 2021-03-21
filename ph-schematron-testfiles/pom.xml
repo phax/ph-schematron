@@ -55,13 +55,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.helger</groupId>
+      <groupId>com.helger.commons</groupId>
       <artifactId>ph-commons</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger</groupId>
+      <groupId>com.helger.commons</groupId>
       <artifactId>ph-xml</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>

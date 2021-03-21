@@ -42,7 +42,8 @@ public final class Issue099Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue099Test.class);
 
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
+  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
+                                               @Nonnull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
 
@@ -57,7 +58,7 @@ public final class Issue099Test
     assertNotNull (aSVRL);
 
     aSW.stop ();
-    LOGGER.info ("Took " + aSW.getSeconds () + " seconds");
+    LOGGER.info ("Took " + aSW.getDuration ());
 
     LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
 
@@ -65,7 +66,7 @@ public final class Issue099Test
   }
 
   @Test
-  @Ignore
+  @Ignore ("Is very verbose")
   public void testIssue () throws Exception
   {
     _validateAndProduceSVRL (new File ("src/test/resources/issues/github99/urn_feap.gov.pt_CIUS-PT_1.0.6.sch"),

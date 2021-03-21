@@ -18,6 +18,7 @@ package com.helger.schematron.saxon;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +32,6 @@ import javax.xml.transform.URIResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.CGlobal;
 import com.helger.commons.exception.InitializationException;
 import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.xml.transform.DefaultTransformURIResolver;
@@ -57,7 +57,7 @@ public final class SchematronTransformerFactory
   static
   {
     s_aDefaultFactory = createTransformerFactorySaxonFirst (SchematronTransformerFactory.class.getClassLoader (),
-                                                            new LoggingTransformErrorListener (CGlobal.DEFAULT_LOCALE),
+                                                            new LoggingTransformErrorListener (Locale.US),
                                                             new DefaultTransformURIResolver ());
   }
 
@@ -98,7 +98,8 @@ public final class SchematronTransformerFactory
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calling createTransformerFactorySaxonFirst");
 
-    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader : ClassLoaderHelper.getContextClassLoader ();
+    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
+                                                                   : ClassLoaderHelper.getContextClassLoader ();
 
     TransformerFactory aFactory;
     try
