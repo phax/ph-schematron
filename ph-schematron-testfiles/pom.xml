@@ -98,7 +98,7 @@
       <plugin>
         <groupId>com.helger.maven</groupId>
         <artifactId>ph-dirindex-maven-plugin</artifactId>
-        <version>3.0.2</version><!--$NO-MVN-MAN-VER$-->
+        <version>3.0.3</version><!--$NO-MVN-MAN-VER$-->
         <executions>
           <execution>
             <id>sch</id>
