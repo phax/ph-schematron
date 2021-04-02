@@ -49,9 +49,6 @@ public final class CSVRL
                                                                                     new ClassPathResource (SVRL_XSD_PATH, _getCL ()))
                                                                                                                                      .getAsUnmodifiable ();
 
-  /** Path to the SVRL RelaxNG Compact file within the class path */
-  public static final String SVRL_RNC_PATH = "schemas/svrl.rnc";
-
   /** The namespace of the SVRL files. */
   public static final String SVRL_NAMESPACE_URI = "http://purl.oclc.org/dsdl/svrl";
 
