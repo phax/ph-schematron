@@ -32,7 +32,6 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 public final class Issue110Test
 {
   @Test
-  // @Ignore ("Relies on Saxon bug")
   public void testIncludedFilesNotDeleted () throws Exception
   {
     DefaultResourceResolver.setDebugResolve (true);
