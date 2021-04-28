@@ -70,7 +70,7 @@
   </developers>
   
   <properties>
-    <ant.version>1.10.9</ant.version>
+    <ant.version>1.10.10</ant.version>
   </properties>
   
   <dependencyManagement>
@@ -92,7 +92,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>10.3</version>
+        <version>10.5</version>
       </dependency>
       
       <!-- RelaxNG -->
@@ -170,12 +170,12 @@
       <dependency>
         <groupId>name.dmaus.schxslt</groupId>
         <artifactId>schxslt</artifactId>
-        <version>1.6.2</version>
+        <version>1.7.1</version>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>4.2</version>
+        <version>4.3</version>
       </dependency>
       
       <dependency>

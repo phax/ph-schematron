@@ -326,11 +326,11 @@ public final class SchematronResourcePureTest
                          "  <iso:ns prefix='dp' uri='http://www.dpawson.co.uk/ns#' />\n" +
                          "  <iso:ns prefix='fn' uri='http://www.w3.org/2005/xpath-functions' />\n" +
                          "  <iso:ns prefix='functx' uri='http://www.functx.com' />\n" +
-                         "    <iso:pattern >\n" +
+                         "  <iso:pattern >\n" +
                          "    <iso:title>A very simple pattern with a title</iso:title>\n" +
                          "    <iso:rule context='chapter'>\n" +
                          "      <iso:assert test='functx:are-distinct-values(para)'>Should have distinct values</iso:assert>\n" +
-                         "      </iso:rule>\n" +
+                         "    </iso:rule>\n" +
                          "  </iso:pattern>\n" +
                          "</iso:schema>";
 
