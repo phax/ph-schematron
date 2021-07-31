@@ -211,6 +211,9 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
     }
     catch (final Exception ex)
     {
@@ -219,7 +222,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   }
 
   @Nonnull
-  public IReadableResource getSchematronResource ()
+  public final IReadableResource getSchematronResource ()
   {
     return m_aSchematronResource;
   }
@@ -230,7 +233,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   }
 
   @Nullable
-  public Document getXSLTDocument ()
+  public final Document getXSLTDocument ()
   {
     return m_aSchematronXSLTDoc;
   }
