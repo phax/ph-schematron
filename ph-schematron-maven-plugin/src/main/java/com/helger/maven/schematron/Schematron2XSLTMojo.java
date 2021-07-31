@@ -36,6 +36,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.w3c.dom.Document;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
@@ -47,8 +48,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
-import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-import com.helger.schematron.sch.SchematronResourceSCHCache;
+import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
@@ -225,6 +225,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
+
     if (m_aSchematronDirectory == null)
       throw new MojoExecutionException ("No Schematron directory specified!");
     if (m_aSchematronDirectory.exists () && !m_aSchematronDirectory.isDirectory ())
@@ -302,15 +303,17 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                                                                                         .setLanguageCode (m_sLanguageCode)
                                                                                         .setParameters (m_aCustomParameters)
                                                                                         .setForceCacheResult (m_bForceCacheResult);
-            final ISchematronXSLTBasedProvider aXsltProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (aSchematronResource,
-                                                                                                                        aCustomizer);
-            if (aXsltProvider != null)
+
+            getLog ().debug ("Compiling Schematron instance " + aSchematronResource.toString ());
+
+            final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
+            if (aXsltDoc != null)
             {
               // Write the resulting XSLT file to disk
               final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
               // Add all namespaces from XSLT document root
               final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
-              XMLHelper.forAllAttributes (aXsltProvider.getXSLTDocument ().getDocumentElement (), (sAttrName, sAttrValue) -> {
+              XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
                 if (sAttrName.startsWith (sNSPrefix))
                   aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
               });
@@ -321,7 +324,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
               final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
               if (aOS == null)
                 throw new IllegalStateException ("Failed to open output stream for file " + aXSLTFile.getAbsolutePath ());
-              XMLWriter.writeToStream (aXsltProvider.getXSLTDocument (), aOS, aXWS);
+              XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
 
               getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
 
