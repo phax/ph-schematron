@@ -50,7 +50,7 @@ public final class SchematronValidationMojoTest
     // relative to the test POM!
     aMojo.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch").getAbsoluteFile ());
     aMojo.setXmlDirectory (new File ("src/test/resources/data").getAbsoluteFile ());
-    aMojo.setXmlIncludes ("*-valid.xml");
+    aMojo.setXmlIncludes (new String [] { "*-valid.xml" });
 
     // Test parameters from POM
     final ICommonsMap <String, String> aParams = aMojo.getParameters ();
@@ -77,7 +77,7 @@ public final class SchematronValidationMojoTest
     // relative to the test POM!
     aMojo.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch").getAbsoluteFile ());
     aMojo.setXmlDirectory (new File ("src/test/resources/data2").getAbsoluteFile ());
-    aMojo.setXmlIncludes ("*-invalid.xml");
+    aMojo.setXmlIncludes (new String [] { "*-invalid.xml" });
 
     try
     {

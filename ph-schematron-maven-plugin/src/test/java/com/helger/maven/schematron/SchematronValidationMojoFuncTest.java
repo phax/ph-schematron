@@ -56,8 +56,8 @@ public final class SchematronValidationMojoFuncTest
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
     OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
     OUT.setXmlDirectory (new File ("src/test/resources/data"));
-    OUT.setXmlIncludes ("*.xml");
-    OUT.setXmlExcludes ("*-invalid.xml");
+    OUT.setXmlIncludes (new String [] { "*.xml" });
+    OUT.setXmlExcludes (new String [] { "*-invalid.xml" });
     OUT.execute ();
 
     verify (project);
@@ -72,7 +72,7 @@ public final class SchematronValidationMojoFuncTest
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
     OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
     OUT.setXmlErrorDirectory (new File ("src/test/resources/data"));
-    OUT.setXmlErrorIncludes ("*-invalid.xml");
+    OUT.setXmlErrorIncludes (new String [] { "*-invalid.xml" });
     OUT.execute ();
 
     verify (project);
@@ -87,8 +87,8 @@ public final class SchematronValidationMojoFuncTest
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
     OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
     OUT.setXmlDirectory (new File ("src/test/resources/data"));
-    OUT.setXmlIncludes ("*.xml");
-    OUT.setXmlExcludes ("*-valid.xml");
+    OUT.setXmlIncludes (new String [] { "*.xml" });
+    OUT.setXmlExcludes (new String [] { "*-valid.xml" });
     try
     {
       OUT.execute ();

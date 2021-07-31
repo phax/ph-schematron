@@ -38,6 +38,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
 import com.helger.commons.annotation.VisibleForTesting;
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -121,7 +122,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * considered.
    */
   @Parameter (name = "xmlIncludes", defaultValue = "**/*.xml", required = true)
-  private String m_sXmlIncludes;
+  private String [] m_aXmlIncludes;
 
   /**
    * A pattern for the XML files that should be excluded. Can contain Ant-style
@@ -130,7 +131,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * considered.
    */
   @Parameter (name = "xmlExcludes")
-  private String m_sXmlExcludes;
+  private String [] m_aXmlExcludes;
 
   /**
    * The SVRL path to write to (for positive tests). The filenames are based on
@@ -154,7 +155,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * considered.
    */
   @Parameter (name = "xmlErrorIncludes", defaultValue = "**/*.xml")
-  private String m_sXmlErrorIncludes;
+  private String [] m_aXmlErrorIncludes;
 
   /**
    * A pattern for the erroneous XML files that should be excluded. Can contain
@@ -163,7 +164,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * subdirectories will be considered.
    */
   @Parameter (name = "xmlErrorExcludes")
-  private String m_sXmlErrorExcludes;
+  private String [] m_aXmlErrorExcludes;
 
   /**
    * The SVRL path to write to (for negative tests). The filenames are based on
@@ -251,18 +252,20 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Searching XML files in the directory '" + m_aXmlDirectory + "'");
   }
 
-  public void setXmlIncludes (@Nullable final String sPattern)
+  public void setXmlIncludes (@Nullable final String [] aPattern)
   {
-    m_sXmlIncludes = sPattern;
+    m_aXmlIncludes = aPattern;
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Setting XML file includes to '" + sPattern + "'");
+      getLog ().debug ("Setting XML file includes to " +
+                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
-  public void setXmlExcludes (@Nullable final String sPattern)
+  public void setXmlExcludes (@Nullable final String [] aPattern)
   {
-    m_sXmlExcludes = sPattern;
+    m_aXmlExcludes = aPattern;
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Setting XML file excludes to '" + sPattern + "'");
+      getLog ().debug ("Setting XML file excludes to " +
+                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
   public void setSvrlDirectory (@Nonnull final File aDir)
@@ -283,18 +286,20 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Searching erroneous XML files in the directory '" + m_aXmlDirectory + "'");
   }
 
-  public void setXmlErrorIncludes (@Nullable final String sPattern)
+  public void setXmlErrorIncludes (@Nullable final String [] aPattern)
   {
-    m_sXmlErrorIncludes = sPattern;
+    m_aXmlErrorIncludes = aPattern;
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Setting erroneous XML file includes to '" + sPattern + "'");
+      getLog ().debug ("Setting erroneous XML file includes to " +
+                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
-  public void setXmlErrorExcludes (@Nullable final String sPattern)
+  public void setXmlErrorExcludes (@Nullable final String [] aPattern)
   {
-    m_sXmlErrorExcludes = sPattern;
+    m_aXmlErrorExcludes = aPattern;
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Setting erroneous XML file excludes to '" + sPattern + "'");
+      getLog ().debug ("Setting erroneous XML file excludes to " +
+                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
   public void setSvrlErrorDirectory (@Nonnull final File aDir)
@@ -377,10 +382,10 @@ public final class SchematronValidationMojo extends AbstractMojo
    *        Schematron resource to apply on validation artefacts
    * @param aXMLDirectory
    *        XML directory to be scanned
-   * @param sXMLIncludes
-   *        XML include mask
-   * @param sXMLExcludes
-   *        XML exclude mask
+   * @param aXMLIncludes
+   *        XML include mask - may be <code>null</code> or empty
+   * @param aXMLExcludes
+   *        XML exclude mask - may be <code>null</code> or empty
    * @param aSVRLDirectory
    *        SVRL directory to write to (maybe <code>null</code> in which case
    *        the SVRL is not written)
@@ -397,18 +402,18 @@ public final class SchematronValidationMojo extends AbstractMojo
    */
   private void _performValidation (@Nonnull final ISchematronResource aSch,
                                    @Nonnull final File aXMLDirectory,
-                                   @Nullable final String sXMLIncludes,
-                                   @Nullable final String sXMLExcludes,
+                                   @Nullable final String [] aXMLIncludes,
+                                   @Nullable final String [] aXMLExcludes,
                                    @Nullable final File aSVRLDirectory,
                                    final boolean bExpectSuccess,
                                    @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException, MojoFailureException
   {
     final DirectoryScanner aScanner = new DirectoryScanner ();
     aScanner.setBasedir (aXMLDirectory);
-    if (StringHelper.hasText (sXMLIncludes))
-      aScanner.setIncludes (new String [] { sXMLIncludes });
-    if (StringHelper.hasText (sXMLExcludes))
-      aScanner.setExcludes (new String [] { sXMLExcludes });
+    if (ArrayHelper.isNotEmpty (aXMLIncludes))
+      aScanner.setIncludes (aXMLIncludes);
+    if (ArrayHelper.isNotEmpty (aXMLExcludes))
+      aScanner.setExcludes (aXMLExcludes);
     aScanner.setCaseSensitive (true);
     aScanner.scan ();
     final String [] aXMLFilenames = aScanner.getIncludedFiles ();
@@ -506,7 +511,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     {
       if (m_aXmlDirectory.exists () && !m_aXmlDirectory.isDirectory ())
         throw new MojoExecutionException ("The specified XML directory " + m_aXmlDirectory + " is not a directory!");
-      if (StringHelper.hasNoText (m_sXmlIncludes))
+      if (ArrayHelper.isEmpty (m_aXmlIncludes))
         throw new MojoExecutionException ("No XML include pattern specified!");
 
       if (m_aSvrlDirectory != null)
@@ -520,7 +525,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     {
       if (m_aXmlErrorDirectory.exists () && !m_aXmlErrorDirectory.isDirectory ())
         throw new MojoExecutionException ("The specified erroneous XML directory " + m_aXmlErrorDirectory + " is not a directory!");
-      if (StringHelper.hasNoText (m_sXmlErrorIncludes))
+      if (ArrayHelper.isEmpty (m_aXmlErrorIncludes))
         throw new MojoExecutionException ("No erroneous XML include pattern specified!");
 
       if (m_aSvrlErrorDirectory != null)
@@ -621,15 +626,15 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (m_aXmlDirectory != null)
     {
       // Expect success
-      _performValidation (aSch, m_aXmlDirectory, m_sXmlIncludes, m_sXmlExcludes, m_aSvrlDirectory, true, aErrorMessages);
+      _performValidation (aSch, m_aXmlDirectory, m_aXmlIncludes, m_aXmlExcludes, m_aSvrlDirectory, true, aErrorMessages);
     }
     if (m_aXmlErrorDirectory != null)
     {
       // Expect error
       _performValidation (aSch,
                           m_aXmlErrorDirectory,
-                          m_sXmlErrorIncludes,
-                          m_sXmlErrorExcludes,
+                          m_aXmlErrorIncludes,
+                          m_aXmlErrorExcludes,
                           m_aSvrlErrorDirectory,
                           false,
                           aErrorMessages);
