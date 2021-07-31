@@ -94,31 +94,26 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     if (s_aStep1 == null)
     {
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+      final ClassLoader aCL = SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ();
 
       // Step 1
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating SchXslt step 1 template");
-      s_aStep1 = XMLTransformerFactory.newTemplates (aTF,
-                                                     new ClassPathResource (XSLT2_STEP1,
-                                                                            SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ()));
+      s_aStep1 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP1, aCL));
       if (s_aStep1 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP1 + "'");
 
       // Step 2
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating SchXslt step 2 template");
-      s_aStep2 = XMLTransformerFactory.newTemplates (aTF,
-                                                     new ClassPathResource (XSLT2_STEP2,
-                                                                            SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ()));
+      s_aStep2 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP2, aCL));
       if (s_aStep2 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP2 + "'");
 
       // Step 3
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating SchXslt step 3 template");
-      s_aStep3 = XMLTransformerFactory.newTemplates (aTF,
-                                                     new ClassPathResource (XSLT2_STEP3,
-                                                                            SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ()));
+      s_aStep3 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP3, aCL));
       if (s_aStep3 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP3 + "'");
     }
@@ -136,6 +131,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     final Transformer aTransformer1 = s_aStep1.newTransformer ();
     aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_1, aTransformer1);
     final StreamSource aSrc1 = TransformSourceFactory.create (aSchematronResource);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Now applying XSLT step 1 on " + aSchematronResource);
+
     aTransformer1.transform (aSrc1, aResult1);
 
     if (LOGGER.isDebugEnabled ())
@@ -150,6 +149,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     // SystemId is required for "base-uri(.)" to work
     if (aSrc2.getSystemId () == null)
       aSrc2.setSystemId (aSrc1.getSystemId ());
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Now applying XSLT step 2 on " + aSchematronResource);
+
     aTransformer2.transform (aSrc2, aResult2);
 
     if (LOGGER.isDebugEnabled ())
@@ -175,6 +178,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     // SystemId is required for "base-uri(.)" to work
     if (aSrc3.getSystemId () == null)
       aSrc3.setSystemId (aSrc1.getSystemId ());
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Now applying XSLT step 3 on " + aSchematronResource);
+
     aTransformer3.transform (aSrc3, aResult3);
 
     if (LOGGER.isDebugEnabled ())
