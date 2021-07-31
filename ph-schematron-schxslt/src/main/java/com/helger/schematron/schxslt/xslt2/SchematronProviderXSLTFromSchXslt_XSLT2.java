@@ -24,6 +24,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -123,6 +124,76 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     }
   }
 
+  @Nonnull
+  public static Document createSchematronXSLT (@Nonnull final IReadableResource aSchematronResource,
+                                               @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer) throws TransformerException
+  {
+    cacheXSLTTemplates ();
+
+    // perform step 1 (Schematron -> ResultStep1)
+    final Document aResult1Doc = XMLFactory.newDocument ();
+    final DOMResult aResult1 = new DOMResult (aResult1Doc);
+    final Transformer aTransformer1 = s_aStep1.newTransformer ();
+    aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_1, aTransformer1);
+    final StreamSource aSrc1 = TransformSourceFactory.create (aSchematronResource);
+    aTransformer1.transform (aSrc1, aResult1);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Finished applying SchXslt step 1 on " + aSchematronResource);
+
+    // perform step 2 (ResultStep1 -> ResultStep2)
+    final Document aResult2Doc = XMLFactory.newDocument ();
+    final DOMResult aResult2 = new DOMResult (aResult2Doc);
+    final Transformer aTransformer2 = s_aStep2.newTransformer ();
+    aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_2, aTransformer2);
+    final DOMSource aSrc2 = TransformSourceFactory.create (aResult1Doc);
+    // SystemId is required for "base-uri(.)" to work
+    if (aSrc2.getSystemId () == null)
+      aSrc2.setSystemId (aSrc1.getSystemId ());
+    aTransformer2.transform (aSrc2, aResult2);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Finished applying SchXslt step 2 on " + aSchematronResource);
+
+    if (SchematronDebug.isSaveIntermediateXSLTFiles ())
+    {
+      final String sXML = XMLWriter.getNodeAsString (aResult2Doc);
+      final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
+                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".min-xslt.sch");
+      if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
+        LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
+      else
+        LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
+    }
+
+    // perform step 3 (ResultStep2 -> ResultStep3XSL)
+    final Document aResult3Doc = XMLFactory.newDocument ();
+    final DOMResult aResult3 = new DOMResult (aResult3Doc);
+    final Transformer aTransformer3 = s_aStep3.newTransformer ();
+    aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_3, aTransformer3);
+    final DOMSource aSrc3 = TransformSourceFactory.create (aResult2Doc);
+    // SystemId is required for "base-uri(.)" to work
+    if (aSrc3.getSystemId () == null)
+      aSrc3.setSystemId (aSrc1.getSystemId ());
+    aTransformer3.transform (aSrc3, aResult3);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Finished applying SchXslt step 3 on " + aSchematronResource);
+
+    if (SchematronDebug.isSaveIntermediateXSLTFiles ())
+    {
+      final String sXML = XMLWriter.getNodeAsString (aResult3Doc);
+      final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
+                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt");
+      if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
+        LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
+      else
+        LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
+    }
+
+    return aResult3Doc;
+  }
+
   /**
    * Constructor
    *
@@ -135,82 +206,24 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   public SchematronProviderXSLTFromSchXslt_XSLT2 (@Nonnull final IReadableResource aSchematronResource,
                                                   @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
-    m_aSchematronResource = ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
+    ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
+    m_aSchematronResource = aSchematronResource;
 
     try
     {
-      cacheXSLTTemplates ();
-
-      // perform step 1 (Schematron -> ResultStep1)
-      final Document aResult1Doc = XMLFactory.newDocument ();
-      final DOMResult aResult1 = new DOMResult (aResult1Doc);
-      final Transformer aTransformer1 = s_aStep1.newTransformer ();
-      aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_1, aTransformer1);
-      final StreamSource aSrc1 = TransformSourceFactory.create (aSchematronResource);
-      aTransformer1.transform (aSrc1, aResult1);
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Finished applying SchXslt step 1 on " + aSchematronResource);
-
-      // perform step 2 (ResultStep1 -> ResultStep2)
-      final Document aResult2Doc = XMLFactory.newDocument ();
-      final DOMResult aResult2 = new DOMResult (aResult2Doc);
-      final Transformer aTransformer2 = s_aStep2.newTransformer ();
-      aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_2, aTransformer2);
-      final DOMSource aSrc2 = TransformSourceFactory.create (aResult1Doc);
-      // SystemId is required for "base-uri(.)" to work
-      if (aSrc2.getSystemId () == null)
-        aSrc2.setSystemId (aSrc1.getSystemId ());
-      aTransformer2.transform (aSrc2, aResult2);
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Finished applying SchXslt step 2 on " + aSchematronResource);
-
-      if (SchematronDebug.isSaveIntermediateXSLTFiles ())
-      {
-        final String sXML = XMLWriter.getNodeAsString (aResult2Doc);
-        final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".min-xslt.sch");
-        if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
-          LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
-        else
-          LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
-      }
-
-      // perform step 3 (ResultStep2 -> ResultStep3XSL)
-      final Document aResult3Doc = XMLFactory.newDocument ();
-      final DOMResult aResult3 = new DOMResult (aResult3Doc);
-      final Transformer aTransformer3 = s_aStep3.newTransformer ();
-      aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_3, aTransformer3);
-      final DOMSource aSrc3 = TransformSourceFactory.create (aResult2Doc);
-      // SystemId is required for "base-uri(.)" to work
-      if (aSrc3.getSystemId () == null)
-        aSrc3.setSystemId (aSrc1.getSystemId ());
-      aTransformer3.transform (aSrc3, aResult3);
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Finished applying SchXslt step 3 on " + aSchematronResource);
 
       // Save the underlying XSLT document....
       // Note: Saxon 6.5.5 does not allow to clone the document node!!!!
-      m_aSchematronXSLTDoc = aResult3Doc;
-
-      if (SchematronDebug.isSaveIntermediateXSLTFiles ())
-      {
-        final String sXML = XMLWriter.getNodeAsString (m_aSchematronXSLTDoc);
-        final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt");
-        if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
-          LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
-        else
-          LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
-      }
+      m_aSchematronXSLTDoc = createSchematronXSLT (aSchematronResource, aTransformerCustomizer);
 
       // compile result of step 3
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
     }
     catch (final Exception ex)
     {
