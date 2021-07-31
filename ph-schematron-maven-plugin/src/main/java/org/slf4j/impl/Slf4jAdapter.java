@@ -16,10 +16,14 @@
  */
 package org.slf4j.impl;
 
+import javax.annotation.Nonnull;
+
 import org.apache.maven.plugin.logging.Log;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
+
+import com.helger.commons.datetime.PDTFactory;
 
 /**
  * Implementation of {@link org.slf4j.Logger} transforming SLF4J messages to
@@ -29,7 +33,7 @@ import org.slf4j.helpers.MessageFormatter;
  * parent class requires us to implement them all.
  * <p>
  * The class is thread-safe.
- * 
+ *
  * @author Yegor Bugayenko (yegor@jcabi.com)
  * @version $Id$
  * @since 0.1.6
@@ -48,11 +52,78 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   private transient Log m_aMavenLog;
 
   /**
+   * Get Maven Log.
+   *
+   * @return The log from Maven plugin
+   */
+  @Nonnull
+  private Log _mavenLog ()
+  {
+    final Log ret = m_aMavenLog;
+    if (ret == null)
+      throw new IllegalStateException ("initialize StaticLoggerBinder with #setMavenLog() first");
+    return ret;
+  }
+
+  @Nonnull
+  private static String _mod (@Nonnull final String s)
+  {
+    return "[" + PDTFactory.getCurrentLocalTime ().toString () + "] " + s;
+  }
+
+  /**
+   * Format with one object.
+   *
+   * @param format
+   *        Format to use
+   * @param arg
+   *        One argument
+   * @return The message
+   */
+  private static String _format (final String format, final Object arg)
+  {
+    final FormattingTuple tuple = MessageFormatter.format (format, arg);
+    return tuple.getMessage ();
+  }
+
+  /**
+   * Format with two objects.
+   *
+   * @param format
+   *        Format to use
+   * @param first
+   *        First argument
+   * @param second
+   *        Second argument
+   * @return The message
+   */
+  private static String _format (final String format, final Object first, final Object second)
+  {
+    final FormattingTuple tuple = MessageFormatter.format (format, first, second);
+    return tuple.getMessage ();
+  }
+
+  /**
+   * Format with array.
+   *
+   * @param format
+   *        Format to use
+   * @param array
+   *        List of arguments
+   * @return The message
+   */
+  private static String _format (final String format, final Object [] array)
+  {
+    final FormattingTuple tuple = MessageFormatter.arrayFormat (format, array);
+    return tuple.getMessage ();
+  }
+
+  /**
    * Set Maven log.
    * <p>
    * Class variable is used as a synchronization lock, mostly because only one
    * instance of this class may exist.
-   * 
+   *
    * @param log
    *        The log to set
    */
@@ -88,7 +159,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void trace (final String msg)
   {
-    _log ().debug (msg);
+    _mavenLog ().debug (_mod (msg));
   }
 
   /**
@@ -97,7 +168,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void trace (final String format, final Object arg)
   {
-    _log ().debug (_format (format, arg));
+    _mavenLog ().debug (_mod (_format (format, arg)));
   }
 
   /**
@@ -106,7 +177,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void trace (final String format, final Object first, final Object second)
   {
-    _log ().debug (_format (format, first, second));
+    _mavenLog ().debug (_mod (_format (format, first, second)));
   }
 
   /**
@@ -115,7 +186,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void trace (final String format, final Object... array)
   {
-    _log ().debug (_format (format, array));
+    _mavenLog ().debug (_mod (_format (format, array)));
   }
 
   /**
@@ -124,7 +195,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void trace (final String msg, final Throwable thr)
   {
-    _log ().debug (msg, thr);
+    _mavenLog ().debug (_mod (msg), thr);
   }
 
   /**
@@ -133,7 +204,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public boolean isDebugEnabled ()
   {
-    return _log ().isDebugEnabled ();
+    return _mavenLog ().isDebugEnabled ();
   }
 
   /**
@@ -142,7 +213,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void debug (final String msg)
   {
-    _log ().debug (msg);
+    _mavenLog ().debug (_mod (msg));
   }
 
   /**
@@ -151,7 +222,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void debug (final String format, final Object arg)
   {
-    _log ().debug (_format (format, arg));
+    _mavenLog ().debug (_mod (_format (format, arg)));
   }
 
   /**
@@ -160,7 +231,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void debug (final String format, final Object first, final Object second)
   {
-    _log ().debug (_format (format, first, second));
+    _mavenLog ().debug (_mod (_format (format, first, second)));
   }
 
   /**
@@ -169,7 +240,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void debug (final String format, final Object... array)
   {
-    _log ().debug (_format (format, array));
+    _mavenLog ().debug (_mod (_format (format, array)));
   }
 
   /**
@@ -178,7 +249,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void debug (final String msg, final Throwable thr)
   {
-    _log ().debug (msg, thr);
+    _mavenLog ().debug (_mod (msg), thr);
   }
 
   /**
@@ -196,7 +267,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void info (final String msg)
   {
-    _log ().info (msg);
+    _mavenLog ().info (_mod (msg));
   }
 
   /**
@@ -205,7 +276,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void info (final String format, final Object arg)
   {
-    _log ().info (_format (format, arg));
+    _mavenLog ().info (_mod (_format (format, arg)));
   }
 
   /**
@@ -214,7 +285,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void info (final String format, final Object first, final Object second)
   {
-    _log ().info (_format (format, first, second));
+    _mavenLog ().info (_mod (_format (format, first, second)));
   }
 
   /**
@@ -223,7 +294,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void info (final String format, final Object... array)
   {
-    _log ().info (_format (format, array));
+    _mavenLog ().info (_mod (_format (format, array)));
   }
 
   /**
@@ -232,7 +303,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void info (final String msg, final Throwable thr)
   {
-    _log ().info (msg, thr);
+    _mavenLog ().info (_mod (msg), thr);
   }
 
   /**
@@ -250,7 +321,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void warn (final String msg)
   {
-    _log ().warn (msg);
+    _mavenLog ().warn (_mod (msg));
   }
 
   /**
@@ -259,7 +330,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void warn (final String format, final Object arg)
   {
-    _log ().warn (_format (format, arg));
+    _mavenLog ().warn (_mod (_format (format, arg)));
   }
 
   /**
@@ -268,7 +339,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void warn (final String format, final Object... array)
   {
-    _log ().warn (_format (format, array));
+    _mavenLog ().warn (_mod (_format (format, array)));
   }
 
   /**
@@ -277,7 +348,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void warn (final String format, final Object first, final Object second)
   {
-    _log ().warn (_format (format, first, second));
+    _mavenLog ().warn (_mod (_format (format, first, second)));
   }
 
   /**
@@ -286,7 +357,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void warn (final String msg, final Throwable thr)
   {
-    _log ().warn (msg, thr);
+    _mavenLog ().warn (_mod (msg), thr);
   }
 
   /**
@@ -304,7 +375,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void error (final String msg)
   {
-    _log ().error (msg);
+    _mavenLog ().error (_mod (msg));
   }
 
   /**
@@ -313,7 +384,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void error (final String format, final Object arg)
   {
-    _log ().error (_format (format, arg));
+    _mavenLog ().error (_mod (_format (format, arg)));
   }
 
   /**
@@ -322,7 +393,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void error (final String format, final Object first, final Object second)
   {
-    _log ().error (_format (format, first, second));
+    _mavenLog ().error (_mod (_format (format, first, second)));
   }
 
   /**
@@ -331,7 +402,7 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void error (final String format, final Object... array)
   {
-    _log ().error (_format (format, array));
+    _mavenLog ().error (_mod (_format (format, array)));
   }
 
   /**
@@ -340,65 +411,6 @@ final class Slf4jAdapter extends MarkerIgnoringBase
   @Override
   public void error (final String msg, final Throwable thr)
   {
-    _log ().error (msg, thr);
-  }
-
-  /**
-   * Get Maven Log.
-   * 
-   * @return The log from Maven plugin
-   */
-  private Log _log ()
-  {
-    if (m_aMavenLog == null)
-      throw new IllegalStateException ("initialize StaticLoggerBinder with #setMavenLog() first");
-    return m_aMavenLog;
-  }
-
-  /**
-   * Format with one object.
-   * 
-   * @param format
-   *        Format to use
-   * @param arg
-   *        One argument
-   * @return The message
-   */
-  private String _format (final String format, final Object arg)
-  {
-    final FormattingTuple tuple = MessageFormatter.format (format, arg);
-    return tuple.getMessage ();
-  }
-
-  /**
-   * Format with two objects.
-   * 
-   * @param format
-   *        Format to use
-   * @param first
-   *        First argument
-   * @param second
-   *        Second argument
-   * @return The message
-   */
-  private String _format (final String format, final Object first, final Object second)
-  {
-    final FormattingTuple tuple = MessageFormatter.format (format, first, second);
-    return tuple.getMessage ();
-  }
-
-  /**
-   * Format with array.
-   * 
-   * @param format
-   *        Format to use
-   * @param array
-   *        List of arguments
-   * @return The message
-   */
-  private String _format (final String format, final Object [] array)
-  {
-    final FormattingTuple tuple = MessageFormatter.format (format, array);
-    return tuple.getMessage ();
+    _mavenLog ().error (_mod (msg), thr);
   }
 }
