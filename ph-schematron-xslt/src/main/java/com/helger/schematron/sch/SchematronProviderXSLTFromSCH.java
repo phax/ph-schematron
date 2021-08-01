@@ -116,6 +116,9 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       s_aStep3 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP3, aCL));
       if (s_aStep3 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP3 + "'");
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished creating XSLT templates");
     }
   }
 
