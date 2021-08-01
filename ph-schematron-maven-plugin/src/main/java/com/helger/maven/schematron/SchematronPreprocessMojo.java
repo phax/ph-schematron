@@ -214,11 +214,10 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       final PSSchema aSchema = new PSReader (new FileSystemResource (m_aSourceFile), null, null).readSchema ();
       final IPSQueryBinding aQueryBinding = PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());
 
-      final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
-      aPreprocessor.setKeepTitles (m_bKeepTitles);
-      aPreprocessor.setKeepDiagnostics (m_bKeepDiagnostics);
-      aPreprocessor.setKeepReports (m_bKeepReports);
-      aPreprocessor.setKeepEmptyPatterns (m_bKeepEmptyPatterns);
+      final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding).setKeepTitles (m_bKeepTitles)
+                                                                             .setKeepDiagnostics (m_bKeepDiagnostics)
+                                                                             .setKeepReports (m_bKeepReports)
+                                                                             .setKeepEmptyPatterns (m_bKeepEmptyPatterns);
 
       // Pre-process
       final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);

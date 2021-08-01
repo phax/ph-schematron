@@ -278,13 +278,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             getLog ().debug ("Creating directory '" + aXsltFileDirectory.getPath () + "'");
             if (!aXsltFileDirectory.mkdirs ())
             {
-              final String message = "Failed to convert '" +
+              final String sMessage = "Failed to convert '" +
                                      aFile.getPath () +
                                      "' because directory '" +
                                      aXsltFileDirectory.getPath () +
                                      "' could not be created";
-              getLog ().error (message);
-              throw new MojoFailureException (message);
+              getLog ().error (sMessage);
+              throw new MojoFailureException (sMessage);
             }
           }
           // 3.3 Okay, write the XSLT file
