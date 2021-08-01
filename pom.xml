@@ -70,7 +70,7 @@
   </developers>
   
   <properties>
-    <ant.version>1.10.10</ant.version>
+    <ant.version>1.10.11</ant.version>
   </properties>
   
   <dependencyManagement>
@@ -170,7 +170,7 @@
       <dependency>
         <groupId>name.dmaus.schxslt</groupId>
         <artifactId>schxslt</artifactId>
-        <version>1.7.2</version>
+        <version>1.7.4</version>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
