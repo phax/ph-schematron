@@ -33,13 +33,13 @@ import com.helger.commons.ValueEnforcer;
 @ThreadSafe
 public final class SchematronDebug
 {
-  private static final AtomicBoolean s_bSaveIntermediateXSLTFiles = new AtomicBoolean (false);
+  private static final AtomicBoolean SAVE_INTERMEDIATE_XSLT_FILES = new AtomicBoolean (false);
   private static File s_aIntermediateMinifiedSCHFolder = new File ("test-minified");
   private static File s_aIntermediateFinalXSLTFolder = new File ("test-final");
-  private static final AtomicBoolean s_aShowCreatedXSLT = new AtomicBoolean (false);
-  private static final AtomicBoolean s_aShowCreatedSVRL = new AtomicBoolean (false);
-  private static final AtomicBoolean s_aShowPreprocessedSchematron = new AtomicBoolean (false);
-  private static final AtomicBoolean s_aShowResolvedSourceSchematron = new AtomicBoolean (false);
+  private static final AtomicBoolean SHOW_CREATED_XSLT = new AtomicBoolean (false);
+  private static final AtomicBoolean SHOW_CREATED_SVRL = new AtomicBoolean (false);
+  private static final AtomicBoolean SHOW_PREPROCESSED_SCH = new AtomicBoolean (false);
+  private static final AtomicBoolean SHOW_RESOLVED_SOURCE_SCH = new AtomicBoolean (false);
 
   private SchematronDebug ()
   {}
@@ -71,12 +71,12 @@ public final class SchematronDebug
    */
   public static boolean isSaveIntermediateXSLTFiles ()
   {
-    return s_bSaveIntermediateXSLTFiles.get ();
+    return SAVE_INTERMEDIATE_XSLT_FILES.get ();
   }
 
   public static void setSaveIntermediateXSLTFiles (final boolean bSaveIntermediateFiles)
   {
-    s_bSaveIntermediateXSLTFiles.set (bSaveIntermediateFiles);
+    SAVE_INTERMEDIATE_XSLT_FILES.set (bSaveIntermediateFiles);
   }
 
   /**
@@ -115,7 +115,7 @@ public final class SchematronDebug
 
   public static void setShowCreatedXSLT (final boolean bShow)
   {
-    s_aShowCreatedXSLT.set (bShow);
+    SHOW_CREATED_XSLT.set (bShow);
   }
 
   /**
@@ -124,12 +124,12 @@ public final class SchematronDebug
    */
   public static boolean isShowCreatedXSLT ()
   {
-    return s_aShowCreatedXSLT.get ();
+    return SHOW_CREATED_XSLT.get ();
   }
 
   public static void setShowCreatedSVRL (final boolean bShow)
   {
-    s_aShowCreatedSVRL.set (bShow);
+    SHOW_CREATED_SVRL.set (bShow);
   }
 
   /**
@@ -137,12 +137,12 @@ public final class SchematronDebug
    */
   public static boolean isShowCreatedSVRL ()
   {
-    return s_aShowCreatedSVRL.get ();
+    return SHOW_CREATED_SVRL.get ();
   }
 
   public static void setShowResolvedSourceSchematron (final boolean bShow)
   {
-    s_aShowResolvedSourceSchematron.set (bShow);
+    SHOW_RESOLVED_SOURCE_SCH.set (bShow);
   }
 
   /**
@@ -151,12 +151,12 @@ public final class SchematronDebug
    */
   public static boolean isShowResolvedSourceSchematron ()
   {
-    return s_aShowResolvedSourceSchematron.get ();
+    return SHOW_RESOLVED_SOURCE_SCH.get ();
   }
 
   public static void setShowPreprocessedSchematron (final boolean bShow)
   {
-    s_aShowPreprocessedSchematron.set (bShow);
+    SHOW_PREPROCESSED_SCH.set (bShow);
   }
 
   /**
@@ -165,6 +165,6 @@ public final class SchematronDebug
    */
   public static boolean isShowPreprocessedSchematron ()
   {
-    return s_aShowPreprocessedSchematron.get ();
+    return SHOW_PREPROCESSED_SCH.get ();
   }
 }
