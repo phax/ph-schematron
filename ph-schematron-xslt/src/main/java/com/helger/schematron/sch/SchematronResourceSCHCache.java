@@ -43,7 +43,7 @@ public final class SchematronResourceSCHCache
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
   @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> CACHE = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> MAP = new CommonsHashMap <> ();
 
   private SchematronResourceSCHCache ()
   {}
@@ -133,22 +133,24 @@ public final class SchematronResourceSCHCache
                                                                 StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
 
     // Validator already in the cache?
-    final SchematronProviderXSLTFromSCH aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
-    if (aProvider != null)
-      return aProvider;
-
-    return RW_LOCK.writeLockedGet ( () -> {
+    SchematronProviderXSLTFromSCH aProvider = RW_LOCK.readLockedGet ( () -> MAP.get (sCacheKey));
+    if (aProvider == null)
+    {
       // Validator already in the cache?
-      SchematronProviderXSLTFromSCH aProvider2 = CACHE.get (sCacheKey);
-      if (aProvider2 == null)
+      aProvider = RW_LOCK.writeLockedGet ( () -> MAP.get (sCacheKey));
+      if (aProvider == null)
       {
-        // Create new object and put in cache
-        aProvider2 = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
-        if (aProvider2 != null)
-          CACHE.put (sCacheKey, aProvider2);
+        // Create new object outside of the write lock
+        final SchematronProviderXSLTFromSCH aProviderNew = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
+        if (aProviderNew != null)
+        {
+          // Put in cache
+          RW_LOCK.writeLocked ( () -> MAP.put (sCacheKey, aProviderNew));
+        }
+        aProvider = aProviderNew;
       }
-      return aProvider2;
-    });
+    }
+    return aProvider;
   }
 
   /**
@@ -158,6 +160,6 @@ public final class SchematronResourceSCHCache
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked ( () -> CACHE.clear ());
+    RW_LOCK.writeLocked ( () -> MAP.clear ());
   }
 }

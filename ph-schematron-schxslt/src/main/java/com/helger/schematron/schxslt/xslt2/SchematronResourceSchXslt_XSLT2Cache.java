@@ -43,7 +43,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSchXslt_XSLT2Cache.class);
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
   @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, SchematronProviderXSLTFromSchXslt_XSLT2> CACHE = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTFromSchXslt_XSLT2> MAP = new CommonsHashMap <> ();
 
   private SchematronResourceSchXslt_XSLT2Cache ()
   {}
@@ -134,11 +134,11 @@ public final class SchematronResourceSchXslt_XSLT2Cache
                                                                 StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
 
     // Validator already in the cache?
-    SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sCacheKey));
+    SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = RW_LOCK.readLockedGet ( () -> MAP.get (sCacheKey));
     if (aProvider == null)
     {
       // Check again in write lock
-      aProvider = RW_LOCK.writeLockedGet ( () -> CACHE.get (sCacheKey));
+      aProvider = RW_LOCK.writeLockedGet ( () -> MAP.get (sCacheKey));
       if (aProvider == null)
       {
         // Create new object outside of the write lock
@@ -147,7 +147,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
         if (aProviderNew != null)
         {
           // Put in cache
-          RW_LOCK.writeLockedGet ( () -> CACHE.put (sCacheKey, aProviderNew));
+          RW_LOCK.writeLocked ( () -> MAP.put (sCacheKey, aProviderNew));
         }
         aProvider = aProviderNew;
       }
@@ -160,6 +160,6 @@ public final class SchematronResourceSchXslt_XSLT2Cache
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked ( () -> CACHE.clear ());
+    RW_LOCK.writeLocked ( () -> MAP.clear ());
   }
 }

@@ -48,7 +48,7 @@ public final class SchematronResourceXSLTCache
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
   @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> CACHE = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> MAP = new CommonsHashMap <> ();
 
   private SchematronResourceXSLTCache ()
   {}
@@ -118,11 +118,11 @@ public final class SchematronResourceXSLTCache
     final String sResourceID = aXSLTResource.getResourceID ();
 
     // Validator already in the cache?
-    SchematronProviderXSLTPrebuild aProvider = RW_LOCK.readLockedGet ( () -> CACHE.get (sResourceID));
+    SchematronProviderXSLTPrebuild aProvider = RW_LOCK.readLockedGet ( () -> MAP.get (sResourceID));
     if (aProvider == null)
     {
       // Check again in write lock
-      aProvider = RW_LOCK.writeLockedGet ( () -> CACHE.get (sResourceID));
+      aProvider = RW_LOCK.writeLockedGet ( () -> MAP.get (sResourceID));
 
       if (aProvider == null)
       {
@@ -133,7 +133,7 @@ public final class SchematronResourceXSLTCache
         if (aProviderNew != null)
         {
           // Put in the cache
-          RW_LOCK.writeLockedGet ( () -> CACHE.put (sResourceID, aProviderNew));
+          RW_LOCK.writeLocked ( () -> MAP.put (sResourceID, aProviderNew));
         }
         aProvider = aProviderNew;
       }
@@ -148,6 +148,6 @@ public final class SchematronResourceXSLTCache
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked ( () -> CACHE.clear ());
+    RW_LOCK.writeLocked ( () -> MAP.clear ());
   }
 }
