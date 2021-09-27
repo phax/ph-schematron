@@ -117,19 +117,17 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
   public void testXSLTPreprocessor ()
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
-      if (!aRes.getPath ().contains ("/ATGOV-UBL-") &&
-          !aRes.getPath ().contains ("/ATNAT-UBL-") &&
-          !aRes.getPath ().contains ("/BIICORE-UBL-") &&
-          !aRes.getPath ().contains ("/BIIPROFILES-UBL-") &&
-          !aRes.getPath ().contains ("/BIIRULES-") &&
-          !aRes.getPath ().contains ("/DKNAT-") &&
-          !aRes.getPath ().contains ("/EUGEN-UBL-") &&
-          !aRes.getPath ().contains ("/ITNAT-UBL-") &&
-          !aRes.getPath ().contains ("/NOGOV-") &&
-          !aRes.getPath ().contains ("/NONAT-") &&
-          !aRes.getPath ().endsWith ("/example-8-5.sch") &&
-          !aRes.getPath ().endsWith ("/pattern-example-with-includes.sch") &&
-          !aRes.getPath ().endsWith ("/pattern-example.sch"))
+      if (// !aRes.getPath ().contains ("/ATGOV-UBL-") &&
+          // !aRes.getPath ().contains ("/ATNAT-UBL-") &&
+          // !aRes.getPath ().contains ("/BIICORE-UBL-") &&
+          // !aRes.getPath ().contains ("/BIIPROFILES-UBL-") &&
+          // !aRes.getPath ().contains ("/BIIRULES-") &&
+          // !aRes.getPath ().contains ("/DKNAT-") &&
+          // !aRes.getPath ().contains ("/EUGEN-UBL-") &&
+          // !aRes.getPath ().contains ("/ITNAT-UBL-") &&
+          // !aRes.getPath ().contains ("/NOGOV-") &&
+          // !aRes.getPath ().contains ("/NONAT-") &&
+      !aRes.getPath ().endsWith ("/pattern-example-with-includes.sch") && !aRes.getPath ().endsWith ("/pattern-example.sch"))
       {
         if (true)
           LOGGER.info (aRes.getPath ());
