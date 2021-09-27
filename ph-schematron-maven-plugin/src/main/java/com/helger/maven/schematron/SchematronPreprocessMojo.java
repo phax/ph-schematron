@@ -31,7 +31,9 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.commons.annotation.Since;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.string.StringHelper;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -122,6 +124,14 @@ public final class SchematronPreprocessMojo extends AbstractMojo
   @Parameter (name = "keepEmptyPatterns", defaultValue = "false")
   private boolean m_bKeepEmptyPatterns;
 
+  /**
+   * A constant header string that should be added to all preprocessed SCH
+   * files, e.g. as a version number etc.
+   */
+  @Parameter (name = "schHeader")
+  @Since ("6.2.2")
+  private String m_sSCHHeader;
+
   public void setSourceFile (@Nonnull final File aFile)
   {
     m_aSourceFile = aFile;
@@ -185,6 +195,15 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       getLog ().debug ("Removing <pattern> elements without rules");
   }
 
+  public void setSchHeader (final String s)
+  {
+    m_sSCHHeader = s;
+    if (StringHelper.hasText (m_sSCHHeader))
+      getLog ().debug ("Using the SCH header '" + m_sSCHHeader + "'");
+    else
+      getLog ().debug ("No SCH header is configured");
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
@@ -236,7 +255,13 @@ public final class SchematronPreprocessMojo extends AbstractMojo
 
       final IXMLWriterSettings XWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN).setNamespaceContext (aNSCtx);
       final IMicroDocument aDoc = new MicroDocument ();
+      if (StringHelper.hasText (m_sSCHHeader))
+      {
+        // Add the optional header as a comment
+        aDoc.appendComment (m_sSCHHeader);
+      }
       aDoc.appendChild (aPreprocessedSchema.getAsMicroElement ());
+
       if (MicroWriter.writeToFile (aDoc, m_aTargetFile, XWS).isSuccess ())
         getLog ().info ("Successfully wrote preprocessed Schematron file '" + m_aTargetFile.getPath () + "'");
       else
