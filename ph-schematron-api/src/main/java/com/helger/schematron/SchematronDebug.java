@@ -74,6 +74,13 @@ public final class SchematronDebug
     return SAVE_INTERMEDIATE_XSLT_FILES.get ();
   }
 
+  /**
+   * Enable/disable the saving of intermediate XSLT files
+   *
+   * @param bSaveIntermediateFiles
+   *        <code>true</code> to save them, <code>false</code> to disable it.
+   * @see #setDebugMode(boolean) to trigger all debug options at once
+   */
   public static void setSaveIntermediateXSLTFiles (final boolean bSaveIntermediateFiles)
   {
     SAVE_INTERMEDIATE_XSLT_FILES.set (bSaveIntermediateFiles);
@@ -90,6 +97,13 @@ public final class SchematronDebug
     return s_aIntermediateMinifiedSCHFolder;
   }
 
+  /**
+   * Set the folder to which the intermediate minified SCH files should be save
+   * to
+   *
+   * @param aIntermediateMinifiedSCHFolder
+   *        The folder to save to. May not be <code>null</code>.
+   */
   public static void setIntermediateMinifiedSCHFolder (@Nonnull final File aIntermediateMinifiedSCHFolder)
   {
     ValueEnforcer.notNull (aIntermediateMinifiedSCHFolder, "IntermediateMinifiedSCHFolder");
@@ -107,15 +121,17 @@ public final class SchematronDebug
     return s_aIntermediateFinalXSLTFolder;
   }
 
+  /**
+   * Set the folder to which the intermediate minified SCH files should be save
+   * to.
+   *
+   * @param aIntermediateFinalXSLTFolder
+   *        The folder to save to. May not be <code>null</code>.
+   */
   public static void setIntermediateFinalXSLTFolder (@Nonnull final File aIntermediateFinalXSLTFolder)
   {
     ValueEnforcer.notNull (aIntermediateFinalXSLTFolder, "IntermediateFinalXSLTFolder");
     s_aIntermediateFinalXSLTFolder = aIntermediateFinalXSLTFolder;
-  }
-
-  public static void setShowCreatedXSLT (final boolean bShow)
-  {
-    SHOW_CREATED_XSLT.set (bShow);
   }
 
   /**
@@ -127,9 +143,17 @@ public final class SchematronDebug
     return SHOW_CREATED_XSLT.get ();
   }
 
-  public static void setShowCreatedSVRL (final boolean bShow)
+  /**
+   * Log the created XSLT files or not
+   *
+   * @param bShow
+   *        <code>true</code> to enable logging, <code>false</code> to disable
+   *        it.
+   * @see #setDebugMode(boolean) to trigger all debug options at once
+   */
+  public static void setShowCreatedXSLT (final boolean bShow)
   {
-    SHOW_CREATED_SVRL.set (bShow);
+    SHOW_CREATED_XSLT.set (bShow);
   }
 
   /**
@@ -140,9 +164,17 @@ public final class SchematronDebug
     return SHOW_CREATED_SVRL.get ();
   }
 
-  public static void setShowResolvedSourceSchematron (final boolean bShow)
+  /**
+   * Log the created SVRL results or not
+   *
+   * @param bShow
+   *        <code>true</code> to enable logging, <code>false</code> to disable
+   *        it.
+   * @see #setDebugMode(boolean) to trigger all debug options at once
+   */
+  public static void setShowCreatedSVRL (final boolean bShow)
   {
-    SHOW_RESOLVED_SOURCE_SCH.set (bShow);
+    SHOW_CREATED_SVRL.set (bShow);
   }
 
   /**
@@ -154,9 +186,17 @@ public final class SchematronDebug
     return SHOW_RESOLVED_SOURCE_SCH.get ();
   }
 
-  public static void setShowPreprocessedSchematron (final boolean bShow)
+  /**
+   * Log the created Schematron with the includes resolved
+   *
+   * @param bShow
+   *        <code>true</code> to enable logging, <code>false</code> to disable
+   *        it.
+   * @see #setDebugMode(boolean) to trigger all debug options at once
+   */
+  public static void setShowResolvedSourceSchematron (final boolean bShow)
   {
-    SHOW_PREPROCESSED_SCH.set (bShow);
+    SHOW_RESOLVED_SOURCE_SCH.set (bShow);
   }
 
   /**
@@ -166,5 +206,18 @@ public final class SchematronDebug
   public static boolean isShowPreprocessedSchematron ()
   {
     return SHOW_PREPROCESSED_SCH.get ();
+  }
+
+  /**
+   * Log the complete created preprocessed Schematron
+   *
+   * @param bShow
+   *        <code>true</code> to enable logging, <code>false</code> to disable
+   *        it.
+   * @see #setDebugMode(boolean) to trigger all debug options at once
+   */
+  public static void setShowPreprocessedSchematron (final boolean bShow)
+  {
+    SHOW_PREPROCESSED_SCH.set (bShow);
   }
 }
