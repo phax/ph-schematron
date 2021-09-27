@@ -141,6 +141,10 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("5.2.1")
   private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
+  /**
+   * A constant header string that should be added to all XSLT files, e.g. as a
+   * version number etc.
+   */
   @Parameter (name = "xsltHeader")
   @Since ("6.2.2")
   private String m_sXSLTHeader;
