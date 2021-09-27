@@ -92,7 +92,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>10.5</version>
+        <version>10.6</version>
       </dependency>
       
       <!-- RelaxNG -->
@@ -170,7 +170,7 @@
       <dependency>
         <groupId>name.dmaus.schxslt</groupId>
         <artifactId>schxslt</artifactId>
-        <version>1.8</version>
+        <version>1.8.2</version>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
