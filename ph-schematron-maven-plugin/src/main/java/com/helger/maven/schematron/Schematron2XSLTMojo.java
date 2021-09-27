@@ -141,6 +141,10 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("5.2.1")
   private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
+  @Parameter (name = "xsltHeader")
+  @Since ("6.2.2")
+  private String m_sXSLTHeader;
+
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -222,6 +226,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("Results not not forcebly cached");
   }
 
+  public void setXsltHeader (final String s)
+  {
+    m_sXSLTHeader = s;
+    if (StringHelper.hasText (m_sXSLTHeader))
+      getLog ().debug ("Using the XSLT header '" + m_sXSLTHeader + "'");
+    else
+      getLog ().debug ("No XSLT header is configured");
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
@@ -279,14 +292,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             if (!aXsltFileDirectory.mkdirs ())
             {
               final String sMessage = "Failed to convert '" +
-                                     aFile.getPath () +
-                                     "' because directory '" +
-                                     aXsltFileDirectory.getPath () +
-                                     "' could not be created";
+                                      aFile.getPath () +
+                                      "' because directory '" +
+                                      aXsltFileDirectory.getPath () +
+                                      "' could not be created";
               getLog ().error (sMessage);
               throw new MojoFailureException (sMessage);
             }
           }
+
           // 3.3 Okay, write the XSLT file
           try
           {
@@ -309,6 +323,12 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
             if (aXsltDoc != null)
             {
+              if (StringHelper.hasText (m_sXSLTHeader))
+              {
+                // Inject the header into the XSLT
+                aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());
+              }
+
               // Write the resulting XSLT file to disk
               final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
               // Add all namespaces from XSLT document root
