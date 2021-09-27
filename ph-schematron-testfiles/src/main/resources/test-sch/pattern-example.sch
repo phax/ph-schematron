@@ -20,7 +20,7 @@
     </sch:pattern>
     <sch:pattern is-a="table" id="CALS_Table">
         <sch:param name="table" value="table"/>
-        <sch:param name="row"   value=".//row"/>
+        <sch:param name="row"   value="row"/>
         <sch:param name="entry" value="cell"/>
     </sch:pattern>
     <sch:pattern is-a="table" id="calendar">

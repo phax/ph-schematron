@@ -36,6 +36,7 @@ import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -116,38 +117,29 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
   @Test
   public void testXSLTPreprocessor ()
   {
+    if (false)
+      SchematronDebug.setDebugMode (true);
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
-      if (// !aRes.getPath ().contains ("/ATGOV-UBL-") &&
-          // !aRes.getPath ().contains ("/ATNAT-UBL-") &&
-          // !aRes.getPath ().contains ("/BIICORE-UBL-") &&
-          // !aRes.getPath ().contains ("/BIIPROFILES-UBL-") &&
-          // !aRes.getPath ().contains ("/BIIRULES-") &&
-          // !aRes.getPath ().contains ("/DKNAT-") &&
-          // !aRes.getPath ().contains ("/EUGEN-UBL-") &&
-          // !aRes.getPath ().contains ("/ITNAT-UBL-") &&
-          // !aRes.getPath ().contains ("/NOGOV-") &&
-          // !aRes.getPath ().contains ("/NONAT-") &&
-      !aRes.getPath ().endsWith ("/pattern-example-with-includes.sch") && !aRes.getPath ().endsWith ("/pattern-example.sch"))
+    {
+      if (true)
+        LOGGER.info (aRes.getPath ());
+
+      final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
+      final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (aRes,
+                                                                                                                            new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aCEH)
+                                                                                                                                                                     .setLanguageCode ("de"));
+      assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
+      assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
+      assertNotNull (aPreprocessor.getXSLTDocument ());
+
+      final IErrorList aErrorGroup = aCEH.getErrorList ();
+      if (aErrorGroup.isNotEmpty ())
       {
-        if (true)
-          LOGGER.info (aRes.getPath ());
-
-        final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
-        final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (aRes,
-                                                                                                                              new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aCEH)
-                                                                                                                                                                       .setLanguageCode ("de"));
-        assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
-        assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
-        assertNotNull (aPreprocessor.getXSLTDocument ());
-
-        final IErrorList aErrorGroup = aCEH.getErrorList ();
-        if (aErrorGroup.isNotEmpty ())
-        {
-          for (final IError aError : aErrorGroup)
-            if (aError.isError ())
-              LOGGER.info ("!!" + aError.getAsString (Locale.US));
-          LOGGER.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
-        }
+        for (final IError aError : aErrorGroup)
+          if (aError.isError ())
+            LOGGER.info ("!!" + aError.getAsString (Locale.US));
+        LOGGER.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
       }
+    }
   }
 }

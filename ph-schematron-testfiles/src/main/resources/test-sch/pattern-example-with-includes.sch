@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding='xslt2'>
     <sch:include href="pattern-example-with-includes.incl" />
     
     <sch:pattern is-a="table" id="HTML_Table">
@@ -9,7 +9,7 @@
     </sch:pattern>
     <sch:pattern is-a="table" id="CALS_Table">
         <sch:param name="table" value="table"/>
-        <sch:param name="row"   value=".//row"/>
+        <sch:param name="row"   value="row"/>
         <sch:param name="entry" value="cell"/>
     </sch:pattern>
     <sch:pattern is-a="table" id="calendar">
