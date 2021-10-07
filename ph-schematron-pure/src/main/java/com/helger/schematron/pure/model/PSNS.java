@@ -111,15 +111,6 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   }
 
   /**
-   * @param sUri
-   *        The namespace URI.
-   */
-  public void setUri (@Nullable final String sUri)
-  {
-    m_sUri = sUri;
-  }
-
-  /**
    * @return The namespace URI. May be <code>null</code>.
    */
   @Nullable
@@ -129,12 +120,12 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   }
 
   /**
-   * @param sPrefix
-   *        The namespace prefix to use.
+   * @param sUri
+   *        The namespace URI. May be <code>null</code>.
    */
-  public void setPrefix (@Nullable final String sPrefix)
+  public void setUri (@Nullable final String sUri)
   {
-    m_sPrefix = sPrefix;
+    m_sUri = sUri;
   }
 
   /**
@@ -144,6 +135,15 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   public String getPrefix ()
   {
     return m_sPrefix;
+  }
+
+  /**
+   * @param sPrefix
+   *        The namespace prefix to use. May be <code>null</code>.
+   */
+  public void setPrefix (@Nullable final String sPrefix)
+  {
+    m_sPrefix = sPrefix;
   }
 
   @Nonnull
@@ -176,5 +176,26 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
                                        .appendIfNotNull ("prefix", m_sPrefix)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
+  }
+
+  /**
+   * Factory method to create a new {@link PSNS} with certain "prefix" and "uri"
+   * values
+   *
+   * @param sUri
+   * @param sPrefix
+   *        The namespace prefix to use. May be <code>null</code>.
+   * @param sUri
+   *        The namespace URI. May be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.3
+   */
+  @Nonnull
+  public static PSNS ofPrefixAndUri (@Nullable final String sPrefix, @Nullable final String sUri)
+  {
+    final PSNS ret = new PSNS ();
+    ret.setPrefix (sPrefix);
+    ret.setUri (sUri);
+    return ret;
   }
 }

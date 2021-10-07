@@ -77,6 +77,18 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return true;
   }
 
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
+  {
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
+  }
+
+  public boolean hasForeignAttributes ()
+  {
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
+  }
+
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
@@ -86,16 +98,13 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
-  public boolean hasForeignAttributes ()
+  /**
+   * @return The select expression string. May be <code>null</code>.
+   */
+  @Nullable
+  public String getSelect ()
   {
-    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
-  {
-    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
+    return m_sSelect;
   }
 
   /**
@@ -107,15 +116,6 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
   public void setSelect (@Nullable final String sSelect)
   {
     m_sSelect = sSelect;
-  }
-
-  /**
-   * @return The select expression string. May be <code>null</code>.
-   */
-  @Nullable
-  public String getSelect ()
-  {
-    return m_sSelect;
   }
 
   @Nonnull
@@ -145,5 +145,22 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return new ToStringGenerator (this).appendIfNotNull ("select", m_sSelect)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
+  }
+
+  /**
+   * Factory method to create a new {@link PSValueOf} with a certain "select"
+   * value
+   *
+   * @param sSelect
+   *        The "select" value to be used. May be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.3
+   */
+  @Nonnull
+  public static PSValueOf ofSelect (@Nullable final String sSelect)
+  {
+    final PSValueOf ret = new PSValueOf ();
+    ret.setSelect (sSelect);
+    return ret;
   }
 }

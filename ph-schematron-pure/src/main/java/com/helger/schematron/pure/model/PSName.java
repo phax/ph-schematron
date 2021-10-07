@@ -69,6 +69,18 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     return true;
   }
 
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
+  {
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
+  }
+
+  public boolean hasForeignAttributes ()
+  {
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
+  }
+
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
@@ -78,25 +90,13 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
-  public boolean hasForeignAttributes ()
-  {
-    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
-  {
-    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
-  }
-
   /**
-   * @param sPath
-   *        The path to use. May be <code>null</code>.
+   * @return The optional path to use.
    */
-  public void setPath (@Nullable final String sPath)
+  @Nullable
+  public String getPath ()
   {
-    m_sPath = sPath;
+    return m_sPath;
   }
 
   /**
@@ -109,12 +109,12 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
   }
 
   /**
-   * @return The optional path to use.
+   * @param sPath
+   *        The path to use. May be <code>null</code>.
    */
-  @Nullable
-  public String getPath ()
+  public void setPath (@Nullable final String sPath)
   {
-    return m_sPath;
+    m_sPath = sPath;
   }
 
   @Nonnull
@@ -144,5 +144,21 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     return new ToStringGenerator (this).appendIfNotNull ("path", m_sPath)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
+  }
+
+  /**
+   * Factory method to create a new {@link PSName} with a certain "path" value
+   *
+   * @param sPath
+   *        The "path" value to be used. May be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.3
+   */
+  @Nonnull
+  public static PSName ofPath (@Nullable final String sPath)
+  {
+    final PSName ret = new PSName ();
+    ret.setPath (sPath);
+    return ret;
   }
 }
