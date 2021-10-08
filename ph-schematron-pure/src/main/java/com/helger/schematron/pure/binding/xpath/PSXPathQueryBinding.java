@@ -71,7 +71,10 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     ValueEnforcer.notNull (sTest, "Test");
 
     if (sTest.startsWith ("not(") && sTest.endsWith (")"))
+    {
+      // Avoid double not be stripping the outer not
       return sTest.substring (4, sTest.length () - 2);
+    }
 
     return "not(" + sTest + ")";
   }
