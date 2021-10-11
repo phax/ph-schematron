@@ -19,8 +19,8 @@ package com.helger.schematron.pure.model;
 import com.helger.commons.lang.ICloneable;
 
 /**
- * Base interface for a clonable Schematron elements
- * 
+ * Base interface for a cloneable Schematron elements
+ *
  * @author Philip Helger
  * @param <IMPLTYPE>
  *        The real implementation type

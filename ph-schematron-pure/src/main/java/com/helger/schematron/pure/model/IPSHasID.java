@@ -28,14 +28,6 @@ import javax.annotation.Nullable;
 public interface IPSHasID
 {
   /**
-   * Set an ID for this object.
-   *
-   * @param sID
-   *        The ID to be set. May be <code>null</code>.
-   */
-  void setID (@Nullable String sID);
-
-  /**
    * @return The optional ID of this element. May be <code>null</code>.
    */
   @Nullable
@@ -49,4 +41,12 @@ public interface IPSHasID
   {
     return getID () != null;
   }
+
+  /**
+   * Set an ID for this object.
+   *
+   * @param sID
+   *        The ID to be set. May be <code>null</code>.
+   */
+  void setID (@Nullable String sID);
 }

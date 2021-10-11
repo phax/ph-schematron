@@ -31,6 +31,12 @@ import com.helger.xml.microdom.IMicroElement;
  */
 public interface IPSHasForeignElements extends IPSHasForeignAttributes
 {
+  boolean hasForeignElements ();
+
+  @Nonnull
+  @ReturnsMutableCopy
+  ICommonsList <IMicroElement> getAllForeignElements ();
+
   void addForeignElement (@Nonnull IMicroElement aForeignElement);
 
   default void addForeignElements (@Nonnull final Iterable <IMicroElement> aForeignElements)
@@ -39,10 +45,4 @@ public interface IPSHasForeignElements extends IPSHasForeignAttributes
     for (final IMicroElement aForeignElement : aForeignElements)
       addForeignElement (aForeignElement);
   }
-
-  boolean hasForeignElements ();
-
-  @Nonnull
-  @ReturnsMutableCopy
-  ICommonsList <IMicroElement> getAllForeignElements ();
 }

@@ -31,6 +31,12 @@ import com.helger.commons.collection.impl.ICommonsOrderedMap;
  */
 public interface IPSHasForeignAttributes
 {
+  @Nonnull
+  @ReturnsMutableCopy
+  ICommonsOrderedMap <String, String> getAllForeignAttributes ();
+
+  boolean hasForeignAttributes ();
+
   void addForeignAttribute (@Nonnull String sAttrName, @Nonnull String sAttrValue);
 
   default void addForeignAttributes (@Nonnull final Map <String, String> aForeignAttrs)
@@ -39,10 +45,4 @@ public interface IPSHasForeignAttributes
     for (final Map.Entry <String, String> aEntry : aForeignAttrs.entrySet ())
       addForeignAttribute (aEntry.getKey (), aEntry.getValue ());
   }
-
-  boolean hasForeignAttributes ();
-
-  @Nonnull
-  @ReturnsMutableCopy
-  ICommonsOrderedMap <String, String> getAllForeignAttributes ();
 }

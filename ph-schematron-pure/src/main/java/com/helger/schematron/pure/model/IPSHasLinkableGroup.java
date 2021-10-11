@@ -26,12 +26,11 @@ import javax.annotation.Nullable;
 public interface IPSHasLinkableGroup
 {
   /**
-   * Overwrite any existing linkable group.
-   *
-   * @param aLinkable
-   *        The new linkable group to set. May be <code>null</code>.
+   * @return Get the existing linkable group or <code>null</code> if none is
+   *         present.
    */
-  void setLinkable (@Nullable PSLinkableGroup aLinkable);
+  @Nullable
+  PSLinkableGroup getLinkable ();
 
   /**
    * @return <code>true</code> if a linkable group is present,
@@ -43,13 +42,6 @@ public interface IPSHasLinkableGroup
   }
 
   /**
-   * @return Get the existing linkable group or <code>null</code> if none is
-   *         present.
-   */
-  @Nullable
-  PSLinkableGroup getLinkable ();
-
-  /**
    * @return Get a clone of the linkable group or <code>null</code> if no
    *         linkable group is present at this object.
    */
@@ -59,4 +51,12 @@ public interface IPSHasLinkableGroup
     final PSLinkableGroup aLinkable = getLinkable ();
     return aLinkable == null ? null : aLinkable.getClone ();
   }
+
+  /**
+   * Overwrite any existing linkable group.
+   *
+   * @param aLinkable
+   *        The new linkable group to set. May be <code>null</code>.
+   */
+  void setLinkable (@Nullable PSLinkableGroup aLinkable);
 }

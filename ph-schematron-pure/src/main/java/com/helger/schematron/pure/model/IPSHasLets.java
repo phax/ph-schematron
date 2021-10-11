@@ -30,14 +30,6 @@ import com.helger.commons.collection.impl.ICommonsOrderedMap;
 public interface IPSHasLets
 {
   /**
-   * Add a {@link PSLet} element.
-   *
-   * @param aLet
-   *        The let element to be added. May not be <code>null</code>.
-   */
-  void addLet (@Nonnull PSLet aLet);
-
-  /**
    * @return <code>true</code> if this object has at least on contained
    *         {@link PSLet} object.
    */
@@ -59,4 +51,12 @@ public interface IPSHasLets
   @Nonnull
   @ReturnsMutableCopy
   ICommonsOrderedMap <String, String> getAllLetsAsMap ();
+
+  /**
+   * Add a {@link PSLet} element.
+   *
+   * @param aLet
+   *        The let element to be added. May not be <code>null</code>.
+   */
+  void addLet (@Nonnull PSLet aLet);
 }

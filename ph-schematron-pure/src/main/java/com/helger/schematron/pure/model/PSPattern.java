@@ -252,14 +252,6 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return true;
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
-  {
-    ValueEnforcer.notNull (aForeignElement, "ForeignElement");
-    if (aForeignElement.hasParent ())
-      throw new IllegalArgumentException ("ForeignElement already has a parent!");
-    m_aContent.add (aForeignElement);
-  }
-
   public boolean hasForeignElements ()
   {
     return m_aContent.containsAny (x -> x instanceof IMicroElement);
@@ -272,13 +264,12 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
   {
-    ValueEnforcer.notNull (sAttrName, "AttrName");
-    ValueEnforcer.notNull (sAttrValue, "AttrValue");
-    if (m_aForeignAttrs == null)
-      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
-    m_aForeignAttrs.put (sAttrName, sAttrValue);
+    ValueEnforcer.notNull (aForeignElement, "ForeignElement");
+    if (aForeignElement.hasParent ())
+      throw new IllegalArgumentException ("ForeignElement already has a parent!");
+    m_aContent.add (aForeignElement);
   }
 
   public boolean hasForeignAttributes ()
@@ -293,9 +284,13 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
-  public void setAbstract (final boolean bAbstract)
+  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
   {
-    m_bAbstract = bAbstract;
+    ValueEnforcer.notNull (sAttrName, "AttrName");
+    ValueEnforcer.notNull (sAttrValue, "AttrValue");
+    if (m_aForeignAttrs == null)
+      m_aForeignAttrs = new CommonsLinkedHashMap <> ();
+    m_aForeignAttrs.put (sAttrName, sAttrValue);
   }
 
   public boolean isAbstract ()
@@ -303,9 +298,9 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_bAbstract;
   }
 
-  public void setID (@Nullable final String sID)
+  public void setAbstract (final boolean bAbstract)
   {
-    m_sID = sID;
+    m_bAbstract = bAbstract;
   }
 
   @Nullable
@@ -314,9 +309,9 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_sID;
   }
 
-  public void setIsA (@Nullable final String sIsA)
+  public void setID (@Nullable final String sID)
   {
-    m_sIsA = sIsA;
+    m_sID = sID;
   }
 
   @Nullable
@@ -325,9 +320,9 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_sIsA;
   }
 
-  public void setRich (@Nullable final PSRichGroup aRich)
+  public void setIsA (@Nullable final String sIsA)
   {
-    m_aRich = aRich;
+    m_sIsA = sIsA;
   }
 
   @Nullable
@@ -336,10 +331,9 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_aRich;
   }
 
-  public void addInclude (@Nonnull final PSInclude aInclude)
+  public void setRich (@Nullable final PSRichGroup aRich)
   {
-    ValueEnforcer.notNull (aInclude, "Include");
-    m_aContent.add (aInclude);
+    m_aRich = aRich;
   }
 
   public boolean hasAnyInclude ()
@@ -352,6 +346,23 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   public ICommonsList <PSInclude> getAllIncludes ()
   {
     return m_aContent.getAllInstanceOf (PSInclude.class);
+  }
+
+  public void addInclude (@Nonnull final PSInclude aInclude)
+  {
+    ValueEnforcer.notNull (aInclude, "Include");
+    m_aContent.add (aInclude);
+  }
+
+  @Nullable
+  public PSTitle getTitle ()
+  {
+    return m_aContent.findFirstMapped (x -> x instanceof PSTitle, x -> (PSTitle) x);
+  }
+
+  public boolean hasTitle ()
+  {
+    return m_aContent.containsAny (x -> x instanceof PSTitle);
   }
 
   public void setTitle (@Nullable final PSTitle aTitle)
@@ -376,23 +387,6 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
       else
         m_aContent.add (nLastInclude + 1, aTitle);
     }
-  }
-
-  @Nullable
-  public PSTitle getTitle ()
-  {
-    return m_aContent.findFirstMapped (x -> x instanceof PSTitle, x -> (PSTitle) x);
-  }
-
-  public boolean hasTitle ()
-  {
-    return m_aContent.containsAny (x -> x instanceof PSTitle);
-  }
-
-  public void addRule (@Nonnull final PSRule aRule)
-  {
-    ValueEnforcer.notNull (aRule, "Rule");
-    m_aContent.add (aRule);
   }
 
   @Nullable
@@ -422,10 +416,10 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_aContent.getCount (e -> e instanceof PSRule);
   }
 
-  public void addParam (@Nonnull final PSParam aParam)
+  public void addRule (@Nonnull final PSRule aRule)
   {
-    ValueEnforcer.notNull (aParam, "Param");
-    m_aContent.add (aParam);
+    ValueEnforcer.notNull (aRule, "Rule");
+    m_aContent.add (aRule);
   }
 
   @Nonnull
@@ -440,10 +434,10 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_aContent.containsAny (e -> e instanceof PSParam);
   }
 
-  public void addP (@Nonnull final PSP aP)
+  public void addParam (@Nonnull final PSParam aParam)
   {
-    ValueEnforcer.notNull (aP, "P");
-    m_aContent.add (aP);
+    ValueEnforcer.notNull (aParam, "Param");
+    m_aContent.add (aParam);
   }
 
   @Nonnull
@@ -453,10 +447,10 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     return m_aContent.getAllInstanceOf (PSP.class);
   }
 
-  public void addLet (@Nonnull final PSLet aLet)
+  public void addP (@Nonnull final PSP aP)
   {
-    ValueEnforcer.notNull (aLet, "Let");
-    m_aContent.add (aLet);
+    ValueEnforcer.notNull (aP, "P");
+    m_aContent.add (aP);
   }
 
   public boolean hasAnyLet ()
@@ -469,6 +463,12 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   public ICommonsList <PSLet> getAllLets ()
   {
     return m_aContent.getAllInstanceOf (PSLet.class);
+  }
+
+  public void addLet (@Nonnull final PSLet aLet)
+  {
+    ValueEnforcer.notNull (aLet, "Let");
+    m_aContent.add (aLet);
   }
 
   @Nonnull

@@ -29,14 +29,6 @@ import com.helger.commons.collection.impl.ICommonsList;
 public interface IPSHasIncludes
 {
   /**
-   * Add an include to this object.
-   *
-   * @param aInclude
-   *        The include to be added. May not be <code>null</code>.
-   */
-  void addInclude (@Nonnull PSInclude aInclude);
-
-  /**
    * @return <code>true</code> if at least one include is present in this
    *         object.
    */
@@ -48,4 +40,12 @@ public interface IPSHasIncludes
   @Nonnull
   @ReturnsMutableCopy
   ICommonsList <PSInclude> getAllIncludes ();
+
+  /**
+   * Add an include to this object.
+   *
+   * @param aInclude
+   *        The include to be added. May not be <code>null</code>.
+   */
+  void addInclude (@Nonnull PSInclude aInclude);
 }

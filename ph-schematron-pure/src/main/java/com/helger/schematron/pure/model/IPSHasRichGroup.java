@@ -26,12 +26,11 @@ import javax.annotation.Nullable;
 public interface IPSHasRichGroup
 {
   /**
-   * Overwrite any existing rich group.
-   *
-   * @param aRich
-   *        The new rich group to set. May be <code>null</code>.
+   * @return Get the existing rich group or <code>null</code> if none is
+   *         present.
    */
-  void setRich (@Nullable PSRichGroup aRich);
+  @Nullable
+  PSRichGroup getRich ();
 
   /**
    * @return <code>true</code> if a rich group is present, <code>false</code>
@@ -43,13 +42,6 @@ public interface IPSHasRichGroup
   }
 
   /**
-   * @return Get the existing rich group or <code>null</code> if none is
-   *         present.
-   */
-  @Nullable
-  PSRichGroup getRich ();
-
-  /**
    * @return Get a clone of the rich group or <code>null</code> if no rich group
    *         is present at this object.
    */
@@ -59,4 +51,12 @@ public interface IPSHasRichGroup
     final PSRichGroup aRich = getRich ();
     return aRich == null ? null : aRich.getClone ();
   }
+
+  /**
+   * Overwrite any existing rich group.
+   *
+   * @param aRich
+   *        The new rich group to set. May be <code>null</code>.
+   */
+  void setRich (@Nullable PSRichGroup aRich);
 }
