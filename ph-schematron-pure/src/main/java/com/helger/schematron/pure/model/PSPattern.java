@@ -17,6 +17,7 @@
 package com.helger.schematron.pure.model;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -420,6 +421,12 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   {
     ValueEnforcer.notNull (aRule, "Rule");
     m_aContent.add (aRule);
+  }
+
+  public void removeRule (@Nonnull final Predicate <? super PSRule> aRuleFilter)
+  {
+    ValueEnforcer.notNull (aRuleFilter, "RuleFilter");
+    m_aContent.removeIf (x -> x instanceof PSRule && aRuleFilter.test ((PSRule) x));
   }
 
   @Nonnull
