@@ -52,7 +52,7 @@ public final class Issue119Test
       catch (final SchematronInterruptedException ex)
       {
         // "Silently" ignore
-        LOGGER.info ("Applying Schematron was successfully interrupted", ex);
+        LOGGER.info ("Applying Schematron was successfully interrupted - " + ex.getMessage ());
       }
       catch (final Exception ex)
       {
