@@ -92,6 +92,7 @@
           <excludes>
             <exclude>**/LICENSE</exclude>
             <exclude>**/NOTICE</exclude>
+            <exclude>**/*.xq</exclude>
             <exclude>src/main/resources/schematron/**</exclude>
             <exclude>src/test/resources/issues/**</exclude>
             <exclude>test-final/**</exclude>
