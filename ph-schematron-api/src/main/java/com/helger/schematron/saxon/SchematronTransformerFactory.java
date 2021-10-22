@@ -52,13 +52,13 @@ public final class SchematronTransformerFactory
 {
   public static final String SAXON_TRANSFORMER_FACTORY_CLASS = "net.sf.saxon.TransformerFactoryImpl";
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTransformerFactory.class);
-  private static final TransformerFactory s_aDefaultFactory;
+  private static final TransformerFactory DEFAULT_FACTORY;
 
   static
   {
-    s_aDefaultFactory = createTransformerFactorySaxonFirst (SchematronTransformerFactory.class.getClassLoader (),
-                                                            new LoggingTransformErrorListener (Locale.US),
-                                                            new DefaultTransformURIResolver ());
+    DEFAULT_FACTORY = createTransformerFactorySaxonFirst (SchematronTransformerFactory.class.getClassLoader (),
+                                                          new LoggingTransformErrorListener (Locale.US),
+                                                          new DefaultTransformURIResolver ());
   }
 
   private SchematronTransformerFactory ()
@@ -71,7 +71,7 @@ public final class SchematronTransformerFactory
   @Nonnull
   public static TransformerFactory getDefaultSaxonFirst ()
   {
-    return s_aDefaultFactory;
+    return DEFAULT_FACTORY;
   }
 
   /**
@@ -98,8 +98,7 @@ public final class SchematronTransformerFactory
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calling createTransformerFactorySaxonFirst");
 
-    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
-                                                                   : ClassLoaderHelper.getContextClassLoader ();
+    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader : ClassLoaderHelper.getContextClassLoader ();
 
     TransformerFactory aFactory;
     try
