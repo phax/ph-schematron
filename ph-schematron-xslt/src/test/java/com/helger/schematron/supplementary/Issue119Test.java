@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.concurrent.ThreadHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.sch.SchematronResourceSCH;
 
 public final class Issue119Test
@@ -48,6 +49,11 @@ public final class Issue119Test
         aSV.applySchematronValidation (new ClassPathResource ("/issues/github119/ubl-tc434-example1.xml"));
         LOGGER.info ("Finished applying Schematron");
       }
+      catch (final SchematronInterruptedException ex)
+      {
+        // "Silently" ignore
+        LOGGER.info ("Applying Schematron was successfully interrupted", ex);
+      }
       catch (final Exception ex)
       {
         LOGGER.error ("Error", ex);
@@ -60,6 +66,7 @@ public final class Issue119Test
     LOGGER.info ("Cancel");
     future.cancel (true);
 
+    ThreadHelper.sleepSeconds (3);
     LOGGER.info ("Done");
   }
 }

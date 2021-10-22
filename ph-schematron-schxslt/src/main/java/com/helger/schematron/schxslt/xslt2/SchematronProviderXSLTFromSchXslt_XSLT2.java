@@ -40,6 +40,7 @@ import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.XMLFactory;
@@ -90,12 +91,12 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
 
   public static void cacheXSLTTemplates ()
   {
+    final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+    final ClassLoader aCL = SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ();
+
     // prepare all steps
     if (s_aStep1 == null)
     {
-      final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
-      final ClassLoader aCL = SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ();
-
       // Step 1
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating SchXslt step 1 template");
@@ -103,6 +104,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       if (s_aStep1 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP1 + "'");
 
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished creating XSLT step 1 template");
+
+      if (Thread.interrupted ())
+        throw new SchematronInterruptedException ("after cached XSLT step 1");
+    }
+
+    if (s_aStep2 == null)
+    {
       // Step 2
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating SchXslt step 2 template");
@@ -110,6 +120,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       if (s_aStep2 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP2 + "'");
 
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished creating XSLT step 2 template");
+
+      if (Thread.interrupted ())
+        throw new SchematronInterruptedException ("after cached XSLT step 2");
+    }
+
+    if (s_aStep3 == null)
+    {
       // Step 3
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Creating SchXslt step 3 template");
@@ -118,7 +137,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP3 + "'");
 
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Finished creating SchXslt templates");
+        LOGGER.debug ("Finished creating XSLT step 3 template");
+
+      if (Thread.interrupted ())
+        throw new SchematronInterruptedException ("after cached XSLT step 3");
     }
   }
 
@@ -126,6 +148,9 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   public static Document createSchematronXSLT (@Nonnull final IReadableResource aSchematronResource,
                                                @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer) throws TransformerException
   {
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("before XSLT starts");
+
     cacheXSLTTemplates ();
 
     // perform step 1 (Schematron -> ResultStep1)
@@ -142,6 +167,9 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Finished applying SchXslt step 1 on " + aSchematronResource);
+
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("after XSLT step 1");
 
     // perform step 2 (ResultStep1 -> ResultStep2)
     final Document aResult2Doc = XMLFactory.newDocument ();
@@ -172,6 +200,9 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
         LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
     }
 
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("after XSLT step 2");
+
     // perform step 3 (ResultStep2 -> ResultStep3XSL)
     final Document aResult3Doc = XMLFactory.newDocument ();
     final DOMResult aResult3 = new DOMResult (aResult3Doc);
@@ -201,6 +232,9 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
         LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
     }
 
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("after XSLT step 3");
+
     return aResult3Doc;
   }
 
@@ -212,6 +246,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
    * @param aTransformerCustomizer
    *        The customizer for XSLT {@link Transformer} objects. May not be
    *        <code>null</code>.
+   * @throws SchematronInterruptedException
+   *         If Schematron compilation was interrupted
    */
   public SchematronProviderXSLTFromSchXslt_XSLT2 (@Nonnull final IReadableResource aSchematronResource,
                                                   @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
@@ -235,10 +271,17 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
     }
+    catch (final SchematronInterruptedException ex)
+    {
+      throw ex;
+    }
     catch (final Exception ex)
     {
       LOGGER.error ("SchXslt preprocessor error", ex);
     }
+
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("after XSLT template was created");
   }
 
   @Nonnull
