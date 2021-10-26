@@ -70,7 +70,7 @@
   </developers>
   
   <properties>
-    <ant.version>1.10.11</ant.version>
+    <ant.version>1.10.12</ant.version>
   </properties>
   
   <dependencyManagement>
