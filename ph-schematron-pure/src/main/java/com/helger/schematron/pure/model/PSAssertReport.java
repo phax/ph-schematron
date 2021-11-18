@@ -398,4 +398,16 @@ public class PSAssertReport implements
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
+
+  @Nonnull
+  public static PSAssertReport assertion ()
+  {
+    return new PSAssertReport (true);
+  }
+
+  @Nonnull
+  public static PSAssertReport report ()
+  {
+    return new PSAssertReport (false);
+  }
 }
