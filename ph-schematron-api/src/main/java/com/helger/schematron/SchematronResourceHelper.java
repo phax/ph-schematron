@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.PresentForCodeCoverage;
@@ -65,13 +64,11 @@ public final class SchematronResourceHelper
    * @param aDRS
    *        DOMReader settings to use. May not be <code>null</code>.
    * @return The DOM node and never <code>null</code>.
-   * @throws SAXException
-   *         In case XML parsing fails
    * @throws IllegalArgumentException
    *         in case an unsupported {@link Source} implementation is provided.
    */
   @Nullable
-  public static Node getNodeOfSource (@Nonnull final Source aSource, @Nonnull final DOMReaderSettings aDRS) throws SAXException
+  public static Node getNodeOfSource (@Nonnull final Source aSource, @Nonnull final DOMReaderSettings aDRS)
   {
     ValueEnforcer.notNull (aSource, "Source");
     ValueEnforcer.notNull (aDRS, "DOMReaderSettings");
