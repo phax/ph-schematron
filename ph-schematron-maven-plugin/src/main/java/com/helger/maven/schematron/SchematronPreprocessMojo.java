@@ -253,7 +253,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       for (final PSNS aItem : aSchema.getAllNSs ())
         aNSCtx.setMapping (aItem.getPrefix (), aItem.getUri ());
 
-      final IXMLWriterSettings XWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN).setNamespaceContext (aNSCtx);
+      final IXMLWriterSettings aXWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN).setNamespaceContext (aNSCtx);
       final IMicroDocument aDoc = new MicroDocument ();
       if (StringHelper.hasText (m_sSCHHeader))
       {
@@ -262,7 +262,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       }
       aDoc.appendChild (aPreprocessedSchema.getAsMicroElement ());
 
-      if (MicroWriter.writeToFile (aDoc, m_aTargetFile, XWS).isSuccess ())
+      if (MicroWriter.writeToFile (aDoc, m_aTargetFile, aXWS).isSuccess ())
         getLog ().info ("Successfully wrote preprocessed Schematron file '" + m_aTargetFile.getPath () + "'");
       else
         getLog ().error ("Error writing preprocessed Schematron file to '" + m_aTargetFile.getPath () + "'");

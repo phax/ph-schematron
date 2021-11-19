@@ -77,7 +77,7 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
 
   public boolean hasAnyText ()
   {
-    return m_aContent.containsAny (e -> e instanceof String);
+    return m_aContent.containsAny (String.class::isInstance);
   }
 
   @Nonnull

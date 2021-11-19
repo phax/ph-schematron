@@ -37,7 +37,7 @@ final class Loggers implements ILoggerFactory
   /**
    * The adapter between SLF4J and Maven.
    */
-  private final transient Slf4jAdapter m_aAdapter = new Slf4jAdapter ();
+  private final Slf4jAdapter m_aAdapter = new Slf4jAdapter ();
 
   /**
    * {@inheritDoc}

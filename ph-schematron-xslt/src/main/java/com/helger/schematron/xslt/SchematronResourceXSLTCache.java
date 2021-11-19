@@ -148,6 +148,6 @@ public final class SchematronResourceXSLTCache
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked ( () -> MAP.clear ());
+    RW_LOCK.writeLocked (MAP::clear);
   }
 }

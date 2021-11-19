@@ -66,7 +66,7 @@ public class PSBoundSchemaCacheKey
   private final EntityResolver m_aEntityResolver;
   private final boolean m_bLenient;
   // Status vars
-  private transient int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
+  private int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
   public PSBoundSchemaCacheKey (@Nonnull final IReadableResource aResource,
                                 @Nullable final String sPhase,
@@ -223,8 +223,7 @@ public class PSBoundSchemaCacheKey
   @OverrideOnDemand
   public PSPreprocessor createPreprocessor (@Nonnull final IPSQueryBinding aQueryBinding)
   {
-    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (aQueryBinding);
-    return aPreprocessor;
+    return PSPreprocessor.createPreprocessorWithoutInformationLoss (aQueryBinding);
   }
 
   /**

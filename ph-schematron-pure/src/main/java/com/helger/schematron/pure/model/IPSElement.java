@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.model;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -28,12 +26,12 @@ import com.helger.xml.microdom.IMicroElement;
  *
  * @author Philip Helger
  */
-public interface IPSElement extends Serializable
+public interface IPSElement
 {
   /**
    * Check if this element is specified completely. This method stops at the
    * first encountered error.
-   * 
+   *
    * @param aErrorHandler
    *        The error handler where the error details are stored. May not be
    *        <code>null</code>.
@@ -45,7 +43,7 @@ public interface IPSElement extends Serializable
   /**
    * Check if this element is specified completely. This method performs all
    * validations independent of the number of encountered error.
-   * 
+   *
    * @param aErrorHandler
    *        The error handler where the error details are stored. May not be
    *        <code>null</code>.

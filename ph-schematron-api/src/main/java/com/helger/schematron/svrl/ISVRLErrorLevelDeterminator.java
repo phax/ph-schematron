@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.svrl;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,7 +31,7 @@ import com.helger.schematron.svrl.jaxb.SuccessfulReport;
  * @author Philip Helger
  */
 @FunctionalInterface
-public interface ISVRLErrorLevelDeterminator extends Serializable
+public interface ISVRLErrorLevelDeterminator
 {
   /**
    * Get the error level associated with a single failed assertion/successful

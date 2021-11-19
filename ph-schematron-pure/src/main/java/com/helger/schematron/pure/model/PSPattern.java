@@ -255,7 +255,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull
@@ -339,7 +339,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
 
   public boolean hasAnyInclude ()
   {
-    return m_aContent.containsAny (x -> x instanceof PSInclude);
+    return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
   @Nonnull
@@ -358,18 +358,18 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   @Nullable
   public PSTitle getTitle ()
   {
-    return m_aContent.findFirstMapped (x -> x instanceof PSTitle, x -> (PSTitle) x);
+    return m_aContent.findFirstMapped (PSTitle.class::isInstance, PSTitle.class::cast);
   }
 
   public boolean hasTitle ()
   {
-    return m_aContent.containsAny (x -> x instanceof PSTitle);
+    return m_aContent.containsAny (PSTitle.class::isInstance);
   }
 
   public void setTitle (@Nullable final PSTitle aTitle)
   {
     // Remove existing
-    m_aContent.removeIf (x -> x instanceof PSTitle);
+    m_aContent.removeIf (PSTitle.class::isInstance);
 
     if (aTitle != null)
     {
@@ -414,7 +414,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   @Nonnegative
   public int getRuleCount ()
   {
-    return m_aContent.getCount (e -> e instanceof PSRule);
+    return m_aContent.getCount (PSRule.class::isInstance);
   }
 
   public void addRule (@Nonnull final PSRule aRule)
@@ -438,7 +438,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
 
   public boolean hasAnyParam ()
   {
-    return m_aContent.containsAny (e -> e instanceof PSParam);
+    return m_aContent.containsAny (PSParam.class::isInstance);
   }
 
   public void addParam (@Nonnull final PSParam aParam)
@@ -462,7 +462,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
 
   public boolean hasAnyLet ()
   {
-    return m_aContent.containsAny (e -> e instanceof PSLet);
+    return m_aContent.containsAny (PSLet.class::isInstance);
   }
 
   @Nonnull
@@ -502,7 +502,7 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   {
     // Remove includes and title
     return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude) && !(x instanceof PSTitle),
-                                    x -> (IPSElement) x);
+                                    IPSElement.class::cast);
   }
 
   @Nonnull

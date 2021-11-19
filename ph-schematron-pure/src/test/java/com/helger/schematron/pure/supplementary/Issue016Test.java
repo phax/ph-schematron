@@ -16,14 +16,17 @@
  */
 package com.helger.schematron.pure.supplementary;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.commons.io.file.FileHelper;
@@ -109,45 +112,45 @@ public final class Issue016Test
     }
   }
 
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue016Test.class);
+
   @Test
-  @Ignore
   public void testIssue16 () throws Exception
   {
     final File schematronFile = new ClassPathResource ("issues/github16/sample_schematron.sch").getAsFile ();
     final File xmlFile = new ClassPathResource ("issues/github16/test.xml").getAsFile ();
     final SchematronOutputType outputType = SchematronUtil.validateXMLViaXSLTSchematronFull (schematronFile, xmlFile);
-    if (outputType == null)
-      throw new Exception ("SchematronOutputType null");
+    assertNotNull (outputType);
 
     final List <SVRLSuccessfulReport> succeededList = SVRLHelper.getAllSuccessfulReports (outputType);
     for (final SVRLSuccessfulReport succeededReport : succeededList)
     {
-      System.out.println (succeededReport.getTest ());
+      LOGGER.info ("Report Test: " + succeededReport.getTest ());
     }
 
     int i = 1;
-    final List <SVRLFailedAssert> failedList = SVRLHelper.getAllFailedAssertions (outputType);
-    for (final SVRLFailedAssert failedAssert : failedList)
+    final List <SVRLFailedAssert> aFailedList = SVRLHelper.getAllFailedAssertions (outputType);
+    for (final SVRLFailedAssert failedAssert : aFailedList)
     {
-      System.out.println (i++ + ". Location:" + failedAssert.getLocation ());
-      System.out.println ("Test: " + failedAssert.getTest ());
-      System.out.println ("Text: " + failedAssert.getText ());
+      LOGGER.info (i++ + ". Location:" + failedAssert.getLocation ());
+      LOGGER.info ("Test: " + failedAssert.getTest ());
+      LOGGER.info ("Text: " + failedAssert.getText ());
 
       final List <DiagnosticReference> diagnisticReferences = failedAssert.getDiagnisticReferences ();
       for (final DiagnosticReference diagnisticRef : diagnisticReferences)
       {
-        System.out.println ("Diag ref: " + diagnisticRef.getDiagnostic ());
-        System.out.println ("Diag text: " + diagnisticRef.getContentAtIndex (0));
+        LOGGER.info ("Diag ref: " + diagnisticRef.getDiagnostic ());
+        LOGGER.info ("Diag text: " + diagnisticRef.getContentAtIndex (0));
       }
     }
 
-    if (failedList.isEmpty ())
+    if (aFailedList.isEmpty ())
     {
-      System.out.println ("PASS");
+      LOGGER.info ("PASS");
     }
     else
     {
-      System.out.println ("FAIL");
+      LOGGER.info ("FAIL");
     }
   }
 }

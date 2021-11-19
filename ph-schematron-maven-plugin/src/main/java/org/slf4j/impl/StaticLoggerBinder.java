@@ -25,11 +25,11 @@ import org.slf4j.spi.LoggerFactoryBinder;
  * {@link ILoggerFactory} is performed using information returned by this class.
  * <p>
  * This is what you should do in your Maven plugin (before everything else):
- * 
+ *
  * <pre>
  * import org.apache.maven.plugin.AbstractMojo;
  * import org.slf4j.impl.StaticLoggerBinder;
- * 
+ *
  * public class MyMojo extends AbstractMojo
  * {
  *   &#064;Override
@@ -39,13 +39,13 @@ import org.slf4j.spi.LoggerFactoryBinder;
  *     // ... all the rest
  *   }
  * }
- * 
+ *
  * </pre>
  * <p>
  * All SLF4J calls will be forwarded to Maven Log.
  * <p>
  * The class is thread-safe.
- * 
+ *
  * @author Yegor Bugayenko (yegor@jcabi.com)
  * @version $Id$
  * @since 0.1.6
@@ -68,7 +68,7 @@ public final class StaticLoggerBinder implements LoggerFactoryBinder
    * The {@link ILoggerFactory} instance returned by the
    * {@link #getLoggerFactory()} method should always be the same object.
    */
-  private final transient Loggers m_aLoggers = new Loggers ();
+  private final Loggers m_aLoggers = new Loggers ();
 
   /**
    * Private ctor to avoid direct instantiation of the class.
@@ -78,7 +78,7 @@ public final class StaticLoggerBinder implements LoggerFactoryBinder
 
   /**
    * Return the singleton of this class.
-   * 
+   *
    * @return The StaticLoggerBinder singleton
    */
   public static StaticLoggerBinder getSingleton ()
@@ -88,7 +88,7 @@ public final class StaticLoggerBinder implements LoggerFactoryBinder
 
   /**
    * Set Maven Log.
-   * 
+   *
    * @param log
    *        The log from Maven plugin
    */

@@ -16,7 +16,6 @@
  */
 package com.helger.schematron.svrl;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -37,15 +36,15 @@ import com.helger.schematron.svrl.jaxb.DiagnosticReference;
  *
  * @author Philip Helger
  */
-public abstract class AbstractSVRLMessage implements Serializable
+public abstract class AbstractSVRLMessage
 {
-  protected ICommonsList <DiagnosticReference> m_aDiagnosticReferences;
-  protected String m_sText;
-  protected String m_sID;
-  protected String m_sLocation;
-  protected String m_sTest;
-  protected String m_sRole;
-  protected IErrorLevel m_aFlag;
+  private final ICommonsList <DiagnosticReference> m_aDiagnosticReferences;
+  private final String m_sText;
+  private final String m_sID;
+  private final String m_sLocation;
+  private final String m_sTest;
+  private final String m_sRole;
+  private final IErrorLevel m_aFlag;
 
   public AbstractSVRLMessage (@Nullable final List <DiagnosticReference> aDiagnosticReferences,
                               @Nullable final String sID,

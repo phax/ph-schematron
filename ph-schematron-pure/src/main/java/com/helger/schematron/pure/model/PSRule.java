@@ -155,7 +155,7 @@ public class PSRule implements
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull
@@ -267,7 +267,7 @@ public class PSRule implements
 
   public boolean hasAnyInclude ()
   {
-    return m_aContent.containsAny (x -> x instanceof PSInclude);
+    return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
   @Nonnull
@@ -285,7 +285,7 @@ public class PSRule implements
 
   public boolean hasAnyLet ()
   {
-    return m_aContent.containsAny (x -> x instanceof PSLet);
+    return m_aContent.containsAny (PSLet.class::isInstance);
   }
 
   @Nonnull
@@ -338,12 +338,12 @@ public class PSRule implements
   @Nonnegative
   public int getExtendsCount ()
   {
-    return m_aContent.getCount (e -> e instanceof PSExtends);
+    return m_aContent.getCount (PSExtends.class::isInstance);
   }
 
   public boolean hasAnyExtends ()
   {
-    return m_aContent.containsAny (e -> e instanceof PSExtends);
+    return m_aContent.containsAny (PSExtends.class::isInstance);
   }
 
   /**
@@ -356,7 +356,7 @@ public class PSRule implements
   {
     // All except include and let
     return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude) && !(x instanceof PSLet),
-                                    x -> (IPSElement) x);
+                                    IPSElement.class::cast);
   }
 
   @Nonnull

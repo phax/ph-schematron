@@ -110,7 +110,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull
@@ -171,7 +171,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
 
   public boolean hasAnyInclude ()
   {
-    return m_aContent.containsAny (x -> x instanceof PSInclude);
+    return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
   @Nonnull
@@ -202,7 +202,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
 
   public boolean hasAnyLet ()
   {
-    return m_aContent.containsAny (e -> e instanceof PSLet);
+    return m_aContent.containsAny (PSLet.class::isInstance);
   }
 
   @Nonnull
@@ -247,7 +247,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public ICommonsList <IPSElement> getAllContentElements ()
   {
     // Remove includes
-    return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude), x -> (IPSElement) x);
+    return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude), IPSElement.class::cast);
   }
 
   @Nonnull

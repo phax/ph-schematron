@@ -241,7 +241,7 @@ public class PSPreprocessor
     }
 
     // Keep report or make it always an assert
-    final PSAssertReport ret = new PSAssertReport (m_bKeepReports ? aAssertReport.isAssert () : true);
+    final PSAssertReport ret = new PSAssertReport (!m_bKeepReports || aAssertReport.isAssert ());
     ret.setTest (m_aQueryBinding.getWithParamTextsReplaced (sTest, aParamValueMap));
     ret.setFlag (aAssertReport.getFlag ());
     ret.setID (aIDPool.getUniqueID (aAssertReport.getID ()));

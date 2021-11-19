@@ -130,6 +130,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     return aSB.toString ();
   }
 
+  @Override
   public void onStart (@Nonnull final PSSchema aSchema,
                        @Nullable final PSPhase aActivePhase,
                        @Nullable final String sBaseURI) throws SchematronValidationException
@@ -137,16 +138,19 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     _log ("onStart (" + aSchema + ", " + aActivePhase + ", " + sBaseURI + ")");
   }
 
+  @Override
   public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
   {
     _log ("onPattern (" + aPattern + ")");
   }
 
+  @Override
   public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
   }
 
+  @Override
   public void onFiredRule (@Nonnull final PSRule aRule,
                            @Nonnull final String sContext,
                            @Nonnegative final int nNodeIndex,
@@ -156,6 +160,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Nonnull
+  @Override
   public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
@@ -177,6 +182,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Nonnull
+  @Override
   public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
@@ -197,6 +203,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     return EContinue.CONTINUE;
   }
 
+  @Override
   public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     _log ("onEnd (" + aSchema + ", " + aActivePhase + ")");

@@ -35,7 +35,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 public final class Issue036Test
 {
   @Test
-  public void test () throws Exception
+  public void testBasic () throws Exception
   {
     final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github36/test.sch");
     aResPure.setErrorHandler (new LoggingPSErrorHandler ());

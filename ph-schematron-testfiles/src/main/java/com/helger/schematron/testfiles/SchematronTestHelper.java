@@ -20,6 +20,9 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.impl.CommonsArrayList;
@@ -40,6 +43,7 @@ import com.helger.xml.microdom.serialize.MicroReader;
  */
 public final class SchematronTestHelper
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTestHelper.class);
   private static final ICommonsList <SchematronTestFile> SCH = _readDI (new ClassPathResource ("test-sch/dirindex.xml"));
   private static final ICommonsList <SchematronTestFile> SVRL = _readDI (new ClassPathResource ("test-svrl/dirindex.xml"));
   private static final ICommonsList <SchematronTestFile> XML = _readDI (new ClassPathResource ("test-xml/dirindex.xml"));
@@ -49,11 +53,11 @@ public final class SchematronTestHelper
   {
     if (false)
       ClassPathHelper.getAllClassPathEntries ().forEach (x -> {
-        System.out.println (x);
+        LOGGER.info (x);
         if (new File (x).isDirectory ())
         {
           final FileSystemRecursiveIterator it = new FileSystemRecursiveIterator (new File (x));
-          it.forEach (y -> System.out.println (StringHelper.getRepeated ("  ", it.getLevel ()) + y));
+          it.forEach (y -> LOGGER.info (StringHelper.getRepeated ("  ", it.getLevel ()) + y));
         }
       });
     ValueEnforcer.notNull (aRes, "Resource");

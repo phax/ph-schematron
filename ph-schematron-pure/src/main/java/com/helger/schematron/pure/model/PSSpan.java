@@ -94,7 +94,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull

@@ -295,43 +295,47 @@ public final class SVRLHelper
   public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@Nonnull final FailedAssert aFA)
   {
     return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            x -> x instanceof DiagnosticReference,
-                                            (final Object x) -> (DiagnosticReference) x);
+                                            DiagnosticReference.class::isInstance,
+                                            DiagnosticReference.class::cast);
   }
 
   @Nonnull
   public static ICommonsList <PropertyReference> getAllPropertyReferences (@Nonnull final FailedAssert aFA)
   {
     return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            x -> x instanceof PropertyReference,
-                                            (final Object x) -> (PropertyReference) x);
+                                            PropertyReference.class::isInstance,
+                                            PropertyReference.class::cast);
   }
 
   @Nonnull
   public static Text getText (@Nonnull final FailedAssert aFA)
   {
-    return CollectionHelper.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (), x -> x instanceof Text, x -> (Text) x);
+    return CollectionHelper.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                             Text.class::isInstance,
+                                             Text.class::cast);
   }
 
   @Nonnull
   public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@Nonnull final SuccessfulReport aSR)
   {
     return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            x -> x instanceof DiagnosticReference,
-                                            (final Object x) -> (DiagnosticReference) x);
+                                            DiagnosticReference.class::isInstance,
+                                            DiagnosticReference.class::cast);
   }
 
   @Nonnull
   public static ICommonsList <PropertyReference> getAllPropertyReferences (@Nonnull final SuccessfulReport aSR)
   {
     return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            x -> x instanceof PropertyReference,
-                                            (final Object x) -> (PropertyReference) x);
+                                            PropertyReference.class::isInstance,
+                                            PropertyReference.class::cast);
   }
 
   @Nonnull
   public static Text getText (@Nonnull final SuccessfulReport aSR)
   {
-    return CollectionHelper.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (), x -> x instanceof Text, x -> (Text) x);
+    return CollectionHelper.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                             Text.class::isInstance,
+                                             Text.class::cast);
   }
 }

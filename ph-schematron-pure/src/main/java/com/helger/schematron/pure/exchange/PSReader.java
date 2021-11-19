@@ -235,9 +235,9 @@ public class PSReader
     return ret;
   }
 
-  private void _handleRichGroup (@Nonnull final String sAttrName,
-                                 @Nonnull final String sAttrValue,
-                                 @Nonnull final PSRichGroup aRichGroup)
+  private static void _handleRichGroup (@Nonnull final String sAttrName,
+                                        @Nonnull final String sAttrValue,
+                                        @Nonnull final PSRichGroup aRichGroup)
   {
     if (sAttrName.equals (CSchematronXML.ATTR_ICON))
       aRichGroup.setIcon (sAttrValue);
@@ -255,9 +255,9 @@ public class PSReader
               aRichGroup.setXmlSpace (ESpace.getFromIDOrNull (sAttrValue));
   }
 
-  private void _handleLinkableGroup (@Nonnull final String sAttrName,
-                                     @Nonnull final String sAttrValue,
-                                     @Nonnull final PSLinkableGroup aLinkableGroup)
+  private static void _handleLinkableGroup (@Nonnull final String sAttrName,
+                                            @Nonnull final String sAttrValue,
+                                            @Nonnull final PSLinkableGroup aLinkableGroup)
   {
     if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
       aLinkableGroup.setRole (sAttrValue);
@@ -276,8 +276,7 @@ public class PSReader
   @Nonnull
   public PSAssertReport readAssertReportFromXML (@Nonnull final IMicroElement eAssertReport)
   {
-    final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ()
-                                                                .equals (CSchematronXML.ELEMENT_ASSERT));
+    final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ().equals (CSchematronXML.ELEMENT_ASSERT));
 
     final PSRichGroup aRichGroup = new PSRichGroup ();
     final PSLinkableGroup aLinkableGroup = new PSLinkableGroup ();
@@ -843,11 +842,7 @@ public class PSReader
                   if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
                     ret.addParam (readParamFromXML (ePatternChild));
                   else
-                    _warn (ret,
-                           "Unsupported Schematron element '" +
-                                ePatternChild.getLocalName () +
-                                "' in " +
-                                ret.toString ());
+                    _warn (ret, "Unsupported Schematron element '" + ePatternChild.getLocalName () + "' in " + ret.toString ());
       }
       else
         ret.addForeignElement (ePatternChild.getClone ());
@@ -1200,13 +1195,9 @@ public class PSReader
     // Resolve all includes as the first action
     final SAXReaderSettings aSettings = new SAXReaderSettings ().setEntityResolver (m_aEntityResolver);
 
-    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
-                                                                                    aSettings,
-                                                                                    m_aErrorHandler,
-                                                                                    m_bLenient);
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource, aSettings, m_aErrorHandler, m_bLenient);
     if (aDoc == null || aDoc.getDocumentElement () == null)
-      throw new SchematronReadException (m_aResource,
-                                         "Failed to resolve includes in Schematron resource " + m_aResource);
+      throw new SchematronReadException (m_aResource, "Failed to resolve includes in Schematron resource " + m_aResource);
 
     if (SchematronDebug.isShowResolvedSourceSchematron ())
       LOGGER.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
@@ -1217,8 +1208,6 @@ public class PSReader
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("resource", m_aResource)
-                                       .append ("errorHandler", m_aErrorHandler)
-                                       .getToString ();
+    return new ToStringGenerator (this).append ("resource", m_aResource).append ("errorHandler", m_aErrorHandler).getToString ();
   }
 }

@@ -84,7 +84,7 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull
@@ -123,7 +123,7 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
 
   public boolean hasAnyInclude ()
   {
-    return m_aContent.containsAny (x -> x instanceof PSInclude);
+    return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
   @Nonnull

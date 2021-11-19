@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.benchmark;
 
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 
 import com.helger.commons.io.resource.ClassPathResource;
@@ -57,7 +55,8 @@ public final class MainBenchmarkSchematronGetSVRL extends AbstractBenchmarkTask
       final SchematronResourcePure aResPure = new SchematronResourcePure (VALID_SCHEMATRON);
       try
       {
-        assertTrue (aResPure.getSchematronValidity (VALID_XMLINSTANCE).isValid ());
+        if (aResPure.getSchematronValidity (VALID_XMLINSTANCE).isValid ())
+          LOGGER.error ("SCH is invalid");
       }
       catch (final Exception ex)
       {
@@ -74,7 +73,8 @@ public final class MainBenchmarkSchematronGetSVRL extends AbstractBenchmarkTask
       aResSCH.setErrorListener (new DoNothingTransformErrorListener ());
       try
       {
-        assertTrue (aResSCH.getSchematronValidity (VALID_XMLINSTANCE).isValid ());
+        if (!aResSCH.getSchematronValidity (VALID_XMLINSTANCE).isValid ())
+          LOGGER.error ("SCH is invalid");
       }
       catch (final Exception ex)
       {

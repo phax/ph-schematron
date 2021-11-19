@@ -31,9 +31,9 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class IssueGlobalLet
+public final class IssueGlobalLetTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (IssueGlobalLet.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (IssueGlobalLetTest.class);
 
   @Test
   public void testIssueXsltKey () throws Exception

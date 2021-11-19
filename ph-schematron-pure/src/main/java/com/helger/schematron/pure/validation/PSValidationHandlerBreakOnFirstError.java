@@ -68,10 +68,8 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
    *         assertion and no successful report occurred,
    *         {@link EValidity#INVALID} otherwise.
    */
-
-  @Override
   @Nonnull
-  public EValidity getValidity ()
+  public final EValidity getValidity ()
   {
     return m_eValidity;
   }

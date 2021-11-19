@@ -90,7 +90,7 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull
@@ -162,7 +162,7 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
 
   public boolean hasAnyText ()
   {
-    return m_aContent.containsAny (e -> e instanceof String);
+    return m_aContent.containsAny (String.class::isInstance);
   }
 
   @Nonnull

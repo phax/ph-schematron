@@ -81,9 +81,9 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
    */
   public static final String XSLT2_STEP3 = SCHEMATRON_DIRECTORY_XSLT2 + "compile-for-svrl.xsl";
 
-  private static volatile Templates s_aStep1;
-  private static volatile Templates s_aStep2;
-  private static volatile Templates s_aStep3;
+  private static Templates s_aStep1;
+  private static Templates s_aStep2;
+  private static Templates s_aStep3;
 
   private final IReadableResource m_aSchematronResource;
   private Document m_aSchematronXSLTDoc;

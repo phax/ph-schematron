@@ -28,7 +28,7 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class IssueDita1
+public final class IssueDita1Test
 {
   @Test
   public void testIssueXsltKey () throws Exception

@@ -24,16 +24,16 @@ import com.helger.schematron.SchematronException;
 
 /**
  * Exception when reading Schematron fails.
- * 
+ *
  * @author Philip Helger
  */
 public class SchematronReadException extends SchematronException
 {
-  private final IReadableResource m_aRes;
+  private final transient IReadableResource m_aRes;
 
   /**
    * Constructor
-   * 
+   *
    * @param aRes
    *        The resource in which the error occurred. May not be
    *        <code>null</code>.
@@ -47,7 +47,7 @@ public class SchematronReadException extends SchematronException
 
   /**
    * Constructor
-   * 
+   *
    * @param aRes
    *        The resource in which the error occurred. May not be
    *        <code>null</code>.

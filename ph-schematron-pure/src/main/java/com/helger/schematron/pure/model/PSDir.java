@@ -57,14 +57,14 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
    *
    * @author Philip Helger
    */
-  public static enum EDirValue implements IHasID <String>
+  public enum EDirValue implements IHasID <String>
   {
     LTR ("ltr"),
     RTL ("rtl");
 
     private final String m_sID;
 
-    private EDirValue (@Nonnull @Nonempty final String sID)
+    EDirValue (@Nonnull @Nonempty final String sID)
     {
       m_sID = sID;
     }
@@ -121,7 +121,7 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
 
   public boolean hasForeignElements ()
   {
-    return m_aContent.containsAny (x -> x instanceof IMicroElement);
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
   @Nonnull
@@ -171,7 +171,7 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
 
   public boolean hasAnyText ()
   {
-    return m_aContent.containsAny (x -> x instanceof String);
+    return m_aContent.containsAny (String.class::isInstance);
   }
 
   @Nonnull

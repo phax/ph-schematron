@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.benchmark;
 
-import static org.junit.Assert.assertTrue;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -82,7 +80,8 @@ public final class MainBenchmarkIsValidSchematron extends AbstractBenchmarkTask
                                                                             CSchematron.PHASE_ALL,
                                                                             new DoNothingPSErrorHandler (),
                                                                             false);
-        assertTrue (aRes.getPath (), aResPure.isValidSchematron ());
+        if (!aResPure.isValidSchematron ())
+          LOGGER.error (aRes.getPath () + " is invalid");
       }
     }
   }
@@ -102,7 +101,8 @@ public final class MainBenchmarkIsValidSchematron extends AbstractBenchmarkTask
       {
         final SchematronResourceSCH aResSCH = new SchematronResourceSCH (aRes);
         aResSCH.setErrorListener (new DoNothingTransformErrorListener ());
-        assertTrue (aRes.getPath (), aResSCH.isValidSchematron ());
+        if (!aResSCH.isValidSchematron ())
+          LOGGER.error (aRes.getPath () + " is invalid");
       }
     }
   }

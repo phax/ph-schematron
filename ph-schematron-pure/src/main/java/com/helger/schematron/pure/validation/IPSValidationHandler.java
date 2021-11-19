@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.validation;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,7 +38,7 @@ import com.helger.schematron.pure.model.PSSchema;
  *      IPSValidationHandler)
  * @author Philip Helger
  */
-public interface IPSValidationHandler extends Serializable
+public interface IPSValidationHandler
 {
   /**
    * This is the first method called.
@@ -231,6 +229,7 @@ public interface IPSValidationHandler extends Serializable
 
     return new IPSValidationHandler ()
     {
+      @Override
       public void onStart (@Nonnull final PSSchema aSchema,
                            @Nullable final PSPhase aActivePhase,
                            @Nullable final String sBaseURI) throws SchematronValidationException
@@ -239,18 +238,21 @@ public interface IPSValidationHandler extends Serializable
         rhs.onStart (aSchema, aActivePhase, sBaseURI);
       }
 
+      @Override
       public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
       {
         lhs.onPattern (aPattern);
         rhs.onPattern (aPattern);
       }
 
+      @Override
       public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
       {
         lhs.onRuleStart (aRule, aContextList);
         rhs.onRuleStart (aRule, aContextList);
       }
 
+      @Override
       public void onFiredRule (@Nonnull final PSRule aRule,
                                @Nonnull final String sContext,
                                @Nonnegative final int nNodeIndex,
@@ -261,6 +263,7 @@ public interface IPSValidationHandler extends Serializable
       }
 
       @Nonnull
+      @Override
       public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
@@ -274,6 +277,7 @@ public interface IPSValidationHandler extends Serializable
       }
 
       @Nonnull
+      @Override
       public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
                                            @Nonnull final String sTestExpression,
                                            @Nonnull final Node aRuleMatchingNode,
@@ -286,6 +290,7 @@ public interface IPSValidationHandler extends Serializable
         return eCtd;
       }
 
+      @Override
       public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
       {
         lhs.onEnd (aSchema, aActivePhase);

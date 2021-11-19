@@ -39,14 +39,14 @@ import com.helger.xml.microdom.IMicroElement;
 @NotThreadSafe
 public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
 {
-  public static enum ESpace implements IHasID <String>
+  public enum ESpace implements IHasID <String>
   {
     PRESERVE ("preserve"),
     DEFAULT ("default");
 
     private final String m_sID;
 
-    private ESpace (@Nonnull @Nonempty final String sID)
+    ESpace (@Nonnull @Nonempty final String sID)
     {
       m_sID = sID;
     }
