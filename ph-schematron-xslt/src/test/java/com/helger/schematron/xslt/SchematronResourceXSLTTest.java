@@ -62,7 +62,8 @@ public final class SchematronResourceXSLTTest
   public void testFromInputStream () throws Exception
   {
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromInputStream (new NonBlockingByteArrayInputStream (aPayload));
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromInputStream ("mock-res-id",
+                                                                               new NonBlockingByteArrayInputStream (aPayload));
     Assert.assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);

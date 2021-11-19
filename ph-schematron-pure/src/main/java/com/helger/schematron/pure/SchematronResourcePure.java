@@ -361,8 +361,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
-                                          @Nullable final String sBaseURI) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -400,8 +399,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
-                                             @Nullable final String sBaseURI) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -436,8 +434,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @since 6.0.4
    */
   @Nonnull
-  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath,
-                                                      @Nullable final ClassLoader aClassLoader)
+  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath, @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourcePure (new ClassPathResource (sSCHPath, aClassLoader));
   }
@@ -510,11 +507,35 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The {@link InputStream} to read the Schematron rules from. May not
    *        be <code>null</code>.
    * @return Never <code>null</code>.
+   * @deprecated since 6.3.0. Use {@link #fromInputStream(String, InputStream)}
+   *             instead
    */
+  @Deprecated
   @Nonnull
   public static SchematronResourcePure fromInputStream (@Nonnull final InputStream aSchematronIS)
   {
     return new SchematronResourcePure (new ReadableResourceInputStream (aSchematronIS));
+  }
+
+  /**
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided
+   * by an arbitrary {@link InputStream}.<br>
+   * <b>Important:</b> in this case, no include resolution will be performed!!
+   *
+   * @param sResourceID
+   *        Resource ID to be used as the cache key. Should neither be
+   *        <code>null</code> nor empty.
+   * @param aSchematronIS
+   *        The {@link InputStream} to read the Schematron rules from. May not
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.3.0
+   */
+  @Nonnull
+  public static SchematronResourcePure fromInputStream (@Nonnull @Nonempty final String sResourceID,
+                                                        @Nonnull final InputStream aSchematronIS)
+  {
+    return new SchematronResourcePure (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
   /**

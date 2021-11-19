@@ -96,7 +96,8 @@ public final class SchematronResourcePureTest
                          "\n" +
                          "</iso:schema>";
     assertTrue (SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8)).isValidSchematron ());
-    assertTrue (SchematronResourcePure.fromInputStream (new StringInputStream (sTest, StandardCharsets.UTF_8)).isValidSchematron ());
+    assertTrue (SchematronResourcePure.fromInputStream ("ba-from-string", new StringInputStream (sTest, StandardCharsets.UTF_8))
+                                      .isValidSchematron ());
   }
 
   @Test

@@ -129,11 +129,33 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        The {@link InputStream} to read the XSLT Schematron rules from. May
    *        not be <code>null</code>.
    * @return Never <code>null</code>.
+   * @deprecated since 6.3.0. Use {@link #fromInputStream(String, InputStream)}
+   *             instead
    */
+  @Deprecated
   @Nonnull
   public static SchematronResourceXSLT fromInputStream (@Nonnull final InputStream aSchematronIS)
   {
     return new SchematronResourceXSLT (new ReadableResourceInputStream (aSchematronIS));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
+   * provided by an arbitrary {@link InputStream}.<br>
+   *
+   * @param sResourceID
+   *        Resource ID to be used as the cache key. Should neither be
+   *        <code>null</code> nor empty.
+   * @param aSchematronIS
+   *        The {@link InputStream} to read the XSLT Schematron rules from. May
+   *        not be <code>null</code>.
+   * @return Never <code>null</code>.
+   */
+  @Nonnull
+  public static SchematronResourceXSLT fromInputStream (@Nonnull @Nonempty final String sResourceID,
+                                                        @Nonnull final InputStream aSchematronIS)
+  {
+    return new SchematronResourceXSLT (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
   /**
