@@ -66,24 +66,59 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
     return SchematronResourceXSLTCache.createSchematronXSLTProvider (getResource (), getErrorListener (), getURIResolver ());
   }
 
+  /**
+   * Create a new {@link SchematronResourceXSLT} resource.
+   *
+   * @param sXSLTPath
+   *        The classpath relative path to the Schematron XSLT file. May neither
+   *        be <code>null</code> nor empty.
+   * @return Never <code>null</code>.
+   */
   @Nonnull
   public static SchematronResourceXSLT fromClassPath (@Nonnull @Nonempty final String sXSLTPath)
   {
     return new SchematronResourceXSLT (new ClassPathResource (sXSLTPath));
   }
 
+  /**
+   * Create a new {@link SchematronResourceXSLT} resource.
+   *
+   * @param sXSLTPath
+   *        The classpath relative path to the Schematron XSLT file. May neither
+   *        be <code>null</code> nor empty.
+   * @param aClassLoader
+   *        The class loader to be used to retrieve the classpath resource. May
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   */
   @Nonnull
   public static SchematronResourceXSLT fromClassPath (@Nonnull @Nonempty final String sXSLTPath, @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourceXSLT (new ClassPathResource (sXSLTPath, aClassLoader));
   }
 
+  /**
+   * Create a new {@link SchematronResourceXSLT} resource.
+   *
+   * @param sXSLTPath
+   *        The file system path to the Schematron XSLT file. May neither be
+   *        <code>null</code> nor empty.
+   * @return Never <code>null</code>.
+   */
   @Nonnull
   public static SchematronResourceXSLT fromFile (@Nonnull @Nonempty final String sXSLTPath)
   {
     return new SchematronResourceXSLT (new FileSystemResource (sXSLTPath));
   }
 
+  /**
+   * Create a new {@link SchematronResourceXSLT} resource.
+   *
+   * @param aXSLTFile
+   *        The {@link File} of the Schematron XSLT file. May not be
+   *        <code>null</code>.
+   * @return Never <code>null</code>.
+   */
   @Nonnull
   public static SchematronResourceXSLT fromFile (@Nonnull final File aXSLTFile)
   {
@@ -94,7 +129,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
    * provided at a URL
    *
-   * @param sSCHURL
+   * @param sXSLTURL
    *        The URL to the XSLT Schematron rules. May neither be
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
@@ -102,41 +137,41 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *         In case an invalid URL is provided
    */
   @Nonnull
-  public static SchematronResourceXSLT fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  public static SchematronResourceXSLT fromURL (@Nonnull @Nonempty final String sXSLTURL) throws MalformedURLException
   {
-    return new SchematronResourceXSLT (new URLResource (sSCHURL));
+    return new SchematronResourceXSLT (new URLResource (sXSLTURL));
   }
 
   /**
    * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
    * provided at a URL
    *
-   * @param aSCHURL
+   * @param aXSLTURL
    *        The URL to the XSLT Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceXSLT fromURL (@Nonnull final URL aSCHURL)
+  public static SchematronResourceXSLT fromURL (@Nonnull final URL aXSLTURL)
   {
-    return new SchematronResourceXSLT (new URLResource (aSCHURL));
+    return new SchematronResourceXSLT (new URLResource (aXSLTURL));
   }
 
   /**
    * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
    * provided by an arbitrary {@link InputStream}.<br>
    *
-   * @param aSchematronIS
+   * @param aXSLTIS
    *        The {@link InputStream} to read the XSLT Schematron rules from. May
    *        not be <code>null</code>.
    * @return Never <code>null</code>.
-   * @deprecated since 6.3.0. Use {@link #fromInputStream(String, InputStream)}
+   * @deprecated since 6.2.5. Use {@link #fromInputStream(String, InputStream)}
    *             instead
    */
   @Deprecated
   @Nonnull
-  public static SchematronResourceXSLT fromInputStream (@Nonnull final InputStream aSchematronIS)
+  public static SchematronResourceXSLT fromInputStream (@Nonnull final InputStream aXSLTIS)
   {
-    return new SchematronResourceXSLT (new ReadableResourceInputStream (aSchematronIS));
+    return new SchematronResourceXSLT (new ReadableResourceInputStream (aXSLTIS));
   }
 
   /**
@@ -146,47 +181,46 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * @param sResourceID
    *        Resource ID to be used as the cache key. Should neither be
    *        <code>null</code> nor empty.
-   * @param aSchematronIS
+   * @param aXSLTIS
    *        The {@link InputStream} to read the XSLT Schematron rules from. May
    *        not be <code>null</code>.
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceXSLT fromInputStream (@Nonnull @Nonempty final String sResourceID,
-                                                        @Nonnull final InputStream aSchematronIS)
+  public static SchematronResourceXSLT fromInputStream (@Nonnull @Nonempty final String sResourceID, @Nonnull final InputStream aXSLTIS)
   {
-    return new SchematronResourceXSLT (new ReadableResourceInputStream (sResourceID, aSchematronIS));
+    return new SchematronResourceXSLT (new ReadableResourceInputStream (sResourceID, aXSLTIS));
   }
 
   /**
    * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
    * provided by an arbitrary byte array.<br>
    *
-   * @param aSchematron
+   * @param aXSLT
    *        The byte array representing the XSLT Schematron. May not be
    *        <code>null</code>.
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceXSLT fromByteArray (@Nonnull final byte [] aSchematron)
+  public static SchematronResourceXSLT fromByteArray (@Nonnull final byte [] aXSLT)
   {
-    return new SchematronResourceXSLT (new ReadableResourceByteArray (aSchematron));
+    return new SchematronResourceXSLT (new ReadableResourceByteArray (aXSLT));
   }
 
   /**
    * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
    * provided by an arbitrary String.<br>
    *
-   * @param sSchematron
+   * @param sXSLT
    *        The String representing the XSLT Schematron. May not be
-   *        <code>null</code> .
+   *        <code>null</code>.
    * @param aCharset
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceXSLT fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  public static SchematronResourceXSLT fromString (@Nonnull final String sXSLT, @Nonnull final Charset aCharset)
   {
-    return fromByteArray (sSchematron.getBytes (aCharset));
+    return fromByteArray (sXSLT.getBytes (aCharset));
   }
 }
