@@ -507,7 +507,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The {@link InputStream} to read the Schematron rules from. May not
    *        be <code>null</code>.
    * @return Never <code>null</code>.
-   * @deprecated since 6.3.0. Use {@link #fromInputStream(String, InputStream)}
+   * @deprecated since 6.2.5. Use {@link #fromInputStream(String, InputStream)}
    *             instead
    */
   @Deprecated
@@ -529,7 +529,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The {@link InputStream} to read the Schematron rules from. May not
    *        be <code>null</code>.
    * @return Never <code>null</code>.
-   * @since 6.3.0
+   * @since 6.2.5
    */
   @Nonnull
   public static SchematronResourcePure fromInputStream (@Nonnull @Nonempty final String sResourceID,
