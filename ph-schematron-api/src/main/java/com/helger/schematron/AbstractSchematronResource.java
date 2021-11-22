@@ -31,6 +31,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.io.IHasInputStream;
 import com.helger.commons.io.resource.IReadableResource;
@@ -187,6 +188,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
+  @OverrideOnDemand
   protected Node getAsNode (@Nonnull final Source aXMLSource) throws Exception
   {
     final DOMReaderSettings aDRS = internalCreateDOMReaderSettings ();
