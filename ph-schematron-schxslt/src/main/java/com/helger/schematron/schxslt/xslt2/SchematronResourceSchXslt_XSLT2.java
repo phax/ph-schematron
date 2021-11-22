@@ -17,6 +17,10 @@
 package com.helger.schematron.schxslt.xslt2;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,11 +31,15 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.URLResource;
+import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
+import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
 /**
- * A Schematron resource that is based on the original SCH file.
+ * A Schematron resource that is based on the original SCH file. It uses SchXslt
+ * to convert SCH to XSLT.
  *
  * @author Philip Helger
  */
@@ -122,7 +130,7 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   }
 
   /**
-   * Create a new Schematron resource.
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
    *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
@@ -136,7 +144,7 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   }
 
   /**
-   * Create a new Schematron resource.
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
    *
    * @param sSCHPath
    *        The classpath relative path to the Schematron file. May neither be
@@ -155,7 +163,7 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   }
 
   /**
-   * Create a new Schematron resource.
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
    *
    * @param sSCHPath
    *        The file system path to the Schematron file. May neither be
@@ -169,7 +177,7 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   }
 
   /**
-   * Create a new Schematron resource.
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
    *
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
@@ -179,5 +187,92 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   public static SchematronResourceSchXslt_XSLT2 fromFile (@Nonnull final File aSCHFile)
   {
     return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (aSCHFile));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules
+   * provided at a URL
+   *
+   * @param sSCHURL
+   *        The URL to the Schematron rules. May neither be <code>null</code>
+   *        nor empty.
+   * @return Never <code>null</code>.
+   * @throws MalformedURLException
+   *         In case an invalid URL is provided
+   * @since 6.2.5
+   */
+  @Nonnull
+  public static SchematronResourceSchXslt_XSLT2 fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  {
+    return new SchematronResourceSchXslt_XSLT2 (new URLResource (sSCHURL));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules
+   * provided at a URL
+   *
+   * @param aSCHURL
+   *        The URL to the Schematron rules. May not be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.5
+   */
+  @Nonnull
+  public static SchematronResourceSchXslt_XSLT2 fromURL (@Nonnull final URL aSCHURL)
+  {
+    return new SchematronResourceSchXslt_XSLT2 (new URLResource (aSCHURL));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules
+   * provided by an arbitrary {@link InputStream}.<br>
+   *
+   * @param sResourceID
+   *        Resource ID to be used as the cache key. Should neither be
+   *        <code>null</code> nor empty.
+   * @param aSchematronIS
+   *        The {@link InputStream} to read the Schematron rules from. May not
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.5
+   */
+  @Nonnull
+  public static SchematronResourceSchXslt_XSLT2 fromInputStream (@Nonnull @Nonempty final String sResourceID,
+                                                                 @Nonnull final InputStream aSchematronIS)
+  {
+    return new SchematronResourceSchXslt_XSLT2 (new ReadableResourceInputStream (sResourceID, aSchematronIS));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules
+   * provided by an arbitrary byte array.<br>
+   *
+   * @param aSchematron
+   *        The byte array representing the Schematron. May not be
+   *        <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.5
+   */
+  @Nonnull
+  public static SchematronResourceSchXslt_XSLT2 fromByteArray (@Nonnull final byte [] aSchematron)
+  {
+    return new SchematronResourceSchXslt_XSLT2 (new ReadableResourceByteArray (aSchematron));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules
+   * provided by an arbitrary String.<br>
+   *
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>
+   *        .
+   * @param aCharset
+   *        The charset to be used to convert the String to a byte array.
+   * @return Never <code>null</code>.
+   * @since 6.2.5
+   */
+  @Nonnull
+  public static SchematronResourceSchXslt_XSLT2 fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  {
+    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 }
