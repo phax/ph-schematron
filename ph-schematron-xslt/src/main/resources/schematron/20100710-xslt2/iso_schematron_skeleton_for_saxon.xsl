@@ -202,6 +202,8 @@ THE SOFTWARE.
 --> 
 <!--
   VERSION INFORMATION
+     2021-11-24
+      * Added proposed fix in https://github.com/phax/ph-schematron/issues/123
      2010-04-14
      	* RJ Reorder call-template in exslt case only, report by BD
         * Add command line parameter 'terminate' which will terminate on first failed 
@@ -505,7 +507,7 @@ which require a preprocess.
       @*|*
       *
   instead for schema for which they are equivalent.
-  If the params are set explictly the above may be used, and also either if
+  If the params are set explictily the above may be used, and also either if
       @*
       @*|node()
    in all cases the result may not be equivalent, for example if you specify no attributes and the schema 
@@ -513,7 +515,7 @@ which require a preprocess.
 
   after testing it turns out that
   node()[not(self::text())] is slower in saxon than *|comment()|processing-instruction() 
-  which I find a bit surprising but anyway I'll use the longr faster version.
+  which I find a bit surprising but anyway I'll use the longer faster version.
 -->
 <xsl:variable name="context-xpath">
   <!-- [ph] See #123 -->
