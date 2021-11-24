@@ -507,7 +507,7 @@ which require a preprocess.
       @*|*
       *
   instead for schema for which they are equivalent.
-  If the params are set explictily the above may be used, and also either if
+  If the params are set explicitly the above may be used, and also either if
       @*
       @*|node()
    in all cases the result may not be equivalent, for example if you specify no attributes and the schema 
@@ -553,13 +553,11 @@ which require a preprocess.
 
 <!-- Simple namespace check -->
 <xsl:template match="/">
-    <xsl:if  test="//schold:*[ancestor::iso:* or descendant::iso:*]">
-    
-	<xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">1</xsl:with-param></xsl:call-template></xsl:message>
- 
-    </xsl:if>
+  <xsl:if  test="//schold:*[ancestor::iso:* or descendant::iso:*]">
+  	<xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">1</xsl:with-param></xsl:call-template></xsl:message>
+  </xsl:if>
 
-    <xsl:apply-templates />
+  <xsl:apply-templates />
 </xsl:template>
 
 
@@ -570,20 +568,20 @@ which require a preprocess.
 
 <!-- SCHEMA -->
 <!-- Default uses XSLT 1 -->
-<xsl:template match="iso:schema[not(@queryBinding) or @queryBinding='xslt' 
-     or @queryBinding='xslt1' or @queryBinding='XSLT' or @queryBinding='XSLT1'
-     or @queryBinding='xpath']">
-     <xsl:if test="
-	     @queryBinding='xslt1' or @queryBinding='XSLT' or @queryBinding='XSLT1'">
-	     <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">2</xsl:with-param></xsl:call-template></xsl:message>
+<xsl:template match="iso:schema[not(@queryBinding) or @queryBinding='xslt' or 
+                                                      @queryBinding='xslt1' or 
+                                                      @queryBinding='XSLT' or 
+                                                      @queryBinding='XSLT1' or 
+                                                      @queryBinding='xpath']">
+  <xsl:if test="@queryBinding='xslt1' or @queryBinding='XSLT' or @queryBinding='XSLT1'">
+	  <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">2</xsl:with-param></xsl:call-template></xsl:message>
 	</xsl:if>
 	<axsl:stylesheet>
-	    <xsl:apply-templates 
-		select="iso:ns" />
+    <xsl:apply-templates select="iso:ns" />
 
-	    <!-- Handle the namespaces before the version attribute: reported to help SAXON -->
-      <!-- [ph] change from 1.0 to 2.0 -->
-	    <xsl:attribute name="version">2.0</xsl:attribute>
+    <!-- Handle the namespaces before the version attribute: reported to help SAXON -->
+    <!-- [ph] change from 1.0 to 2.0 -->
+    <xsl:attribute name="version">2.0</xsl:attribute>
 	    
 		<xsl:apply-templates select="." mode="stylesheetbody"/>
 		<!-- was xsl:call-template name="stylesheetbody"/ -->
@@ -592,41 +590,37 @@ which require a preprocess.
 
 <!-- Using EXSLT with all modeles (except function module: not applicable) -->
 <xsl:template match="iso:schema[@queryBinding='exslt']" priority="10">
-    <xsl:comment>This XSLT was automatically generated from a Schematron schema.</xsl:comment>
+  <xsl:comment>This XSLT was automatically generated from a Schematron schema.</xsl:comment>
 	<axsl:stylesheet
  	  	xmlns:date="http://exslt.org/dates-and-times"
  	  	xmlns:dyn="http://exslt.org/dynamic"
-		xmlns:exsl="http://exslt.org/common"
-		xmlns:math="http://exslt.org/math"
+		  xmlns:exsl="http://exslt.org/common"
+		  xmlns:math="http://exslt.org/math"
    		xmlns:random="http://exslt.org/random"
   		xmlns:regexp="http://exslt.org/regular-expressions"
    		xmlns:set="http://exslt.org/sets"
    		xmlns:str="http://exslt.org/strings"
    		extension-element-prefixes="date dyn exsl math random regexp set str" >
 	
-        <xsl:apply-templates
-		select="iso:ns" />
-	    <!-- Handle the namespaces before the version attribute: reported to help SAXON -->
-	    <xsl:attribute name="version">1.0</xsl:attribute>
+    <xsl:apply-templates select="iso:ns" />
+	  <!-- Handle the namespaces before the version attribute: reported to help SAXON -->
+	  <xsl:attribute name="version">1.0</xsl:attribute>
 	    
-	    <xsl:apply-templates select="." mode="stylesheetbody"/>
+	  <xsl:apply-templates select="." mode="stylesheetbody"/>
 		<!-- was xsl:call-template name="stylesheetbody"/ -->
 	</axsl:stylesheet>
 </xsl:template>
 
 <!-- Using XSLT 2 -->
-<xsl:template 
-	match="iso:schema[@queryBinding='xslt2' or @queryBinding ='xpath2']" 
-	priority="10">
+<xsl:template match="iso:schema[@queryBinding='xslt2' or @queryBinding ='xpath2']" priority="10">
 	<axsl:stylesheet
 	   xmlns:xs="http://www.w3.org/2001/XMLSchema" 
 	   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
 	   xmlns:saxon="http://saxon.sf.net/" 
 	   >
-        <xsl:apply-templates 
-		select="iso:ns" />
-	    <!-- Handle the namespaces before the version attribute: reported to help SAXON -->
-	    <xsl:attribute name="version">2.0</xsl:attribute>
+    <xsl:apply-templates select="iso:ns" />
+	  <!-- Handle the namespaces before the version attribute: reported to help SAXON -->
+	  <xsl:attribute name="version">2.0</xsl:attribute>
 	    
 		<xsl:apply-templates select="." mode="stylesheetbody"/>
 		<!-- was xsl:call-template name="stylesheetbody"/ -->
@@ -643,7 +637,7 @@ which require a preprocess.
 
 <xsl:template match="*" mode="stylesheetbody">
 	<!--xsl:template name="stylesheetbody"-->
-    <xsl:comment>Implementers: please note that overriding process-prolog or process-root is 
+  <xsl:comment>Implementers: please note that overriding process-prolog or process-root is 
     the preferred method for meta-stylesheets to use where possible. </xsl:comment><xsl:text>&#10;</xsl:text>
  
     <!-- These parameters may contain strings with the name and directory of the file being
@@ -652,61 +646,61 @@ which require a preprocess.
    for ZIP archives.
 	-->
     
-    <xsl:call-template name="iso:exslt.add.imports" /> <!-- RJ moved report BH -->
+  <xsl:call-template name="iso:exslt.add.imports" /> <!-- RJ moved report BH -->
 	<axsl:param name="archiveDirParameter" />
 	<axsl:param name="archiveNameParameter" />
 	<axsl:param name="fileNameParameter"  />
 	<axsl:param name="fileDirParameter" /> 
 	
-       
-    <axsl:variable name="document-uri"><axsl:value-of select="document-uri(/)" /></axsl:variable>
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>PHASES</xsl:comment><xsl:text>&#10;</xsl:text>
+
+  <axsl:variable name="document-uri"><axsl:value-of select="document-uri(/)" /></axsl:variable>
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>PHASES</xsl:comment><xsl:text>&#10;</xsl:text>
 	<xsl:call-template name="handle-phase"/> 
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>PROLOG</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>PROLOG</xsl:comment><xsl:text>&#10;</xsl:text>
 	<xsl:call-template name="process-prolog"/> 
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>XSD TYPES FOR XSLT2</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>XSD TYPES FOR XSLT2</xsl:comment><xsl:text>&#10;</xsl:text>
 	<xsl:apply-templates mode="do-types"   select="xsl:import-schema"/>
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>KEYS AND FUNCTIONS</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>KEYS AND FUNCTIONS</xsl:comment><xsl:text>&#10;</xsl:text>
 	<xsl:apply-templates mode="do-keys"   select="xsl:key | xsl:function "/>
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>DEFAULT RULES</xsl:comment><xsl:text>&#10;</xsl:text>
-    <xsl:call-template name="generate-default-rules" />
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>SCHEMA SETUP</xsl:comment><xsl:text>&#10;</xsl:text>
-    <xsl:call-template name="handle-root"/>
-    <xsl:text>&#10;&#10;</xsl:text><xsl:comment>SCHEMATRON PATTERNS</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>DEFAULT RULES</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:call-template name="generate-default-rules" />
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>SCHEMA SETUP</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:call-template name="handle-root"/>
+  <xsl:text>&#10;&#10;</xsl:text><xsl:comment>SCHEMATRON PATTERNS</xsl:comment><xsl:text>&#10;</xsl:text>
  
 	<xsl:apply-templates select="*[not(self::iso:ns)] " />
 </xsl:template>
  
-    <xsl:template name="iso:exslt.add.imports">
-      <xsl:param name="imports" select="$sch.exslt.imports"/>
-      <xsl:choose>
-        <xsl:when test="contains($imports, ';')">
-          <axsl:import href="{ substring-before($imports, ';') }"/>
-          <xsl:call-template name="iso:exslt.add.imports">
-            <xsl:with-param name="imports"  select="substring-after($imports, ';')"/>
-          </xsl:call-template>
-        </xsl:when>
-        <xsl:when test="$imports">
-          <axsl:import href="{ $imports }"/>
-        </xsl:when>
-      </xsl:choose>
-    </xsl:template>
+<xsl:template name="iso:exslt.add.imports">
+  <xsl:param name="imports" select="$sch.exslt.imports"/>
+  <xsl:choose>
+    <xsl:when test="contains($imports, ';')">
+      <axsl:import href="{ substring-before($imports, ';') }"/>
+      <xsl:call-template name="iso:exslt.add.imports">
+        <xsl:with-param name="imports"  select="substring-after($imports, ';')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="$imports">
+      <axsl:import href="{ $imports }"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
 
 <xsl:template name="handle-phase" >
-    <!-- This just tests that the phase exists -->
+  <!-- This just tests that the phase exists -->
 	<xsl:if test="not(normalize-space( $phase ) = '#ALL')">
 	  <xsl:if test="not(iso:phase[@id = normalize-space( $phase )])">
 		  <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">4a</xsl:with-param></xsl:call-template>
 		  <xsl:value-of select="normalize-space( $phase )"/>
 		  <xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">4b</xsl:with-param></xsl:call-template></xsl:message>
 	  </xsl:if>
-     </xsl:if>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template name="generate-default-rules">
-		<xsl:text>&#10;&#10;</xsl:text>
-		<xsl:comment>MODE: SCHEMATRON-SELECT-FULL-PATH</xsl:comment><xsl:text>&#10;</xsl:text>
-		<xsl:comment>This mode can be used to generate an ugly though full XPath for locators</xsl:comment><xsl:text>&#10;</xsl:text>
+  <xsl:text>&#10;&#10;</xsl:text>
+	<xsl:comment>MODE: SCHEMATRON-SELECT-FULL-PATH</xsl:comment><xsl:text>&#10;</xsl:text>
+	<xsl:comment>This mode can be used to generate an ugly though full XPath for locators</xsl:comment><xsl:text>&#10;</xsl:text>
    		<axsl:template match="*" mode="schematron-select-full-path">
    			<xsl:choose>
    				<xsl:when test=" $full-path-notation = '1' ">
@@ -2225,7 +2219,7 @@ which require a preprocess.
 		<xsl:param name="number" />  
 		 
 		<xsl:choose>
-		   <xsl:when test="string-length( $langCode ) = 0 or $langCode = 'default'" > 	   	 
+		  <xsl:when test="string-length( $langCode ) = 0 or $langCode = 'default'" > 	   	 
 				<xsl:value-of select='document("")//xhtml:p[@id=concat("sch-message-", $number)]/text()' />
 			</xsl:when>
 			<xsl:otherwise>
@@ -2233,8 +2227,7 @@ which require a preprocess.
 					<xsl:value-of select="concat('sch-messages-', $langCode, '.xhtml')" />
 				</xsl:variable>
 				<xsl:variable name="theLocalizedMessage" >
-					<xsl:value-of select=
-				'document( $localizationDocumentFilename, /)//xhtml:p[@id=concat("sch-message-", $number, "-", $langCode)]/text()' />
+					<xsl:value-of select='document( $localizationDocumentFilename, /)//xhtml:p[@id=concat("sch-message-", $number, "-", $langCode)]/text()' />
 				</xsl:variable>
 				
 				<xsl:choose>
@@ -2247,8 +2240,6 @@ which require a preprocess.
 						<xsl:value-of select='document("")//xhtml:p[@id=concat("sch-message-", $number)]/text()' />
 					</xsl:otherwise>
 				</xsl:choose>	
-				
-				 
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -2309,6 +2300,3 @@ which require a preprocess.
 	<xhtml:p id="sch-message-39b" />
  </xhtml:div>
 </xsl:stylesheet>
-
-
-
