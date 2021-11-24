@@ -17,6 +17,10 @@
 package com.helger.schematron.sch;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,6 +31,9 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.io.resource.URLResource;
+import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
+import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
@@ -180,5 +187,95 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile)
   {
     return new SchematronResourceSCH (new FileSystemResource (aSCHFile));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
+   * at a URL
+   *
+   * @param sSCHURL
+   *        The URL to the Schematron rules. May neither be <code>null</code>
+   *        nor empty.
+   * @return Never <code>null</code>.
+   * @throws MalformedURLException
+   *         In case an invalid URL is provided
+   * @since 6.2.6
+   */
+  @Nonnull
+  public static SchematronResourceSCH fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  {
+    return new SchematronResourceSCH (new URLResource (sSCHURL));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
+   * at a URL
+   *
+   * @param aSCHURL
+   *        The URL to the Schematron rules. May not be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.6
+   */
+  @Nonnull
+  public static SchematronResourceSCH fromURL (@Nonnull final URL aSCHURL)
+  {
+    return new SchematronResourceSCH (new URLResource (aSCHURL));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
+   * by an arbitrary {@link InputStream}.<br>
+   * <b>Important:</b> in this case, no include resolution will be performed!!
+   *
+   * @param sResourceID
+   *        Resource ID to be used as the cache key. Should neither be
+   *        <code>null</code> nor empty.
+   * @param aSchematronIS
+   *        The {@link InputStream} to read the Schematron rules from. May not
+   *        be <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.6
+   */
+  @Nonnull
+  public static SchematronResourceSCH fromInputStream (@Nonnull @Nonempty final String sResourceID,
+                                                       @Nonnull final InputStream aSchematronIS)
+  {
+    return new SchematronResourceSCH (new ReadableResourceInputStream (sResourceID, aSchematronIS));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
+   * by an arbitrary byte array.<br>
+   * <b>Important:</b> in this case, no include resolution will be performed!!
+   *
+   * @param aSchematron
+   *        The byte array representing the Schematron. May not be
+   *        <code>null</code>.
+   * @return Never <code>null</code>.
+   * @since 6.2.6
+   */
+  @Nonnull
+  public static SchematronResourceSCH fromByteArray (@Nonnull final byte [] aSchematron)
+  {
+    return new SchematronResourceSCH (new ReadableResourceByteArray (aSchematron));
+  }
+
+  /**
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
+   * by an arbitrary String.<br>
+   * <b>Important:</b> in this case, no include resolution will be performed!!
+   *
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>
+   *        .
+   * @param aCharset
+   *        The charset to be used to convert the String to a byte array.
+   * @return Never <code>null</code>.
+   * @since 6.2.6
+   */
+  @Nonnull
+  public static SchematronResourceSCH fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  {
+    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 }
