@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<message:Data 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:message="msg:ns">
+  <body>
+    <content>
+      <objects>
+        <object xmlns:line="msg:line" xsi:type="line:Type" id="1234">
+          <idType>1234</idType>
+        </object>
+        <object xmlns:line="msg:line" xsi:type="line:Type" id="2345">
+          <idType>2345</idType>
+        </object>
+      </objects>
+    </content>
+  </body>
+</message:Data>
