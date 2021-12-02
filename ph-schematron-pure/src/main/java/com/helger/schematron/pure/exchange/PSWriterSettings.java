@@ -70,6 +70,18 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
     return new XMLWriterSettings (m_aXMLWriterSettings);
   }
 
+  @Nonnull
+  public PSWriterSettings getClone ()
+  {
+    return new PSWriterSettings (this);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("XMLWriterSettings", m_aXMLWriterSettings).getToString ();
+  }
+
   /**
    * Helper method to extract the namespace mapping from the provided
    * Schematron.
@@ -89,17 +101,5 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
     for (final PSNS aItem : aSchema.getAllNSs ())
       ret.addMapping (aItem.getPrefix (), aItem.getUri ());
     return ret;
-  }
-
-  @Nonnull
-  public PSWriterSettings getClone ()
-  {
-    return new PSWriterSettings (this);
-  }
-
-  @Override
-  public String toString ()
-  {
-    return new ToStringGenerator (this).append ("XMLWriterSettings", m_aXMLWriterSettings).getToString ();
   }
 }
