@@ -147,6 +147,11 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return aDRS;
   }
 
+  /**
+   * Helper class to handle DOM Document and base URI for reference
+   *
+   * @author Philip Helger
+   */
   protected static final class NodeAndBaseURI
   {
     private final Document m_aDoc;
@@ -160,6 +165,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
+  @OverrideOnDemand
   protected NodeAndBaseURI getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
     final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
@@ -200,8 +206,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nonnull
   public EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
-    if (!isValidSchematron ())
-      return EValidity.INVALID;
+    // Don't check for valid Schematron upfront, because in case of a XSLT based
+    // implementation and disabled caching, a Schematron might be evaluated
+    // twice!
 
     final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
@@ -213,8 +220,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nonnull
   public EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception
   {
-    if (!isValidSchematron ())
-      return EValidity.INVALID;
+    // Don't check for valid Schematron upfront, because in case of a XSLT based
+    // implementation and disabled caching, a Schematron might be evaluated
+    // twice!
 
     final Node aXMLNode = getAsNode (aXMLSource);
     if (aXMLNode == null)
@@ -226,8 +234,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nullable
   public Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
-    if (!isValidSchematron ())
-      return null;
+    // Don't check for valid Schematron upfront, because in case of a XSLT based
+    // implementation and disabled caching, a Schematron might be evaluated
+    // twice!
 
     final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
@@ -239,8 +248,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nullable
   public Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
   {
-    if (!isValidSchematron ())
-      return null;
+    // Don't check for valid Schematron upfront, because in case of a XSLT based
+    // implementation and disabled caching, a Schematron might be evaluated
+    // twice!
 
     final Node aXMLNode = getAsNode (aXMLSource);
     if (aXMLNode == null)
@@ -252,8 +262,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nullable
   public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
   {
-    if (!isValidSchematron ())
-      return null;
+    // Don't check for valid Schematron upfront, because in case of a XSLT based
+    // implementation and disabled caching, a Schematron might be evaluated
+    // twice!
 
     final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
@@ -265,8 +276,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   @Nullable
   public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
   {
-    if (!isValidSchematron ())
-      return null;
+    // Don't check for valid Schematron upfront, because in case of a XSLT based
+    // implementation and disabled caching, a Schematron might be evaluated
+    // twice!
 
     final Node aXMLNode = getAsNode (aXMLSource);
     if (aXMLNode == null)
