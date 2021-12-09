@@ -26,7 +26,7 @@
   </parent>
   <artifactId>ph-schematron-pure</artifactId>
   <packaging>bundle</packaging>
-  <name>ph-schematron-pur</name>
+  <name>ph-schematron-pure</name>
   <description>This package contains the 'Pure' Schematron implementation</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-pure</url>
   <inceptionYear>2014</inceptionYear>
