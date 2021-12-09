@@ -31,7 +31,7 @@ public class SVRLNamespaceContext extends MapBasedNamespaceContext
 {
   private static final class SingletonHolder
   {
-    static final SVRLNamespaceContext s_aInstance = new SVRLNamespaceContext ();
+    static final SVRLNamespaceContext INSTANCE = new SVRLNamespaceContext ();
   }
 
   protected SVRLNamespaceContext ()
@@ -42,6 +42,6 @@ public class SVRLNamespaceContext extends MapBasedNamespaceContext
   @Nonnull
   public static SVRLNamespaceContext getInstance ()
   {
-    return SingletonHolder.s_aInstance;
+    return SingletonHolder.INSTANCE;
   }
 }
