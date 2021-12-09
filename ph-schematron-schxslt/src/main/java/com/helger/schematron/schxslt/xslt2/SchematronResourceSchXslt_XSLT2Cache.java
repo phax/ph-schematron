@@ -66,6 +66,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
+    // This is the call to convert Schematron to XSLT
     final SchematronProviderXSLTFromSchXslt_XSLT2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt_XSLT2 (aSchematronResource,
                                                                                                                    aTransformerCustomizer);
     if (!aXSLTPreprocessor.isValidSchematron ())

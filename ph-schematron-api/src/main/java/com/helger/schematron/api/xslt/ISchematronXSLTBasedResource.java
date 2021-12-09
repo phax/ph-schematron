@@ -98,6 +98,7 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
    * @return this for chaining
+   * @see #getEntityResolver()
    */
   @Nonnull
   ISchematronXSLTBasedResource setEntityResolver (@Nullable EntityResolver aEntityResolver);
