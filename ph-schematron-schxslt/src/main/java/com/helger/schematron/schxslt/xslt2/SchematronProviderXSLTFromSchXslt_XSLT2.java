@@ -89,6 +89,11 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 
+  /**
+   * Ensure that all XSLT templates for converting Schematron to XSLT are
+   * cached. That may be called on application startup, otherwise it is done
+   * lazily on demand.
+   */
   public static void cacheXSLTTemplates ()
   {
     final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
@@ -239,7 +244,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   }
 
   /**
-   * Constructor
+   * Constructor. This call does the main Schematron to XSLT conversion. TODO
+   * remove this from the constructor.
    *
    * @param aSchematronResource
    *        SCH resource
