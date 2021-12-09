@@ -223,7 +223,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * exception is thrown to indicate the unnecessity of the call.
    *
    * @param aXPathConfig
-   *        The xpath config to set. May be <code>null</code>.
+   *        The XPath config to set. May be <code>null</code>.
    * @return this
    */
   @Nonnull
@@ -294,6 +294,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   @Nonnull
   public IPSBoundSchema getOrCreateBoundSchema ()
   {
+    // Always caching
     if (m_aBoundSchema == null)
       try
       {
