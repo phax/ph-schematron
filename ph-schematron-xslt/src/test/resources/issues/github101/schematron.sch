@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2"
-  xmlns:sqf="http://www.schematron-quickfix.com/validator/process">
-
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
   <sch:pattern id="p1000101">
     <sch:title>Rule title</sch:title>
     <sch:rule id="r1000101" fpi="BR-123" context="/doc/h1">
