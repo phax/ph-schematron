@@ -207,6 +207,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (aXSLTProvider == null || !aXSLTProvider.isValidSchematron ())
     {
       // We cannot progress because of invalid Schematron
+      LOGGER.warn ("Cannot apply the Schematron validation, due to errors in the Schematron rules");
       return null;
     }
 
