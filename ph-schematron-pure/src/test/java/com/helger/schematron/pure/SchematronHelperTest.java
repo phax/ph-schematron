@@ -38,11 +38,11 @@ public final class SchematronHelperTest
   private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
 
   @Test
-  public void testReadValidSchematronValidXMLFromFile ()
+  public void testReadValidSchematronValidXMLFromFile () throws Exception
   {
     final ISchematronResource aSchematron = SchematronResourcePure.fromClassPath (VALID_SCHEMATRON);
     final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
-    final SchematronOutputType aSO = SchematronHelper.applySchematron (aSchematron, TransformSourceFactory.create (aXML));
+    final SchematronOutputType aSO = aSchematron.applySchematronValidationToSVRL (TransformSourceFactory.create (aXML));
     assertNotNull ("Failed to parse Schematron output", aSO);
   }
 }

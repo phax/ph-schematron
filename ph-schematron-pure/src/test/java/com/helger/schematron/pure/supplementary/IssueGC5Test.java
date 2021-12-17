@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
-import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
@@ -51,9 +50,7 @@ public final class IssueGC5Test
     // final Result res = new StreamResult (fos);
 
     // res.setSystemId(result.getAbsolutePath());
-    // final SchematronOutputType svrl = pure.applySchematronValidationToSVRL
-    // (anXMLSource);
-    final SchematronOutputType aSO = SchematronHelper.applySchematron (pure, anXMLSource);
+    final SchematronOutputType aSO = pure.applySchematronValidationToSVRL (anXMLSource);
     final ICommonsList <SVRLFailedAssert> aFailedAsserts = SVRLHelper.getAllFailedAssertions (aSO);
     LOGGER.info (aFailedAsserts.toString ());
   }
