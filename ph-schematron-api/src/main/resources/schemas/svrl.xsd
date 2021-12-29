@@ -84,6 +84,11 @@
       </xs:sequence>
       <xs:attribute name="diagnostic" use="required" type="xs:NMTOKEN"/>
       <xs:attribute ref="xml:lang" use="optional" />
+      <xs:attribute ref="xml:space" use="optional" />
+      <!-- [ph] if 'allowForeignElements' is enabled the following three can occur: -->
+      <xs:attribute name="see" type="xs:string" use="optional"/>
+      <xs:attribute name="icon" type="xs:string" use="optional"/>
+      <xs:attribute name="fpi" type="xs:string" use="optional"/>
     </xs:complexType>
   </xs:element>
   <!-- only failed assertions are reported -->

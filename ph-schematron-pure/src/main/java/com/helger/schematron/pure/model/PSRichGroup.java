@@ -27,6 +27,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.id.IHasID;
 import com.helger.commons.lang.EnumHelper;
 import com.helger.commons.lang.ICloneable;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
 import com.helger.xml.microdom.IMicroElement;
@@ -74,11 +75,6 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
   public PSRichGroup ()
   {}
 
-  public void setIcon (@Nullable final String sIcon)
-  {
-    m_sIcon = sIcon;
-  }
-
   /**
    * The location of a graphics file containing some visible representation of
    * the severity, significance or other grouping of the associated element.<br>
@@ -92,9 +88,9 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
     return m_sIcon;
   }
 
-  public void setSee (@Nullable final String sSee)
+  public void setIcon (@Nullable final String sIcon)
   {
-    m_sSee = sSee;
+    m_sIcon = sIcon;
   }
 
   /**
@@ -110,9 +106,9 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
     return m_sSee;
   }
 
-  public void setFPI (@Nullable final String sFPI)
+  public void setSee (@Nullable final String sSee)
   {
-    m_sFPI = sFPI;
+    m_sSee = sSee;
   }
 
   /**
@@ -127,9 +123,9 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
     return m_sFPI;
   }
 
-  public void setXmlLang (@Nullable final String sXmlLang)
+  public void setFPI (@Nullable final String sFPI)
   {
-    m_sXmlLang = sXmlLang;
+    m_sFPI = sFPI;
   }
 
   @Nullable
@@ -138,15 +134,30 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
     return m_sXmlLang;
   }
 
-  public void setXmlSpace (@Nullable final ESpace eXmlSpace)
+  public boolean hasXmlLang ()
   {
-    m_eXmlSpace = eXmlSpace;
+    return StringHelper.hasText (m_sXmlLang);
+  }
+
+  public void setXmlLang (@Nullable final String sXmlLang)
+  {
+    m_sXmlLang = sXmlLang;
   }
 
   @Nullable
   public ESpace getXmlSpace ()
   {
     return m_eXmlSpace;
+  }
+
+  public boolean hasXmlSpace ()
+  {
+    return m_eXmlSpace != null;
+  }
+
+  public void setXmlSpace (@Nullable final ESpace eXmlSpace)
+  {
+    m_eXmlSpace = eXmlSpace;
   }
 
   public static boolean isRichAttribute (@Nullable final String sAttrName)
