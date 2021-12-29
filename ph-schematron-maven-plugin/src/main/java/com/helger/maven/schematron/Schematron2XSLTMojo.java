@@ -441,18 +441,18 @@ public final class Schematron2XSLTMojo extends AbstractMojo
               final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
               getLog ().info ("Schematron conversion of '" + aFile.getName () + "' was finalized after " + nDurationSecs + " seconds");
             }
-
-            // Did any exceptions occur?
-            if (fe.isSet ())
-              throw fe.get ();
-            if (ee.isSet ())
-              throw ee.get ();
           }
           else
           {
             // No progress version
             r.run ();
           }
+
+          // Did any exceptions occur?
+          if (fe.isSet ())
+            throw fe.get ();
+          if (ee.isSet ())
+            throw ee.get ();
         }
       }
     }
