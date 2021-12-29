@@ -156,6 +156,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("6.2.2")
   private String m_sXSLTHeader;
 
+  /**
+   * If the transformation of a Schematron to XSLT takes longer than 5 seconds,
+   * a message is displayed every 5 seconds to inform you that the
+   * transformation is still in progress. This is enabled by default.
+   */
+  @Parameter (name = "showProgress", defaultValue = "true")
+  @Since ("6.2.8")
+  private boolean m_bShowProgress = true;
+
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -244,6 +253,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("Using the XSLT header '" + m_sXSLTHeader + "'");
     else
       getLog ().debug ("No XSLT header is configured");
+  }
+
+  public void setShowProgress (final boolean b)
+  {
+    m_bShowProgress = b;
+    if (b)
+      getLog ().debug ("Progress indicator is enabled");
+    else
+      getLog ().debug ("Progress indicator is disabled");
   }
 
   public void execute () throws MojoExecutionException, MojoFailureException
@@ -383,50 +401,58 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             }
           };
 
-          // Run conversion in one thread and run another thread that logs the
-          // time
-          final ExecutorService aES = Executors.newSingleThreadExecutor ();
-          aES.submit (r);
+          if (m_bShowProgress)
+          {
+            // Run conversion in one thread and run another thread that logs the
+            // time
+            final ExecutorService aES = Executors.newSingleThreadExecutor ();
+            aES.submit (r);
 
-          final long nStartTime = System.currentTimeMillis ();
-          final AtomicBoolean aLoggedAnything = new AtomicBoolean (false);
-          final Thread t = new Thread ( () -> {
-            long nLastSecs = 0;
-            while (!Thread.currentThread ().isInterrupted ())
-            {
-              if (ThreadHelper.sleep (500).isSuccess ())
+            final long nStartTime = System.currentTimeMillis ();
+            final AtomicBoolean aLoggedAnything = new AtomicBoolean (false);
+            final Thread t = new Thread ( () -> {
+              long nLastSecs = 0;
+              while (!Thread.currentThread ().isInterrupted ())
               {
-                final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
-                // Log only every x seconds
-                if (nDurationSecs >= nLastSecs + 5)
+                if (ThreadHelper.sleep (500).isSuccess ())
                 {
-                  getLog ().info ("Schematron conversion of '" +
-                                  aFile.getName () +
-                                  "' already takes " +
-                                  nDurationSecs +
-                                  " seconds - please stay tuned");
-                  nLastSecs = nDurationSecs;
-                  aLoggedAnything.set (true);
+                  final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
+                  // Log only every x seconds
+                  if (nDurationSecs >= nLastSecs + 5)
+                  {
+                    getLog ().info ("Schematron conversion of '" +
+                                    aFile.getName () +
+                                    "' already takes " +
+                                    nDurationSecs +
+                                    " seconds - please wait...");
+                    nLastSecs = nDurationSecs;
+                    aLoggedAnything.set (true);
+                  }
                 }
               }
+            });
+            t.setDaemon (true);
+            t.start ();
+            ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aES);
+            t.interrupt ();
+            if (aLoggedAnything.get ())
+            {
+              // Log finalization of conversion if it took longer
+              final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
+              getLog ().info ("Schematron conversion of '" + aFile.getName () + "' was finalized after " + nDurationSecs + " seconds");
             }
-          });
-          t.setDaemon (true);
-          t.start ();
-          ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aES);
-          t.interrupt ();
-          if (aLoggedAnything.get ())
-          {
-            // Log finalization of conversion if it took longer
-            final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
-            getLog ().info ("Schematron conversion of '" + aFile.getName () + "' was finalized after " + nDurationSecs + " seconds");
-          }
 
-          // Did any exceptions occur?
-          if (fe.isSet ())
-            throw fe.get ();
-          if (ee.isSet ())
-            throw ee.get ();
+            // Did any exceptions occur?
+            if (fe.isSet ())
+              throw fe.get ();
+            if (ee.isSet ())
+              throw ee.get ();
+          }
+          else
+          {
+            // No progress version
+            r.run ();
+          }
         }
       }
     }
