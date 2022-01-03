@@ -43,6 +43,7 @@ import com.helger.schematron.pure.model.PSEmph;
 import com.helger.schematron.pure.model.PSName;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
+import com.helger.schematron.pure.model.PSRichGroup;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSSpan;
@@ -106,9 +107,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                                .build ());
   }
 
-  private void _error (@Nonnull final IPSElement aSourceElement,
-                       @Nonnull final String sMsg,
-                       @Nullable final Throwable t)
+  private void _error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg, @Nullable final Throwable t)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
@@ -153,9 +152,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aSchematronOutput.setTitle (_getTitleAsString (aSchema.getTitle ()));
 
     // Add namespace prefixes
-    for (final Map.Entry <String, String> aEntry : aSchema.getAsNamespaceContext ()
-                                                          .getPrefixToNamespaceURIMap ()
-                                                          .entrySet ())
+    for (final Map.Entry <String, String> aEntry : aSchema.getAsNamespaceContext ().getPrefixToNamespaceURIMap ().entrySet ())
     {
       final NsPrefixInAttributeValues aNsPrefix = new NsPrefixInAttributeValues ();
       aNsPrefix.setPrefix (aEntry.getKey ());
@@ -190,6 +187,16 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aRetRule.setId (aRule.getID ());
     if (aRule.hasLinkable ())
       aRetRule.setRole (aRule.getLinkable ().getRole ());
+    final PSRichGroup aRich = aRule.getRich ();
+    if (aRich != null)
+    {
+      aRetRule.setLang (aRich.getXmlLang ());
+      if (aRich.hasXmlSpace ())
+        aRetRule.setSpace (aRich.getXmlSpace ().getID ());
+      aRetRule.setIcon (aRich.getIcon ());
+      aRetRule.setSee (aRich.getSee ());
+      aRetRule.setFpi (aRich.getFPI ());
+    }
     m_aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ().add (aRetRule);
   }
 
@@ -224,9 +231,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // XPath present
             try
             {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                  aSourceNode,
-                                                                  m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aSourceNode, m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -249,15 +254,11 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             final PSValueOf aValueOf = (PSValueOf) aContent;
             try
             {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                  aSourceNode,
-                                                                  m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aSourceNode, m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
-              _error (aValueOf,
-                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
-                      ex);
+              _error (aValueOf, "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'", ex);
               // Append the path so that something is present in the output
               aSB.append (aValueOf.getSelect ());
             }
@@ -316,6 +317,16 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // Create the SVRL diagnostic-reference element
             final DiagnosticReference aDR = new DiagnosticReference ();
             aDR.setDiagnostic (sDiagnosticID);
+            final PSRichGroup aRich = aDiagnostic.getDiagnostic ().getRich ();
+            if (aRich != null)
+            {
+              aDR.setLang (aRich.getXmlLang ());
+              if (aRich.hasXmlSpace ())
+                aDR.setSpace (aRich.getXmlSpace ().getID ());
+              aDR.setIcon (aRich.getIcon ());
+              aDR.setSee (aRich.getSee ());
+              aDR.setFpi (aRich.getFPI ());
+            }
             aDR.getContent ().add (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode));
             aDstList.add (aDR);
           }

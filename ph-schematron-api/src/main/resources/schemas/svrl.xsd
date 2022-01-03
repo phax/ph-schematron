@@ -70,10 +70,7 @@
       <xs:attribute name="context" type="xs:string" use="required"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="flag" type="xs:NMTOKEN"/>
-      <!-- [ph] if 'allowForeignElements' is enabled the following three can occur: -->
-      <xs:attribute name="see" type="xs:string" use="optional"/>
-      <xs:attribute name="icon" type="xs:string" use="optional"/>
-      <xs:attribute name="fpi" type="xs:string" use="optional"/>
+      <xs:attributeGroup ref="svrl:attlist.rich"/>
     </xs:complexType>
   </xs:element>
   <!-- only references are reported, not the diagnostic -->
@@ -83,7 +80,7 @@
         <xs:element ref="svrl:text" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
       <xs:attribute name="diagnostic" use="required" type="xs:NMTOKEN"/>
-      <xs:attribute ref="xml:lang" use="optional" />
+      <xs:attributeGroup ref="svrl:attlist.rich"/>
     </xs:complexType>
   </xs:element>
   <!-- only failed assertions are reported -->
@@ -126,9 +123,7 @@
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="svrl:rich-text">
-          <xs:attribute name="see"/>
-          <xs:attribute name="icon"/>
-          <xs:attribute name="fpi"/>
+          <xs:attributeGroup ref="svrl:attlist.rich"/>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -173,6 +168,14 @@
       <xs:any namespace="##local" processContents="skip"/>
     </xs:choice>
   </xs:group>
+  <xs:attributeGroup name="attlist.rich">
+    <xs:attribute ref="xml:lang" use="optional" />
+    <xs:attribute ref="xml:space" use="optional" />
+    <!-- [ph] if 'allowForeignElements' is enabled the following three can occur: -->
+    <xs:attribute name="see" type="xs:string" use="optional"/>
+    <xs:attribute name="icon" type="xs:string" use="optional"/>
+    <xs:attribute name="fpi" type="xs:string" use="optional"/>
+  </xs:attributeGroup>
   <xs:attributeGroup name="attlist.assert-and-report">
     <!-- [ph] changed from ID to NCName for real-life handling -->
     <xs:attribute name="id" type="xs:NCName"/>
@@ -180,9 +183,6 @@
     <xs:attribute name="test" use="required"/>
     <xs:attribute name="role" type="xs:NMTOKEN"/>
     <xs:attribute name="flag" type="xs:NMTOKEN"/>
-    <!-- [ph] if 'allowForeignElements' is enabled the following three can occur: -->
-    <xs:attribute name="see" type="xs:string" use="optional"/>
-    <xs:attribute name="icon" type="xs:string" use="optional"/>
-    <xs:attribute name="fpi" type="xs:string" use="optional"/>
+    <xs:attributeGroup ref="svrl:attlist.rich"/>
   </xs:attributeGroup>
 </xs:schema>

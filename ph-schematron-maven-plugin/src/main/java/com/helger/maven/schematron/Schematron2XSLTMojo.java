@@ -19,6 +19,9 @@ package com.helger.maven.schematron;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,16 +41,20 @@ import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 
+import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.Since;
 import com.helger.commons.annotation.VisibleForTesting;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.concurrent.ExecutorServiceHelper;
+import com.helger.commons.concurrent.ThreadHelper;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.wrapper.Wrapper;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.svrl.CSVRL;
@@ -149,6 +156,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("6.2.2")
   private String m_sXSLTHeader;
 
+  /**
+   * If the transformation of a Schematron to XSLT takes longer than 5 seconds,
+   * a message is displayed every 5 seconds to inform you that the
+   * transformation is still in progress. This is enabled by default.
+   */
+  @Parameter (name = "showProgress", defaultValue = "true")
+  @Since ("6.2.8")
+  private boolean m_bShowProgress = true;
+
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -239,6 +255,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("No XSLT header is configured");
   }
 
+  public void setShowProgress (final boolean b)
+  {
+    m_bShowProgress = b;
+    if (b)
+      getLog ().debug ("Progress indicator is enabled");
+    else
+      getLog ().debug ("Progress indicator is disabled");
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
@@ -305,72 +330,129 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             }
           }
 
-          // 3.3 Okay, write the XSLT file
-          try
-          {
-            buildContext.removeMessages (aFile);
-            // Custom error listener to log to the Mojo logger
-            final ErrorListener aMojoErrorListener = new PluginErrorListener (buildContext, aFile);
-
-            // Custom error listener
-            // No custom URI resolver
-            // Specified phase - default = null
-            // Specified language code - default = null
-            final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
-                                                                                        .setPhase (m_sPhaseName)
-                                                                                        .setLanguageCode (m_sLanguageCode)
-                                                                                        .setParameters (m_aCustomParameters)
-                                                                                        .setForceCacheResult (m_bForceCacheResult);
-
-            getLog ().debug ("Compiling Schematron instance " + aSchematronResource.toString ());
-
-            final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
-            if (aXsltDoc != null)
+          // 3.3 The main SCH to XSLT conversion
+          final Wrapper <MojoFailureException> fe = new Wrapper <> ();
+          final Wrapper <MojoExecutionException> ee = new Wrapper <> ();
+          final Runnable r = () -> {
+            try
             {
-              if (StringHelper.hasText (m_sXSLTHeader))
+              buildContext.removeMessages (aFile);
+              // Custom error listener to log to the Mojo logger
+              final ErrorListener aMojoErrorListener = new PluginErrorListener (buildContext, aFile);
+
+              // Custom error listener
+              // No custom URI resolver
+              // Specified phase - default = null
+              // Specified language code - default = null
+              final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
+                                                                                          .setPhase (m_sPhaseName)
+                                                                                          .setLanguageCode (m_sLanguageCode)
+                                                                                          .setParameters (m_aCustomParameters)
+                                                                                          .setForceCacheResult (m_bForceCacheResult);
+
+              getLog ().debug ("Compiling Schematron instance " + aSchematronResource.toString ());
+
+              final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
+              if (aXsltDoc != null)
               {
-                // Inject the header into the XSLT
-                aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());
+                if (StringHelper.hasText (m_sXSLTHeader))
+                {
+                  // Inject the header into the XSLT
+                  aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());
+                }
+
+                // Write the resulting XSLT file to disk
+                final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
+                // Add all namespaces from XSLT document root
+                final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
+                XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
+                  if (sAttrName.startsWith (sNSPrefix))
+                    aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
+                });
+
+                final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
+                                                                       .setPutNamespaceContextPrefixesInRoot (true);
+
+                final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
+                if (aOS == null)
+                  throw new IllegalStateException ("Failed to open output stream for file " + aXSLTFile.getAbsolutePath ());
+                XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
+
+                getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
+
+                buildContext.refresh (aXsltFileDirectory);
               }
-
-              // Write the resulting XSLT file to disk
-              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
-              // Add all namespaces from XSLT document root
-              final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
-              XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
-                if (sAttrName.startsWith (sNSPrefix))
-                  aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
-              });
-
-              final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
-                                                                     .setPutNamespaceContextPrefixesInRoot (true);
-
-              final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
-              if (aOS == null)
-                throw new IllegalStateException ("Failed to open output stream for file " + aXSLTFile.getAbsolutePath ());
-              XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
-
-              getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
-
-              buildContext.refresh (aXsltFileDirectory);
+              else
+              {
+                final String message = "Failed to convert '" + aFile.getPath () + "': the Schematron resource is invalid";
+                getLog ().error (message);
+                throw new MojoFailureException (message);
+              }
             }
-            else
+            catch (final MojoFailureException up)
             {
-              final String message = "Failed to convert '" + aFile.getPath () + "': the Schematron resource is invalid";
-              getLog ().error (message);
-              throw new MojoFailureException (message);
+              fe.set (up);
+            }
+            catch (final Exception ex)
+            {
+              final String sMessage = "Failed to convert '" + aFile.getPath () + "' to XSLT file '" + aXSLTFile.getPath () + "'";
+              getLog ().error (sMessage, ex);
+              ee.set (new MojoExecutionException (sMessage, ex));
+            }
+          };
+
+          if (m_bShowProgress)
+          {
+            // Run conversion in one thread and run another thread that logs the
+            // time
+            final ExecutorService aES = Executors.newSingleThreadExecutor ();
+            aES.submit (r);
+
+            final long nStartTime = System.currentTimeMillis ();
+            final AtomicBoolean aLoggedAnything = new AtomicBoolean (false);
+            final Thread t = new Thread ( () -> {
+              long nLastSecs = 0;
+              while (!Thread.currentThread ().isInterrupted ())
+              {
+                if (ThreadHelper.sleep (500).isSuccess ())
+                {
+                  final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
+                  // Log only every x seconds
+                  if (nDurationSecs >= nLastSecs + 5)
+                  {
+                    getLog ().info ("Schematron conversion of '" +
+                                    aFile.getName () +
+                                    "' already takes " +
+                                    nDurationSecs +
+                                    " seconds - please wait...");
+                    nLastSecs = nDurationSecs;
+                    aLoggedAnything.set (true);
+                  }
+                }
+              }
+            });
+            t.setDaemon (true);
+            t.start ();
+            ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aES);
+            t.interrupt ();
+            if (aLoggedAnything.get ())
+            {
+              // Log finalization of conversion if it took longer
+              final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
+              getLog ().info ("Schematron conversion of '" + aFile.getName () + "' was finalized after " + nDurationSecs + " seconds");
             }
           }
-          catch (final MojoFailureException up)
+          else
           {
-            throw up;
+            // No progress version
+            r.run ();
           }
-          catch (final Exception ex)
-          {
-            final String sMessage = "Failed to convert '" + aFile.getPath () + "' to XSLT file '" + aXSLTFile.getPath () + "'";
-            getLog ().error (sMessage, ex);
-            throw new MojoExecutionException (sMessage, ex);
-          }
+
+          // Did any exceptions occur?
+          if (fe.isSet ())
+            throw fe.get ();
+          if (ee.isSet ())
+            throw ee.get ();
         }
       }
     }

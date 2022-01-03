@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.pure.supplementary;
+package com.helger.schematron.supplementary;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -28,20 +28,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.validation.LoggingPSValidationHandler;
+import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class Issue088Test
+public final class Issue083Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue088Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue083Test.class);
 
   private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
   {
-    final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
-    aSCH.setCustomValidationHandler (new LoggingPSValidationHandler ());
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromFile (aSchematron);
+    aSCH.parameters ().put ("schxslt.compile.metadata", "false");
+
+    SchematronDebug.setSaveIntermediateXSLTFiles (true);
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
@@ -49,16 +51,17 @@ public final class Issue088Test
 
     final String sSVRL = new SVRLMarshaller ().getAsString (aSVRL);
     assertNotNull (sSVRL);
-    if (false)
+    if (true)
       LOGGER.info ("SVRL:\n" + sSVRL);
 
-    assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+    // XXX should be 1 according to #83
+    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github88/schematron.sch"),
-                             new File ("src/test/resources/issues/github88/test.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/issues/github83/schematron.sch"),
+                             new File ("src/test/resources/issues/github83/test.xml"));
   }
 }

@@ -42,5 +42,8 @@ public class SVRLMarshaller extends GenericJAXBMarshaller <SchematronOutputType>
   {
     super (SchematronOutputType.class, bValidationEnabled ? CSVRL.SVRL_XSDS : null, new ObjectFactory ()::createSchematronOutput);
     setFormattedOutput (GlobalDebug.isDebugMode ());
+
+    // Use the default namespace context
+    setNamespaceContext (SVRLNamespaceContext.getInstance ());
   }
 }

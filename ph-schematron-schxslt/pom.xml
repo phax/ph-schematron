@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>6.2.8-SNAPSHOT</version>
+    <version>6.2.9-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-schxslt</artifactId>
   <packaging>bundle</packaging>
@@ -30,6 +30,7 @@
   <description>Library for validating XML documents using the SchXslt implementation</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-schxslt</url>
   <inceptionYear>2020</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,10 +38,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
   </organization>
+  
   <developers>
     <developer>
       <id>philip</id>
@@ -49,6 +52,7 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.schematron</groupId>
@@ -58,6 +62,7 @@
       <groupId>name.dmaus.schxslt</groupId>
       <artifactId>schxslt</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
@@ -68,7 +73,13 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>

@@ -16,8 +16,8 @@
  */
 package com.helger.schematron.pure.supplementary;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -34,9 +34,9 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-public final class Issue088Test
+public final class Issue126Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue088Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue126Test.class);
 
   private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
   {
@@ -49,16 +49,16 @@ public final class Issue088Test
 
     final String sSVRL = new SVRLMarshaller ().getAsString (aSVRL);
     assertNotNull (sSVRL);
-    if (false)
+    if (true)
       LOGGER.info ("SVRL:\n" + sSVRL);
 
-    assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+    assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github88/schematron.sch"),
-                             new File ("src/test/resources/issues/github88/test.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/issues/github126/schematron.sch"),
+                             new File ("src/test/resources/issues/github126/test.xml"));
   }
 }
