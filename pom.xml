@@ -95,87 +95,10 @@
         <version>10.6</version>
       </dependency>
       
-      <!-- RelaxNG -->
-      <dependency>
-        <groupId>com.helger</groupId>
-        <artifactId>ph-isorelax</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.thaiopensource</groupId>
-        <artifactId>jing</artifactId>
-        <version>20091111</version>
-        <exclusions>
-          <exclusion>
-            <groupId>isorelax</groupId>
-            <artifactId>isorelax</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      
-      <!-- Trang -->
-      <dependency>
-        <groupId>com.thaiopensource</groupId>
-        <artifactId>trang</artifactId>
-        <version>20091111</version>
-        <exclusions>
-          <exclusion>
-            <groupId>isorelax</groupId>
-            <artifactId>isorelax</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      
-      <!-- Ant -->
-      <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant</artifactId>
-        <version>${ant.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant-apache-resolver</artifactId>
-        <version>${ant.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.ant</groupId>
-        <artifactId>ant-testutil</artifactId>
-        <version>${ant.version}</version>
-      </dependency>
-      
       <dependency>
         <groupId>name.dmaus.schxslt</groupId>
         <artifactId>schxslt</artifactId>
-        <version>1.8.5</version>
-      </dependency>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymock</artifactId>
-        <version>4.3</version>
+        <version>1.8.6</version>
       </dependency>
       
       <dependency>
