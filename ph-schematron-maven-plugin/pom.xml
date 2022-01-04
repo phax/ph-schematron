@@ -63,6 +63,16 @@
     <maven.annot.version>3.5.1</maven.annot.version>
     <maven.test.version>3.3.0</maven.test.version>
   </properties>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>4.3</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>

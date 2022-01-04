@@ -29,6 +29,7 @@
   <name>ph-schematron-ant-task</name>
   <url>https://github.com/phax/ph-schematron/ph-schematron-ant-task</url>
   <inceptionYear>2017</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,10 +37,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <organization>
     <name>Philip Helger</name>
     <url>http://www.helger.com</url>
   </organization>
+  
   <developers>
     <developer>
       <id>philip</id>
@@ -48,6 +51,27 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
+  <dependencyManagement>
+    <dependencies>
+      <!-- Ant -->
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant</artifactId>
+        <version>${ant.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-apache-resolver</artifactId>
+        <version>${ant.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.ant</groupId>
+        <artifactId>ant-testutil</artifactId>
+        <version>${ant.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
