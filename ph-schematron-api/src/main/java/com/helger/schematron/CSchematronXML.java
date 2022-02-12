@@ -78,7 +78,7 @@ public final class CSchematronXML
   public static final String ELEMENT_VALUE_OF = "value-of";
 
   @PresentForCodeCoverage
-  private static final CSchematronXML s_aInstance = new CSchematronXML ();
+  private static final CSchematronXML INSTANCE = new CSchematronXML ();
 
   private CSchematronXML ()
   {}

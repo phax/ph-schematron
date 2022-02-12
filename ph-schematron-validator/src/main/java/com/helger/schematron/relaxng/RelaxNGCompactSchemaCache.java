@@ -49,7 +49,7 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
 
   private static final class SingletonHolder
   {
-    static final RelaxNGCompactSchemaCache s_aInstance = new RelaxNGCompactSchemaCache ();
+    static final RelaxNGCompactSchemaCache INSTANCE = new RelaxNGCompactSchemaCache ();
   }
 
   private static boolean s_bDefaultInstantiated = false;
@@ -89,7 +89,7 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
   @Nonnull
   public static RelaxNGCompactSchemaCache getInstance ()
   {
-    final RelaxNGCompactSchemaCache ret = SingletonHolder.s_aInstance;
+    final RelaxNGCompactSchemaCache ret = SingletonHolder.INSTANCE;
     s_bDefaultInstantiated = true;
     return ret;
   }

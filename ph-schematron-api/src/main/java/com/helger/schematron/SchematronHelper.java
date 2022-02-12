@@ -73,7 +73,7 @@ public final class SchematronHelper
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronHelper.class);
 
   @PresentForCodeCoverage
-  private static final SchematronHelper s_aInstance = new SchematronHelper ();
+  private static final SchematronHelper INSTANCE = new SchematronHelper ();
 
   private SchematronHelper ()
   {}

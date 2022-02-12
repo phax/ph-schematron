@@ -58,7 +58,7 @@ public final class SchematronValidator
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronValidator.class);
 
   @PresentForCodeCoverage
-  private static final SchematronValidator s_aInstance = new SchematronValidator ();
+  private static final SchematronValidator INSTANCE = new SchematronValidator ();
 
   private SchematronValidator ()
   {}

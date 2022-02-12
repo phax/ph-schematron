@@ -54,7 +54,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   public static final char PARAM_VARIABLE_PREFIX = '$';
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathQueryBinding.class);
-  private static final PSXPathQueryBinding s_aInstance = new PSXPathQueryBinding ();
+  private static final PSXPathQueryBinding INSTANCE = new PSXPathQueryBinding ();
 
   private PSXPathQueryBinding ()
   {}
@@ -62,7 +62,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   @Nonnull
   public static PSXPathQueryBinding getInstance ()
   {
-    return s_aInstance;
+    return INSTANCE;
   }
 
   @Nonnull

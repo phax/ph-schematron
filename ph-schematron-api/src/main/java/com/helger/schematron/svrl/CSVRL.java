@@ -53,7 +53,7 @@ public final class CSVRL
   public static final String SVRL_NAMESPACE_URI = "http://purl.oclc.org/dsdl/svrl";
 
   @PresentForCodeCoverage
-  private static final CSVRL s_aInstance = new CSVRL ();
+  private static final CSVRL INSTANCE = new CSVRL ();
 
   private CSVRL ()
   {}

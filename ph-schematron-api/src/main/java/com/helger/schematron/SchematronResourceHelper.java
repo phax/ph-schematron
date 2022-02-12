@@ -50,7 +50,7 @@ public final class SchematronResourceHelper
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceHelper.class);
 
   @PresentForCodeCoverage
-  private static final SchematronResourceHelper s_aInstance = new SchematronResourceHelper ();
+  private static final SchematronResourceHelper INSTANCE = new SchematronResourceHelper ();
 
   private SchematronResourceHelper ()
   {}

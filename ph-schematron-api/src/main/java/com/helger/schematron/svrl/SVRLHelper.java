@@ -47,12 +47,12 @@ import com.helger.schematron.svrl.jaxb.Text;
 @ThreadSafe
 public final class SVRLHelper
 {
-  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
 
   private static ISVRLErrorLevelDeterminator s_aELD = new DefaultSVRLErrorLevelDeterminator ();
 
   @PresentForCodeCoverage
-  private static final SVRLHelper s_aInstance = new SVRLHelper ();
+  private static final SVRLHelper INSTANCE = new SVRLHelper ();
 
   private SVRLHelper ()
   {}
@@ -218,7 +218,7 @@ public final class SVRLHelper
   @Nonnull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
-    return s_aRWLock.readLockedGet ( () -> s_aELD);
+    return RW_LOCK.readLockedGet ( () -> s_aELD);
   }
 
   /**
@@ -231,7 +231,7 @@ public final class SVRLHelper
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
-    s_aRWLock.writeLockedGet ( () -> s_aELD = aELD);
+    RW_LOCK.writeLockedGet ( () -> s_aELD = aELD);
   }
 
   /**

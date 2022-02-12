@@ -34,7 +34,7 @@ public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSc
 {
   private static final class SingletonHolder
   {
-    static final PSBoundSchemaCache s_aInstance = new PSBoundSchemaCache ();
+    static final PSBoundSchemaCache INSTANCE = new PSBoundSchemaCache ();
   }
 
   /**
@@ -65,6 +65,6 @@ public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSc
   @Nonnull
   public static PSBoundSchemaCache getInstance ()
   {
-    return SingletonHolder.s_aInstance;
+    return SingletonHolder.INSTANCE;
   }
 }
