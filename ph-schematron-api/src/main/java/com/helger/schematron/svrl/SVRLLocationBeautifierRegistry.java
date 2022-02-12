@@ -36,10 +36,10 @@ import com.helger.commons.lang.ServiceLoaderHelper;
 public final class SVRLLocationBeautifierRegistry
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SVRLLocationBeautifierRegistry.class);
-  private static final ICommonsList <ISVRLLocationBeautifierSPI> s_aList = ServiceLoaderHelper.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
+  private static final ICommonsList <ISVRLLocationBeautifierSPI> LIST = ServiceLoaderHelper.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
 
   @PresentForCodeCoverage
-  private static final SVRLLocationBeautifierRegistry s_aInstance = new SVRLLocationBeautifierRegistry ();
+  private static final SVRLLocationBeautifierRegistry INSTANCE = new SVRLLocationBeautifierRegistry ();
 
   private SVRLLocationBeautifierRegistry ()
   {}
@@ -56,7 +56,7 @@ public final class SVRLLocationBeautifierRegistry
   @Nullable
   public static String getBeautifiedLocation (@Nonnull final String sNamespaceURI, @Nonnull final String sLocalName)
   {
-    for (final ISVRLLocationBeautifierSPI aBeautifier : s_aList)
+    for (final ISVRLLocationBeautifierSPI aBeautifier : LIST)
     {
       final String sBeautified = aBeautifier.getReplacementText (sNamespaceURI, sLocalName);
       if (sBeautified != null)
