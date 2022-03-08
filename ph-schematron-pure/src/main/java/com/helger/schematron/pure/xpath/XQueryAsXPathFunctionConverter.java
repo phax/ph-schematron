@@ -156,7 +156,7 @@ public class XQueryAsXPathFunctionConverter
           {
             // Currently the user functions are in ExecutableFunctionLibrary
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
-              for (final UserFunction aUserFunc : new IterableIterator <> (((ExecutableFunctionLibrary) aNestedFuncLib).iterateFunctions ()))
+              for (final UserFunction aUserFunc : new IterableIterator <> (((ExecutableFunctionLibrary) aNestedFuncLib).getAllFunctions ()))
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
                 aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
