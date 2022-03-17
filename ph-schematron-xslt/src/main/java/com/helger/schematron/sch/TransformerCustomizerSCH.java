@@ -164,17 +164,17 @@ public class TransformerCustomizerSCH
     return !hasParameters () || m_bForceCacheResult;
   }
 
-  public void customize (@Nonnull final TransformerFactory aTransformer)
+  public void customize (@Nonnull final TransformerFactory aTransformerFactory)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
-      aTransformer.setErrorListener (m_aCustomErrorListener);
+      aTransformerFactory.setErrorListener (m_aCustomErrorListener);
     else
-      aTransformer.setErrorListener (new LoggingTransformErrorListener (Locale.US));
+      aTransformerFactory.setErrorListener (new LoggingTransformErrorListener (Locale.US));
 
     // Set the optional URI Resolver
     if (m_aCustomURIResolver != null)
-      aTransformer.setURIResolver (m_aCustomURIResolver);
+      aTransformerFactory.setURIResolver (m_aCustomURIResolver);
   }
 
   public void customize (@Nonnull final EStepSCH eStep, @Nonnull final Transformer aTransformer)
