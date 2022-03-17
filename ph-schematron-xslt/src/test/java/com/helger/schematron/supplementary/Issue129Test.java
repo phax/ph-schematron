@@ -21,24 +21,99 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 
 import javax.annotation.Nonnull;
+import javax.xml.transform.TransformerFactory;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
+
+import net.sf.saxon.TransformerFactoryImpl;
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.ItemType;
+import net.sf.saxon.s9api.OccurrenceIndicator;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.SequenceType;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmValue;
 
 public final class Issue129Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue129Test.class);
 
+  private static class MyTestExtensionFunction implements ExtensionFunction
+  {
+    @Override
+    public QName getName ()
+    {
+      return new QName ("http://some.namespace.com", "test");
+    }
+
+    @Override
+    public SequenceType getResultType ()
+    {
+      return SequenceType.makeSequenceType (ItemType.STRING, OccurrenceIndicator.ONE);
+    }
+
+    @Override
+    public net.sf.saxon.s9api.SequenceType [] getArgumentTypes ()
+    {
+      return new SequenceType [] {};
+    }
+
+    @Override
+    public XdmValue call (final XdmValue [] arguments) throws SaxonApiException
+    {
+      final String result = "Saxon is being extended correctly.";
+      return new XdmAtomicValue (result);
+    }
+  }
+
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new FileSystemResource (aSchematron))
+    {
+      @Override
+      @Nonnull
+      @OverrideOnDemand
+      protected TransformerCustomizerSCH createTransformerCustomizer ()
+      {
+        final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ()
+        {
+          @Override
+          public void customize (@Nonnull final TransformerFactory aTransformerFactory)
+          {
+            super.customize (aTransformerFactory);
+
+            if (aTransformerFactory instanceof TransformerFactoryImpl)
+            {
+              final net.sf.saxon.TransformerFactoryImpl aSaxonTF = (net.sf.saxon.TransformerFactoryImpl) aTransformerFactory;
+
+              // Get the currently used processor
+              final net.sf.saxon.Configuration saxonConfig = aSaxonTF.getConfiguration ();
+              final net.sf.saxon.s9api.Processor processor = (net.sf.saxon.s9api.Processor) saxonConfig.getProcessor ();
+
+              // Here extension happens
+              processor.registerExtensionFunction (new MyTestExtensionFunction ());
+            }
+          }
+        };
+        return aCustomizer.setErrorListener (getErrorListener ())
+                          .setURIResolver (getURIResolver ())
+                          .setParameters (parameters ())
+                          .setPhase (getPhase ())
+                          .setLanguageCode (getLanguageCode ())
+                          .setForceCacheResult (isForceCacheResult ());
+      }
+    };
 
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
