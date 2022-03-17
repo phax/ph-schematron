@@ -9,6 +9,8 @@
 
   <!-- Example for an XSLT function used -->
   <sch:ns uri="utils" prefix="u"/>
+
+  <!-- Example for a Java function used -->
   <sch:ns uri="http://some.namespace.com" prefix="java"/>
 
   <function xmlns="http://www.w3.org/1999/XSL/Transform"
@@ -20,10 +22,12 @@
      
   <sch:pattern name="any">
     <sch:rule context="/file/Customer/age">
+      <!-- Test inline XSLT function -->
       <sch:assert test="u:mul2(normalize-space()) >= 18">Double the age must be at least be 18 but is <sch:value-of select="u:mul2(normalize-space())" /></sch:assert>
-    </sch:rule>
-    <sch:rule context="/file/Customer">
+      
+      <!-- Test calling of Java function -->
       <sch:assert test="false">This is supposed to fail. Message from Java: <sch:value-of select="java:test()" /></sch:assert>
+      <sch:assert test="java:mul3(.) >= 27">Triple the age must be at least be 27 but is <sch:value-of select="java:mul3(.)" /></sch:assert>
     </sch:rule>
   </sch:pattern>
 </sch:schema> 

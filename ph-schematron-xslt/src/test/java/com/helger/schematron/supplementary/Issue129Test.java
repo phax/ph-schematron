@@ -49,7 +49,7 @@ public final class Issue129Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue129Test.class);
 
-  private static class MyTestExtensionFunction implements ExtensionFunction
+  private static class EF_Test implements ExtensionFunction
   {
     @Override
     public QName getName ()
@@ -74,6 +74,34 @@ public final class Issue129Test
     {
       final String result = "Saxon is being extended correctly.";
       return new XdmAtomicValue (result);
+    }
+  }
+
+  private static class EF_Mul3 implements ExtensionFunction
+  {
+    @Override
+    public QName getName ()
+    {
+      return new QName ("http://some.namespace.com", "mul3");
+    }
+
+    @Override
+    public SequenceType getResultType ()
+    {
+      return SequenceType.makeSequenceType (ItemType.INTEGER, OccurrenceIndicator.ONE);
+    }
+
+    @Override
+    public net.sf.saxon.s9api.SequenceType [] getArgumentTypes ()
+    {
+      return new SequenceType [] { SequenceType.makeSequenceType (ItemType.INTEGER, OccurrenceIndicator.ONE) };
+    }
+
+    @Override
+    public XdmValue call (final XdmValue [] arguments) throws SaxonApiException
+    {
+      final long nArg = ((XdmAtomicValue) arguments[0]).getLongValue ();
+      return new XdmAtomicValue (nArg * 3);
     }
   }
 
@@ -102,7 +130,8 @@ public final class Issue129Test
               final net.sf.saxon.s9api.Processor processor = (net.sf.saxon.s9api.Processor) saxonConfig.getProcessor ();
 
               // Here extension happens
-              processor.registerExtensionFunction (new MyTestExtensionFunction ());
+              processor.registerExtensionFunction (new EF_Test ());
+              processor.registerExtensionFunction (new EF_Mul3 ());
             }
           }
         };
