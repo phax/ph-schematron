@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -106,15 +107,23 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   }
 
   @Nonnull
+  protected final TransformerCustomizerSchXslt_XSLT2 applyDefaultValuesOnTransformerCustomizer (@Nonnull final TransformerCustomizerSchXslt_XSLT2 aTC)
+  {
+    ValueEnforcer.notNull (aTC, "TransformerCustomizer");
+    aTC.setErrorListener (getErrorListener ())
+       .setURIResolver (getURIResolver ())
+       .setParameters (parameters ())
+       .setPhase (m_sPhase)
+       .setLanguageCode (m_sLanguageCode)
+       .setForceCacheResult (m_bForceCacheResult);
+    return aTC;
+  }
+
+  @Nonnull
   @OverrideOnDemand
   protected TransformerCustomizerSchXslt_XSLT2 createTransformerCustomizer ()
   {
-    return new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (getErrorListener ())
-                                                    .setURIResolver (getURIResolver ())
-                                                    .setParameters (parameters ())
-                                                    .setPhase (m_sPhase)
-                                                    .setLanguageCode (m_sLanguageCode)
-                                                    .setForceCacheResult (m_bForceCacheResult);
+    return applyDefaultValuesOnTransformerCustomizer (new TransformerCustomizerSchXslt_XSLT2 ());
   }
 
   @Override
