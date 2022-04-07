@@ -17,10 +17,10 @@
 package com.helger.schematron.xslt;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -42,7 +42,7 @@ public final class SchematronResourceXSLTTest
   public void testFromUrl () throws Exception
   {
     final SchematronResourceXSLT sch = SchematronResourceXSLT.fromURL (VALID_XSLT_SCHEMATRON.getAsURL ());
-    Assert.assertTrue ("invalid schematron", sch.isValidSchematron ());
+    assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
     assertNotNull (aDoc);
@@ -51,8 +51,9 @@ public final class SchematronResourceXSLTTest
   @Test
   public void testFromStringUrl () throws Exception
   {
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromURL (VALID_XSLT_SCHEMATRON.getAsURL ().toExternalForm ());
-    Assert.assertTrue ("invalid schematron", sch.isValidSchematron ());
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromURL (VALID_XSLT_SCHEMATRON.getAsURL ()
+                                                                                            .toExternalForm ());
+    assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
     assertNotNull (aDoc);
@@ -64,7 +65,7 @@ public final class SchematronResourceXSLTTest
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
     final SchematronResourceXSLT sch = SchematronResourceXSLT.fromInputStream ("mock-res-id",
                                                                                new NonBlockingByteArrayInputStream (aPayload));
-    Assert.assertTrue ("invalid schematron", sch.isValidSchematron ());
+    assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
     assertNotNull (aDoc);
@@ -75,7 +76,7 @@ public final class SchematronResourceXSLTTest
   {
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
     final SchematronResourceXSLT sch = SchematronResourceXSLT.fromByteArray (aPayload);
-    Assert.assertTrue ("invalid schematron", sch.isValidSchematron ());
+    assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
     assertNotNull (aDoc);
@@ -87,7 +88,7 @@ public final class SchematronResourceXSLTTest
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
     final SchematronResourceXSLT sch = SchematronResourceXSLT.fromString (new String (aPayload, StandardCharsets.UTF_8),
                                                                           StandardCharsets.UTF_8);
-    Assert.assertTrue ("invalid schematron", sch.isValidSchematron ());
+    assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
     assertNotNull (aDoc);
