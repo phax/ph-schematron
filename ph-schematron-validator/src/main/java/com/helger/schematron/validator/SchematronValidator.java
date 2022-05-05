@@ -113,12 +113,14 @@ public final class SchematronValidator
   }
 
   /**
-   * Check if the passed source is a valid schematron instance.
+   * Check if the passed source is a valid Schematron instance.
    *
    * @param aSource
-   *        The source to check. May be <code>null</code>.
-   * @return The error list or <code>null</code> in case some weird error
-   *         occurred.
+   *        The source to check. May be <code>null</code>. This may NOT be a
+   *        DOMSource, because the validation with this scheme has not been
+   *        implemented yet.
+   * @return The error list or <code>null</code> if the source is
+   *         <code>null</code> or an Exception occurred.
    */
   @Nullable
   public static IErrorList validateSchematron (@Nullable final Source aSource)
