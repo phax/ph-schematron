@@ -61,9 +61,9 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
-        <groupId>com.thaiopensource</groupId>
+        <groupId>org.relaxng</groupId>
         <artifactId>jing</artifactId>
-        <version>20091111</version>
+        <version>20181222</version>
         <exclusions>
           <exclusion>
             <groupId>isorelax</groupId>
@@ -86,9 +86,9 @@
       
       <!-- Trang -->
       <dependency>
-        <groupId>com.thaiopensource</groupId>
+        <groupId>org.relaxng</groupId>
         <artifactId>trang</artifactId>
-        <version>20091111</version>
+        <version>20181222</version>
         <exclusions>
           <exclusion>
             <groupId>isorelax</groupId>
@@ -127,13 +127,13 @@
       <artifactId>ph-isorelax</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.thaiopensource</groupId>
+      <groupId>org.relaxng</groupId>
       <artifactId>jing</artifactId>
     </dependency>
     
     <!-- Trang -->
     <dependency>
-      <groupId>com.thaiopensource</groupId>
+      <groupId>org.relaxng</groupId>
       <artifactId>trang</artifactId>
       <scope>test</scope>
     </dependency>
