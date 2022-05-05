@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 
 import com.helger.commons.annotation.PresentForCodeCoverage;
 import com.helger.commons.error.level.EErrorLevel;
+import com.helger.commons.error.list.IErrorList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.schematron.relaxng.RelaxNGCompactSchemaCache;
@@ -116,13 +117,14 @@ public final class SchematronValidator
    *
    * @param aSource
    *        The source to check. May be <code>null</code>.
-   * @return <code>true</code> if the schematron is valid, <code>false</code>
-   *         otherwise.
+   * @return The error list or <code>null</code> in case some weird error
+   *         occurred.
    */
-  public static boolean isValidSchematron (@Nullable final Source aSource)
+  @Nullable
+  public static IErrorList validateSchematron (@Nullable final Source aSource)
   {
     if (aSource == null)
-      return false;
+      return null;
 
     try
     {
@@ -131,7 +133,7 @@ public final class SchematronValidator
 
       // Ensure a collecting error handler is set
       final ErrorHandler aOldEH = aValidator.getErrorHandler ();
-      CollectingSAXErrorHandler aCEH;
+      final CollectingSAXErrorHandler aCEH;
       if (aOldEH instanceof CollectingSAXErrorHandler)
         aCEH = (CollectingSAXErrorHandler) aOldEH;
       else
@@ -144,7 +146,7 @@ public final class SchematronValidator
       aValidator.validate (aSource, null);
 
       // Check results
-      return aCEH.getErrorList ().getMostSevereErrorLevel ().isLT (EErrorLevel.ERROR);
+      return aCEH.getErrorList ();
     }
     catch (final SAXException ex)
     {
@@ -154,6 +156,20 @@ public final class SchematronValidator
     {
       LOGGER.warn ("Failed to read source " + aSource, ex);
     }
-    return false;
+    return null;
+  }
+
+  /**
+   * Check if the passed source is a valid schematron instance.
+   *
+   * @param aSource
+   *        The source to check. May be <code>null</code>.
+   * @return <code>true</code> if the schematron is valid, <code>false</code>
+   *         otherwise.
+   */
+  public static boolean isValidSchematron (@Nullable final Source aSource)
+  {
+    final IErrorList ret = validateSchematron (aSource);
+    return ret != null && ret.getMostSevereErrorLevel ().isLT (EErrorLevel.ERROR);
   }
 }
