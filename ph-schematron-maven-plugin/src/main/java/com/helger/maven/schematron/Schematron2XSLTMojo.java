@@ -165,6 +165,14 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("6.2.8")
   private boolean m_bShowProgress = true;
 
+  /**
+   * If an error occurs, shall the conversion stop or shall the next file be
+   * tried? For backwards compatibility reason, this is enabled by default.
+   */
+  @Parameter (name = "stopOnError", defaultValue = "true")
+  @Since ("6.3.2")
+  private boolean m_bStopOnError = true;
+
   public void setSchematronDirectory (@Nonnull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -264,6 +272,15 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("Progress indicator is disabled");
   }
 
+  public void setStopOnError (final boolean b)
+  {
+    m_bStopOnError = b;
+    if (b)
+      getLog ().debug ("Stop on error is enabled");
+    else
+      getLog ().debug ("Stop on error is disabled");
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
@@ -271,7 +288,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     if (m_aSchematronDirectory == null)
       throw new MojoExecutionException ("No Schematron directory specified!");
     if (m_aSchematronDirectory.exists () && !m_aSchematronDirectory.isDirectory ())
-      throw new MojoExecutionException ("The specified Schematron directory " + m_aSchematronDirectory + " is not a directory!");
+      throw new MojoExecutionException ("The specified Schematron directory " +
+                                        m_aSchematronDirectory +
+                                        " is not a directory!");
     if (StringHelper.hasNoText (m_sSchematronPattern))
       throw new MojoExecutionException ("No Schematron pattern specified!");
     if (m_aXsltDirectory == null)
@@ -298,9 +317,14 @@ public final class Schematron2XSLTMojo extends AbstractMojo
         final File aFile = new File (m_aSchematronDirectory, sFilename);
 
         // 1. build XSLT file name (outputdir + localpath with new extension)
-        final File aXSLTFile = new File (m_aXsltDirectory, FilenameHelper.getWithoutExtension (sFilename) + m_sXsltExtension);
+        final File aXSLTFile = new File (m_aXsltDirectory,
+                                         FilenameHelper.getWithoutExtension (sFilename) + m_sXsltExtension);
 
-        getLog ().info ("Converting Schematron file '" + aFile.getPath () + "' to XSLT file '" + aXSLTFile.getPath () + "'");
+        getLog ().info ("Converting Schematron file '" +
+                        aFile.getPath () +
+                        "' to XSLT file '" +
+                        aXSLTFile.getPath () +
+                        "'");
 
         // 2. The Schematron resource
         final IReadableResource aSchematronResource = new FileSystemResource (aFile);
@@ -352,7 +376,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
               getLog ().debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
-              final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
+              final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource,
+                                                                                            aCustomizer);
               if (aXsltDoc != null)
               {
                 if (StringHelper.hasText (m_sXSLTHeader))
@@ -362,7 +387,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 }
 
                 // Write the resulting XSLT file to disk
-                final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
+                final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl",
+                                                                                                        CSVRL.SVRL_NAMESPACE_URI);
                 // Add all namespaces from XSLT document root
                 final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
                 XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
@@ -375,7 +401,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
                 final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
                 if (aOS == null)
-                  throw new IllegalStateException ("Failed to open output stream for file " + aXSLTFile.getAbsolutePath ());
+                  throw new IllegalStateException ("Failed to open output stream for file " +
+                                                   aXSLTFile.getAbsolutePath ());
                 XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
 
                 getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
@@ -384,7 +411,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
               }
               else
               {
-                final String message = "Failed to convert '" + aFile.getPath () + "': the Schematron resource is invalid";
+                final String message = "Failed to convert '" +
+                                       aFile.getPath () +
+                                       "': the Schematron resource is invalid";
                 getLog ().error (message);
                 throw new MojoFailureException (message);
               }
@@ -395,7 +424,11 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             }
             catch (final Exception ex)
             {
-              final String sMessage = "Failed to convert '" + aFile.getPath () + "' to XSLT file '" + aXSLTFile.getPath () + "'";
+              final String sMessage = "Failed to convert '" +
+                                      aFile.getPath () +
+                                      "' to XSLT file '" +
+                                      aXSLTFile.getPath () +
+                                      "'";
               getLog ().error (sMessage, ex);
               ee.set (new MojoExecutionException (sMessage, ex));
             }
@@ -416,7 +449,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
               {
                 if (ThreadHelper.sleep (500).isSuccess ())
                 {
-                  final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
+                  final long nDurationSecs = (System.currentTimeMillis () - nStartTime) /
+                                             CGlobal.MILLISECONDS_PER_SECOND;
                   // Log only every x seconds
                   if (nDurationSecs >= nLastSecs + 5)
                   {
@@ -439,7 +473,11 @@ public final class Schematron2XSLTMojo extends AbstractMojo
             {
               // Log finalization of conversion if it took longer
               final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
-              getLog ().info ("Schematron conversion of '" + aFile.getName () + "' was finalized after " + nDurationSecs + " seconds");
+              getLog ().info ("Schematron conversion of '" +
+                              aFile.getName () +
+                              "' was finalized after " +
+                              nDurationSecs +
+                              " seconds");
             }
           }
           else
@@ -450,9 +488,17 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
           // Did any exceptions occur?
           if (fe.isSet ())
-            throw fe.get ();
+          {
+            if (m_bStopOnError)
+              throw fe.get ();
+            getLog ().warn ("Received an error, but continuing anyway", fe.get ());
+          }
           if (ee.isSet ())
-            throw ee.get ();
+          {
+            if (m_bStopOnError)
+              throw ee.get ();
+            getLog ().warn ("Received an error, but continuing anyway", ee.get ());
+          }
         }
       }
     }
