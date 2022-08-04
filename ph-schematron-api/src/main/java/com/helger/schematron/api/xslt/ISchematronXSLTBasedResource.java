@@ -118,4 +118,23 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    */
   @Nonnull
   ISchematronXSLTBasedResource setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator);
+
+  /**
+   * @return <code>true</code> if the created SVRL should be validated or not.
+   *         Defaults to <code>true</code>.
+   * @since 6.3.3
+   */
+  boolean isValidateSVRL ();
+
+  /**
+   * Enable or disable the validation of the created SVRL.
+   *
+   * @param bValidateSVRL
+   *        <code>true</code> to enable XSD validation, <code>false</code> to
+   *        disable it.
+   * @return this for chaining
+   * @since 6.3.3
+   */
+  @Nonnull
+  ISchematronXSLTBasedResource setValidateSVRL (boolean bValidateSVRL);
 }

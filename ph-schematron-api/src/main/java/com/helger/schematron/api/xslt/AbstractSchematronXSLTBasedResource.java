@@ -72,12 +72,14 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                           ISchematronXSLTBasedResource,
                                                           IGenericImplTrait <IMPLTYPE>
 {
+  public static final boolean DEFAULT_VALIDATE_SVRL = true;
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
   private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
+  private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
   @Nullable
   private static String _findBaseURL (@Nonnull final IReadableResource aRes)
@@ -177,6 +179,18 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return thisAsT ();
   }
 
+  public final boolean isValidateSVRL ()
+  {
+    return m_bValidateSVRL;
+  }
+
+  @Nonnull
+  public final IMPLTYPE setValidateSVRL (final boolean bValidateSVRL)
+  {
+    m_bValidateSVRL = bValidateSVRL;
+    return thisAsT ();
+  }
+
   public final boolean isValidSchematron ()
   {
     final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
@@ -270,7 +284,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (aDoc.getDocumentElement () == null)
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
 
-    final SVRLMarshaller aMarshaller = new SVRLMarshaller ();
+    final SVRLMarshaller aMarshaller = new SVRLMarshaller (m_bValidateSVRL);
     if (GlobalDebug.isDebugMode ())
     {
       // Set an exception callback that logs the source node as well
@@ -283,6 +297,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("XSLTValidator", m_aXSLTValidator).getToString ();
+    return ToStringGenerator.getDerived (super.toString ())
+                            .append ("CustomErrorListener", m_aCustomErrorListener)
+                            .append ("CustomURIResolver", m_aCustomURIResolver)
+                            .append ("CustomParameters", m_aCustomParameters)
+                            .append ("XSLTValidator", m_aXSLTValidator)
+                            .append ("ValidateSVRL", m_bValidateSVRL)
+                            .getToString ();
   }
 }
