@@ -53,6 +53,16 @@
     </developer>
   </developers>
   
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>name.dmaus.schxslt</groupId>
+        <artifactId>schxslt</artifactId>
+        <version>${schxslt.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.schematron</groupId>
