@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.svrl;
 
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -58,6 +59,7 @@ public class SVRLResourceError extends SingleError
    *        The SVRL test that triggered this error. May not be
    *        <code>null</code>.
    */
+  @Deprecated
   public SVRLResourceError (@Nonnull final IErrorLevel aErrorLevel,
                             @Nullable final String sErrorID,
                             @Nullable final String sErrorFieldName,
@@ -66,7 +68,40 @@ public class SVRLResourceError extends SingleError
                             @Nullable final Throwable aLinkedException,
                             @Nonnull final String sTest)
   {
-    super (aErrorLevel, sErrorID, sErrorFieldName, aErrorLocation, aErrorText, aLinkedException);
+    this (null, aErrorLevel, sErrorID, sErrorFieldName, aErrorLocation, aErrorText, aLinkedException, sTest);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param aErrorDT
+   *        Error date time
+   * @param aErrorLevel
+   *        The error level. May not be <code>null</code>.
+   * @param sErrorID
+   *        Error ID. May be <code>null</code>.
+   * @param sErrorFieldName
+   *        Error field name. May be <code>null</code>.
+   * @param aErrorLocation
+   *        Location where the error occurred. May be <code>null</code>.
+   * @param aErrorText
+   *        The error text. May be <code>null</code>.
+   * @param aLinkedException
+   *        An exception that caused the error. May be <code>null</code>.
+   * @param sTest
+   *        The SVRL test that triggered this error. May not be
+   *        <code>null</code>.
+   */
+  public SVRLResourceError (@Nullable final LocalDateTime aErrorDT,
+                            @Nonnull final IErrorLevel aErrorLevel,
+                            @Nullable final String sErrorID,
+                            @Nullable final String sErrorFieldName,
+                            @Nullable final ILocation aErrorLocation,
+                            @Nullable final IHasErrorText aErrorText,
+                            @Nullable final Throwable aLinkedException,
+                            @Nonnull final String sTest)
+  {
+    super (aErrorDT, aErrorLevel, sErrorID, sErrorFieldName, aErrorLocation, aErrorText, aLinkedException);
     m_sTest = ValueEnforcer.notNull (sTest, "Test");
   }
 
@@ -107,7 +142,7 @@ public class SVRLResourceError extends SingleError
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("test", m_sTest).getToString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("Test", m_sTest).getToString ();
   }
 
   public static class SVRLErrorBuilder extends SingleError.AbstractBuilder <SVRLResourceError, SVRLErrorBuilder>
@@ -116,11 +151,18 @@ public class SVRLResourceError extends SingleError
 
     public SVRLErrorBuilder (@Nonnull final String sTest)
     {
-      setTest (sTest);
+      test (sTest);
     }
 
     @Nonnull
+    @Deprecated
     public final SVRLErrorBuilder setTest (@Nonnull final String sTest)
+    {
+      return test (sTest);
+    }
+
+    @Nonnull
+    public final SVRLErrorBuilder test (@Nonnull final String sTest)
     {
       m_sTest = ValueEnforcer.notNull (sTest, "Test");
       return this;
@@ -129,7 +171,8 @@ public class SVRLResourceError extends SingleError
     @Override
     public SVRLResourceError build ()
     {
-      return new SVRLResourceError (m_aErrorLevel,
+      return new SVRLResourceError (m_aErrorDT,
+                                    m_aErrorLevel,
                                     m_sErrorID,
                                     m_sErrorFieldName,
                                     m_aErrorLocation,
