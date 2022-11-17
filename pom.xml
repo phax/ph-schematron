@@ -71,7 +71,7 @@
   
   <properties>
     <ant.version>1.10.12</ant.version>
-    <schxslt.version>1.9.1</schxslt.version>
+    <schxslt.version>1.9.4</schxslt.version>
   </properties>
   
   <dependencyManagement>
@@ -79,7 +79,7 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>10.2.1</version>
+        <version>10.2.2-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
