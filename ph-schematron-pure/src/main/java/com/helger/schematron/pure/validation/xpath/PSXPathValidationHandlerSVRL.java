@@ -24,6 +24,8 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathExpressionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import com.helger.commons.ValueEnforcer;
@@ -61,6 +63,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.xml.XMLHelper;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**
  * A special validation handler that creates an SVRL document. This class only
@@ -72,9 +75,12 @@ import com.helger.xml.XMLHelper;
 @NotThreadSafe
 public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathValidationHandlerSVRL.class);
+
   private final IPSErrorHandler m_aErrorHandler;
   private SchematronOutputType m_aSchematronOutput;
   private PSSchema m_aSchema;
+  private MapBasedNamespaceContext m_aNSContext;
   private String m_sBaseURI;
 
   /**
@@ -107,7 +113,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                                .build ());
   }
 
-  private void _error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg, @Nullable final Throwable t)
+  private void _error (@Nonnull final IPSElement aSourceElement,
+                       @Nonnull final String sMsg,
+                       @Nullable final Throwable t)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
@@ -152,16 +160,18 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aSchematronOutput.setTitle (_getTitleAsString (aSchema.getTitle ()));
 
     // Add namespace prefixes
-    for (final Map.Entry <String, String> aEntry : aSchema.getAsNamespaceContext ().getPrefixToNamespaceURIMap ().entrySet ())
+    m_aSchematronOutput = aSchematronOutput;
+    m_aSchema = aSchema;
+    m_aNSContext = aSchema.getAsNamespaceContext ();
+    m_sBaseURI = sBaseURI;
+
+    for (final Map.Entry <String, String> aEntry : m_aNSContext.getPrefixToNamespaceURIMap ().entrySet ())
     {
       final NsPrefixInAttributeValues aNsPrefix = new NsPrefixInAttributeValues ();
       aNsPrefix.setPrefix (aEntry.getKey ());
       aNsPrefix.setUri (aEntry.getValue ());
       aSchematronOutput.getNsPrefixInAttributeValues ().add (aNsPrefix);
     }
-    m_aSchematronOutput = aSchematronOutput;
-    m_aSchema = aSchema;
-    m_sBaseURI = sBaseURI;
   }
 
   @Override
@@ -231,7 +241,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // XPath present
             try
             {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aSourceNode, m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
+                                                                  aSourceNode,
+                                                                  m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
@@ -254,11 +266,15 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             final PSValueOf aValueOf = (PSValueOf) aContent;
             try
             {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aSourceNode, m_sBaseURI));
+              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
+                                                                  aSourceNode,
+                                                                  m_sBaseURI));
             }
             catch (final XPathExpressionException ex)
             {
-              _error (aValueOf, "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'", ex);
+              _error (aValueOf,
+                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
+                      ex);
               // Append the path so that something is present in the output
               aSB.append (aValueOf.getSelect ());
             }
@@ -338,9 +354,21 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Nonnull
-  private static String _getPathToNode (@Nonnull final Node aNode)
+  private String _getPathToNode (@Nonnull final Node aNode)
   {
-    return XMLHelper.getPathToNode2 (aNode, "/");
+    final String ret = XMLHelper.pathToNodeBuilder ()
+                                .node (aNode)
+                                .separator ("/")
+                                .excludeDocumentNode ()
+                                .oneBasedIndex ()
+                                .forceUseIndex (false)
+                                .trailingSeparator (false)
+                                .compareIncludingNamespaceURI (true)
+                                .namespaceContext (m_aNSContext)
+                                .build ();
+    if (LOGGER.isTraceEnabled ())
+      LOGGER.trace ("Converted Node to path '" + ret + "'");
+    return ret;
   }
 
   @Override
