@@ -35,6 +35,7 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
+import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -245,9 +246,13 @@ public class PSBoundSchemaCacheKey
     final PSPreprocessor aPreprocessor = createPreprocessor (aQueryBinding);
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
     if (aPreprocessedSchema == null)
-      throw new SchematronPreprocessException ("Failed to preprocess schema " + aSchema + " with query binding " + aQueryBinding);
+      throw new SchematronPreprocessException ("Failed to preprocess schema " +
+                                               aSchema +
+                                               " with query binding " +
+                                               aQueryBinding);
     if (SchematronDebug.isShowPreprocessedSchematron ())
-      LOGGER.info ("Preprocessed Schematron:\n" + MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
+      LOGGER.info ("Preprocessed Schematron:\n" +
+                   MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
     return aPreprocessedSchema;
   }
 
@@ -278,11 +283,26 @@ public class PSBoundSchemaCacheKey
     // Resolve the query binding to be used
     final IPSQueryBinding aQueryBinding = getQueryBinding (aSchema);
 
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("Schematron creation interrupted before preprocessing");
+
     // Pre-process schema
     final PSSchema aPreprocessedSchema = createPreprocessedSchema (aSchema, aQueryBinding);
 
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("Schematron creation interrupted after preprocessing");
+
     // And finally bind the pre-processed schema
-    return aQueryBinding.bind (aPreprocessedSchema, m_sPhase, m_aErrorHandler, m_aCustomValidationHandler, m_aXPathConfig);
+    final IPSBoundSchema ret = aQueryBinding.bind (aPreprocessedSchema,
+                                                   m_sPhase,
+                                                   m_aErrorHandler,
+                                                   m_aCustomValidationHandler,
+                                                   m_aXPathConfig);
+
+    if (Thread.interrupted ())
+      throw new SchematronInterruptedException ("Schematron creation interrupted after binding");
+
+    return ret;
   }
 
   @Override
@@ -303,7 +323,10 @@ public class PSBoundSchemaCacheKey
   {
     int ret = m_nHashCode;
     if (ret == IHashCodeGenerator.ILLEGAL_HASHCODE)
-      ret = m_nHashCode = new HashCodeGenerator (this).append (m_aResource).append (m_sPhase).append (m_aXPathConfig).getHashCode ();
+      ret = m_nHashCode = new HashCodeGenerator (this).append (m_aResource)
+                                                      .append (m_sPhase)
+                                                      .append (m_aXPathConfig)
+                                                      .getHashCode ();
     return ret;
   }
 
