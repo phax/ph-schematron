@@ -40,10 +40,6 @@ public final class Issue137Test
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 
-    // Assign custom parameters
-    aSCH.parameters ().put ("xyz", "cellphone");
-    aSCH.parameters ().put ("expected", "");
-
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
 
