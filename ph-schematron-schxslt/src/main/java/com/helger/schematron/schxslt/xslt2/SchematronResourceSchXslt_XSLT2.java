@@ -45,7 +45,8 @@ import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBasedResource <SchematronResourceSchXslt_XSLT2>
+public class SchematronResourceSchXslt_XSLT2 extends
+                                             AbstractSchematronXSLTBasedResource <SchematronResourceSchXslt_XSLT2>
 {
   private String m_sPhase;
   private String m_sLanguageCode;
@@ -60,6 +61,8 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
   public SchematronResourceSchXslt_XSLT2 (@Nonnull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
+    // Avoid creating the SVRL Metadata, because it is not schema compliant
+    parameters ().put ("schxslt.compile.metadata", "false");
   }
 
   @Nullable
@@ -280,7 +283,8 @@ public class SchematronResourceSchXslt_XSLT2 extends AbstractSchematronXSLTBased
    * @since 6.2.5
    */
   @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  public static SchematronResourceSchXslt_XSLT2 fromString (@Nonnull final String sSchematron,
+                                                            @Nonnull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }
