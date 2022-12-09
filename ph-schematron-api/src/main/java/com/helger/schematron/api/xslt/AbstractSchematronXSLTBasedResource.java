@@ -67,7 +67,8 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
  *        Implementation type
  */
 @NotThreadSafe
-public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>> extends
+public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends AbstractSchematronXSLTBasedResource <IMPLTYPE>>
+                                                          extends
                                                           AbstractSchematronResource implements
                                                           ISchematronXSLTBasedResource,
                                                           IGenericImplTrait <IMPLTYPE>
@@ -198,7 +199,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+                                                @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -250,7 +252,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     // Set all custom parameters
     if (m_aCustomParameters != null)
       for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
+      {
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Adding XSLT parameter '" + aEntry.getKey () + "' = '" + aEntry.getValue () + "'");
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
+      }
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Applying Schematron XSLT on XML [start]");
@@ -289,7 +295,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     {
       // Set an exception callback that logs the source node as well
       aMarshaller.readExceptionCallbacks ()
-                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc), ex));
+                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc),
+                                           ex));
     }
     return aMarshaller.read (aDoc);
   }
