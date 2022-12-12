@@ -27,18 +27,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
 
-public final class Issue137Test
+public final class Issue137SchXsltTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue137Test.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue137SchXsltTest.class);
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+    if (false)
+      SchematronDebug.setDebugMode (true);
+
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromFile (aSchematron);
 
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
