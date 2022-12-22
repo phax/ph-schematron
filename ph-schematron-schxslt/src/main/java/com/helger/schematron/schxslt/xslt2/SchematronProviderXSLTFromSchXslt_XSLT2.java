@@ -50,9 +50,9 @@ import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
 /**
- * The XSLT preprocessor used to convert a Schematron XML document into an XSLT
- * document. This implementation uses JAXP with Saxon to be used as the
- * respective parser.
+ * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an
+ * XSLT document. This implementation uses JAXP with Saxon to be used as the
+ * respective parser/compiler.
  *
  * @author Philip Helger
  */
@@ -158,7 +158,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
 
     cacheXSLTTemplates ();
 
-    // perform step 1 (Schematron -> ResultStep1)
+    // perform step 1 (Schematron -> ResultStep1; "include")
     final Document aResult1Doc = XMLFactory.newDocument ();
     final DOMResult aResult1 = new DOMResult (aResult1Doc);
     final Transformer aTransformer1 = s_aStep1.newTransformer ();
@@ -176,7 +176,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     if (Thread.interrupted ())
       throw new SchematronInterruptedException ("after XSLT step 1");
 
-    // perform step 2 (ResultStep1 -> ResultStep2)
+    // perform step 2 (ResultStep1 -> ResultStep2, "expand")
     final Document aResult2Doc = XMLFactory.newDocument ();
     final DOMResult aResult2 = new DOMResult (aResult2Doc);
     final Transformer aTransformer2 = s_aStep2.newTransformer ();
@@ -198,7 +198,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     {
       final String sXML = XMLWriter.getNodeAsString (aResult2Doc);
       final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".min-xslt.sch");
+                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
+                                                                                                    ".min-xslt.sch");
       if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
         LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
       else
@@ -208,7 +209,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     if (Thread.interrupted ())
       throw new SchematronInterruptedException ("after XSLT step 2");
 
-    // perform step 3 (ResultStep2 -> ResultStep3XSL)
+    // perform step 3 (ResultStep2 -> ResultStep3XSL; "compile-for-svrl")
     final Document aResult3Doc = XMLFactory.newDocument ();
     final DOMResult aResult3 = new DOMResult (aResult3Doc);
     final Transformer aTransformer3 = s_aStep3.newTransformer ();
@@ -230,7 +231,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     {
       final String sXML = XMLWriter.getNodeAsString (aResult3Doc);
       final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
-                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt");
+                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
+                                                                                                  ".xslt");
       if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
         LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
       else
@@ -272,7 +274,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       // compile result of step 3
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       aTransformerCustomizer.customize (aTF);
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
+                                                                       TransformSourceFactory.create (m_aSchematronXSLTDoc));
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
