@@ -32,6 +32,7 @@ import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.system.ENewLineMode;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -128,6 +129,7 @@ public final class PSPreprocessorTest
 
     final PSWriterSettings aPWS = new PSWriterSettings ();
     aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
+                                                       .setNewLineMode (ENewLineMode.WINDOWS)
                                                        .setPutNamespaceContextPrefixesInRoot (true)
                                                        .setNamespaceContext (PSWriterSettings.createNamespaceMapping (aPreprocessedSchema)));
     final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
@@ -172,7 +174,8 @@ public final class PSPreprocessorTest
       assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
 
       final PSWriterSettings aPWS = new PSWriterSettings ();
-      aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN));
+      aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
+                                                         .setNewLineMode (ENewLineMode.WINDOWS));
       final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
 
       if (LOGGER.isDebugEnabled ())
