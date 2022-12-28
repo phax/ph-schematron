@@ -122,7 +122,8 @@ public class PSReader
 
   /**
    * @return <code>true</code> if the old Schematron namespace is supported,
-   *         <code>false</code> if not.
+   *         <code>false</code> if not. Default is
+   *         {@link CSchematron#DEFAULT_ALLOW_DEPRECATED_NAMESPACES}.
    * @since 5.4.1
    */
   public final boolean isLenient ()
@@ -135,7 +136,8 @@ public class PSReader
    * deprecated.
    *
    * @param bLenient
-   *        <code>true</code> to enable support for old namespace URIs.
+   *        <code>true</code> to enable support for old namespace URIs,
+   *        <code>false</code> to disallow it.
    * @return this for chaining
    * @since 5.4.1
    */
@@ -276,7 +278,8 @@ public class PSReader
   @Nonnull
   public PSAssertReport readAssertReportFromXML (@Nonnull final IMicroElement eAssertReport)
   {
-    final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ().equals (CSchematronXML.ELEMENT_ASSERT));
+    final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ()
+                                                                .equals (CSchematronXML.ELEMENT_ASSERT));
 
     final PSRichGroup aRichGroup = new PSRichGroup ();
     final PSLinkableGroup aLinkableGroup = new PSLinkableGroup ();
@@ -842,7 +845,11 @@ public class PSReader
                   if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
                     ret.addParam (readParamFromXML (ePatternChild));
                   else
-                    _warn (ret, "Unsupported Schematron element '" + ePatternChild.getLocalName () + "' in " + ret.toString ());
+                    _warn (ret,
+                           "Unsupported Schematron element '" +
+                                ePatternChild.getLocalName () +
+                                "' in " +
+                                ret.toString ());
       }
       else
         ret.addForeignElement (ePatternChild.getClone ());
@@ -1195,9 +1202,13 @@ public class PSReader
     // Resolve all includes as the first action
     final SAXReaderSettings aSettings = new SAXReaderSettings ().setEntityResolver (m_aEntityResolver);
 
-    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource, aSettings, m_aErrorHandler, m_bLenient);
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
+                                                                                    aSettings,
+                                                                                    m_aErrorHandler,
+                                                                                    m_bLenient);
     if (aDoc == null || aDoc.getDocumentElement () == null)
-      throw new SchematronReadException (m_aResource, "Failed to resolve includes in Schematron resource " + m_aResource);
+      throw new SchematronReadException (m_aResource,
+                                         "Failed to resolve includes in Schematron resource " + m_aResource);
 
     if (SchematronDebug.isShowResolvedSourceSchematron ())
       LOGGER.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
@@ -1208,6 +1219,8 @@ public class PSReader
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("resource", m_aResource).append ("errorHandler", m_aErrorHandler).getToString ();
+    return new ToStringGenerator (this).append ("resource", m_aResource)
+                                       .append ("errorHandler", m_aErrorHandler)
+                                       .getToString ();
   }
 }
