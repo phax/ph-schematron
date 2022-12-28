@@ -22,6 +22,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -69,6 +72,8 @@ public class PSAssertReport implements
                             IPSHasRichGroup,
                             IPSHasLinkableGroup
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSAssertReport.class);
+
   private final boolean m_bIsAssert;
   private String m_sTest;
   private String m_sFlag;
@@ -118,6 +123,18 @@ public class PSAssertReport implements
     return true;
   }
 
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsList <IMicroElement> getAllForeignElements ()
+  {
+    return m_aContent.getAllInstanceOf (IMicroElement.class);
+  }
+
+  public boolean hasForeignElements ()
+  {
+    return m_aContent.containsAny (IMicroElement.class::isInstance);
+  }
+
   public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
@@ -126,16 +143,16 @@ public class PSAssertReport implements
     m_aContent.add (aForeignElement);
   }
 
-  public boolean hasForeignElements ()
-  {
-    return m_aContent.containsAny (IMicroElement.class::isInstance);
-  }
-
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <IMicroElement> getAllForeignElements ()
+  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
-    return m_aContent.getAllInstanceOf (IMicroElement.class);
+    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
+  }
+
+  public boolean hasForeignAttributes ()
+  {
+    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
   public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
@@ -145,18 +162,6 @@ public class PSAssertReport implements
     if (m_aForeignAttrs == null)
       m_aForeignAttrs = new CommonsLinkedHashMap <> ();
     m_aForeignAttrs.put (sAttrName, sAttrValue);
-  }
-
-  public boolean hasForeignAttributes ()
-  {
-    return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
-  {
-    return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
   public boolean isAssert ()
@@ -169,20 +174,15 @@ public class PSAssertReport implements
     return !m_bIsAssert;
   }
 
-  public void setTest (@Nullable final String sTest)
-  {
-    m_sTest = sTest;
-  }
-
   @Nullable
   public String getTest ()
   {
     return m_sTest;
   }
 
-  public void setFlag (@Nullable final String sFlag)
+  public void setTest (@Nullable final String sTest)
   {
-    m_sFlag = sFlag;
+    m_sTest = sTest;
   }
 
   @Nullable
@@ -191,15 +191,33 @@ public class PSAssertReport implements
     return m_sFlag;
   }
 
-  public void setID (@Nullable final String sID)
+  public void setFlag (@Nullable final String sFlag)
   {
-    m_sID = sID;
+    m_sFlag = sFlag;
   }
 
   @Nullable
   public String getID ()
   {
     return m_sID;
+  }
+
+  public void setID (@Nullable final String sID)
+  {
+    if (StringHelper.hasText (m_sID))
+      LOGGER.info ("Replacing " + (m_bIsAssert ? "Assert" : "Report") + " ID '" + m_sID + "' with '" + sID + "'");
+    m_sID = sID;
+  }
+
+  /**
+   * @return List of references to {@link PSDiagnostic} elements.
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsList <String> getAllDiagnostics ()
+  {
+    // May be null
+    return new CommonsArrayList <> (m_aDiagnostics);
   }
 
   /**
@@ -229,15 +247,10 @@ public class PSAssertReport implements
     m_aDiagnostics = aDiagnostics;
   }
 
-  /**
-   * @return List of references to {@link PSDiagnostic} elements.
-   */
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsList <String> getAllDiagnostics ()
+  @Nullable
+  public PSRichGroup getRich ()
   {
-    // May be null
-    return new CommonsArrayList <> (m_aDiagnostics);
+    return m_aRich;
   }
 
   public void setRich (@Nullable final PSRichGroup aRich)
@@ -246,9 +259,9 @@ public class PSAssertReport implements
   }
 
   @Nullable
-  public PSRichGroup getRich ()
+  public PSLinkableGroup getLinkable ()
   {
-    return m_aRich;
+    return m_aLinkable;
   }
 
   public void setLinkable (@Nullable final PSLinkableGroup aLinkable)
@@ -256,10 +269,16 @@ public class PSAssertReport implements
     m_aLinkable = aLinkable;
   }
 
-  @Nullable
-  public PSLinkableGroup getLinkable ()
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsList <String> getAllTexts ()
   {
-    return m_aLinkable;
+    return m_aContent.getAllInstanceOf (String.class);
+  }
+
+  public boolean hasAnyText ()
+  {
+    return m_aContent.containsAny (String.class::isInstance);
   }
 
   public void addText (@Nonnull @Nonempty final String sText)
@@ -268,16 +287,11 @@ public class PSAssertReport implements
     m_aContent.add (sText);
   }
 
-  public boolean hasAnyText ()
-  {
-    return m_aContent.containsAny (String.class::isInstance);
-  }
-
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <String> getAllTexts ()
+  public ICommonsList <PSName> getAllNames ()
   {
-    return m_aContent.getAllInstanceOf (String.class);
+    return m_aContent.getAllInstanceOf (PSName.class);
   }
 
   public void addName (@Nonnull final PSName aName)
@@ -288,9 +302,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <PSName> getAllNames ()
+  public ICommonsList <PSValueOf> getAllValueOfs ()
   {
-    return m_aContent.getAllInstanceOf (PSName.class);
+    return m_aContent.getAllInstanceOf (PSValueOf.class);
   }
 
   public void addValueOf (@Nonnull final PSValueOf aValueOf)
@@ -301,9 +315,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <PSValueOf> getAllValueOfs ()
+  public ICommonsList <PSEmph> getAllEmphs ()
   {
-    return m_aContent.getAllInstanceOf (PSValueOf.class);
+    return m_aContent.getAllInstanceOf (PSEmph.class);
   }
 
   public void addEmph (@Nonnull final PSEmph aEmph)
@@ -314,9 +328,9 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <PSEmph> getAllEmphs ()
+  public ICommonsList <PSDir> getAllDirs ()
   {
-    return m_aContent.getAllInstanceOf (PSEmph.class);
+    return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
   public void addDir (@Nonnull final PSDir aDir)
@@ -327,22 +341,15 @@ public class PSAssertReport implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsList <PSDir> getAllDirs ()
+  public ICommonsList <PSSpan> getAllSpans ()
   {
-    return m_aContent.getAllInstanceOf (PSDir.class);
+    return m_aContent.getAllInstanceOf (PSSpan.class);
   }
 
   public void addSpan (@Nonnull final PSSpan aSpan)
   {
     ValueEnforcer.notNull (aSpan, "Span");
     m_aContent.add (aSpan);
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsList <PSSpan> getAllSpans ()
-  {
-    return m_aContent.getAllInstanceOf (PSSpan.class);
   }
 
   /**
@@ -360,7 +367,8 @@ public class PSAssertReport implements
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON,
-                                                m_bIsAssert ? CSchematronXML.ELEMENT_ASSERT : CSchematronXML.ELEMENT_REPORT);
+                                                m_bIsAssert ? CSchematronXML.ELEMENT_ASSERT
+                                                            : CSchematronXML.ELEMENT_REPORT);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);

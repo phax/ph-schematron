@@ -16,9 +16,14 @@
  */
 package com.helger.schematron.pure.preprocess;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.CommonsHashSet;
 import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.string.ToStringGenerator;
@@ -29,12 +34,57 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @NotThreadSafe
-final class PreprocessorIDPool
+public class PreprocessorIDPool
 {
+  public static final String DEFAULT_SEPARATOR = "";
+  private static final Logger LOGGER = LoggerFactory.getLogger (PreprocessorIDPool.class);
+
+  private static String s_sDefaultSeparator = DEFAULT_SEPARATOR;
+
+  /**
+   * @return The separator to be used between the original ID and the counter
+   *         added to make the ID unique. Never <code>null</code>. The default
+   *         value is {@link #DEFAULT_SEPARATOR}.
+   * @since 6.3.5
+   */
+  @Nonnull
+  public static String getDefaultSeparator ()
+  {
+    return s_sDefaultSeparator;
+  }
+
+  /**
+   * Set the separator to be used between the original ID and the counter added
+   * internally.
+   *
+   * @param sDefaultSeparator
+   *        Any non-<code>null</code> value is okay.
+   * @since 6.3.5
+   */
+  public static void setDefaultSeparator (@Nonnull final String sDefaultSeparator)
+  {
+    ValueEnforcer.notNull (sDefaultSeparator, "separator");
+    s_sDefaultSeparator = sDefaultSeparator;
+  }
+
   private final ICommonsSet <String> m_aUsedIDs = new CommonsHashSet <> ();
 
   public PreprocessorIDPool ()
   {}
+
+  /**
+   * @return The separator to be used between the original ID and the counter
+   *         added to make the ID unique. Never <code>null</code>. The default
+   *         value is {@link #DEFAULT_SEPARATOR}.
+   * @see #getDefaultSeparator()
+   * @see #setDefaultSeparator(String)
+   * @since 6.3.5
+   */
+  @Nonnull
+  public String getSeparator ()
+  {
+    return getDefaultSeparator ();
+  }
 
   /**
    * Create a unique ID based on the passed one. If the passed ID is not yet
@@ -57,18 +107,27 @@ final class PreprocessorIDPool
       return sID;
     }
 
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("The ID '" + sID + "' was already used in the current Schematron - creating a unique version");
+
     // Non-unique ID
+    final String sNewBaseID = sID + getSeparator ();
     int nIndex = 0;
-    String sNewID = sID + nIndex;
+    String sNewID = sNewBaseID + nIndex;
     do
     {
       if (m_aUsedIDs.add (sNewID))
       {
         // Now it's unique
+        LOGGER.warn ("The ID '" +
+                     sID +
+                     "' was already used in the current Schematron and replaced with '" +
+                     sNewID +
+                     "'");
         return sNewID;
       }
       ++nIndex;
-      sNewID = sID + nIndex;
+      sNewID = sNewBaseID + nIndex;
     } while (true);
   }
 

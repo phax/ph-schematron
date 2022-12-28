@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.pure.preprocess;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -63,7 +64,8 @@ public final class PSPreprocessorTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       // Resolve all includes
-      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, new LoggingPSErrorHandler ());
+      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes,
+                                                                                      new LoggingPSErrorHandler ());
       assertNotNull (aDoc);
 
       // Read to domain object
@@ -83,7 +85,8 @@ public final class PSPreprocessorTest
       if (false)
       {
         final String sXML = MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ());
-        SimpleFileIO.writeFile (new File ("test-minified", FilenameHelper.getWithoutPath (aRes.getPath ()) + ".min-pure.sch"),
+        SimpleFileIO.writeFile (new File ("test-minified",
+                                          FilenameHelper.getWithoutPath (aRes.getPath ()) + ".min-pure.sch"),
                                 sXML,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
       }
@@ -127,6 +130,64 @@ public final class PSPreprocessorTest
     aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
                                                        .setPutNamespaceContextPrefixesInRoot (true)
                                                        .setNamespaceContext (PSWriterSettings.createNamespaceMapping (aPreprocessedSchema)));
-    LOGGER.info ("Preprocessed:\n" + new PSWriter (aPWS).getXMLString (aPreprocessedSchema));
+    final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Preprocessed:\n" + sXML);
+
+    assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                  "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:sqs=\"http://example.org/sqs\" xmlns:sqf=\"http://example.org/sqf\" queryBinding=\"xslt2\">\r\n" +
+                  "  <ns prefix=\"sqs\" uri=\"http://example.org/sqs\" />\r\n" +
+                  "  <ns prefix=\"sqf\" uri=\"http://example.org/sqf\" />\r\n" +
+                  "  <pattern name=\"Customer\">\r\n" +
+                  "    <rule context=\"/file/Customer\">\r\n" +
+                  "      <assert test=\"base-uri()\" role=\"fatal\">\n" +
+                  "        <sqs:issue id=\"xyz\">\n" +
+                  "          <sqs:element name=\"hudri\">bla</sqs:element>\n" +
+                  "        </sqs:issue>\n" +
+                  "        base-uri is '<value-of select=\"base-uri()\" />'\n" +
+                  "        <sqf:fix id=\"a12\" />\n" +
+                  "      </assert>\r\n" +
+                  "    </rule>\r\n" +
+                  "  </pattern>\r\n" +
+                  "</schema>\r\n",
+                  sXML);
+  }
+
+  @Test
+  public void testIssue138 () throws SchematronException
+  {
+    final IReadableResource aRes = new FileSystemResource ("src/test/resources/issues/github138/test138.sch");
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, new LoggingPSErrorHandler ());
+    final PSReader aReader = new PSReader (aRes);
+    final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
+    assertNotNull (aSchema);
+
+    PreprocessorIDPool.setDefaultSeparator ("##");
+
+    final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
+    final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
+    assertNotNull (aPreprocessedSchema);
+    assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
+
+    final PSWriterSettings aPWS = new PSWriterSettings ();
+    aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN));
+    final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Preprocessed:\n" + sXML);
+
+    assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                  "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
+                  "  <pattern name=\"Customer\">\r\n" +
+                  "    <rule context=\"/file/Customer\">\r\n" +
+                  "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab1</assert>\r\n" +
+                  "    </rule>\r\n" +
+                  "    <rule context=\"/file/Client\">\r\n" +
+                  "      <assert id=\"ab##0\" test=\"true\" role=\"fatal\">ab2</assert>\r\n" +
+                  "    </rule>\r\n" +
+                  "  </pattern>\r\n" +
+                  "</schema>\r\n",
+                  sXML);
   }
 }

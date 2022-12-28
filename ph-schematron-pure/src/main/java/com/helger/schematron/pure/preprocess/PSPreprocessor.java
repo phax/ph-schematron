@@ -20,6 +20,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
@@ -62,6 +65,7 @@ public class PSPreprocessor
   public static final boolean DEFAULT_KEEP_REPORTS = false;
   public static final boolean DEFAULT_KEEP_EMPTY_PATTERNS = true;
   public static final boolean DEFAULT_KEEP_EMPTY_SCHEMA = true;
+  private static final Logger LOGGER = LoggerFactory.getLogger (PSPreprocessor.class);
 
   private final IPSQueryBinding m_aQueryBinding;
   private boolean m_bKeepTitles = DEFAULT_KEEP_TITLES;
@@ -482,7 +486,11 @@ public class PSPreprocessor
 
     // Anything to do?
     if (aSchema.isPreprocessed ())
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Schematron does not need any preprocessing. Returning Schema as-is.");
       return aSchema;
+    }
 
     return getForcedPreprocessedSchema (aSchema);
   }
