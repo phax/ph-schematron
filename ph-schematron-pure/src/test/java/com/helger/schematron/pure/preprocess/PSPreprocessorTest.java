@@ -164,30 +164,37 @@ public final class PSPreprocessorTest
     assertNotNull (aSchema);
 
     PreprocessorIDPool.setDefaultSeparator ("##");
+    try
+    {
+      final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
+      final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
+      assertNotNull (aPreprocessedSchema);
+      assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
 
-    final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
-    final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
-    assertNotNull (aPreprocessedSchema);
-    assertTrue (aPreprocessedSchema.isValid (new DoNothingPSErrorHandler ()));
+      final PSWriterSettings aPWS = new PSWriterSettings ();
+      aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN));
+      final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
 
-    final PSWriterSettings aPWS = new PSWriterSettings ();
-    aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN));
-    final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Preprocessed:\n" + sXML);
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Preprocessed:\n" + sXML);
-
-    assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
-                  "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
-                  "  <pattern name=\"Customer\">\r\n" +
-                  "    <rule context=\"/file/Customer\">\r\n" +
-                  "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab1</assert>\r\n" +
-                  "    </rule>\r\n" +
-                  "    <rule context=\"/file/Client\">\r\n" +
-                  "      <assert id=\"ab##0\" test=\"true\" role=\"fatal\">ab2</assert>\r\n" +
-                  "    </rule>\r\n" +
-                  "  </pattern>\r\n" +
-                  "</schema>\r\n",
-                  sXML);
+      assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                    "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
+                    "  <pattern name=\"Customer\">\r\n" +
+                    "    <rule context=\"/file/Customer\">\r\n" +
+                    "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab1</assert>\r\n" +
+                    "    </rule>\r\n" +
+                    "    <rule context=\"/file/Client\">\r\n" +
+                    "      <assert id=\"ab##0\" test=\"true\" role=\"fatal\">ab2</assert>\r\n" +
+                    "    </rule>\r\n" +
+                    "  </pattern>\r\n" +
+                    "</schema>\r\n",
+                    sXML);
+    }
+    finally
+    {
+      // Restore default
+      PreprocessorIDPool.setDefaultSeparator (PreprocessorIDPool.DEFAULT_SEPARATOR);
+    }
   }
 }
