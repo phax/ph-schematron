@@ -73,7 +73,7 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
   }
 
   @Nullable
-  public Object evaluate (final List aArgs) throws XPathFunctionException
+  public Object evaluate (final List <?> aArgs) throws XPathFunctionException
   {
     try
     {
