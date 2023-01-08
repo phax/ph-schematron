@@ -19,8 +19,6 @@ package com.helger.schematron.pure.bound;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,28 +138,6 @@ public class PSBoundSchemaCacheKey
   public final IXPathConfig getXPathConfig ()
   {
     return m_aXPathConfig;
-  }
-
-  /**
-   * @return The variable resolver to be used. May be <code>null</code>.
-   * @deprecated Since 5.5.0; use indirection via {@link #getXPathConfig()}
-   */
-  @Nullable
-  @Deprecated
-  public final XPathVariableResolver getVariableResolver ()
-  {
-    return getXPathConfig ().getXPathVariableResolver ();
-  }
-
-  /**
-   * @return The function resolver to be used. May be <code>null</code>.
-   * @deprecated Since 5.5.0; use indirection via {@link #getXPathConfig()}
-   */
-  @Deprecated
-  @Nullable
-  public final XPathFunctionResolver getFunctionResolver ()
-  {
-    return getXPathConfig ().getXPathFunctionResolver ();
   }
 
   /**

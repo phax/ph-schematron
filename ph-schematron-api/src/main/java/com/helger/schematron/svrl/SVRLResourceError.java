@@ -43,37 +43,6 @@ public class SVRLResourceError extends SingleError
   /**
    * Constructor.
    *
-   * @param aErrorLevel
-   *        The error level. May not be <code>null</code>.
-   * @param sErrorID
-   *        Error ID. May be <code>null</code>.
-   * @param sErrorFieldName
-   *        Error field name. May be <code>null</code>.
-   * @param aErrorLocation
-   *        Location where the error occurred. May be <code>null</code>.
-   * @param aErrorText
-   *        The error text. May be <code>null</code>.
-   * @param aLinkedException
-   *        An exception that caused the error. May be <code>null</code>.
-   * @param sTest
-   *        The SVRL test that triggered this error. May not be
-   *        <code>null</code>.
-   */
-  @Deprecated
-  public SVRLResourceError (@Nonnull final IErrorLevel aErrorLevel,
-                            @Nullable final String sErrorID,
-                            @Nullable final String sErrorFieldName,
-                            @Nullable final ILocation aErrorLocation,
-                            @Nullable final IHasErrorText aErrorText,
-                            @Nullable final Throwable aLinkedException,
-                            @Nonnull final String sTest)
-  {
-    this (null, aErrorLevel, sErrorID, sErrorFieldName, aErrorLocation, aErrorText, aLinkedException, sTest);
-  }
-
-  /**
-   * Constructor.
-   *
    * @param aErrorDT
    *        Error date time
    * @param aErrorLevel
@@ -152,13 +121,6 @@ public class SVRLResourceError extends SingleError
     public SVRLErrorBuilder (@Nonnull final String sTest)
     {
       test (sTest);
-    }
-
-    @Nonnull
-    @Deprecated
-    public final SVRLErrorBuilder setTest (@Nonnull final String sTest)
-    {
-      return test (sTest);
     }
 
     @Nonnull
