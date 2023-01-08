@@ -70,7 +70,7 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
 
   @Nonnull
   @DevelopersNote ("Java 8: Iterator; Java 10: Iterator<String>")
-  public Iterator getPrefixes (@Nonnull final String sNamespaceURI)
+  public Iterator <String> getPrefixes (@Nonnull final String sNamespaceURI)
   {
     return m_aCtx.getPrefixes (sNamespaceURI);
   }

@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.11.5</version>
+    <version>2.0.0</version>
   </parent>
   <groupId>com.helger.schematron</groupId>
   <artifactId>ph-schematron-parent-pom</artifactId>
@@ -71,6 +71,9 @@
   
   <properties>
     <ant.version>1.10.12</ant.version>
+    <jaxb-plugin.group>com.helger.maven</jaxb-plugin.group>
+    <jaxb-plugin.artifact>jaxb40-maven-plugin</jaxb-plugin.artifact>
+    <jaxb-plugin.version>0.16.0</jaxb-plugin.version>
     <schxslt.version>1.9.4</schxslt.version>
   </properties>
   
@@ -79,14 +82,14 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>10.2.2</version>
+        <version>11.0.1-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.xsd</groupId>
         <artifactId>ph-xsds-parent-pom</artifactId>
-        <version>2.6.0</version>
+        <version>3.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -94,6 +97,12 @@
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
         <version>11.4</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       
       <dependency>

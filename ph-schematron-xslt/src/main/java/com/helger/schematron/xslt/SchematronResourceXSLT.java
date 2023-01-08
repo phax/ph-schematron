@@ -60,10 +60,14 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
     if (isUseCache ())
-      return SchematronResourceXSLTCache.getSchematronXSLTProvider (getResource (), getErrorListener (), getURIResolver ());
+      return SchematronResourceXSLTCache.getSchematronXSLTProvider (getResource (),
+                                                                    getErrorListener (),
+                                                                    getURIResolver ());
 
     // Always create a new one
-    return SchematronResourceXSLTCache.createSchematronXSLTProvider (getResource (), getErrorListener (), getURIResolver ());
+    return SchematronResourceXSLTCache.createSchematronXSLTProvider (getResource (),
+                                                                     getErrorListener (),
+                                                                     getURIResolver ());
   }
 
   /**
@@ -92,7 +96,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceXSLT fromClassPath (@Nonnull @Nonempty final String sXSLTPath, @Nullable final ClassLoader aClassLoader)
+  public static SchematronResourceXSLT fromClassPath (@Nonnull @Nonempty final String sXSLTPath,
+                                                      @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourceXSLT (new ClassPathResource (sXSLTPath, aClassLoader));
   }
@@ -160,24 +165,6 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
    * provided by an arbitrary {@link InputStream}.<br>
    *
-   * @param aXSLTIS
-   *        The {@link InputStream} to read the XSLT Schematron rules from. May
-   *        not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @deprecated since 6.2.5. Use {@link #fromInputStream(String, InputStream)}
-   *             instead
-   */
-  @Deprecated
-  @Nonnull
-  public static SchematronResourceXSLT fromInputStream (@Nonnull final InputStream aXSLTIS)
-  {
-    return new SchematronResourceXSLT (new ReadableResourceInputStream (aXSLTIS));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
-   * provided by an arbitrary {@link InputStream}.<br>
-   *
    * @param sResourceID
    *        Resource ID to be used as the cache key. Should neither be
    *        <code>null</code> nor empty.
@@ -187,7 +174,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * @return Never <code>null</code>.
    */
   @Nonnull
-  public static SchematronResourceXSLT fromInputStream (@Nonnull @Nonempty final String sResourceID, @Nonnull final InputStream aXSLTIS)
+  public static SchematronResourceXSLT fromInputStream (@Nonnull @Nonempty final String sResourceID,
+                                                        @Nonnull final InputStream aXSLTIS)
   {
     return new SchematronResourceXSLT (new ReadableResourceInputStream (sResourceID, aXSLTIS));
   }

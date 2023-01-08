@@ -76,10 +76,13 @@ public final class PSXPathBoundSchemaTest
     for (int i = 0; i < SCH.length; ++i)
     {
       final IReadableResource aSchRes = new ClassPathResource ("test-sch/" + SCH[i]);
+      assertTrue (aSchRes.getPath (), aSchRes.exists ());
       final IReadableResource aXmlRes = new ClassPathResource ("test-xml/" + XML[i]);
+      assertTrue (aXmlRes.getPath (), aXmlRes.exists ());
 
       // Resolve all includes
-      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aSchRes, new LoggingPSErrorHandler ());
+      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aSchRes,
+                                                                                      new LoggingPSErrorHandler ());
       assertNotNull (aDoc);
 
       // Read to domain object

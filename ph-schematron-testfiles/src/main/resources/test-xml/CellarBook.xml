@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE cellar-book [<!ENTITY guy "Guy Lapalme" >
-                       <!ENTITY eacute "&#xe9;" >
-                       <!ENTITY mtl "Montr&eacute;al" >
-                       <!ENTITY GL "&guy;, &mtl;" >]>
 <?xml-stylesheet type="text/css" href="compact.css"?><!-- to display in a browser -->
 <!-- Full text inclusion of cellar-book and wine-catalog (validation with a Schema) -->
 <cellar-book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -114,7 +110,7 @@
         <wine code="C00043125">
             <purchaseDate>2005-06-20</purchaseDate>
             <quantity>2</quantity>
-            <comment><cat:bold>&GL;</cat:bold>: should reorder soon</comment>
+            <comment><cat:bold>bla</cat:bold>: should reorder soon</comment>
         </wine>
         <wine code="C00312363">
             <purchaseDate>2004-11-19</purchaseDate>

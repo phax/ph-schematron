@@ -113,9 +113,9 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
         </configuration>
       </plugin>
       <plugin>
-        <groupId>com.evolvedbinary.maven.jvnet</groupId>
-        <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>0.15.0</version>
+        <groupId>${jaxb-plugin.group}</groupId>
+        <artifactId>${jaxb-plugin.artifact}</artifactId>
+        <version>${jaxb-plugin.version}</version>
         <executions>
           <execution>
             <id>svrl</id>
@@ -167,8 +167,8 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
         <dependencies>
           <dependency>
             <groupId>com.helger</groupId>
-            <artifactId>ph-jaxb22-plugin</artifactId>
-            <version>2.3.3.3</version>
+            <artifactId>ph-jaxb-plugin</artifactId>
+            <version>4.0.0</version>
           </dependency>
         </dependencies>
       </plugin>
