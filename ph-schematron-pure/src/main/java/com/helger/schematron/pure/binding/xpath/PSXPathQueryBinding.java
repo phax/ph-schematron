@@ -72,7 +72,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
 
     if (sTest.startsWith ("not(") && sTest.endsWith (")"))
     {
-      // Avoid double not be stripping the outer not
+      // Avoid double not() by stripping the outer not()
       return sTest.substring (4, sTest.length () - 2);
     }
 
@@ -107,7 +107,8 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   }
 
   @Nullable
-  public String getWithParamTextsReplaced (@Nullable final String sText, @Nullable final Map <String, String> aStringReplacements)
+  public String getWithParamTextsReplaced (@Nullable final String sText,
+                                           @Nullable final Map <String, String> aStringReplacements)
   {
     return getWithParamTextsReplacedStatic (sText, aStringReplacements);
   }
@@ -121,7 +122,8 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
-    final IPSErrorHandler aErrorHandler = aCustomErrorListener != null ? aCustomErrorListener : new CollectingPSErrorHandler ();
+    final IPSErrorHandler aErrorHandler = aCustomErrorListener != null ? aCustomErrorListener
+                                                                       : new CollectingPSErrorHandler ();
     if (!aSchema.isValid (aErrorHandler))
       throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
                                          (aErrorHandler == aCustomErrorListener ? ". Errors are in the provided error handler."
