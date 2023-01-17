@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dog>
+<dog xmlns="urn:mydog:dummy">
   <ball />
   <!-- no <bone /> -->
 </dog>
