@@ -123,7 +123,8 @@ public class XQueryAsXPathFunctionConverter
    *         if a failure occurs reading the supplied input.
    */
   @Nonnull
-  public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException, IOException
+  public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException,
+                                                                                                    IOException
   {
     ValueEnforcer.notNull (aXQueryIS, "XQueryIS");
 
@@ -159,25 +160,32 @@ public class XQueryAsXPathFunctionConverter
               for (final UserFunction aUserFunc : new IterableIterator <> (((ExecutableFunctionLibrary) aNestedFuncLib).getAllFunctions ()))
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
-                aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
+                aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ()
+                                                              .getNamespaceBinding ()
+                                                              .getNamespaceUri ()
+                                                              .toString (),
                                                      aUserFunc.getFunctionName ().getLocalPart (),
                                                      aUserFunc.getArity (),
-                                                     new XPathFunctionFromUserFunction (aConfiguration, aXQController, aUserFunc));
+                                                     new XPathFunctionFromUserFunction (aConfiguration,
+                                                                                        aXQController,
+                                                                                        aUserFunc));
               }
           }
         }
         else
           if (aFuncLib instanceof XQueryFunctionLibrary)
           {
-            // This block works with Saxon HE 9.6.0-x :)
             final XQueryFunctionLibrary aRealFuncLib = (XQueryFunctionLibrary) aFuncLib;
             for (final XQueryFunction aXQueryFunction : new IterableIterator <> (aRealFuncLib.getFunctionDefinitions ()))
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();
-              aFunctionResolver.addUniqueFunction (aXQueryFunction.getFunctionName ().getNamespaceBinding ().getURI (),
+              aFunctionResolver.addUniqueFunction (aXQueryFunction.getFunctionName ()
+                                                                  .getNamespaceBinding ()
+                                                                  .getNamespaceUri ()
+                                                                  .toString (),
                                                    aXQueryFunction.getFunctionName ().getLocalPart (),
-                                                   aXQueryFunction.getNumberOfArguments (),
+                                                   aXQueryFunction.getNumberOfParameters (),
                                                    new XPathFunctionFromUserFunction (aConfiguration,
                                                                                       aXQController,
                                                                                       aXQueryFunction.getUserFunction ()));
