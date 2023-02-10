@@ -133,7 +133,8 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
     {
       final String sPath = aRes.getPath ();
 
-      if ("test-sch/biicore/BIICORE-UBL-T01.sch".equals (sPath))
+      if ("test-sch/biicore/BIICORE-UBL-T01.sch".equals (sPath) ||
+          "test-sch/biicore/BIICORE-UBL-T10.sch".equals (sPath))
       {
         /**
          * SchXslt preprocessor error ; SystemID:
