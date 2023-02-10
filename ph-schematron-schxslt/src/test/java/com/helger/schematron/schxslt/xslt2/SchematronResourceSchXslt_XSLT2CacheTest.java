@@ -71,7 +71,11 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
         LOGGER.info (XMLWriter.getNodeAsString (aDoc));
     }
     final long nEnd = System.nanoTime ();
-    LOGGER.info ("Sync Total: " + ((nEnd - nStart) / 1000) + " microsecs btw. " + ((nEnd - nStart) / 1000 / RUNS) + " microsecs/run");
+    LOGGER.info ("Sync Total: " +
+                 ((nEnd - nStart) / 1000) +
+                 " microsecs btw. " +
+                 ((nEnd - nStart) / 1000 / RUNS) +
+                 " microsecs/run");
   }
 
   @Test
@@ -81,7 +85,9 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
     SchematronResourceSchXslt_XSLT2.fromClassPath (VALID_SCHEMATRON);
 
     // Create Thread pool with fixed number of threads
-    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ().availableProcessors () * 2);
+    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ()
+                                                                                   .availableProcessors () *
+                                                                            2);
 
     final long nStart = System.nanoTime ();
     for (int i = 0; i < RUNS; ++i)
@@ -101,7 +107,11 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
     }
     ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
     final long nEnd = System.nanoTime ();
-    LOGGER.info ("Async Total: " + ((nEnd - nStart) / 1000) + " microsecs btw. " + ((nEnd - nStart) / 1000 / RUNS) + " microsecs/run");
+    LOGGER.info ("Async Total: " +
+                 ((nEnd - nStart) / 1000) +
+                 " microsecs btw. " +
+                 ((nEnd - nStart) / 1000 / RUNS) +
+                 " microsecs/run");
   }
 
   @Test
@@ -121,15 +131,46 @@ public final class SchematronResourceSchXslt_XSLT2CacheTest
       SchematronDebug.setDebugMode (true);
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
+      final String sPath = aRes.getPath ();
+
+      if ("test-sch/biicore/BIICORE-UBL-T01.sch".equals (sPath))
+      {
+        /**
+         * SchXslt preprocessor error ; SystemID:
+         * jar:file:/C:/Users/phili/.m2/repository/name/dmaus/schxslt/schxslt/1.9.4/schxslt-1.9.4.jar!/xslt/2.0/expand.xsl;
+         * Line#: 99; Column#: 23
+         * net.sf.saxon.trans.XPathException$StackOverflow: Too many nested
+         * function calls. May be due to infinite recursion
+         */
+        continue;
+      }
+
+      if ("test-sch/biirules/BIIRULES-Facturae-T10.sch".equals (sPath) ||
+          "test-sch/biirules/BIIRULES-UBL-T01.sch".equals (sPath) ||
+          "test-sch/biirules/BIIRULES-UBL-T10.sch".equals (sPath) ||
+          "test-sch/biirules/BIIRULES-UBL-T14.sch".equals (sPath) ||
+          "test-sch/biirules/BIIRULES-UBL-T15.sch".equals (sPath) ||
+          "test-sch/nonat/NONAT-ubl-T17.sch".equals (sPath))
+      {
+        // Saxon 12.0 issue
+        /**
+         * java.lang.NullPointerException at
+         * net.sf.saxon.expr.parser.LoopLifter.markDependencies(LoopLifter.java:221)
+         * at
+         * net.sf.saxon.expr.parser.LoopLifter.gatherInfo(LoopLifter.java:171)
+         */
+        continue;
+      }
+
       if (true)
-        LOGGER.info (aRes.getPath ());
+        LOGGER.info (sPath);
 
       final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
       final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (aRes,
                                                                                                                             new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aCEH)
                                                                                                                                                                      .setLanguageCode ("de"));
       assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
-      assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
+      assertTrue (sPath, aPreprocessor.isValidSchematron ());
       assertNotNull (aPreprocessor.getXSLTDocument ());
 
       final IErrorList aErrorGroup = aCEH.getErrorList ();

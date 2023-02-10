@@ -39,19 +39,27 @@ public final class Issue108Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue108Test.class);
 
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
+  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
+                                               @Nonnull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
-    final ISchematronResource aSCH = SchematronResourceSCH.fromFile (aSchematron);
+    try
+    {
+      final ISchematronResource aSCH = SchematronResourceSCH.fromFile (aSchematron);
 
-    // Perform validation
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
-    assertNotNull (aSVRL);
+      // Perform validation
+      final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+      assertNotNull (aSVRL);
 
-    LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
+      LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
 
-    if (false)
-      assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+      if (false)
+        assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+    }
+    finally
+    {
+      SchematronDebug.setSaveIntermediateXSLTFiles (false);
+    }
   }
 
   @Test
