@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>7.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-validator</artifactId>
   <packaging>bundle</packaging>

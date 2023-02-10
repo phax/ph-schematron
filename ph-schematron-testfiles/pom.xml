@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>7.0.2-SNAPSHOT</version>
+    <version>7.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-testfiles</artifactId>
   <packaging>bundle</packaging>
@@ -89,6 +89,7 @@
         <artifactId>ph-dirindex-maven-plugin</artifactId>
         <version>4.0.0</version><!--$NO-MVN-MAN-VER$-->
         <executions>
+<!--  
           <execution>
             <id>sch</id>
             <goals>
@@ -125,10 +126,9 @@
               <targetFilename>dirindex.xml</targetFilename>
             </configuration>
           </execution>
+-->
         </executions>
       </plugin>
-<!--  
--->
     </plugins>
   </build>
 </project>
