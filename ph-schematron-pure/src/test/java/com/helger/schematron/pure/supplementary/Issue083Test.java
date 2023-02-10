@@ -43,18 +43,24 @@ public final class Issue083Test
   {
     final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
+    try
+    {
+      // Perform validation
+      final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+      assertNotNull (aSVRL);
 
-    // Perform validation
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
-    assertNotNull (aSVRL);
+      final String sSVRL = new SVRLMarshaller ().getAsString (aSVRL);
+      assertNotNull (sSVRL);
+      if (true)
+        LOGGER.info ("SVRL:\n" + sSVRL);
 
-    final String sSVRL = new SVRLMarshaller ().getAsString (aSVRL);
-    assertNotNull (sSVRL);
-    if (true)
-      LOGGER.info ("SVRL:\n" + sSVRL);
-
-    // XXX should be 1 according to #83
-    assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+      // XXX should be 1 according to #83
+      assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+    }
+    finally
+    {
+      SchematronDebug.setSaveIntermediateXSLTFiles (false);
+    }
   }
 
   @Test

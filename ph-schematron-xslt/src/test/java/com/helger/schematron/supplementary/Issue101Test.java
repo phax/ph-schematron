@@ -42,16 +42,23 @@ public final class Issue101Test
                                                @Nonnull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
-    aSCH.setAllowForeignElements (true);
+    try
+    {
+      final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+      aSCH.setAllowForeignElements (true);
 
-    // Perform validation
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
-    assertNotNull (aSVRL);
+      // Perform validation
+      final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+      assertNotNull (aSVRL);
 
-    LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
+      LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
 
-    assertEquals (2, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+      assertEquals (2, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+    }
+    finally
+    {
+      SchematronDebug.setSaveIntermediateXSLTFiles (false);
+    }
   }
 
   @Test

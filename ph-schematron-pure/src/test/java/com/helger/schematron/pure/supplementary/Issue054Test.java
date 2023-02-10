@@ -48,8 +48,14 @@ public final class Issue054Test
   public void testIssue () throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
-
-    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github54/schematron.sch"),
-                            new File ("src/test/resources/external/issues/github54/test.xml"));
+    try
+    {
+      validateAndProduceSVRL (new File ("src/test/resources/external/issues/github54/schematron.sch"),
+                              new File ("src/test/resources/external/issues/github54/test.xml"));
+    }
+    finally
+    {
+      SchematronDebug.setSaveIntermediateXSLTFiles (false);
+    }
   }
 }

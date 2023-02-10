@@ -46,23 +46,29 @@ public final class Issue099Test
                                                @Nonnull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
+    try
+    {
+      final StopWatch aSW = StopWatch.createdStarted ();
+      LOGGER.info ("Start");
+      final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
+      if (aSCH instanceof SchematronResourcePure)
+        ((SchematronResourcePure) aSCH).setCustomValidationHandler (new LoggingPSValidationHandler ());
 
-    final StopWatch aSW = StopWatch.createdStarted ();
-    LOGGER.info ("Start");
-    final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
-    if (aSCH instanceof SchematronResourcePure)
-      ((SchematronResourcePure) aSCH).setCustomValidationHandler (new LoggingPSValidationHandler ());
+      // Perform validation
+      final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+      assertNotNull (aSVRL);
 
-    // Perform validation
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
-    assertNotNull (aSVRL);
+      aSW.stop ();
+      LOGGER.info ("Took " + aSW.getDuration ());
 
-    aSW.stop ();
-    LOGGER.info ("Took " + aSW.getDuration ());
+      LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
 
-    LOGGER.info ("SVRL:\n" + new SVRLMarshaller ().getAsString (aSVRL));
-
-    assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+      assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+    }
+    finally
+    {
+      SchematronDebug.setSaveIntermediateXSLTFiles (false);
+    }
   }
 
   @Test
