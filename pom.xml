@@ -74,7 +74,11 @@
     <jaxb-plugin.group>com.helger.maven</jaxb-plugin.group>
     <jaxb-plugin.artifact>jaxb40-maven-plugin</jaxb-plugin.artifact>
     <jaxb-plugin.version>0.16.1</jaxb-plugin.version>
+<<<<<<< Upstream, based on b27ab2ae40eb0a28239457167c523510395a2c16
     <schxslt.version>1.9.5</schxslt.version>
+=======
+    <schxslt.version>1.9.4</schxslt.version>
+>>>>>>> bbecaff Version bump
   </properties>
   
   <dependencyManagement>
