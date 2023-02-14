@@ -92,8 +92,7 @@ declare function functx:atomic-type
  else if ($val instance of xs:NCName) then 'xs:NCName'
  else if ($val instance of xs:Name) then 'xs:Name'
  else if ($val instance of xs:token) then 'xs:token'
- else if ($val instance of xs:normalizedString)
-         then 'xs:normalizedString'
+ else if ($val instance of xs:normalizedString) then 'xs:normalizedString'
  else if ($val instance of xs:string) then 'xs:string'
  else if ($val instance of xs:QName) then 'xs:QName'
  else if ($val instance of xs:boolean) then 'xs:boolean'
@@ -107,14 +106,10 @@ declare function functx:atomic-type
  else if ($val instance of xs:unsignedShort) then 'xs:unsignedShort'
  else if ($val instance of xs:unsignedInt) then 'xs:unsignedInt'
  else if ($val instance of xs:unsignedLong) then 'xs:unsignedLong'
- else if ($val instance of xs:positiveInteger)
-         then 'xs:positiveInteger'
- else if ($val instance of xs:nonNegativeInteger)
-         then 'xs:nonNegativeInteger'
- else if ($val instance of xs:negativeInteger)
-         then 'xs:negativeInteger'
- else if ($val instance of xs:nonPositiveInteger)
-         then 'xs:nonPositiveInteger'
+ else if ($val instance of xs:positiveInteger) then 'xs:positiveInteger'
+ else if ($val instance of xs:nonNegativeInteger) then 'xs:nonNegativeInteger'
+ else if ($val instance of xs:negativeInteger) then 'xs:negativeInteger'
+ else if ($val instance of xs:nonPositiveInteger) then 'xs:nonPositiveInteger'
  else if ($val instance of xs:integer) then 'xs:integer'
  else if ($val instance of xs:decimal) then 'xs:decimal'
  else if ($val instance of xs:float) then 'xs:float'
@@ -122,10 +117,8 @@ declare function functx:atomic-type
  else if ($val instance of xs:date) then 'xs:date'
  else if ($val instance of xs:time) then 'xs:time'
  else if ($val instance of xs:dateTime) then 'xs:dateTime'
- else if ($val instance of xs:dayTimeDuration)
-         then 'xs:dayTimeDuration'
- else if ($val instance of xs:yearMonthDuration)
-         then 'xs:yearMonthDuration'
+ else if ($val instance of xs:dayTimeDuration) then 'xs:dayTimeDuration'
+ else if ($val instance of xs:yearMonthDuration) then 'xs:yearMonthDuration'
  else if ($val instance of xs:duration) then 'xs:duration'
  else if ($val instance of xs:gMonth) then 'xs:gMonth'
  else if ($val instance of xs:gYear) then 'xs:gYear'
