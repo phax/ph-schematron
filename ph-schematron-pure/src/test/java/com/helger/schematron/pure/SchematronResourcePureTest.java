@@ -25,8 +25,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.validation.Schema;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,7 @@ import org.w3c.dom.Node;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.StringInputStream;
+import com.helger.commons.lang.ClassLoaderHelper;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
@@ -46,6 +51,7 @@ import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.schema.XMLSchemaCache;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
@@ -96,7 +102,8 @@ public final class SchematronResourcePureTest
                          "\n" +
                          "</iso:schema>";
     assertTrue (SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8)).isValidSchematron ());
-    assertTrue (SchematronResourcePure.fromInputStream ("ba-from-string", new StringInputStream (sTest, StandardCharsets.UTF_8))
+    assertTrue (SchematronResourcePure.fromInputStream ("ba-from-string",
+                                                        new StringInputStream (sTest, StandardCharsets.UTF_8))
                                       .isValidSchematron ());
   }
 
@@ -129,14 +136,18 @@ public final class SchematronResourcePureTest
                                                               .setErrorHandler (aErrorHandler);
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
-    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (), 3, aErrorHandler.getErrorList ().size ());
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
+                  3,
+                  aErrorHandler.getErrorList ().size ());
     if (false)
       LOGGER.info (aErrorHandler.getErrorList ().toString ());
 
     // Perform complete validation
     aErrorHandler.clearResourceErrors ();
     aSch.validateCompletely ();
-    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (), 3, aErrorHandler.getErrorList ().size ());
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
+                  3,
+                  aErrorHandler.getErrorList ().size ());
   }
 
   @Test
@@ -311,10 +322,12 @@ public final class SchematronResourcePureTest
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node kind: element - end".trim (), SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      Node kind: element - end".trim (),
+                  SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
+  @Ignore ("Fails in Saxon 12.0 - works in Saxon 11.4")
   public void testResolveFunctXAreDistinctValuesQueryFunctions () throws Exception
   {
     final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
@@ -358,6 +371,38 @@ public final class SchematronResourcePureTest
   }
 
   @Test
+  @Ignore ("Fails in Saxon 12.0 - works in Saxon 11.4")
+  public void testSaxon12Bug () throws Exception
+  {
+    final XPath xPath = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
+                                                  "net.sf.saxon.xpath.XPathFactoryImpl",
+                                                  ClassLoaderHelper.getContextClassLoader ())
+                                    .newXPath ();
+    assertNotNull (xPath);
+    assertTrue (xPath instanceof net.sf.saxon.xpath.XPathEvaluator);
+
+    final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
+                                                    "<chapter>" +
+                                                    "<title />" +
+                                                    "<para>100</para>" +
+                                                    "<para>200</para>" +
+                                                    "</chapter>");
+
+    Object ret = xPath.evaluate ("count(para)", aTestDoc.getDocumentElement (), XPathConstants.NUMBER);
+    assertEquals (Double.valueOf (2), ret);
+
+    ret = xPath.evaluate ("count(distinct-values(para))", aTestDoc.getDocumentElement (), XPathConstants.NUMBER);
+    assertEquals (Double.valueOf (2), ret);
+
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+    xPath.setXPathFunctionResolver (aFunctionResolver);
+    xPath.setNamespaceContext (new MapBasedNamespaceContext ().addMapping ("functx", "http://www.functx.com"));
+
+    ret = xPath.evaluate ("functx:are-distinct-values(para)", aTestDoc.getDocumentElement (), XPathConstants.BOOLEAN);
+    assertEquals (Boolean.TRUE, ret);
+  }
+
+  @Test
   public void testFunctXAreDistinctValuesWithXSD () throws Exception
   {
     final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
@@ -375,7 +420,8 @@ public final class SchematronResourcePureTest
 
     final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
 
-    final Schema aSchema = XMLSchemaCache.getInstance ().getSchema (new ClassPathResource ("issues/20141124/chapter.xsd"));
+    final Schema aSchema = XMLSchemaCache.getInstance ()
+                                         .getSchema (new ClassPathResource ("issues/20141124/chapter.xsd"));
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
                                                     "<chapter>" +
                                                     " <title />" +
