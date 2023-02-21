@@ -324,7 +324,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         }
 
         // Evaluate base node set for this rule
-        final String sRuleContext = aGlobalVariables.getAppliedReplacement (getValidationContext (aRule.getContext ()));
+        final String sRuleContext = aPatternVariables.getAppliedReplacement (getValidationContext (aRule.getContext ()));
         PSXPathBoundRule aBoundRule = null;
         try
         {
