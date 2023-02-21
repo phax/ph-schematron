@@ -50,7 +50,7 @@ public final class Issue134Test
 
     final String sSVRL = new SVRLMarshaller ().getAsString (aSVRL);
     assertNotNull (sSVRL);
-    if (true)
+    if (false)
       LOGGER.info ("SVRL:\n" + sSVRL);
 
     assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
