@@ -36,6 +36,7 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
+import com.helger.xml.CXMLRegEx;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
@@ -147,7 +148,13 @@ import com.helger.xml.microdom.MicroElement;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup
+public class PSPattern implements
+                       IPSElement,
+                       IPSHasID,
+                       IPSHasForeignElements,
+                       IPSHasIncludes,
+                       IPSHasLets,
+                       IPSHasRichGroup
 {
   private boolean m_bAbstract = false;
   private String m_sID;
@@ -213,6 +220,11 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
     // If abstract, an ID must be present
     if (m_bAbstract && StringHelper.hasNoText (m_sID))
       aErrorHandler.error (this, "abstract <pattern> does not have an 'id'");
+    // ID needs to be an NCName
+    if (StringHelper.hasText (m_sID))
+      if (!CXMLRegEx.PATTERN_NCNAME.matcher (m_sID).matches ())
+        aErrorHandler.error (this, "The <pattern> attribute 'id' is not a valid XML NCName");
+
     // is-a may not be present for abstract rules
     if (m_bAbstract && StringHelper.hasText (m_sIsA))
       aErrorHandler.error (this, "abstract <pattern> may not have an 'is-a'");
@@ -501,7 +513,9 @@ public class PSPattern implements IPSElement, IPSHasID, IPSHasForeignElements, I
   public ICommonsList <IPSElement> getAllContentElements ()
   {
     // Remove includes and title
-    return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude) && !(x instanceof PSTitle),
+    return m_aContent.getAllMapped (x -> x instanceof IPSElement &&
+                                         !(x instanceof PSInclude) &&
+                                         !(x instanceof PSTitle),
                                     IPSElement.class::cast);
   }
 
