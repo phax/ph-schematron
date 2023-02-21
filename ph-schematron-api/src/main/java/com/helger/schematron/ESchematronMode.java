@@ -30,9 +30,13 @@ import com.helger.commons.lang.EnumHelper;
  */
 public enum ESchematronMode implements IHasID <String>
 {
+  /** Java pure version */
   PURE ("pure"),
+  /** ISO Schematron, SCH version */
   SCHEMATRON ("schematron"),
+  /** SchXslt Schematron, SCH version */
   SCHXSLT_XSLT2 ("schxslt-xslt2"),
+  /** XSLT version */
   XSLT ("xslt");
 
   private final String m_sID;
