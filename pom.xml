@@ -74,7 +74,7 @@
     <jaxb-plugin.group>com.helger.maven</jaxb-plugin.group>
     <jaxb-plugin.artifact>jaxb40-maven-plugin</jaxb-plugin.artifact>
     <jaxb-plugin.version>0.16.1</jaxb-plugin.version>
-    <schxslt.version>1.9.4</schxslt.version>
+    <schxslt.version>1.9.5</schxslt.version>
   </properties>
   
   <dependencyManagement>
