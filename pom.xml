@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.schematron</groupId>
   <artifactId>ph-schematron-parent-pom</artifactId>
-  <version>7.0.1-SNAPSHOT</version>
+  <version>7.0.1</version>
   <packaging>pom</packaging>
   <name>ph-schematron-parent-pom</name>
   <description>Base POM to build the ph-schematron projects</description>
@@ -45,7 +45,7 @@
     <connection>scm:git:git@github.com:phax/ph-schematron.git</connection>
     <developerConnection>scm:git:git@github.com:phax/ph-schematron.git</developerConnection>
     <url>http://github.com/phax/ph-schematron</url>
-    <tag>7.0.x</tag>
+    <tag>ph-schematron-parent-pom-7.0.1</tag>
   </scm>
   
   <distributionManagement>
