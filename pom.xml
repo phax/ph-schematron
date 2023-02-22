@@ -70,7 +70,7 @@
   </developers>
   
   <properties>
-    <ant.version>1.10.12</ant.version>
+    <ant.version>1.10.13</ant.version>
     <jaxb-plugin.group>com.helger.maven</jaxb-plugin.group>
     <jaxb-plugin.artifact>jaxb40-maven-plugin</jaxb-plugin.artifact>
     <jaxb-plugin.version>0.16.1</jaxb-plugin.version>
