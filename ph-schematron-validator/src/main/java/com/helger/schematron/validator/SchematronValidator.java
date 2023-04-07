@@ -51,7 +51,7 @@ import com.helger.xml.transform.TransformSourceFactory;
 public final class SchematronValidator
 {
   /** Path to the Schematron RelaxNG Compact file within the class path */
-  public static final String SCHEMATRON_RNC_PATH = "schemas/iso-schematron-2006.rnc";
+  public static final String SCHEMATRON_RNC_PATH = "external/schemas/iso-schematron-2006.rnc";
 
   /** The readable resource with the RelaxNG compact Schematron rules */
   public static final ClassPathResource SCHEMATRON_RNC = new ClassPathResource (SCHEMATRON_RNC_PATH);

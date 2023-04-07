@@ -85,17 +85,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>src/main/resources/test-sch/**</exclude>
-            <exclude>src/main/resources/test-svrl/**</exclude>
-            <exclude>src/main/resources/test-xml/**</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>com.helger.maven</groupId>
         <artifactId>ph-dirindex-maven-plugin</artifactId>
         <version>4.0.0</version><!--$NO-MVN-MAN-VER$-->
@@ -106,7 +95,7 @@
               <goal>generate-dirindex</goal>
             </goals>
             <configuration>
-              <sourceDirectory>${basedir}/src/main/resources/test-sch</sourceDirectory>
+              <sourceDirectory>${basedir}/src/main/resources/external/test-sch</sourceDirectory>
               <filenameRegEx>.*\.sch</filenameRegEx>
               <targetDirectory>test-sch</targetDirectory>
               <targetFilename>dirindex.xml</targetFilename>
@@ -118,7 +107,7 @@
               <goal>generate-dirindex</goal>
             </goals>
             <configuration>
-              <sourceDirectory>${basedir}/src/main/resources/test-svrl</sourceDirectory>
+              <sourceDirectory>${basedir}/src/main/resources/external/test-svrl</sourceDirectory>
               <filenameRegEx>.*\.svrl</filenameRegEx>
               <targetDirectory>test-svrl</targetDirectory>
               <targetFilename>dirindex.xml</targetFilename>
@@ -130,7 +119,7 @@
               <goal>generate-dirindex</goal>
             </goals>
             <configuration>
-              <sourceDirectory>${basedir}/src/main/resources/test-xml</sourceDirectory>
+              <sourceDirectory>${basedir}/src/main/resources/external/test-xml</sourceDirectory>
               <filenameRegEx>.*\.xml</filenameRegEx>
               <targetDirectory>test-xml</targetDirectory>
               <targetFilename>dirindex.xml</targetFilename>

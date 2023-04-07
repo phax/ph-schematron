@@ -44,9 +44,9 @@ import com.helger.xml.microdom.serialize.MicroReader;
 public final class SchematronTestHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTestHelper.class);
-  private static final ICommonsList <SchematronTestFile> SCH = _readDI (new ClassPathResource ("test-sch/dirindex.xml"));
-  private static final ICommonsList <SchematronTestFile> SVRL = _readDI (new ClassPathResource ("test-svrl/dirindex.xml"));
-  private static final ICommonsList <SchematronTestFile> XML = _readDI (new ClassPathResource ("test-xml/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> SCH = _readDI (new ClassPathResource ("external/test-sch/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> SVRL = _readDI (new ClassPathResource ("external/test-svrl/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> XML = _readDI (new ClassPathResource ("external/test-xml/dirindex.xml"));
 
   @Nonnull
   private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aRes)
@@ -88,7 +88,8 @@ public final class SchematronTestHelper
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidSchematronFiles ()
   {
-    return SCH.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid") && !aFile.getParentDirBaseName ().equals ("include"),
+    return SCH.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid") &&
+                                      !aFile.getParentDirBaseName ().equals ("include"),
                              SchematronTestFile::getResource);
   }
 
@@ -96,7 +97,8 @@ public final class SchematronTestHelper
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidSchematronFiles ()
   {
-    return SCH.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid") && !aFile.getParentDirBaseName ().equals ("include"),
+    return SCH.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid") &&
+                                      !aFile.getParentDirBaseName ().equals ("include"),
                              SchematronTestFile::getResource);
   }
 
@@ -104,21 +106,24 @@ public final class SchematronTestHelper
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidSVRLFiles ()
   {
-    return SVRL.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
+    return SVRL.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"),
+                              SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidSVRLFiles ()
   {
-    return SVRL.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
+    return SVRL.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid"),
+                              SchematronTestFile::getResource);
   }
 
   @Nonnull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidXMLFiles ()
   {
-    return XML.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"), SchematronTestFile::getResource);
+    return XML.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid"),
+                             SchematronTestFile::getResource);
   }
 
   @Nonnull
