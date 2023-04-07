@@ -45,8 +45,8 @@ import com.helger.xml.XMLFactory;
 public final class SVRLMarshallerFuncTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SVRLMarshallerFuncTest.class);
-  private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
-  private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
+  private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
+  private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
 
   @Test
   public void testCreate () throws Exception
@@ -92,7 +92,7 @@ public final class SVRLMarshallerFuncTest
     {}
 
     // Read XML that is not SVRL
-    final ClassPathResource aRes = new ClassPathResource ("test-xml/goodOrder01.xml");
+    final ClassPathResource aRes = new ClassPathResource ("external/test-xml/goodOrder01.xml");
     assertTrue (aRes.exists ());
     final SchematronOutputType aSVRL = new SVRLMarshaller ().read (aRes);
     assertNull (aSVRL);

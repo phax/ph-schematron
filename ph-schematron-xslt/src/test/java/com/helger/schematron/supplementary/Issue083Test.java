@@ -38,7 +38,8 @@ public final class Issue083Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue083Test.class);
 
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
+  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
+                                               @Nonnull final File aXML) throws Exception
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
@@ -59,7 +60,7 @@ public final class Issue083Test
   @Test
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github83/schematron.sch"),
-                             new File ("src/test/resources/issues/github83/test.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/external/issues/github83/schematron.sch"),
+                             new File ("src/test/resources/external/issues/github83/test.xml"));
   }
 }

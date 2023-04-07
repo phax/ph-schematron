@@ -30,7 +30,7 @@ public final class Issue20180214Test
   @Test
   public void testRead () throws Exception
   {
-    final ISchematronXSLTBasedResource aRes = SchematronResourceSCH.fromFile (new File ("src/test/resources/issues/20180214/04-ESPD-Common-BR-rules.sch"));
+    final ISchematronXSLTBasedResource aRes = SchematronResourceSCH.fromFile (new File ("src/test/resources/external/issues/20180214/04-ESPD-Common-BR-rules.sch"));
     aRes.setAllowForeignElements (true);
     assertTrue (aRes.isValidSchematron ());
   }

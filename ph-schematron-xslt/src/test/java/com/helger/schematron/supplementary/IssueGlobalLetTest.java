@@ -38,8 +38,8 @@ public final class IssueGlobalLetTest
   @Test
   public void testIssueXsltKey () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/global-let/schematron.sch"),
-                            new File ("src/test/resources/issues/global-let/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/global-let/schematron.sch"),
+                            new File ("src/test/resources/external/issues/global-let/test.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception

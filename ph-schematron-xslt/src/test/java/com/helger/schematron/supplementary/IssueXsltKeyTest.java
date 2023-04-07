@@ -34,8 +34,8 @@ public final class IssueXsltKeyTest
   @Test
   public void testIssueXsltKey () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/xslt-key/schematron.sch"),
-                            new File ("src/test/resources/issues/xslt-key/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/xslt-key/schematron.sch"),
+                            new File ("src/test/resources/external/issues/xslt-key/test.xml"));
   }
 
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception

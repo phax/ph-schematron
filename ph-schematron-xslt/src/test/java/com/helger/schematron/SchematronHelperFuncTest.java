@@ -36,8 +36,8 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  */
 public final class SchematronHelperFuncTest
 {
-  private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
-  private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
+  private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
+  private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
 
   @Test
   public void testReadValidSchematronValidXML () throws Exception

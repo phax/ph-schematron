@@ -35,8 +35,8 @@ import com.helger.commons.io.stream.StreamHelper;
  */
 public final class SchematronResourceXSLTTest
 {
-  private static final ClassPathResource VALID_XSLT_SCHEMATRON = new ClassPathResource ("/test-xslt/valid01.xslt");
-  private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("/test-xml/valid01.xml");
+  private static final ClassPathResource VALID_XSLT_SCHEMATRON = new ClassPathResource ("external/test-xslt/valid01.xslt");
+  private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid01.xml");
 
   @Test
   public void testFromUrl () throws Exception

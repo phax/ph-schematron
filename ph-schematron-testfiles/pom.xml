@@ -97,7 +97,7 @@
             <configuration>
               <sourceDirectory>${basedir}/src/main/resources/external/test-sch</sourceDirectory>
               <filenameRegEx>.*\.sch</filenameRegEx>
-              <targetDirectory>test-sch</targetDirectory>
+              <targetDirectory>external/test-sch</targetDirectory>
               <targetFilename>dirindex.xml</targetFilename>
             </configuration>
           </execution>
@@ -109,7 +109,7 @@
             <configuration>
               <sourceDirectory>${basedir}/src/main/resources/external/test-svrl</sourceDirectory>
               <filenameRegEx>.*\.svrl</filenameRegEx>
-              <targetDirectory>test-svrl</targetDirectory>
+              <targetDirectory>external/test-svrl</targetDirectory>
               <targetFilename>dirindex.xml</targetFilename>
             </configuration>
           </execution>
@@ -121,7 +121,7 @@
             <configuration>
               <sourceDirectory>${basedir}/src/main/resources/external/test-xml</sourceDirectory>
               <filenameRegEx>.*\.xml</filenameRegEx>
-              <targetDirectory>test-xml</targetDirectory>
+              <targetDirectory>external/test-xml</targetDirectory>
               <targetFilename>dirindex.xml</targetFilename>
             </configuration>
           </execution>

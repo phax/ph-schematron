@@ -65,8 +65,8 @@ public final class Issue137XsltTest
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github137/schematron.sch"),
-                            new File ("src/test/resources/issues/github137/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github137/schematron.sch"),
+                            new File ("src/test/resources/external/issues/github137/test.xml"));
   }
 
   @Ignore
@@ -273,7 +273,7 @@ public final class Issue137XsltTest
                                                                                                     null,
                                                                                                     new DefaultTransformURIResolver (null));
     final Transformer t = aTF.newTransformer (new StringStreamSource (sXslt));
-    t.transform (TransformSourceFactory.create (new File ("src/test/resources/issues/github137/test.xml")),
+    t.transform (TransformSourceFactory.create (new File ("src/test/resources/external/issues/github137/test.xml")),
                  new StreamResult (System.out));
   }
 
@@ -313,7 +313,7 @@ public final class Issue137XsltTest
                                                                                                     null,
                                                                                                     new DefaultTransformURIResolver (null));
     final Transformer t = aTF.newTransformer (new StringStreamSource (sXslt));
-    t.transform (TransformSourceFactory.create (new File ("src/test/resources/issues/github137/test.xml")),
+    t.transform (TransformSourceFactory.create (new File ("src/test/resources/external/issues/github137/test.xml")),
                  new StreamResult (System.out));
   }
 }

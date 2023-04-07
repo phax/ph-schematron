@@ -64,7 +64,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   /**
    * The classpath directory where the Schematron 2 XSLT files reside.
    */
-  public static final String SCHEMATRON_DIRECTORY_XSLT2 = "schematron/20100710-xslt2/";
+  public static final String SCHEMATRON_DIRECTORY_XSLT2 = "external/schematron/20100710-xslt2/";
 
   /**
    * The class path to first XSLT to be applied.
@@ -198,7 +198,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     {
       final String sXML = XMLWriter.getNodeAsString (aResult2Doc);
       final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".min-xslt.sch");
+                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
+                                                                                                    ".min-xslt.sch");
       if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
         LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
       else
@@ -230,7 +231,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     {
       final String sXML = XMLWriter.getNodeAsString (aResult3Doc);
       final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
-                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) + ".xslt");
+                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
+                                                                                                  ".xslt");
       if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
         LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
       else
@@ -272,7 +274,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       // compile result of step 3
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       aTransformerCustomizer.customize (aTF);
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF, TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
+                                                                       TransformSourceFactory.create (m_aSchematronXSLTDoc));
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);

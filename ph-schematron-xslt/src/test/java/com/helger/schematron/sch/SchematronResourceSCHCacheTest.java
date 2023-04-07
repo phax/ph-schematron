@@ -49,8 +49,8 @@ import com.helger.xml.transform.CollectingTransformErrorListener;
 public final class SchematronResourceSCHCacheTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCacheTest.class);
-  private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
-  private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
+  private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
+  private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
 
   private static final int RUNS = 1000;
 
@@ -70,7 +70,11 @@ public final class SchematronResourceSCHCacheTest
         LOGGER.info (XMLWriter.getNodeAsString (aDoc));
     }
     final long nEnd = System.nanoTime ();
-    LOGGER.info ("Sync Total: " + ((nEnd - nStart) / 1000) + " microsecs btw. " + ((nEnd - nStart) / 1000 / RUNS) + " microsecs/run");
+    LOGGER.info ("Sync Total: " +
+                 ((nEnd - nStart) / 1000) +
+                 " microsecs btw. " +
+                 ((nEnd - nStart) / 1000 / RUNS) +
+                 " microsecs/run");
   }
 
   @Test
@@ -80,7 +84,9 @@ public final class SchematronResourceSCHCacheTest
     SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
 
     // Create Thread pool with fixed number of threads
-    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ().availableProcessors () * 2);
+    final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ()
+                                                                                   .availableProcessors () *
+                                                                            2);
 
     final long nStart = System.nanoTime ();
     for (int i = 0; i < RUNS; ++i)
@@ -100,17 +106,21 @@ public final class SchematronResourceSCHCacheTest
     }
     ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
     final long nEnd = System.nanoTime ();
-    LOGGER.info ("Async Total: " + ((nEnd - nStart) / 1000) + " microsecs btw. " + ((nEnd - nStart) / 1000 / RUNS) + " microsecs/run");
+    LOGGER.info ("Async Total: " +
+                 ((nEnd - nStart) / 1000) +
+                 " microsecs btw. " +
+                 ((nEnd - nStart) / 1000 / RUNS) +
+                 " microsecs/run");
   }
 
   @Test
   public void testInvalidSchematron ()
   {
-    assertFalse (new SchematronResourceSCH (new ClassPathResource ("test-sch/invalid01.sch")).isValidSchematron ());
-    assertFalse (new SchematronResourceSCH (new ClassPathResource ("test-sch/this.file.does.not.exists")).isValidSchematron ());
+    assertFalse (new SchematronResourceSCH (new ClassPathResource ("external/test-sch/invalid01.sch")).isValidSchematron ());
+    assertFalse (new SchematronResourceSCH (new ClassPathResource ("external/test-sch/this.file.does.not.exists")).isValidSchematron ());
 
-    assertFalse (new SchematronResourceSCH (new FileSystemResource ("src/test/resources/test-sch/invalid01.sch")).isValidSchematron ());
-    assertFalse (new SchematronResourceSCH (new FileSystemResource ("src/test/resources/test-sch/this.file.does.not.exists")).isValidSchematron ());
+    assertFalse (new SchematronResourceSCH (new FileSystemResource ("src/test/resources/external/test-sch/invalid01.sch")).isValidSchematron ());
+    assertFalse (new SchematronResourceSCH (new FileSystemResource ("src/test/resources/external/test-sch/this.file.does.not.exists")).isValidSchematron ());
   }
 
   @Test

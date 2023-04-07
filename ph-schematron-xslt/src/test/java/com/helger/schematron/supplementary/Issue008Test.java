@@ -35,8 +35,8 @@ public final class Issue008Test
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github8/schematron.sch"),
-                            new File ("src/test/resources/issues/github8/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github8/schematron.sch"),
+                            new File ("src/test/resources/external/issues/github8/test.xml"));
   }
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception

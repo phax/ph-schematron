@@ -35,7 +35,7 @@ public final class Issue110Test
   public void testIncludedFilesNotDeleted () throws Exception
   {
     DefaultResourceResolver.setDebugResolve (true);
-    final String sPath = "target/test-classes/issues/github110/";
+    final String sPath = "target/test-classes/external/issues/github110/";
     final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (sPath + "ATGOV-UBL-T10.sch");
     aSV.applySchematronValidation (new FileSystemResource (sPath + "test.xml"));
     assertTrue (new FileSystemResource (sPath + "include/ATGOV-T10-abstract.sch").exists ());
