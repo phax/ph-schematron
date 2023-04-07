@@ -34,8 +34,8 @@ import com.helger.commons.ValueEnforcer;
 public final class SchematronDebug
 {
   private static final AtomicBoolean SAVE_INTERMEDIATE_XSLT_FILES = new AtomicBoolean (false);
-  private static File s_aIntermediateMinifiedSCHFolder = new File ("test-minified");
-  private static File s_aIntermediateFinalXSLTFolder = new File ("test-final");
+  private static File s_aIntermediateMinifiedSCHFolder = new File ("generated/test-minified");
+  private static File s_aIntermediateFinalXSLTFolder = new File ("generated/test-final");
   private static final AtomicBoolean SHOW_CREATED_XSLT = new AtomicBoolean (false);
   private static final AtomicBoolean SHOW_CREATED_SVRL = new AtomicBoolean (false);
   private static final AtomicBoolean SHOW_PREPROCESSED_SCH = new AtomicBoolean (false);

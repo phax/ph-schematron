@@ -34,7 +34,7 @@ public final class Issue40v3Test
   @Before
   public void init ()
   {
-    m_aBuildRule.configureProject ("src/test/resources/issues/40v3/build.xml");
+    m_aBuildRule.configureProject ("src/test/resources/external/issues/40v3/build.xml");
     m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener (false));
   }
 

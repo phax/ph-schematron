@@ -36,7 +36,7 @@ public final class Issue047Test
 
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver ( (aFunctionName, aArity) -> {
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver ( (aFunctionName, aArity) -> {
       System.out.println (aFunctionName + " - " + aArity);
       return null;
     }).build ();
@@ -52,14 +52,14 @@ public final class Issue047Test
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github47/schematron.sch"),
-                            new File ("src/test/resources/issues/github47/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github47/schematron.sch"),
+                            new File ("src/test/resources/external/issues/github47/test.xml"));
   }
 
   @Test
   public void testIssue2 () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github47/schematron2.sch"),
-                            new File ("src/test/resources/issues/github47/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github47/schematron2.sch"),
+                            new File ("src/test/resources/external/issues/github47/test.xml"));
   }
 }

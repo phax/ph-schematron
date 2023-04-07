@@ -119,7 +119,7 @@ public final class PSPreprocessorTest
   {
     final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ()).setKeepTitles (true)
                                                                                                 .setKeepDiagnostics (true);
-    final IReadableResource aRes = new FileSystemResource ("src/test/resources/issues/github51/test51.sch");
+    final IReadableResource aRes = new FileSystemResource ("src/test/resources/external/issues/github51/test51.sch");
     final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, new LoggingPSErrorHandler ());
     final PSReader aReader = new PSReader (aRes).setLenient (true);
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
@@ -159,7 +159,7 @@ public final class PSPreprocessorTest
   @Test
   public void testIssue138 () throws SchematronException
   {
-    final IReadableResource aRes = new FileSystemResource ("src/test/resources/issues/github138/test138.sch");
+    final IReadableResource aRes = new FileSystemResource ("src/test/resources/external/issues/github138/test138.sch");
     final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, new LoggingPSErrorHandler ());
     final PSReader aReader = new PSReader (aRes);
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());

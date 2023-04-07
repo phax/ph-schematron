@@ -102,17 +102,6 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
         </configuration>
       </plugin>
       <plugin>
-        <groupId>com.mycila</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/LICENSE</exclude>
-            <exclude>**/NOTICE</exclude>
-            <exclude>src/main/resources/schemas/**</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>${jaxb-plugin.group}</groupId>
         <artifactId>${jaxb-plugin.artifact}</artifactId>
         <version>${jaxb-plugin.version}</version>
@@ -127,7 +116,7 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
               <bindingIncludes>
                 <bindingInclude>binding.xjb</bindingInclude>
               </bindingIncludes>
-              <schemaDirectory>${basedir}/src/main/resources/schemas</schemaDirectory>
+              <schemaDirectory>${basedir}/src/main/resources/external/schemas</schemaDirectory>
               <schemaIncludes>
                 <schemaInclude>svrl.xsd</schemaInclude>
               </schemaIncludes>

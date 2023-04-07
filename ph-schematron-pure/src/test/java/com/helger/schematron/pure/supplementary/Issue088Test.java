@@ -38,7 +38,8 @@ public final class Issue088Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue088Test.class);
 
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron, @Nonnull final File aXML) throws Exception
+  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
+                                               @Nonnull final File aXML) throws Exception
   {
     final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
     aSCH.setCustomValidationHandler (new LoggingPSValidationHandler ());
@@ -58,7 +59,7 @@ public final class Issue088Test
   @Test
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github88/schematron.sch"),
-                             new File ("src/test/resources/issues/github88/test.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/external/issues/github88/schematron.sch"),
+                             new File ("src/test/resources/external/issues/github88/test.xml"));
   }
 }

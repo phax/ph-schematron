@@ -27,7 +27,7 @@
     <xjc:javaType name="com.helger.commons.datetime.XMLOffsetDate"     xmlType="xsd:date"     adapter="com.helger.jaxb.adapter.AdapterXMLOffsetDate" />
     <xjc:javaType name="com.helger.commons.datetime.XMLOffsetTime"     xmlType="xsd:time"     adapter="com.helger.jaxb.adapter.AdapterXMLOffsetTime" />
   </globalBindings>
-  <bindings schemaLocation="../resources/schemas/svrl.xsd">
+  <bindings schemaLocation="../resources/external/schemas/svrl.xsd">
     <schemaBindings>
       <package name="com.helger.schematron.svrl.jaxb" />
     </schemaBindings>

@@ -42,12 +42,12 @@ public final class CSVRL
   }
 
   /** Path to the SVRL XSD file within the class path */
-  public static final String SVRL_XSD_PATH = "schemas/svrl.xsd";
+  public static final String SVRL_XSD_PATH = "external/schemas/svrl.xsd";
 
   @CodingStyleguideUnaware
   public static final List <ClassPathResource> SVRL_XSDS = new CommonsArrayList <> (CXML_XSD.getXSDResource (),
-                                                                                    new ClassPathResource (SVRL_XSD_PATH, _getCL ()))
-                                                                                                                                     .getAsUnmodifiable ();
+                                                                                    new ClassPathResource (SVRL_XSD_PATH,
+                                                                                                           _getCL ())).getAsUnmodifiable ();
 
   /** The namespace of the SVRL files. */
   public static final String SVRL_NAMESPACE_URI = "http://purl.oclc.org/dsdl/svrl";

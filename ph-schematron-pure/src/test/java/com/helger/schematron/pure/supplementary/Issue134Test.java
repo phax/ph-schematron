@@ -59,7 +59,7 @@ public final class Issue134Test
   @Test
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github134/schematron.sch"),
-                             new File ("src/test/resources/issues/github134/test.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/external/issues/github134/schematron.sch"),
+                             new File ("src/test/resources/external/issues/github134/test.xml"));
   }
 }

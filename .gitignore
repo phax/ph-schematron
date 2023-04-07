@@ -1,6 +1,7 @@
 .idea/
 .settings/
 target/
+generated/
 
 *.iml
 .pmd
@@ -11,9 +12,3 @@ zz
 IEC FDIS 19757-3.pdf
 IEC FDIS 19757-7.pdf
 
-ph-schematron-xslt/test-final/
-ph-schematron-xslt/test-minified/
-ph-schematron-schxslt/test-final/
-ph-schematron-schxslt/test-minified/
-ph-schematron-pure/test-final/
-ph-schematron-pure/test-minified/

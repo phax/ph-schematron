@@ -33,10 +33,10 @@ public final class IssueDita1Test
   @Test
   public void testIssueXsltKey () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/dita1/topic.sch"),
-                            new File ("src/test/resources/issues/dita1/image-in-title.dita"));
-    validateAndProduceSVRL (new File ("src/test/resources/issues/dita1/topic.sch"),
-                            new File ("src/test/resources/issues/dita1/highlight-in-title.dita"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/dita1/topic.sch"),
+                            new File ("src/test/resources/external/issues/dita1/image-in-title.dita"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/dita1/topic.sch"),
+                            new File ("src/test/resources/external/issues/dita1/highlight-in-title.dita"));
   }
 
   public static void validateAndProduceSVRL (final File aSchematronFile, final File aXmlFile) throws Exception

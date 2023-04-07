@@ -96,7 +96,8 @@ public final class SchematronResourcePureTest
                          "\n" +
                          "</iso:schema>";
     assertTrue (SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8)).isValidSchematron ());
-    assertTrue (SchematronResourcePure.fromInputStream ("ba-from-string", new StringInputStream (sTest, StandardCharsets.UTF_8))
+    assertTrue (SchematronResourcePure.fromInputStream ("ba-from-string",
+                                                        new StringInputStream (sTest, StandardCharsets.UTF_8))
                                       .isValidSchematron ());
   }
 
@@ -129,14 +130,18 @@ public final class SchematronResourcePureTest
                                                               .setErrorHandler (aErrorHandler);
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
-    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (), 3, aErrorHandler.getErrorList ().size ());
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
+                  3,
+                  aErrorHandler.getErrorList ().size ());
     if (false)
       LOGGER.info (aErrorHandler.getErrorList ().toString ());
 
     // Perform complete validation
     aErrorHandler.clearResourceErrors ();
     aSch.validateCompletely ();
-    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (), 3, aErrorHandler.getErrorList ().size ());
+    assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
+                  3,
+                  aErrorHandler.getErrorList ().size ());
   }
 
   @Test
@@ -311,7 +316,8 @@ public final class SchematronResourcePureTest
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node kind: element - end".trim (), SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
+    assertEquals ("\n      Node kind: element - end".trim (),
+                  SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
   @Test
@@ -375,7 +381,8 @@ public final class SchematronResourcePureTest
 
     final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
 
-    final Schema aSchema = XMLSchemaCache.getInstance ().getSchema (new ClassPathResource ("issues/20141124/chapter.xsd"));
+    final Schema aSchema = XMLSchemaCache.getInstance ()
+                                         .getSchema (new ClassPathResource ("external/issues/20141124/chapter.xsd"));
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
                                                     "<chapter>" +
                                                     " <title />" +

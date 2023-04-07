@@ -33,8 +33,8 @@ public final class Issue50Test
   @Test
   public void testSuccess ()
   {
-    m_aBuildRule.configureProject ("src/test/resources/issues/50/build.xml");
-    m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/issues/50"));
+    m_aBuildRule.configureProject ("src/test/resources/external/issues/50/build.xml");
+    m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/50"));
     m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
     m_aBuildRule.getProject ().executeTarget ("schematron");
   }
@@ -44,8 +44,8 @@ public final class Issue50Test
   {
     try
     {
-      m_aBuildRule.configureProject ("src/test/resources/issues/50/build-fail-error.xml");
-      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/issues/50"));
+      m_aBuildRule.configureProject ("src/test/resources/external/issues/50/build-fail-error.xml");
+      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/50"));
       m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
       m_aBuildRule.getProject ().executeTarget ("schematron");
       fail ();
@@ -61,8 +61,8 @@ public final class Issue50Test
   {
     try
     {
-      m_aBuildRule.configureProject ("src/test/resources/issues/50/build-fail-fatal.xml");
-      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/issues/50"));
+      m_aBuildRule.configureProject ("src/test/resources/external/issues/50/build-fail-fatal.xml");
+      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/50"));
       m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
       m_aBuildRule.getProject ().executeTarget ("schematron");
       fail ();
@@ -78,8 +78,8 @@ public final class Issue50Test
   {
     try
     {
-      m_aBuildRule.configureProject ("src/test/resources/issues/50/build-fail-info.xml");
-      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/issues/50"));
+      m_aBuildRule.configureProject ("src/test/resources/external/issues/50/build-fail-info.xml");
+      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/50"));
       m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
       m_aBuildRule.getProject ().executeTarget ("schematron");
       fail ();
@@ -95,8 +95,8 @@ public final class Issue50Test
   {
     try
     {
-      m_aBuildRule.configureProject ("src/test/resources/issues/50/build-fail-warn.xml");
-      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/issues/50"));
+      m_aBuildRule.configureProject ("src/test/resources/external/issues/50/build-fail-warn.xml");
+      m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/50"));
       m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
       m_aBuildRule.getProject ().executeTarget ("schematron");
       fail ();

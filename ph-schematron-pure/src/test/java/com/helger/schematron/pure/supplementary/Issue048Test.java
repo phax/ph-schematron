@@ -51,7 +51,8 @@ public final class Issue048Test
     if (false)
       System.out.println (sSCH);
 
-    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH, StandardCharsets.UTF_8));
+    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH,
+                                                                                              StandardCharsets.UTF_8));
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
@@ -65,8 +66,8 @@ public final class Issue048Test
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
 
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github48/schematron.sch"),
-                            new File ("src/test/resources/issues/github48/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github48/schematron.sch"),
+                            new File ("src/test/resources/external/issues/github48/test.xml"));
   }
 
   @Test
@@ -74,7 +75,7 @@ public final class Issue048Test
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
 
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github48/schematron2.sch"),
-                            new File ("src/test/resources/issues/github48/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github48/schematron2.sch"),
+                            new File ("src/test/resources/external/issues/github48/test.xml"));
   }
 }

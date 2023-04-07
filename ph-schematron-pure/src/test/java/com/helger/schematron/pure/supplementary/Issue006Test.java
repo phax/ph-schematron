@@ -39,8 +39,8 @@ public final class Issue006Test
   @Test
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github6/schematron.sch"),
-                            new File ("src/test/resources/issues/github6/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github6/schematron.sch"),
+                            new File ("src/test/resources/external/issues/github6/test.xml"));
   }
 
   @SuppressFBWarnings ("BC_IMPOSSIBLE_INSTANCEOF")
@@ -52,7 +52,8 @@ public final class Issue006Test
     if (aSCH instanceof SchematronResourcePure)
       ((SchematronResourcePure) aSCH).setErrorHandler (new LoggingPSErrorHandler ());
     else
-      System.out.println (XMLWriter.getNodeAsString (((SchematronResourceSCH) aSCH).getXSLTProvider ().getXSLTDocument ()));
+      System.out.println (XMLWriter.getNodeAsString (((SchematronResourceSCH) aSCH).getXSLTProvider ()
+                                                                                   .getXSLTDocument ()));
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
     assertNotNull (aSVRL);
     if (false)

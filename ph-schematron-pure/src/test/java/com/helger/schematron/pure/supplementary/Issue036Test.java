@@ -37,10 +37,10 @@ public final class Issue036Test
   @Test
   public void testBasic () throws Exception
   {
-    final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github36/test.sch");
+    final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/external/issues/github36/test.sch");
     aResPure.setErrorHandler (new LoggingPSErrorHandler ());
 
-    final SchematronOutputType aSOT = aResPure.applySchematronValidationToSVRL (new FileSystemResource ("src/test/resources/issues/github36/test.xml"));
+    final SchematronOutputType aSOT = aResPure.applySchematronValidationToSVRL (new FileSystemResource ("src/test/resources/external/issues/github36/test.xml"));
     assertNotNull (aSOT);
     assertFalse (SVRLHelper.getAllFailedAssertions (aSOT).isEmpty ());
   }
@@ -48,10 +48,10 @@ public final class Issue036Test
   @Test
   public void testNestedExtends () throws Exception
   {
-    final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/issues/github36/test2.sch");
+    final SchematronResourcePure aResPure = SchematronResourcePure.fromFile ("src/test/resources/external/issues/github36/test2.sch");
     aResPure.setErrorHandler (new LoggingPSErrorHandler ());
 
-    final SchematronOutputType aSOT = aResPure.applySchematronValidationToSVRL (new FileSystemResource ("src/test/resources/issues/github36/test.xml"));
+    final SchematronOutputType aSOT = aResPure.applySchematronValidationToSVRL (new FileSystemResource ("src/test/resources/external/issues/github36/test.xml"));
     assertNotNull (aSOT);
     assertFalse (SVRLHelper.getAllFailedAssertions (aSOT).isEmpty ());
   }

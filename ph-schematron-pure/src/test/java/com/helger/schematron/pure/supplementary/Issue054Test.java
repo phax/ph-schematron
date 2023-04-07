@@ -49,7 +49,7 @@ public final class Issue054Test
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
 
-    validateAndProduceSVRL (new File ("src/test/resources/issues/github54/schematron.sch"),
-                            new File ("src/test/resources/issues/github54/test.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/github54/schematron.sch"),
+                            new File ("src/test/resources/external/issues/github54/test.xml"));
   }
 }

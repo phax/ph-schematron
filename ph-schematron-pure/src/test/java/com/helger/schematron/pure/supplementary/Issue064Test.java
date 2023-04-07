@@ -48,8 +48,8 @@ public final class Issue064Test
     SchematronDebug.setShowCreatedSVRL (true);
     try
     {
-      validateAndProduceSVRL (new File ("src/test/resources/issues/github64/schematron.sch"),
-                              new File ("src/test/resources/issues/github64/test.xml"));
+      validateAndProduceSVRL (new File ("src/test/resources/external/issues/github64/schematron.sch"),
+                              new File ("src/test/resources/external/issues/github64/test.xml"));
     }
     finally
     {
