@@ -75,7 +75,7 @@ public final class Issue099Test
   @Ignore ("Is very verbose")
   public void testIssue () throws Exception
   {
-    _validateAndProduceSVRL (new File ("src/test/resources/issues/github99/urn_feap.gov.pt_CIUS-PT_1.0.6.sch"),
-                             new File ("src/test/resources/issues/github99/all_DN_CIUS-PT.xml"));
+    _validateAndProduceSVRL (new File ("src/test/resources/external/issues/github99/urn_feap.gov.pt_CIUS-PT_1.0.6.sch"),
+                             new File ("src/test/resources/external/issues/github99/all_DN_CIUS-PT.xml"));
   }
 }

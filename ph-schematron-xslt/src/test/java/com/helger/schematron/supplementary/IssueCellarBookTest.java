@@ -58,7 +58,7 @@ public final class IssueCellarBookTest
   @Ignore ("Does not work, because ISO Schematron resolves the abstract rules in a broken way - use SchXslt instead")
   public void testIssue () throws Exception
   {
-    validateAndProduceSVRL (new File ("src/test/resources/issues/cellarbook/CellarBook.sch"),
-                            new File ("src/test/resources/issues/cellarbook/cellar.xml"));
+    validateAndProduceSVRL (new File ("src/test/resources/external/issues/cellarbook/CellarBook.sch"),
+                            new File ("src/test/resources/external/issues/cellarbook/cellar.xml"));
   }
 }

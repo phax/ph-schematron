@@ -246,8 +246,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   }
 
   /**
-   * Constructor. This call does the main Schematron to XSLT conversion. TODO
-   * remove this from the constructor.
+   * Constructor. This call does the main Schematron to XSLT conversion.<br>
+   * TODO remove this from the constructor.
    *
    * @param aSchematronResource
    *        SCH resource

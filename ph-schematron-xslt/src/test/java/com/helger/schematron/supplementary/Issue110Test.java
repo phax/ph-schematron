@@ -36,7 +36,9 @@ public final class Issue110Test
   {
     DefaultResourceResolver.setDebugResolve (true);
     final String sPath = "target/test-classes/external/issues/github110/";
-    final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (sPath + "ATGOV-UBL-T10.sch");
+    final ISchematronResource aSV = SchematronResourceSCH.fromFile (sPath + "ATGOV-UBL-T10.sch");
+    assertTrue (aSV.getResource ().exists ());
+
     aSV.applySchematronValidation (new FileSystemResource (sPath + "test.xml"));
     assertTrue (new FileSystemResource (sPath + "include/ATGOV-T10-abstract.sch").exists ());
     Files.delete (Paths.get (new FileSystemResource (sPath + "include/ATGOV-T10-abstract.sch").getAsURL ().toURI ()));

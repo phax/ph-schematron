@@ -70,11 +70,11 @@ public final class SchematronTestHelper
     String sLastParentDirBaseName = null;
     for (final IMicroElement eItem : aDoc.getDocumentElement ().getAllChildElements ())
       if (eItem.getTagName ().equals ("directory"))
-        sLastParentDirBaseName = eItem.getAttributeValue ("basename");
+        sLastParentDirBaseName = "external/" + eItem.getAttributeValue ("basename");
       else
         if (eItem.getTagName ().equals ("file"))
           ret.add (new SchematronTestFile (sLastParentDirBaseName,
-                                           new ClassPathResource (eItem.getAttributeValue ("name")),
+                                           new ClassPathResource ("external/" + eItem.getAttributeValue ("name")),
                                            eItem.getAttributeValue ("basename")));
         else
           throw new IllegalArgumentException ("Cannot handle " + eItem);
@@ -89,7 +89,7 @@ public final class SchematronTestHelper
   public static ICommonsList <IReadableResource> getAllValidSchematronFiles ()
   {
     return SCH.getAllMapped (aFile -> !aFile.getFileBaseName ().startsWith ("invalid") &&
-                                      !aFile.getParentDirBaseName ().equals ("include"),
+                                      !aFile.getParentDirBaseName ().endsWith ("include"),
                              SchematronTestFile::getResource);
   }
 
@@ -98,7 +98,7 @@ public final class SchematronTestHelper
   public static ICommonsList <IReadableResource> getAllInvalidSchematronFiles ()
   {
     return SCH.getAllMapped (aFile -> aFile.getFileBaseName ().startsWith ("invalid") &&
-                                      !aFile.getParentDirBaseName ().equals ("include"),
+                                      !aFile.getParentDirBaseName ().endsWith ("include"),
                              SchematronTestFile::getResource);
   }
 

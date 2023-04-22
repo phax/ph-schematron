@@ -53,7 +53,7 @@ public final class Issue029Test
     SchematronOutputType ob = null;
 
     // Must use the XSLT based version, because of "key" usage
-    final ISchematronResource aResSCH = new SchematronResourcePure (new ClassPathResource ("issues/github29/pbs.sch"));
+    final ISchematronResource aResSCH = new SchematronResourcePure (new ClassPathResource ("external/issues/github29/pbs.sch"));
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
     try
@@ -76,7 +76,7 @@ public final class Issue029Test
   @Ignore ("Takes too long - more than 1 min")
   public void testGood () throws Exception
   {
-    final SchematronOutputType aSOT = validateXmlUsingSchematron (new GZIPReadableResource (new ClassPathResource ("issues/github29/sample.xml.gz")));
+    final SchematronOutputType aSOT = validateXmlUsingSchematron (new GZIPReadableResource (new ClassPathResource ("external/issues/github29/sample.xml.gz")));
     assertNotNull (aSOT);
     final ICommonsList <SVRLFailedAssert> aErrors = SVRLHelper.getAllFailedAssertions (aSOT);
     assertNotNull (aErrors);

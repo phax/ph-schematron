@@ -65,8 +65,8 @@ import com.helger.xml.xpath.MapBasedXPathVariableResolver;
  */
 public final class SchematronResourcePureTest
 {
-
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureTest.class);
+  private static final String FILE_XQ = "external/xquery/functx-1.0-nodoc-2007-01.xq";
 
   @Test
   public void testBasic () throws Exception
@@ -305,7 +305,7 @@ public final class SchematronResourcePureTest
                          "\n" +
                          "</iso:schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
 
     // Test with variable and function resolver
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
@@ -327,6 +327,7 @@ public final class SchematronResourcePureTest
   }
 
   @Test
+  // TODO Saxon 12 issue
   @Ignore ("Fails in Saxon 12.0 - works in Saxon 11.4")
   public void testResolveFunctXAreDistinctValuesQueryFunctions () throws Exception
   {
@@ -348,7 +349,7 @@ public final class SchematronResourcePureTest
                          "  </iso:pattern>\n" +
                          "</iso:schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
 
     // Test with variable and function resolver
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
@@ -371,6 +372,7 @@ public final class SchematronResourcePureTest
   }
 
   @Test
+  // TODO Saxon 12 issue
   @Ignore ("Fails in Saxon 12.0 - works in Saxon 11.4")
   public void testSaxon12Bug () throws Exception
   {
@@ -394,7 +396,7 @@ public final class SchematronResourcePureTest
     ret = xPath.evaluate ("count(distinct-values(para))", aTestDoc.getDocumentElement (), XPathConstants.NUMBER);
     assertEquals (Double.valueOf (2), ret);
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
     xPath.setXPathFunctionResolver (aFunctionResolver);
     xPath.setNamespaceContext (new MapBasedNamespaceContext ().addMapping ("functx", "http://www.functx.com"));
 
@@ -418,7 +420,7 @@ public final class SchematronResourcePureTest
                          "  </pattern>\n" +
                          "</schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
 
     final Schema aSchema = XMLSchemaCache.getInstance ()
                                          .getSchema (new ClassPathResource ("external/issues/20141124/chapter.xsd"));

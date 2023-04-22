@@ -89,7 +89,6 @@
         <artifactId>ph-dirindex-maven-plugin</artifactId>
         <version>4.0.0</version><!--$NO-MVN-MAN-VER$-->
         <executions>
-<!--  
           <execution>
             <id>sch</id>
             <goals>
@@ -126,6 +125,7 @@
               <targetFilename>dirindex.xml</targetFilename>
             </configuration>
           </execution>
+<!--  
 -->
         </executions>
       </plugin>

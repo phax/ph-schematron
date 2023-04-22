@@ -143,6 +143,7 @@ public final class SchematronResourceSCHCacheTest
       {
         if (true)
           LOGGER.info (aRes.toString ());
+        assertTrue ("Not existing " + aRes, aRes.exists ());
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
         final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
