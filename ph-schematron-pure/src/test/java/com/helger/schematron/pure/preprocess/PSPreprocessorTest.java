@@ -103,7 +103,7 @@ public final class PSPreprocessorTest
   {
     final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ()).setKeepTitles (true)
                                                                                                 .setKeepDiagnostics (true);
-    final IReadableResource aRes = new ClassPathResource ("test-sch/example-3-5.sch");
+    final IReadableResource aRes = new ClassPathResource ("external/test-sch/example-3-5.sch");
     final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, new LoggingPSErrorHandler ());
     final PSReader aReader = new PSReader (aRes);
     final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());

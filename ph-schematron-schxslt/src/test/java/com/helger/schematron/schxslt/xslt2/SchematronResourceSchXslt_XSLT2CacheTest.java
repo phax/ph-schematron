@@ -50,8 +50,8 @@ import com.helger.xml.transform.CollectingTransformErrorListener;
 public final class SchematronResourceSchXslt_XSLT2CacheTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSchXslt_XSLT2CacheTest.class);
-  private static final String VALID_SCHEMATRON = "test-sch/valid01.sch";
-  private static final String VALID_XMLINSTANCE = "test-xml/valid01.xml";
+  private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
+  private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
 
   private static final int RUNS = 1000;
 

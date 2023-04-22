@@ -32,8 +32,8 @@ public final class Issue025Test
   @Test
   public void testIssue25Valid () throws Exception
   {
-    final IReadableResource aSCH = new ClassPathResource ("test-sch/xfront/example05/check-classifications.sch");
-    final IReadableResource aXML = new ClassPathResource ("test-sch/xfront/example05/valid-document.xml");
+    final IReadableResource aSCH = new ClassPathResource ("external/test-sch/xfront/example05/check-classifications.sch");
+    final IReadableResource aXML = new ClassPathResource ("external/test-sch/xfront/example05/valid-document.xml");
 
     final SchematronOutputType aSOT = new SchematronResourcePure (aSCH).applySchematronValidationToSVRL (aXML);
     assertNotNull (aSOT);
@@ -43,8 +43,8 @@ public final class Issue025Test
   @Test
   public void testIssue25Invalid () throws Exception
   {
-    final IReadableResource aSCH = new ClassPathResource ("test-sch/xfront/example05/check-classifications.sch");
-    final IReadableResource aXML = new ClassPathResource ("test-sch/xfront/example05/invalid-document.xml");
+    final IReadableResource aSCH = new ClassPathResource ("external/test-sch/xfront/example05/check-classifications.sch");
+    final IReadableResource aXML = new ClassPathResource ("external/test-sch/xfront/example05/invalid-document.xml");
 
     final SchematronOutputType aSOT = new SchematronResourcePure (aSCH).applySchematronValidationToSVRL (aXML);
     assertNotNull (aSOT);

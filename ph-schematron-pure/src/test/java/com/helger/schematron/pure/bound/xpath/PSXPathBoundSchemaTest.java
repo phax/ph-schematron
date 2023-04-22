@@ -75,9 +75,9 @@ public final class PSXPathBoundSchemaTest
   {
     for (int i = 0; i < SCH.length; ++i)
     {
-      final IReadableResource aSchRes = new ClassPathResource ("test-sch/" + SCH[i]);
+      final IReadableResource aSchRes = new ClassPathResource ("external/test-sch/" + SCH[i]);
       assertTrue (aSchRes.getPath (), aSchRes.exists ());
-      final IReadableResource aXmlRes = new ClassPathResource ("test-xml/" + XML[i]);
+      final IReadableResource aXmlRes = new ClassPathResource ("external/test-xml/" + XML[i]);
       assertTrue (aXmlRes.getPath (), aXmlRes.exists ());
 
       // Resolve all includes

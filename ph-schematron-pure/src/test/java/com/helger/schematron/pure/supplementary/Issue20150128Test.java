@@ -50,12 +50,12 @@ public final class Issue20150128Test
 
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("xquery/functx-1.0-nodoc-2007-01.xq"));
+    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream ("external/xquery/functx-1.0-nodoc-2007-01.xq"));
 
     final SchematronResourcePure resource = SchematronResourcePure.fromString (sTest2, StandardCharsets.ISO_8859_1);
 
     resource.setErrorHandler (aErrorHandler);
-    IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
     resource.setXPathConfig (aXPathConfig);
     assertTrue (resource.isValidSchematron ());
     assertEquals (1, aErrorHandler.getErrorList ().size ());
