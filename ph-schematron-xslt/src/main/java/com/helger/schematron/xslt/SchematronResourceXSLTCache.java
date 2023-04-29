@@ -58,13 +58,13 @@ public final class SchematronResourceXSLTCache
                                                                              @Nullable final ErrorListener aCustomErrorListener,
                                                                              @Nullable final URIResolver aCustomURIResolver)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Compiling XSLT instance " + aXSLTResource.toString ());
+    LOGGER.info ("Compiling XSLT instance " + aXSLTResource.toString ());
 
     final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource,
-                                                                                                 aCEH.andThen (aCustomErrorListener != null ? aCustomErrorListener
-                                                                                                                                            : new LoggingTransformErrorListener (Locale.US)),
+                                                                                                 aCEH.andThen (aCustomErrorListener !=
+                                                                                                               null ? aCustomErrorListener
+                                                                                                                    : new LoggingTransformErrorListener (Locale.US)),
                                                                                                  aCustomURIResolver);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
@@ -74,16 +74,16 @@ public final class SchematronResourceXSLTCache
         LOGGER.warn ("  " + aError.getAsString (Locale.US));
       return null;
     }
-
     // If it is a valid schematron, there must be a result XSLT present!
     if (aXSLTPreprocessor.getXSLTDocument () == null)
     {
       // Note: this should never occur, as it is in the Prebuild implementation
       // the same as "isValidSchematron" but to be implementation agnostic, we
       // leave the check anyway.
-      throw new IllegalStateException ("No XSLT document retrieved from XSLT resource '" + aXSLTResource.getResourceID () + "'!");
+      throw new IllegalStateException ("No XSLT document retrieved from XSLT resource '" +
+                                       aXSLTResource.getResourceID () +
+                                       "'!");
     }
-
     // Create the main validator for the schematron
     return aXSLTPreprocessor;
   }
@@ -107,13 +107,11 @@ public final class SchematronResourceXSLTCache
                                                                           @Nullable final URIResolver aCustomURIResolver)
   {
     ValueEnforcer.notNull (aXSLTResource, "resource");
-
     if (!aXSLTResource.exists ())
     {
       LOGGER.warn ("XSLT resource " + aXSLTResource + " does not exist!");
       return null;
     }
-
     // Determine the unique resource ID for caching
     final String sResourceID = aXSLTResource.getResourceID ();
 
@@ -123,7 +121,6 @@ public final class SchematronResourceXSLTCache
     {
       // Check again in write lock
       aProvider = RW_LOCK.writeLockedGet ( () -> MAP.get (sResourceID));
-
       if (aProvider == null)
       {
         // Create new object outside of the write lock
