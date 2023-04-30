@@ -16,4 +16,4 @@ The project is licensed under Apache 2.0 license.
 ---
 
 My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
-Kindly supported by [YourKit Java Profiler](https://www.yourkit.com)
+It is appreciated if you star the GitHub project if you like it.
