@@ -153,7 +153,8 @@ VERSION INFORMATION
 	<!-- Suppress uses of abstract patterns -->
 	<xslt:template match="iso:pattern[@is-a]"  mode="iae:go" >
 			
-		<xslt:comment>Start pattern based on abstract <xslt:value-of select="@is-a"/></xslt:comment>
+    <!-- [PH] added the @id -->
+		<xslt:comment>Start pattern based on abstract <xslt:value-of select="@is-a"/> for <xslt:value-of select="@id"/></xslt:comment>
 		
 		<xslt:call-template name="iae:abstract-to-real" >
 			<xslt:with-param name="caller" select="@id" />
@@ -193,20 +194,25 @@ VERSION INFORMATION
 		<xslt:param name="text" />
 		<xslt:param name="paramNumber" />
 
+    <!-- [PH] added -->
+    <!-- 
+    <xslt:comment>Macro expand [<xslt:value-of select="$caller"/>][<xslt:value-of select="$paramNumber"/>]</xslt:comment>
+     -->
 		
 		<xslt:choose>
 			<xslt:when test="//iso:pattern[@id=$caller]/iso:param[ $paramNumber]">
-
+        <!-- [PH] added -->
+        <!-- 
+        <xslt:comment>Replacing param <xslt:value-of select="//iso:pattern[@id=$caller]/iso:param[ $paramNumber ]"/></xslt:comment>
+         -->
 				<xslt:call-template name="iae:multi-macro-expand">
 					<xslt:with-param name="caller" select="$caller"/>	
 					<xslt:with-param name="paramNumber" select="$paramNumber + 1"/>		
 					<xslt:with-param name="text" >
 						<xslt:call-template name="iae:replace-substring">
-							<xslt:with-param name="original" select="$text"/>
-							<xslt:with-param name="substring"
-							select="concat('$', //iso:pattern[@id=$caller]/iso:param[ $paramNumber ]/@name)"/>
-							<xslt:with-param name="replacement"
-								select="//iso:pattern[@id=$caller]/iso:param[ $paramNumber ]/@value"/>			
+							<xslt:with-param name="original"    select="$text"/>
+							<xslt:with-param name="substring" 	select="concat('$', //iso:pattern[@id=$caller]/iso:param[ $paramNumber ]/@name)"/>
+							<xslt:with-param name="replacement" select="//iso:pattern[@id=$caller]/iso:param[ $paramNumber ]/@value"/>			
 						</xslt:call-template>
 					</xslt:with-param>						
 				</xslt:call-template>
@@ -222,22 +228,20 @@ VERSION INFORMATION
 		<xslt:param name="caller"/>
 		<xslt:param name="is-a" />
 		<xslt:for-each select="//iso:pattern[@id= $is-a]">
-		<xslt:copy>
-		
+		  <xslt:copy>
 		    <xslt:choose>
 		      <xslt:when test=" string-length( $caller ) = 0">
-		      <xslt:attribute name="id"><xslt:value-of select="concat( generate-id(.) , $is-a)" /></xslt:attribute>
+		        <xslt:attribute name="id"><xslt:value-of select="concat( generate-id(.) , $is-a)" /></xslt:attribute>
 		      </xslt:when>
 		      <xslt:otherwise>
-				<xslt:attribute name="id"><xslt:value-of select="$caller" /></xslt:attribute>
-		      </xslt:otherwise>
-		    </xslt:choose> 
-			
-			<xslt:apply-templates select="*|text()" mode="iae:do-pattern"    >
-				<xslt:with-param name="caller"><xslt:value-of select="$caller"/></xslt:with-param>
-			</xslt:apply-templates>	
-			
-		</xslt:copy>
+  				  <xslt:attribute name="id"><xslt:value-of select="$caller" /></xslt:attribute>
+  		    </xslt:otherwise>
+  		  </xslt:choose> 
+  			
+  			<xslt:apply-templates select="*|text()" mode="iae:do-pattern">
+  				<xslt:with-param name="caller"><xslt:value-of select="$caller"/></xslt:with-param>
+  			</xslt:apply-templates>	
+  		</xslt:copy>
 		</xslt:for-each>
 	</xslt:template>
 		
@@ -246,12 +250,12 @@ VERSION INFORMATION
 	<xslt:template mode="iae:do-pattern" match="*">
 		<xslt:param name="caller"/>
 		<xslt:copy>
-			<xslt:for-each select="@*[name()='test' or name()='context' or name()='select'   or name()='path'  ]">
+			<xslt:for-each select="@*[name()='test' or name()='context' or name()='select' or name()='path']">
 				<xslt:attribute name="{name()}">
-				<xslt:call-template name="iae:macro-expand">
-						<xslt:with-param name="text"><xslt:value-of select="."/></xslt:with-param>
-						<xslt:with-param name="caller"><xslt:value-of select="$caller"/></xslt:with-param>
-					</xslt:call-template>
+  				<xslt:call-template name="iae:macro-expand">
+  				  <xslt:with-param name="text"><xslt:value-of select="."/></xslt:with-param>
+  					<xslt:with-param name="caller"><xslt:value-of select="$caller"/></xslt:with-param>
+  			  </xslt:call-template>
 				</xslt:attribute>
 			</xslt:for-each>	
 			<xslt:copy-of select="@*[name()!='test'][name()!='context'][name()!='select'][name()!='path']" />
@@ -284,31 +288,28 @@ VERSION INFORMATION
 		<xslt:param name="substring" />   
 		<xslt:param name="replacement" select="''"/>
 		
-  <xsl:choose>
-    <xsl:when test="not($original)" /> 
-    <xsl:when test="not(string($substring))">
-      <xsl:value-of select="$original" />
-    </xsl:when> 
-        <xsl:when test="contains($original, $substring)">
-          <xsl:variable name="before" select="substring-before($original, $substring)" />
-          <xsl:variable name="after" select="substring-after($original, $substring)" />
-          
-          <xsl:value-of select="$before" />
-          <xsl:value-of select="$replacement" />
-          <!-- recursion -->
-          <xsl:call-template name="iae:replace-substring">
-            <xsl:with-param name="original" select="$after" />
-            <xsl:with-param name="substring" select="$substring" />
-            <xsl:with-param name="replacement" select="$replacement" /> 
-            </xsl:call-template>
-        </xsl:when>
-        <xsl:otherwise>
-        	<!-- no substitution -->
-        	<xsl:value-of select="$original" />
-        </xsl:otherwise>
-      </xsl:choose> 
-</xslt:template>
-
-
-
+    <xsl:choose>
+      <xsl:when test="not($original)" /> 
+      <xsl:when test="not(string($substring))">
+        <xsl:value-of select="$original" />
+      </xsl:when> 
+      <xsl:when test="contains($original, $substring)">
+        <xsl:variable name="before" select="substring-before($original, $substring)" />
+        <xsl:variable name="after" select="substring-after($original, $substring)" />
+        
+        <xsl:value-of select="$before" />
+        <xsl:value-of select="$replacement" />
+        <!-- recursion -->
+        <xsl:call-template name="iae:replace-substring">
+          <xsl:with-param name="original" select="$after" />
+          <xsl:with-param name="substring" select="$substring" />
+          <xsl:with-param name="replacement" select="$replacement" /> 
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+      	<!-- no substitution -->
+      	<xsl:value-of select="$original" />
+      </xsl:otherwise>
+    </xsl:choose> 
+  </xslt:template>
 </xslt:stylesheet>
