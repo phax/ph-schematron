@@ -39,6 +39,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
+import com.helger.commons.string.StringHelper;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
@@ -197,9 +198,11 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     if (SchematronDebug.isSaveIntermediateXSLTFiles ())
     {
       final String sXML = XMLWriter.getNodeAsString (aResult2Doc);
+      String sBasename = FilenameHelper.getWithoutPath (aSchematronResource.getPath ());
+      if (StringHelper.hasNoText (sBasename))
+        sBasename = "in-memory";
       final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                                                                    ".min-xslt.sch");
+                                               sBasename + ".min-xslt.sch");
       if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
         LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
       else
@@ -230,9 +233,10 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
     if (SchematronDebug.isSaveIntermediateXSLTFiles ())
     {
       final String sXML = XMLWriter.getNodeAsString (aResult3Doc);
-      final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
-                                               FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                                                                  ".xslt");
+      String sBasename = FilenameHelper.getWithoutPath (aSchematronResource.getPath ());
+      if (StringHelper.hasNoText (sBasename))
+        sBasename = "in-memory";
+      final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (), sBasename + ".xslt");
       if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
         LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
       else
