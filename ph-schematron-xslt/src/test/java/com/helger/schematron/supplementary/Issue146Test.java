@@ -75,4 +75,45 @@ public final class Issue146Test
     final ICommonsList <AbstractSVRLMessage> errs = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (svrl);
     assertEquals (1, errs.size ());
   }
+
+  @Test
+  public void selectText () throws Exception
+  {
+    final String schematron = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                              "<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
+                              "   <sch:title>Schematron Stefan</sch:title>\r\n" +
+                              "   <sch:pattern id=\"quotation-marks-en\">\r\n" +
+                              "      <sch:rule context=\"//*[@xml:lang = 'en-US']\">\r\n" +
+                              "         <sch:assert role=\"info\" subject=\"text()\" test=\"not(matches(., '«|»|„'))\">Please use the correct typographic quotes for the English language (“” and ‘’).</sch:assert>\r\n" +
+                              "         <sch:assert role=\"info\" subject=\"text()\" test=\"matches(., '«|»|„')\">Please use the correct typographic quotes for the English language (“” and ‘’).</sch:assert>\r\n" +
+                              "      </sch:rule>\r\n" +
+                              "   </sch:pattern>\r\n" +
+                              "</sch:schema>";
+
+    if (false)
+      SchematronDebug.setDebugMode (true);
+
+    final SchematronResourceSCH aResSCH = SchematronResourceSCH.fromString (schematron, StandardCharsets.UTF_8);
+    final boolean ans = aResSCH.isValidSchematron ();
+    assertTrue (ans);
+
+    final String xmlFile = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                           "<topic id=\"GUID-84fa6d91-8506-4d06-9595-ebabc6f8b46f-enHYPHENUS\" xml:lang=\"en-US\">\r\n" +
+                           "  <title>Sample</title>\r\n" +
+                           "  <shortdesc>This short description is too short. Or too long? The recommendation is, that the short description should have around twenty words.</shortdesc>\r\n" +
+                           "  <body>\r\n" +
+                           "    <p>This text is using the &quot;straight quotes&quot; which should be reported.</p>\r\n" +
+                           "    <p>This text is using the «straight quotes» which should be reported.</p>\r\n" +
+                           "    <p>This paragraph contains the word Content.</p>\r\n" +
+                           "  </body>\r\n" +
+                           "</topic>";
+    final SchematronOutputType svrl = aResSCH.applySchematronValidationToSVRL (new StringStreamSource (xmlFile));
+    assertNotNull (svrl);
+
+    if (false)
+      LOGGER.info (new SVRLMarshaller ().setFormattedOutput (true).getAsString (svrl));
+
+    final ICommonsList <AbstractSVRLMessage> errs = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (svrl);
+    assertEquals (1, errs.size ());
+  }
 }
