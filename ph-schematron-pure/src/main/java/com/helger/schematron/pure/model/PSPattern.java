@@ -423,6 +423,11 @@ public class PSPattern implements
     return m_aContent.getAllInstanceOf (PSRule.class);
   }
 
+  public boolean containsRule (@Nullable final PSRule aRule)
+  {
+    return aRule != null && m_aContent.containsAny (x -> x instanceof PSRule && x.equals (aRule));
+  }
+
   @Nonnegative
   public int getRuleCount ()
   {
