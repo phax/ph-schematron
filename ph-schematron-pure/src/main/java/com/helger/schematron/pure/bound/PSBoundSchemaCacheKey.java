@@ -315,7 +315,10 @@ public class PSBoundSchemaCacheKey
     return new ToStringGenerator (this).append ("Resource", m_aResource)
                                        .append ("Phase", m_sPhase)
                                        .appendIfNotNull ("ErrorHandler", m_aErrorHandler)
+                                       .appendIfNotNull ("CustomValidationHandler", m_aCustomValidationHandler)
                                        .appendIfNotNull ("XPathConfig", m_aXPathConfig)
+                                       .appendIfNotNull ("EntityResolver", m_aEntityResolver)
+                                       .append ("Lenient", m_bLenient)
                                        .getToString ();
   }
 }

@@ -36,7 +36,8 @@ public class PSXPathBoundPattern
   private final PSPattern m_aPattern;
   private final ICommonsList <PSXPathBoundRule> m_aBoundRules;
 
-  public PSXPathBoundPattern (@Nonnull final PSPattern aPattern, @Nonnull final ICommonsList <PSXPathBoundRule> aBoundRules)
+  public PSXPathBoundPattern (@Nonnull final PSPattern aPattern,
+                              @Nonnull final ICommonsList <PSXPathBoundRule> aBoundRules)
   {
     ValueEnforcer.notNull (aPattern, "Pattern");
     ValueEnforcer.notNull (aBoundRules, "BoundRules");
@@ -60,6 +61,8 @@ public class PSXPathBoundPattern
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("pattern", m_aPattern).append ("boundRules", m_aBoundRules).getToString ();
+    return new ToStringGenerator (this).append ("Pattern", m_aPattern)
+                                       .append ("BoundRules", m_aBoundRules)
+                                       .getToString ();
   }
 }

@@ -127,11 +127,11 @@ public class PSXPathBoundAssertReport
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("assertReport", m_aAssertReport)
-                                       .append ("testExpression", m_sTestExpression)
-                                       .append ("boundTestExpression", m_aBoundTestExpression)
-                                       .append ("boundContent", m_aBoundContent)
-                                       .append ("boundDiagnostics", m_aBoundDiagnostics)
+    return new ToStringGenerator (this).append ("AssertReport", m_aAssertReport)
+                                       .append ("TestExpression", m_sTestExpression)
+                                       .append ("BoundTestExpression", m_aBoundTestExpression)
+                                       .append ("BoundContent", m_aBoundContent)
+                                       .append ("BoundDiagnostics", m_aBoundDiagnostics)
                                        .getToString ();
   }
 }

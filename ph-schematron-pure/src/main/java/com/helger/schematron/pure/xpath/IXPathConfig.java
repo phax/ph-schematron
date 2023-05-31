@@ -46,12 +46,22 @@ import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
 @MustImplementEqualsAndHashcode
 public interface IXPathConfig
 {
+  /**
+   * @return The {@link XPathFactory} to use. May not be <code>null</code>.
+   */
   @Nonnull
   XPathFactory getXPathFactory ();
 
+  /**
+   * @return The {@link XPathVariableResolver} to use. May be <code>null</code>.
+   */
   @Nullable
   XPathVariableResolver getXPathVariableResolver ();
 
+  /**
+   * @return The {@link XPathFunctionResolver} to use. May not be
+   *         <code>null</code>.
+   */
   @Nullable
   XPathFunctionResolver getXPathFunctionResolver ();
 }

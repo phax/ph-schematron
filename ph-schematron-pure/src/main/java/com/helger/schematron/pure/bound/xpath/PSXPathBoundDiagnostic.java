@@ -36,7 +36,8 @@ public class PSXPathBoundDiagnostic
   private final PSDiagnostic m_aDiagnostic;
   private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
 
-  public PSXPathBoundDiagnostic (@Nonnull final PSDiagnostic aDiagnostic, @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent)
+  public PSXPathBoundDiagnostic (@Nonnull final PSDiagnostic aDiagnostic,
+                                 @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent)
   {
     ValueEnforcer.notNull (aDiagnostic, "Diagnostic");
     ValueEnforcer.notNull (aBoundContent, "BoundContent");
@@ -60,6 +61,8 @@ public class PSXPathBoundDiagnostic
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("diagnostic", m_aDiagnostic).append ("boundContent", m_aBoundContent).getToString ();
+    return new ToStringGenerator (this).append ("Diagnostic", m_aDiagnostic)
+                                       .append ("BoundContent", m_aBoundContent)
+                                       .getToString ();
   }
 }

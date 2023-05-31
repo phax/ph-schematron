@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.system.SystemProperties;
 import com.helger.xml.xpath.XPathHelper;
 
@@ -46,11 +47,10 @@ public class XPathConfigBuilder
   public static final IXPathConfig DEFAULT = new XPathConfig (XPATH_FACTORY_SAXON_FIRST, null, null);
 
   private static final Logger LOGGER = LoggerFactory.getLogger (XPathConfigBuilder.class);
-  private static final Class <?> [] EMPTY_CLASS_ARRAY = new Class <?> [0];
 
   private XPathFactory m_aXPathFactory;
   private Class <? extends XPathFactory> m_aXPathFactoryClass;
-  private String m_sGlobalXPathFactory;
+  private String m_sGlobalXPathFactoryClassName;
   private XPathVariableResolver m_aXPathVariableResolver;
   private XPathFunctionResolver m_aXPathFunctionResolver;
 
@@ -63,6 +63,13 @@ public class XPathConfigBuilder
     return m_aXPathFactory;
   }
 
+  /**
+   * Set the {@link XPathFactory} to use. This instance always has priority 1.
+   *
+   * @param aXPathFactory
+   *        The factory to use. May not be <code>null</code>.
+   * @return this for chaining.
+   */
   @Nonnull
   public final XPathConfigBuilder setXPathFactory (@Nonnull final XPathFactory aXPathFactory)
   {
@@ -77,6 +84,16 @@ public class XPathConfigBuilder
     return m_aXPathFactoryClass;
   }
 
+  /**
+   * Set the {@link XPathFactory} class to instantiate. This has priority 2 and
+   * is only used if {@link #getXPathFactory()} is <code>null</code>.
+   *
+   * @param aXPathFactoryClass
+   *        The factory to use. May not be <code>null</code>.
+   * @return this for chaining.
+   * @see #setXPathFactory(XPathFactory)
+   * @see #setGlobalXPathFactory(String)
+   */
   @Nonnull
   public final XPathConfigBuilder setXPathFactoryClass (@Nonnull final Class <? extends XPathFactory> aXPathFactoryClass)
   {
@@ -88,7 +105,7 @@ public class XPathConfigBuilder
   @Nullable
   public final String getGlobalXPathFactory ()
   {
-    return m_sGlobalXPathFactory;
+    return m_sGlobalXPathFactoryClassName;
   }
 
   /**
@@ -105,11 +122,13 @@ public class XPathConfigBuilder
    *        Most commonly set to
    *        'com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl'.
    * @return this for chaining
+   * @see #setXPathFactory(XPathFactory)
+   * @see #setXPathFactoryClass(Class)
    */
   @Nonnull
   public final XPathConfigBuilder setGlobalXPathFactory (@Nullable final String sGlobalXPathFactory)
   {
-    m_sGlobalXPathFactory = sGlobalXPathFactory;
+    m_sGlobalXPathFactoryClassName = sGlobalXPathFactory;
     return this;
   }
 
@@ -144,40 +163,71 @@ public class XPathConfigBuilder
   {
     // Check if a predefined XPathFactory is present
     XPathFactory aXPathFactory = m_aXPathFactory;
-    if (aXPathFactory == null)
+    if (aXPathFactory != null)
     {
-      if (StringHelper.hasText (m_sGlobalXPathFactory))
-        if (SystemProperties.setPropertyValue ("javax.xml.xpath.XPathFactory", m_sGlobalXPathFactory).isChanged ())
-          LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" + m_sGlobalXPathFactory + "'");
-
+      if (LOGGER.isTraceEnabled ())
+        LOGGER.trace ("Using provided XPathFactory instance");
+    }
+    else
+    {
       if (m_aXPathFactoryClass != null)
       {
+        if (LOGGER.isTraceEnabled ())
+          LOGGER.trace ("Trying to instantiate XPathFactory class " + m_aXPathFactoryClass);
+
         try
         {
-          aXPathFactory = m_aXPathFactoryClass.getConstructor (EMPTY_CLASS_ARRAY).newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
+          aXPathFactory = m_aXPathFactoryClass.getConstructor (ArrayHelper.EMPTY_CLASS_ARRAY)
+                                              .newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
         }
-        catch (final InvocationTargetException e)
+        catch (final InvocationTargetException ex)
         {
-          throw new XPathFactoryConfigurationException (e.getCause ());
+          throw new XPathFactoryConfigurationException (ex.getCause ());
         }
-        catch (final Exception e)
+        catch (final Exception ex)
         {
-          throw new XPathFactoryConfigurationException (e);
+          throw new XPathFactoryConfigurationException (ex);
         }
       }
       else
-        if (StringHelper.hasText (m_sGlobalXPathFactory))
+        if (StringHelper.hasText (m_sGlobalXPathFactoryClassName))
         {
+          if (LOGGER.isTraceEnabled ())
+            LOGGER.trace ("Trying to set global XPathFactory system property to '" +
+                          m_sGlobalXPathFactoryClassName +
+                          "'");
+
+          if (SystemProperties.setPropertyValue ("javax.xml.xpath.XPathFactory", m_sGlobalXPathFactoryClassName)
+                              .isChanged ())
+          {
+            LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" +
+                         m_sGlobalXPathFactoryClassName +
+                         "'");
+          }
+
           // Fall back to the global XPath factory
           aXPathFactory = XPathFactory.newInstance ();
         }
         else
         {
+          LOGGER.warn ("The XPathConfigBuilder contains no clue what XPathFactory to use - using default.");
+
           // DEFAULT as fallback
           aXPathFactory = XPATH_FACTORY_SAXON_FIRST;
         }
     }
 
     return new XPathConfig (aXPathFactory, m_aXPathVariableResolver, m_aXPathFunctionResolver);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("XPathFactory", m_aXPathFactory)
+                                       .append ("XPathFactoryClass", m_aXPathFactoryClass)
+                                       .append ("GlobalXPathFactoryClassName", m_sGlobalXPathFactoryClassName)
+                                       .append ("XPathVariableResolver", m_aXPathVariableResolver)
+                                       .append ("XPathFunctionResolver", m_aXPathFunctionResolver)
+                                       .getToString ();
   }
 }
