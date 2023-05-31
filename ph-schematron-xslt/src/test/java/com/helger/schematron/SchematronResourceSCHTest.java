@@ -18,6 +18,7 @@ package com.helger.schematron;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.transform.Source;
@@ -30,11 +31,11 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
- * Test class for class {@link SchematronHelper}.
+ * Test class for class {@link SchematronResourceSCH}.
  *
  * @author Philip Helger
  */
-public final class SchematronHelperFuncTest
+public final class SchematronResourceSCHTest
 {
   private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
@@ -98,5 +99,12 @@ public final class SchematronHelperFuncTest
     {
       /* expected */
     }
+  }
+
+  @Test
+  public void testReadISOSchematron2016SCH ()
+  {
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromClassPath ("external/schematron/iso-schematron-2016.sch");
+    assertTrue (aSCH.isValidSchematron ());
   }
 }
