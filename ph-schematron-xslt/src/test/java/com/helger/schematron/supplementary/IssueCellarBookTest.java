@@ -42,8 +42,8 @@ public final class IssueCellarBookTest
   {
     if (false)
       SchematronDebug.setDebugMode (true);
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
 
