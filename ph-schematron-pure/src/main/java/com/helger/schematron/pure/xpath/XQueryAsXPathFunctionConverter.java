@@ -24,6 +24,9 @@ import java.net.MalformedURLException;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.iterate.IterableIterator;
@@ -37,6 +40,7 @@ import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.functions.ExecutableFunctionLibrary;
 import net.sf.saxon.functions.FunctionLibrary;
 import net.sf.saxon.functions.FunctionLibraryList;
+import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.query.DynamicQueryContext;
 import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
@@ -52,6 +56,8 @@ import net.sf.saxon.trans.XPathException;
  */
 public class XQueryAsXPathFunctionConverter
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (XQueryAsXPathFunctionConverter.class);
+
   private final String m_sBaseURL;
 
   /**
@@ -136,10 +142,13 @@ public class XQueryAsXPathFunctionConverter
       final Configuration aConfiguration = new Configuration ();
       final DynamicQueryContext aDynamicQueryContext = new DynamicQueryContext (aConfiguration);
       final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
+
       // The base URI required for resolving within the XQuery
       aStaticQueryCtx.setBaseURI (m_sBaseURL);
+
       // null == auto detect
       final String sEncoding = null;
+
       final XQueryExpression exp = aStaticQueryCtx.compileQuery (aXQueryIS, sEncoding);
       final Controller aXQController = exp.newController (aDynamicQueryContext);
 
@@ -147,7 +156,6 @@ public class XQueryAsXPathFunctionConverter
       final FunctionLibraryList aFuncLibList = exp.getExecutable ().getFunctionLibrary ();
       for (final FunctionLibrary aFuncLib : aFuncLibList.getLibraryList ())
       {
-        // Ignore all Vendor, System etc. internal libraries
         if (aFuncLib instanceof FunctionLibraryList)
         {
           // This block works with Saxon HE 9.5.1-x :)
@@ -157,16 +165,34 @@ public class XQueryAsXPathFunctionConverter
           {
             // Currently the user functions are in ExecutableFunctionLibrary
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
-              for (final UserFunction aUserFunc : new IterableIterator <> (((ExecutableFunctionLibrary) aNestedFuncLib).getAllFunctions ()))
+            {
+              final ExecutableFunctionLibrary aExecNestedFuncLib = (ExecutableFunctionLibrary) aNestedFuncLib;
+              for (final UserFunction aUserFunc : new IterableIterator <> (aExecNestedFuncLib.getAllFunctions ()))
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
-                aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
-                                                     aUserFunc.getFunctionName ().getLocalPart (),
+                final StructuredQName aFN = aUserFunc.getFunctionName ();
+                aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getURI (),
+                                                     aFN.getLocalPart (),
                                                      aUserFunc.getArity (),
                                                      new XPathFunctionFromUserFunction (aConfiguration,
                                                                                         aXQController,
                                                                                         aUserFunc));
+                if (LOGGER.isDebugEnabled ())
+                  LOGGER.debug ("Registered user function '" +
+                                aFN.getNamespaceBinding ().getPrefix () +
+                                ":" +
+                                aFN.getLocalPart () +
+                                "' with arity of " +
+                                aUserFunc.getArity ());
               }
+            }
+            else
+            {
+              // Ignore all Vendor, System etc. internal libraries
+              if (LOGGER.isDebugEnabled ())
+                LOGGER.debug ("Ignoring other nested function library of type " +
+                              aNestedFuncLib.getClass ().getName ());
+            }
           }
         }
         else
@@ -177,13 +203,30 @@ public class XQueryAsXPathFunctionConverter
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();
-              aFunctionResolver.addUniqueFunction (aXQueryFunction.getFunctionName ().getNamespaceBinding ().getURI (),
-                                                   aXQueryFunction.getFunctionName ().getLocalPart (),
+
+              final StructuredQName aFN = aXQueryFunction.getFunctionName ();
+
+              aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getURI (),
+                                                   aFN.getLocalPart (),
                                                    aXQueryFunction.getNumberOfArguments (),
                                                    new XPathFunctionFromUserFunction (aConfiguration,
                                                                                       aXQController,
                                                                                       aXQueryFunction.getUserFunction ()));
+
+              if (LOGGER.isDebugEnabled ())
+                LOGGER.debug ("Registered user function '" +
+                              aFN.getNamespaceBinding ().getPrefix () +
+                              ":" +
+                              aFN.getLocalPart () +
+                              "' with arity of " +
+                              aXQueryFunction.getNumberOfArguments ());
             }
+          }
+          else
+          {
+            // Ignore all Vendor, System etc. internal libraries
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("Ignoring other function library of type " + aFuncLib.getClass ().getName ());
           }
       }
 

@@ -23,6 +23,9 @@ import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
 
 import net.sf.saxon.Configuration;
@@ -41,6 +44,8 @@ import net.sf.saxon.om.StructuredQName;
  */
 public final class XPathFunctionFromUserFunction implements XPathFunction
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (XPathFunctionFromUserFunction.class);
+
   private final Configuration m_aConfiguration;
   private final Controller m_aXQController;
   private final UserFunction m_aUserFunc;
@@ -73,8 +78,10 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
   }
 
   @Nullable
-  public Object evaluate (final List <?> aArgs) throws XPathFunctionException
+  public Object evaluate (@Nonnull final List <?> aArgs) throws XPathFunctionException
   {
+    LOGGER.info ("Evaluating user function '" + getFunctionName () + "' with " + aArgs.size () + " parameter(s)");
+
     try
     {
       // Convert the parameters
