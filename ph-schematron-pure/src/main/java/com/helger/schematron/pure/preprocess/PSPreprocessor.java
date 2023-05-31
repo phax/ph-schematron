@@ -290,11 +290,14 @@ public class PSPreprocessor
    *        A list consisting of {@link PSAssertReport} and {@link PSExtends}
    *        objects. Never <code>null</code>.
    * @param aLookup
-   *        The rule lookup object
+   *        The rule lookup object. Never <code>null</code>.
+   * @param aIDPool
+   *        The ID pool to use for unique IDs. May not be <code>null</code>.
    * @throws SchematronPreprocessException
    *         If the base rule of an extends object could not be resolved.
    */
-  private void _resolveRuleContent (@Nonnull final ICommonsList <IPSElement> aRuleContent,
+  private void _resolveRuleContent (@Nonnull final PSPattern aOwningPattern,
+                                    @Nonnull final ICommonsList <IPSElement> aRuleContent,
                                     @Nonnull final PreprocessorLookup aLookup,
                                     @Nonnull final PreprocessorIDPool aIDPool,
                                     @Nullable final ICommonsMap <String, String> aParamValueMap,
@@ -318,8 +321,21 @@ public class PSPreprocessor
                                                    "' in extends statement. Available rules are: " +
                                                    aLookup.getAllAbstractRuleIDs ());
 
+        // check if base rule belongs to the same pattern as the base rule
+        if (!aOwningPattern.containsRule (aBaseRule))
+          throw new SchematronPreprocessException ("The rule with ID '" +
+                                                   sRuleID +
+                                                   "' belongs to a different pattern (with ID '" +
+                                                   aOwningPattern.getID () +
+                                                   "') then the rule that is extending it.");
+
         // Recursively resolve the extends of the base rule
-        _resolveRuleContent (aBaseRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, aTargetRule);
+        _resolveRuleContent (aOwningPattern,
+                             aBaseRule.getAllContentElements (),
+                             aLookup,
+                             aIDPool,
+                             aParamValueMap,
+                             aTargetRule);
 
         // Copy all lets
         for (final PSLet aBaseLet : aBaseRule.getAllLets ())
@@ -329,7 +345,8 @@ public class PSPreprocessor
   }
 
   @Nullable
-  private PSRule _getPreprocessedRule (@Nonnull final PSRule aRule,
+  private PSRule _getPreprocessedRule (@Nonnull final PSPattern aOwningPattern,
+                                       @Nonnull final PSRule aRule,
                                        @Nonnull final PreprocessorLookup aLookup,
                                        @Nonnull final PreprocessorIDPool aIDPool,
                                        @Nullable final ICommonsMap <String, String> aParamValueMap) throws SchematronPreprocessException
@@ -351,7 +368,10 @@ public class PSPreprocessor
       throw new SchematronPreprocessException ("Cannot preprocess <rule> with an <include>");
     for (final PSLet aLet : aRule.getAllLets ())
       ret.addLet (aLet.getClone ());
-    _resolveRuleContent (aRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, ret);
+
+    // Preprocess assert/report and resolve abstract rules
+    _resolveRuleContent (aOwningPattern, aRule.getAllContentElements (), aLookup, aIDPool, aParamValueMap, ret);
+
     ret.addForeignElements (aRule.getAllForeignElements ());
     ret.addForeignAttributes (aRule.getAllForeignAttributes ());
     return ret;
@@ -408,7 +428,11 @@ public class PSPreprocessor
         else
           if (aElement instanceof PSRule)
           {
-            final PSRule aMinifiedRule = _getPreprocessedRule ((PSRule) aElement, aLookup, aIDPool, aParamValueMap);
+            final PSRule aMinifiedRule = _getPreprocessedRule (aPattern,
+                                                               (PSRule) aElement,
+                                                               aLookup,
+                                                               aIDPool,
+                                                               aParamValueMap);
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
@@ -425,7 +449,7 @@ public class PSPreprocessor
         else
           if (aElement instanceof PSRule)
           {
-            final PSRule aMinifiedRule = _getPreprocessedRule ((PSRule) aElement, aLookup, aIDPool, null);
+            final PSRule aMinifiedRule = _getPreprocessedRule (aPattern, (PSRule) aElement, aLookup, aIDPool, null);
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
