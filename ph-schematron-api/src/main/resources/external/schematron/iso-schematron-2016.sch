@@ -39,14 +39,20 @@ AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
     
     <!--Abstract Rules -->
     <sch:rule abstract="true" id="second-level">
-      <sch:assert test="../svrl:schematron-output">The <sch:name /> element is a child of schematron-output.</sch:assert>
+      <sch:assert test="../svrl:schematron-output">
+        The <sch:name /> element is a child of schematron-output.
+      </sch:assert>
     </sch:rule>
     <sch:rule abstract="true" id="childless">
-      <sch:assert test="count(*)=0">The <sch:name /> element should not contain any elements.</sch:assert>
+      <sch:assert test="count(*)=0">
+        The <sch:name /> element should not contain any elements.
+      </sch:assert>
     </sch:rule>
     <sch:rule abstract="true" id="empty">
       <sch:extends rule="childless" />
-      <sch:assert test="string-length(normalize-space(.)) = 0">The <sch:name /> element should be empty.</sch:assert>
+      <sch:assert test="string-length(normalize-space(.)) = 0">
+        The <sch:name /> element should be empty.
+      </sch:assert>
     </sch:rule>
     
     <!-- Rules-->
@@ -108,7 +114,7 @@ AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
       </sch:assert>
       <sch:assert test="preceding-sibling::svrl:fired-rule | 
                         preceding-sibling::svrl:failed-assert |
-                        preceding-sibling::svrl:successfulreport ">
+                        preceding-sibling::svrl:successful-report ">
         A <sch:name /> comes after a fired-rule, a failed-assert or a successful-report.
       </sch:assert>
     </sch:rule>
@@ -124,7 +130,7 @@ AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
   <sch:pattern>
     <sch:title>Unique Ids</sch:title>
     <sch:rule context="*[@id]">
-      <!-- current() is an XSLT variable -->
+      <!-- current() is an XSLT function -->
       <!-- [PH] added trailing ")" -->
       <sch:assert test="not(preceding::*[@id=current()/@id][1])">
         Id attributes should be unique in a document.
