@@ -375,18 +375,26 @@ public class PSPreprocessor
     ret.setRich (aPattern.getRichClone ());
     if (aPattern.hasAnyInclude ())
       throw new SchematronPreprocessException ("Cannot preprocess <pattern> with an <include>");
+
     if (m_bKeepTitles && aPattern.hasTitle ())
       ret.setTitle (aPattern.getTitle ().getClone ());
 
     final String sIsA = aPattern.getIsA ();
     if (sIsA != null)
     {
+      // Search base pattern via "is-a"
       final PSPattern aBasePattern = aLookup.getAbstractPatternOfID (sIsA);
       if (aBasePattern == null)
         throw new SchematronPreprocessException ("Failed to resolve the pattern denoted by is-a='" + sIsA + "'");
 
       if (!ret.hasID ())
+      {
+        // See issue #146
+        LOGGER.warn ("The instance of the abstract pattern denoted with is-a='" +
+                     sIsA +
+                     "' should have an 'id' attribute to work with ISO Schematron as well");
         ret.setID (aIDPool.getUniqueID (aBasePattern.getID ()));
+      }
       if (!ret.hasRich ())
         ret.setRich (aBasePattern.getRichClone ());
 
@@ -421,7 +429,7 @@ public class PSPreprocessor
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
-        // params must beben resolved
+        // params must been resolved
         // ps are ignored
       }
     }
