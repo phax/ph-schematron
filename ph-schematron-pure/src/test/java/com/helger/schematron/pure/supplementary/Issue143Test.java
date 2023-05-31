@@ -23,7 +23,6 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,6 @@ public final class Issue143Test
   }
 
   @Test
-  @Ignore
   public void testIssue () throws Exception
   {
     validateAndProduceSVRL (new File ("src/test/resources/external/issues/github143/schematron.sch"),
