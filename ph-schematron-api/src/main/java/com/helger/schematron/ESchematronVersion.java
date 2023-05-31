@@ -36,6 +36,8 @@ public enum ESchematronVersion implements IHasID <String>
   SCHEMATRON_2016 ("sch2016"),
   SCHEMATRON_2020 ("sch2020");
 
+  public static final ESchematronVersion LATEST = SCHEMATRON_2020;
+
   private final String m_sID;
 
   ESchematronVersion (@Nonnull @Nonempty final String sID)

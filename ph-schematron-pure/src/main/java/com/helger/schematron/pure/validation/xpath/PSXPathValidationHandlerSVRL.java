@@ -178,7 +178,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   public void onPattern (@Nonnull final PSPattern aPattern)
   {
     final ActivePattern aRetPattern = new ActivePattern ();
-    // TODO document
+    // TODO documents
     aRetPattern.setId (aPattern.getID ());
     // TODO name
     // TODO role

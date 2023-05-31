@@ -96,7 +96,7 @@
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
-        <version>12.2</version>
+        <version>11.5</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>

@@ -160,10 +160,7 @@ public class XQueryAsXPathFunctionConverter
               for (final UserFunction aUserFunc : new IterableIterator <> (((ExecutableFunctionLibrary) aNestedFuncLib).getAllFunctions ()))
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
-                aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ()
-                                                              .getNamespaceBinding ()
-                                                              .getNamespaceUri ()
-                                                              .toString (),
+                aFunctionResolver.addUniqueFunction (aUserFunc.getFunctionName ().getNamespaceBinding ().getURI (),
                                                      aUserFunc.getFunctionName ().getLocalPart (),
                                                      aUserFunc.getArity (),
                                                      new XPathFunctionFromUserFunction (aConfiguration,
@@ -180,12 +177,9 @@ public class XQueryAsXPathFunctionConverter
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();
-              aFunctionResolver.addUniqueFunction (aXQueryFunction.getFunctionName ()
-                                                                  .getNamespaceBinding ()
-                                                                  .getNamespaceUri ()
-                                                                  .toString (),
+              aFunctionResolver.addUniqueFunction (aXQueryFunction.getFunctionName ().getNamespaceBinding ().getURI (),
                                                    aXQueryFunction.getFunctionName ().getLocalPart (),
-                                                   aXQueryFunction.getNumberOfParameters (),
+                                                   aXQueryFunction.getNumberOfArguments (),
                                                    new XPathFunctionFromUserFunction (aConfiguration,
                                                                                       aXQController,
                                                                                       aXQueryFunction.getUserFunction ()));

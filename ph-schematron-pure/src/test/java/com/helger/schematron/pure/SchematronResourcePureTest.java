@@ -30,7 +30,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -327,8 +326,6 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  // TODO Saxon 12 issue
-  @Ignore ("Fails in Saxon 12.0/12.1/12.2 - works in Saxon 11.4")
   public void testResolveFunctXAreDistinctValuesQueryFunctions () throws Exception
   {
     final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
@@ -372,13 +369,12 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  // TODO Saxon 12 issue
-  @Ignore ("Fails in Saxon 12.0/12.1/12.2 - works in Saxon 11.4")
   public void testSaxon12Bug () throws Exception
   {
     final XPath xPath = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
                                                   "net.sf.saxon.xpath.XPathFactoryImpl",
-                                                  ClassLoaderHelper.getContextClassLoader ()).newXPath ();
+                                                  ClassLoaderHelper.getContextClassLoader ())
+                                    .newXPath ();
     assertNotNull (xPath);
     assertTrue (xPath instanceof net.sf.saxon.xpath.XPathEvaluator);
 
