@@ -51,7 +51,7 @@ public final class Issue143Test
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
     // XXX Should be 1 but is currently 0
-    assertEquals (1, SVRLHelper.getAllFailedAssertions (aSVRL).size ());
+    assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
