@@ -89,7 +89,7 @@ public final class PSQueryBindingRegistry
   public static final IPSQueryBinding DEFAULT_QUERY_BINDING = PSXPathQueryBinding.getInstance ();
 
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
-  private static final ICommonsMap <String, IPSQueryBinding> s_aMap = new CommonsHashMap <> ();
+  private static final ICommonsMap <String, IPSQueryBinding> MAP = new CommonsHashMap <> ();
 
   static
   {
@@ -123,9 +123,9 @@ public final class PSQueryBindingRegistry
     ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
 
     RW_LOCK.writeLockedThrowing ( () -> {
-      if (s_aMap.containsKey (sName))
+      if (MAP.containsKey (sName))
         throw new SchematronBindException ("A queryBinding with the name '" + sName + "' is already registered!");
-      s_aMap.put (sName, aQueryBinding);
+      MAP.put (sName, aQueryBinding);
     });
   }
 
@@ -144,7 +144,7 @@ public final class PSQueryBindingRegistry
     if (sName == null)
       return DEFAULT_QUERY_BINDING;
 
-    return RW_LOCK.readLockedGet ( () -> s_aMap.get (sName));
+    return RW_LOCK.readLockedGet ( () -> MAP.get (sName));
   }
 
   /**
@@ -173,6 +173,6 @@ public final class PSQueryBindingRegistry
   @ReturnsMutableCopy
   public static ICommonsMap <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
   {
-    return RW_LOCK.readLockedGet (s_aMap::getClone);
+    return RW_LOCK.readLockedGet (MAP::getClone);
   }
 }
