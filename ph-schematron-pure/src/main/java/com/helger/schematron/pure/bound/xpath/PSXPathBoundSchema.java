@@ -16,9 +16,7 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
@@ -45,7 +43,6 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.state.EContinue;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -86,7 +83,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
 
   private final IXPathConfig m_aXPathConfig;
-  private boolean m_bUseParallel = false;
 
   // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
@@ -239,7 +235,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final ICommonsList <PSXPathBoundPattern> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
 
-    // For all relevant patterns
+    // For all relevant patterns (e.g. phase-limited)
     for (final PSPattern aPattern : getAllRelevantPatterns ())
     {
       // Handle pattern specific variables
@@ -280,7 +276,24 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           aRuleVariables = aPatternVariables;
         }
 
-        // TODO
+        // Now all variables need to be resolved against the XPath context to
+        // make sense
+        final PSXPathVariables aBoundRuleVariables = new PSXPathVariables ();
+        {
+          for (final Map.Entry <String, String> aEntry : aRuleVariables.getAll ().entrySet ())
+          {
+            final String sPlainValue = aEntry.getValue ();
+            try
+            {
+              final XPathExpression aBoundVariableValue = _compileXPath (aXPathContext, sPlainValue);
+            }
+            catch (final XPathExpressionException ex)
+            {
+              error (aRule, "Failed to compile XPath expression in <let>: '" + sPlainValue + "'", ex);
+              bHasAnyError = true;
+            }
+          }
+        }
 
         // For all contained assert and reports within the current rule
         final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList <> ();
@@ -397,16 +410,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       {
         throw new SchematronBindException ("Failed to create XPath configuration", ex);
       }
-  }
-
-  public boolean isUseParallel ()
-  {
-    return m_bUseParallel;
-  }
-
-  public void setUseParallel (final boolean b)
-  {
-    m_bUseParallel = b;
   }
 
   @Nonnull
@@ -528,144 +531,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   {
     @Nonnull
     ELocalActionResult run () throws SchematronValidationException;
-  }
-
-  private void _validateParallel (@Nonnull final Node aNode,
-                                  @Nullable final String sBaseURI,
-                                  @Nonnull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
-  {
-    final PSSchema aSchema = getOriginalSchema ();
-    final PSPhase aPhase = getPhase ();
-
-    LOGGER.warn ("You are using an experimental feature - handle with care and don't use in production!");
-
-    // Call the "start" callback method
-    aValidationHandler.onStart (aSchema, aPhase, sBaseURI);
-
-    // For all bound patterns
-    for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
-    {
-      final PSPattern aPattern = aBoundPattern.getPattern ();
-      final List <ILocalAction> actions = new Vector <> ();
-      actions.add ( () -> {
-        aValidationHandler.onPattern (aPattern);
-        return ELocalActionResult.UNDEFINED;
-      });
-
-      // For all bound rules
-      aBoundPattern.getAllBoundRules ().parallelStream ().forEach (aBoundRule -> {
-        final PSRule aRule = aBoundRule.getRule ();
-
-        // Find all nodes matching the rules
-        final NodeList aRuleContextNodes;
-        try
-        {
-          aRuleContextNodes = XPathEvaluationHelper.evaluateAsNodeList (aBoundRule.getBoundRuleContext (),
-                                                                        aNode,
-                                                                        sBaseURI);
-        }
-        catch (final XPathExpressionException ex)
-        {
-          // Handle the cause, because it is usually a wrapper only
-          error (aRule,
-                 "Failed to evaluate XPath expression to a nodeset: '" + aBoundRule.getRuleContext () + "'",
-                 ex.getCause () != null ? ex.getCause () : ex);
-          return;
-        }
-
-        actions.add ( () -> {
-          aValidationHandler.onRuleStart (aRule, aRuleContextNodes);
-          return ELocalActionResult.UNDEFINED;
-        });
-
-        // Check each node, if it matches the assert/report
-        final int nRuleMatchingNodes = aRuleContextNodes.getLength ();
-        for (int nMatchedNode = 0; nMatchedNode < nRuleMatchingNodes; ++nMatchedNode)
-        {
-          // XSLT does "fired-rule" for each node
-          final int nFinalMatchedNode = nMatchedNode;
-          actions.add ( () -> {
-            aValidationHandler.onFiredRule (aRule, aBoundRule.getRuleContext (), nFinalMatchedNode, nRuleMatchingNodes);
-            return ELocalActionResult.UNDEFINED;
-          });
-
-          // For all contained assert and report elements
-          aBoundRule.getAllBoundAssertReports ().parallelStream ().forEach (aBoundAssertReport -> {
-            final PSAssertReport aAssertReport = aBoundAssertReport.getAssertReport ();
-            final boolean bIsAssert = aAssertReport.isAssert ();
-            final XPathExpression aTestExpression = aBoundAssertReport.getBoundTestExpression ();
-
-            final Node aRuleMatchingNode = aRuleContextNodes.item (nFinalMatchedNode);
-            try
-            {
-              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExpression,
-                                                                                   aRuleMatchingNode,
-                                                                                   sBaseURI);
-              if (bIsAssert)
-              {
-                // It's an assert
-                if (!bTestResult)
-                {
-                  // Assert failed
-                  actions.add ( () -> {
-                    final EContinue eContinue = aValidationHandler.onFailedAssert (aAssertReport,
-                                                                                   aBoundAssertReport.getTestExpression (),
-                                                                                   aRuleMatchingNode,
-                                                                                   nFinalMatchedNode,
-                                                                                   aBoundAssertReport);
-                    return eContinue.isContinue () ? ELocalActionResult.CONTINUE : ELocalActionResult.BREAK;
-                  });
-
-                }
-              }
-              else
-              {
-                // It's a report
-                if (bTestResult)
-                {
-                  // Successful report
-                  actions.add ( () -> {
-                    final EContinue eContinue = aValidationHandler.onSuccessfulReport (aAssertReport,
-                                                                                       aBoundAssertReport.getTestExpression (),
-                                                                                       aRuleMatchingNode,
-                                                                                       nFinalMatchedNode,
-                                                                                       aBoundAssertReport);
-                    return eContinue.isContinue () ? ELocalActionResult.CONTINUE : ELocalActionResult.BREAK;
-                  });
-                }
-              }
-            }
-            catch (final XPathExpressionException ex)
-            {
-              error (aRule,
-                     "Failed to evaluate XPath expression to a boolean: '" +
-                            aBoundAssertReport.getTestExpression () +
-                            "'",
-                     ex.getCause () != null ? ex.getCause () : ex);
-            }
-          });
-        }
-      });
-
-      // Process all actions afterwards
-      for (final ILocalAction x : actions)
-        try
-        {
-          final ELocalActionResult eLAR = x.run ();
-          if (eLAR == ELocalActionResult.BREAK)
-          {
-            // Happens only on fail-early Assertions
-            return;
-          }
-        }
-        catch (final SchematronValidationException ex)
-        {
-          throw ex;
-        }
-    }
-
-    // Call the "end" callback method
-    aValidationHandler.onEnd (aSchema, aPhase);
   }
 
   private void _validateSerial (@Nonnull final Node aNode,
@@ -790,10 +655,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     if (m_aBoundPatterns == null)
       throw new IllegalStateException ("bind was never called!");
 
-    if (m_bUseParallel)
-      _validateParallel (aNode, sBaseURI, aValidationHandler);
-    else
-      _validateSerial (aNode, sBaseURI, aValidationHandler);
+    _validateSerial (aNode, sBaseURI, aValidationHandler);
   }
 
   @Override

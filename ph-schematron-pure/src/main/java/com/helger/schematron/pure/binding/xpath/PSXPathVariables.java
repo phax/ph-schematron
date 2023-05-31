@@ -44,6 +44,7 @@ public class PSXPathVariables implements IPSXPathVariables
   @ReturnsMutableCopy
   private static ICommonsNavigableMap <String, String> _createMap ()
   {
+    // Longest must be first
     return new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
   }
 

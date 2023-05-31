@@ -63,7 +63,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   private final MapBasedNamespaceContext m_aNamespaceContext;
   private final String m_sPhaseID;
   private final PSPhase m_aPhase;
-  private final ICommonsList <PSPattern> m_aPatterns = new CommonsArrayList <> ();
+  private final ICommonsList <PSPattern> m_aRelevantPatterns = new CommonsArrayList <> ();
   private final IPSValidationHandler m_aCustomValidationHandler;
 
   public AbstractPSBoundSchema (@Nonnull final IPSQueryBinding aQueryBinding,
@@ -105,7 +105,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     if (m_aPhase == null)
     {
       // Apply all patterns
-      m_aPatterns.addAll (aOrigSchema.getAllPatterns ());
+      m_aRelevantPatterns.addAll (aOrigSchema.getAllPatterns ());
     }
     else
     {
@@ -126,15 +126,17 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
         else
         {
           // Add the pattern of this phase
-          m_aPatterns.add (aPattern);
+          m_aRelevantPatterns.add (aPattern);
         }
       }
     }
-    if (m_aPatterns.isEmpty ())
+    if (m_aRelevantPatterns.isEmpty ())
+    {
       if (m_aPhase == null)
         error (aOrigSchema, "No patterns found in schema!");
       else
         error (aOrigSchema, "No patterns found in schema for phase '" + m_aPhase.getID () + "!");
+    }
 
     m_aCustomValidationHandler = aCustomValidationHandler;
   }
@@ -220,7 +222,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   @ReturnsMutableCopy
   public final ICommonsList <PSPattern> getAllRelevantPatterns ()
   {
-    return m_aPatterns.getClone ();
+    return m_aRelevantPatterns.getClone ();
   }
 
   @Nullable
@@ -269,7 +271,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                                        .append ("NamespaceContext", m_aNamespaceContext)
                                        .appendIfNotNull ("PhaseID", m_sPhaseID)
                                        .appendIfNotNull ("Phase", m_aPhase)
-                                       .append ("Patterns", m_aPatterns)
+                                       .append ("Patterns", m_aRelevantPatterns)
                                        .getToString ();
   }
 }
