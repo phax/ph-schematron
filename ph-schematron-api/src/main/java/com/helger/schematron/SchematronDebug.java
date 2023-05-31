@@ -33,13 +33,15 @@ import com.helger.commons.ValueEnforcer;
 @ThreadSafe
 public final class SchematronDebug
 {
-  private static final AtomicBoolean SAVE_INTERMEDIATE_XSLT_FILES = new AtomicBoolean (false);
+  public static final boolean DEFAULT_DEBUG = false;
+
+  private static final AtomicBoolean SAVE_INTERMEDIATE_XSLT_FILES = new AtomicBoolean (DEFAULT_DEBUG);
   private static File s_aIntermediateMinifiedSCHFolder = new File ("generated/test-minified");
   private static File s_aIntermediateFinalXSLTFolder = new File ("generated/test-final");
-  private static final AtomicBoolean SHOW_CREATED_XSLT = new AtomicBoolean (false);
-  private static final AtomicBoolean SHOW_CREATED_SVRL = new AtomicBoolean (false);
-  private static final AtomicBoolean SHOW_PREPROCESSED_SCH = new AtomicBoolean (false);
-  private static final AtomicBoolean SHOW_RESOLVED_SOURCE_SCH = new AtomicBoolean (false);
+  private static final AtomicBoolean SHOW_CREATED_XSLT = new AtomicBoolean (DEFAULT_DEBUG);
+  private static final AtomicBoolean SHOW_CREATED_SVRL = new AtomicBoolean (DEFAULT_DEBUG);
+  private static final AtomicBoolean SHOW_PREPROCESSED_SCH = new AtomicBoolean (DEFAULT_DEBUG);
+  private static final AtomicBoolean SHOW_RESOLVED_SOURCE_SCH = new AtomicBoolean (DEFAULT_DEBUG);
 
   private SchematronDebug ()
   {}
@@ -63,6 +65,19 @@ public final class SchematronDebug
     setShowCreatedSVRL (bDebugMode);
     setShowResolvedSourceSchematron (bDebugMode);
     setShowPreprocessedSchematron (bDebugMode);
+  }
+
+  public static void inDebugMode (@Nonnull final Runnable aRun)
+  {
+    setDebugMode (true);
+    try
+    {
+      aRun.run ();
+    }
+    finally
+    {
+      setDebugMode (false);
+    }
   }
 
   /**
