@@ -186,20 +186,15 @@ public class PSRule implements
     return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
-  public void setFlag (@Nullable final String sFlag)
-  {
-    m_sFlag = sFlag;
-  }
-
   @Nullable
   public String getFlag ()
   {
     return m_sFlag;
   }
 
-  public void setRich (@Nullable final PSRichGroup aRich)
+  public void setFlag (@Nullable final String sFlag)
   {
-    m_aRich = aRich;
+    m_sFlag = sFlag;
   }
 
   @Nullable
@@ -208,9 +203,9 @@ public class PSRule implements
     return m_aRich;
   }
 
-  public void setLinkable (@Nullable final PSLinkableGroup aLinkable)
+  public void setRich (@Nullable final PSRichGroup aRich)
   {
-    m_aLinkable = aLinkable;
+    m_aRich = aRich;
   }
 
   @Nullable
@@ -219,13 +214,9 @@ public class PSRule implements
     return m_aLinkable;
   }
 
-  /**
-   * @param bAbstract
-   *        The abstract state of this rule.
-   */
-  public void setAbstract (final boolean bAbstract)
+  public void setLinkable (@Nullable final PSLinkableGroup aLinkable)
   {
-    m_bAbstract = bAbstract;
+    m_aLinkable = aLinkable;
   }
 
   /**
@@ -237,9 +228,13 @@ public class PSRule implements
     return m_bAbstract;
   }
 
-  public void setContext (@Nullable final String sContext)
+  /**
+   * @param bAbstract
+   *        The abstract state of this rule.
+   */
+  public void setAbstract (final boolean bAbstract)
   {
-    m_sContext = sContext;
+    m_bAbstract = bAbstract;
   }
 
   @Nullable
@@ -248,9 +243,9 @@ public class PSRule implements
     return m_sContext;
   }
 
-  public void setID (@Nullable final String sID)
+  public void setContext (@Nullable final String sContext)
   {
-    m_sID = sID;
+    m_sContext = sContext;
   }
 
   @Nullable
@@ -259,10 +254,9 @@ public class PSRule implements
     return m_sID;
   }
 
-  public void addInclude (@Nonnull final PSInclude aInclude)
+  public void setID (@Nullable final String sID)
   {
-    ValueEnforcer.notNull (aInclude, "Include");
-    m_aContent.add (aInclude);
+    m_sID = sID;
   }
 
   public boolean hasAnyInclude ()
@@ -277,10 +271,10 @@ public class PSRule implements
     return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
-  public void addLet (@Nonnull final PSLet aLet)
+  public void addInclude (@Nonnull final PSInclude aInclude)
   {
-    ValueEnforcer.notNull (aLet, "Let");
-    m_aContent.add (aLet);
+    ValueEnforcer.notNull (aInclude, "Include");
+    m_aContent.add (aInclude);
   }
 
   public boolean hasAnyLet ()
@@ -293,6 +287,12 @@ public class PSRule implements
   public ICommonsList <PSLet> getAllLets ()
   {
     return m_aContent.getAllInstanceOf (PSLet.class);
+  }
+
+  public void addLet (@Nonnull final PSLet aLet)
+  {
+    ValueEnforcer.notNull (aLet, "Let");
+    m_aContent.add (aLet);
   }
 
   @Nonnull
@@ -309,12 +309,6 @@ public class PSRule implements
     return ret;
   }
 
-  public void addAssertReport (@Nonnull final PSAssertReport aAssertReport)
-  {
-    ValueEnforcer.notNull (aAssertReport, "AssertReport");
-    m_aContent.add (aAssertReport);
-  }
-
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <PSAssertReport> getAllAssertReports ()
@@ -322,10 +316,10 @@ public class PSRule implements
     return m_aContent.getAllInstanceOf (PSAssertReport.class);
   }
 
-  public void addExtends (@Nonnull final PSExtends aExtends)
+  public void addAssertReport (@Nonnull final PSAssertReport aAssertReport)
   {
-    ValueEnforcer.notNull (aExtends, "Extends");
-    m_aContent.add (aExtends);
+    ValueEnforcer.notNull (aAssertReport, "AssertReport");
+    m_aContent.add (aAssertReport);
   }
 
   @Nonnull
@@ -344,6 +338,12 @@ public class PSRule implements
   public boolean hasAnyExtends ()
   {
     return m_aContent.containsAny (PSExtends.class::isInstance);
+  }
+
+  public void addExtends (@Nonnull final PSExtends aExtends)
+  {
+    ValueEnforcer.notNull (aExtends, "Extends");
+    m_aContent.add (aExtends);
   }
 
   /**
@@ -373,10 +373,12 @@ public class PSRule implements
     if (m_aLinkable != null)
       m_aLinkable.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
+    {
       if (aContent instanceof IMicroElement)
         ret.appendChild (((IMicroElement) aContent).getClone ());
       else
         ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+    }
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
