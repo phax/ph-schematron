@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xml>
+  <owner id="o1" />
+  <car id="c1" owner="o1" />
+
+  <owner id="o2" />
+  <car id="c2" owner="o2" />
+  <car id="c3" owner="o2" />
+</xml>
