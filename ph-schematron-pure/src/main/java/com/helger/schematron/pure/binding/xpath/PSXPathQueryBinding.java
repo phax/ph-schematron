@@ -83,6 +83,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   @ReturnsMutableCopy
   public ICommonsNavigableMap <String, String> getStringReplacementMap (@Nonnull final List <PSParam> aParams)
   {
+    // Longest matches must go first
     final ICommonsNavigableMap <String, String> ret = new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
     for (final PSParam aParam : aParams)
       ret.put (PARAM_VARIABLE_PREFIX + aParam.getName (), aParam.getValue ());
@@ -101,8 +102,9 @@ public class PSXPathQueryBinding implements IPSQueryBinding
       return sText;
     }
     final String ret = StringHelper.replaceMultiple (sText, aStringReplacements);
-    if (false && ret.indexOf (PARAM_VARIABLE_PREFIX) >= 0)
-      LOGGER.warn ("Text still contains variables after replacement: " + ret);
+    if (false)
+      if (ret.indexOf (PARAM_VARIABLE_PREFIX) >= 0)
+        LOGGER.warn ("Text still contains variables after replacement: " + ret);
     return ret;
   }
 

@@ -24,6 +24,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.transform.SourceLocator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
@@ -43,7 +44,6 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.location.ILocation;
 import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EContinue;
 import com.helger.commons.string.ToStringGenerator;
@@ -73,7 +73,6 @@ import com.helger.xml.xpath.XPathHelper;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.ErrorReporter;
-import net.sf.saxon.s9api.XmlProcessingError;
 import net.sf.saxon.xpath.XPathEvaluator;
 
 /**
@@ -137,9 +136,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           }
           catch (final XPathExpressionException ex)
           {
-            error (aName,
-                   "Failed to compile XPath expression in <name>: '" + sPath + "'",
-                   ex.getCause () != null ? ex.getCause () : ex);
+            error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex);
             bHasAnyError = true;
           }
         }
@@ -283,6 +280,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           aRuleVariables = aPatternVariables;
         }
 
+        // TODO
+
         // For all contained assert and reports within the current rule
         final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList <> ();
         for (final PSAssertReport aAssertReport : aRule.getAllAssertReports ())
@@ -334,9 +333,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         }
         catch (final XPathExpressionException ex)
         {
-          error (aRule,
-                 "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'",
-                 ex.getCause () != null ? ex.getCause () : ex);
+          error (aRule, "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'", ex);
           bHasAnyError = true;
         }
       }
@@ -431,25 +428,17 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
       // Wrap the PSErrorHandler to a ErrorListener
       final Function <Configuration, ? extends ErrorReporter> aErrReporterFactory = cfg -> {
-        final IPSErrorHandler aErrHdl = getErrorHandler ();
-        return (final XmlProcessingError aXmlError) -> {
-          final ILocation aLocation = aXmlError.getLocation () == null ? null
-                                                                       : new SimpleLocation (aXmlError.getLocation ()
-                                                                                                      .getSystemId (),
-                                                                                             aXmlError.getLocation ()
-                                                                                                      .getLineNumber (),
-                                                                                             aXmlError.getLocation ()
-                                                                                                      .getColumnNumber ());
-          aErrHdl.handleError (SingleError.builder ()
-                                          .errorLevel (aXmlError.isWarning () ? EErrorLevel.WARN : EErrorLevel.ERROR)
-                                          .errorID (aXmlError.getErrorCode () != null ? aXmlError.getErrorCode ()
-                                                                                                 .toString ()
-                                                                                      : null)
-                                          .errorLocation (aLocation)
-                                          .errorText (aXmlError.getMessage ())
-                                          .linkedException (aXmlError.getCause ())
-                                          .build ());
-        };
+        final IPSErrorHandler aPSErrHdl = getErrorHandler ();
+        return aSaxonError -> aPSErrHdl.handleError (SingleError.builder ()
+                                                                .errorLevel (aSaxonError.isWarning () ? EErrorLevel.WARN
+                                                                                                      : EErrorLevel.ERROR)
+                                                                .errorID (aSaxonError.getErrorCode () != null ? aSaxonError.getErrorCode ()
+                                                                                                                           .toString ()
+                                                                                                              : null)
+                                                                .errorLocation (SimpleLocation.create ((SourceLocator) aSaxonError.getLocation ()))
+                                                                .errorText (aSaxonError.getMessage ())
+                                                                .linkedException (aSaxonError.getCause ())
+                                                                .build ());
       };
       aSaxonXPath.getConfiguration ().setErrorReporterFactory (aErrReporterFactory);
     }
