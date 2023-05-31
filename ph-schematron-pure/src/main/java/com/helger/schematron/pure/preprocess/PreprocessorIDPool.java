@@ -103,7 +103,7 @@ public class PreprocessorIDPool
 
     if (m_aUsedIDs.add (sID))
     {
-      // Unique ID
+      // Provided ID is still unique
       return sID;
     }
 

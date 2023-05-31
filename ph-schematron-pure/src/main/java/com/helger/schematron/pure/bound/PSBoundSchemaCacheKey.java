@@ -226,9 +226,12 @@ public class PSBoundSchemaCacheKey
                                                aSchema +
                                                " with query binding " +
                                                aQueryBinding);
+
     if (SchematronDebug.isShowPreprocessedSchematron ())
+    {
       LOGGER.info ("Preprocessed Schematron:\n" +
                    MicroWriter.getNodeAsString (aPreprocessedSchema.getAsMicroElement ()));
+    }
     return aPreprocessedSchema;
   }
 
