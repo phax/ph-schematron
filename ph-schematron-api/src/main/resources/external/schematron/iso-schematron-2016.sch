@@ -21,7 +21,8 @@ notice:
 THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
 AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
 -->
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xml:lang="en">
+<!-- [PH] added queryBinding -->
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xml:lang="en" queryBinding="xslt2">
   <sch:title>Schema for Schematron Validation Report Language</sch:title>
   <sch:ns prefix="svrl" uri="http://purl.oclc.org/dsdl/svrl" />
   <sch:p>The Schematron Validation Report Language is a simple language
