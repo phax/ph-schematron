@@ -322,12 +322,15 @@ public class PSPreprocessor
                                                    aLookup.getAllAbstractRuleIDs ());
 
         // check if base rule belongs to the same pattern as the base rule
-        if (!aOwningPattern.containsRule (aBaseRule))
-          throw new SchematronPreprocessException ("The rule with ID '" +
-                                                   sRuleID +
-                                                   "' belongs to a different pattern (with ID '" +
-                                                   aOwningPattern.getID () +
-                                                   "') then the rule that is extending it.");
+        // (#113)
+        // This is totally valid - so rule is not effective
+        if (false)
+          if (!aOwningPattern.containsRule (aBaseRule))
+            throw new SchematronPreprocessException ("The rule with ID '" +
+                                                     sRuleID +
+                                                     "' belongs to a different pattern (with ID '" +
+                                                     aOwningPattern.getID () +
+                                                     "') then the rule that is extending it.");
 
         // Recursively resolve the extends of the base rule
         _resolveRuleContent (aOwningPattern,
