@@ -21,6 +21,10 @@ notice:
 THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
 AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
 -->
+<!-- 
+THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
+AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD.
+-->
 <!-- [PH] added queryBinding -->
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xml:lang="en" queryBinding="xslt2">
   <sch:title>Schema for Schematron Validation Report Language</sch:title>

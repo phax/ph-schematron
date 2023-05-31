@@ -161,4 +161,3 @@ provided this notice is included in all copies.
     <sch:param name="attribute" value="@prefix" />
   </sch:pattern>
 </sch:schema>
-  
