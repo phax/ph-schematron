@@ -53,7 +53,8 @@ public class PSXPathBoundElement
                               @Nullable final XPathExpression aBoundExpression)
   {
     ValueEnforcer.notNull (aElement, "Element");
-    ValueEnforcer.isTrue (aElement instanceof String || aElement instanceof IPSElement, "Element must be a String of a PS element");
+    ValueEnforcer.isTrue (aElement instanceof String || aElement instanceof IPSElement,
+                          "Element must be a String of a PS element");
     m_aElement = aElement;
     m_sExpression = sExpression;
     m_aBoundExpression = aBoundExpression;
@@ -94,9 +95,9 @@ public class PSXPathBoundElement
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("element", m_aElement)
-                                       .appendIfNotNull ("expression", m_sExpression)
-                                       .appendIfNotNull ("boundExpression", m_aBoundExpression)
+    return new ToStringGenerator (this).append ("Element", m_aElement)
+                                       .appendIfNotNull ("Expression", m_sExpression)
+                                       .appendIfNotNull ("BoundExpression", m_aBoundExpression)
                                        .getToString ();
   }
 }

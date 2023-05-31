@@ -31,6 +31,7 @@ import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.log.LogHelper;
 import com.helger.commons.state.EContinue;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
@@ -145,7 +146,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
+  public void onRuleStart (@Nonnull final PSRule aRule,
+                           @Nonnull final NodeList aContextList) throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
   }
@@ -204,8 +206,18 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  public void onEnd (@Nonnull final PSSchema aSchema,
+                     @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     _log ("onEnd (" + aSchema + ", " + aActivePhase + ")");
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Logger", m_aLogger)
+                                       .append ("LogLevel", m_aLogLevel)
+                                       .append ("LogPrefix", m_sLogPrefix)
+                                       .getToString ();
   }
 }

@@ -799,6 +799,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("boundPatterns", m_aBoundPatterns).getToString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("BoundPatterns", m_aBoundPatterns).getToString ();
   }
 }

@@ -593,12 +593,12 @@ public class PSPreprocessor
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("queryBinding", m_aQueryBinding)
-                                       .append ("keepTitles", m_bKeepTitles)
-                                       .append ("keepDiagnostics", m_bKeepDiagnostics)
-                                       .append ("keepReports", m_bKeepReports)
-                                       .append ("keepEmptyPatterns", m_bKeepEmptyPatterns)
-                                       .append ("keepEmptySchema", m_bKeepEmptySchema)
+    return new ToStringGenerator (this).append ("QueryBinding", m_aQueryBinding)
+                                       .append ("KeepTitles", m_bKeepTitles)
+                                       .append ("KeepDiagnostics", m_bKeepDiagnostics)
+                                       .append ("KeepReports", m_bKeepReports)
+                                       .append ("KeepEmptyPatterns", m_bKeepEmptyPatterns)
+                                       .append ("KeepEmptySchema", m_bKeepEmptySchema)
                                        .getToString ();
   }
 

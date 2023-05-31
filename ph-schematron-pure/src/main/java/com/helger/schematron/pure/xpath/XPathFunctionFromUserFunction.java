@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.ToStringGenerator;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
@@ -109,5 +110,14 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
       // Wrap all exceptions
       throw new XPathFunctionException (ex);
     }
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Configuration", m_aConfiguration)
+                                       .append ("XQController", m_aXQController)
+                                       .append ("UserFunc", m_aUserFunc)
+                                       .getToString ();
   }
 }

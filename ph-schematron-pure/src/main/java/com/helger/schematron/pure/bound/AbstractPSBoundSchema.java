@@ -263,13 +263,13 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("queryBinding", m_aQueryBinding)
-                                       .append ("origSchema", m_aOrigSchema)
-                                       .appendIfNotNull ("errorHandler", m_aErrorHandler)
-                                       .append ("namespaceContext", m_aNamespaceContext)
-                                       .appendIfNotNull ("phaseID", m_sPhaseID)
-                                       .appendIfNotNull ("phase", m_aPhase)
-                                       .append ("patterns", m_aPatterns)
+    return new ToStringGenerator (this).append ("QueryBinding", m_aQueryBinding)
+                                       .append ("OrigSchema", m_aOrigSchema)
+                                       .appendIfNotNull ("ErrorHandler", m_aErrorHandler)
+                                       .append ("NamespaceContext", m_aNamespaceContext)
+                                       .appendIfNotNull ("PhaseID", m_sPhaseID)
+                                       .appendIfNotNull ("Phase", m_aPhase)
+                                       .append ("Patterns", m_aPatterns)
                                        .getToString ();
   }
 }

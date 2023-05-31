@@ -90,10 +90,10 @@ public class PSXPathBoundRule
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("rule", m_aRule)
-                                       .append ("ruleExpression", m_sRuleContext)
-                                       .append ("boundRuleExpression", m_aBoundRuleContext)
-                                       .append ("boundAssertReports", m_aBoundAssertReports)
+    return new ToStringGenerator (this).append ("Rule", m_aRule)
+                                       .append ("RuleExpression", m_sRuleContext)
+                                       .append ("BoundRuleExpression", m_aBoundRuleContext)
+                                       .append ("BoundAssertReports", m_aBoundAssertReports)
                                        .getToString ();
   }
 }

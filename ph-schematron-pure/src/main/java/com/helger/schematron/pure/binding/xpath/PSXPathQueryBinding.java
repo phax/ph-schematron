@@ -31,6 +31,7 @@ import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.ICommonsNavigableMap;
 import com.helger.commons.compare.IComparator;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -56,7 +57,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathQueryBinding.class);
   private static final PSXPathQueryBinding INSTANCE = new PSXPathQueryBinding ();
 
-  private PSXPathQueryBinding ()
+  protected PSXPathQueryBinding ()
   {}
 
   @Nonnull
@@ -133,23 +134,34 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                                                                                   ((CollectingPSErrorHandler) aErrorHandler).getErrorList ()
                                                                                                                             .toString ()));
 
-    PSSchema aSchemaToUse = aSchema;
-    if (!aSchemaToUse.isPreprocessed ())
+    final PSSchema aPreprocessedSchema;
+    if (aSchema.isPreprocessed ())
+    {
+      // We're good
+      aPreprocessedSchema = aSchema;
+    }
+    else
     {
       // Required for parameter resolution
       final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (this);
 
       // Apply preprocessing
-      aSchemaToUse = aPreprocessor.getForcedPreprocessedSchema (aSchema);
+      aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
     }
 
     final PSXPathBoundSchema ret = new PSXPathBoundSchema (this,
-                                                           aSchemaToUse,
+                                                           aPreprocessedSchema,
                                                            sPhase,
                                                            aCustomErrorListener,
                                                            aCustomValidationHandler,
                                                            aXPathConfig);
     ret.bind ();
     return ret;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).getToString ();
   }
 }

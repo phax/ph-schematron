@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 
 import com.helger.commons.state.EContinue;
 import com.helger.commons.state.EValidity;
+import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 
 /**
@@ -72,5 +73,11 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
   public final EValidity getValidity ()
   {
     return m_eValidity;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Validity", m_eValidity).getToString ();
   }
 }
