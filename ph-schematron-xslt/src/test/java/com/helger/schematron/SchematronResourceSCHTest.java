@@ -102,6 +102,13 @@ public final class SchematronResourceSCHTest
   }
 
   @Test
+  public void testReadISOSchematron2006SCH ()
+  {
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromClassPath ("external/schematron/iso-schematron-2006.sch");
+    assertTrue (aSCH.isValidSchematron ());
+  }
+
+  @Test
   public void testReadISOSchematron2016SCH ()
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromClassPath ("external/schematron/iso-schematron-2016.sch");
