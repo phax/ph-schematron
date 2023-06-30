@@ -88,7 +88,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
           sFlag.equalsIgnoreCase ("note"))
         return EErrorLevel.INFO;
 
-      if (sFlag.equalsIgnoreCase ("warning") || sFlag.equalsIgnoreCase ("warn"))
+      if (sFlag.equalsIgnoreCase ("warning") || sFlag.equalsIgnoreCase ("warn") || sFlag.equalsIgnoreCase ("caution"))
         return EErrorLevel.WARN;
 
       if (sFlag.equalsIgnoreCase ("error") || sFlag.equalsIgnoreCase ("err"))
