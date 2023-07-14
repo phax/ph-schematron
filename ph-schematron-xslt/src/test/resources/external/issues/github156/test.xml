@@ -1,0 +1,556 @@
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xmlns:dcr="http://www.isocat.org/ns/dcr"
+  xmlns:egXML="http://www.tei-c.org/ns/Examples" xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.28" xml:lang="de">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Beschreibung von Leipzig, Universitätsbibliothek Leipzig, Philos.114/2 (Almuth Märker)</title>
+        <respStmt>
+          <resp>Beschrieben von</resp>
+          <persName role="author">Almuth Märker</persName>
+          <note>2012</note>
+        </respStmt>
+      </titleStmt>
+      <editionStmt>
+        <edition>Elektronische Ausgabe nach TEI P5</edition>
+        <respStmt>
+          <resp>Diese Datei wurde unter Anwendung des MXML-to-TEI-P5-Stylesheets, welches an der Herzog August
+            Bibliothek Wolfenbüttel im Rahmen des Projektes "Handschriftenportal" gepflegt wird aus einem am 01.09.2022
+            17:35:29:329 erstellten HIDA-DOC1-XML-Dokument erstellt.
+          </resp>
+          <name type="org">Handschriftenportal</name>
+        </respStmt>
+      </editionStmt>
+      <publicationStmt>
+        <publisher>
+          <name type="org">Handschriftenportal</name>
+        </publisher>
+        <date when="dsfsdfs" type="primary">2012</date>
+        <availability status="restricted">
+          <licence target="http://rightsstatements.org/vocab/InC/1.0/">
+            <p>http://rightsstatements.org/vocab/InC/1.0/</p>
+          </licence>
+        </availability>
+      </publicationStmt>
+      <sourceDesc>
+        <bibl>Almuth Märker</bibl>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+      <creation>
+        <date when="2012-06-06">06.06.2012</date>
+      </creation>
+    </profileDesc>
+    <revisionDesc>
+      <change>
+
+
+
+
+
+        <date when="2022-08-26">2022-08-26 00:00:00</date>
+      </change>
+    </revisionDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <msDesc status="intern" xml:id="HSP-2cdbc30c-83f8-3c8c-a308-f2498909b47d" xml:lang="de" subtype="medieval"
+        type="hsp:description">
+        <msIdentifier>
+          <settlement key="NORM-4a887b8a-68ac-39b0-8d9d-027bddedb06b">Leipzig</settlement>
+          <repository key="NORM-444a6f1b-4bcb-3fa7-a96d-b6cafe49f0d0"
+            ref="http://d-nb.info/gnd/30026-3 https://sigel.staatsbibliothek-berlin.de/suche/?isil=DE-15">Universitätsbibliothek Leipzig</repository>
+          <collection>Philos.</collection>
+          <collection type="baseShelfmarkGroup">Philos.</collection>
+          <idno>Philos.114/2</idno>
+          <altIdentifier type="mxml-ID">
+            <idno>MXML-31575629</idno>
+          </altIdentifier>
+          <altIdentifier type="hsp-ID">
+            <collection>Handschriftenportal Kulturobjektdokument-ID</collection>
+            <idno>HSP-ffc21b2a-c135-3fc2-b39a-fc93e9cebf4d</idno>
+          </altIdentifier>
+        </msIdentifier>
+        <head>
+
+
+
+
+
+          <index indexName="norm_title">
+            <term type="title">Kurze Abhandlungen zur Logik, lat.</term>
+          </index>
+
+
+
+
+
+          <title>Kurze Abhandlungen zur Logik (lat.)</title>
+
+
+
+
+
+          <note type="headline">Papier · 16 Bl. · 25 x 17 · Deutschland · um 1500</note>
+
+
+
+
+
+          <index indexName="norm_material">
+            <term type="material">Papier</term>
+            <term type="material_type">paper</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_measure">
+            <term type="measure">16 Bl.</term>
+            <term type="measure_noOfLeaves">16</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_dimensions">
+            <term type="dimensions">25 × 17</term>
+            <term type="height">25</term>
+            <term type="width">17</term>
+            <term type="depth" />
+            <term type="dimensions_typeOfInformation">factual</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_format">
+            <term type="format">quarto</term>
+            <term type="format_typeOfInformation">computed</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_origPlace">
+            <term type="origPlace">Deutschland</term>
+            <term key="NORM-3c2f8b8c-8c43-338b-a5a0-327ae84c3f65" ref="http://d-nb.info/gnd/4011882-4"
+              type="origPlace_norm">Deutschland</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_origDate">
+            <term type="origDate">um 1500</term>
+            <term type="origDate_notBefore">1490</term>
+            <term type="origDate_notAfter">1510</term>
+            <term type="origDate_type">datable</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_textLang">
+            <term type="textLang">lateinisch</term>
+            <term type="textLang-ID">la</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_form">
+            <term type="form">codex</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_status">
+            <term type="status">existent</term>
+          </index>
+
+
+
+
+
+          <index indexName="norm_decoration">
+            <term type="decoration" />
+          </index>
+
+
+
+
+
+          <index indexName="norm_musicNotation">
+            <term type="musicNotation" />
+          </index>
+        </head>
+        <physDesc>
+          <p>
+            Mehrteiligkeit:
+
+
+
+
+            <lb />
+
+
+
+
+            <lb />
+
+
+
+
+            <lb />
+
+
+
+
+            <lb />
+            Sammelband, bestehend aus einer Inkunabel (
+            <persName role="Autor" ref="">SThomas Bricot</persName>
+            : Textus abbreviatus totius logices Aristotelis; GW 5535) und einer Handschrift
+          </p>
+        </physDesc>
+        <msPart type="binding">
+          <msIdentifier>
+            <idno>Einband</idno>
+          </msIdentifier>
+          <head>
+
+
+
+
+
+            <index indexName="norm_title">
+              <term type="title" />
+            </index>
+
+
+
+
+
+            <title />
+
+
+
+
+
+            <note type="headline" />
+
+
+
+
+
+            <index indexName="norm_material">
+              <term type="material" />
+              <term type="material_type" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_measure">
+              <term type="measure" />
+              <term type="measure_noOfLeaves" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_dimensions">
+              <term type="dimensions" />
+              <term type="height" />
+              <term type="width" />
+              <term type="depth" />
+              <term type="dimensions_typeOfInformation" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_format">
+              <term type="format" />
+              <term type="format_typeOfInformation" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_origPlace">
+              <term type="origPlace" />
+              <term type="origPlace_norm" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_origDate">
+              <term type="origDate" />
+              <term type="origDate_notBefore" />
+              <term type="origDate_notAfter" />
+              <term type="origDate_type" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_textLang">
+              <term type="textLang" />
+              <term type="textLang-ID" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_form">
+              <term type="form">binding</term>
+            </index>
+
+
+
+
+
+            <index indexName="norm_status">
+              <term type="status" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_decoration">
+              <term type="decoration" />
+            </index>
+
+
+
+
+
+            <index indexName="norm_musicNotation">
+              <term type="musicNotation" />
+            </index>
+          </head>
+          <physDesc>
+            <p>Spätgotischer Halbledereinband. Schweinsleder auf Holz. Wittenberg: Blütenstängel VIII (EBDB w003606)
+              (Quelle: Inkunabelkatalog)
+            </p>
+          </physDesc>
+          <msPart type="fragment">
+            <msIdentifier>
+              <idno>Fragment 1</idno>
+            </msIdentifier>
+            <head>
+
+
+
+
+
+              <index indexName="norm_title">
+                <term type="title" />
+              </index>
+
+
+
+
+
+              <title />
+
+
+
+
+
+              <note type="headline" />
+
+
+
+
+
+              <index indexName="norm_material">
+                <term type="material" />
+                <term type="material_type" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_measure">
+                <term type="measure" />
+                <term type="measure_noOfLeaves" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_dimensions">
+                <term type="dimensions" />
+                <term type="height" />
+                <term type="width" />
+                <term type="depth" />
+                <term type="dimensions_typeOfInformation" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_format">
+                <term type="format" />
+                <term type="format_typeOfInformation" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_origPlace">
+                <term type="origPlace" />
+                <term type="origPlace_norm" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_origDate">
+                <term type="origDate" />
+                <term type="origDate_notBefore" />
+                <term type="origDate_notAfter" />
+                <term type="origDate_type" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_textLang">
+                <term type="textLang" />
+                <term type="textLang-ID" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_form">
+                <term type="form" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_status">
+                <term type="status" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_decoration">
+                <term type="decoration" />
+              </index>
+
+
+
+
+
+              <index indexName="norm_musicNotation">
+                <term type="musicNotation" />
+              </index>
+            </head>
+            <msContents>
+              <msItem>
+                <note type="text">vgl. Inkunabelkatalog</note>
+              </msItem>
+            </msContents>
+          </msPart>
+        </msPart>
+        <history>
+          <p>
+            um 1500 aufgrund des paläografischen Befunds
+            <lb />
+            <lb />
+            <lb />
+            <lb />
+            Wohl aus säkularisiertem Klosterbesitz des albertinischen Sachsen: auf dem Vorderdeckel Titelschild der
+            Leipziger Bibliotheca Paulina (1540er Jahre).
+          </p>
+        </history>
+        <msContents>
+          <msItem>
+            <note type="text">
+              1r-16r: Kurze Texte und Abhandlungen zur
+
+
+
+
+              <ref type="bezwrk[0].6922">Logik</ref>
+              (lat.) (darunter 4r: Übersicht zu
+
+
+
+
+              <hi rend="italic">precognicio</hi>
+              mit
+
+
+
+
+              <hi rend="italic">dignitas</hi>
+              ,
+
+
+
+
+              <hi rend="italic">subiectum</hi>
+              und
+
+
+
+
+              <hi rend="italic">passio</hi>
+              ; 7r: Übersicht zu
+
+
+
+
+              <hi rend="italic">demonstracio circularis</hi>
+              [Zirkelschluss]). – 16v: leer.
+            </note>
+          </msItem>
+        </msContents>
+        <msPart type="other">
+          <msIdentifier>
+            <idno>Sonstiges</idno>
+          </msIdentifier>
+          <p>
+            <index>
+              <term>Abschrift</term>
+            </index>
+          </p>
+        </msPart>
+      </msDesc>
+    </body>
+  </text>
+</TEI>
