@@ -139,7 +139,7 @@ public final class Issue016Test
       LOGGER.info ("Test: " + failedAssert.getTest ());
       LOGGER.info ("Text: " + failedAssert.getText ());
 
-      final List <DiagnosticReference> diagnisticReferences = failedAssert.getDiagnisticReferences ();
+      final List <DiagnosticReference> diagnisticReferences = failedAssert.getDiagnosticReferences ();
       for (final DiagnosticReference diagnisticRef : diagnisticReferences)
       {
         LOGGER.info ("Diag ref: " + diagnisticRef.getDiagnostic ());
