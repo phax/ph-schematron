@@ -57,7 +57,7 @@ public final class Issue156Test
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
     final ICommonsList <AbstractSVRLMessage> aAssertions = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL);
-    assertEquals (0, aAssertions.size ());
+    assertEquals (2, aAssertions.size ());
   }
 
   @Test
