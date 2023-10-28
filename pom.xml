@@ -42,8 +42,8 @@
   </licenses>
   
   <scm>
-    <connection>scm:git:git@github.com:phax/ph-schematron.git</connection>
-    <developerConnection>scm:git:git@github.com:phax/ph-schematron.git</developerConnection>
+    <connection>scm:git:https://github.com/phax/ph-schematron.git</connection>
+    <developerConnection>scm:git:https://github.com/phax/ph-schematron.git</developerConnection>
     <url>http://github.com/phax/ph-schematron</url>
     <tag>HEAD</tag>
   </scm>
