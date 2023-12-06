@@ -231,7 +231,7 @@ public final class SVRLHelper
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
-    RW_LOCK.writeLockedGet ( () -> s_aELD = aELD);
+    RW_LOCK.writeLocked ( () -> s_aELD = aELD);
   }
 
   /**
@@ -267,7 +267,8 @@ public final class SVRLHelper
    * @since 6.0.4
    */
   @Nonnull
-  public static String getBeautifiedLocation (@Nonnull final String sLocation, @Nonnull final ISVRLLocationBeautifier aLocationBeautifier)
+  public static String getBeautifiedLocation (@Nonnull final String sLocation,
+                                              @Nonnull final ISVRLLocationBeautifier aLocationBeautifier)
   {
     ValueEnforcer.notNull (sLocation, "Location");
     ValueEnforcer.notNull (aLocationBeautifier, "LocationBeautifier");
@@ -276,7 +277,8 @@ public final class SVRLHelper
     // Handle namespaces:
     // Search for "*:xx[namespace-uri()='yy']" where xx is the localname and yy
     // is the namespace URI
-    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E", sResult);
+    final Matcher aMatcher = RegExHelper.getMatcher ("\\Q*:\\E([a-zA-Z0-9_]+)\\Q[namespace-uri()='\\E([^']+)\\Q']\\E",
+                                                     sResult);
     while (aMatcher.find ())
     {
       final String sLocalName = aMatcher.group (1);
