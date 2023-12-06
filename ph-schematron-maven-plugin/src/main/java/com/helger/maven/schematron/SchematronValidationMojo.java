@@ -226,6 +226,14 @@ public final class SchematronValidationMojo extends AbstractMojo
   @Since ("5.4.1")
   private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
 
+  /**
+   * <code>true</code> to ignore all warnings, <code>false</code> to also show
+   * warning messages,
+   */
+  @Parameter (name = "ignoreWarnings", defaultValue = "false")
+  @Since ("7.1.3")
+  private boolean m_bIgnoreWarnings = false;
+
   public void setSchematronFile (@Nonnull final File aFile)
   {
     m_aSchematronFile = aFile;
@@ -369,6 +377,15 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Old deprecated namespace URIs are not supported");
   }
 
+  public void setIgnoreWarnings (final boolean bIgnoreWarnings)
+  {
+    m_bIgnoreWarnings = bIgnoreWarnings;
+    if (m_bIgnoreWarnings)
+      getLog ().debug ("Warnings will be ignored and only errors will be displayed");
+    else
+      getLog ().debug ("Warning and errors will be displayed");
+  }
+
   @Nonnull
   @ReturnsMutableCopy
   @VisibleForTesting
@@ -406,7 +423,8 @@ public final class SchematronValidationMojo extends AbstractMojo
                                    @Nullable final String [] aXMLExcludes,
                                    @Nullable final File aSVRLDirectory,
                                    final boolean bExpectSuccess,
-                                   @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException, MojoFailureException
+                                   @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException,
+                                                                                        MojoFailureException
   {
     final DirectoryScanner aScanner = new DirectoryScanner ();
     aScanner.setBasedir (aXMLDirectory);
@@ -440,7 +458,10 @@ public final class SchematronValidationMojo extends AbstractMojo
             final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
             final FileIOError aIOErr = FileOperationManager.INSTANCE.createDirRecursiveIfNotExisting (aSVRLFile.getParentFile ());
             if (aIOErr.isFailure ())
-              getLog ().error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "': " + aIOErr.toString ());
+              getLog ().error ("Failed to create parent directory of '" +
+                               aSVRLFile.getAbsolutePath () +
+                               "': " +
+                               aIOErr.toString ());
 
             if (new SVRLMarshaller ().write (aSOT, aSVRLFile).isSuccess ())
               getLog ().info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
@@ -449,15 +470,29 @@ public final class SchematronValidationMojo extends AbstractMojo
           }
 
           // Failed asserts and Successful reports
-          final ICommonsList <AbstractSVRLMessage> aSVRLErrors = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
+          ICommonsList <AbstractSVRLMessage> aSVRLErrors = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
+          if (m_bIgnoreWarnings)
+          {
+            // Use errors only
+            final int nOld = aSVRLErrors.size ();
+            aSVRLErrors = aSVRLErrors.getAll (x -> x.getFlag ().isError ());
+            final int nNew = aSVRLErrors.size ();
+            if (nOld > nNew)
+              getLog ().info ("Ignoring " + (nOld - nNew) + " Schematron warnings");
+          }
+
           if (bExpectSuccess)
           {
             // No failed assertions expected
             if (aSVRLErrors.isNotEmpty ())
             {
-              final String sMessage = aSVRLErrors.size () + " failed Schematron assertions for XML file '" + aXMLFile.getPath () + "'";
+              final String sMessage = aSVRLErrors.size () +
+                                      " failed Schematron assertions for XML file '" +
+                                      aXMLFile.getPath () +
+                                      "'";
               getLog ().error (sMessage);
-              aSVRLErrors.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ()).getAsString (Locale.US)));
+              aSVRLErrors.forEach (x -> getLog ().error (x.getAsResourceError (aXMLFile.getPath ())
+                                                          .getAsString (Locale.US)));
               if (m_bFailFast)
                 throw new MojoFailureException (sMessage);
               aErrorMessages.add (sMessage);
@@ -468,7 +503,9 @@ public final class SchematronValidationMojo extends AbstractMojo
             // At least one failed assertions expected
             if (aSVRLErrors.isEmpty ())
             {
-              final String sMessage = "No failed Schematron assertions for erroneous XML file '" + aXMLFile.getPath () + "'";
+              final String sMessage = "No failed Schematron assertions for erroneous XML file '" +
+                                      aXMLFile.getPath () +
+                                      "'";
               getLog ().error (sMessage);
               if (m_bFailFast)
                 throw new MojoFailureException (sMessage);
@@ -503,7 +540,9 @@ public final class SchematronValidationMojo extends AbstractMojo
       throw new MojoExecutionException ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
     if (m_sSchematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                                        StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
+                                        StringHelper.getImplodedMapped (", ",
+                                                                        ESchematronMode.values (),
+                                                                        x -> "'" + x.getID () + "'"));
     if (m_aXmlDirectory == null && m_aXmlErrorDirectory == null)
       throw new MojoExecutionException ("No XML directory specified - positive or negative directory must be present!");
 
@@ -524,7 +563,9 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (m_aXmlErrorDirectory != null)
     {
       if (m_aXmlErrorDirectory.exists () && !m_aXmlErrorDirectory.isDirectory ())
-        throw new MojoExecutionException ("The specified erroneous XML directory " + m_aXmlErrorDirectory + " is not a directory!");
+        throw new MojoExecutionException ("The specified erroneous XML directory " +
+                                          m_aXmlErrorDirectory +
+                                          " is not a directory!");
       if (ArrayHelper.isEmpty (m_aXmlErrorIncludes))
         throw new MojoExecutionException ("No erroneous XML include pattern specified!");
 
@@ -626,7 +667,13 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (m_aXmlDirectory != null)
     {
       // Expect success
-      _performValidation (aSch, m_aXmlDirectory, m_aXmlIncludes, m_aXmlExcludes, m_aSvrlDirectory, true, aErrorMessages);
+      _performValidation (aSch,
+                          m_aXmlDirectory,
+                          m_aXmlIncludes,
+                          m_aXmlExcludes,
+                          m_aSvrlDirectory,
+                          true,
+                          aErrorMessages);
     }
     if (m_aXmlErrorDirectory != null)
     {
