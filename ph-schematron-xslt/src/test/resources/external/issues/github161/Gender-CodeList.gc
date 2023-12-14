@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+    This work is protected under copyrights held by the members of the
+    TOOP Project Consortium as indicated at
+    http://wiki.ds.unipi.gr/display/TOOP/Contributors
+    (c) 2018-2021. All rights reserved.
+
+    This work is dual licensed under Apache License, Version 2.0
+    and the EUPL 1.2.
+
+     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+     = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+    Licensed under the EUPL, Version 1.2 or – as soon they will be approved
+    by the European Commission - subsequent versions of the EUPL
+    (the "Licence");
+    You may not use this work except in compliance with the Licence.
+    You may obtain a copy of the Licence at:
+
+            https://joinup.ec.europa.eu/software/page/eupl
+
+-->
+<gc:CodeList xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:gc="http://docs.oasis-open.org/codelist/ns/genericode/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Identification>
+		<ShortName>Gender</ShortName>
+		<LongName xml:lang="en">Gender Code</LongName>
+		<Version>2018-03-28</Version>
+		<CanonicalUri>urn:hl7.gendercode</CanonicalUri>
+		<CanonicalVersionUri>2018-03-28</CanonicalVersionUri>
+		<LocationUri>http://www.oid-info.com/get/2.16.840.1.113883.5.1</LocationUri>
+		<Agency>
+			<LongName xml:lang="en">Health Level 7</LongName>
+			<Identifier>HL7</Identifier>
+		</Agency>
+	</Identification>
+	<ColumnSet>
+		<Column Id="code" Use="required">
+			<ShortName>Code</ShortName>
+			<Data Type="normalizedString" Lang="en"/>
+		</Column>
+		<Column Use="optional" Id="name-en">
+			<ShortName>Name</ShortName>
+			<Data Type="string" Lang="en"/>
+		</Column>
+		<Key Id="codeKey">
+			<ShortName>CodeKey</ShortName>
+			<ColumnRef Ref="code"/>
+		</Key>
+	</ColumnSet>
+	<SimpleCodeList>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>M</SimpleValue>
+			</Value>
+			<Value ColumnRef="name-en">
+				<SimpleValue>Male</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>F</SimpleValue>
+			</Value>
+			<Value ColumnRef="name-en">
+				<SimpleValue>Female</SimpleValue>
+			</Value>
+		</Row>
+		<Row>
+			<Value ColumnRef="code">
+				<SimpleValue>UN</SimpleValue>
+			</Value>
+			<Value ColumnRef="name-en">
+				<SimpleValue>Undifferentiated (the gender of a person could not be uniquely defined as male or female, such as hermaphrodite)</SimpleValue>
+			</Value>
+		</Row>
+	</SimpleCodeList>
+</gc:CodeList>
