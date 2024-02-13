@@ -23,6 +23,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.model.PSPattern;
 
 /**
@@ -35,14 +36,18 @@ public class PSXPathBoundPattern
 {
   private final PSPattern m_aPattern;
   private final ICommonsList <PSXPathBoundRule> m_aBoundRules;
+  private final PSXPathVariables m_aVariables;
 
   public PSXPathBoundPattern (@Nonnull final PSPattern aPattern,
-                              @Nonnull final ICommonsList <PSXPathBoundRule> aBoundRules)
+                              @Nonnull final ICommonsList <PSXPathBoundRule> aBoundRules,
+                              @Nonnull final PSXPathVariables aVariables)
   {
     ValueEnforcer.notNull (aPattern, "Pattern");
     ValueEnforcer.notNull (aBoundRules, "BoundRules");
+    ValueEnforcer.notNull (aVariables, "Variables");
     m_aPattern = aPattern;
     m_aBoundRules = aBoundRules;
+    m_aVariables = aVariables;
   }
 
   @Nonnull
@@ -58,11 +63,18 @@ public class PSXPathBoundPattern
     return m_aBoundRules.getClone ();
   }
 
+  @Nonnull
+  public final PSXPathVariables getVariables ()
+  {
+    return m_aVariables;
+  }
+
   @Override
   public String toString ()
   {
     return new ToStringGenerator (this).append ("Pattern", m_aPattern)
                                        .append ("BoundRules", m_aBoundRules)
+                                       .append ("Variables", m_aVariables)
                                        .getToString ();
   }
 }
