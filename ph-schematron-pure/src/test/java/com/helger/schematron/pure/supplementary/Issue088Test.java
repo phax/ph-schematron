@@ -17,7 +17,7 @@
 package com.helger.schematron.pure.supplementary;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
@@ -53,7 +53,7 @@ public final class Issue088Test
     if (false)
       LOGGER.info ("SVRL:\n" + sSVRL);
 
-    assertTrue (SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).isEmpty ());
+    assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test

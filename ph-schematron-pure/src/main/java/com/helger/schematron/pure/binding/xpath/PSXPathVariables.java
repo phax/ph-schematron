@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -42,12 +43,12 @@ public class PSXPathVariables implements IPSXPathVariables
 {
   @Nonnull
   @ReturnsMutableCopy
-  private static ICommonsNavigableMap <String, String> _createMap ()
+  private static ICommonsNavigableMap <String, XPathExpression> _createMap ()
   {
     return new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
   }
 
-  private final ICommonsNavigableMap <String, String> m_aMap;
+  private final ICommonsNavigableMap <String, XPathExpression> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -69,7 +70,7 @@ public class PSXPathVariables implements IPSXPathVariables
    *         already present. Never <code>null</code>.
    */
   @Nonnull
-  public EChange add (@Nonnull final Map.Entry <String, String> aEntry)
+  public EChange add (@Nonnull final Map.Entry <String, XPathExpression> aEntry)
   {
     return add (aEntry.getKey (), aEntry.getValue ());
   }
@@ -87,30 +88,16 @@ public class PSXPathVariables implements IPSXPathVariables
    *         already present. Never <code>null</code>.
    */
   @Nonnull
-  public EChange add (@Nonnull @Nonempty final String sName, @Nonnull @Nonempty final String sValue)
+  public EChange add (@Nonnull @Nonempty final String sName, @Nonnull @Nonempty final XPathExpression sValue)
   {
     ValueEnforcer.notEmpty (sName, "Name");
-    ValueEnforcer.notEmpty (sValue, "Value");
+    ValueEnforcer.notNull (sValue, "Value");
 
-    // Prepend the "$" prefix to the variable name
-    final String sRealName = PSXPathQueryBinding.PARAM_VARIABLE_PREFIX + sName;
-    if (m_aMap.containsKey (sRealName))
+    if (m_aMap.containsKey (sName))
       return EChange.UNCHANGED;
 
-    // Apply all existing variables to this variable value!
-    // This ensures that all variables used in variables are resolved correctly
-    // as long as the order of declaration is correct.
-    // Additionally this means that the order of the variables in this class is
-    // irrelevant
-    final String sRealValue = getAppliedReplacement (sValue);
-    m_aMap.put (sRealName, sRealValue);
+    m_aMap.put (sName, sValue);
     return EChange.CHANGED;
-  }
-
-  @Nullable
-  public String getAppliedReplacement (@Nullable final String sText)
-  {
-    return PSXPathQueryBinding.getWithParamTextsReplacedStatic (sText, m_aMap);
   }
 
   /**
@@ -150,7 +137,7 @@ public class PSXPathVariables implements IPSXPathVariables
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsNavigableMap <String, String> getAll ()
+  public ICommonsNavigableMap <String, XPathExpression> getAll ()
   {
     return m_aMap.getClone ();
   }
@@ -163,7 +150,7 @@ public class PSXPathVariables implements IPSXPathVariables
   }
 
   @Nullable
-  public String get (@Nullable final String sName)
+  public XPathExpression get (@Nullable final String sName)
   {
     if (StringHelper.hasNoText (sName))
       return null;

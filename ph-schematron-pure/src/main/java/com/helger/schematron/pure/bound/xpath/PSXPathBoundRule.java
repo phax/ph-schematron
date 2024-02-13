@@ -25,6 +25,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.model.PSRule;
 
 /**
@@ -39,20 +40,24 @@ public class PSXPathBoundRule
   private final String m_sRuleContext;
   private final XPathExpression m_aBoundRuleContext;
   private final ICommonsList <PSXPathBoundAssertReport> m_aBoundAssertReports;
+  private final PSXPathVariables m_aVariables;
 
   public PSXPathBoundRule (@Nonnull final PSRule aRule,
                            @Nonnull final String sRuleContext,
                            @Nonnull final XPathExpression aBoundRuleContext,
-                           @Nonnull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports)
+                           @Nonnull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports,
+                           @Nonnull final PSXPathVariables aVariables)
   {
     ValueEnforcer.notNull (aRule, "Rule");
     ValueEnforcer.notEmpty (sRuleContext, "RuleContext");
     ValueEnforcer.notNull (aBoundRuleContext, "BoundRuleContext");
     ValueEnforcer.notNull (aBoundAssertReports, "BoundAssertReports");
+    ValueEnforcer.notNull (aVariables, "Variables");
     m_aRule = aRule;
     m_sRuleContext = sRuleContext;
     m_aBoundRuleContext = aBoundRuleContext;
     m_aBoundAssertReports = aBoundAssertReports;
+    m_aVariables = aVariables;
   }
 
   @Nonnull
@@ -87,6 +92,13 @@ public class PSXPathBoundRule
     return m_aBoundAssertReports.getClone ();
   }
 
+  @Nonnull
+  public final PSXPathVariables getVariables ()
+  {
+    return m_aVariables;
+  }
+
+
   @Override
   public String toString ()
   {
@@ -94,6 +106,7 @@ public class PSXPathBoundRule
                                        .append ("RuleExpression", m_sRuleContext)
                                        .append ("BoundRuleExpression", m_aBoundRuleContext)
                                        .append ("BoundAssertReports", m_aBoundAssertReports)
+                                       .append ("Variables", m_aVariables)
                                        .getToString ();
   }
 }
