@@ -23,7 +23,6 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +49,10 @@ public final class Issue143Test
     if (true)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
-    // XXX Should be 1 but is currently 0
     assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
-  @Ignore
   public void testIssue () throws Exception
   {
     validateAndProduceSVRL (new File ("src/test/resources/external/issues/github143/schematron.sch"),

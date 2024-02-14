@@ -82,6 +82,14 @@ public final class XPathEvaluationHelper
   }
 
   @Nullable
+  public static Double evaluateAsNumber (@Nonnull final XPathExpression aXPath,
+                                         @Nonnull final Node aItem,
+                                         @Nullable final String sBaseURI) throws XPathExpressionException
+  {
+    return evaluate (aXPath, aItem, XPathConstants.NUMBER, sBaseURI);
+  }
+
+  @Nullable
   public static String evaluateAsString (@Nonnull final XPathExpression aXPath,
                                          @Nonnull final Node aItem,
                                          @Nullable final String sBaseURI) throws XPathExpressionException
