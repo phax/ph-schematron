@@ -28,6 +28,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsTreeMap;
 import com.helger.commons.collection.impl.ICommonsNavigableMap;
+import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.compare.IComparator;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
@@ -140,6 +141,13 @@ public class PSXPathVariables implements IPSXPathVariables
   public ICommonsNavigableMap <String, XPathExpression> getAll ()
   {
     return m_aMap.getClone ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public ICommonsSortedSet <String> getAllNames ()
+  {
+    return m_aMap.copyOfKeySet ();
   }
 
   public boolean contains (@Nullable final String sName)
