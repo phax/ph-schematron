@@ -92,7 +92,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
-  private PSXPathVariables m_aVariables;
+  private PSXPathVariables m_aSchemaVariables;
 
   /**
    * Compile an XPath expression string to an {@link XPathExpressionException}
@@ -224,14 +224,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @param aBoundDiagnostics
    *        A map from DiagnosticID to its mapped counterpart. May not be
    *        <code>null</code>.
-   * @param aGlobalVariables
-   *        The global Schematron-let variables. May not be <code>null</code>.
+   * @param aSchemaVariables
+   *        The schema-global Schematron-let variables. May not be
+   *        <code>null</code>.
    * @return <code>null</code> if an XPath error is contained
    */
   @Nullable
   private ICommonsList <PSXPathBoundPattern> _createBoundPatterns (@Nonnull final XPath aXPathContext,
                                                                    @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
-                                                                   @Nonnull final PSXPathVariables aGlobalVariables)
+                                                                   @Nonnull final PSXPathVariables aSchemaVariables)
   {
     final ICommonsList <PSXPathBoundPattern> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
@@ -253,7 +254,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           {
             final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
             aPatternVariables.add (sLetName, aXPathExpression);
-            if (aGlobalVariables.contains (sLetName))
+
+            // Already defined on a higher level?
+            if (aSchemaVariables.contains (sLetName))
               error (aPattern, "Duplicate <let> with name '" + sLetName + "' in <pattern>");
           }
           catch (final XPathExpressionException ex)
@@ -281,9 +284,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             final String sLetValue = aEntry.getValue ();
             try
             {
-              final XPathExpression aXpathExpression = _compileXPath (aXPathContext, sLetValue);
-              aRuleVariables.add (sLetName, aXpathExpression);
-              if (aGlobalVariables.contains (sLetName) || aPatternVariables.contains (sLetName))
+              final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
+              aRuleVariables.add (sLetName, aXPathExpression);
+
+              // Already defined on a higher level?
+              if (aSchemaVariables.contains (sLetName) || aPatternVariables.contains (sLetName))
                 error (aRule, "Duplicate <let> with name '" + sLetName + "' in <rule>");
             }
             catch (final XPathExpressionException ex)
@@ -294,8 +299,6 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             }
           }
         }
-
-        // TODO
 
         // For all contained assert and reports within the current rule
         final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports = new CommonsArrayList <> ();
@@ -475,7 +478,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final XPath aXPathContext = _createXPathContext ();
 
     // Get all "global" variables that are defined in the schema
-    m_aVariables = new PSXPathVariables ();
+    m_aSchemaVariables = new PSXPathVariables ();
     if (aSchema.hasAnyLet ())
     {
       // Add all global variables
@@ -486,7 +489,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         try
         {
           final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
-          if (m_aVariables.add (sLetName, aXPathExpression).isUnchanged ())
+          if (m_aSchemaVariables.add (sLetName, aXPathExpression).isUnchanged ())
             error (aSchema, "Duplicate <let> with name '" + sLetName + "' in global <schema>");
         }
         catch (final XPathExpressionException ex)
@@ -509,7 +512,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         try
         {
           final XPathExpression xpathExpression = _compileXPath (aXPathContext, sLetValue);
-          if (m_aVariables.add (sLetName, xpathExpression).isUnchanged ())
+          if (m_aSchemaVariables.add (sLetName, xpathExpression).isUnchanged ())
             error (aSchema,
                    "Duplicate <let> with name '" + sLetName + "' in <phase> with name '" + getPhaseID () + "'");
         }
@@ -531,7 +534,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     // Perform the pre-compilation of all XPath expressions in the patterns,
     // rules, asserts/reports and the content elements
-    m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, m_aVariables);
+    m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, m_aSchemaVariables);
     if (m_aBoundPatterns == null)
       throw new SchematronBindException ("Failed to precompile the supplied schema.");
     return this;
@@ -816,9 +819,17 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       final XPathVariableResolver aVarResolver = getXPathVariableResolver ();
       if (aVarResolver instanceof LetVariableResolver)
         aLetResolver = (LetVariableResolver) aVarResolver;
+      else
+      {
+        warn (aSchema,
+              "The XPathVariable resolve is not of type " +
+                       LetVariableResolver.class.getName () +
+                       " therefore variable substitution will not happen");
+      }
     }
 
-    _evaluateVariables (aLetResolver, m_aVariables, aNode, sBaseURI, aSchema);
+    // Evaluate schema-global variables
+    _evaluateVariables (aLetResolver, m_aSchemaVariables, aNode, sBaseURI, aSchema);
 
     // For all bound patterns
     for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
@@ -826,6 +837,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       final PSPattern aPattern = aBoundPattern.getPattern ();
       aValidationHandler.onPattern (aPattern);
 
+      // Evaluate pattern variables
       _evaluateVariables (aLetResolver, aBoundPattern.getVariables (), aNode, sBaseURI, aPattern);
 
       // For all bound rules
@@ -930,7 +942,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
 
     // Variables declared in the schema are going out of scope
-    _removeVariables (aLetResolver, m_aVariables);
+    _removeVariables (aLetResolver, m_aSchemaVariables);
 
     // Call the "end" callback method
     aValidationHandler.onEnd (aSchema, aPhase);
