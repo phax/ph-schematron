@@ -16,49 +16,70 @@
  */
 package com.helger.schematron.pure.xpath;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathVariableResolver;
 
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.string.ToStringGenerator;
 
+@NotThreadSafe
 public class LetVariableResolver implements XPathVariableResolver
 {
+  private final ICommonsMap <QName, Object> m_aVariables = new CommonsHashMap <> ();
   private final XPathVariableResolver m_aDelegatedResolver;
-  private final ICommonsMap<QName, Object> m_aVariables;
 
-  public LetVariableResolver (XPathVariableResolver resolver)
+  public LetVariableResolver (@Nullable final XPathVariableResolver aResolver)
   {
-    this.m_aDelegatedResolver = resolver;
-    this.m_aVariables = new CommonsHashMap<> ();
+    m_aDelegatedResolver = aResolver;
   }
 
-  public void setValue (QName variableName, Object value)
+  public void setVariableValue (@Nonnull final QName aVariableName, @Nullable final Object aValue)
   {
-    m_aVariables.put (variableName, value);
+    ValueEnforcer.notNull (aVariableName, "VariableName");
+    m_aVariables.put (aVariableName, aValue);
   }
 
-    /**
+  /**
    * Remove all variables with the specified names
    *
-   * @param aVarName
+   * @param aVariableName
    *        The variable name to be removed. May be <code>null</code>.
    */
-  public void remove (@Nullable final QName aVarName)
+  public void removeVariable (@Nullable final QName aVariableName)
   {
-    if (aVarName != null)
-      m_aVariables.remove (aVarName);
+    if (aVariableName != null)
+      m_aVariables.remove (aVariableName);
   }
 
   @Override
-  public Object resolveVariable (QName variableName)
+  public Object resolveVariable (@Nullable final QName aVariableName)
   {
-    Object result = m_aVariables.get (variableName);
-    if (result == null && m_aDelegatedResolver != null) {
-      return m_aDelegatedResolver.resolveVariable (variableName);
+    if (aVariableName != null)
+    {
+      // 1. variables
+      final Object result = m_aVariables.get (aVariableName);
+      if (result != null)
+        return result;
+
+      // 2. delegated resolver
+      if (m_aDelegatedResolver != null)
+        return m_aDelegatedResolver.resolveVariable (aVariableName);
     }
 
-    return result;
+    // 3. no match
+    return null;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Variables", m_aVariables)
+                                       .append ("DelegatedResolver", m_aDelegatedResolver)
+                                       .getToString ();
   }
 }

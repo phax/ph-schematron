@@ -247,16 +247,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         // bound pattern
         for (final Map.Entry <String, String> aEntry : aPattern.getAllLetsAsMap ().entrySet ())
         {
+          final String sLetName = aEntry.getKey ();
+          final String sLetValue = aEntry.getValue ();
           try
           {
-            final XPathExpression xpathExpression = _compileXPath (aXPathContext, aEntry.getValue ());
-            aPatternVariables.add (aEntry.getKey (), xpathExpression);
-            if (aGlobalVariables.contains (aEntry.getKey ()))
-              error (aPattern, "Duplicate <let> with name '" + aEntry.getKey () + "' in <pattern>");
+            final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
+            aPatternVariables.add (sLetName, aXPathExpression);
+            if (aGlobalVariables.contains (sLetName))
+              error (aPattern, "Duplicate <let> with name '" + sLetName + "' in <pattern>");
           }
           catch (final XPathExpressionException ex)
           {
-            error (aPattern, "Failed to compile XPath expression in <let> with name '" + aEntry.getKey () + "'", ex);
+            error (aPattern,
+                   "Failed to compile XPath expression '" + sLetValue + "' in <let> with name '" + sLetName + "'",
+                   ex);
           }
         }
       }
@@ -273,16 +277,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           // rule
           for (final Map.Entry <String, String> aEntry : aRule.getAllLetsAsMap ().entrySet ())
           {
+            final String sLetName = aEntry.getKey ();
+            final String sLetValue = aEntry.getValue ();
             try
             {
-              final XPathExpression xpathExpression = _compileXPath (aXPathContext, aEntry.getValue ());
-              aRuleVariables.add (aEntry.getKey (), xpathExpression);
-              if (aGlobalVariables.contains (aEntry.getKey ()) || aPatternVariables.contains (aEntry.getKey ()))
-                error (aRule, "Duplicate <let> with name '" + aEntry.getKey () + "' in <rule>");
+              final XPathExpression aXpathExpression = _compileXPath (aXPathContext, sLetValue);
+              aRuleVariables.add (sLetName, aXpathExpression);
+              if (aGlobalVariables.contains (sLetName) || aPatternVariables.contains (sLetName))
+                error (aRule, "Duplicate <let> with name '" + sLetName + "' in <rule>");
             }
             catch (final XPathExpressionException ex)
             {
-              error (aPattern, "Failed to compile XPath expression in <let> with name '" + aEntry.getKey () + "'", ex);
+              error (aPattern,
+                     "Failed to compile XPath expression '" + sLetValue + "' in <let> with name '" + sLetName + "'",
+                     ex);
             }
           }
         }
@@ -635,7 +643,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         else
         {
           // Variable from <let> do not have any namespace
-          aLetResolver.setValue (new QName (sVariableName), aEvalResult);
+          aLetResolver.setVariableValue (new QName (sVariableName), aEvalResult);
         }
       }
   }
@@ -645,7 +653,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   {
     if (aLetResolver != null)
       for (final String sVarName : aVariables.getAllNames ())
-        aLetResolver.remove (new QName (sVarName));
+        aLetResolver.removeVariable (new QName (sVarName));
   }
 
   private interface ILocalAction
