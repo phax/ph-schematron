@@ -19,23 +19,23 @@ package com.helger.schematron.api.xslt.validator;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.state.EValidity;
-import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
- * The default implementation of {@link ISchematronXSLTValidator} that
- * interprets both failed asserts and successful reports as errors.
+ * A special implementation of {@link ISchematronOutputValidator} that only
+ * handles successful reports as failures, but not failed asserts.
  *
  * @author Philip Helger
+ * @since 6.0.0
  */
-public class SchematronXSLTValidatorDefault implements ISchematronXSLTValidator
+public class SchematronOutputValidatorSuccessfulReportOnly implements ISchematronOutputValidator
 {
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final SchematronOutputType aSO)
+  public EValidity getSchematronOutputValidity (@Nonnull final SchematronOutputType aSO)
   {
     for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof FailedAssert || aObj instanceof SuccessfulReport)
+      if (aObj instanceof SuccessfulReport)
         return EValidity.INVALID;
     return EValidity.VALID;
   }
