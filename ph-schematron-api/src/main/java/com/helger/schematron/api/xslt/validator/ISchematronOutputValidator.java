@@ -28,7 +28,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  * 
  * @author Philip Helger
  */
-public interface ISchematronXSLTValidator
+public interface ISchematronOutputValidator
 {
   /**
    * Determine the overall validity of a Schematron validation result.
@@ -40,5 +40,5 @@ public interface ISchematronXSLTValidator
    *         Never <code>null</code>.
    */
   @Nonnull
-  EValidity getSchematronValidity (@Nonnull SchematronOutputType aSO);
+  EValidity getSchematronOutputValidity (@Nonnull SchematronOutputType aSO);
 }

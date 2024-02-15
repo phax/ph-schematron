@@ -49,8 +49,8 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
-import com.helger.schematron.api.xslt.validator.ISchematronXSLTValidator;
-import com.helger.schematron.api.xslt.validator.SchematronXSLTValidatorDefault;
+import com.helger.schematron.api.xslt.validator.ISchematronOutputValidator;
+import com.helger.schematron.api.xslt.validator.SchematronOutputValidatorDefault;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
@@ -79,7 +79,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
-  private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
+  private ISchematronOutputValidator m_aXSLTValidator = new SchematronOutputValidatorDefault ();
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
   @Nullable
@@ -167,13 +167,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * @return The XSLT validator to be used. Never <code>null</code>.
    */
   @Nonnull
-  public final ISchematronXSLTValidator getXSLTValidator ()
+  public final ISchematronOutputValidator getXSLTValidator ()
   {
     return m_aXSLTValidator;
   }
 
   @Nonnull
-  public final IMPLTYPE setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
+  public final IMPLTYPE setXSLTValidator (@Nonnull final ISchematronOutputValidator aXSLTValidator)
   {
     ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
     m_aXSLTValidator = aXSLTValidator;
@@ -210,7 +210,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       return EValidity.INVALID;
 
     // And now filter all elements that make the passed source invalid
-    return m_aXSLTValidator.getSchematronValidity (aSO);
+    return m_aXSLTValidator.getSchematronOutputValidity (aSO);
   }
 
   @Nullable
