@@ -132,6 +132,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
     final TransformerCustomizerSCH aTransformerCustomizer = createTransformerCustomizer ();
+
     if (isUseCache ())
       return SchematronResourceSCHCache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
 
@@ -166,7 +167,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @since 6.0.4
    */
   @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath, @Nullable final ClassLoader aClassLoader)
+  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
+                                                     @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourceSCH (new ClassPathResource (sSCHPath, aClassLoader));
   }

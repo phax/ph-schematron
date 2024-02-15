@@ -22,7 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.log.ConditionalLogger;
+import com.helger.commons.log.IConditionalLogger;
 
 /**
  * Global Schematron debug settings etc.
@@ -43,6 +48,9 @@ public final class SchematronDebug
   private static final AtomicBoolean SHOW_PREPROCESSED_SCH = new AtomicBoolean (DEFAULT_DEBUG);
   private static final AtomicBoolean SHOW_RESOLVED_SOURCE_SCH = new AtomicBoolean (DEFAULT_DEBUG);
 
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronDebug.class);
+  private static final ConditionalLogger COND_LOG = new ConditionalLogger (LOGGER, DEFAULT_DEBUG);
+
   private SchematronDebug ()
   {}
 
@@ -57,6 +65,7 @@ public final class SchematronDebug
    * @see #setShowCreatedSVRL(boolean)
    * @see #setShowResolvedSourceSchematron(boolean)
    * @see #setShowPreprocessedSchematron(boolean)
+   * @see #setDebugLog(boolean)
    */
   public static void setDebugMode (final boolean bDebugMode)
   {
@@ -65,6 +74,7 @@ public final class SchematronDebug
     setShowCreatedSVRL (bDebugMode);
     setShowResolvedSourceSchematron (bDebugMode);
     setShowPreprocessedSchematron (bDebugMode);
+    setDebugLog (bDebugMode);
   }
 
   public static void inDebugMode (@Nonnull final Runnable aRun)
@@ -234,5 +244,42 @@ public final class SchematronDebug
   public static void setShowPreprocessedSchematron (final boolean bShow)
   {
     SHOW_PREPROCESSED_SCH.set (bShow);
+  }
+
+  /**
+   * @return <code>true</code> if debug logging is enabled.
+   * @see #setDebugLog(boolean)
+   * @see #getDebugLogger()
+   * @since v8
+   */
+  public static boolean isDebugLog ()
+  {
+    return COND_LOG.isEnabled ();
+  }
+
+  /**
+   * Enable or disable debug logging.
+   *
+   * @param b
+   *        <code>true</code> to enable it, <code>false</code> to disable it.
+   * @see #isDebugLog()
+   * @see #getDebugLogger()
+   * @since v8
+   */
+  public static void setDebugLog (final boolean b)
+  {
+    COND_LOG.setEnabled (b);
+  }
+
+  /**
+   * @return The debug aware logger to use. Never <code>null</code>.
+   * @see #isDebugLog()
+   * @see #setDebugLog(boolean)
+   * @since v8
+   */
+  @Nonnull
+  public static IConditionalLogger getDebugLogger ()
+  {
+    return COND_LOG;
   }
 }

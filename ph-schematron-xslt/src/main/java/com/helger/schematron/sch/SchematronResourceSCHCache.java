@@ -66,8 +66,11 @@ public final class SchematronResourceSCHCache
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
-    // This is the call to convert Schematron to XSLT
-    final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource, aTransformerCustomizer);
+    final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource,
+                                                                                               aTransformerCustomizer);
+    // Main conversion call
+    aXSLTPreprocessor.convertSchematronToXSLT ();
+
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
       // Schematron is invalid -> parsing failed
@@ -82,9 +85,11 @@ public final class SchematronResourceSCHCache
 
     // If it is a valid schematron, there must be a result XSLT present!
     if (aXSLTPreprocessor.getXSLTDocument () == null)
+    {
       throw new IllegalStateException ("No XSLT document retrieved from Schematron resource '" +
                                        aSchematronResource.getResourceID () +
                                        "'!");
+    }
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Finished compiling Schematron instance " + aSchematronResource.toString ());
@@ -142,7 +147,8 @@ public final class SchematronResourceSCHCache
       if (aProvider == null)
       {
         // Create new object outside of the write lock
-        final SchematronProviderXSLTFromSCH aProviderNew = createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
+        final SchematronProviderXSLTFromSCH aProviderNew = createSchematronXSLTProvider (aSchematronResource,
+                                                                                         aTransformerCustomizer);
         if (aProviderNew != null)
         {
           // Put in cache
