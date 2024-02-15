@@ -28,12 +28,12 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
 
 @NotThreadSafe
-public class LetVariableResolver implements XPathVariableResolver
+public class XPathLetVariableResolver implements XPathVariableResolver
 {
   private final ICommonsMap <QName, Object> m_aVariables = new CommonsHashMap <> ();
   private final XPathVariableResolver m_aDelegatedResolver;
 
-  public LetVariableResolver (@Nullable final XPathVariableResolver aResolver)
+  public XPathLetVariableResolver (@Nullable final XPathVariableResolver aResolver)
   {
     m_aDelegatedResolver = aResolver;
   }

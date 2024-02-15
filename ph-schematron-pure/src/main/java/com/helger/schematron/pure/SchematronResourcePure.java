@@ -25,8 +25,6 @@ import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,21 +198,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * @return The variable resolver to be used. May be <code>null</code>.
+   * @return The contained {@link IXPathConfig}. Never <code>null</code>.
+   * @since v8
    */
-  @Nullable
-  public final XPathVariableResolver getVariableResolver ()
+  @Nonnull
+  public final IXPathConfig getXPathConfig ()
   {
-    return m_aXPathConfig.getXPathVariableResolver ();
-  }
-
-  /**
-   * @return The function resolver to be used. May be <code>null</code>.
-   */
-  @Nullable
-  public final XPathFunctionResolver getFunctionResolver ()
-  {
-    return m_aXPathConfig.getXPathFunctionResolver ();
+    return m_aXPathConfig;
   }
 
   /**
@@ -362,8 +352,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
-                                          @Nullable final String sBaseURI) throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                         throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -401,8 +391,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
-                                             @Nullable final String sBaseURI) throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                            throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 

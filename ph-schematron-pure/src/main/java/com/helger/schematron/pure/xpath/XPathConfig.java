@@ -47,8 +47,7 @@ public class XPathConfig implements IXPathConfig
   {
     ValueEnforcer.notNull (aXPathFactory, "XPathFactory");
     m_aXPathFactory = aXPathFactory;
-    // Wrap the configured variable resolver in the one we use to resolved <let> variables
-    m_aXPathVariableResolver = new LetVariableResolver (aXPathVariableResolver);
+    m_aXPathVariableResolver = aXPathVariableResolver;
     m_aXPathFunctionResolver = aXPathFunctionResolver;
   }
 
