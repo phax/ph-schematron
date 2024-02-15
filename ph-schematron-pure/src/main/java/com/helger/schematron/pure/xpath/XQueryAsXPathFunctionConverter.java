@@ -171,7 +171,7 @@ public class XQueryAsXPathFunctionConverter
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
                 final StructuredQName aFN = aUserFunc.getFunctionName ();
-                aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getURI (),
+                aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getNamespaceUri ().toString (),
                                                      aFN.getLocalPart (),
                                                      aUserFunc.getArity (),
                                                      new XPathFunctionFromUserFunction (aConfiguration,
@@ -206,9 +206,9 @@ public class XQueryAsXPathFunctionConverter
 
               final StructuredQName aFN = aXQueryFunction.getFunctionName ();
 
-              aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getURI (),
+              aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getNamespaceUri ().toString (),
                                                    aFN.getLocalPart (),
-                                                   aXQueryFunction.getNumberOfArguments (),
+                                                   aXQueryFunction.getNumberOfParameters (),
                                                    new XPathFunctionFromUserFunction (aConfiguration,
                                                                                       aXQController,
                                                                                       aXQueryFunction.getUserFunction ()));
@@ -219,7 +219,7 @@ public class XQueryAsXPathFunctionConverter
                               ":" +
                               aFN.getLocalPart () +
                               "' with arity of " +
-                              aXQueryFunction.getNumberOfArguments ());
+                              aXQueryFunction.getNumberOfParameters ());
             }
           }
           else
