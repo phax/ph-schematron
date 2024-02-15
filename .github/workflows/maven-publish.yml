@@ -24,6 +24,8 @@ on:
   push:
     branches:
       - master
+      - 7.0.x
+      - v8
 
 jobs:
   build:
