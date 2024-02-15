@@ -63,17 +63,6 @@ public abstract class AbstractSVRLMessage
     m_aFlag = aFlag;
   }
 
-  /**
-   * @deprecated Use {@link #getDiagnosticReferences()} instead
-   */
-  @Nonnull
-  @ReturnsMutableCopy
-  @Deprecated (forRemoval = true, since = "7.1.2")
-  public final ICommonsList <DiagnosticReference> getDiagnisticReferences ()
-  {
-    return getDiagnosticReferences ();
-  }
-
   @Nonnull
   @ReturnsMutableCopy
   public final ICommonsList <DiagnosticReference> getDiagnosticReferences ()
