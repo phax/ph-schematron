@@ -47,6 +47,7 @@ import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EContinue;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
@@ -65,9 +66,9 @@ import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.xpath.IXPathConfig;
-import com.helger.schematron.pure.xpath.XPathLetVariableResolver;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XPathEvaluationHelper;
+import com.helger.schematron.pure.xpath.XPathLetVariableResolver;
 import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.xpath.XPathHelper;
@@ -570,6 +571,12 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     BREAK
   }
 
+  private int m_nVarForNodeLists = 0;
+  private int m_nVarForString = 0;
+  private int m_nVarForBoolean = 0;
+  private int m_nVarForNumber = 0;
+  private int m_nVarForNode = 0;
+
   private void _evaluateVariables (@Nonnull final PSXPathVariables aVariables,
                                    @Nonnull final Node aNode,
                                    @Nullable final String sBaseURI,
@@ -584,9 +591,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
       // We don't know the type returned by the XPath expression, so we try
       // them one after another
+      // Based on some common cases, the chances for "NodeList" results and
+      // "String" results are highest, so they are tried first
+
       try
       {
         aEvalResult = XPathEvaluationHelper.evaluateAsNodeList (aXPathExpression, aNode, sBaseURI);
+        m_nVarForNodeLists++;
       }
       catch (final XPathExpressionException ex)
       {
@@ -598,6 +609,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         try
         {
           aEvalResult = XPathEvaluationHelper.evaluateAsString (aXPathExpression, aNode, sBaseURI);
+          m_nVarForString++;
         }
         catch (final XPathExpressionException ex)
         {
@@ -608,6 +620,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         try
         {
           aEvalResult = XPathEvaluationHelper.evaluateAsBooleanObj (aXPathExpression, aNode, sBaseURI);
+          m_nVarForBoolean++;
         }
         catch (final XPathExpressionException ex)
         {
@@ -619,7 +632,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         {
           final Double aValue = XPathEvaluationHelper.evaluateAsNumber (aXPathExpression, aNode, sBaseURI);
           if (aValue != null && !aValue.isNaN ())
+          {
             aEvalResult = aValue;
+            m_nVarForNumber++;
+          }
         }
         catch (final XPathExpressionException ex)
         {
@@ -630,6 +646,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         try
         {
           aEvalResult = XPathEvaluationHelper.evaluateAsNode (aXPathExpression, aNode, sBaseURI);
+          m_nVarForNode++;
         }
         catch (final XPathExpressionException ex)
         {
@@ -927,6 +944,25 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     // Call the "end" callback method
     aValidationHandler.onEnd (aSchema, aPhase);
+
+    if (m_nVarForNodeLists > 0 ||
+        m_nVarForString > 0 ||
+        m_nVarForNode > 0 ||
+        m_nVarForBoolean > 0 ||
+        m_nVarForNumber > 0)
+    {
+      SchematronDebug.getDebugLogger ()
+                     .info ( () -> "Variables result types: NodeList=" +
+                                   m_nVarForNodeLists +
+                                   "; String=" +
+                                   m_nVarForString +
+                                   "; Node=" +
+                                   m_nVarForNode +
+                                   "; Boolean=" +
+                                   m_nVarForBoolean +
+                                   "; Number=" +
+                                   m_nVarForNumber);
+    }
   }
 
   public void validate (@Nonnull final Node aNode,

@@ -46,6 +46,7 @@ public interface IPSErrorHandler extends ISchematronErrorHandler
   {
     if (aSourceElement == null)
       return null;
+
     String sField = ClassHelper.getClassLocalName (aSourceElement);
     if (aSourceElement instanceof IPSHasID && ((IPSHasID) aSourceElement).hasID ())
       sField += " [ID=" + ((IPSHasID) aSourceElement).getID () + "]";

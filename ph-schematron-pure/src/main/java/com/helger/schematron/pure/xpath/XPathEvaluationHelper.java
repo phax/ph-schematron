@@ -61,7 +61,9 @@ public final class XPathEvaluationHelper
                                                                                                                       aItem);
     }
 
-    return GenericReflection.uncheckedCast (aXPath.evaluate (aRealItem, aReturnType));
+    // Unfortunately there is no "any" type
+    final Object ret = aXPath.evaluate (aRealItem, aReturnType);
+    return GenericReflection.uncheckedCast (ret);
   }
 
   @Nullable
