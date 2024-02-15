@@ -7,10 +7,13 @@
 
   <xsl:function as="xs:decimal" name="u:decimal">
     <xsl:param name="element" />
+    <xsl:value-of select="if (boolean($element)) then xs:decimal($element) else 0" />
+    <!-- 
     <xsl:choose>
       <xsl:when test="$element"><xsl:value-of select="xs:decimal($element)" /></xsl:when>
       <xsl:otherwise>0</xsl:otherwise>
     </xsl:choose>
+     -->
   </xsl:function>
 
   <xsl:template match="/">
