@@ -104,20 +104,24 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
   ISchematronXSLTBasedResource setEntityResolver (@Nullable EntityResolver aEntityResolver);
 
   /**
-   * @return The XSLT validator to be used. Never <code>null</code>.
+   * Note: The method was renamed in v8 from <code>getXSLTValidator</code>.
+   *
+   * @return The Schematron output validity determinator to be used. Never
+   *         <code>null</code>.
    */
   @Nonnull
-  ISchematronOutputValidator getXSLTValidator ();
+  ISchematronOutputValidator getOutputValidator ();
 
   /**
-   * Set the XSLT validator to be used.
+   * Set the Schematron output validator to be used.<br>
+   * Note: The method was renamed in v8 from <code>setXSLTValidator</code>.
    *
-   * @param aXSLTValidator
+   * @param aOutputValidator
    *        Validator instance to use. May not be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
-  ISchematronXSLTBasedResource setXSLTValidator (@Nonnull final ISchematronOutputValidator aXSLTValidator);
+  ISchematronXSLTBasedResource setOutputValidator (@Nonnull ISchematronOutputValidator aOutputValidator);
 
   /**
    * @return <code>true</code> if the created SVRL should be validated or not.
