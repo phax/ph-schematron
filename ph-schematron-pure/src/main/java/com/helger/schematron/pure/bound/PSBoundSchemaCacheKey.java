@@ -47,8 +47,9 @@ import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
  * This class represents keys for the {@link PSBoundSchemaCache}. It is a
- * combination of a resource and a phase. It is the responsible class for
- * reading and binding a Schematron resource.
+ * combination of a resource, a phase and an XPath Configuration (see
+ * <code>equals</code> method). It is the responsible class for reading and
+ * binding a Schematron resource.
  *
  * @author Philip Helger
  */
@@ -85,11 +86,6 @@ public class PSBoundSchemaCacheKey
     m_aXPathConfig = aXPathConfig;
     m_aEntityResolver = aEntityResolver;
     m_bLenient = bLenient;
-  }
-
-  public boolean isLenient ()
-  {
-    return m_bLenient;
   }
 
   /**
@@ -147,6 +143,11 @@ public class PSBoundSchemaCacheKey
   public final EntityResolver getEntityResolver ()
   {
     return m_aEntityResolver;
+  }
+
+  public final boolean isLenient ()
+  {
+    return m_bLenient;
   }
 
   /**
