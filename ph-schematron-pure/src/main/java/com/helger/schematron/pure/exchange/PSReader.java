@@ -121,6 +121,17 @@ public class PSReader
   }
 
   /**
+   * @return The entity handler provided in the constructor. May be
+   *         <code>null</code>.
+   * @since v8
+   */
+  @Nullable
+  public final EntityResolver getEntityResolver ()
+  {
+    return m_aEntityResolver;
+  }
+
+  /**
    * @return <code>true</code> if the old Schematron namespace is supported,
    *         <code>false</code> if not. Default is
    *         {@link CSchematron#DEFAULT_ALLOW_DEPRECATED_NAMESPACES}.
@@ -1219,8 +1230,10 @@ public class PSReader
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("resource", m_aResource)
-                                       .append ("errorHandler", m_aErrorHandler)
+    return new ToStringGenerator (this).append ("Resource", m_aResource)
+                                       .append ("ErrorHandler", m_aErrorHandler)
+                                       .append ("EntityResolver", m_aEntityResolver)
+                                       .append ("Lenient", m_bLenient)
                                        .getToString ();
   }
 }

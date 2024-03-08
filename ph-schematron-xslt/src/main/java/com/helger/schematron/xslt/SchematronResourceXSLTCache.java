@@ -71,7 +71,7 @@ public final class SchematronResourceXSLTCache
       // Schematron is invalid -> parsing failed
       LOGGER.warn ("The XSLT resource '" + aXSLTResource.getResourceID () + "' is invalid!");
       for (final IError aError : aCEH.getErrorList ())
-        LOGGER.warn ("  " + aError.getAsString (Locale.US));
+        LOGGER.warn ("  " + aError.getAsStringLocaleIndepdent ());
       return null;
     }
     // If it is a valid schematron, there must be a result XSLT present!

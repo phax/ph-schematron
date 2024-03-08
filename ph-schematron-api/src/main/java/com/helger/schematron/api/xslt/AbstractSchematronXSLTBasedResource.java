@@ -49,8 +49,8 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
-import com.helger.schematron.api.xslt.validator.ISchematronXSLTValidator;
-import com.helger.schematron.api.xslt.validator.SchematronXSLTValidatorDefault;
+import com.helger.schematron.api.xslt.validator.ISchematronOutputValidator;
+import com.helger.schematron.api.xslt.validator.SchematronOutputValidatorDefault;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
@@ -79,7 +79,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
-  private ISchematronXSLTValidator m_aXSLTValidator = new SchematronXSLTValidatorDefault ();
+  private ISchematronOutputValidator m_aSvrlValidator = new SchematronOutputValidatorDefault ();
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
   @Nullable
@@ -164,19 +164,20 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public abstract ISchematronXSLTBasedProvider getXSLTProvider ();
 
   /**
-   * @return The XSLT validator to be used. Never <code>null</code>.
+   * @return The Schematron output validator to be used. Never
+   *         <code>null</code>.
    */
   @Nonnull
-  public final ISchematronXSLTValidator getXSLTValidator ()
+  public final ISchematronOutputValidator getOutputValidator ()
   {
-    return m_aXSLTValidator;
+    return m_aSvrlValidator;
   }
 
   @Nonnull
-  public final IMPLTYPE setXSLTValidator (@Nonnull final ISchematronXSLTValidator aXSLTValidator)
+  public final IMPLTYPE setOutputValidator (@Nonnull final ISchematronOutputValidator aXSLTValidator)
   {
     ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
-    m_aXSLTValidator = aXSLTValidator;
+    m_aSvrlValidator = aXSLTValidator;
     return thisAsT ();
   }
 
@@ -199,8 +200,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nonnull
-  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
-                                                @Nullable final String sBaseURI) throws Exception
+  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                               throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -210,12 +211,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       return EValidity.INVALID;
 
     // And now filter all elements that make the passed source invalid
-    return m_aXSLTValidator.getSchematronValidity (aSO);
+    return m_aSvrlValidator.getSchematronOutputValidity (aSO);
   }
 
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Node aXMLNode,
-                                                   @Nullable final String sBaseURI) throws TransformerException
+  public final Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                                  throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -290,6 +291,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (aDoc.getDocumentElement () == null)
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
 
+    // Now try to read the resulting XML document as a SVRL document - may fail
     final SVRLMarshaller aMarshaller = new SVRLMarshaller (m_bValidateSVRL);
     if (GlobalDebug.isDebugMode ())
     {
@@ -308,7 +310,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                             .append ("CustomErrorListener", m_aCustomErrorListener)
                             .append ("CustomURIResolver", m_aCustomURIResolver)
                             .append ("CustomParameters", m_aCustomParameters)
-                            .append ("XSLTValidator", m_aXSLTValidator)
+                            .append ("XSLTValidator", m_aSvrlValidator)
                             .append ("ValidateSVRL", m_bValidateSVRL)
                             .getToString ();
   }

@@ -30,6 +30,7 @@ import com.helger.commons.string.StringHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 import net.sf.saxon.om.NamespaceResolver;
+import net.sf.saxon.om.NamespaceUri;
 
 public final class SaxonNamespaceContext implements NamespaceContext, NamespaceResolver
 {
@@ -41,11 +42,11 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
   }
 
   @Nullable
-  public String getURIForPrefix (@Nullable final String sPrefix, final boolean bUseDefault)
+  public NamespaceUri getURIForPrefix (@Nullable final String sPrefix, final boolean bUseDefault)
   {
     if (bUseDefault && StringHelper.hasNoText (sPrefix))
-      return m_aCtx.getDefaultNamespaceURI ();
-    return m_aCtx.getCustomNamespaceURI (sPrefix);
+      return NamespaceUri.of (m_aCtx.getDefaultNamespaceURI ());
+    return NamespaceUri.of (m_aCtx.getCustomNamespaceURI (sPrefix));
   }
 
   @Nonnull

@@ -20,9 +20,11 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsNavigableMap;
+import com.helger.commons.collection.impl.ICommonsSortedSet;
 import com.helger.commons.lang.ICloneable;
 
 /**
@@ -33,22 +35,19 @@ import com.helger.commons.lang.ICloneable;
 public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serializable
 {
   /**
-   * Perform the text replacement of all variables in the specified text.
-   *
-   * @param sText
-   *        The source text. May be <code>null</code>.
-   * @return The text with all values replaced. May be <code>null</code> if the
-   *         source text is <code>null</code>.
-   */
-  @Nullable
-  String getAppliedReplacement (@Nullable String sText);
-
-  /**
    * @return All contained variable key value pairs. Never <code>null</code>.
    */
   @Nonnull
   @ReturnsMutableCopy
-  ICommonsNavigableMap <String, String> getAll ();
+  ICommonsNavigableMap <String, XPathExpression> getAll ();
+
+  /**
+   * @return All contained variable names. Never <code>null</code>.
+   * @since v8
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  ICommonsSortedSet <String> getAllNames ();
 
   /**
    * @param sName
@@ -64,5 +63,5 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    *         <code>null</code> if no such variable is present.
    */
   @Nullable
-  String get (@Nullable String sName);
+  XPathExpression get (@Nullable String sName);
 }

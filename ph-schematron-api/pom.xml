@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>7.1.4-SNAPSHOT</version>
+    <version>8.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-api</artifactId>
   <packaging>bundle</packaging>
@@ -104,7 +104,16 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.*</Export-Package>
+            <Export-Package>
+              com.helger.schematron,
+              com.helger.schematron.api.xslt,
+              com.helger.schematron.api.xslt.validator,
+              com.helger.schematron.config,
+              com.helger.schematron.resolve,
+              com.helger.schematron.saxon,
+              com.helger.schematron.svrl,
+              com.helger.schematron.svrl.jaxb
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
 osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",

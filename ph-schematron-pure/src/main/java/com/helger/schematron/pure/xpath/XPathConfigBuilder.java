@@ -165,15 +165,15 @@ public class XPathConfigBuilder
     XPathFactory aXPathFactory = m_aXPathFactory;
     if (aXPathFactory != null)
     {
-      if (LOGGER.isTraceEnabled ())
-        LOGGER.trace ("Using provided XPathFactory instance");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Using provided XPathFactory instance");
     }
     else
     {
       if (m_aXPathFactoryClass != null)
       {
-        if (LOGGER.isTraceEnabled ())
-          LOGGER.trace ("Trying to instantiate XPathFactory class " + m_aXPathFactoryClass);
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Trying to instantiate XPathFactory class " + m_aXPathFactoryClass);
 
         try
         {
@@ -192,8 +192,8 @@ public class XPathConfigBuilder
       else
         if (StringHelper.hasText (m_sGlobalXPathFactoryClassName))
         {
-          if (LOGGER.isTraceEnabled ())
-            LOGGER.trace ("Trying to set global XPathFactory system property to '" +
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Trying to set global XPathFactory system property to '" +
                           m_sGlobalXPathFactoryClassName +
                           "'");
 
@@ -210,7 +210,8 @@ public class XPathConfigBuilder
         }
         else
         {
-          LOGGER.warn ("The XPathConfigBuilder contains no clue what XPathFactory to use - using default.");
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("The XPathConfigBuilder contains no clue what XPathFactory to use - using default.");
 
           // DEFAULT as fallback
           aXPathFactory = XPATH_FACTORY_SAXON_FIRST;

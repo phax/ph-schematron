@@ -57,20 +57,39 @@ public final class XPathEvaluationHelper
       // Saxon specific handling
       // This is trick needed for #47 - "base-uri()"
       final XPathExpressionImpl aImpl = (XPathExpressionImpl) aXPath;
-      aRealItem = new DocumentWrapper (XMLHelper.getOwnerDocument (aItem), sBaseURI, aImpl.getConfiguration ()).wrap (aItem);
+      aRealItem = new DocumentWrapper (XMLHelper.getOwnerDocument (aItem), sBaseURI, aImpl.getConfiguration ()).wrap (
+                                                                                                                      aItem);
     }
 
-    return GenericReflection.uncheckedCast (aXPath.evaluate (aRealItem, aReturnType));
+    // Unfortunately there is no "any" type
+    final Object ret = aXPath.evaluate (aRealItem, aReturnType);
+    return GenericReflection.uncheckedCast (ret);
+  }
+
+  @Nullable
+  public static Boolean evaluateAsBooleanObj (@Nonnull final XPathExpression aXPath,
+                                              @Nonnull final Node aItem,
+                                              @Nullable final String sBaseURI) throws XPathExpressionException
+  {
+    return evaluate (aXPath, aItem, XPathConstants.BOOLEAN, sBaseURI);
   }
 
   public static boolean evaluateAsBoolean (@Nonnull final XPathExpression aXPath,
                                            @Nonnull final Node aItem,
                                            @Nullable final String sBaseURI) throws XPathExpressionException
   {
-    final Boolean aVal = evaluate (aXPath, aItem, XPathConstants.BOOLEAN, sBaseURI);
+    final Boolean aVal = evaluateAsBooleanObj (aXPath, aItem, sBaseURI);
     if (aVal == null)
       throw new XPathExpressionException ("Failed to evaluate the XPath expression as boolean");
     return aVal.booleanValue ();
+  }
+
+  @Nullable
+  public static Node evaluateAsNode (@Nonnull final XPathExpression aXPath,
+                                     @Nonnull final Node aItem,
+                                     @Nullable final String sBaseURI) throws XPathExpressionException
+  {
+    return evaluate (aXPath, aItem, XPathConstants.NODE, sBaseURI);
   }
 
   @Nullable
@@ -79,6 +98,14 @@ public final class XPathEvaluationHelper
                                              @Nullable final String sBaseURI) throws XPathExpressionException
   {
     return evaluate (aXPath, aItem, XPathConstants.NODESET, sBaseURI);
+  }
+
+  @Nullable
+  public static Double evaluateAsNumber (@Nonnull final XPathExpression aXPath,
+                                         @Nonnull final Node aItem,
+                                         @Nullable final String sBaseURI) throws XPathExpressionException
+  {
+    return evaluate (aXPath, aItem, XPathConstants.NUMBER, sBaseURI);
   }
 
   @Nullable

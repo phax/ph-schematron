@@ -43,5 +43,6 @@ public class SchematronInterruptedException extends RuntimeException
   public SchematronInterruptedException (@Nonnull final String sMsg)
   {
     super ("Interrupted Schematron compilation: " + sMsg);
+    SchematronDebug.getDebugLogger ().info ( () -> "Throwing SchematronInterruptedException: " + sMsg);
   }
 }

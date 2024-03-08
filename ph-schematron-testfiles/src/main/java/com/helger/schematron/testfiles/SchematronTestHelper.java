@@ -44,12 +44,12 @@ import com.helger.xml.microdom.serialize.MicroReader;
 public final class SchematronTestHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTestHelper.class);
-  private static final ICommonsList <SchematronTestFile> SCH = _readDI (new ClassPathResource ("external/test-sch/dirindex.xml"));
-  private static final ICommonsList <SchematronTestFile> SVRL = _readDI (new ClassPathResource ("external/test-svrl/dirindex.xml"));
-  private static final ICommonsList <SchematronTestFile> XML = _readDI (new ClassPathResource ("external/test-xml/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> SCH = _readDirIndex (new ClassPathResource ("external/test-sch/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> SVRL = _readDirIndex (new ClassPathResource ("external/test-svrl/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> XML = _readDirIndex (new ClassPathResource ("external/test-xml/dirindex.xml"));
 
   @Nonnull
-  private static ICommonsList <SchematronTestFile> _readDI (@Nonnull final IReadableResource aRes)
+  private static ICommonsList <SchematronTestFile> _readDirIndex (@Nonnull final IReadableResource aRes)
   {
     if (false)
       ClassPathHelper.getAllClassPathEntries ().forEach (x -> {

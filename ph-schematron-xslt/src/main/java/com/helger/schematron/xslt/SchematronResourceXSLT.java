@@ -60,9 +60,12 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
     if (isUseCache ())
+    {
+      // Get or create
       return SchematronResourceXSLTCache.getSchematronXSLTProvider (getResource (),
                                                                     getErrorListener (),
                                                                     getURIResolver ());
+    }
 
     // Always create a new one
     return SchematronResourceXSLTCache.createSchematronXSLTProvider (getResource (),
