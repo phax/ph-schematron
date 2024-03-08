@@ -585,17 +585,25 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         aEvalResult = null;
       }
 
+      // Number first, so that e.g. "sum()" is evaluated as a Number
+      // Numbers can be converted to boolean and to string
       if (aEvalResult == null)
         try
         {
-          aEvalResult = XPathEvaluationHelper.evaluateAsString (aXPathExpression, aNode, sBaseURI);
-          m_nVarForString++;
+          final Double aValue = XPathEvaluationHelper.evaluateAsNumber (aXPathExpression, aNode, sBaseURI);
+          if (aValue != null && !aValue.isNaN ())
+          {
+            aEvalResult = aValue;
+            m_nVarForNumber++;
+          }
         }
         catch (final XPathExpressionException ex)
         {
           // ignore
         }
 
+      // Next as boolean
+      // Boolean can be converted to a string
       if (aEvalResult == null)
         try
         {
@@ -610,12 +618,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       if (aEvalResult == null)
         try
         {
-          final Double aValue = XPathEvaluationHelper.evaluateAsNumber (aXPathExpression, aNode, sBaseURI);
-          if (aValue != null && !aValue.isNaN ())
-          {
-            aEvalResult = aValue;
-            m_nVarForNumber++;
-          }
+          aEvalResult = XPathEvaluationHelper.evaluateAsString (aXPathExpression, aNode, sBaseURI);
+          m_nVarForString++;
         }
         catch (final XPathExpressionException ex)
         {

@@ -19,19 +19,24 @@
     <pattern>
         <rule context="cellar">
             <let name="nbBottles" value="sum(wine/quantity)"/>
+            <let name="sBottles" value="(wine/quantity/text())[1]"/>
+            <let name="bBottles" value="(wine/quantity/text())[1] != ''"/>
             <!-- nb of bottles of each color in the cellar -->
             <let name="winesFromCellar" value="/cellar-book/cellar/wine"/>
             <let name="colors" value="/cellar-book/cat:wine-catalog/cat:wine"/>
-            <let name="nbReds" 
-             value="sum($winesFromCellar[@code='red']/quantity)"/>
-            <let name="nbWhites" 
-             value="sum($winesFromCellar[@code='white']/quantity)"/>
-            <let name="nbRosés" 
-             value="sum($winesFromCellar[@code='rosé']/quantity)"/>
+            <let name="nbReds" value="sum($winesFromCellar[@code='red']/quantity)"/>
+            <let name="nbWhites" value="sum($winesFromCellar[@code='white']/quantity)"/>
+            <let name="nbRosés"  value="sum($winesFromCellar[@code='rosé']/quantity)"/>
             <let name="nbColors" value="$nbReds+$nbWhites+$nbRosés"/>
             <report test="$nbBottles &lt; 10">
                 Only <value-of select="$nbBottles"/> bottles left in the cellar.
             </report>
+            <assert test="string-length($sBottles) &lt; 999">
+                test 1
+            </assert>
+            <assert test="$bBottles">
+                test 2
+            </assert>
             <!-- check for a well balanced cellar!!! -->
             <assert test="$nbReds>$nbColors div 3">
                 Not enough reds (<value-of select="$nbReds"/> over 
