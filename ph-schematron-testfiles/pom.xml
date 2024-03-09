@@ -84,7 +84,9 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron.testfiles</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.testfiles.*</Export-Package>
+            <Export-Package>
+              com.helger.schematron.testfiles
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>

@@ -90,7 +90,10 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron.xslt</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.sch.*,com.helger.schematron.xslt.*</Export-Package>
+            <Export-Package>
+              com.helger.schematron.sch,
+              com.helger.schematron.xslt
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>

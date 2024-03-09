@@ -102,7 +102,20 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron.pure</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.pure.*</Export-Package>
+            <Export-Package>
+              com.helger.schematron.pure,
+              com.helger.schematron.pure.binding,
+              com.helger.schematron.pure.binding.xpath,
+              com.helger.schematron.pure.bound,
+              com.helger.schematron.pure.bound.xpath,
+              com.helger.schematron.pure.errorhandler,
+              com.helger.schematron.pure.exchange,
+              com.helger.schematron.pure.model,
+              com.helger.schematron.pure.preprocess,
+              com.helger.schematron.pure.validation,
+              com.helger.schematron.pure.validation.xpath,
+              com.helger.schematron.pure.xpath
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>

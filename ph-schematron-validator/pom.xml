@@ -168,8 +168,10 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron.validator</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron.relaxng.*,
-              com.helger.schematron.validator.*</Export-Package>
+            <Export-Package>
+              com.helger.schematron.relaxng,
+              com.helger.schematron.validator
+            </Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
