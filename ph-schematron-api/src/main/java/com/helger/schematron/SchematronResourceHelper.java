@@ -114,7 +114,11 @@ public final class SchematronResourceHelper
           final URLResource aURL = new URLResource (sSystemID);
           final Document aDoc = DOMReader.readXMLDOM (aURL, aDRS);
           if (aDoc == null)
-            throw new IllegalArgumentException ("Failed to read source " + aSource + " as XML from SystemID '" + sSystemID + "'");
+            throw new IllegalArgumentException ("Failed to read source " +
+                                                aSource +
+                                                " as XML from SystemID '" +
+                                                sSystemID +
+                                                "'");
           return aDoc;
         }
         catch (final MalformedURLException ex)

@@ -30,6 +30,7 @@ import com.helger.commons.error.ErrorTextProvider.EField;
 import com.helger.commons.error.IError;
 import com.helger.commons.error.IErrorTextProvider;
 import com.helger.commons.log.LogHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * An implementation if {@link IPSErrorHandler} that logs to an SLF4J logger.
@@ -38,13 +39,17 @@ import com.helger.commons.log.LogHelper;
  */
 public class LoggingPSErrorHandler extends AbstractPSErrorHandler
 {
+  // Same as ErrorTextProvider::DEFAULT but without the date and time
   public static final IErrorTextProvider DEFAULT_PS = new ErrorTextProvider ().addItem (EField.ERROR_LEVEL, "[$]")
                                                                               .addItem (EField.ERROR_ID, "[$]")
-                                                                              .addItem (EField.ERROR_FIELD_NAME, "[$]")
+                                                                              .addItem (EField.ERROR_FIELD_NAME,
+                                                                                        "in [$]")
                                                                               .addItem (EField.ERROR_LOCATION, "@ $")
                                                                               .addItem (EField.ERROR_TEXT, "$")
-                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_CLASS, "($:")
-                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_MESSAGE, "$)")
+                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_CLASS,
+                                                                                        "($:")
+                                                                              .addItem (EField.ERROR_LINKED_EXCEPTION_MESSAGE,
+                                                                                        "$)")
                                                                               .setFieldSeparator (" ");
 
   private static final Logger LOGGER = LoggerFactory.getLogger (LoggingPSErrorHandler.class);
@@ -78,6 +83,15 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
   @Override
   protected void handleInternally (@Nonnull final IError aError)
   {
-    LogHelper.log (LOGGER, aError.getErrorLevel (), m_aETP.getErrorText (aError, Locale.US), aError.getLinkedException ());
+    LogHelper.log (LOGGER,
+                   aError.getErrorLevel (),
+                   m_aETP.getErrorText (aError, Locale.US),
+                   aError.getLinkedException ());
+  }
+
+  @Override
+  public String toString ()
+  {
+    return ToStringGenerator.getDerived (super.toString ()).append ("ErrorTextProvider", m_aETP).getToString ();
   }
 }

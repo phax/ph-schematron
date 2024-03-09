@@ -49,8 +49,8 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
-import com.helger.schematron.api.xslt.validator.ISchematronOutputValidator;
-import com.helger.schematron.api.xslt.validator.SchematronOutputValidatorDefault;
+import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
+import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
@@ -79,7 +79,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
-  private ISchematronOutputValidator m_aSvrlValidator = new SchematronOutputValidatorDefault ();
+  private ISchematronOutputValidityDeterminator m_aSOVDeterminator = new SchematronOutputValidityDeterminatorDefault ();
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
   @Nullable
@@ -168,16 +168,16 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *         <code>null</code>.
    */
   @Nonnull
-  public final ISchematronOutputValidator getOutputValidator ()
+  public final ISchematronOutputValidityDeterminator getOutputValidityDeterminator ()
   {
-    return m_aSvrlValidator;
+    return m_aSOVDeterminator;
   }
 
   @Nonnull
-  public final IMPLTYPE setOutputValidator (@Nonnull final ISchematronOutputValidator aXSLTValidator)
+  public final IMPLTYPE setOutputValidityDeterminator (@Nonnull final ISchematronOutputValidityDeterminator aSOVDeterminator)
   {
-    ValueEnforcer.notNull (aXSLTValidator, "XSLTValidator");
-    m_aSvrlValidator = aXSLTValidator;
+    ValueEnforcer.notNull (aSOVDeterminator, "SchematronOutputValidityDeterminator");
+    m_aSOVDeterminator = aSOVDeterminator;
     return thisAsT ();
   }
 
@@ -211,7 +211,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       return EValidity.INVALID;
 
     // And now filter all elements that make the passed source invalid
-    return m_aSvrlValidator.getSchematronOutputValidity (aSO);
+    return m_aSOVDeterminator.getSchematronOutputValidity (aSO);
   }
 
   @Nullable
@@ -310,7 +310,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                             .append ("CustomErrorListener", m_aCustomErrorListener)
                             .append ("CustomURIResolver", m_aCustomURIResolver)
                             .append ("CustomParameters", m_aCustomParameters)
-                            .append ("XSLTValidator", m_aSvrlValidator)
+                            .append ("XSLTValidator", m_aSOVDeterminator)
                             .append ("ValidateSVRL", m_bValidateSVRL)
                             .getToString ();
   }

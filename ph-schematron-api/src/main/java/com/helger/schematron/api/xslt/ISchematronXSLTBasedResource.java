@@ -26,7 +26,7 @@ import org.xml.sax.EntityResolver;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.api.xslt.validator.ISchematronOutputValidator;
+import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 
 /**
  * Special Schematron resource for XSLT based implementations.
@@ -110,18 +110,18 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    *         <code>null</code>.
    */
   @Nonnull
-  ISchematronOutputValidator getOutputValidator ();
+  ISchematronOutputValidityDeterminator getOutputValidityDeterminator ();
 
   /**
    * Set the Schematron output validator to be used.<br>
    * Note: The method was renamed in v8 from <code>setXSLTValidator</code>.
    *
-   * @param aOutputValidator
-   *        Validator instance to use. May not be <code>null</code>.
+   * @param aValidityDeterminator
+   *        Validity determinator instance to use. May not be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
-  ISchematronXSLTBasedResource setOutputValidator (@Nonnull ISchematronOutputValidator aOutputValidator);
+  ISchematronXSLTBasedResource setOutputValidityDeterminator (@Nonnull ISchematronOutputValidityDeterminator aValidityDeterminator);
 
   /**
    * @return <code>true</code> if the created SVRL should be validated or not.

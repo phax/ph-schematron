@@ -18,7 +18,6 @@ package com.helger.schematron.pure.exchange;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,15 +44,11 @@ import com.helger.xml.microdom.IMicroText;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.SAXReaderSettings;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Utility class for reading all Schematron elements from a resource.
  *
  * @author Philip Helger
  */
-@Immutable
-@SuppressFBWarnings ("JCIP_FIELD_ISNT_FINAL_IN_IMMUTABLE_CLASS")
 public class PSReader
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PSReader.class);
