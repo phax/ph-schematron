@@ -26,6 +26,7 @@ import com.helger.commons.state.EContinue;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
+import com.helger.schematron.pure.model.PSRule;
 
 /**
  * A simple implementation if {@link IPSValidationHandler} that stops validation
@@ -42,7 +43,8 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
 
   @Override
   @Nonnull
-  public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+  public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
+                                   @Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
@@ -54,7 +56,8 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
 
   @Override
   @Nonnull
-  public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+  public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
+                                       @Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,

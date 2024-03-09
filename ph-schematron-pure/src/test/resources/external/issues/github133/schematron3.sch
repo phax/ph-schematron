@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" xml:lang="de">
+  <sch:title>Simple</sch:title>
+  <sch:pattern>
+    <!-- no subject -->
+    <sch:rule context="dog">
+      <!-- no subject -->
+      <sch:assert test="bone">A dog should <sch:span class="whatever">have a bone</sch:span>.</sch:assert>
+    </sch:rule>
+  </sch:pattern>
+</sch:schema>

@@ -80,7 +80,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of errors
    */
-  default void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
+  default void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+                                                                                               throws SchematronValidationException
   {}
 
   /**
@@ -109,6 +110,9 @@ public interface IPSValidationHandler
   /**
    * This method is called for every failed assert.
    *
+   * @param aOwningRule
+   *        The rule element that contains the current assertion/report. Never
+   *        <code>null</code>. Since v8.0.0.
    * @param aAssertReport
    *        The current assert element. Never <code>null</code>.
    * @param sTestExpression
@@ -130,7 +134,8 @@ public interface IPSValidationHandler
    *         In case of validation errors
    */
   @Nonnull
-  default EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+  default EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
+                                    @Nonnull final PSAssertReport aAssertReport,
                                     @Nonnull final String sTestExpression,
                                     @Nonnull final Node aRuleMatchingNode,
                                     final int nNodeIndex,
@@ -142,6 +147,9 @@ public interface IPSValidationHandler
   /**
    * This method is called for every failed assert.
    *
+   * @param aOwningRule
+   *        The rule element that contains the current assertion/report. Never
+   *        <code>null</code>. Since v8.0.0.
    * @param aAssertReport
    *        The current assert element. Never <code>null</code>.
    * @param sTestExpression
@@ -163,7 +171,8 @@ public interface IPSValidationHandler
    *         In case of validation errors
    */
   @Nonnull
-  default EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+  default EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
+                                        @Nonnull final PSAssertReport aAssertReport,
                                         @Nonnull final String sTestExpression,
                                         @Nonnull final Node aRuleMatchingNode,
                                         final int nNodeIndex,
@@ -185,7 +194,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  default void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
+                                                                                             throws SchematronValidationException
   {}
 
   /**
@@ -246,7 +256,8 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList) throws SchematronValidationException
+      public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+                                                                                                  throws SchematronValidationException
       {
         lhs.onRuleStart (aRule, aContextList);
         rhs.onRuleStart (aRule, aContextList);
@@ -264,34 +275,57 @@ public interface IPSValidationHandler
 
       @Nonnull
       @Override
-      public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+      public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
+                                       @Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext) throws SchematronValidationException
       {
-        EContinue eCtd = lhs.onFailedAssert (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+        EContinue eCtd = lhs.onFailedAssert (aOwningRule,
+                                             aAssertReport,
+                                             sTestExpression,
+                                             aRuleMatchingNode,
+                                             nNodeIndex,
+                                             aContext);
         if (eCtd.isContinue ())
-          eCtd = rhs.onFailedAssert (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+          eCtd = rhs.onFailedAssert (aOwningRule,
+                                     aAssertReport,
+                                     sTestExpression,
+                                     aRuleMatchingNode,
+                                     nNodeIndex,
+                                     aContext);
         return eCtd;
       }
 
       @Nonnull
       @Override
-      public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+      public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
+                                           @Nonnull final PSAssertReport aAssertReport,
                                            @Nonnull final String sTestExpression,
                                            @Nonnull final Node aRuleMatchingNode,
                                            final int nNodeIndex,
                                            @Nullable final Object aContext) throws SchematronValidationException
       {
-        EContinue eCtd = lhs.onSuccessfulReport (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+        EContinue eCtd = lhs.onSuccessfulReport (aOwningRule,
+                                                 aAssertReport,
+                                                 sTestExpression,
+                                                 aRuleMatchingNode,
+                                                 nNodeIndex,
+                                                 aContext);
         if (eCtd.isContinue ())
-          eCtd = rhs.onSuccessfulReport (aAssertReport, sTestExpression, aRuleMatchingNode, nNodeIndex, aContext);
+          eCtd = rhs.onSuccessfulReport (aOwningRule,
+                                         aAssertReport,
+                                         sTestExpression,
+                                         aRuleMatchingNode,
+                                         nNodeIndex,
+                                         aContext);
         return eCtd;
       }
 
       @Override
-      public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+      public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
+                                                                                                throws SchematronValidationException
       {
         lhs.onEnd (aSchema, aActivePhase);
         rhs.onEnd (aSchema, aActivePhase);

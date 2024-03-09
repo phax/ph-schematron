@@ -33,6 +33,7 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.location.SimpleLocation;
 import com.helger.commons.state.EContinue;
+import com.helger.commons.string.StringHelper;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundElement;
@@ -68,7 +69,9 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 /**
  * A special validation handler that creates an SVRL document. This class only
  * works for the XPath binding, as the special {@link PSXPathBoundAssertReport}
- * class is referenced!
+ * class is referenced!<br>
+ * See https://schematron.com/document/3464.html for the proposed default
+ * mapping from SCH to SVRL
  *
  * @author Philip Helger
  */
@@ -175,14 +178,15 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  public void onPattern (@Nonnull final PSPattern aPattern)
+  public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
   {
     final ActivePattern aRetPattern = new ActivePattern ();
     // TODO documents
     aRetPattern.setId (aPattern.getID ());
-    // TODO name
+    if (aPattern.hasTitle ())
+      aRetPattern.setName (_getTitleAsString (aPattern.getTitle ()));
     // TODO role
-    m_aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ().add (aRetPattern);
+    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aRetPattern);
   }
 
   @Override
@@ -207,7 +211,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       aRetRule.setSee (aRich.getSee ());
       aRetRule.setFpi (aRich.getFPI ());
     }
-    m_aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ().add (aRetRule);
+    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aRetRule);
   }
 
   /**
@@ -373,7 +377,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
 
   @Override
   @Nonnull
-  public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+  public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
+                                   @Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
@@ -386,7 +391,19 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     final FailedAssert aFailedAssert = new FailedAssert ();
     aFailedAssert.setFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
-    aFailedAssert.setLocation (_getPathToNode (aRuleMatchingNode));
+    {
+      String sLocation = null;
+      if (aAssertReport.hasLinkable ())
+        sLocation = aAssertReport.getLinkable ().getSubject ();
+      if (StringHelper.hasNoText (sLocation))
+      {
+        if (aOwningRule.hasLinkable ())
+          sLocation = aOwningRule.getLinkable ().getSubject ();
+        if (StringHelper.hasNoText (sLocation))
+          sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
+      }
+      aFailedAssert.setLocation (sLocation);
+    }
     if (aAssertReport.hasLinkable ())
       aFailedAssert.setRole (aAssertReport.getLinkable ().getRole ());
     aFailedAssert.setTest (sTestExpression);
@@ -402,7 +419,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
 
   @Override
   @Nonnull
-  public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+  public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
+                                       @Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
@@ -415,7 +433,19 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     final SuccessfulReport aSuccessfulReport = new SuccessfulReport ();
     aSuccessfulReport.setFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());
-    aSuccessfulReport.setLocation (_getPathToNode (aRuleMatchingNode));
+    {
+      String sLocation = null;
+      if (aAssertReport.hasLinkable ())
+        sLocation = aAssertReport.getLinkable ().getSubject ();
+      if (StringHelper.hasNoText (sLocation))
+      {
+        if (aOwningRule.hasLinkable ())
+          sLocation = aOwningRule.getLinkable ().getSubject ();
+        if (StringHelper.hasNoText (sLocation))
+          sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
+      }
+      aSuccessfulReport.setLocation (sLocation);
+    }
     if (aAssertReport.hasLinkable ())
       aSuccessfulReport.setRole (aAssertReport.getLinkable ().getRole ());
     aSuccessfulReport.setTest (sTestExpression);

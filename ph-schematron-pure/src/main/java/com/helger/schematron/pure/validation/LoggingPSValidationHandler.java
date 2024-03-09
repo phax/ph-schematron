@@ -146,8 +146,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onRuleStart (@Nonnull final PSRule aRule,
-                           @Nonnull final NodeList aContextList) throws SchematronValidationException
+  public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+                                                                                              throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
   }
@@ -163,13 +163,16 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
 
   @Nonnull
   @Override
-  public EContinue onFailedAssert (@Nonnull final PSAssertReport aAssertReport,
+  public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
+                                   @Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
                                    @Nullable final Object aContext) throws SchematronValidationException
   {
     _log ("onFailedAssert (" +
+          aOwningRule +
+          ", " +
           aAssertReport +
           ", " +
           sTestExpression +
@@ -185,13 +188,16 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
 
   @Nonnull
   @Override
-  public EContinue onSuccessfulReport (@Nonnull final PSAssertReport aAssertReport,
+  public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
+                                       @Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext) throws SchematronValidationException
   {
     _log ("onSuccessfulReport (" +
+          aOwningRule +
+          ", " +
           aAssertReport +
           ", " +
           sTestExpression +
@@ -206,8 +212,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onEnd (@Nonnull final PSSchema aSchema,
-                     @Nullable final PSPhase aActivePhase) throws SchematronValidationException
+  public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
+                                                                                            throws SchematronValidationException
   {
     _log ("onEnd (" + aSchema + ", " + aActivePhase + ")");
   }

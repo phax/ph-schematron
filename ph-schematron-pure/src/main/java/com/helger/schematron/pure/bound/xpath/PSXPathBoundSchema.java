@@ -733,7 +733,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 if (!bTestResult)
                 {
                   // Assert failed
-                  if (aValidationHandler.onFailedAssert (aAssertReport,
+                  if (aValidationHandler.onFailedAssert (aBoundRule.getRule (),
+                                                         aAssertReport,
                                                          aBoundAssertReport.getTestExpression (),
                                                          aRuleMatchingNode,
                                                          nMatchedNode,
@@ -749,7 +750,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 if (bTestResult)
                 {
                   // Successful report
-                  if (aValidationHandler.onSuccessfulReport (aAssertReport,
+                  if (aValidationHandler.onSuccessfulReport (aBoundRule.getRule (),
+                                                             aAssertReport,
                                                              aBoundAssertReport.getTestExpression (),
                                                              aRuleMatchingNode,
                                                              nMatchedNode,
