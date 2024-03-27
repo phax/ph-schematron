@@ -70,8 +70,9 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no
  * XSLT functions in Schematron asserts and reports! If your Schematrons use
  * XSLT functionality you're better off using the
- * {@link com.helger.schematron.sch.SchematronResourceSCH} or
- * {@link com.helger.schematron.xslt.SchematronResourceXSLT} classes instead!
+ * <code>com.helger.schematron.sch.SchematronResourceSCH</code> or
+ * <code>com.helger.schematron.xslt.SchematronResourceXSLT</code> classes
+ * instead!
  *
  * @author Philip Helger
  */
@@ -337,8 +338,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                         throws Exception
+  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+                                          @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -376,8 +377,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                            throws Exception
+  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
+                                             @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
