@@ -182,7 +182,6 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
    * Factory method to create a new {@link PSNS} with certain "prefix" and "uri"
    * values
    *
-   * @param sUri
    * @param sPrefix
    *        The namespace prefix to use. May be <code>null</code>.
    * @param sUri
