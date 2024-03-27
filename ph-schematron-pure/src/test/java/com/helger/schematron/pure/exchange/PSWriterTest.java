@@ -73,7 +73,7 @@ public final class PSWriterTest
   @Test
   public void testWriteWithNamespacePrefix () throws SchematronReadException
   {
-    final IReadableResource aRes = SchematronTestHelper.getAllValidSchematronFiles ().getFirst ();
+    final IReadableResource aRes = SchematronTestHelper.getAllValidSchematronFiles ().getFirstOrNull ();
     // Read existing Schematron
     final PSSchema aSchema = new PSReader (aRes).readSchema ();
 
@@ -84,7 +84,8 @@ public final class PSWriterTest
 
     // Create the PSWriter settings
     final PSWriterSettings aPSWS = new PSWriterSettings ();
-    aPSWS.setXMLWriterSettings (new XMLWriterSettings ().setNamespaceContext (aNSCtx).setPutNamespaceContextPrefixesInRoot (true));
+    aPSWS.setXMLWriterSettings (new XMLWriterSettings ().setNamespaceContext (aNSCtx)
+                                                        .setPutNamespaceContextPrefixesInRoot (true));
 
     // Write the Schematron
     new PSWriter (aPSWS).writeToFile (aSchema, new File ("target/test-with-nsprefix.xml"));
