@@ -29,7 +29,8 @@ import com.helger.commons.error.level.EErrorLevel;
 import com.helger.commons.error.level.IErrorLevel;
 
 /**
- * The default implementation of {@link ISVRLErrorLevelDeterminator}.
+ * The default implementation of {@link ISVRLErrorLevelDeterminator}.<br/>
+ * See also https://schematron.com/document/141.html
  *
  * @author Philip Helger
  */
@@ -85,10 +86,14 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
       if (sFlag.equalsIgnoreCase ("information") ||
           sFlag.equalsIgnoreCase ("info") ||
           sFlag.equalsIgnoreCase ("notice") ||
-          sFlag.equalsIgnoreCase ("note"))
+          sFlag.equalsIgnoreCase ("note") ||
+          sFlag.equalsIgnoreCase ("caution") ||
+          sFlag.equalsIgnoreCase ("hint") ||
+          sFlag.equalsIgnoreCase ("trace") ||
+          sFlag.equalsIgnoreCase ("debug"))
         return EErrorLevel.INFO;
 
-      if (sFlag.equalsIgnoreCase ("warning") || sFlag.equalsIgnoreCase ("warn") || sFlag.equalsIgnoreCase ("caution"))
+      if (sFlag.equalsIgnoreCase ("warning") || sFlag.equalsIgnoreCase ("warn"))
         return EErrorLevel.WARN;
 
       if (sFlag.equalsIgnoreCase ("error") || sFlag.equalsIgnoreCase ("err") || sFlag.equalsIgnoreCase ("nonfatal"))
