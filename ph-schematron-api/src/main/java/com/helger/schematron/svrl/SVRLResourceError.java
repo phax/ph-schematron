@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.error.IError;
 import com.helger.commons.error.SingleError;
 import com.helger.commons.error.level.IErrorLevel;
 import com.helger.commons.error.text.IHasErrorText;
@@ -121,6 +122,13 @@ public class SVRLResourceError extends SingleError
     public SVRLErrorBuilder (@Nonnull final String sTest)
     {
       test (sTest);
+    }
+
+    public SVRLErrorBuilder (@Nonnull final IError aError)
+    {
+      super (aError);
+      if (aError instanceof SVRLResourceError)
+        test (((SVRLResourceError) aError).getTest ());
     }
 
     @Nonnull
