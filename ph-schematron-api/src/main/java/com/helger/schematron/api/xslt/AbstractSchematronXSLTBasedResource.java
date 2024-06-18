@@ -45,6 +45,7 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.state.EValidity;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.commons.traits.IGenericImplTrait;
 import com.helger.schematron.AbstractSchematronResource;
@@ -231,6 +232,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     // Debug print the created XSLT document
     if (SchematronDebug.isShowCreatedXSLT ())
       LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
+
+    LOGGER.info ("Applying Schematron XSLT on XML instance" +
+                 (StringHelper.hasText (sBaseURI) ? " with base URI '" + sBaseURI + "'" : ""));
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
