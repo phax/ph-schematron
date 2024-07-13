@@ -1,0 +1,412 @@
+<ContractAwardNotice xmlns="urn:oasis:names:specification:ubl:schema:xsd:ContractAwardNotice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:efac="http://data.europa.eu/p27/eforms-ubl-extension-aggregate-components/1" xmlns:efbc="http://data.europa.eu/p27/eforms-ubl-extension-basic-components/1" xmlns:efext="http://data.europa.eu/p27/eforms-ubl-extensions/1" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2">
+	<ext:UBLExtensions>
+		<ext:UBLExtension>
+			<ext:ExtensionContent>
+				<efext:EformsExtension>
+					<efac:NoticeResult>
+						<efac:LotResult>
+							<cbc:ID schemeName="result">RES-0001</cbc:ID>
+							<cbc:TenderResultCode listName="winner-selection-status">selec-w</cbc:TenderResultCode>
+							<efac:LotTender>
+								<cbc:ID schemeName="tender">TEN-0001</cbc:ID>
+							</efac:LotTender>
+							<efac:ReceivedSubmissionsStatistics>
+								<efbc:StatisticsCode listName="received-submission-type">t-esubm</efbc:StatisticsCode>
+								<efbc:StatisticsNumeric>1</efbc:StatisticsNumeric>
+							</efac:ReceivedSubmissionsStatistics>
+							<efac:SettledContract>
+								<cbc:ID schemeName="contract">CON-0001</cbc:ID>
+							</efac:SettledContract>
+							<efac:TenderLot>
+								<cbc:ID schemeName="Lot">LOT-0001</cbc:ID>
+							</efac:TenderLot>
+						</efac:LotResult>
+						<efac:LotTender>
+							<cbc:ID schemeName="tender">TEN-0001</cbc:ID>
+							<cbc:RankCode>1</cbc:RankCode>
+							<efbc:TenderRankedIndicator>true</efbc:TenderRankedIndicator>
+							<efbc:TenderVariantIndicator>false</efbc:TenderVariantIndicator>
+							<cac:LegalMonetaryTotal>
+								<cbc:PayableAmount currencyID="EUR">4257407</cbc:PayableAmount>
+							</cac:LegalMonetaryTotal>
+							<efac:TenderingParty>
+								<cbc:ID schemeName="tendering-party">TPA-0001</cbc:ID>
+							</efac:TenderingParty>
+							<efac:TenderLot>
+								<cbc:ID schemeName="Lot">LOT-0001</cbc:ID>
+							</efac:TenderLot>
+							<efac:TenderReference>
+								<cbc:ID>Angebot 1 der telent GmbH</cbc:ID>
+							</efac:TenderReference>
+						</efac:LotTender>
+						<efac:SettledContract>
+							<cbc:ID schemeName="contract">CON-0001</cbc:ID>
+							<efac:ContractReference>
+								<cbc:ID>Auftrag 1 aus Geschäftszeichen 2024/815/010</cbc:ID>
+							</efac:ContractReference>
+							<efac:LotTender>
+								<cbc:ID schemeName="tender">TEN-0001</cbc:ID>
+							</efac:LotTender>
+						</efac:SettledContract>
+						<efac:TenderingParty>
+							<cbc:ID schemeName="tendering-party">TPA-0001</cbc:ID>
+							<efac:Tenderer>
+								<cbc:ID schemeName="organization">ORG-0003</cbc:ID>
+							</efac:Tenderer>
+						</efac:TenderingParty>
+					</efac:NoticeResult>
+					<efac:NoticeSubType>
+						<cbc:SubTypeCode listName="notice-subtype">29</cbc:SubTypeCode>
+					</efac:NoticeSubType>
+					<efac:Organizations>
+						<efac:Organization>
+							<efbc:GroupLeadIndicator>true</efbc:GroupLeadIndicator>
+							<efbc:AcquiringCPBIndicator>false</efbc:AcquiringCPBIndicator>
+							<efbc:AwardingCPBIndicator>false</efbc:AwardingCPBIndicator>
+							<efac:Company>
+								<cac:PartyIdentification>
+									<cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+								</cac:PartyIdentification>
+								<cac:PartyName>
+									<cbc:Name languageID="DEU">Wassestraßen- und Schifffahrtsamt Elbe</cbc:Name>
+								</cac:PartyName>
+								<cac:PostalAddress>
+									<cbc:StreetName>Straße 19/20</cbc:StreetName>
+									<cbc:CityName>Magdeburg</cbc:CityName>
+									<cbc:PostalZone>39104</cbc:PostalZone>
+									<cbc:CountrySubentityCode listName="nuts-lvl3">DEE03</cbc:CountrySubentityCode>
+									<cac:Country>
+										<cbc:IdentificationCode listName="eforms-country">DEU</cbc:IdentificationCode>
+									</cac:Country>
+								</cac:PostalAddress>
+								<cac:PartyLegalEntity>
+									<cbc:CompanyID>Leidweg-ID: 999-07999-99</cbc:CompanyID>
+								</cac:PartyLegalEntity>
+								<cac:Contact>
+									<cbc:Telephone>+49 391 12312312</cbc:Telephone>
+									<cbc:Telefax>+49 391 12312312</cbc:Telefax>
+									<cbc:ElectronicMail>email@mail.de</cbc:ElectronicMail>
+								</cac:Contact>
+							</efac:Company>
+						</efac:Organization>
+						<efac:Organization>
+							<efac:Company>
+								<cac:PartyIdentification>
+									<cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+								</cac:PartyIdentification>
+								<cac:PartyName>
+									<cbc:Name languageID="DEU">Bundeskartellamt - Vergabekammer des Bundes -</cbc:Name>
+								</cac:PartyName>
+								<cac:PostalAddress>
+									<cbc:StreetName>Str. 16</cbc:StreetName>
+									<cbc:CityName>Bonn</cbc:CityName>
+									<cbc:PostalZone>53113</cbc:PostalZone>
+									<cbc:CountrySubentityCode listName="nuts-lvl3">DEA22</cbc:CountrySubentityCode>
+									<cac:Country>
+										<cbc:IdentificationCode listName="eforms-country">DEU</cbc:IdentificationCode>
+									</cac:Country>
+								</cac:PostalAddress>
+								<cac:PartyLegalEntity>
+									<cbc:CompanyID>Tel: (0228) 9999-0</cbc:CompanyID>
+								</cac:PartyLegalEntity>
+								<cac:Contact>
+									<cbc:Telephone>+49 228 99999</cbc:Telephone>
+									<cbc:Telefax>+49 228 9999999</cbc:Telefax>
+									<cbc:ElectronicMail>mail@mail.de</cbc:ElectronicMail>
+								</cac:Contact>
+							</efac:Company>
+						</efac:Organization>
+						<efac:Organization>
+							<efbc:ListedOnRegulatedMarketIndicator>false</efbc:ListedOnRegulatedMarketIndicator>
+							<efac:UltimateBeneficialOwner>
+								<cbc:ID schemeName="ubo">UBO-0001</cbc:ID>
+							</efac:UltimateBeneficialOwner>
+							<efac:Company>
+								<efbc:CompanySizeCode listName="economic-operator-size">small</efbc:CompanySizeCode>
+								<cac:PartyIdentification>
+									<cbc:ID schemeName="organization">ORG-0003</cbc:ID>
+								</cac:PartyIdentification>
+								<cac:PartyName>
+									<cbc:Name languageID="DEU">telent GmbH</cbc:Name>
+								</cac:PartyName>
+								<cac:PostalAddress>
+									<cbc:CityName>Backnang</cbc:CityName>
+									<cbc:PostalZone>77777</cbc:PostalZone>
+									<cbc:CountrySubentityCode listName="nuts-lvl3">DE116</cbc:CountrySubentityCode>
+									<cac:Country>
+										<cbc:IdentificationCode listName="eforms-country">DEU</cbc:IdentificationCode>
+									</cac:Country>
+								</cac:PostalAddress>
+								<cac:PartyLegalEntity>
+									<cbc:CompanyID>Tel. 09999 - 900 0</cbc:CompanyID>
+								</cac:PartyLegalEntity>
+								<cac:Contact>
+									<cbc:Telephone>+49 9999 - 900 0</cbc:Telephone>
+									<cbc:ElectronicMail>mail@mail.de</cbc:ElectronicMail>
+								</cac:Contact>
+							</efac:Company>
+						</efac:Organization>
+						<efac:UltimateBeneficialOwner>
+							<cbc:ID schemeName="ubo">UBO-0001</cbc:ID>
+							<cbc:FamilyName>mail GmbH</cbc:FamilyName>
+							<efac:Nationality>
+								<cbc:NationalityID>DEU</cbc:NationalityID>
+							</efac:Nationality>
+						</efac:UltimateBeneficialOwner>
+					</efac:Organizations>
+				</efext:EformsExtension>
+			</ext:ExtensionContent>
+		</ext:UBLExtension>
+	</ext:UBLExtensions>
+	<cbc:UBLVersionID>2.3</cbc:UBLVersionID>
+	<cbc:CustomizationID>eforms-de-1.1</cbc:CustomizationID>
+	<cbc:ID schemeName="notice-id">52c96051-75aa-4811-ae00-bdef0871d238</cbc:ID>
+	<cbc:ContractFolderID>ddd6ae16-0157-47b6-8a7c-713481a7d7c4</cbc:ContractFolderID>
+	<cbc:IssueDate>2024-06-10+00:00</cbc:IssueDate>
+	<cbc:IssueTime>00:00:00+00:00</cbc:IssueTime>
+	<cbc:VersionID>03</cbc:VersionID>
+	<cbc:RequestedPublicationDate>2024-06-10+00:00</cbc:RequestedPublicationDate>
+	<cbc:RegulatoryDomain>32014L0024</cbc:RegulatoryDomain>
+	<cbc:NoticeTypeCode listName="result">can-standard</cbc:NoticeTypeCode>
+	<cbc:NoticeLanguageCode listName="eu-official-language">DEU</cbc:NoticeLanguageCode>
+	<cac:ContractingParty>
+		<cac:ContractingPartyType>
+			<cbc:PartyTypeCode listName="buyer-legal-type">koerp-oer-bund</cbc:PartyTypeCode>
+		</cac:ContractingPartyType>
+		<cac:ContractingActivity>
+			<cbc:ActivityTypeCode listName="authority-activity">gen-pub</cbc:ActivityTypeCode>
+		</cac:ContractingActivity>
+		<cac:Party>
+			<cac:PartyIdentification>
+				<cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+			</cac:PartyIdentification>
+		</cac:Party>
+	</cac:ContractingParty>
+	<cac:TenderingTerms>
+		<cac:ProcurementLegislationDocumentReference>
+			<cbc:ID>vgv</cbc:ID>
+			<cbc:DocumentDescription languageID="DEU">§15 VgV Offenes Verfahren</cbc:DocumentDescription>
+		</cac:ProcurementLegislationDocumentReference>
+	</cac:TenderingTerms>
+	<cac:TenderingProcess>
+		<ext:UBLExtensions>
+			<ext:UBLExtension>
+				<ext:ExtensionContent>
+					<efext:EformsExtension>
+						<efbc:ProcedureRelaunchIndicator>false</efbc:ProcedureRelaunchIndicator>
+					</efext:EformsExtension>
+				</ext:ExtensionContent>
+			</ext:UBLExtension>
+		</ext:UBLExtensions>
+		<cbc:ProcedureCode listName="procurement-procedure-type">open</cbc:ProcedureCode>
+		<cac:ProcessJustification>
+			<cbc:ProcessReasonCode listName="accelerated-procedure">false</cbc:ProcessReasonCode>
+			<cbc:ProcessReason languageID="DEU">§14 (2) VgV</cbc:ProcessReason>
+		</cac:ProcessJustification>
+	</cac:TenderingProcess>
+	<cac:ProcurementProject>
+		<cbc:ID schemeName="InternalID">Vergabenummer: 2024/815/010</cbc:ID>
+		<cbc:Name languageID="DEU">Rahmenvertrag über Dienstleistungen am KOM-Kabel der WSV (Orts- und Fernkabel)</cbc:Name>
+		<cbc:Description languageID="DEU">Auf der Grundlage des Rahmenvertrages, Dienstleistungen am Kom-Kabel der WSV, werden Reparaturen und Umverlegungen als Einzelmaßnahmen beauftragt.
+Eine Abrechnung der jeweiligen Einzelmaßname erfolgt nach Aufmaß.
+Die Fehlersuche am Kom-Kabel der WSV und dessen Ortung muss von geschultem Fachpersonal durchgeführt werden. Die Kom-Kabel für die Einzelmaßnahmen werden vom AG bereitgestellt. Es handelt sich vorwiegend, um folgende Kabelbauarten (AJ-PLEB2Y, PMZBC, A-02YSTF(L)2YV,
+A-DQ(ZN)B2Y und A-DSQ(ZN)(L)2Y), es können aber auch vereinzelt Kabel ähnlicher Bauart vorkommen.
+Für die Arbeiten im Bereich der Deutschen Bahn AG sind die entsprechenden Qualifizierungen nachzuweisen (z.B. Gleisbauarbeiten, Gleisinstandhaltungsarbeiten u.s.w.).
+Es sind Absprachen und gegebenenfalls Anträge mit mehreren Beteiligten zur Erfüllung der Leistung notwendig.
+Nach Abschluss der Leistung müssen Bestandspläne erstellt werden, diese sind Grundlage des Aufmaßes.
+Es ist davon auszugehen, dass die, im LV, angegebenen Mengen auch unter- und überschritten werden können. Ein Anspruch auf Abnahme aller im LV aufgeführten Positionen besteht nicht.</cbc:Description>
+		<cbc:ProcurementTypeCode listName="eforms-contract-nature">services</cbc:ProcurementTypeCode>
+		<cac:RequestedTenderTotal>
+			<ext:UBLExtensions>
+				<ext:UBLExtension>
+					<ext:ExtensionContent>
+						<efext:EformsExtension>
+							<efbc:FrameworkMaximumAmount currencyID="EUR">430000</efbc:FrameworkMaximumAmount>
+						</efext:EformsExtension>
+					</ext:ExtensionContent>
+				</ext:UBLExtension>
+			</ext:UBLExtensions>
+			<cbc:EstimatedOverallContractAmount currencyID="EUR">430000</cbc:EstimatedOverallContractAmount>
+		</cac:RequestedTenderTotal>
+		<cac:MainCommodityClassification>
+			<cbc:ItemClassificationCode listName="cpv">50330000</cbc:ItemClassificationCode>
+		</cac:MainCommodityClassification>
+		<cac:AdditionalCommodityClassification>
+			<cbc:ItemClassificationCode listName="cpv">50331000</cbc:ItemClassificationCode>
+		</cac:AdditionalCommodityClassification>
+		<cac:RealizedLocation>
+			<cbc:Description languageID="DEU">Die Anlagen im Zuständigkeitsbereich des WSA Magdeburg befinden sich im Wesentlichen an öffentlichen Verkehrswegen, im Bereich von Bahnanlagen sowie auf privaten Grundstücken.
+Der Bereich erstreckt sich von Lübeck, Geesthacht und Artlenburg im Norden bis Dresden im Süden. Weiterhin verläuft die östliche und westliche Grenze 60 km rechts und links der Elbe. Das Gebiet umfasst Bereiche der Ämter Lübeck, Lauenburg, Uelzen, Magdeburg, Brandenburg und Dresden. Der Bereich umfasst außerdem ein Gebiet von Wettin bis zur Saalemündung. Auch hier ist ein Korridor, von 60 km rechts und links der Saale mit einzubeziehen.
+Die Gesamtlänge der betreuten Kom-Kabel, im Verantwortungsbereich des WSA
+Magdeburg (Orts- und Fernkabel), beläuft sich auf ca. 1000 km.
+Die Dienstleistungen sind zum Teil im städtischen Raum und in ländlichen Gebieten
+zu erbringen, hier ist ein Verhältnis von 39% städtisch und 59% ländlich anzusetzen.
+2% der Dienstleistungen finden im Bereich der Deutsch Bahn AG statt.
+Bei der Zuwegung zu den einzelnen Einsatzstellen ist davon auszugehen, dass ca.
+40% befestigte Straßen, 35% unbefestigte Wege, 20% freies Gelände und 5%
+Anlagen der Deutschen Bahn vorzufinden sind.</cbc:Description>
+			<cac:Address>
+				<cbc:StreetName>Fürstenwallstraße 19/20</cbc:StreetName>
+				<cbc:CityName>Magdeburg</cbc:CityName>
+				<cbc:PostalZone>39104</cbc:PostalZone>
+				<cbc:CountrySubentityCode listName="nuts-lvl3">DEE03</cbc:CountrySubentityCode>
+				<cac:Country>
+					<cbc:IdentificationCode listName="eforms-country">DEU</cbc:IdentificationCode>
+				</cac:Country>
+			</cac:Address>
+		</cac:RealizedLocation>
+	</cac:ProcurementProject>
+	<cac:ProcurementProjectLot>
+		<cbc:ID schemeName="Lot">LOT-0001</cbc:ID>
+		<cac:TenderingTerms>
+			<ext:UBLExtensions>
+				<ext:UBLExtension>
+					<ext:ExtensionContent>
+						<efext:EformsExtension>
+							<efac:StrategicProcurement>
+								<efbc:ApplicableLegalBasis listName="cvd-scope">false</efbc:ApplicableLegalBasis>
+							</efac:StrategicProcurement>
+						</efext:EformsExtension>
+					</ext:ExtensionContent>
+				</ext:UBLExtension>
+			</ext:UBLExtensions>
+			<cbc:FundingProgramCode listName="eu-funded">no-eu-funds</cbc:FundingProgramCode>
+			<cac:AwardingTerms>
+				<cac:AwardingCriterion>
+					<cbc:Description languageID="DEU">Preis - 60 Wichtungspunkte
+Konzept Inhalt Qualität und Qualitätsmanagement - 40 Wichtungspunkte
+(siehe Formblatt 313-L V1.1 Gewichtung Zuschlagskriterien)</cbc:Description>
+					<cbc:CalculationExpression languageID="DEU">Preis - 60 Wichtungspunkte
+Konzept Inhalt Qualität und Qualitätsmanagement - 40 Wichtungspunkte
+(siehe Formblatt 313-L V1.1 Gewichtung Zuschlagskriterien)</cbc:CalculationExpression>
+					<cac:SubordinateAwardingCriterion>
+						<ext:UBLExtensions>
+							<ext:UBLExtension>
+								<ext:ExtensionContent>
+									<efext:EformsExtension>
+										<efac:AwardCriterionParameter>
+											<efbc:ParameterCode listName="number-weight">dec-exa</efbc:ParameterCode>
+											<efbc:ParameterNumeric>0.6</efbc:ParameterNumeric>
+										</efac:AwardCriterionParameter>
+										<efac:AwardCriterionParameter>
+											<efbc:ParameterCode listName="number-weight">dec-exa</efbc:ParameterCode>
+											<efbc:ParameterNumeric>0.4</efbc:ParameterNumeric>
+										</efac:AwardCriterionParameter>
+									</efext:EformsExtension>
+								</ext:ExtensionContent>
+							</ext:UBLExtension>
+						</ext:UBLExtensions>
+						<cbc:AwardingCriterionTypeCode listName="award-criterion-type">price</cbc:AwardingCriterionTypeCode>
+						<cbc:Name languageID="DEU">Preis - 60 Wichtungspunkte
+Konzept Inhalt Qualität und Qualitätsmanagement - 40 Wichtungspunkte
+(siehe Formblatt 313-L V1.1 Gewichtung Zuschlagskriterien)</cbc:Name>
+						<cbc:Description languageID="DEU">Preis - 60 Wichtungspunkte
+Konzept Inhalt Qualität und Qualitätsmanagement - 40 Wichtungspunkte</cbc:Description>
+					</cac:SubordinateAwardingCriterion>
+				</cac:AwardingCriterion>
+			</cac:AwardingTerms>
+			<cac:AdditionalInformationParty>
+				<cac:PartyIdentification>
+					<cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+				</cac:PartyIdentification>
+			</cac:AdditionalInformationParty>
+			<cac:DocumentProviderParty>
+				<cac:PartyIdentification>
+					<cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+				</cac:PartyIdentification>
+			</cac:DocumentProviderParty>
+			<cac:AppealTerms>
+				<cac:PresentationPeriod>
+					<cbc:Description languageID="DEU">Ein Antrag auf Nachprüfung ist gemäß § 160 (3) Nr. 1 bis 4 GWB nur zulässig, soweit: 1. der Antragsteller den geltend gemachten Verstoß gegen Vergabevorschriften im Vergabeverfahren vor Einreichen des Nachprüfungsantrags erkannt und gegenüber dem Auftraggeber innerhalb von 10 Kalendertagen gerügt hat, 2. Verstöße gegen Vergabevorschriften, die aufgrund der Be-anntmachung erkennbar sind, spätestens bis Ablauf der in der Bekanntmachung benannten Frist zur Bewerbung gegenüber dem Auftraggeber gerügt worden sind, 3. Verstöße gegen ergabevorschriften, die erst in den Vergabeunterlagen erkennbar sind, spätestens bis zum Ablauf der Frist zur Angebotsabgabe gegenüber dem Auftraggeber gerügt werden, 4. nicht mehr als 15 Kalendertage nach Eingang der Mitteilung des Auftraggebers, einer Rüge nicht abhelfen zu wollen, vergangen sind.</cbc:Description>
+				</cac:PresentationPeriod>
+				<cac:AppealInformationParty>
+					<cac:PartyIdentification>
+						<cbc:ID schemeName="organization">ORG-0002</cbc:ID>
+					</cac:PartyIdentification>
+				</cac:AppealInformationParty>
+				<cac:AppealReceiverParty>
+					<cac:PartyIdentification>
+						<cbc:ID schemeName="organization">ORG-0001</cbc:ID>
+					</cac:PartyIdentification>
+				</cac:AppealReceiverParty>
+			</cac:AppealTerms>
+		</cac:TenderingTerms>
+		<cac:TenderingProcess>
+			<cbc:GovernmentAgreementConstraintIndicator>true</cbc:GovernmentAgreementConstraintIndicator>
+			<cac:AuctionTerms>
+				<cbc:AuctionConstraintIndicator>false</cbc:AuctionConstraintIndicator>
+			</cac:AuctionTerms>
+			<cac:ContractingSystem>
+				<cbc:ContractingSystemTypeCode listName="framework-agreement">fa-wo-rc</cbc:ContractingSystemTypeCode>
+			</cac:ContractingSystem>
+			<cac:ContractingSystem>
+				<cbc:ContractingSystemTypeCode listName="dps-usage">none</cbc:ContractingSystemTypeCode>
+			</cac:ContractingSystem>
+		</cac:TenderingProcess>
+		<cac:ProcurementProject>
+			<cbc:ID schemeName="InternalID">2024/815/010</cbc:ID>
+			<cbc:Name languageID="DEU">Rahmenvertrag über Dienstleistungen am KOM-Kabel der WSV (Orts- und Fernkabel)</cbc:Name>
+			<cbc:Description languageID="DEU">Auf der Grundlage des Rahmenvertrages, Dienstleistungen am Kom-Kabel der WSV, werden Reparaturen und Umverlegungen als Einzelmaßnahmen beauftragt.
+Eine Abrechnung der jeweiligen Einzelmaßname erfolgt nach Aufmaß.
+Die Fehlersuche am Kom-Kabel der WSV und dessen Ortung muss von geschultem Fachpersonal durchgeführt werden. Die Kom-Kabel für die Einzelmaßnahmen werden vom AG bereitgestellt. Es handelt sich vorwiegend, um folgende Kabelbauarten (AJ-PLEB2Y, PMZBC, A-02YSTF(L)2YV,
+A-DQ(ZN)B2Y und A-DSQ(ZN)(L)2Y), es können aber auch vereinzelt Kabel ähnlicher Bauart vorkommen.
+Für die Arbeiten im Bereich der Deutschen Bahn AG sind die entsprechenden Qualifizierungen nachzuweisen (z.B. Gleisbauarbeiten, Gleisinstandhaltungsarbeiten u.s.w.).
+Es sind Absprachen und gegebenenfalls Anträge mit mehreren Beteiligten zur Erfüllung der Leistung notwendig.
+Nach Abschluss der Leistung müssen Bestandspläne erstellt werden, diese sind Grundlage des Aufmaßes.
+Es ist davon auszugehen, dass die, im LV, angegebenen Mengen auch unter- und überschritten werden können.</cbc:Description>
+			<cbc:ProcurementTypeCode listName="contract-nature">services</cbc:ProcurementTypeCode>
+			<cbc:Note languageID="DEU">#Besonders geeignet für:freelance#, #Besonders geeignet für:selbst#, #Besonders geeignet für:startup#</cbc:Note>
+			<cac:ProcurementAdditionalType>
+				<cbc:ProcurementTypeCode listName="strategic-procurement">none</cbc:ProcurementTypeCode>
+			</cac:ProcurementAdditionalType>
+			<cac:RequestedTenderTotal>
+				<ext:UBLExtensions>
+					<ext:UBLExtension>
+						<ext:ExtensionContent>
+							<efext:EformsExtension>
+								<efbc:FrameworkMaximumAmount currencyID="EUR">1</efbc:FrameworkMaximumAmount>
+							</efext:EformsExtension>
+						</ext:ExtensionContent>
+					</ext:UBLExtension>
+				</ext:UBLExtensions>
+				<cbc:EstimatedOverallContractAmount currencyID="EUR">4300000</cbc:EstimatedOverallContractAmount>
+			</cac:RequestedTenderTotal>
+			<cac:MainCommodityClassification>
+				<cbc:ItemClassificationCode listName="cpv">50330000</cbc:ItemClassificationCode>
+			</cac:MainCommodityClassification>
+			<cac:AdditionalCommodityClassification>
+				<cbc:ItemClassificationCode listName="cpv">50332000</cbc:ItemClassificationCode>
+			</cac:AdditionalCommodityClassification>
+			<cac:RealizedLocation>
+				<cbc:Description languageID="DEU">Die Anlagen im Zuständigkeitsbereich des WSA Magdeburg befinden sich im Wesentlichen an öffentlichen Verkehrswegen, im Bereich von Bahnanlagen sowie auf privaten Grundstücken.
+Der Bereich erstreckt sich von Lübeck, Geesthacht und Artlenburg im Norden bis Dresden im Süden. Weiterhin verläuft die östliche und westliche Grenze 60 km rechts und links der Elbe. Das Gebiet umfasst Bereiche der Ämter Lübeck, Lauenburg, Uelzen, Magdeburg, Brandenburg und Dresden. Der Bereich umfasst außerdem ein Gebiet von Wettin bis zur Saalemündung. Auch hier ist ein Korridor, von 60 km rechts und links der Saale mit einzubeziehen.
+Die Gesamtlänge der betreuten Kom-Kabel, im Verantwortungsbereich des WSA
+Magdeburg (Orts- und Fernkabel), beläuft sich auf ca. 1000 km.
+Die Dienstleistungen sind zum Teil im städtischen Raum und in ländlichen Gebieten
+zu erbringen, hier ist ein Verhältnis von 39% städtisch und 59% ländlich anzusetzen.
+2% der Dienstleistungen finden im Bereich der Deutsch Bahn AG statt.
+Bei der Zuwegung zu den einzelnen Einsatzstellen ist davon auszugehen, dass ca.
+40% befestigte Straßen, 35% unbefestigte Wege, 20% freies Gelände und 5%
+Anlagen der Deutschen Bahn vorzufinden sind.</cbc:Description>
+				<cac:Address>
+					<cbc:StreetName>Fürstenwallstraße 19/20</cbc:StreetName>
+					<cbc:CityName>Magdeburg</cbc:CityName>
+					<cbc:PostalZone>39104</cbc:PostalZone>
+					<cbc:CountrySubentityCode listName="nuts-lvl3">DEE03</cbc:CountrySubentityCode>
+					<cbc:Region>anyw</cbc:Region>
+					<cac:Country>
+						<cbc:IdentificationCode listName="eforms-country">DEU</cbc:IdentificationCode>
+					</cac:Country>
+				</cac:Address>
+			</cac:RealizedLocation>
+			<cac:PlannedPeriod>
+				<cbc:StartDate>2024-05-15+02:00</cbc:StartDate>
+				<cbc:EndDate>2028-05-15+02:00</cbc:EndDate>
+				<cbc:DurationMeasure unitCode="YEAR">4</cbc:DurationMeasure>
+			</cac:PlannedPeriod>
+		</cac:ProcurementProject>
+	</cac:ProcurementProjectLot>
+	<cac:TenderResult>
+		<cbc:AwardDate>2000-01-01+01:00</cbc:AwardDate>
+	</cac:TenderResult>
+</ContractAwardNotice>

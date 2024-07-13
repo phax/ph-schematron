@@ -738,7 +738,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                          aBoundAssertReport.getTestExpression (),
                                                          aRuleMatchingNode,
                                                          nMatchedNode,
-                                                         aBoundAssertReport).isBreak ())
+                                                         aBoundAssertReport,
+                                                         null).isBreak ())
                   {
                     return;
                   }
@@ -755,7 +756,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                              aBoundAssertReport.getTestExpression (),
                                                              aRuleMatchingNode,
                                                              nMatchedNode,
-                                                             aBoundAssertReport).isBreak ())
+                                                             aBoundAssertReport,
+                                                             null).isBreak ())
                   {
                     return;
                   }
@@ -764,11 +766,43 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             }
             catch (final XPathExpressionException ex)
             {
-              error (aRule,
-                     "Failed to evaluate XPath expression to a boolean: '" +
-                            aBoundAssertReport.getTestExpression () +
-                            "'",
-                     ex.getCause () != null ? ex.getCause () : ex);
+              // As the exception will be emitted as a failed assert, no need to
+              // additionally log it here
+              if (false)
+                error (aRule,
+                       "Failed to evaluate XPath expression to a boolean: '" +
+                              aBoundAssertReport.getTestExpression () +
+                              "'",
+                       ex.getCause () != null ? ex.getCause () : ex);
+
+              if (bIsAssert)
+              {
+                // Assert failed
+                if (aValidationHandler.onFailedAssert (aBoundRule.getRule (),
+                                                       aAssertReport,
+                                                       aBoundAssertReport.getTestExpression (),
+                                                       aRuleMatchingNode,
+                                                       nMatchedNode,
+                                                       aBoundAssertReport,
+                                                       ex).isBreak ())
+                {
+                  return;
+                }
+              }
+              else
+              {
+                // Successful report
+                if (aValidationHandler.onSuccessfulReport (aBoundRule.getRule (),
+                                                           aAssertReport,
+                                                           aBoundAssertReport.getTestExpression (),
+                                                           aRuleMatchingNode,
+                                                           nMatchedNode,
+                                                           aBoundAssertReport,
+                                                           ex).isBreak ())
+                {
+                  return;
+                }
+              }
             }
           }
         }

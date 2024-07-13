@@ -168,7 +168,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
-                                   @Nullable final Object aContext) throws SchematronValidationException
+                                   @Nullable final Object aContext,
+                                   @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     _log ("onFailedAssert (" +
           aOwningRule +
@@ -193,7 +194,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
-                                       @Nullable final Object aContext) throws SchematronValidationException
+                                       @Nullable final Object aContext,
+                                       @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     _log ("onSuccessfulReport (" +
           aOwningRule +

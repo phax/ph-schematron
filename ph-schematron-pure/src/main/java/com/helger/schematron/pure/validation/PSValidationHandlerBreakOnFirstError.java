@@ -48,7 +48,8 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
-                                   @Nullable final Object aContext)
+                                   @Nullable final Object aContext,
+                                   @Nullable final Exception aEvaluationException)
   {
     m_eValidity = EValidity.INVALID;
     return EContinue.BREAK;
@@ -61,7 +62,8 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
-                                       @Nullable final Object aContext)
+                                       @Nullable final Object aContext,
+                                       @Nullable final Exception aEvaluationException)
   {
     m_eValidity = EValidity.INVALID;
     return EContinue.BREAK;

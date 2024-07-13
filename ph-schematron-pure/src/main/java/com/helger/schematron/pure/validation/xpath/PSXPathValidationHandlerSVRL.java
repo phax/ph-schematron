@@ -104,7 +104,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     return m_aErrorHandler;
   }
 
-  private void _warn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
+  private void _onWarn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
@@ -116,9 +116,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                                .build ());
   }
 
-  private void _error (@Nonnull final IPSElement aSourceElement,
-                       @Nonnull final String sMsg,
-                       @Nullable final Throwable t)
+  private void _onError (@Nonnull final IPSElement aSourceElement,
+                         @Nonnull final String sMsg,
+                         @Nullable final Throwable t)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
@@ -221,80 +221,98 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    *        The list of bound elements to be evaluated.
    * @param aSourceNode
    *        The XML node of the document currently validated.
+   * @param aEvaluationException
+   *        An optional exception that may occur while evaluating the test
+   *        expression. May be <code>null</code>.
+   * @param sTestExpression
+   *        The test expression that was evaluated. May be <code>null</code>.
    * @return A non-<code>null</code> String
    * @throws SchematronValidationException
    *         In case evaluating an XPath expression fails.
    */
   @Nonnull
   private Text _getErrorText (@Nonnull final List <PSXPathBoundElement> aBoundContentElements,
-                              @Nonnull final Node aSourceNode) throws SchematronValidationException
+                              @Nonnull final Node aSourceNode,
+                              @Nullable final Exception aEvaluationException,
+                              @Nullable final String sTestExpression) throws SchematronValidationException
   {
     final StringBuilder aSB = new StringBuilder ();
-
-    for (final PSXPathBoundElement aBoundElement : aBoundContentElements)
+    if (aEvaluationException != null)
     {
-      final Object aContent = aBoundElement.getElement ();
-      if (aContent instanceof String)
-        aSB.append ((String) aContent);
-      else
-        if (aContent instanceof PSName)
-        {
-          final PSName aName = (PSName) aContent;
-          if (aName.hasPath ())
-          {
-            // XPath present
-            try
-            {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                  aSourceNode,
-                                                                  m_sBaseURI));
-            }
-            catch (final XPathExpressionException ex)
-            {
-              _error (aName,
-                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
-                      ex.getCause () != null ? ex.getCause () : ex);
-              // Append the path so that something is present in the output
-              aSB.append (aName.getPath ());
-            }
-          }
-          else
-          {
-            // No XPath present
-            aSB.append (aSourceNode.getNodeName ());
-          }
-        }
-        else
-          if (aContent instanceof PSValueOf)
-          {
-            final PSValueOf aValueOf = (PSValueOf) aContent;
-            try
-            {
-              aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                  aSourceNode,
-                                                                  m_sBaseURI));
-            }
-            catch (final XPathExpressionException ex)
-            {
-              _error (aValueOf,
-                      "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
-                      ex);
-              // Append the path so that something is present in the output
-              aSB.append (aValueOf.getSelect ());
-            }
-          }
-          else
-            if (aContent instanceof PSEmph)
-              aSB.append (((PSEmph) aContent).getAsText ());
-            else
-              if (aContent instanceof PSDir)
-                aSB.append (((PSDir) aContent).getAsText ());
-              else
-                if (aContent instanceof PSSpan)
-                  aSB.append (((PSSpan) aContent).getAsText ());
-                else
-                  throw new SchematronValidationException ("Unsupported assert/report content element: " + aContent);
+      aSB.append ("Failed to evaluate XPath expression to a boolean.\nTest: '" +
+                  sTestExpression +
+                  "'\nError: " +
+                  (aEvaluationException.getCause () != null ? aEvaluationException.getCause () : aEvaluationException)
+                                                                                                                      .getMessage ());
     }
+    else
+    {
+      for (final PSXPathBoundElement aBoundElement : aBoundContentElements)
+      {
+        final Object aContent = aBoundElement.getElement ();
+        if (aContent instanceof String)
+          aSB.append ((String) aContent);
+        else
+          if (aContent instanceof PSName)
+          {
+            final PSName aName = (PSName) aContent;
+            if (aName.hasPath ())
+            {
+              // XPath present
+              try
+              {
+                aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
+                                                                    aSourceNode,
+                                                                    m_sBaseURI));
+              }
+              catch (final XPathExpressionException ex)
+              {
+                _onError (aName,
+                          "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
+                          ex.getCause () != null ? ex.getCause () : ex);
+                // Append the path so that something is present in the output
+                aSB.append (aName.getPath ());
+              }
+            }
+            else
+            {
+              // No XPath present
+              aSB.append (aSourceNode.getNodeName ());
+            }
+          }
+          else
+            if (aContent instanceof PSValueOf)
+            {
+              final PSValueOf aValueOf = (PSValueOf) aContent;
+              try
+              {
+                aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
+                                                                    aSourceNode,
+                                                                    m_sBaseURI));
+              }
+              catch (final XPathExpressionException ex)
+              {
+                _onError (aValueOf,
+                          "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
+                          ex);
+                // Append the path so that something is present in the output
+                aSB.append (aValueOf.getSelect ());
+              }
+            }
+            else
+              if (aContent instanceof PSEmph)
+                aSB.append (((PSEmph) aContent).getAsText ());
+              else
+                if (aContent instanceof PSDir)
+                  aSB.append (((PSDir) aContent).getAsText ());
+                else
+                  if (aContent instanceof PSSpan)
+                    aSB.append (((PSSpan) aContent).getAsText ());
+                  else
+                    throw new SchematronValidationException ("Unsupported assert/report content element: " + aContent);
+      }
+    }
+
     final Text ret = new Text ();
     ret.addContent (aSB.toString ());
     return ret;
@@ -331,7 +349,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
         {
           final PSXPathBoundDiagnostic aDiagnostic = aBoundAssertReport.getBoundDiagnosticOfID (sDiagnosticID);
           if (aDiagnostic == null)
-            _warn (aDiagnostics, "Failed to resolve diagnostics with ID '" + sDiagnosticID + "'");
+            _onWarn (aDiagnostics, "Failed to resolve diagnostics with ID '" + sDiagnosticID + "'");
           else
           {
             // Create the SVRL diagnostic-reference element
@@ -347,13 +365,14 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
               aDR.setSee (aRich.getSee ());
               aDR.setFpi (aRich.getFPI ());
             }
-            aDR.getContent ().add (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode));
+            aDR.getContent ()
+               .add (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode, null, null));
             aDstList.add (aDR);
           }
         }
       }
       else
-        _warn (m_aSchema, "Failed to resolve diagnostic because schema has no diagnostics");
+        _onWarn (m_aSchema, "Failed to resolve diagnostic because schema has no diagnostics");
     }
   }
 
@@ -375,6 +394,24 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     return ret;
   }
 
+  @Nonnull
+  private String _getLocation (@Nonnull final PSRule aOwningRule,
+                               @Nonnull final PSAssertReport aAssertReport,
+                               @Nonnull final Node aRuleMatchingNode)
+  {
+    String sLocation = null;
+    if (aAssertReport.hasLinkable ())
+      sLocation = aAssertReport.getLinkable ().getSubject ();
+    if (StringHelper.hasNoText (sLocation))
+    {
+      if (aOwningRule.hasLinkable ())
+        sLocation = aOwningRule.getLinkable ().getSubject ();
+      if (StringHelper.hasNoText (sLocation))
+        sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
+    }
+    return sLocation;
+  }
+
   @Override
   @Nonnull
   public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
@@ -382,33 +419,25 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                    @Nonnull final String sTestExpression,
                                    @Nonnull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
-                                   @Nullable final Object aContext) throws SchematronValidationException
+                                   @Nullable final Object aContext,
+                                   @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     if (!(aContext instanceof PSXPathBoundAssertReport))
-      throw new SchematronValidationException ("The passed context must be an XPath object but is a " + aContext);
+      throw new SchematronValidationException ("The passed context must be a PSXPathBoundAssertReport object but is a " +
+                                               aContext);
     final PSXPathBoundAssertReport aBoundAssertReport = (PSXPathBoundAssertReport) aContext;
 
     final FailedAssert aFailedAssert = new FailedAssert ();
     aFailedAssert.setFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
-    {
-      String sLocation = null;
-      if (aAssertReport.hasLinkable ())
-        sLocation = aAssertReport.getLinkable ().getSubject ();
-      if (StringHelper.hasNoText (sLocation))
-      {
-        if (aOwningRule.hasLinkable ())
-          sLocation = aOwningRule.getLinkable ().getSubject ();
-        if (StringHelper.hasNoText (sLocation))
-          sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
-      }
-      aFailedAssert.setLocation (sLocation);
-    }
+    aFailedAssert.setLocation (_getLocation (aOwningRule, aAssertReport, aRuleMatchingNode));
     if (aAssertReport.hasLinkable ())
       aFailedAssert.setRole (aAssertReport.getLinkable ().getRole ());
     aFailedAssert.setTest (sTestExpression);
-    aFailedAssert.getDiagnosticReferenceOrPropertyReferenceOrText ()
-                 .add (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
+    aFailedAssert.addDiagnosticReferenceOrPropertyReferenceOrText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (),
+                                                                                  aRuleMatchingNode,
+                                                                                  aEvaluationException,
+                                                                                  sTestExpression));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
                                  aFailedAssert.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                  aBoundAssertReport,
@@ -424,33 +453,25 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
-                                       @Nullable final Object aContext) throws SchematronValidationException
+                                       @Nullable final Object aContext,
+                                       @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     if (!(aContext instanceof PSXPathBoundAssertReport))
-      throw new SchematronValidationException ("The passed context must be an XPath object but is a " + aContext);
+      throw new SchematronValidationException ("The passed context must be a PSXPathBoundAssertReport object but is a " +
+                                               aContext);
     final PSXPathBoundAssertReport aBoundAssertReport = (PSXPathBoundAssertReport) aContext;
 
     final SuccessfulReport aSuccessfulReport = new SuccessfulReport ();
     aSuccessfulReport.setFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());
-    {
-      String sLocation = null;
-      if (aAssertReport.hasLinkable ())
-        sLocation = aAssertReport.getLinkable ().getSubject ();
-      if (StringHelper.hasNoText (sLocation))
-      {
-        if (aOwningRule.hasLinkable ())
-          sLocation = aOwningRule.getLinkable ().getSubject ();
-        if (StringHelper.hasNoText (sLocation))
-          sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
-      }
-      aSuccessfulReport.setLocation (sLocation);
-    }
+    aSuccessfulReport.setLocation (_getLocation (aOwningRule, aAssertReport, aRuleMatchingNode));
     if (aAssertReport.hasLinkable ())
       aSuccessfulReport.setRole (aAssertReport.getLinkable ().getRole ());
     aSuccessfulReport.setTest (sTestExpression);
-    aSuccessfulReport.getDiagnosticReferenceOrPropertyReferenceOrText ()
-                     .add (_getErrorText (aBoundAssertReport.getAllBoundContentElements (), aRuleMatchingNode));
+    aSuccessfulReport.addDiagnosticReferenceOrPropertyReferenceOrText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (),
+                                                                                      aRuleMatchingNode,
+                                                                                      aEvaluationException,
+                                                                                      sTestExpression));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
                                  aSuccessfulReport.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                  aBoundAssertReport,

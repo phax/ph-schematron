@@ -129,6 +129,8 @@ public interface IPSValidationHandler
    *        binding this is e.g. an
    *        {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport}
    *        object.
+   * @param aEvaluationException
+   *        An optional evaluation exception. May be <code>null</code>.
    * @return {@link EContinue#BREAK} to stop validating immediately.
    * @throws SchematronValidationException
    *         In case of validation errors
@@ -139,7 +141,8 @@ public interface IPSValidationHandler
                                     @Nonnull final String sTestExpression,
                                     @Nonnull final Node aRuleMatchingNode,
                                     final int nNodeIndex,
-                                    @Nullable final Object aContext) throws SchematronValidationException
+                                    @Nullable final Object aContext,
+                                    @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     return EContinue.CONTINUE;
   }
@@ -166,6 +169,8 @@ public interface IPSValidationHandler
    *        binding this is e.g. an
    *        {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport}
    *        object.
+   * @param aEvaluationException
+   *        An optional evaluation exception. May be <code>null</code>.
    * @return {@link EContinue#BREAK} to stop validating immediately.
    * @throws SchematronValidationException
    *         In case of validation errors
@@ -176,7 +181,8 @@ public interface IPSValidationHandler
                                         @Nonnull final String sTestExpression,
                                         @Nonnull final Node aRuleMatchingNode,
                                         final int nNodeIndex,
-                                        @Nullable final Object aContext) throws SchematronValidationException
+                                        @Nullable final Object aContext,
+                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     return EContinue.CONTINUE;
   }
@@ -280,21 +286,24 @@ public interface IPSValidationHandler
                                        @Nonnull final String sTestExpression,
                                        @Nonnull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
-                                       @Nullable final Object aContext) throws SchematronValidationException
+                                       @Nullable final Object aContext,
+                                       @Nullable final Exception aEvaluationException) throws SchematronValidationException
       {
         EContinue eCtd = lhs.onFailedAssert (aOwningRule,
                                              aAssertReport,
                                              sTestExpression,
                                              aRuleMatchingNode,
                                              nNodeIndex,
-                                             aContext);
+                                             aContext,
+                                             aEvaluationException);
         if (eCtd.isContinue ())
           eCtd = rhs.onFailedAssert (aOwningRule,
                                      aAssertReport,
                                      sTestExpression,
                                      aRuleMatchingNode,
                                      nNodeIndex,
-                                     aContext);
+                                     aContext,
+                                     aEvaluationException);
         return eCtd;
       }
 
@@ -305,21 +314,24 @@ public interface IPSValidationHandler
                                            @Nonnull final String sTestExpression,
                                            @Nonnull final Node aRuleMatchingNode,
                                            final int nNodeIndex,
-                                           @Nullable final Object aContext) throws SchematronValidationException
+                                           @Nullable final Object aContext,
+                                           @Nullable final Exception aEvaluationException) throws SchematronValidationException
       {
         EContinue eCtd = lhs.onSuccessfulReport (aOwningRule,
                                                  aAssertReport,
                                                  sTestExpression,
                                                  aRuleMatchingNode,
                                                  nNodeIndex,
-                                                 aContext);
+                                                 aContext,
+                                                 aEvaluationException);
         if (eCtd.isContinue ())
           eCtd = rhs.onSuccessfulReport (aOwningRule,
                                          aAssertReport,
                                          sTestExpression,
                                          aRuleMatchingNode,
                                          nNodeIndex,
-                                         aContext);
+                                         aContext,
+                                         aEvaluationException);
         return eCtd;
       }
 
