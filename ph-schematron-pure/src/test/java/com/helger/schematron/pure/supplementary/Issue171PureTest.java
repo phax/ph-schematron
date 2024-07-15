@@ -46,7 +46,7 @@ public final class Issue171PureTest
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (aXML);
     assertNotNull (aSVRL);
-    if (true)
+    if (false)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
     final ICommonsList <AbstractSVRLMessage> aFailures = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL);
