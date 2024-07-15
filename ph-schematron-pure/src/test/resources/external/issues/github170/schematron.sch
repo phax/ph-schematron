@@ -2,9 +2,7 @@
   <pattern>
     <rule context="/xml">
       <let name="stringVar" value="'foo'"/>
-      <rule context="/*">
-        <assert role="ERROR" test="$stringVar eq 'bar'">error message</assert>
-      </rule>
+      <assert role="ERROR" test="$stringVar eq 'bar'">error message</assert>
     </rule>
     <rule context="/xml/owner">
     <let name="booleanVar" value="1 eq 1"/>
