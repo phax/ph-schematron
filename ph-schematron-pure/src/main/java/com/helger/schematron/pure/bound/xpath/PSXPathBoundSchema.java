@@ -569,21 +569,33 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
       Object aEvalResult;
 
-      // We don't know the type returned by the XPath expression, so we try
-      // them one after another
-      // Based on some common cases, the chances for "NodeList" results and
-      // "String" results are highest, so they are tried first
-
+      // First we try type auto detection magic, that only works if Saxon is on
+      // the classpath. See #170 for the original intention
       try
       {
-        aEvalResult = XPathEvaluationHelper.evaluateAsNodeList (aXPathExpression, aNode, sBaseURI);
-        m_nVarForNodeLists++;
+        aEvalResult = XPathEvaluationHelper.evaluateWithTypeAutodetect (aXPathExpression, aNode, sBaseURI);
       }
       catch (final XPathExpressionException ex)
       {
         // ignore
         aEvalResult = null;
       }
+
+      // We don't know the type returned by the XPath expression, so we try
+      // them one after another
+      // Based on some common cases, the chances for "NodeList" results and
+      // "String" results are highest, so they are tried first
+
+      if (aEvalResult == null)
+        try
+        {
+          aEvalResult = XPathEvaluationHelper.evaluateAsNodeList (aXPathExpression, aNode, sBaseURI);
+          m_nVarForNodeLists++;
+        }
+        catch (final XPathExpressionException ex)
+        {
+          // ignore
+        }
 
       // Number first, so that e.g. "sum()" is evaluated as a Number
       // Numbers can be converted to boolean and to string

@@ -46,10 +46,10 @@ public final class Issue170Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
-    if (false)
+    if (true)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
-    assertEquals (3, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+    assertEquals (12, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
