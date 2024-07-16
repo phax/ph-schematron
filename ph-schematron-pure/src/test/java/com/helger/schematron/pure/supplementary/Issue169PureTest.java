@@ -54,7 +54,9 @@ public final class Issue169PureTest
     for (final Object o : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
       if (o instanceof FiredRule)
       {
-        LOGGER.info (((FiredRule) o).getContext ());
+        // Enable if needed
+        if (false)
+          LOGGER.info (((FiredRule) o).getContext ());
         nFiredRules++;
       }
     LOGGER.info (nFiredRules + " fired rules");
