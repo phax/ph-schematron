@@ -46,9 +46,11 @@ import net.sf.saxon.expr.StringLiteral;
 import net.sf.saxon.expr.ValueComparison;
 import net.sf.saxon.expr.sort.DocumentSorter;
 import net.sf.saxon.om.FunctionItem;
+import net.sf.saxon.pattern.NodeKindTest;
 import net.sf.saxon.type.AtomicType;
 import net.sf.saxon.type.BuiltInAtomicType;
 import net.sf.saxon.type.ItemType;
+import net.sf.saxon.type.UType;
 import net.sf.saxon.value.BigDecimalValue;
 import net.sf.saxon.value.BooleanValue;
 import net.sf.saxon.value.Int64Value;
@@ -85,6 +87,44 @@ public final class XPathEvaluationHelper
       return new DocumentWrapper (XMLHelper.getOwnerDocument (aNode), sBaseURI, aImpl.getConfiguration ()).wrap (aNode);
     }
 
+    private static QName _findReturnType (final UType uType)
+    {
+      if (uType == UType.BOOLEAN)
+        return XPathConstants.BOOLEAN;
+      if (uType == UType.DECIMAL || uType == UType.FLOAT || uType == UType.DOUBLE)
+        return XPathConstants.NUMBER;
+      if (uType == UType.ATTRIBUTE ||
+          uType == UType.TEXT ||
+          uType == UType.COMMENT ||
+          uType == UType.PI ||
+          uType == UType.NAMESPACE ||
+          uType == UType.STRING ||
+          uType == UType.DURATION ||
+          uType == UType.DATE_TIME ||
+          uType == UType.DATE ||
+          uType == UType.TIME ||
+          uType == UType.G_YEAR_MONTH ||
+          uType == UType.G_YEAR ||
+          uType == UType.G_MONTH_DAY ||
+          uType == UType.G_DAY ||
+          uType == UType.G_MONTH ||
+          uType == UType.HEX_BINARY ||
+          uType == UType.BASE64_BINARY ||
+          uType == UType.ANY_URI ||
+          uType == UType.QNAME ||
+          uType == UType.NOTATION ||
+          uType == UType.UNTYPED_ATOMIC)
+        return XPathConstants.STRING;
+      if (uType == UType.DOCUMENT || uType == UType.ELEMENT)
+        return XPathConstants.NODE;
+      if (uType == UType.ANY_NODE)
+        return XPathConstants.NODESET;
+
+      // Else: FUNCTION, EXTENSION
+      LOGGER.warn ("Unknown Saxon UType: " + uType);
+      return null;
+    }
+
     @Nullable
     private static QName _findReturnType (@Nonnull final ItemType type)
     {
@@ -99,6 +139,11 @@ public final class XPathEvaluationHelper
           return XPathConstants.STRING;
         // Fall back to node set
         return XPathConstants.NODESET;
+      }
+      if (type instanceof NodeKindTest)
+      {
+        final NodeKindTest nkt = (NodeKindTest) type;
+        return _findReturnType (nkt.getUType ());
       }
       LOGGER.warn ("Unknown Saxon type: " + (type == null ? "null" : type.getClass ().getName ()));
       return null;

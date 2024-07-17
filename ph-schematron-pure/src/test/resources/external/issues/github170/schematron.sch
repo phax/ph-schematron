@@ -2,6 +2,7 @@
   <pattern>
     <rule context="/xml/owner">
       <let name="stringVar" value="'foo'"/>
+      <let name="stringVar2" value="concat('ab', 'c')"/>
       <let name="booleanVar" value="1 eq 1"/>
       <let name="booleanVar2" value="true()"/>
       <let name="numVar" value="123"/>
@@ -10,6 +11,7 @@
       <let name="nodeVar" value="."/>
       <let name="nodeSetVar" value="//owner"/>
       <assert role="ERROR" test="$stringVar = 'bar'">error message</assert>
+      <assert role="ERROR" test="$stringVar2 = 'bar'">error message</assert>
       <assert role="ERROR" test="$booleanVar = false()">error message</assert>
       <assert role="ERROR" test="$booleanVar2 = false()">error message</assert>
       <assert role="ERROR" test="$numVar = 17">error message</assert>

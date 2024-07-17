@@ -49,7 +49,7 @@ public final class Issue170Test
     if (true)
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
-    assertEquals (12, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+    assertEquals (14, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
   }
 
   @Test
