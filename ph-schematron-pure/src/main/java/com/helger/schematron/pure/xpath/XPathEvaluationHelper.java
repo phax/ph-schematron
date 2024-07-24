@@ -38,6 +38,7 @@ import net.sf.saxon.expr.CastExpression;
 import net.sf.saxon.expr.ContextItemExpression;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.FirstItemExpression;
+import net.sf.saxon.expr.ForExpression;
 import net.sf.saxon.expr.GeneralComparison;
 import net.sf.saxon.expr.Literal;
 import net.sf.saxon.expr.SlashExpression;
@@ -191,6 +192,11 @@ public final class XPathEvaluationHelper
         // As it is unclear, if the variable can be resolved at all, we just
         // skip this
         return null;
+      }
+      if (expr instanceof ForExpression)
+      {
+        final ItemType aItemType = ((ForExpression) expr).getItemType ();
+        return _findReturnType (aItemType);
       }
 
       LOGGER.warn ("Unknown Saxon expression type: " + expr.getClass ().getName ());
