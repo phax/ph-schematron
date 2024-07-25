@@ -161,7 +161,7 @@ public final class XPathEvaluationHelper
         return XPathConstants.NUMBER;
       if (expr instanceof ContextItemExpression || expr instanceof FirstItemExpression)
         return XPathConstants.NODE;
-      if (expr instanceof SlashExpression || expr instanceof DocumentSorter)
+      if (expr instanceof SlashExpression || expr instanceof DocumentSorter || expr instanceof ForExpression)
         return XPathConstants.NODESET;
       if (expr instanceof Literal)
       {
@@ -192,11 +192,6 @@ public final class XPathEvaluationHelper
         // As it is unclear, if the variable can be resolved at all, we just
         // skip this
         return null;
-      }
-      if (expr instanceof ForExpression)
-      {
-        final ItemType aItemType = ((ForExpression) expr).getItemType ();
-        return _findReturnType (aItemType);
       }
 
       LOGGER.warn ("Unknown Saxon expression type: " + expr.getClass ().getName ());
