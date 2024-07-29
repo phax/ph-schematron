@@ -37,6 +37,7 @@ import net.sf.saxon.expr.ArithmeticExpression;
 import net.sf.saxon.expr.CastExpression;
 import net.sf.saxon.expr.ContextItemExpression;
 import net.sf.saxon.expr.Expression;
+import net.sf.saxon.expr.FilterExpression;
 import net.sf.saxon.expr.FirstItemExpression;
 import net.sf.saxon.expr.ForExpression;
 import net.sf.saxon.expr.GeneralComparison;
@@ -161,7 +162,10 @@ public final class XPathEvaluationHelper
         return XPathConstants.NUMBER;
       if (expr instanceof ContextItemExpression || expr instanceof FirstItemExpression)
         return XPathConstants.NODE;
-      if (expr instanceof SlashExpression || expr instanceof DocumentSorter || expr instanceof ForExpression)
+      if (expr instanceof SlashExpression ||
+          expr instanceof DocumentSorter ||
+          expr instanceof ForExpression ||
+          expr instanceof FilterExpression)
         return XPathConstants.NODESET;
       if (expr instanceof Literal)
       {

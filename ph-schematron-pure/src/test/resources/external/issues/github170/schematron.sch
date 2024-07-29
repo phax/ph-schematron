@@ -11,6 +11,7 @@
       <let name="nodeVar" value="."/>
       <let name="nodeSetVar" value="//owner"/>
       <let name="forVar" value="for $i in //owner[@id = 'o2']/@id return //car[@owner = $i]/@id"/>
+      <let name="filterVar" value="/xml/car[@owner = 'o1']"/>
       <assert role="ERROR" test="$stringVar = 'bar'">error message</assert>
       <assert role="ERROR" test="$stringVar2 = 'bar'">error message</assert>
       <assert role="ERROR" test="$booleanVar = false()">error message</assert>
@@ -21,6 +22,7 @@
       <assert role="ERROR" test="$nodeVar = ..">error message</assert>
       <assert role="ERROR" test="$nodeSetVar = ../owner">error message</assert>
       <assert role="ERROR" test="$forVar = //car/@id">error message</assert>
+      <assert role="ERROR" test="$filterVar = //car[1]">error message</assert>
     </rule>
   </pattern>
 </schema>
