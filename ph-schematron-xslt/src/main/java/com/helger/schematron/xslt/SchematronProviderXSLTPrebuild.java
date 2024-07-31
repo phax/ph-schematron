@@ -46,6 +46,7 @@ import com.helger.xml.transform.TransformSourceFactory;
 public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvider
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
+
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 

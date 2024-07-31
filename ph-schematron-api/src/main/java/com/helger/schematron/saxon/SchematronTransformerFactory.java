@@ -19,6 +19,7 @@ package com.helger.schematron.saxon;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,6 +45,8 @@ import net.sf.saxon.lib.FeatureKeys;
  * {@link TransformerFactory} before calling the SPI version
  * <code>TransformerFactory.newInstance ()</code>. This is mainly to solve the
  * interoperability issue when using Xalan and Saxon together in the class path.
+ * Also in general, Saxon is always to be preferred to Xalan. Xalan is simply
+ * out of date.
  *
  * @author Philip Helger
  */
@@ -52,14 +55,15 @@ public final class SchematronTransformerFactory
 {
   public static final String SAXON_TRANSFORMER_FACTORY_CLASS = "net.sf.saxon.TransformerFactoryImpl";
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTransformerFactory.class);
-  private static final TransformerFactory DEFAULT_FACTORY;
 
-  static
+  private static final class SingletonHolder
   {
-    DEFAULT_FACTORY = createTransformerFactorySaxonFirst (SchematronTransformerFactory.class.getClassLoader (),
-                                                          new LoggingTransformErrorListener (Locale.US),
-                                                          new DefaultTransformURIResolver ());
+    static final TransformerFactory INSTANCE = createTransformerFactorySaxonFirst (SchematronTransformerFactory.class.getClassLoader (),
+                                                                                   new LoggingTransformErrorListener (Locale.US),
+                                                                                   new DefaultTransformURIResolver ());
   }
+
+  private static Consumer <TransformerFactory> s_aFactoryCustomizer;
 
   private SchematronTransformerFactory ()
   {}
@@ -71,7 +75,21 @@ public final class SchematronTransformerFactory
   @Nonnull
   public static TransformerFactory getDefaultSaxonFirst ()
   {
-    return DEFAULT_FACTORY;
+    return SingletonHolder.INSTANCE;
+  }
+
+  /**
+   * Set an optional {@link Consumer} that is called for every
+   * {@link TransformerFactory} created by this class. This may e.g. be used, to
+   * add implementation specific configuration. Based on #176.
+   *
+   * @param a
+   *        The consumer to invoke. May be <code>null</code>.
+   * @since 8.0.3
+   */
+  public static void setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
+  {
+    s_aFactoryCustomizer = a;
   }
 
   /**
@@ -157,6 +175,10 @@ public final class SchematronTransformerFactory
       aFactory.setErrorListener (aErrorListener);
     if (aURIResolver != null)
       aFactory.setURIResolver (aURIResolver);
+
+    // Call the customizer
+    if (s_aFactoryCustomizer != null)
+      s_aFactoryCustomizer.accept (aFactory);
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Created TransformerFactory is " + aFactory);
