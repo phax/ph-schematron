@@ -22,8 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.resource.FileSystemResource;
@@ -34,7 +32,6 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 public final class Issue174SchXsltTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue174SchXsltTest.class);
   private static final File SCH = new File ("src/test/resources/external/issues/github174/schematron.sch");
   private static final File XML = new File ("src/test/resources/external/issues/github174/test.xml");
 
