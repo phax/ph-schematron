@@ -26,10 +26,9 @@ import javax.xml.xpath.XPathExpression;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.ICommonsNavigableMap;
-import com.helger.commons.collection.impl.ICommonsSortedSet;
-import com.helger.commons.compare.IComparator;
+import com.helger.commons.collection.impl.CommonsLinkedHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -44,12 +43,12 @@ public class PSXPathVariables implements IPSXPathVariables
 {
   @Nonnull
   @ReturnsMutableCopy
-  private static ICommonsNavigableMap <String, XPathExpression> _createMap ()
+  private static ICommonsMap <String, XPathExpression> _createMap ()
   {
-    return new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
+    return new CommonsLinkedHashMap <> ();
   }
 
-  private final ICommonsNavigableMap <String, XPathExpression> m_aMap;
+  private final ICommonsMap <String, XPathExpression> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -138,14 +137,14 @@ public class PSXPathVariables implements IPSXPathVariables
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsNavigableMap <String, XPathExpression> getAll ()
+  public ICommonsMap <String, XPathExpression> getAll ()
   {
     return m_aMap.getClone ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsSortedSet <String> getAllNames ()
+  public ICommonsSet <String> getAllNames ()
   {
     return m_aMap.copyOfKeySet ();
   }

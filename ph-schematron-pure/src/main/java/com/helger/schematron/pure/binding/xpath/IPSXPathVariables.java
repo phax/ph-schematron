@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.ICommonsNavigableMap;
-import com.helger.commons.collection.impl.ICommonsSortedSet;
+import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.lang.ICloneable;
 
 /**
@@ -39,7 +39,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    */
   @Nonnull
   @ReturnsMutableCopy
-  ICommonsNavigableMap <String, XPathExpression> getAll ();
+  ICommonsMap <String, XPathExpression> getAll ();
 
   /**
    * @return All contained variable names. Never <code>null</code>.
@@ -47,7 +47,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    */
   @Nonnull
   @ReturnsMutableCopy
-  ICommonsSortedSet <String> getAllNames ();
+  ICommonsSet <String> getAllNames ();
 
   /**
    * @param sName
