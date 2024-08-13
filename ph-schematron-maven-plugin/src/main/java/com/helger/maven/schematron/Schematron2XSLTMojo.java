@@ -37,7 +37,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 
@@ -283,8 +282,6 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
   public void execute () throws MojoExecutionException, MojoFailureException
   {
-    StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
-
     if (m_aSchematronDirectory == null)
       throw new MojoExecutionException ("No Schematron directory specified!");
     if (m_aSchematronDirectory.exists () && !m_aSchematronDirectory.isDirectory ())

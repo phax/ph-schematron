@@ -28,7 +28,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.commons.annotation.Since;
@@ -206,7 +205,6 @@ public final class SchematronPreprocessMojo extends AbstractMojo
 
   public void execute () throws MojoExecutionException, MojoFailureException
   {
-    StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
     if (m_aSourceFile == null)
       throw new MojoExecutionException ("No Source file specified!");
     if (m_aSourceFile.exists () && !m_aSourceFile.isFile ())
@@ -241,7 +239,10 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       // Pre-process
       final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
       if (aPreprocessedSchema == null)
-        throw new SchematronPreprocessException ("Failed to preprocess schema " + aSchema + " with query binding " + aQueryBinding);
+        throw new SchematronPreprocessException ("Failed to preprocess schema " +
+                                                 aSchema +
+                                                 " with query binding " +
+                                                 aQueryBinding);
 
       // Convert to XML string
       final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
@@ -253,7 +254,8 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       for (final PSNS aItem : aSchema.getAllNSs ())
         aNSCtx.setMapping (aItem.getPrefix (), aItem.getUri ());
 
-      final IXMLWriterSettings aXWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN).setNamespaceContext (aNSCtx);
+      final IXMLWriterSettings aXWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
+                                                              .setNamespaceContext (aNSCtx);
       final IMicroDocument aDoc = new MicroDocument ();
       if (StringHelper.hasText (m_sSCHHeader))
       {

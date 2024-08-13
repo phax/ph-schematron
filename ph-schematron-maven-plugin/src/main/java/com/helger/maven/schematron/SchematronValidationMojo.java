@@ -32,7 +32,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -533,7 +532,6 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   public void execute () throws MojoExecutionException, MojoFailureException
   {
-    StaticLoggerBinder.getSingleton ().setMavenLog (getLog ());
     if (m_aSchematronFile == null)
       throw new MojoExecutionException ("No Schematron file specified!");
     if (m_aSchematronFile.exists () && !m_aSchematronFile.isFile ())
