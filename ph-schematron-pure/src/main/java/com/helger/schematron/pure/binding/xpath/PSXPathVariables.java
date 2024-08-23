@@ -27,8 +27,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.collection.impl.ICommonsSet;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -43,12 +43,12 @@ public class PSXPathVariables implements IPSXPathVariables
 {
   @Nonnull
   @ReturnsMutableCopy
-  private static ICommonsMap <String, XPathExpression> _createMap ()
+  private static ICommonsOrderedMap <String, XPathExpression> _createMap ()
   {
     return new CommonsLinkedHashMap <> ();
   }
 
-  private final ICommonsMap <String, XPathExpression> m_aMap;
+  private final ICommonsOrderedMap <String, XPathExpression> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -137,14 +137,14 @@ public class PSXPathVariables implements IPSXPathVariables
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsMap <String, XPathExpression> getAll ()
+  public ICommonsOrderedMap <String, XPathExpression> getAll ()
   {
     return m_aMap.getClone ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsSet <String> getAllNames ()
+  public ICommonsOrderedSet <String> getAllNames ()
   {
     return m_aMap.copyOfKeySet ();
   }

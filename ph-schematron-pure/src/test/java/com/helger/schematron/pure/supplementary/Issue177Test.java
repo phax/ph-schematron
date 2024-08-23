@@ -34,6 +34,11 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
+/**
+ * Test for GitHub issue 177
+ *
+ * @author Bertrand Lorentz
+ */
 public final class Issue177Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue177Test.class);
