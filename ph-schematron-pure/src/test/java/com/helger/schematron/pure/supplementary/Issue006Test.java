@@ -32,8 +32,6 @@ import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 public final class Issue006Test
 {
   @Test
@@ -43,7 +41,6 @@ public final class Issue006Test
                             new File ("src/test/resources/external/issues/github6/test.xml"));
   }
 
-  @SuppressFBWarnings ("BC_IMPOSSIBLE_INSTANCEOF")
   public static void validateAndProduceSVRL (final File schematron, final File xml) throws Exception
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());

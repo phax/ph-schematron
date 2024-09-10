@@ -55,8 +55,6 @@ import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.sax.InputSourceFactory;
 import com.helger.xml.serialize.read.ISAXReaderSettings;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * This is a helper class that provides a way to easily apply an Schematron
  * resource on an XML resource.
@@ -158,9 +156,8 @@ public final class SchematronHelper
     return ret;
   }
 
-  @SuppressFBWarnings ("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
   @Nonnull
-  private static ESuccess _recursiveResolveAllSchematronIncludes (@Nonnull final IMicroElement eRoot,
+  private static ESuccess _recursiveResolveAllSchematronIncludes (@Nullable final IMicroElement eRoot,
                                                                   @Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @Nonnull final ISchematronErrorHandler aErrorHandler,
@@ -232,14 +229,17 @@ public final class SchematronHelper
                                                           new DefaultHierarchyVisitorCallback <IMicroNode> ()
                                                           {
                                                             @Override
-                                                            public EHierarchyVisitorReturn onItemBeforeChildren (final IMicroNode aItem)
+                                                            public EHierarchyVisitorReturn onItemBeforeChildren (@Nonnull final IMicroNode aItem)
                                                             {
                                                               if (aItem.isElement ())
                                                               {
                                                                 final IMicroElement aCurElement = (IMicroElement) aItem;
                                                                 final String sID = aCurElement.getAttributeValue ("id");
                                                                 if (sFinalAnchor.equals (sID))
+                                                                {
                                                                   aMatch.set (aCurElement);
+                                                                  return EHierarchyVisitorReturn.STOP_ITERATION;
+                                                                }
                                                               }
                                                               return EHierarchyVisitorReturn.CONTINUE;
                                                             }
