@@ -40,7 +40,6 @@ import com.helger.schematron.pure.model.PSDir.EDirValue;
 import com.helger.schematron.pure.model.PSRichGroup.ESpace;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
-import com.helger.xml.microdom.IMicroText;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.SAXReaderSettings;
 
@@ -211,7 +210,7 @@ public class PSReader
       switch (aActiveChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aActiveChild).getNodeValue ());
+          ret.addText (aActiveChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aActiveChild;
@@ -318,7 +317,7 @@ public class PSReader
       switch (aAssertReportChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aAssertReportChild).getNodeValue ());
+          ret.addText (aAssertReportChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aAssertReportChild;
@@ -385,7 +384,7 @@ public class PSReader
       switch (aDiagnosticChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aDiagnosticChild).getNodeValue ());
+          ret.addText (aDiagnosticChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aDiagnosticChild;
@@ -478,7 +477,7 @@ public class PSReader
       switch (aDirChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aDirChild).getNodeValue ());
+          ret.addText (aDirChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aDirChild;
@@ -521,7 +520,7 @@ public class PSReader
       switch (aEmphChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aEmphChild).getNodeValue ());
+          ret.addText (aEmphChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aEmphChild;
@@ -733,7 +732,7 @@ public class PSReader
       switch (aChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aChild).getNodeValue ());
+          ret.addText (aChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aChild;
@@ -1093,7 +1092,7 @@ public class PSReader
       switch (aSpanChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aSpanChild).getNodeValue ());
+          ret.addText (aSpanChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aSpanChild;
@@ -1136,7 +1135,7 @@ public class PSReader
       switch (aTitleChild.getType ())
       {
         case TEXT:
-          ret.addText (((IMicroText) aTitleChild).getNodeValue ());
+          ret.addText (aTitleChild.getNodeValue ());
           break;
         case ELEMENT:
           final IMicroElement eElement = (IMicroElement) aTitleChild;
