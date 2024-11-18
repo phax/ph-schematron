@@ -30,6 +30,8 @@
   
 
   History: 
+    2024-11-18
+      * Emitting active-pattern/@documents attribute as well
    	2010-07-10
    		* MIT license
     2010-04-14
@@ -150,12 +152,11 @@ THE SOFTWARE.
 <xsl:stylesheet
    version="2.0"
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	 xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:axsl="http://www.w3.org/1999/XSL/TransformAlias"
    xmlns:schold="http://www.ascc.net/xml/schematron" 
    xmlns:iso="http://purl.oclc.org/dsdl/schematron"
    xmlns:svrl="http://purl.oclc.org/dsdl/svrl" 
-    
 >
 
 <!-- Select the import statement and adjust the path as 
@@ -549,9 +550,13 @@ THE SOFTWARE.
 	<xsl:param name="see" />
 	<xsl:param name="space" />
 	<svrl:active-pattern >
-	    <axsl:attribute name="document">
-	    	<axsl:value-of select="document-uri(/)" />
-	    </axsl:attribute><!-- If XSLT1 remove this -->
+    <axsl:attribute name="document">
+    	<axsl:value-of select="document-uri(/)" />
+    </axsl:attribute><!-- If XSLT1 remove this -->
+    <!--  [PH] added 2024-11-18; see #149 -->
+    <axsl:attribute name="documents">
+      <axsl:value-of select="document-uri(/)" />
+    </axsl:attribute><!-- If XSLT1 remove this -->
 		<xsl:if test=" string( $id )">
 			<axsl:attribute name="id">
 				<xsl:value-of select=" $id " />
