@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>8.0.4</version>
+    <version>8.0.5-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-ant-task</artifactId>
   <packaging>jar</packaging>
