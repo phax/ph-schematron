@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.exception.InitializationException;
 import com.helger.commons.lang.ClassLoaderHelper;
+import com.helger.xml.XMLFactory;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
@@ -116,8 +117,8 @@ public final class SchematronTransformerFactory
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calling createTransformerFactorySaxonFirst");
 
-    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader : ClassLoaderHelper
-                                                                                                     .getContextClassLoader ();
+    final ClassLoader aEffectiveClassLoader = aClassLoader != null ? aClassLoader
+                                                                   : ClassLoaderHelper.getContextClassLoader ();
 
     TransformerFactory aFactory;
     try
@@ -163,7 +164,7 @@ public final class SchematronTransformerFactory
       try
       {
         // Try default afterwards
-        aFactory = TransformerFactory.newInstance ();
+        aFactory = XMLFactory.createDefaultTransformerFactory ();
       }
       catch (final TransformerFactoryConfigurationError ex2)
       {
