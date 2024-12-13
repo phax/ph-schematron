@@ -30,7 +30,15 @@ import com.helger.commons.string.ToStringGenerator;
 @NotThreadSafe
 public class XPathLetVariableResolver implements XPathVariableResolver
 {
-  private final ICommonsMap <QName, Object> m_aVariables = new CommonsHashMap <> ();
+  private final ThreadLocal <ICommonsMap <QName, Object>> m_aTLVariables = new ThreadLocal <> ()
+  {
+    @Override
+    protected ICommonsMap <QName, Object> initialValue ()
+    {
+      return new CommonsHashMap <> ();
+    }
+  };
+
   private final XPathVariableResolver m_aDelegatedResolver;
 
   public XPathLetVariableResolver (@Nullable final XPathVariableResolver aResolver)
@@ -41,7 +49,7 @@ public class XPathLetVariableResolver implements XPathVariableResolver
   public void setVariableValue (@Nonnull final QName aVariableName, @Nullable final Object aValue)
   {
     ValueEnforcer.notNull (aVariableName, "VariableName");
-    m_aVariables.put (aVariableName, aValue);
+    m_aTLVariables.get ().put (aVariableName, aValue);
   }
 
   /**
@@ -53,7 +61,7 @@ public class XPathLetVariableResolver implements XPathVariableResolver
   public void removeVariable (@Nullable final QName aVariableName)
   {
     if (aVariableName != null)
-      m_aVariables.remove (aVariableName);
+      m_aTLVariables.get ().remove (aVariableName);
   }
 
   @Override
@@ -62,7 +70,7 @@ public class XPathLetVariableResolver implements XPathVariableResolver
     if (aVariableName != null)
     {
       // 1. variables
-      final Object result = m_aVariables.get (aVariableName);
+      final Object result = m_aTLVariables.get ().get (aVariableName);
       if (result != null)
         return result;
 
@@ -78,7 +86,7 @@ public class XPathLetVariableResolver implements XPathVariableResolver
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Variables", m_aVariables)
+    return new ToStringGenerator (this).append ("Variables", m_aTLVariables.get ())
                                        .append ("DelegatedResolver", m_aDelegatedResolver)
                                        .getToString ();
   }

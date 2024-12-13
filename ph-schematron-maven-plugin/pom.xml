@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>8.0.4-SNAPSHOT</version>
+    <version>8.0.5-SNAPSHOT</version>
   </parent>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
@@ -62,17 +62,8 @@
     <maven.core.version>3.8.6</maven.core.version>
     <maven.annot.version>3.7.0</maven.annot.version>
     <maven.test.version>3.3.0</maven.test.version>
+    <easymock.version>5.5.0</easymock.version>
   </properties>
-  
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymock</artifactId>
-        <version>5.4.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -142,6 +133,7 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
+      <version>${easymock.version}</version>
       <scope>test</scope>
     </dependency>    
   </dependencies>
