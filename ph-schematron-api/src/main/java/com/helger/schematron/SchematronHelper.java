@@ -343,6 +343,7 @@ public final class SchematronHelper
     return getWithResolvedSchematronIncludes (aResource,
                                               null,
                                               aErrorHandler,
+                                              (ISchematronIncludeResolver) null,
                                               CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
 
@@ -367,6 +368,7 @@ public final class SchematronHelper
     return getWithResolvedSchematronIncludes (aResource,
                                               aSettings,
                                               aErrorHandler,
+                                              (ISchematronIncludeResolver) null,
                                               CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES);
   }
 

@@ -38,6 +38,7 @@ import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.pure.model.*;
 import com.helger.schematron.pure.model.PSDir.EDirValue;
 import com.helger.schematron.pure.model.PSRichGroup.ESpace;
+import com.helger.schematron.resolve.ISchematronIncludeResolver;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroWriter;
@@ -54,6 +55,7 @@ public class PSReader
 
   private final IReadableResource m_aResource;
   private final IPSErrorHandler m_aErrorHandler;
+  private ISchematronIncludeResolver m_aSchematronIncludeResolver;
   private final EntityResolver m_aEntityResolver;
   private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
 
@@ -150,6 +152,31 @@ public class PSReader
   public final PSReader setLenient (final boolean bLenient)
   {
     m_bLenient = bLenient;
+    return this;
+  }
+
+  /**
+   * @return The custom Schematron include resolver. May be <code>null</code>.
+   * @since 8.0.5
+   */
+  @Nullable
+  public final ISchematronIncludeResolver getSchematronIncludeResolver ()
+  {
+    return m_aSchematronIncludeResolver;
+  }
+
+  /**
+   * Set the customer schematron include resolver to be used.
+   *
+   * @param aSchematronIncludeResolver
+   *        The resolver to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 8.0.5
+   */
+  @Nonnull
+  public final PSReader setSchematronIncludeResolver (@Nullable final ISchematronIncludeResolver aSchematronIncludeResolver)
+  {
+    m_aSchematronIncludeResolver = aSchematronIncludeResolver;
     return this;
   }
 
@@ -1210,6 +1237,7 @@ public class PSReader
     final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
                                                                                     aSettings,
                                                                                     m_aErrorHandler,
+                                                                                    m_aSchematronIncludeResolver,
                                                                                     m_bLenient);
     if (aDoc == null || aDoc.getDocumentElement () == null)
       throw new SchematronReadException (m_aResource,
