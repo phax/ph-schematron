@@ -37,6 +37,7 @@ import com.helger.commons.string.ToStringGenerator;
 public class DefaultSchematronIncludeResolver implements ISchematronIncludeResolver
 {
   private final String m_sBaseHref;
+  private ISchematronIncludeResolver m_aCustomIncludeResolver;
 
   @Nullable
   private static String _getBaseHref (@Nonnull final IReadableResource aResource)
@@ -56,20 +57,33 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
   }
 
   @Nullable
-  public String getBaseHref ()
+  public final String getBaseHref ()
   {
     return m_sBaseHref;
+  }
+
+  public void setCustomSchematronIncludeResolver (@Nullable final ISchematronIncludeResolver aCustomIncludeResolver)
+  {
+    m_aCustomIncludeResolver = aCustomIncludeResolver;
   }
 
   @Nonnull
   public IReadableResource getResolvedSchematronResource (@Nonnull @Nonempty final String sHref) throws IOException
   {
+    if (m_aCustomIncludeResolver != null)
+    {
+      final IReadableResource ret = m_aCustomIncludeResolver.getResolvedSchematronResource (sHref);
+      if (ret != null)
+        return ret;
+    }
     return DefaultResourceResolver.getResolvedResource (sHref, getBaseHref ());
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("baseHref", m_sBaseHref).getToString ();
+    return new ToStringGenerator (this).append ("BaseHref", m_sBaseHref)
+                                       .appendIfNotNull ("CustomIncludeResolver", m_aCustomIncludeResolver)
+                                       .getToString ();
   }
 }

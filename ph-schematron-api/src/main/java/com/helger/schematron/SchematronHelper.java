@@ -44,6 +44,7 @@ import com.helger.commons.state.ESuccess;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.wrapper.Wrapper;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
+import com.helger.schematron.resolve.ISchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLResourceError;
@@ -161,11 +162,14 @@ public final class SchematronHelper
                                                                   @Nonnull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @Nonnull final ISchematronErrorHandler aErrorHandler,
+                                                                  @Nullable final ISchematronIncludeResolver aCustomIncludeResolver,
                                                                   final boolean bLenient)
   {
     if (eRoot != null)
     {
       final DefaultSchematronIncludeResolver aIncludeResolver = new DefaultSchematronIncludeResolver (aResource);
+      if (aCustomIncludeResolver != null)
+        aIncludeResolver.setCustomSchematronIncludeResolver (aCustomIncludeResolver);
 
       for (final IMicroElement aElement : eRoot.getAllChildElementsRecursive ())
         if (isValidSchematronNS (aElement.getNamespaceURI (), bLenient) &&
@@ -301,6 +305,7 @@ public final class SchematronHelper
                                                         aIncludeRes,
                                                         aSettings,
                                                         aErrorHandler,
+                                                        aCustomIncludeResolver,
                                                         bLenient).isFailure ())
               return ESuccess.FAILURE;
 
@@ -387,6 +392,38 @@ public final class SchematronHelper
                                                                   @Nonnull final ISchematronErrorHandler aErrorHandler,
                                                                   final boolean bLenient)
   {
+    return getWithResolvedSchematronIncludes (aResource,
+                                              aSettings,
+                                              aErrorHandler,
+                                              (ISchematronIncludeResolver) null,
+                                              bLenient);
+  }
+
+  /**
+   * Resolve all Schematron includes of the passed resource.
+   *
+   * @param aResource
+   *        The Schematron resource to read. May not be <code>null</code>.
+   * @param aSettings
+   *        The SAX reader settings to be used. May be <code>null</code> to use
+   *        the default settings.
+   * @param aErrorHandler
+   *        The error handler to be used. May not be <code>null</code>.
+   * @param aCustomIncludeResolver
+   *        A custom include resolver. May be <code>null</code>.
+   * @param bLenient
+   *        <code>true</code> if 'old' Schematron NS is tolerated.
+   * @return <code>null</code> if the passed resource could not be read as XML
+   *         document
+   * @since 8.0.5
+   */
+  @Nullable
+  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+                                                                  @Nullable final ISAXReaderSettings aSettings,
+                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler,
+                                                                  @Nullable final ISchematronIncludeResolver aCustomIncludeResolver,
+                                                                  final boolean bLenient)
+  {
     final InputSource aIS = InputSourceFactory.create (aResource);
     final IMicroDocument aDoc = MicroReader.readMicroXML (aIS, aSettings);
     if (aDoc != null)
@@ -396,6 +433,7 @@ public final class SchematronHelper
                                                   aResource,
                                                   aSettings,
                                                   aErrorHandler,
+                                                  aCustomIncludeResolver,
                                                   bLenient).isFailure ())
       {
         // Error resolving includes
