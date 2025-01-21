@@ -76,7 +76,7 @@
     <jaxb-plugin.version>4.0.8</jaxb-plugin.version>
     <ph-jaxb-plugin.version>4.0.3</ph-jaxb-plugin.version>
     <schxslt.version>1.10.1</schxslt.version>
-    <spotbugs-annotations.version>4.8.6</spotbugs-annotations.version>
+    <spotbugs-annotations.version>4.9.0</spotbugs-annotations.version>
   </properties>
   
   <dependencyManagement>
