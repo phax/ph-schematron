@@ -32,6 +32,7 @@
             <xs:element ref="svrl:failed-assert"/>
             <xs:element ref="svrl:successful-report"/>
           </xs:choice>
+          <xs:element ref="svrl:suppressed-rule" minOccurs="0"/>
         </xs:sequence>
       </xs:sequence>
     </xs:sequence>
@@ -75,6 +76,18 @@
       <xs:attributeGroup ref="svrl:attlist.rich"/>
     </xs:complexType>
   </xs:element>
+  <!-- [ph] added for SchXslt support:
+       https://github.com/Schematron/schema-2016/pull/15/files
+   -->
+  <xs:element name="suppressed-rule">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:NCName"/>
+      <xs:attribute name="name" type="xs:string"/>
+      <xs:attribute name="context" type="xs:string" use="required"/>
+      <xs:attribute name="role" type="xs:NMTOKEN"/>
+      <xs:attribute name="flag" type="xs:NMTOKEN"/>
+    </xs:complexType>
+  </xs:element>
   <!-- only references are reported, not the diagnostic -->
   <xs:element name="diagnostic-reference">
     <xs:complexType mixed="true">
@@ -92,6 +105,10 @@
         <xs:element ref="svrl:diagnostic-reference"/>
         <xs:element ref="svrl:property-reference"/>
         <xs:element ref="svrl:text"/>
+        <!-- SchXslt extension -->
+        <xs:element ref="svrl:message-code" minOccurs="0"/>
+        <!-- SchXslt extension -->
+        <xs:element ref="svrl:message-category" minOccurs="0"/>
         <!-- Note: XSLT based version may emit the diagnostic-reference here :( -->
       </xs:choice>
       <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
@@ -104,6 +121,10 @@
         <xs:element ref="svrl:diagnostic-reference"/>
         <xs:element ref="svrl:property-reference"/>
         <xs:element ref="svrl:text"/>
+        <!-- SchXslt extension -->
+        <xs:element ref="svrl:message-code" minOccurs="0"/>
+        <!-- SchXslt extension -->
+        <xs:element ref="svrl:message-category" minOccurs="0"/>
         <!-- Note: XSLT based version may emit the diagnostic-reference here :( -->
       </xs:choice>
       <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
@@ -130,6 +151,8 @@
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
+  <xs:element name="message-code" type="xs:string" />
+  <xs:element name="message-category" type="xs:string" />
   <!-- rich text -->
   <xs:complexType name="rich-text" mixed="true">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
