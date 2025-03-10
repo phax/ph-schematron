@@ -19,6 +19,8 @@
 
   <xs:complexType name="SchematronOutputType">
     <xs:sequence>
+      <!-- This is e.g. used for the SchXslt metadata element -->
+      <xs:any minOccurs="0" namespace="#other" processContents="lax" />
       <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
       <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:ns-prefix-in-attribute-values"/>
       <xs:sequence maxOccurs="unbounded">
