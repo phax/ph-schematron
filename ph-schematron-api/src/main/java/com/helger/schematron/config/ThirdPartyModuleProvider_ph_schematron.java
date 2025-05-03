@@ -26,8 +26,7 @@ import com.helger.commons.thirdparty.ThirdPartyModule;
 import com.helger.commons.version.Version;
 
 /**
- * Implement this SPI interface if your JAR file contains external third party
- * modules.
+ * Implement this SPI interface if your JAR file contains external third party modules.
  *
  * @author Philip Helger
  */
@@ -37,7 +36,7 @@ public final class ThirdPartyModuleProvider_ph_schematron implements IThirdParty
   public static final IThirdPartyModule SAXON_HE = new ThirdPartyModule ("Saxon HE",
                                                                          "Saxonica Limited",
                                                                          ELicense.MPL20,
-                                                                         new Version (12, 5, 0, "HE"),
+                                                                         new Version (12, 6, 0, "HE"),
                                                                          "http://saxon.sourceforge.net/");
 
   @Nullable
