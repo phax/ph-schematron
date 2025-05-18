@@ -27,6 +27,8 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
 
+import net.sf.saxon.s9api.XdmValue;
+
 @NotThreadSafe
 public class XPathLetVariableResolver implements XPathVariableResolver
 {
@@ -46,7 +48,7 @@ public class XPathLetVariableResolver implements XPathVariableResolver
     m_aDelegatedResolver = aResolver;
   }
 
-  public void setVariableValue (@Nonnull final QName aVariableName, @Nullable final Object aValue)
+  public void setVariableValue (@Nonnull final QName aVariableName, @Nullable final XdmValue aValue)
   {
     ValueEnforcer.notNull (aVariableName, "VariableName");
     m_aTLVariables.get ().put (aVariableName, aValue);

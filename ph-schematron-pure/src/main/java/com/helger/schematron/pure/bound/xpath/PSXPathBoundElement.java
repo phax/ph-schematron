@@ -25,9 +25,11 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.IPSElement;
 
+import net.sf.saxon.s9api.XPathExecutable;
+
 /**
- * This class represents a single XPath-bound text element that is contained
- * inside an assert- or report-element.
+ * This class represents a single XPath-bound text element that is contained inside an assert- or
+ * report-element.
  *
  * @author Philip Helger
  */
@@ -36,7 +38,7 @@ public class PSXPathBoundElement
 {
   private final Object m_aElement;
   private final String m_sExpression;
-  private final XPathExpression m_aBoundExpression;
+  private final XPathExecutable m_aBoundExpression;
 
   public PSXPathBoundElement (@Nonnull final String sElement)
   {
@@ -50,7 +52,7 @@ public class PSXPathBoundElement
 
   public PSXPathBoundElement (@Nonnull final Object aElement,
                               @Nullable final String sExpression,
-                              @Nullable final XPathExpression aBoundExpression)
+                              @Nullable final XPathExecutable aBoundExpression)
   {
     ValueEnforcer.notNull (aElement, "Element");
     ValueEnforcer.isTrue (aElement instanceof String || aElement instanceof IPSElement,
@@ -61,8 +63,7 @@ public class PSXPathBoundElement
   }
 
   /**
-   * @return {@link String} or {@link IPSElement} objects. May not be
-   *         <code>null</code>.
+   * @return {@link String} or {@link IPSElement} objects. May not be <code>null</code>.
    */
   @Nonnull
   public final Object getElement ()
@@ -71,11 +72,10 @@ public class PSXPathBoundElement
   }
 
   /**
-   * @return The source expression that was compiled to an
-   *         {@link XPathExpression}. It may differ from the XPath expression
-   *         contained in the element because of replaced variables from
-   *         &lt;let&gt; elements. May be <code>null</code> if
-   *         {@link #getExpression()} is <code>null</code>.
+   * @return The source expression that was compiled to an {@link XPathExpression}. It may differ
+   *         from the XPath expression contained in the element because of replaced variables from
+   *         &lt;let&gt; elements. May be <code>null</code> if {@link #getExpression()} is
+   *         <code>null</code>.
    */
   @Nullable
   public final String getExpression ()
@@ -84,10 +84,10 @@ public class PSXPathBoundElement
   }
 
   /**
-   * @return The compiled {@link XPathExpression} - may be <code>null</code>.
+   * @return The compiled {@link XPathExecutable} - may be <code>null</code>.
    */
   @Nullable
-  public final XPathExpression getBoundExpression ()
+  public final XPathExecutable getBoundExpression ()
   {
     return m_aBoundExpression;
   }

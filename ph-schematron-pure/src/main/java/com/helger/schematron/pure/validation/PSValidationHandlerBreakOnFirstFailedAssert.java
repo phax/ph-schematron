@@ -20,18 +20,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.w3c.dom.Node;
-
 import com.helger.commons.state.EContinue;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSRule;
 
+import net.sf.saxon.s9api.XdmNode;
+
 /**
- * A simple implementation if {@link IPSValidationHandler} that stops validation
- * upon the first failed assertion. The final validation result can be retrieved
- * by invoking {@link #getValidity()}.
+ * A simple implementation if {@link IPSValidationHandler} that stops validation upon the first
+ * failed assertion. The final validation result can be retrieved by invoking
+ * {@link #getValidity()}.
  *
  * @author Philip Helger
  */
@@ -45,7 +45,7 @@ public class PSValidationHandlerBreakOnFirstFailedAssert implements IPSPartialVa
   public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
                                    @Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
-                                   @Nonnull final Node aRuleMatchingNode,
+                                   @Nonnull final XdmNode aRuleMatchingNode,
                                    final int nNodeIndex,
                                    @Nullable final Object aContext,
                                    @Nullable final Exception aEvaluationException)
@@ -55,9 +55,8 @@ public class PSValidationHandlerBreakOnFirstFailedAssert implements IPSPartialVa
   }
 
   /**
-   * @return The validity of the XML file. {@link EValidity#VALID} if no failed
-   *         assertion and no successful report occurred,
-   *         {@link EValidity#INVALID} otherwise.
+   * @return The validity of the XML file. {@link EValidity#VALID} if no failed assertion and no
+   *         successful report occurred, {@link EValidity#INVALID} otherwise.
    */
   @Override
   @Nonnull

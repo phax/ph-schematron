@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -33,6 +32,8 @@ import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
+import net.sf.saxon.s9api.XPathExecutable;
+
 /**
  * This class manages all variables present in Schematron &lt;let&gt; elements.
  *
@@ -43,12 +44,12 @@ public class PSXPathVariables implements IPSXPathVariables
 {
   @Nonnull
   @ReturnsMutableCopy
-  private static ICommonsOrderedMap <String, XPathExpression> _createMap ()
+  private static ICommonsOrderedMap <String, XPathExecutable> _createMap ()
   {
     return new CommonsLinkedHashMap <> ();
   }
 
-  private final ICommonsOrderedMap <String, XPathExpression> m_aMap;
+  private final ICommonsOrderedMap <String, XPathExecutable> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -64,13 +65,13 @@ public class PSXPathVariables implements IPSXPathVariables
    * Add a new variable.
    *
    * @param aEntry
-   *        The entry to be added - key is the variable name and value is the
-   *        variable value. May not be <code>null</code>.
-   * @return {@link EChange#UNCHANGED} if a variable with the same name is
-   *         already present. Never <code>null</code>.
+   *        The entry to be added - key is the variable name and value is the variable value. May
+   *        not be <code>null</code>.
+   * @return {@link EChange#UNCHANGED} if a variable with the same name is already present. Never
+   *         <code>null</code>.
    */
   @Nonnull
-  public EChange add (@Nonnull final Map.Entry <String, XPathExpression> aEntry)
+  public EChange add (@Nonnull final Map.Entry <String, XPathExecutable> aEntry)
   {
     return add (aEntry.getKey (), aEntry.getValue ());
   }
@@ -79,16 +80,14 @@ public class PSXPathVariables implements IPSXPathVariables
    * Add a new variable.
    *
    * @param sName
-   *        The name of the variable. May neither be <code>null</code> nor
-   *        empty.
+   *        The name of the variable. May neither be <code>null</code> nor empty.
    * @param sValue
-   *        The value of the variable. May neither be <code>null</code> nor
-   *        empty.
-   * @return {@link EChange#UNCHANGED} if a variable with the same name is
-   *         already present. Never <code>null</code>.
+   *        The value of the variable. May neither be <code>null</code> nor empty.
+   * @return {@link EChange#UNCHANGED} if a variable with the same name is already present. Never
+   *         <code>null</code>.
    */
   @Nonnull
-  public EChange add (@Nonnull @Nonempty final String sName, @Nonnull @Nonempty final XPathExpression sValue)
+  public EChange add (@Nonnull @Nonempty final String sName, @Nonnull @Nonempty final XPathExecutable sValue)
   {
     ValueEnforcer.notEmpty (sName, "Name");
     ValueEnforcer.notNull (sValue, "Value");
@@ -105,8 +104,8 @@ public class PSXPathVariables implements IPSXPathVariables
    *
    * @param sVarName
    *        The name of the variable to be removed. May be <code>null</code>.
-   * @return {@link EChange#CHANGED} if the variable was removed successfully.
-   *         Never <code>null</code>.
+   * @return {@link EChange#CHANGED} if the variable was removed successfully. Never
+   *         <code>null</code>.
    */
   @Nonnull
   public EChange remove (@Nullable final String sVarName)
@@ -122,8 +121,8 @@ public class PSXPathVariables implements IPSXPathVariables
    *
    * @param aVars
    *        A list of variable names to be removed. May be <code>null</code>.
-   * @return {@link EChange#CHANGED} if at least one variable was removed
-   *         successfully. Never <code>null</code>.
+   * @return {@link EChange#CHANGED} if at least one variable was removed successfully. Never
+   *         <code>null</code>.
    */
   @Nonnull
   public EChange removeAll (@Nullable final Iterable <String> aVars)
@@ -137,7 +136,7 @@ public class PSXPathVariables implements IPSXPathVariables
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, XPathExpression> getAll ()
+  public ICommonsOrderedMap <String, XPathExecutable> getAll ()
   {
     return m_aMap.getClone ();
   }
@@ -157,7 +156,7 @@ public class PSXPathVariables implements IPSXPathVariables
   }
 
   @Nullable
-  public XPathExpression get (@Nullable final String sName)
+  public XPathExecutable get (@Nullable final String sName)
   {
     if (StringHelper.hasNoText (sName))
       return null;

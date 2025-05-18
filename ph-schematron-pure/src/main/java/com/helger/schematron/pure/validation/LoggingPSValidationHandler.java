@@ -22,8 +22,6 @@ import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.error.level.EErrorLevel;
@@ -37,7 +35,10 @@ import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
-import com.helger.xml.XMLDebug;
+
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
  * A logging implementation of {@link IPSValidationHandler}
@@ -110,25 +111,24 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Nonnull
-  public static String getAsString (@Nonnull final Node aNode)
+  public static String getAsString (@Nonnull final XdmValue aNode)
   {
-    return XMLDebug.getNodeTypeAsString (aNode.getNodeType ()) + ": " + aNode.toString ();
+    // TODO XdmValue toString
+    return aNode.toString ();
+    // return XMLDebug.getNodeTypeAsString (aNode.getNodeType ()) + ": " + aNode.toString ();
   }
 
   @Nonnull
-  public static String getAsString (@Nonnull final NodeList aNL)
+  public static String getAsString (@Nonnull final XdmItem aNL)
   {
-    final int nLen = aNL.getLength ();
-    final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("NodeList[").append (nLen).append ("](");
-    for (int i = 0; i < nLen; ++i)
-    {
-      if (i > 0)
-        aSB.append (", ");
-      aSB.append (getAsString (aNL.item (i)));
-    }
-    aSB.append (')');
-    return aSB.toString ();
+    // TODO XdmItem toString
+    return aNL.toString ();
+    /*
+     * final int nLen = aNL.getLength (); final StringBuilder aSB = new StringBuilder (); aSB.append
+     * ("NodeList[").append (nLen).append ("]("); for (int i = 0; i < nLen; ++i) { if (i > 0)
+     * aSB.append (", "); aSB.append (getAsString (aNL.item (i))); } aSB.append (')'); return
+     * aSB.toString ();
+     */
   }
 
   @Override
@@ -146,7 +146,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+  public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final XdmValue aContextList)
                                                                                               throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
@@ -166,7 +166,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
                                    @Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
-                                   @Nonnull final Node aRuleMatchingNode,
+                                   @Nonnull final XdmNode aRuleMatchingNode,
                                    final int nNodeIndex,
                                    @Nullable final Object aContext,
                                    @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -192,7 +192,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
                                        @Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
-                                       @Nonnull final Node aRuleMatchingNode,
+                                       @Nonnull final XdmNode aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext,
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException

@@ -21,7 +21,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.helger.commons.state.EContinue;
 import com.helger.schematron.pure.model.PSAssertReport;
@@ -30,12 +29,14 @@ import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
+
 /**
- * Base interface for a Schematron validation callback handler. It is only
- * invoked when validating an XML against a Schematron file.
+ * Base interface for a Schematron validation callback handler. It is only invoked when validating
+ * an XML against a Schematron file.
  *
- * @see com.helger.schematron.pure.bound.IPSBoundSchema#validate(Node,String,
- *      IPSValidationHandler)
+ * @see com.helger.schematron.pure.bound.IPSBoundSchema#validate(Node,String, IPSValidationHandler)
  * @author Philip Helger
  */
 public interface IPSValidationHandler
@@ -46,8 +47,7 @@ public interface IPSValidationHandler
    * @param aSchema
    *        The Schematron to be validated. Never <code>null</code>.
    * @param aActivePhase
-   *        The selected phase, if any special phase was selected. May be
-   *        <code>null</code>.
+   *        The selected phase, if any special phase was selected. May be <code>null</code>.
    * @param sBaseURI
    *        The Base URI of the XML to be validated. May be <code>null</code>.
    * @see #onEnd(PSSchema, PSPhase)
@@ -80,20 +80,19 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of errors
    */
-  default void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+  default void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final XdmValue aContextList)
                                                                                                throws SchematronValidationException
   {}
 
   /**
-   * This method is called for every rule inside the current pattern. Was called
-   * "onRule" previously.
+   * This method is called for every rule inside the current pattern. Was called "onRule"
+   * previously.
    *
    * @param aRule
    *        The current rule. Never <code>null</code>.
    * @param sContext
-   *        The real context to be used in validation. May differ from the
-   *        result of {@link PSRule#getContext()} because of replaced variables
-   *        from &lt;let&gt; elements.
+   *        The real context to be used in validation. May differ from the result of
+   *        {@link PSRule#getContext()} because of replaced variables from &lt;let&gt; elements.
    * @param nNodeIndex
    *        0-based node index currently fired
    * @param nNodeCount
@@ -111,24 +110,21 @@ public interface IPSValidationHandler
    * This method is called for every failed assert.
    *
    * @param aOwningRule
-   *        The rule element that contains the current assertion/report. Never
-   *        <code>null</code>. Since v8.0.0.
+   *        The rule element that contains the current assertion/report. Never <code>null</code>.
+   *        Since v8.0.0.
    * @param aAssertReport
    *        The current assert element. Never <code>null</code>.
    * @param sTestExpression
-   *        The source XPath expression that was evaluated for this node. It may
-   *        be different from the test expression contained in the passed
-   *        assert/report element because of replaced &lt;let&gt; elements.
-   *        Never <code>null</code>.
+   *        The source XPath expression that was evaluated for this node. It may be different from
+   *        the test expression contained in the passed assert/report element because of replaced
+   *        &lt;let&gt; elements. Never <code>null</code>.
    * @param aRuleMatchingNode
    *        The XML node of the document to be validated.
    * @param nNodeIndex
    *        The index of the matched node, relative to the current rule.
    * @param aContext
-   *        A context object - implementation dependent. For the default query
-   *        binding this is e.g. an
-   *        {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport}
-   *        object.
+   *        A context object - implementation dependent. For the default query binding this is e.g.
+   *        an {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport} object.
    * @param aEvaluationException
    *        An optional evaluation exception. May be <code>null</code>.
    * @return {@link EContinue#BREAK} to stop validating immediately.
@@ -139,7 +135,7 @@ public interface IPSValidationHandler
   default EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
                                     @Nonnull final PSAssertReport aAssertReport,
                                     @Nonnull final String sTestExpression,
-                                    @Nonnull final Node aRuleMatchingNode,
+                                    @Nonnull final XdmNode aRuleMatchingNode,
                                     final int nNodeIndex,
                                     @Nullable final Object aContext,
                                     @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -151,24 +147,21 @@ public interface IPSValidationHandler
    * This method is called for every failed assert.
    *
    * @param aOwningRule
-   *        The rule element that contains the current assertion/report. Never
-   *        <code>null</code>. Since v8.0.0.
+   *        The rule element that contains the current assertion/report. Never <code>null</code>.
+   *        Since v8.0.0.
    * @param aAssertReport
    *        The current assert element. Never <code>null</code>.
    * @param sTestExpression
-   *        The source XPath expression that was evaluated for this node. It may
-   *        be different from the test expression contained in the passed
-   *        assert/report element because of replaced &lt;let&gt; elements.
-   *        Never <code>null</code>.
+   *        The source XPath expression that was evaluated for this node. It may be different from
+   *        the test expression contained in the passed assert/report element because of replaced
+   *        &lt;let&gt; elements. Never <code>null</code>.
    * @param aRuleMatchingNode
    *        The XML node of the document to be validated.
    * @param nNodeIndex
    *        The index of the matched node, relative to the current rule.
    * @param aContext
-   *        A context object - implementation dependent. For the default query
-   *        binding this is e.g. an
-   *        {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport}
-   *        object.
+   *        A context object - implementation dependent. For the default query binding this is e.g.
+   *        an {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport} object.
    * @param aEvaluationException
    *        An optional evaluation exception. May be <code>null</code>.
    * @return {@link EContinue#BREAK} to stop validating immediately.
@@ -179,7 +172,7 @@ public interface IPSValidationHandler
   default EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
                                         @Nonnull final PSAssertReport aAssertReport,
                                         @Nonnull final String sTestExpression,
-                                        @Nonnull final Node aRuleMatchingNode,
+                                        @Nonnull final XdmNode aRuleMatchingNode,
                                         final int nNodeIndex,
                                         @Nullable final Object aContext,
                                         @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -188,14 +181,12 @@ public interface IPSValidationHandler
   }
 
   /**
-   * This is the last method called. It indicates that the validation for the
-   * current scheme ended.
+   * This is the last method called. It indicates that the validation for the current scheme ended.
    *
    * @param aSchema
    *        The Schematron that was be validated. Never <code>null</code>.
    * @param aActivePhase
-   *        The selected phase, if any special phase was selected. May be
-   *        <code>null</code>.
+   *        The selected phase, if any special phase was selected. May be <code>null</code>.
    * @see #onStart(PSSchema, PSPhase, String)
    * @throws SchematronValidationException
    *         In case of validation errors
@@ -205,12 +196,11 @@ public interface IPSValidationHandler
   {}
 
   /**
-   * Create a new validation handler that first invokes all methods from this
-   * handler, and than later on from the passed validation handler.
+   * Create a new validation handler that first invokes all methods from this handler, and than
+   * later on from the passed validation handler.
    *
    * @param rhs
-   *        The validation handler to be invoked after this one. May be
-   *        <code>null</code>.
+   *        The validation handler to be invoked after this one. May be <code>null</code>.
    * @return The new validation handler that invokes this and the passed on
    */
   @Nonnull
@@ -222,17 +212,15 @@ public interface IPSValidationHandler
   }
 
   /**
-   * Create a new validation handler that first invokes all methods from the
-   * first handler and second from the second handler.
+   * Create a new validation handler that first invokes all methods from the first handler and
+   * second from the second handler.
    *
    * @param lhs
-   *        The first validation handler to be invoked. May be
-   *        <code>null</code>.
+   *        The first validation handler to be invoked. May be <code>null</code>.
    * @param rhs
-   *        The second validation handler to be invoked. May be
-   *        <code>null</code>.
-   * @return The new validation handler that invokes both handlers. May be
-   *         <code>null</code> if both are null.
+   *        The second validation handler to be invoked. May be <code>null</code>.
+   * @return The new validation handler that invokes both handlers. May be <code>null</code> if both
+   *         are null.
    */
   @Nonnull
   static IPSValidationHandler and (@Nullable final IPSValidationHandler lhs, @Nullable final IPSValidationHandler rhs)
@@ -262,7 +250,7 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+      public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final XdmValue aContextList)
                                                                                                   throws SchematronValidationException
       {
         lhs.onRuleStart (aRule, aContextList);
@@ -284,7 +272,7 @@ public interface IPSValidationHandler
       public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
                                        @Nonnull final PSAssertReport aAssertReport,
                                        @Nonnull final String sTestExpression,
-                                       @Nonnull final Node aRuleMatchingNode,
+                                       @Nonnull final XdmNode aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext,
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -312,7 +300,7 @@ public interface IPSValidationHandler
       public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
                                            @Nonnull final PSAssertReport aAssertReport,
                                            @Nonnull final String sTestExpression,
-                                           @Nonnull final Node aRuleMatchingNode,
+                                           @Nonnull final XdmNode aRuleMatchingNode,
                                            final int nNodeIndex,
                                            @Nullable final Object aContext,
                                            @Nullable final Exception aEvaluationException) throws SchematronValidationException

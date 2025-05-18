@@ -19,7 +19,6 @@ package com.helger.schematron.pure.bound.xpath;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -27,6 +26,8 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
+
+import net.sf.saxon.s9api.XPathExecutable;
 
 /**
  * This class represents a single XPath-bound assert- or report-element.
@@ -38,13 +39,13 @@ public class PSXPathBoundAssertReport
 {
   private final PSAssertReport m_aAssertReport;
   private final String m_sTestExpression;
-  private final XPathExpression m_aBoundTestExpression;
+  private final XPathExecutable m_aBoundTestExpression;
   private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
   private final ICommonsMap <String, PSXPathBoundDiagnostic> m_aBoundDiagnostics;
 
   public PSXPathBoundAssertReport (@Nonnull final PSAssertReport aAssertReport,
                                    @Nonnull final String sTestExpression,
-                                   @Nonnull final XPathExpression aBoundTestExpression,
+                                   @Nonnull final XPathExecutable aBoundTestExpression,
                                    @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent,
                                    @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics)
   {
@@ -70,8 +71,7 @@ public class PSXPathBoundAssertReport
   }
 
   /**
-   * @return The source XPath expression that was compiled. Never
-   *         <code>null</code>.
+   * @return The source XPath expression that was compiled. Never <code>null</code>.
    */
   @Nonnull
   public final String getTestExpression ()
@@ -83,14 +83,14 @@ public class PSXPathBoundAssertReport
    * @return The pre-compiled XPath expression. Never <code>null</code>.
    */
   @Nonnull
-  public final XPathExpression getBoundTestExpression ()
+  public final XPathExecutable getBoundTestExpression ()
   {
     return m_aBoundTestExpression;
   }
 
   /**
-   * @return All contained bound elements. It has the same amount of elements as
-   *         the source assert/report.
+   * @return All contained bound elements. It has the same amount of elements as the source
+   *         assert/report.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -115,8 +115,7 @@ public class PSXPathBoundAssertReport
   /**
    * Get all bound diagnostics
    *
-   * @return A copy of all bound diagnostics. Never <code>null</code> but maybe
-   *         empty.
+   * @return A copy of all bound diagnostics. Never <code>null</code> but maybe empty.
    */
   @Nullable
   public final ICommonsMap <String, PSXPathBoundDiagnostic> getAllBoundDiagnostics ()

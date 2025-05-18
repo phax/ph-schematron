@@ -20,12 +20,13 @@ import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.xpath.XPathExpression;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.lang.ICloneable;
+
+import net.sf.saxon.s9api.XPathExecutable;
 
 /**
  * Read-only interface for {@link PSXPathVariables}.
@@ -39,7 +40,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    */
   @Nonnull
   @ReturnsMutableCopy
-  ICommonsOrderedMap <String, XPathExpression> getAll ();
+  ICommonsOrderedMap <String, XPathExecutable> getAll ();
 
   /**
    * @return All contained variable names. Never <code>null</code>.
@@ -59,9 +60,9 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
   /**
    * @param sName
    *        Variable name
-   * @return The variable value of the variable with the specified name or
-   *         <code>null</code> if no such variable is present.
+   * @return The variable value of the variable with the specified name or <code>null</code> if no
+   *         such variable is present.
    */
   @Nullable
-  XPathExpression get (@Nullable String sName);
+  XPathExecutable get (@Nullable String sName);
 }
