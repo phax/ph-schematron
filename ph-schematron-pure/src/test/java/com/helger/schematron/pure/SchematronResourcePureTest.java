@@ -73,6 +73,7 @@ public final class SchematronResourcePureTest
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
+      LOGGER.info ("Reading '" + aRes.getPath () + "'");
       // The validity is tested in another test case!
       // Parse them
       final SchematronResourcePure aResPure = new SchematronResourcePure (aRes);
@@ -375,8 +376,7 @@ public final class SchematronResourcePureTest
   {
     final XPath xPath = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
                                                   "net.sf.saxon.xpath.XPathFactoryImpl",
-                                                  ClassLoaderHelper.getContextClassLoader ())
-                                    .newXPath ();
+                                                  ClassLoaderHelper.getContextClassLoader ()).newXPath ();
     assertNotNull (xPath);
     assertTrue (xPath instanceof net.sf.saxon.xpath.XPathEvaluator);
 
@@ -402,12 +402,10 @@ public final class SchematronResourcePureTest
 
     // fails here
     /**
-     * Caused by: java.lang.ClassCastException: class
-     * net.sf.saxon.dom.DOMNodeWrapper cannot be cast to class
-     * net.sf.saxon.value.AtomicValue (net.sf.saxon.dom.DOMNodeWrapper and
+     * Caused by: java.lang.ClassCastException: class net.sf.saxon.dom.DOMNodeWrapper cannot be cast
+     * to class net.sf.saxon.value.AtomicValue (net.sf.saxon.dom.DOMNodeWrapper and
      * net.sf.saxon.value.AtomicValue are in unnamed module of loader 'app') at
-     * net.sf.saxon.functions.DistinctValues$DistinctIterator.next(DistinctValues.java:80)
-     * at
+     * net.sf.saxon.functions.DistinctValues$DistinctIterator.next(DistinctValues.java:80) at
      * net.sf.saxon.functions.DistinctValues$DistinctIterator.next(DistinctValues.java:48)
      */
     ret = xPath.evaluate ("functx:are-distinct-values(para)", aTestDoc.getDocumentElement (), XPathConstants.BOOLEAN);

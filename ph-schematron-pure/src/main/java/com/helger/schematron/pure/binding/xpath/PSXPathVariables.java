@@ -17,6 +17,7 @@
 package com.helger.schematron.pure.binding.xpath;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,14 +43,14 @@ import net.sf.saxon.s9api.XPathExecutable;
 @NotThreadSafe
 public class PSXPathVariables implements IPSXPathVariables
 {
+  private final ICommonsOrderedMap <String, XPathExecutable> m_aMap;
+
   @Nonnull
   @ReturnsMutableCopy
   private static ICommonsOrderedMap <String, XPathExecutable> _createMap ()
   {
     return new CommonsLinkedHashMap <> ();
   }
-
-  private final ICommonsOrderedMap <String, XPathExecutable> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -161,6 +162,11 @@ public class PSXPathVariables implements IPSXPathVariables
     if (StringHelper.hasNoText (sName))
       return null;
     return m_aMap.get (sName);
+  }
+
+  public void forEach (@Nonnull final BiConsumer <String, XPathExecutable> aConsumer)
+  {
+    m_aMap.forEach (aConsumer);
   }
 
   @Nonnull

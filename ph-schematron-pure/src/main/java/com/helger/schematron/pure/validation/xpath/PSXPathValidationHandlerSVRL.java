@@ -63,6 +63,7 @@ import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmNode;
 
 /**
@@ -258,7 +259,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
               // XPath present
               try
               {
-                aSB.append (aBoundElement.getBoundExpression ().load ().evaluateSingle ().toString ());
+                final XPathSelector aXS = aBoundElement.getBoundExpression ().load ();
+                // TODO add variables
+                aSB.append (aXS.evaluateSingle ().toString ());
               }
               catch (final SaxonApiException ex)
               {
@@ -272,8 +275,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             else
             {
               // No XPath present
-              // TODO fix node name
-              // aSB.append (aSourceNode.getNodeName ());
+              aSB.append (aSourceNode.getNodeName ());
             }
           }
           else
@@ -282,7 +284,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
               final PSValueOf aValueOf = (PSValueOf) aContent;
               try
               {
-                aSB.append (aBoundElement.getBoundExpression ().load ().evaluateSingle ().toString ());
+                final XPathSelector aXS = aBoundElement.getBoundExpression ().load ();
+                // TODO add variables
+                aSB.append (aXS.evaluateSingle ().toString ());
               }
               catch (final SaxonApiException ex)
               {

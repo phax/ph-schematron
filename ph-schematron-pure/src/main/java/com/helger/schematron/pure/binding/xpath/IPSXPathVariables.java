@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.binding.xpath;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,7 +31,7 @@ import net.sf.saxon.s9api.XPathExecutable;
  *
  * @author Philip Helger
  */
-public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serializable
+public interface IPSXPathVariables extends ICloneable <PSXPathVariables>
 {
   /**
    * @return All contained variable key value pairs. Never <code>null</code>.
