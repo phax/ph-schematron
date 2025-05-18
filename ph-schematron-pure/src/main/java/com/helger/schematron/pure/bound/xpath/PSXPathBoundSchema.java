@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.namespace.QName;
 import javax.xml.transform.SourceLocator;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathVariableResolver;
 
@@ -62,15 +61,13 @@ import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XPathLetVariableResolver;
-import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.xml.XMLHelper;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
-import com.helger.xml.xpath.XPathHelper;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.dom.DOMNodeWrapper;
 import net.sf.saxon.dom.DocumentWrapper;
 import net.sf.saxon.lib.ErrorReporter;
+import net.sf.saxon.om.NamespaceUri;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XPathCompiler;
@@ -436,17 +433,16 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     // Get an XPathCompiler from the processor
     final XPathCompiler aS9XPathCompiler = aS9Processor.newXPathCompiler ();
 
-    // Set namespace context
-    final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
-    ((IndependentContext) aS9XPathCompiler.getUnderlyingStaticContext ()).setNamespaceResolver (new SaxonNamespaceContext (aNamespaceContext));
+    final IndependentContext aIC = (IndependentContext) aS9XPathCompiler.getUnderlyingStaticContext ();
+
+    // add all namespaces to the context
+    for (final var aEntry : getNamespaceContext ().getPrefixToNamespaceURIMap ().entrySet ())
+      aIC.declareNamespace (aEntry.getKey (), NamespaceUri.of (aEntry.getValue ()));
 
     // TODO handle variables
     // TODO handle function
-    final XPath aXPathCompiler = XPathHelper.createNewXPath (m_aXPathConfig.getXPathFactory (),
-                                                             m_aXPathVariableResolver,
-                                                             m_aXPathConfig.getXPathFunctionResolver (),
-                                                             aNamespaceContext);
-    new SaxonNamespaceContext (aNamespaceContext);
+    m_aXPathVariableResolver.toString ();
+    m_aXPathConfig.getXPathFunctionResolver ();
 
     return aS9XPathCompiler;
   }
