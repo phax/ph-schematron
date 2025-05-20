@@ -171,7 +171,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       final NsPrefixInAttributeValues aNsPrefix = new NsPrefixInAttributeValues ();
       aNsPrefix.setPrefix (aEntry.getKey ());
       aNsPrefix.setUri (aEntry.getValue ());
-      aSchematronOutput.getNsPrefixInAttributeValues ().add (aNsPrefix);
+      aSchematronOutput.addNsPrefixInAttributeValues (aNsPrefix);
     }
   }
 
