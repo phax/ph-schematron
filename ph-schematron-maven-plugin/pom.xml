@@ -62,7 +62,7 @@
     <maven.core.version>3.8.6</maven.core.version>
     <maven.annot.version>3.7.0</maven.annot.version>
     <maven.test.version>3.3.0</maven.test.version>
-    <easymock.version>5.5.0</easymock.version>
+    <easymock.version>5.6.0</easymock.version>
   </properties>
 
   <dependencies>
