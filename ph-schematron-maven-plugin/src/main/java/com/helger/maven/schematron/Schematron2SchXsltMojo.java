@@ -54,8 +54,9 @@ import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.wrapper.Wrapper;
-import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
+import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSLT2;
+import com.helger.schematron.schxslt.xslt2.TransformerCustomizerSchXslt_XSLT2;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -67,11 +68,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Converts one or more Schematron schema files into XSLT scripts.
  *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * @author Philip Helger
  */
 @SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
-@Mojo (name = "convert", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
-public final class Schematron2XSLTMojo extends AbstractMojo
+@Mojo (name = "convert-schxslt", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
+public final class Schematron2SchXsltMojo extends AbstractMojo
 {
   /**
    * BuildContext for m2e (it's a pass-though straight to the filesystem when invoked from the Maven
@@ -364,16 +365,16 @@ public final class Schematron2XSLTMojo extends AbstractMojo
               // No custom URI resolver
               // Specified phase - default = null
               // Specified language code - default = null
-              final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
-                                                                                          .setPhase (m_sPhaseName)
-                                                                                          .setLanguageCode (m_sLanguageCode)
-                                                                                          .setParameters (m_aCustomParameters)
-                                                                                          .setForceCacheResult (m_bForceCacheResult);
+              final TransformerCustomizerSchXslt_XSLT2 aCustomizer = new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aMojoErrorListener)
+                                                                                                              .setPhase (m_sPhaseName)
+                                                                                                              .setLanguageCode (m_sLanguageCode)
+                                                                                                              .setParameters (m_aCustomParameters)
+                                                                                                              .setForceCacheResult (m_bForceCacheResult);
 
               getLog ().debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
-              final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource,
-                                                                                            aCustomizer);
+              final Document aXsltDoc = SchematronProviderXSLTFromSchXslt_XSLT2.createSchematronXSLT (aSchematronResource,
+                                                                                                      aCustomizer);
               if (aXsltDoc != null)
               {
                 if (StringHelper.hasText (m_sXSLTHeader))

@@ -17,7 +17,7 @@
     limitations under the License.
 
 -->
-<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+<sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding='xslt2'>
 
    <sch:ns uri="http://www.example.org"
            prefix="ex" />
