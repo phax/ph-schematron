@@ -64,6 +64,7 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.dom.DOMNodeWrapper;
 import net.sf.saxon.dom.DocumentWrapper;
 import net.sf.saxon.lib.ErrorReporter;
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
 import net.sf.saxon.om.NamespaceUri;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -162,6 +163,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                               .build ());
     };
     m_aS9Processor.getUnderlyingConfiguration ().setErrorReporterFactory (aErrReporterFactory);
+
+    // Add the XPath functions now
+    if (m_aXPathConfig.getAllEFDs () != null)
+      for (final ExtensionFunctionDefinition aEFD : m_aXPathConfig.getAllEFDs ())
+        m_aS9Processor.getUnderlyingConfiguration ().registerExtensionFunction (aEFD);
   }
 
   @Nullable
@@ -421,10 +427,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     for (final var aEntry : getNamespaceContext ().getPrefixToNamespaceURIMap ().entrySet ())
       aIC.declareNamespace (aEntry.getKey (), NamespaceUri.of (aEntry.getValue ()));
 
-    // TODO handle variables
-    // TODO handle function
+    // TODO add variables here
     m_aXPathVariableResolver.toString ();
-    m_aXPathConfig.getXPathFunctionResolver ();
 
     return aS9XPathCompiler;
   }

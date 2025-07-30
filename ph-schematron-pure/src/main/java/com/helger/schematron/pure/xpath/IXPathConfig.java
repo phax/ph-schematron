@@ -23,18 +23,21 @@ import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
+import com.helger.xml.xpath.MapBasedXPathVariableResolver;
+
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
 
 /**
  * XPath configuration to use.
  * <p>
  * This is a counter-measure against
- * <a href="https://github.com/phax/ph-schematron/issues/96">#96</a>: When using
- * Saxon-HE, you have stripped down XPath support (no XPath higher order
- * functions according to the <a href=
- * "https://www.saxonica.com/html/products/feature-matrix-9-9.html">saxon
- * feature matrix</a>). In this case, you perhaps want to use a different
- * <em>XPath implementation</em> (most commonly the XPath implementation shipped
- * with Java).
+ * <a href="https://github.com/phax/ph-schematron/issues/96">#96</a>: When using Saxon-HE, you have
+ * stripped down XPath support (no XPath higher order functions according to the
+ * <a href= "https://www.saxonica.com/html/products/feature-matrix-9-9.html">saxon feature
+ * matrix</a>). In this case, you perhaps want to use a different <em>XPath implementation</em>
+ * (most commonly the XPath implementation shipped with Java).
  * </p>
  *
  * @author Thomas Pasch
@@ -56,12 +59,14 @@ public interface IXPathConfig
    * @return The {@link XPathVariableResolver} to use. May be <code>null</code>.
    */
   @Nullable
-  XPathVariableResolver getXPathVariableResolver ();
+  MapBasedXPathVariableResolver getXPathVariableResolver ();
 
   /**
-   * @return The {@link XPathFunctionResolver} to use. May not be
-   *         <code>null</code>.
+   * @return The {@link XPathFunctionResolver} to use. May not be <code>null</code>.
    */
   @Nullable
-  XPathFunctionResolver getXPathFunctionResolver ();
+  MapBasedXPathFunctionResolver getXPathFunctionResolver ();
+
+  @Nullable
+  ICommonsList <ExtensionFunctionDefinition> getAllEFDs ();
 }

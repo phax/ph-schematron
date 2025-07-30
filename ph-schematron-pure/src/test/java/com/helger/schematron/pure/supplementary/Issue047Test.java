@@ -20,7 +20,11 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathFunction;
 
 import org.junit.Test;
 
@@ -30,15 +34,21 @@ import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
 public final class Issue047Test
 {
-
   public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
   {
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver ( (aFunctionName, aArity) -> {
-      System.out.println (aFunctionName + " - " + aArity);
-      return null;
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (new MapBasedXPathFunctionResolver ()
+    {
+      @Override
+      @Nullable
+      public XPathFunction resolveFunction (@Nonnull final QName aFunctionName, @Nonnegative final int nArity)
+      {
+        System.out.println (aFunctionName + " - " + nArity);
+        return null;
+      }
     }).build ();
     final SchematronResourcePure aSCH = new SchematronResourcePure (new FileSystemResource (aSchematron)).setXPathConfig (aXPathConfig);
 

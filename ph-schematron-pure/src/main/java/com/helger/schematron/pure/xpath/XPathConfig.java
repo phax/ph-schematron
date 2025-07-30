@@ -20,13 +20,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
+import com.helger.xml.xpath.MapBasedXPathVariableResolver;
+
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
 
 /**
  * The immutable default implementation of {@link IXPathConfig}
@@ -38,17 +41,20 @@ import com.helger.commons.string.ToStringGenerator;
 public class XPathConfig implements IXPathConfig
 {
   private final XPathFactory m_aXPathFactory;
-  private final XPathVariableResolver m_aXPathVariableResolver;
-  private final XPathFunctionResolver m_aXPathFunctionResolver;
+  private final MapBasedXPathVariableResolver m_aXPathVariableResolver;
+  private final MapBasedXPathFunctionResolver m_aXPathFunctionResolver;
+  private final ICommonsList <ExtensionFunctionDefinition> m_aEFDs;
 
   public XPathConfig (@Nonnull final XPathFactory aXPathFactory,
-                      @Nullable final XPathVariableResolver aXPathVariableResolver,
-                      @Nullable final XPathFunctionResolver aXPathFunctionResolver)
+                      @Nullable final MapBasedXPathVariableResolver aXPathVariableResolver,
+                      @Nullable final MapBasedXPathFunctionResolver aXPathFunctionResolver,
+                      @Nullable final ICommonsList <ExtensionFunctionDefinition> aEFDs)
   {
     ValueEnforcer.notNull (aXPathFactory, "XPathFactory");
     m_aXPathFactory = aXPathFactory;
     m_aXPathVariableResolver = aXPathVariableResolver;
     m_aXPathFunctionResolver = aXPathFunctionResolver;
+    m_aEFDs = aEFDs;
   }
 
   @Nonnull
@@ -58,15 +64,21 @@ public class XPathConfig implements IXPathConfig
   }
 
   @Nullable
-  public XPathVariableResolver getXPathVariableResolver ()
+  public MapBasedXPathVariableResolver getXPathVariableResolver ()
   {
     return m_aXPathVariableResolver;
   }
 
   @Nullable
-  public XPathFunctionResolver getXPathFunctionResolver ()
+  public MapBasedXPathFunctionResolver getXPathFunctionResolver ()
   {
     return m_aXPathFunctionResolver;
+  }
+
+  @Nullable
+  public ICommonsList <ExtensionFunctionDefinition> getAllEFDs ()
+  {
+    return m_aEFDs;
   }
 
   @Override

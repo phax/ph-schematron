@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.xml.validation.Schema;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -37,6 +38,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.helger.commons.builder.IBuilder;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.StringInputStream;
@@ -49,6 +53,7 @@ import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -57,6 +62,17 @@ import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
 import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 import com.helger.xml.xpath.MapBasedXPathVariableResolver;
+
+import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.lib.ExtensionFunctionCall;
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
+import net.sf.saxon.om.Item;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.value.SequenceType;
+import net.sf.saxon.value.StringValue;
 
 /**
  * Test class for class {@link SchematronResourcePure}.
@@ -210,6 +226,110 @@ public final class SchematronResourcePureTest
     assertEquals ("\n      2 paragraphs found".trim (), SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
+  public static final class EFDBuilder implements IBuilder <ExtensionFunctionDefinition>
+  {
+    public interface ICall
+    {
+      Sequence call (Sequence [] arguments, XPathContext context) throws XPathException;
+    }
+
+    private StructuredQName m_aName;
+    private int m_nMinArity = 0;
+    private int m_nMaxArity = 0;
+    private ICommonsList <SequenceType> m_aArgs = new CommonsArrayList <> ();
+    private SequenceType m_aResult = SequenceType.ANY_SEQUENCE;
+    private ICall m_aCall;
+
+    @Nonnull
+    public EFDBuilder funcName (@Nonnull String sNamespaceURI, @Nonnull String sFuncName)
+    {
+      m_aName = new StructuredQName ("", sNamespaceURI, sFuncName);
+      return this;
+    }
+
+    @Nonnull
+    public EFDBuilder addOptionalArg (@Nonnull SequenceType aArg)
+    {
+      m_nMaxArity++;
+      m_aArgs.add (aArg);
+      return this;
+    }
+
+    @Nonnull
+    public EFDBuilder addMandatoryArg (@Nonnull SequenceType aArg)
+    {
+      m_nMinArity++;
+      m_nMaxArity++;
+      m_aArgs.add (aArg);
+      return this;
+    }
+
+    @Nonnull
+    public EFDBuilder resultType (@Nonnull SequenceType aResult)
+    {
+      m_aResult = aResult;
+      return this;
+    }
+
+    @Nonnull
+    public EFDBuilder call (@Nonnull ICall aCall)
+    {
+      m_aCall = aCall;
+      return this;
+    }
+
+    @Nonnull
+    public ExtensionFunctionDefinition build ()
+    {
+      return new ExtensionFunctionDefinition ()
+      {
+        @Override
+        public StructuredQName getFunctionQName ()
+        {
+          return m_aName;
+        }
+
+        @Override
+        public int getMinimumNumberOfArguments ()
+        {
+          return m_nMinArity;
+        }
+
+        @Override
+        public int getMaximumNumberOfArguments ()
+        {
+          return m_nMaxArity;
+        }
+
+        @Override
+        public SequenceType [] getArgumentTypes ()
+        {
+          // List to array
+          return m_aArgs.toArray (new SequenceType [m_aArgs.size ()]);
+        }
+
+        @Override
+        public SequenceType getResultType (SequenceType [] suppliedArgumentTypes)
+        {
+          return m_aResult;
+        }
+
+        @Override
+        public ExtensionFunctionCall makeCallExpression ()
+        {
+          return new ExtensionFunctionCall ()
+          {
+            @Override
+            public Sequence call (@Nonnull XPathContext aContext, @Nonnull Sequence [] aArguments) throws XPathException
+            {
+              return m_aCall.call (aArguments, aContext);
+            }
+          };
+        }
+      };
+    }
+  }
+
   @Test
   public void testResolveFunctions () throws SchematronException, XPathFactoryConfigurationException
   {
@@ -225,10 +345,9 @@ public final class SchematronResourcePureTest
                          "  <iso:pattern >\n" +
                          "    <iso:title>A very simple pattern with a title</iso:title>\n" +
                          "    <iso:rule context=\"chapter\">\n" +
-                         "      <iso:assert test=\"title\">Chapter should have a title</iso:assert>\n" +
-                         "      <iso:report test=\"count(para) = 2\">\n"
+                         "      <iso:assert test=\"exists(title)\">Chapter should have a title</iso:assert>\n" +
+                         "      <iso:report test=\"count(para) = 2\">\n" +
                          // Custom function
-                         +
                          "      Node details: <iso:value-of select=\"java:get-nodelist-details(para)\"/> - end</iso:report>\n" +
                          "    </iso:rule>\n" +
                          "  </iso:pattern>\n" +
@@ -236,45 +355,50 @@ public final class SchematronResourcePureTest
                          "</iso:schema>";
 
     // Test with variable and function resolver
-    final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
-    aFunctionResolver.addUniqueFunction ("http://helger.com/schematron/test", "get-nodelist-details", 1, args -> {
-      // We expect exactly one argument
-      assertEquals (1, args.size ());
-      // The type of the first argument
-      // itself is also a list
-      final List <?> aFirstArg = (List <?>) args.get (0);
-      // Ensure that the first argument
-      // only contains Nodes
-      final StringBuilder ret = new StringBuilder ();
-      boolean bFirst = true;
-      for (final Object aFirstArgItem : aFirstArg)
-      {
-        assertTrue (aFirstArgItem instanceof Node);
-        final Node aNode = (Node) aFirstArgItem;
 
-        if (bFirst)
-          bFirst = false;
-        else
-          ret.append (", ");
+    ExtensionFunctionDefinition aEFD = new EFDBuilder ().funcName ("http://helger.com/schematron/test",
+                                                                   "get-nodelist-details")
+                                                        .addMandatoryArg (SequenceType.NODE_SEQUENCE)
+                                                        .resultType (SequenceType.SINGLE_STRING)
+                                                        .call ( (arguments, context) -> {
+                                                          // We expect exactly one argument
+                                                          assertEquals (1, arguments.length);
+                                                          SequenceIterator it = arguments[0].iterate ();
+                                                          final StringBuilder ret = new StringBuilder ();
+                                                          boolean bFirst = true;
+                                                          Item aItem = null;
+                                                          while ((aItem = it.next ()) != null)
+                                                          {
+                                                            assertTrue (aItem instanceof Node);
+                                                            final Node aNode = (Node) aItem;
 
-        ret.append (aNode.getNodeName ()).append ("[").append (aNode.getTextContent ()).append ("]");
-      }
+                                                            if (bFirst)
+                                                              bFirst = false;
+                                                            else
+                                                              ret.append (", ");
 
-      return ret;
-    });
+                                                            ret.append (aNode.getNodeName ())
+                                                               .append ('[')
+                                                               .append (aNode.getTextContent ())
+                                                               .append (']');
+                                                          }
+                                                          return new StringValue (ret.toString ());
+                                                        })
+                                                        .build ();
 
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
                                                     "<chapter>" +
-                                                    "<title />" +
-                                                    "<para>First para</para>" +
-                                                    "<para>Second para</para>" +
+                                                    "  <title />" +
+                                                    "  <para>First para</para>" +
+                                                    "  <para>Second para</para>" +
                                                     "</chapter>");
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addEFD (aEFD).build ();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                                            .setXPathConfig (aXPathConfig)
                                                            .applySchematronValidationToSVRL (aTestDoc, null);
+    LOGGER.info (new SVRLMarshaller ().setFormattedOutput (true).getAsString (aOT));
     assertNotNull (aOT);
-    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+    assertEquals (1, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
     // Note: the text contains all whitespaces!
     assertEquals ("\n      Node details: para[First para], para[Second para] - end".trim (),
