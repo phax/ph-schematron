@@ -16,14 +16,14 @@
  */
 package com.helger.schematron.ant;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
-import com.helger.commons.debug.GlobalDebug;
+import com.helger.base.debug.GlobalDebug;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Abstract base class with common functionality of Schematron ANT tasks.

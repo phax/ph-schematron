@@ -20,11 +20,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.ICommonsNavigableMap;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.collection.commons.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -35,6 +32,9 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a single query binding.

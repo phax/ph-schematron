@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.exchange;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.xml.serialize.write.IXMLWriterSettings;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Read-only interface with settings for the {@link PSWriter}.

@@ -16,17 +16,17 @@
  */
 package com.helger.schematron.pure.validation;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.w3c.dom.Node;
 
-import com.helger.commons.state.EContinue;
-import com.helger.commons.state.EValidity;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.state.EContinue;
+import com.helger.base.state.EValidity;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSRule;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A simple implementation if {@link IPSValidationHandler} that stops validation

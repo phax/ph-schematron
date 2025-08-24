@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.io.resource.ClassPathResource;
 
 /**
  * Test class for class {@link CSVRL}.

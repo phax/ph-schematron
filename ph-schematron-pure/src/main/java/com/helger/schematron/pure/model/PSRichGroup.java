@@ -18,19 +18,20 @@ package com.helger.schematron.pure.model;
 
 import java.io.Serializable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.XMLConstants;
 
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.id.IHasID;
-import com.helger.commons.lang.EnumHelper;
-import com.helger.commons.lang.ICloneable;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.clone.ICloneable;
+import com.helger.base.id.IHasID;
+import com.helger.base.lang.EnumHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
 import com.helger.xml.microdom.IMicroElement;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A single "rich" group
@@ -76,8 +77,8 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
   {}
 
   /**
-   * The location of a graphics file containing some visible representation of
-   * the severity, significance or other grouping of the associated element.<br>
+   * The location of a graphics file containing some visible representation of the severity,
+   * significance or other grouping of the associated element.<br>
    * An implementation is not required to make use of this attribute.
    *
    * @return The icon value
@@ -94,8 +95,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
   }
 
   /**
-   * The URI of external information of interest to maintainers and users of the
-   * schema.<br>
+   * The URI of external information of interest to maintainers and users of the schema.<br>
    * An implementation is not required to make use of this attribute.
    *
    * @return The see value
@@ -136,7 +136,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
 
   public boolean hasXmlLang ()
   {
-    return StringHelper.hasText (m_sXmlLang);
+    return StringHelper.isNotEmpty (m_sXmlLang);
   }
 
   public void setXmlLang (@Nullable final String sXmlLang)
@@ -174,9 +174,9 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
     aElement.setAttribute (CSchematronXML.ATTR_ICON, m_sIcon);
     aElement.setAttribute (CSchematronXML.ATTR_SEE, m_sSee);
     aElement.setAttribute (CSchematronXML.ATTR_FPI, m_sFPI);
-    aElement.setAttribute (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_LANG, m_sXmlLang);
+    aElement.setAttributeNS (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_LANG, m_sXmlLang);
     if (m_eXmlSpace != null)
-      aElement.setAttribute (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_SPACE, m_eXmlSpace.getID ());
+      aElement.setAttributeNS (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_SPACE, m_eXmlSpace.getID ());
   }
 
   @Nonnull

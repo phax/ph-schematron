@@ -26,7 +26,7 @@ import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.collection.commons.ICommonsMap;
 
 public final class Schematron2XSLTMojoTest
 {

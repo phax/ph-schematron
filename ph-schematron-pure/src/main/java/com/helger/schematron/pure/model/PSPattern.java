@@ -19,20 +19,17 @@ package com.helger.schematron.pure.model;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -40,22 +37,24 @@ import com.helger.xml.CXMLRegEx;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
  * A single Schematron pattern-element.<br>
- * A structure, simple or complex. A set of rules giving constraints that are in
- * some way related. The id attribute provides a unique name for the pattern and
- * is required for abstract patterns.<br>
+ * A structure, simple or complex. A set of rules giving constraints that are in some way related.
+ * The id attribute provides a unique name for the pattern and is required for abstract
+ * patterns.<br>
  * The title and p elements allow rich documentation.<br>
  * The icon, see and fpi attributes allow rich interfaces and documentation.<br>
- * When a pattern element has the attribute abstract with a value true, then the
- * pattern defines an abstract pattern. An abstract pattern shall not have a
- * is-a attribute and shall have an id attribute.<br>
- * Abstract patterns allow a common definition mechanism for structures which
- * use different names and paths, but which are at heart the same. For example,
- * there are different table markup languages, but they all can be in large part
- * represented as an abstract pattern where a table contains rows and rows
- * contain entries, as defined in the following example using the default query
- * language binding:<br>
+ * When a pattern element has the attribute abstract with a value true, then the pattern defines an
+ * abstract pattern. An abstract pattern shall not have a is-a attribute and shall have an id
+ * attribute.<br>
+ * Abstract patterns allow a common definition mechanism for structures which use different names
+ * and paths, but which are at heart the same. For example, there are different table markup
+ * languages, but they all can be in large part represented as an abstract pattern where a table
+ * contains rows and rows contain entries, as defined in the following example using the default
+ * query language binding:<br>
  *
  * <pre>
  *     &lt;sch:pattern abstract="true" id="table"&gt;
@@ -72,12 +71,12 @@ import com.helger.xml.microdom.MicroElement;
  *     &lt;/sch:pattern&gt;
  * </pre>
  *
- * When a pattern element has the attribute is-a with a value specifying the
- * name of an abstract pattern, then the pattern is an instance of an abstract
- * pattern. Such a pattern shall not contain any rule elements, but shall have
- * param elements for all parameters used in the abstract pattern.<br>
- * The following example uses the abstract pattern for tables given above to
- * create three patterns for tables with different names or structures.<br>
+ * When a pattern element has the attribute is-a with a value specifying the name of an abstract
+ * pattern, then the pattern is an instance of an abstract pattern. Such a pattern shall not contain
+ * any rule elements, but shall have param elements for all parameters used in the abstract
+ * pattern.<br>
+ * The following example uses the abstract pattern for tables given above to create three patterns
+ * for tables with different names or structures.<br>
  *
  * <pre>
  *     &lt;sch:pattern is-a="table" id="HTML_Table"&gt;
@@ -97,14 +96,12 @@ import com.helger.xml.microdom.MicroElement;
  *     &lt;/sch:pattern&gt;
  * </pre>
  *
- * When creating an instance of an abstract pattern, the parameter values
- * supplied by the param element replace the parameter references used in the
- * abstract patterns. The examples above use the default query language binding
- * in which the character $ is used as the delimiter for parameter references.
- * <br>
- * Thus, given the abstract patterns defined earlier in this clause, the
- * patterns defined above are equivalent to the following, with the id elements
- * shown expanded:<br>
+ * When creating an instance of an abstract pattern, the parameter values supplied by the param
+ * element replace the parameter references used in the abstract patterns. The examples above use
+ * the default query language binding in which the character $ is used as the delimiter for
+ * parameter references. <br>
+ * Thus, given the abstract patterns defined earlier in this clause, the patterns defined above are
+ * equivalent to the following, with the id elements shown expanded:<br>
  *
  * <pre>
  *     &lt;sch:pattern id="HTML_table"&gt;
@@ -169,18 +166,18 @@ public class PSPattern implements
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     // If abstract, an ID must be present
-    if (m_bAbstract && StringHelper.hasNoText (m_sID))
+    if (m_bAbstract && StringHelper.isEmpty (m_sID))
     {
       aErrorHandler.error (this, "abstract <pattern> does not have an 'id'");
       return false;
     }
     // is-a may not be present for abstract rules
-    if (m_bAbstract && StringHelper.hasText (m_sIsA))
+    if (m_bAbstract && StringHelper.isNotEmpty (m_sIsA))
     {
       aErrorHandler.error (this, "abstract <pattern> may not have an 'is-a'");
       return false;
     }
-    if (StringHelper.hasNoText (m_sIsA))
+    if (StringHelper.isEmpty (m_sIsA))
     {
       // param only if is-a is set
       for (final Object aContent : m_aContent)
@@ -218,17 +215,17 @@ public class PSPattern implements
   public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
   {
     // If abstract, an ID must be present
-    if (m_bAbstract && StringHelper.hasNoText (m_sID))
+    if (m_bAbstract && StringHelper.isEmpty (m_sID))
       aErrorHandler.error (this, "abstract <pattern> does not have an 'id'");
     // ID needs to be an NCName
-    if (StringHelper.hasText (m_sID))
+    if (StringHelper.isNotEmpty (m_sID))
       if (!CXMLRegEx.PATTERN_NCNAME.matcher (m_sID).matches ())
         aErrorHandler.error (this, "The <pattern> attribute 'id' is not a valid XML NCName");
 
     // is-a may not be present for abstract rules
-    if (m_bAbstract && StringHelper.hasText (m_sIsA))
+    if (m_bAbstract && StringHelper.isNotEmpty (m_sIsA))
       aErrorHandler.error (this, "abstract <pattern> may not have an 'is-a'");
-    if (StringHelper.hasNoText (m_sIsA))
+    if (StringHelper.isEmpty (m_sIsA))
     {
       // param only if is-a is set
       for (final Object aContent : m_aContent)
@@ -256,7 +253,7 @@ public class PSPattern implements
   {
     if (m_bAbstract)
       return false;
-    if (StringHelper.hasText (m_sIsA))
+    if (StringHelper.isNotEmpty (m_sIsA))
       return false;
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -405,7 +402,7 @@ public class PSPattern implements
   @Nullable
   public PSRule getRuleOfID (@Nullable final String sID)
   {
-    if (StringHelper.hasText (sID))
+    if (StringHelper.isNotEmpty (sID))
       for (final Object aContent : m_aContent)
         if (aContent instanceof PSRule)
         {
@@ -510,8 +507,8 @@ public class PSPattern implements
   }
 
   /**
-   * @return A list consisting of {@link PSP}, {@link PSLet}, {@link PSRule} and
-   *         {@link PSParam} parameters
+   * @return A list consisting of {@link PSP}, {@link PSLet}, {@link PSRule} and {@link PSParam}
+   *         parameters
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -520,8 +517,7 @@ public class PSPattern implements
     // Remove includes and title
     return m_aContent.getAllMapped (x -> x instanceof IPSElement &&
                                          !(x instanceof PSInclude) &&
-                                         !(x instanceof PSTitle),
-                                    IPSElement.class::cast);
+                                         !(x instanceof PSTitle), IPSElement.class::cast);
   }
 
   @Nonnull
@@ -536,9 +532,9 @@ public class PSPattern implements
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
       if (aContent instanceof IMicroElement)
-        ret.appendChild (((IMicroElement) aContent).getClone ());
+        ret.addChild (((IMicroElement) aContent).getClone ());
       else
-        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+        ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

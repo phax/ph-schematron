@@ -16,19 +16,19 @@
  */
 package com.helger.schematron.pure.validation;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.helger.commons.state.EContinue;
+import com.helger.annotation.Nonnegative;
+import com.helger.base.state.EContinue;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a Schematron validation callback handler. It is only

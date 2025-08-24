@@ -18,12 +18,13 @@ package com.helger.schematron.supplementary.documentation;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * This class contains code examples that are used in the documentation.

@@ -18,13 +18,13 @@ package com.helger.schematron.ant;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsLinkedHashSet;
+import com.helger.collection.commons.ICommonsIterable;
+import com.helger.collection.commons.ICommonsOrderedSet;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.CommonsLinkedHashSet;
-import com.helger.commons.collection.impl.ICommonsIterable;
-import com.helger.commons.collection.impl.ICommonsOrderedSet;
-import com.helger.commons.string.ToStringGenerator;
+import jakarta.annotation.Nonnull;
 
 /**
  * Stores resolved ResourceCollection data.

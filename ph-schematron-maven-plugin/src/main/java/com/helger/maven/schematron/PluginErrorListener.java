@@ -23,8 +23,8 @@ import javax.annotation.Nonnull;
 
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.commons.error.IError;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.diagnostics.error.IError;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 
 public class PluginErrorListener extends AbstractTransformErrorListener
@@ -38,13 +38,18 @@ public class PluginErrorListener extends AbstractTransformErrorListener
     m_aSourceFile = aSource;
   }
 
-  public static void logIError (@Nonnull final BuildContext aBuildContext, @Nonnull final File aSourceFile, @Nonnull final IError aResError)
+  public static void logIError (@Nonnull final BuildContext aBuildContext,
+                                @Nonnull final File aSourceFile,
+                                @Nonnull final IError aResError)
   {
     final int nLine = aResError.getErrorLocation ().getLineNumber ();
     final int nColumn = aResError.getErrorLocation ().getColumnNumber ();
-    final String sMessage = StringHelper.getImplodedNonEmpty (" - ",
-                                                              aResError.getErrorText (Locale.US),
-                                                              aResError.getLinkedExceptionMessage ());
+    final String sMessage = StringImplode.imploder ()
+                                         .source (aResError.getErrorText (Locale.US),
+                                                  aResError.getLinkedExceptionMessage ())
+                                         .separator (" - ")
+                                         .filterNonEmpty ()
+                                         .build ();
 
     // 0 means undefined line/column
     aBuildContext.addMessage (aSourceFile,

@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.microdom.IMicroDocument;

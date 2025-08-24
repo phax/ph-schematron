@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -113,7 +113,7 @@ public final class SVRLMarshallerFuncTest
 
     // Create String
     final String sDoc2 = new SVRLMarshaller ().getAsString (aSO);
-    assertTrue (StringHelper.hasText (sDoc2));
+    assertTrue (StringHelper.isNotEmpty (sDoc2));
     assertTrue (sDoc2.contains (CSVRL.SVRL_NAMESPACE_URI));
   }
 }

@@ -16,14 +16,14 @@
  */
 package com.helger.schematron.svrl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Interface that helps in determining an error level from SVRL elements.
@@ -34,8 +34,7 @@ import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 public interface ISVRLErrorLevelDeterminator
 {
   /**
-   * Get the error level associated with a single failed assertion/successful
-   * report.
+   * Get the error level associated with a single failed assertion/successful report.
    *
    * @param sValue
    *        The value to be queried. May be <code>null</code>.
@@ -59,7 +58,7 @@ public interface ISVRLErrorLevelDeterminator
 
     // First try "flag" (for backwards compatibility)
     String sValue = aFailedAssert.getFlag ();
-    if (StringHelper.hasNoText (sValue))
+    if (StringHelper.isEmpty (sValue))
     {
       // Fall back to "role"
       sValue = aFailedAssert.getRole ();
@@ -81,7 +80,7 @@ public interface ISVRLErrorLevelDeterminator
 
     // First try "flag" (for backwards compatibility)
     String sValue = aSuccessfulReport.getFlag ();
-    if (StringHelper.hasNoText (sValue))
+    if (StringHelper.isEmpty (sValue))
     {
       // Fall back to "role"
       sValue = aSuccessfulReport.getRole ();

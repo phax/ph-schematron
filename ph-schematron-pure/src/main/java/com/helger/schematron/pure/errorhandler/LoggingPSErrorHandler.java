@@ -18,19 +18,19 @@ package com.helger.schematron.pure.errorhandler;
 
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.ErrorTextProvider;
-import com.helger.commons.error.ErrorTextProvider.EField;
-import com.helger.commons.error.IError;
-import com.helger.commons.error.IErrorTextProvider;
-import com.helger.commons.log.LogHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.diagnostics.error.ErrorTextProvider;
+import com.helger.diagnostics.error.ErrorTextProvider.EField;
+import com.helger.diagnostics.error.IError;
+import com.helger.diagnostics.error.IErrorTextProvider;
+import com.helger.diagnostics.log.LogHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * An implementation if {@link IPSErrorHandler} that logs to an SLF4J logger.

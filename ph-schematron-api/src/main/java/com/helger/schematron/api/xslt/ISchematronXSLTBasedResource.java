@@ -16,17 +16,18 @@
  */
 package com.helger.schematron.api.xslt;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.URIResolver;
 
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.annotation.style.ReturnsMutableObject;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Special Schematron resource for XSLT based implementations.

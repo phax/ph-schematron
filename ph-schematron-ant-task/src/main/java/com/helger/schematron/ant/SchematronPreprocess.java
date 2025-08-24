@@ -18,11 +18,9 @@ package com.helger.schematron.ant;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import org.apache.tools.ant.BuildException;
 
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.pure.exchange.PSReader;
 import com.helger.schematron.pure.exchange.PSWriter;
@@ -32,6 +30,8 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * ANT task to perform Schematron preprocessing. It converts an existing schema

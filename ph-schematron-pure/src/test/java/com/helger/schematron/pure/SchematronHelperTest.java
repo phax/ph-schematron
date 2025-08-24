@@ -20,8 +20,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;

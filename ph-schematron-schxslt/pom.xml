@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>8.0.7-SNAPSHOT</version>
+    <version>9.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-schxslt</artifactId>
   <packaging>bundle</packaging>
@@ -91,6 +91,11 @@
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-unittest-support-ext</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

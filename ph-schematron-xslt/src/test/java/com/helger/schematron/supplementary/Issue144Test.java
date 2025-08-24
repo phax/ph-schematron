@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.AbstractSVRLMessage;

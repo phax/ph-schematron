@@ -18,21 +18,18 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -40,24 +37,32 @@ import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
  * A single Schematron schema-element.<br>
  * The top-level element of a Schematron schema.<br>
- * The optional schemaVersion attribute gives the version of the schema. Its
- * allowed values are not defined by this part of ISO/IEC 19757 and its use is
- * implementation-dependent.<br>
- * The optional queryBinding attribute provides the short name of the query
- * language binding in use. If this attribute is specified, it is an error if it
- * has a value that the current implementation does not support.<br>
- * The defaultPhase attribute may be used to indicate the phase to use in the
- * absence of explicit user-supplied information.<br>
+ * The optional schemaVersion attribute gives the version of the schema. Its allowed values are not
+ * defined by this part of ISO/IEC 19757 and its use is implementation-dependent.<br>
+ * The optional queryBinding attribute provides the short name of the query language binding in use.
+ * If this attribute is specified, it is an error if it has a value that the current implementation
+ * does not support.<br>
+ * The defaultPhase attribute may be used to indicate the phase to use in the absence of explicit
+ * user-supplied information.<br>
  * The title and p elements allow rich documentation.<br>
  * The icon, see and fpi attributes allow rich interfaces and documentation.<br>
  *
  * @author Philip Helger
  */
 @NotThreadSafe
-public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasRichGroup
+public class PSSchema implements
+                      IPSElement,
+                      IPSHasID,
+                      IPSHasForeignElements,
+                      IPSHasIncludes,
+                      IPSHasLets,
+                      IPSHasRichGroup
 {
   private final IReadableResource m_aResource;
   private String m_sID;
@@ -89,8 +94,8 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
    * Constructor for reading a schema from a file.
    *
    * @param aResource
-   *        The resource to be used. May be <code>null</code> indicating that
-   *        this is a newly created schema.
+   *        The resource to be used. May be <code>null</code> indicating that this is a newly
+   *        created schema.
    */
   public PSSchema (@Nullable final IReadableResource aResource)
   {
@@ -98,8 +103,8 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   }
 
   /**
-   * @return The resource from which the schema was read. May be
-   *         <code>null</code> if the schema is newly created.
+   * @return The resource from which the schema was read. May be <code>null</code> if the schema is
+   *         newly created.
    */
   @Nullable
   public IReadableResource getResource ()
@@ -167,16 +172,14 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   }
 
   /**
-   * Check if this schema is already pre-processed or not. A schema is
-   * considered pre-processed if:
+   * Check if this schema is already pre-processed or not. A schema is considered pre-processed if:
    * <ul>
    * <li>no includes are contained recursively and</li>
    * <li>no abstract patterns are contained and</li>
    * <li>no abstract rules are contained.</li>
    * </ul>
    *
-   * @return <code>true</code> if it is pre-processed, <code>false</code> if
-   *         not.
+   * @return <code>true</code> if it is pre-processed, <code>false</code> if not.
    */
   public boolean isPreprocessed ()
   {
@@ -455,8 +458,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   }
 
   /**
-   * @return A list with all phase IDs. Only phases having a valid ID are
-   *         considered.
+   * @return A list with all phase IDs. Only phases having a valid ID are considered.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -468,7 +470,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @Nullable
   public PSPhase getPhaseOfID (@Nullable final String sID)
   {
-    if (StringHelper.hasText (sID))
+    if (StringHelper.isNotEmpty (sID))
       for (final PSPhase aPhase : m_aPhases)
         if (sID.equals (aPhase.getID ()))
           return aPhase;
@@ -507,7 +509,7 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
   @Nullable
   public PSPattern getPatternOfID (@Nullable final String sID)
   {
-    if (StringHelper.hasText (sID))
+    if (StringHelper.isNotEmpty (sID))
       for (final PSPattern aPattern : m_aPatterns)
         if (sID.equals (aPattern.getID ()))
           return aPattern;
@@ -555,25 +557,25 @@ public class PSSchema implements IPSElement, IPSHasID, IPSHasForeignElements, IP
     ret.setAttribute (CSchematronXML.ATTR_QUERY_BINDING, m_sQueryBinding);
     if (m_aForeignElements != null)
       for (final IMicroElement aForeignElement : m_aForeignElements)
-        ret.appendChild (aForeignElement.getClone ());
+        ret.addChild (aForeignElement.getClone ());
     for (final PSInclude aInclude : m_aIncludes)
-      ret.appendChild (aInclude.getAsMicroElement ());
+      ret.addChild (aInclude.getAsMicroElement ());
     if (m_aTitle != null)
-      ret.appendChild (m_aTitle.getAsMicroElement ());
+      ret.addChild (m_aTitle.getAsMicroElement ());
     for (final PSNS aNS : m_aNSs)
-      ret.appendChild (aNS.getAsMicroElement ());
+      ret.addChild (aNS.getAsMicroElement ());
     for (final PSP aP : m_aStartPs)
-      ret.appendChild (aP.getAsMicroElement ());
+      ret.addChild (aP.getAsMicroElement ());
     for (final PSLet aLet : m_aLets)
-      ret.appendChild (aLet.getAsMicroElement ());
+      ret.addChild (aLet.getAsMicroElement ());
     for (final PSPhase aPhase : m_aPhases)
-      ret.appendChild (aPhase.getAsMicroElement ());
+      ret.addChild (aPhase.getAsMicroElement ());
     for (final PSPattern aPattern : m_aPatterns)
-      ret.appendChild (aPattern.getAsMicroElement ());
+      ret.addChild (aPattern.getAsMicroElement ());
     for (final PSP aP : m_aEndPs)
-      ret.appendChild (aP.getAsMicroElement ());
+      ret.addChild (aP.getAsMicroElement ());
     if (m_aDiagnostics != null)
-      ret.appendChild (m_aDiagnostics.getAsMicroElement ());
+      ret.addChild (m_aDiagnostics.getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

@@ -23,7 +23,7 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.helger.commons.lang.ClassLoaderHelper;
+import com.helger.base.classloader.ClassLoaderHelper;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 

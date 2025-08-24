@@ -20,20 +20,20 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillClose;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.WillClose;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ESuccess;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.pure.model.IPSElement;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.MicroDocument;
 import com.helger.xml.microdom.serialize.MicroWriter;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This class serializes the Schematron created within the domain object
@@ -77,7 +77,7 @@ public class PSWriter
   protected IMicroNode getAsDocument (@Nonnull final IMicroElement aElement)
   {
     final IMicroDocument aDoc = new MicroDocument ();
-    aDoc.appendChild (aElement);
+    aDoc.addChild (aElement);
     return aDoc;
   }
 
@@ -104,8 +104,8 @@ public class PSWriter
    * @param aPSElement
    *        The schematron element to write. May not be <code>null</code>.
    * @param aOS
-   *        The output stream to write things to. May not be <code>null</code>.
-   *        The stream is automatically closed.
+   *        The output stream to write things to. May not be <code>null</code>. The stream is
+   *        automatically closed.
    * @return {@link ESuccess}.
    */
   @Nonnull
@@ -122,8 +122,8 @@ public class PSWriter
    * @param aPSElement
    *        The schematron element to write. May not be <code>null</code>.
    * @param aWriter
-   *        The writer to write things to. May not be <code>null</code>. The
-   *        writer is automatically closed.
+   *        The writer to write things to. May not be <code>null</code>. The writer is automatically
+   *        closed.
    * @return {@link ESuccess}.
    */
   @Nonnull
@@ -138,10 +138,8 @@ public class PSWriter
    * Get the passed Schematron element as a String
    *
    * @param aPSElement
-   *        The schematron element to convert to a string. May not be
-   *        <code>null</code>.
-   * @return The passed element as a string or <code>null</code> if
-   *         serialization failed.
+   *        The schematron element to convert to a string. May not be <code>null</code>.
+   * @return The passed element as a string or <code>null</code> if serialization failed.
    */
   @Nullable
   public String getXMLString (@Nonnull final IPSElement aPSElement)
@@ -155,8 +153,7 @@ public class PSWriter
    * Get the passed Schematron element as a String
    *
    * @param aPSElement
-   *        The schematron element to convert to a string. May not be
-   *        <code>null</code>.
+   *        The schematron element to convert to a string. May not be <code>null</code>.
    * @return The passed element as a string and never <code>null</code>.
    * @throws IllegalStateException
    *         if serialization failed

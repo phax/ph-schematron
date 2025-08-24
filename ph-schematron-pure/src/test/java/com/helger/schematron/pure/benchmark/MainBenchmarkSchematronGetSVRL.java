@@ -18,7 +18,7 @@ package com.helger.schematron.pure.benchmark;
 
 import java.math.BigDecimal;
 
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.xml.transform.DoNothingTransformErrorListener;

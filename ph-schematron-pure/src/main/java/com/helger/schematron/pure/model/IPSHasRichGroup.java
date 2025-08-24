@@ -16,7 +16,7 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for objects having a rich group.

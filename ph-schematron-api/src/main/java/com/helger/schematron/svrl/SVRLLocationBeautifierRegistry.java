@@ -16,16 +16,17 @@
  */
 package com.helger.schematron.svrl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.lang.ServiceLoaderHelper;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.base.spi.ServiceLoaderHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A central registry for all {@link ISVRLLocationBeautifierSPI} instances.
@@ -36,7 +37,7 @@ import com.helger.commons.lang.ServiceLoaderHelper;
 public final class SVRLLocationBeautifierRegistry
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SVRLLocationBeautifierRegistry.class);
-  private static final ICommonsList <ISVRLLocationBeautifierSPI> LIST = ServiceLoaderHelper.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
+  private static final List <ISVRLLocationBeautifierSPI> LIST = ServiceLoaderHelper.getAllSPIImplementations (ISVRLLocationBeautifierSPI.class);
 
   @PresentForCodeCoverage
   private static final SVRLLocationBeautifierRegistry INSTANCE = new SVRLLocationBeautifierRegistry ();

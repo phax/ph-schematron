@@ -26,11 +26,9 @@ import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.junit.DebugModeTestRule;
-import com.helger.commons.mock.CommonsTestHelper;
+import com.helger.diagnostics.error.level.EErrorLevel;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -43,6 +41,8 @@ import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.unittest.junit4.DebugModeTestRule;
+import com.helger.unittest.support.TestHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.serialize.read.DOMReader;
 
@@ -57,18 +57,18 @@ public final class PSXPathBoundSchemaTest
   @Rule
   public final TestRule m_aRule = new DebugModeTestRule ();
 
-  private static final String [] SCH = new String [] { "valid01.sch",
-                                                       "valid02.sch",
-                                                       "biicore/BIICORE-UBL-T01.sch",
-                                                       "biirules/BIIRULES-UBL-T01.sch",
-                                                       "CellarBook.sch",
-                                                       "VariableTests.sch" };
-  private static final String [] XML = new String [] { "valid01.xml",
-                                                       "valid01.xml",
-                                                       "goodOrder01.xml",
-                                                       "goodOrder01.xml",
-                                                       "CellarBook.xml",
-                                                       "valid01.xml" };
+  private static final String [] SCH = { "valid01.sch",
+                                         "valid02.sch",
+                                         "biicore/BIICORE-UBL-T01.sch",
+                                         "biirules/BIIRULES-UBL-T01.sch",
+                                         "CellarBook.sch",
+                                         "VariableTests.sch" };
+  private static final String [] XML = { "valid01.xml",
+                                         "valid01.xml",
+                                         "goodOrder01.xml",
+                                         "goodOrder01.xml",
+                                         "CellarBook.xml",
+                                         "valid01.xml" };
 
   @Test
   public void testSchematronValidation () throws SchematronException
@@ -114,7 +114,7 @@ public final class PSXPathBoundSchemaTest
       // Parse the schema
       final PSSchema aSchema = new PSReader (aRes).readSchema ();
       assertNotNull (aSchema);
-      CommonsTestHelper.testToStringImplementation (aSchema);
+      TestHelper.testToStringImplementation (aSchema);
 
       final CollectingPSErrorHandler aErrHdl = new CollectingPSErrorHandler ();
       if (!aSchema.isValid (aErrHdl))

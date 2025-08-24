@@ -16,11 +16,11 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.diagnostics.error.IError;
 
-import com.helger.commons.error.IError;
-import com.helger.commons.string.ToStringGenerator;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of {@link IPSErrorHandler}.

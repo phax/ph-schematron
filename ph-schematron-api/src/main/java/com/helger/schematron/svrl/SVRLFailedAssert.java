@@ -18,11 +18,11 @@ package com.helger.schematron.svrl;
 
 import java.util.function.Function;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.error.level.IErrorLevel;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A wrapper around {@link FailedAssert} with easier error level handling.

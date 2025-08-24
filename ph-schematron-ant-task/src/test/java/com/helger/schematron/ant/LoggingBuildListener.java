@@ -16,13 +16,13 @@
  */
 package com.helger.schematron.ant;
 
-import javax.annotation.Nonnull;
-
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.annotation.Nonnull;
 
 final class LoggingBuildListener implements BuildListener
 {

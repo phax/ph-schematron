@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.collection.commons.ICommonsList;
 
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.ICommonsList;
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for Pure Schematron elements that support includes.

@@ -24,8 +24,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resourceresolver.DefaultResourceResolver;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resourceresolver.DefaultResourceResolver;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 

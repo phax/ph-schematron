@@ -18,17 +18,17 @@ package com.helger.schematron.svrl;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A wrapper around FailedAssert and SuccessfulReport with easier error level

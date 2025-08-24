@@ -18,24 +18,25 @@ package com.helger.schematron.xslt;
 
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.URIResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.error.IError;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.diagnostics.error.IError;
+import com.helger.io.resource.IReadableResource;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.LoggingTransformErrorListener;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Factory for creating {@link SchematronProviderXSLTPrebuild} objects.

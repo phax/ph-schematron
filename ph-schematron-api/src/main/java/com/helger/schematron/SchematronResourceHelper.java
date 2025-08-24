@@ -20,9 +20,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -32,12 +29,16 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.io.resource.URLResource;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.io.resource.URLResource;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This is a common utility class.
@@ -56,8 +57,8 @@ public final class SchematronResourceHelper
   {}
 
   /**
-   * Convert the passed transform source into a DOM node. Currently on
-   * {@link DOMSource} and {@link StreamSource} can be handled.
+   * Convert the passed transform source into a DOM node. Currently on {@link DOMSource} and
+   * {@link StreamSource} can be handled.
    *
    * @param aSource
    *        The transform source to use. May not be <code>null</code>.
@@ -106,7 +107,7 @@ public final class SchematronResourceHelper
       }
 
       final String sSystemID = aStreamSource.getSystemId ();
-      if (StringHelper.hasText (sSystemID))
+      if (StringHelper.isNotEmpty (sSystemID))
       {
         // System ID
         try

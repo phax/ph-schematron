@@ -16,21 +16,22 @@
  */
 package com.helger.schematron.schxslt.xslt2;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.io.resource.IReadableResource;
 import com.helger.xml.serialize.write.XMLWriter;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Factory for creating {@link SchematronProviderXSLTFromSchXslt_XSLT2} objects.
@@ -54,10 +55,8 @@ public final class SchematronResourceSchXslt_XSLT2Cache
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
    * @param aTransformerCustomizer
-   *        The XSLT transformer customizer to be used. May not be
-   *        <code>null</code>.
-   * @return <code>null</code> if the passed Schematron resource does not exist
-   *         or is invalid.
+   *        The XSLT transformer customizer to be used. May not be <code>null</code>.
+   * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
   @Nullable
   public static SchematronProviderXSLTFromSchXslt_XSLT2 createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
@@ -96,18 +95,15 @@ public final class SchematronResourceSchXslt_XSLT2Cache
   }
 
   /**
-   * Get the Schematron validator for the passed resource. If no custom
-   * parameter are present, the result is cached. The respective cache key is a
-   * combination of the Schematron resource path, the phase and the language
-   * code.
+   * Get the Schematron validator for the passed resource. If no custom parameter are present, the
+   * result is cached. The respective cache key is a combination of the Schematron resource path,
+   * the phase and the language code.
    *
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
    * @param aTransformerCustomizer
-   *        The XSLT transformer customizer to be used. May not be
-   *        <code>null</code>.
-   * @return <code>null</code> if the passed Schematron resource does not exist
-   *         or is invalid.
+   *        The XSLT transformer customizer to be used. May not be <code>null</code>.
+   * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
   @Nullable
   public static SchematronProviderXSLTFromSchXslt_XSLT2 getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
@@ -130,10 +126,12 @@ public final class SchematronResourceSchXslt_XSLT2Cache
     }
 
     // Determine the unique resource ID for caching
-    final String sCacheKey = StringHelper.<String> getImploded (':',
-                                                                aSchematronResource.getResourceID (),
-                                                                StringHelper.getNotNull (aTransformerCustomizer.getPhase ()),
-                                                                StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()));
+    final String sCacheKey = StringImplode.imploder ()
+                                          .separator (':')
+                                          .source (aSchematronResource.getResourceID (),
+                                                   StringHelper.getNotNull (aTransformerCustomizer.getPhase ()),
+                                                   StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()))
+                                          .build ();
 
     // Validator already in the cache?
     SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = RW_LOCK.readLockedGet ( () -> MAP.get (sCacheKey));

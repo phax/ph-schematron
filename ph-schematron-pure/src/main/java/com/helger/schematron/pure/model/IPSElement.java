@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
-
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for a single Pure Schematron element

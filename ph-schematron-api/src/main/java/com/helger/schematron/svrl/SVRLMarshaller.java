@@ -16,9 +16,8 @@
  */
 package com.helger.schematron.svrl;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.debug.GlobalDebug;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.debug.GlobalDebug;
 import com.helger.jaxb.GenericJAXBMarshaller;
 import com.helger.schematron.svrl.jaxb.ObjectFactory;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;

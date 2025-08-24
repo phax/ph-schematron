@@ -16,17 +16,17 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron include-element.<br>
@@ -47,7 +47,7 @@ public class PSInclude implements IPSElement
 
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.hasNoText (m_sHref))
+    if (StringHelper.isEmpty (m_sHref))
     {
       aErrorHandler.error (this, "<include> has no 'href'");
       return false;
@@ -57,7 +57,7 @@ public class PSInclude implements IPSElement
 
   public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.hasNoText (m_sHref))
+    if (StringHelper.isEmpty (m_sHref))
       aErrorHandler.error (this, "<include> has no 'href'");
   }
 

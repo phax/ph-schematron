@@ -22,28 +22,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.io.resource.URLResource;
-import com.helger.commons.io.resource.inmemory.AbstractMemoryReadableResource;
-import com.helger.commons.io.resource.inmemory.ReadableResourceByteArray;
-import com.helger.commons.io.resource.inmemory.ReadableResourceInputStream;
-import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.state.EValidity;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.location.SimpleLocation;
+import com.helger.base.state.EValidity;
+import com.helger.diagnostics.error.SingleError;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.IReadableResource;
+import com.helger.io.resource.URLResource;
+import com.helger.io.resource.inmemory.AbstractMemoryReadableResource;
+import com.helger.io.resource.inmemory.ReadableResourceByteArray;
+import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
@@ -61,6 +58,9 @@ import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A Schematron resource that is not XSLT based but using the pure (native Java)

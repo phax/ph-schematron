@@ -18,26 +18,26 @@ package com.helger.schematron.svrl;
 
 import java.util.regex.Matcher;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.regex.RegExHelper;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringReplace;
+import com.helger.cache.regex.RegExHelper;
+import com.helger.collection.CollectionFind;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).
@@ -89,8 +89,8 @@ public final class SVRLHelper
   }
 
   /**
-   * Get a list of all failed assertions in a given schematron output, with an
-   * error level equally or more severe than the passed error level.
+   * Get a list of all failed assertions in a given schematron output, with an error level equally
+   * or more severe than the passed error level.
    *
    * @param aSchematronOutput
    *        The schematron output to be used. May be <code>null</code>.
@@ -135,8 +135,8 @@ public final class SVRLHelper
   }
 
   /**
-   * Get a list of all successful reports in a given schematron output, with an
-   * error level equally or more severe than the passed error level.
+   * Get a list of all successful reports in a given schematron output, with an error level equally
+   * or more severe than the passed error level.
    *
    * @param aSchematronOutput
    *        The schematron output to be used. May be <code>null</code>.
@@ -162,14 +162,12 @@ public final class SVRLHelper
   }
 
   /**
-   * Get a list of all failed assertions and successful reports in a given
-   * schematron output.
+   * Get a list of all failed assertions and successful reports in a given schematron output.
    *
    * @param aSchematronOutput
    *        The schematron output to be used. May be <code>null</code>.
-   * @return A non-<code>null</code> list with all failed assertions and
-   *         successful reports. Maybe an empty list if the input is
-   *         <code>null</code>.
+   * @return A non-<code>null</code> list with all failed assertions and successful reports. Maybe
+   *         an empty list if the input is <code>null</code>.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -235,15 +233,14 @@ public final class SVRLHelper
   }
 
   /**
-   * Convert an "unsexy" location string in the for, of
-   * <code>*:xx[namespace-uri()='yy']</code> to something more readable like
-   * <code>prefix:xx</code> by using the mapping registered in the
+   * Convert an "unsexy" location string in the for, of <code>*:xx[namespace-uri()='yy']</code> to
+   * something more readable like <code>prefix:xx</code> by using the mapping registered in the
    * {@link SVRLLocationBeautifierRegistry}.
    *
    * @param sLocation
    *        The original location string. May not be <code>null</code>.
-   * @return The beautified string. Never <code>null</code>. Might be identical
-   *         to the original string if the pattern was not found.
+   * @return The beautified string. Never <code>null</code>. Might be identical to the original
+   *         string if the pattern was not found.
    * @since 5.0.1
    */
   @Nonnull
@@ -253,17 +250,16 @@ public final class SVRLHelper
   }
 
   /**
-   * Convert an "unsexy" location string in the for, of
-   * <code>*:xx[namespace-uri()='yy']</code> to something more readable like
-   * <code>prefix:xx</code> by using the mapping registered in the
+   * Convert an "unsexy" location string in the for, of <code>*:xx[namespace-uri()='yy']</code> to
+   * something more readable like <code>prefix:xx</code> by using the mapping registered in the
    * {@link SVRLLocationBeautifierRegistry}.
    *
    * @param sLocation
    *        The original location string. May not be <code>null</code>.
    * @param aLocationBeautifier
    *        The location beautifier to be used. May not be <code>null</code>.
-   * @return The beautified string. Never <code>null</code>. Might be identical
-   *         to the original string if the pattern was not found.
+   * @return The beautified string. Never <code>null</code>. Might be identical to the original
+   *         string if the pattern was not found.
    * @since 6.0.4
    */
   @Nonnull
@@ -288,7 +284,7 @@ public final class SVRLHelper
       // local name
       final String sBeautified = aLocationBeautifier.getReplacementText (sNamespaceURI, sLocalName);
       if (sBeautified != null)
-        sResult = StringHelper.replaceAll (sResult, aMatcher.group (), sBeautified);
+        sResult = StringReplace.replaceAll (sResult, aMatcher.group (), sBeautified);
     }
     return sResult;
   }
@@ -312,9 +308,9 @@ public final class SVRLHelper
   @Nonnull
   public static Text getText (@Nonnull final FailedAssert aFA)
   {
-    return CollectionHelper.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                             Text.class::isInstance,
-                                             Text.class::cast);
+    return CollectionFind.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                           Text.class::isInstance,
+                                           Text.class::cast);
   }
 
   @Nonnull
@@ -336,8 +332,8 @@ public final class SVRLHelper
   @Nonnull
   public static Text getText (@Nonnull final SuccessfulReport aSR)
   {
-    return CollectionHelper.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                             Text.class::isInstance,
-                                             Text.class::cast);
+    return CollectionFind.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                           Text.class::isInstance,
+                                           Text.class::cast);
   }
 }

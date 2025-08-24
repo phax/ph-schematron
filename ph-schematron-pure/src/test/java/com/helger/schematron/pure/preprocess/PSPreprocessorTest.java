@@ -27,12 +27,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.file.SimpleFileIO;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.system.ENewLineMode;
+import com.helger.base.system.ENewLineMode;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.file.SimpleFileIO;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;

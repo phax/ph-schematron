@@ -16,21 +16,18 @@
  */
 package com.helger.schematron.pure.bound;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import org.w3c.dom.Node;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.state.EValidity;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.location.SimpleLocation;
+import com.helger.base.state.EValidity;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
@@ -47,6 +44,9 @@ import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base implementation of {@link IPSBoundSchema} with all common elements. It is

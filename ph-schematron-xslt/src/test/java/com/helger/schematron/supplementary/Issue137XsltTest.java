@@ -20,7 +20,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -30,7 +29,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.schematron.sch.SchematronResourceSCH;
@@ -41,6 +40,8 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.StringStreamSource;
 import com.helger.xml.transform.TransformSourceFactory;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue137XsltTest
 {

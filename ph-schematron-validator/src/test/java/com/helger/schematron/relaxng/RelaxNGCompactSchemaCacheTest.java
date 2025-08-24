@@ -26,7 +26,7 @@ import javax.xml.validation.Validator;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.xml.transform.TransformSourceFactory;
 
 /**

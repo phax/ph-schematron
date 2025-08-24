@@ -19,21 +19,21 @@ package com.helger.schematron.svrl;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.location.ILocation;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.diagnostics.error.AbstractSingleErrorBuilder;
+import com.helger.diagnostics.error.IError;
+import com.helger.diagnostics.error.SingleError;
+import com.helger.diagnostics.error.level.IErrorLevel;
+import com.helger.diagnostics.error.text.IHasErrorText;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.IError;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.error.text.IHasErrorText;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.location.ILocation;
-import com.helger.commons.string.ToStringGenerator;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
- * Special SVRL resource error that contains the Schematron &quot;test&quot; as
- * well.
+ * Special SVRL resource error that contains the Schematron &quot;test&quot; as well.
  *
  * @author Philip Helger
  */
@@ -59,8 +59,7 @@ public class SVRLResourceError extends SingleError
    * @param aLinkedException
    *        An exception that caused the error. May be <code>null</code>.
    * @param sTest
-   *        The SVRL test that triggered this error. May not be
-   *        <code>null</code>.
+   *        The SVRL test that triggered this error. May not be <code>null</code>.
    */
   public SVRLResourceError (@Nullable final LocalDateTime aErrorDT,
                             @Nonnull final IErrorLevel aErrorLevel,
@@ -87,9 +86,9 @@ public class SVRLResourceError extends SingleError
   @Override
   public String getAsString (@Nonnull final Locale aContentLocale)
   {
-    String ret = super.getAsString (aContentLocale);
-    ret += " Test=" + m_sTest;
-    return ret;
+    StringBuilder ret = new StringBuilder ().append (super.getAsString (aContentLocale));
+    ret.append (" Test=").append (m_sTest);
+    return ret.toString ();
   }
 
   @Override
@@ -115,7 +114,7 @@ public class SVRLResourceError extends SingleError
     return ToStringGenerator.getDerived (super.toString ()).append ("Test", m_sTest).getToString ();
   }
 
-  public static class SVRLErrorBuilder extends SingleError.AbstractBuilder <SVRLResourceError, SVRLErrorBuilder>
+  public static class SVRLErrorBuilder extends AbstractSingleErrorBuilder <SVRLResourceError, SVRLErrorBuilder>
   {
     private String m_sTest;
 

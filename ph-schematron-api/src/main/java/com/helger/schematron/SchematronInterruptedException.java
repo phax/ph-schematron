@@ -16,7 +16,7 @@
  */
 package com.helger.schematron;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * An unchecked "interrupted" exception.

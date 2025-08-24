@@ -22,13 +22,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedResource;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.SchematronResourceSCH;
@@ -38,6 +36,8 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.serialize.write.XMLWriter;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue174XsltTest
 {

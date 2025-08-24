@@ -16,17 +16,18 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import javax.xml.xpath.XPathExpression;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.annotation.style.ReturnsMutableObject;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.model.PSRule;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a single XPath-bound rule-element.

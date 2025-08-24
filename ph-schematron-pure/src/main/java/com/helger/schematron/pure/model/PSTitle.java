@@ -16,26 +16,26 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
+import jakarta.annotation.Nonnull;
+
 /**
  * A single Schematron title-element.<br>
- * A summary of the purpose or role of the schema or pattern, for the purpose of
- * documentation or a rich user interface.<br>
+ * A summary of the purpose or role of the schema or pattern, for the purpose of documentation or a
+ * rich user interface.<br>
  * An implementation is not required to make use of this element.
  *
  * @author Philip Helger
@@ -116,9 +116,9 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_TITLE);
     for (final Object aContent : m_aContent)
       if (aContent instanceof String)
-        ret.appendText ((String) aContent);
+        ret.addText ((String) aContent);
       else
-        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+        ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     return ret;
   }
 

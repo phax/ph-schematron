@@ -19,9 +19,9 @@ package com.helger.schematron.pure.benchmark;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;

@@ -16,8 +16,8 @@
  */
 package com.helger.schematron.svrl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Interface for simplifying namespace URLs.

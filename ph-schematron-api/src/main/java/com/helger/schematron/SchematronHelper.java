@@ -18,31 +18,28 @@ package com.helger.schematron;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.error.list.ErrorList;
-import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.hierarchy.visit.ChildrenProviderHierarchyVisitor;
-import com.helger.commons.hierarchy.visit.DefaultHierarchyVisitorCallback;
-import com.helger.commons.hierarchy.visit.EHierarchyVisitorReturn;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.wrapper.Wrapper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.location.SimpleLocation;
+import com.helger.base.state.ESuccess;
+import com.helger.base.string.StringImplode;
+import com.helger.base.wrapper.Wrapper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.hierarchy.visit.ChildrenProviderHierarchyVisitor;
+import com.helger.collection.hierarchy.visit.DefaultHierarchyVisitorCallback;
+import com.helger.collection.hierarchy.visit.EHierarchyVisitorReturn;
+import com.helger.diagnostics.error.SingleError;
+import com.helger.diagnostics.error.list.ErrorList;
+import com.helger.diagnostics.error.list.IErrorList;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.resolve.DefaultSchematronIncludeResolver;
 import com.helger.schematron.resolve.ISchematronIncludeResolver;
 import com.helger.schematron.svrl.SVRLFailedAssert;
@@ -56,9 +53,12 @@ import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.sax.InputSourceFactory;
 import com.helger.xml.serialize.read.ISAXReaderSettings;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * This is a helper class that provides a way to easily apply an Schematron
- * resource on an XML resource.
+ * This is a helper class that provides a way to easily apply an Schematron resource on an XML
+ * resource.
  *
  * @author Philip Helger
  */
@@ -78,8 +78,8 @@ public final class SchematronHelper
    *
    * @param sNamespaceURI
    *        The namespace URI to check. May be <code>null</code>.
-   * @return <code>true</code> if the passed namespace URI is a deprecated
-   *         Schematron namespace URI, <code>false</code> if not.
+   * @return <code>true</code> if the passed namespace URI is a deprecated Schematron namespace URI,
+   *         <code>false</code> if not.
    * @since 5.4.1
    */
   public static boolean isDeprecatedSchematronNS (@Nullable final String sNamespaceURI)
@@ -96,10 +96,9 @@ public final class SchematronHelper
    * @param sNamespaceURI
    *        The namespace URI to check. May be <code>null</code>.
    * @param bLenient
-   *        <code>true</code> to support old namespace URIs, <code>false</code>
-   *        if not.
-   * @return <code>true</code> if the passed namespace URI is a valid Schematron
-   *         namespace URI, <code>false</code> if not.
+   *        <code>true</code> to support old namespace URIs, <code>false</code> if not.
+   * @return <code>true</code> if the passed namespace URI is a valid Schematron namespace URI,
+   *         <code>false</code> if not.
    * @since 5.4.1
    */
   public static boolean isValidSchematronNS (@Nullable final String sNamespaceURI, final boolean bLenient)
@@ -116,10 +115,9 @@ public final class SchematronHelper
    * Get a list of all supported namespaces.
    *
    * @param bLenient
-   *        <code>true</code> to support old namespace URIs, <code>false</code>
-   *        if not.
-   * @return The non-<code>null</code> and non-empty list of all supported
-   *         schematron namespace URIs.
+   *        <code>true</code> to support old namespace URIs, <code>false</code> if not.
+   * @return The non-<code>null</code> and non-empty list of all supported schematron namespace
+   *         URIs.
    * @since 5.4.1
    */
   @Nonnull
@@ -140,10 +138,8 @@ public final class SchematronHelper
    * @param aSchematronOutput
    *        The result of Schematron validation
    * @param sResourceName
-   *        The name of the resource that was validated (may be a file path
-   *        etc.)
-   * @return List non-<code>null</code> error list of {@link SVRLResourceError}
-   *         objects.
+   *        The name of the resource that was validated (may be a file path etc.)
+   * @return List non-<code>null</code> error list of {@link SVRLResourceError} objects.
    */
   @Nonnull
   public static IErrorList convertToErrorList (@Nonnull final SchematronOutputType aSchematronOutput,
@@ -280,9 +276,11 @@ public final class SchematronHelper
                                                                   " contains the wrong XML namespace URI '" +
                                                                   aIncludedContent.getNamespaceURI () +
                                                                   "' but was expected to have: " +
-                                                                  StringHelper.getImplodedMapped (", ",
-                                                                                                  getAllValidSchematronNS (bLenient),
-                                                                                                  x -> "'" + x + "'"))
+                                                                  StringImplode.imploder ()
+                                                                               .source (getAllValidSchematronNS (bLenient),
+                                                                                        x -> "'" + x + "'")
+                                                                               .separator (", ")
+                                                                               .build ())
                                                       .build ());
                 return ESuccess.FAILURE;
               }
@@ -333,8 +331,7 @@ public final class SchematronHelper
    *        The Schematron resource to read. May not be <code>null</code>.
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
-   * @return <code>null</code> if the passed resource could not be read as XML
-   *         document
+   * @return <code>null</code> if the passed resource could not be read as XML document
    */
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
@@ -353,12 +350,11 @@ public final class SchematronHelper
    * @param aResource
    *        The Schematron resource to read. May not be <code>null</code>.
    * @param aSettings
-   *        The SAX reader settings to be used. May be <code>null</code> to use
-   *        the default settings.
+   *        The SAX reader settings to be used. May be <code>null</code> to use the default
+   *        settings.
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
-   * @return <code>null</code> if the passed resource could not be read as XML
-   *         document
+   * @return <code>null</code> if the passed resource could not be read as XML document
    */
   @Nullable
   public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
@@ -378,14 +374,13 @@ public final class SchematronHelper
    * @param aResource
    *        The Schematron resource to read. May not be <code>null</code>.
    * @param aSettings
-   *        The SAX reader settings to be used. May be <code>null</code> to use
-   *        the default settings.
+   *        The SAX reader settings to be used. May be <code>null</code> to use the default
+   *        settings.
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
    * @param bLenient
    *        <code>true</code> if 'old' Schematron NS is tolerated.
-   * @return <code>null</code> if the passed resource could not be read as XML
-   *         document
+   * @return <code>null</code> if the passed resource could not be read as XML document
    * @since 5.4.1
    */
   @Nullable
@@ -407,16 +402,15 @@ public final class SchematronHelper
    * @param aResource
    *        The Schematron resource to read. May not be <code>null</code>.
    * @param aSettings
-   *        The SAX reader settings to be used. May be <code>null</code> to use
-   *        the default settings.
+   *        The SAX reader settings to be used. May be <code>null</code> to use the default
+   *        settings.
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
    * @param aCustomIncludeResolver
    *        A custom include resolver. May be <code>null</code>.
    * @param bLenient
    *        <code>true</code> if 'old' Schematron NS is tolerated.
-   * @return <code>null</code> if the passed resource could not be read as XML
-   *         document
+   * @return <code>null</code> if the passed resource could not be read as XML document
    * @since 8.0.5
    */
   @Nullable

@@ -16,14 +16,11 @@
  */
 package com.helger.schematron.pure.bound;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.w3c.dom.Node;
 
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.state.EValidity;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.state.EValidity;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.model.PSPattern;
@@ -33,6 +30,9 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a bound schema. A bound schema is a {@link PSSchema} with

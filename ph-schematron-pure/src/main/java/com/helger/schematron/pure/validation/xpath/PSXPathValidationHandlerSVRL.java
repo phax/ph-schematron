@@ -19,21 +19,19 @@ package com.helger.schematron.pure.validation.xpath;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.state.EContinue;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.location.SimpleLocation;
+import com.helger.base.state.EContinue;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.CollectionHelper;
+import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundElement;
@@ -65,6 +63,9 @@ import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A special validation handler that creates an SVRL document. This class only
@@ -402,11 +403,11 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     String sLocation = null;
     if (aAssertReport.hasLinkable ())
       sLocation = aAssertReport.getLinkable ().getSubject ();
-    if (StringHelper.hasNoText (sLocation))
+    if (StringHelper.isEmpty (sLocation))
     {
       if (aOwningRule.hasLinkable ())
         sLocation = aOwningRule.getLinkable ().getSubject ();
-      if (StringHelper.hasNoText (sLocation))
+      if (StringHelper.isEmpty (sLocation))
         sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
     }
     return sLocation;

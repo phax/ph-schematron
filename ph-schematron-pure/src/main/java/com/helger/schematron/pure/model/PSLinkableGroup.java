@@ -18,14 +18,14 @@ package com.helger.schematron.pure.model;
 
 import java.io.Serializable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.lang.ICloneable;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.clone.ICloneable;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
 import com.helger.xml.microdom.IMicroElement;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A single "linkable" group

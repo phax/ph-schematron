@@ -29,12 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.helger.commons.concurrent.ExecutorServiceHelper;
-import com.helger.commons.error.IError;
-import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.base.concurrent.ExecutorServiceHelper;
+import com.helger.diagnostics.error.IError;
+import com.helger.diagnostics.error.list.IErrorList;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.testfiles.SchematronTestHelper;

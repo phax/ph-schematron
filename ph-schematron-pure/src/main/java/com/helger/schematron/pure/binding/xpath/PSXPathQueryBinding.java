@@ -19,19 +19,15 @@ package com.helger.schematron.pure.binding.xpath;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsTreeMap;
-import com.helger.commons.collection.impl.ICommonsNavigableMap;
-import com.helger.commons.compare.IComparator;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringReplace;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsTreeMap;
+import com.helger.collection.commons.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -44,6 +40,10 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
+import com.helger.text.compare.ComparatorHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Default XPath/XSLT query binding
@@ -85,7 +85,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   public ICommonsNavigableMap <String, String> getStringReplacementMap (@Nonnull final List <PSParam> aParams)
   {
     // Longest matches must go first
-    final ICommonsNavigableMap <String, String> ret = new CommonsTreeMap <> (IComparator.getComparatorStringLongestFirst ());
+    final ICommonsNavigableMap <String, String> ret = new CommonsTreeMap <> (ComparatorHelper.getComparatorStringLongestFirst ());
     for (final PSParam aParam : aParams)
       ret.put (PARAM_VARIABLE_PREFIX + aParam.getName (), aParam.getValue ());
     return ret;
@@ -102,7 +102,7 @@ public class PSXPathQueryBinding implements IPSQueryBinding
       // No replacement necessary
       return sText;
     }
-    final String ret = StringHelper.replaceMultiple (sText, aStringReplacements);
+    final String ret = StringReplace.replaceMultiple (sText, aStringReplacements);
     if (false)
       if (ret.indexOf (PARAM_VARIABLE_PREFIX) >= 0)
         LOGGER.warn ("Text still contains variables after replacement: " + ret);
@@ -129,7 +129,8 @@ public class PSXPathQueryBinding implements IPSQueryBinding
                                                                        : new CollectingPSErrorHandler ();
     if (!aSchema.isValid (aErrorHandler))
       throw new SchematronBindException ("The passed schema is not valid and can therefore not be bound" +
-                                         (aErrorHandler == aCustomErrorListener ? ". Errors are in the provided error handler."
+                                         (aErrorHandler == aCustomErrorListener
+                                                                                ? ". Errors are in the provided error handler."
                                                                                 : ": " +
                                                                                   ((CollectingPSErrorHandler) aErrorHandler).getErrorList ()
                                                                                                                             .toString ()));

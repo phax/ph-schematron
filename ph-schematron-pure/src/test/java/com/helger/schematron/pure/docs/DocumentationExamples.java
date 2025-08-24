@@ -18,13 +18,12 @@ package com.helger.schematron.pure.docs;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.io.file.FileHelper;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -37,6 +36,8 @@ import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * This class contains code examples that are used in the documentation.

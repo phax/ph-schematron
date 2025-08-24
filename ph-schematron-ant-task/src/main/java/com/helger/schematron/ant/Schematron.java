@@ -21,8 +21,6 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.transform.URIResolver;
 
 import org.apache.tools.ant.BuildException;
@@ -35,22 +33,21 @@ import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.ResourceUtils;
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.annotation.UsedViaReflection;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.error.ErrorTextProvider;
-import com.helger.commons.error.IError;
-import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.io.file.FileOperations;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.annotation.style.UsedViaReflection;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.diagnostics.error.ErrorTextProvider;
+import com.helger.diagnostics.error.IError;
+import com.helger.diagnostics.error.level.EErrorLevel;
+import com.helger.diagnostics.error.level.IErrorLevel;
+import com.helger.diagnostics.error.list.IErrorList;
+import com.helger.io.file.FileOperations;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
@@ -66,10 +63,13 @@ import com.helger.schematron.svrl.SVRLNamespaceContext;
 import com.helger.schematron.svrl.SVRLResourceError;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
+import com.helger.typeconvert.collection.IStringMap;
+import com.helger.typeconvert.collection.StringMap;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * ANT task to perform Schematron validation.
@@ -77,7 +77,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Philip Helger
  * @since 4.2.3
  */
-@SuppressFBWarnings ("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public class Schematron extends AbstractSchematronTask
 {
   /**
@@ -153,7 +152,7 @@ public class Schematron extends AbstractSchematronTask
     {
       // Only add parameters that have a name
       // If the value is null it becomes ""
-      if (StringHelper.hasText (m_sName))
+      if (StringHelper.isNotEmpty (m_sName))
         aMap.put (m_sName, StringHelper.getNotNull (m_sValue));
     }
   }
@@ -167,79 +166,74 @@ public class Schematron extends AbstractSchematronTask
    * The processing engine to use. Can be one of the following:
    * <ul>
    * <li>pure - for SCH files</li>
-   * <li>schematron - for SCH files that will be converted to XSLT and applied
-   * from there.</li>
+   * <li>schematron - for SCH files that will be converted to XSLT and applied from there.</li>
    * <li>xslt - apply pre-build XSLT files</li>
    * </ul>
    */
   private ESchematronMode m_eSchematronProcessingEngine = ESchematronMode.SCHEMATRON;
 
   /**
-   * The collection for resources (like FileSets etc.) which are to be
-   * validated.
+   * The collection for resources (like FileSets etc.) which are to be validated.
    */
   private final ICommonsList <ResourceCollection> m_aResCollections = new CommonsArrayList <> ();
 
   /**
-   * The SVRL path to write to. The filenames are based on the source XML
-   * filenames.
+   * The SVRL path to write to. The filenames are based on the source XML filenames.
    */
   private File m_aSvrlDirectory;
 
   /**
-   * Define the phase to be used for Schematron validation. By default the
-   * <code>defaultPhase</code> attribute of the Schematron file is used. This
-   * phase name is only used if the processing engine <code>pure</code> or
-   * <code>schematron</code> are used.
+   * Define the phase to be used for Schematron validation. By default the <code>defaultPhase</code>
+   * attribute of the Schematron file is used. This phase name is only used if the processing engine
+   * <code>pure</code> or <code>schematron</code> are used.
    */
   private String m_sPhaseName;
 
   /**
-   * Define the language code to be used for Schematron validation. Default is
-   * English. Supported language codes are: cs, de, en, fr, nl.
+   * Define the language code to be used for Schematron validation. Default is English. Supported
+   * language codes are: cs, de, en, fr, nl.
    */
   private String m_sLanguageCode;
 
   /**
-   * <code>true</code> if internal caching of the result should be forced,
-   * <code>false</code> if not. This only applies when Schematron to XSLT
-   * conversion is performed.
+   * <code>true</code> if internal caching of the result should be forced, <code>false</code> if
+   * not. This only applies when Schematron to XSLT conversion is performed.
    */
   private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
-   * <code>true</code> if the XMLs are supposed to be valid, <code>false</code>
-   * otherwise. Defaults to <code>true</code>.
+   * <code>true</code> if the XMLs are supposed to be valid, <code>false</code> otherwise. Defaults
+   * to <code>true</code>.
    */
   private boolean m_bExpectSuccess = true;
 
   /**
-   * List of "role" attribute values that will trigger an error. If combined
-   * with "failOnError" it will break the build.
+   * List of "role" attribute values that will trigger an error. If combined with "failOnError" it
+   * will break the build.
    */
   private final ICommonsList <Schematron.ErrorRole> m_aErrorRoles = new CommonsArrayList <> ();
 
   /**
-   * <code>true</code> if the build should fail if any validation "error"
-   * occurs. Defaults to <code>false</code>. Since v5.0.11.
+   * <code>true</code> if the build should fail if any validation "error" occurs. Defaults to
+   * <code>false</code>. Since v5.0.11.
    */
   private boolean m_bFailOnValidationError = false;
 
   /**
-   * <code>true</code> if the build should fail if any validation "warnings"
-   * occurs. Defaults to <code>false</code>. Since v5.0.11.
+   * <code>true</code> if the build should fail if any validation "warnings" occurs. Defaults to
+   * <code>false</code>. Since v5.0.11.
    */
   private boolean m_bFailOnValidationWarn = false;
 
   /**
-   * <code>true</code> if the build should fail if any validation "information"
-   * occurs. Defaults to <code>false</code>. Since v5.0.11.
+   * <code>true</code> if the build should fail if any validation "information" occurs. Defaults to
+   * <code>false</code>. Since v5.0.11.
    */
   private boolean m_bFailOnValidationInfo = false;
 
   /**
-   * For resolving entities such as DTDs. This is used both for the Schematron
-   * file as well as for the XML files to be validated.
+   * For resolving entities such as DTDs. This is used both for the Schematron file as well as for
+   * the XML files to be validated.
    */
   private final XMLCatalog m_aXmlCatalog = new XMLCatalog ();
 
@@ -318,7 +312,9 @@ public class Schematron extends AbstractSchematronTask
   {
     m_bExpectSuccess = bExpectSuccess;
 
-    _debug ("Expecting that XML files " + (bExpectSuccess ? "conform" : "do not conform") + " to the provided Schematron file");
+    _debug ("Expecting that XML files " +
+            (bExpectSuccess ? "conform" : "do not conform") +
+            " to the provided Schematron file");
   }
 
   @Nonnull
@@ -534,8 +530,12 @@ public class Schematron extends AbstractSchematronTask
                        "' was validated against Schematron '" +
                        aSch.getResource ().getPath () +
                        "' and matches the rules" +
-                       (nWarningMessages > 0 ? " (" + sWarnings + (nWarningMessages == 1 ? " is" : " are") + " contained)" : "") +
-                       (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)" : ""));
+                       (nWarningMessages > 0 ? " (" +
+                                               sWarnings +
+                                               (nWarningMessages == 1 ? " is" : " are") +
+                                               " contained)" : "") +
+                       (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
+                                          : ""));
               }
               else
               {
@@ -570,8 +570,12 @@ public class Schematron extends AbstractSchematronTask
                 _error ("No Schematron errors for erroneous XML file '" +
                         aXMLFile.getPath () +
                         "'" +
-                        (nWarningMessages > 0 ? " (" + sWarnings + (nWarningMessages == 1 ? " is" : " are") + " contained)" : "") +
-                        (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)" : ""));
+                        (nWarningMessages > 0 ? " (" +
+                                                sWarnings +
+                                                (nWarningMessages == 1 ? " is" : " are") +
+                                                " contained)" : "") +
+                        (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
+                                           : ""));
               }
             }
 
@@ -632,7 +636,10 @@ public class Schematron extends AbstractSchematronTask
       else
         if (m_eSchematronProcessingEngine == null)
           _errorOrFail ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                        StringHelper.getImplodedMapped (", ", ESchematronMode.values (), x -> "'" + x.getID () + "'"));
+                        StringImplode.imploder ()
+                                     .source (ESchematronMode.values (), x -> "'" + x.getID () + "'")
+                                     .separator (", ")
+                                     .build ());
         else
           if (m_aResCollections.isEmpty ())
             _errorOrFail ("No XML resources to be validated specified! Add e.g. a <fileset> element.");

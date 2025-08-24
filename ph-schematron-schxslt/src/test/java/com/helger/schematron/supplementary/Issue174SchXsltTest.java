@@ -23,8 +23,8 @@ import java.io.File;
 
 import org.junit.Test;
 
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;

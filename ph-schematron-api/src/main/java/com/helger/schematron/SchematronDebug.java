@@ -19,15 +19,15 @@ package com.helger.schematron;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.log.ConditionalLogger;
-import com.helger.commons.log.IConditionalLogger;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.log.ConditionalLogger;
+import com.helger.base.log.IConditionalLogger;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Global Schematron debug settings etc.

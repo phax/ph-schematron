@@ -18,9 +18,6 @@ package com.helger.schematron;
 
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -30,19 +27,23 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.io.IHasInputStream;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.state.EValidity;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.iface.IHasInputStream;
+import com.helger.base.state.EValidity;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.EXMLParserFeature;
 import com.helger.xml.sax.DefaultEntityResolver;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
 import com.helger.xml.transform.TransformSourceFactory;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of the {@link ISchematronResource} interface handling

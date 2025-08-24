@@ -16,13 +16,14 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.commons.annotation.MustImplementEqualsAndHashcode;
+import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * XPath configuration to use.

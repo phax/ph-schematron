@@ -16,19 +16,16 @@
  */
 package com.helger.schematron.pure.exchange;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.SingleError;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.location.SimpleLocation;
-import com.helger.commons.string.StringParser;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.location.SimpleLocation;
+import com.helger.base.string.StringParser;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.diagnostics.error.SingleError;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.SchematronDebug;
@@ -43,6 +40,9 @@ import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.SAXReaderSettings;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Utility class for reading all Schematron elements from a resource.
@@ -63,8 +63,7 @@ public class PSReader
    * Constructor without an error handler
    *
    * @param aResource
-   *        The resource to read the Schematron from. May not be
-   *        <code>null</code>.
+   *        The resource to read the Schematron from. May not be <code>null</code>.
    */
   public PSReader (@Nonnull final IReadableResource aResource)
   {
@@ -75,12 +74,10 @@ public class PSReader
    * Constructor with an error handler
    *
    * @param aResource
-   *        The resource to read the Schematron from. May not be
-   *        <code>null</code>.
+   *        The resource to read the Schematron from. May not be <code>null</code>.
    * @param aErrorHandler
-   *        The error handler to use. May be <code>null</code>. If the error
-   *        handler is <code>null</code> a {@link LoggingPSErrorHandler} is
-   *        automatically created and used.
+   *        The error handler to use. May be <code>null</code>. If the error handler is
+   *        <code>null</code> a {@link LoggingPSErrorHandler} is automatically created and used.
    * @param aEntityResolver
    *        The XML entity resolver to be used. May be <code>null</code>.
    * @since 4.1.1
@@ -96,8 +93,7 @@ public class PSReader
   }
 
   /**
-   * @return The resource from which the Schematron schema is read. Never
-   *         <code>null</code>.
+   * @return The resource from which the Schematron schema is read. Never <code>null</code>.
    */
   @Nonnull
   public final IReadableResource getResource ()
@@ -106,9 +102,8 @@ public class PSReader
   }
 
   /**
-   * @return The error handler used. If no error handler was passed in the
-   *         constructor, than a {@link LoggingPSErrorHandler} is automatically
-   *         used.
+   * @return The error handler used. If no error handler was passed in the constructor, than a
+   *         {@link LoggingPSErrorHandler} is automatically used.
    */
   @Nonnull
   public final IPSErrorHandler getErrorHandler ()
@@ -117,8 +112,7 @@ public class PSReader
   }
 
   /**
-   * @return The entity handler provided in the constructor. May be
-   *         <code>null</code>.
+   * @return The entity handler provided in the constructor. May be <code>null</code>.
    * @since v8
    */
   @Nullable
@@ -128,9 +122,8 @@ public class PSReader
   }
 
   /**
-   * @return <code>true</code> if the old Schematron namespace is supported,
-   *         <code>false</code> if not. Default is
-   *         {@link CSchematron#DEFAULT_ALLOW_DEPRECATED_NAMESPACES}.
+   * @return <code>true</code> if the old Schematron namespace is supported, <code>false</code> if
+   *         not. Default is {@link CSchematron#DEFAULT_ALLOW_DEPRECATED_NAMESPACES}.
    * @since 5.4.1
    */
   public final boolean isLenient ()
@@ -139,12 +132,11 @@ public class PSReader
   }
 
   /**
-   * Allow or disallow the support for old namespace prefix. By default this is
-   * deprecated.
+   * Allow or disallow the support for old namespace prefix. By default this is deprecated.
    *
    * @param bLenient
-   *        <code>true</code> to enable support for old namespace URIs,
-   *        <code>false</code> to disallow it.
+   *        <code>true</code> to enable support for old namespace URIs, <code>false</code> to
+   *        disallow it.
    * @return this for chaining
    * @since 5.4.1
    */
@@ -181,8 +173,8 @@ public class PSReader
   }
 
   /**
-   * Utility method to get a real attribute value, by trimming spaces, if the
-   * value is non-<code>null</code>.
+   * Utility method to get a real attribute value, by trimming spaces, if the value is
+   * non-<code>null</code>.
    *
    * @param sAttrValue
    *        The source attribute value. May be <code>null</code>.
@@ -1006,13 +998,13 @@ public class PSReader
   }
 
   /**
-   * Parse the Schematron into a pure Java object. This method makes no
-   * assumptions on the validity of the document!
+   * Parse the Schematron into a pure Java object. This method makes no assumptions on the validity
+   * of the document!
    *
    * @param eSchema
    *        The XML element to use. May not be <code>null</code>.
-   * @return The created {@link PSSchema} object or <code>null</code> in case of
-   *         <code>null</code> document or a fatal error.
+   * @return The created {@link PSSchema} object or <code>null</code> in case of <code>null</code>
+   *         document or a fatal error.
    * @throws SchematronReadException
    *         If reading fails
    */
@@ -1220,9 +1212,8 @@ public class PSReader
   }
 
   /**
-   * Read the schema from the resource supplied in the constructor. First all
-   * includes are resolved and than {@link #readSchemaFromXML(IMicroElement)} is
-   * called.
+   * Read the schema from the resource supplied in the constructor. First all includes are resolved
+   * and than {@link #readSchemaFromXML(IMicroElement)} is called.
    *
    * @return The read {@link PSSchema}.
    * @throws SchematronReadException

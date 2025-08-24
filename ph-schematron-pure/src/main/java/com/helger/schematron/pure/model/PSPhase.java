@@ -18,40 +18,37 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
  * A single Schematron phase-element.<br>
- * A grouping of patterns, to name and declare variations in schemas, for
- * example, to support progressive validation. The required id attribute is the
- * name of the phase. The implementation determines which phase to use for
- * validating documents, for example by user command.<br>
- * Two names, #ALL and #DEFAULT, have special meanings. The name #ALL is
- * reserved and available for use by implementations to denote that all patterns
- * are active. The name #DEFAULT is reserved and available for use by
- * implementations to denote that the name given in the defaultPhase attribute
- * on the schema element should be used. If no defaultPhase is specified, then
- * all patterns are active.<br>
- * NOTE: The names #ALL and #DEFAULT shall not be used in a Schematron schema.
- * They are for use when invoking or configuring schema validation, for example
- * as a command-line parameter.<br>
+ * A grouping of patterns, to name and declare variations in schemas, for example, to support
+ * progressive validation. The required id attribute is the name of the phase. The implementation
+ * determines which phase to use for validating documents, for example by user command.<br>
+ * Two names, #ALL and #DEFAULT, have special meanings. The name #ALL is reserved and available for
+ * use by implementations to denote that all patterns are active. The name #DEFAULT is reserved and
+ * available for use by implementations to denote that the name given in the defaultPhase attribute
+ * on the schema element should be used. If no defaultPhase is specified, then all patterns are
+ * active.<br>
+ * NOTE: The names #ALL and #DEFAULT shall not be used in a Schematron schema. They are for use when
+ * invoking or configuring schema validation, for example as a command-line parameter.<br>
  * The icon, see and fpi attributes allow rich interfaces and documentation.<br>
  * {@link PSPhase} elements are only referenced from {@link PSSchema} elements.
  *
@@ -74,7 +71,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
       if (aContent instanceof IPSElement)
         if (!((IPSElement) aContent).isValid (aErrorHandler))
           return false;
-    if (StringHelper.hasNoText (m_sID))
+    if (StringHelper.isEmpty (m_sID))
     {
       aErrorHandler.error (this, "<phase> has no 'id'");
       return false;
@@ -87,7 +84,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
         ((IPSElement) aContent).validateCompletely (aErrorHandler);
-    if (StringHelper.hasNoText (m_sID))
+    if (StringHelper.isEmpty (m_sID))
       aErrorHandler.error (this, "<phase> has no 'id'");
   }
 
@@ -259,9 +256,9 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
       if (aContent instanceof IMicroElement)
-        ret.appendChild (((IMicroElement) aContent).getClone ());
+        ret.addChild (((IMicroElement) aContent).getClone ());
       else
-        ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+        ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

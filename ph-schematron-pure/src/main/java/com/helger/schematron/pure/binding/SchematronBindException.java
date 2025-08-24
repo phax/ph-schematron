@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.binding;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.schematron.SchematronException;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Schematron exception that happens during binding.

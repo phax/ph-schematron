@@ -16,18 +16,18 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron let-element.<br>
@@ -62,12 +62,12 @@ public class PSLet implements IPSClonableElement <PSLet>
 
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.hasNoText (m_sName))
+    if (StringHelper.isEmpty (m_sName))
     {
       aErrorHandler.error (this, "<let> has no 'name'");
       return false;
     }
-    if (StringHelper.hasNoText (m_sValue))
+    if (StringHelper.isEmpty (m_sValue))
     {
       aErrorHandler.error (this, "<let> has no 'value'");
       return false;
@@ -77,9 +77,9 @@ public class PSLet implements IPSClonableElement <PSLet>
 
   public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.hasNoText (m_sName))
+    if (StringHelper.isEmpty (m_sName))
       aErrorHandler.error (this, "<let> has no 'name'");
-    if (StringHelper.hasNoText (m_sValue))
+    if (StringHelper.isEmpty (m_sValue))
       aErrorHandler.error (this, "<let> has no 'value'");
   }
 

@@ -18,15 +18,13 @@ package com.helger.schematron.supplementary;
 
 import static org.junit.Assert.assertNotNull;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -34,6 +32,8 @@ import com.helger.schematron.svrl.jaxb.FiredRule;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestFile;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue169XsltTest
 {

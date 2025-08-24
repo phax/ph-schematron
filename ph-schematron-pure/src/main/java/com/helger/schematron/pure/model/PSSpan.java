@@ -18,30 +18,31 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
  * A single Schematron span-element.<br>
- * A portion of some paragraph that should be rendered in a distinct way, keyed
- * with the class attribute.<br>
+ * A portion of some paragraph that should be rendered in a distinct way, keyed with the class
+ * attribute.<br>
  * An implementation is not required to make use of this element.
  *
  * @author Philip Helger
@@ -58,7 +59,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
 
   public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.hasNoText (m_sClass))
+    if (StringHelper.isEmpty (m_sClass))
     {
       aErrorHandler.error (this, "<span> has no 'class'");
       return false;
@@ -73,7 +74,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
 
   public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.hasNoText (m_sClass))
+    if (StringHelper.isEmpty (m_sClass))
       aErrorHandler.error (this, "<span> has no 'class'");
     if (m_aContent.isEmpty ())
       aErrorHandler.error (this, "<span> has no content");
@@ -157,7 +158,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   @Nullable
   public String getAsText ()
   {
-    return StringHelper.getImploded (m_aContent);
+    return StringImplode.getImploded (m_aContent);
   }
 
   @Nonnull
@@ -167,9 +168,9 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     ret.setAttribute (CSchematronXML.ATTR_CLASS, m_sClass);
     for (final Object aContent : m_aContent)
       if (aContent instanceof IMicroElement)
-        ret.appendChild (((IMicroElement) aContent).getClone ());
+        ret.addChild (((IMicroElement) aContent).getClone ());
       else
-        ret.appendText ((String) aContent);
+        ret.addText ((String) aContent);
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

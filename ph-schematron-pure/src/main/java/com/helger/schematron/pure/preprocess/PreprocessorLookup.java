@@ -16,20 +16,20 @@
  */
 package com.helger.schematron.pure.preprocess;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.CommonsTreeSet;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.collection.impl.ICommonsSortedSet;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.CommonsTreeSet;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.collection.commons.ICommonsSortedSet;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Utility lookup cache for ID to pattern and ID to rule, to avoid the linear

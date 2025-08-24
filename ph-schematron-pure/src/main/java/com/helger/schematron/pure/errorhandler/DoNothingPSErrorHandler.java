@@ -16,9 +16,9 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
-import javax.annotation.Nonnull;
+import com.helger.diagnostics.error.IError;
 
-import com.helger.commons.error.IError;
+import jakarta.annotation.Nonnull;
 
 /**
  * An implementation if {@link IPSErrorHandler} that does nothing and swallows

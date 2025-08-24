@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>8.0.7-SNAPSHOT</version>
+    <version>9.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-ant-task</artifactId>
   <packaging>jar</packaging>
@@ -75,10 +75,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
@@ -110,14 +106,6 @@
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.github.spotbugs</groupId>
-      <artifactId>spotbugs-annotations</artifactId>
-      <version>${spotbugs-annotations.version}</version>
-      <scope>compile</scope>
-      <optional>true</optional>
     </dependency>
 
     <dependency>

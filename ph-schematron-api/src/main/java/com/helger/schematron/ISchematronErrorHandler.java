@@ -16,9 +16,9 @@
  */
 package com.helger.schematron;
 
-import javax.annotation.Nonnull;
+import com.helger.diagnostics.error.IError;
 
-import com.helger.commons.error.IError;
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for a Schematron error handler.

@@ -32,8 +32,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
 
 public final class Schematron2XSLTMojoFuncTest
 {

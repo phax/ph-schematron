@@ -18,31 +18,31 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringImplode;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
  * A single Schematron p-element.<br>
- * A paragraph of natural language text containing maintainer and user
- * information about the parent element. The schema can nominate paragraphs that
- * should be rendered in a distinct way, keyed with the class attribute.<br>
+ * A paragraph of natural language text containing maintainer and user information about the parent
+ * element. The schema can nominate paragraphs that should be rendered in a distinct way, keyed with
+ * the class attribute.<br>
  * An implementation is not required to make use of this element.
  *
  * @author Philip Helger
@@ -175,7 +175,7 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   @Nullable
   public String getText ()
   {
-    return StringHelper.getImploded (m_aContent);
+    return StringImplode.getImploded (m_aContent);
   }
 
   public void addDir (@Nonnull final PSDir aDir)
@@ -218,8 +218,7 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   }
 
   /**
-   * @return A list of {@link String}, {@link PSDir}, {@link PSEmph} and
-   *         {@link PSSpan} elements.
+   * @return A list of {@link String}, {@link PSDir}, {@link PSEmph} and {@link PSSpan} elements.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -237,12 +236,12 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
     ret.setAttribute (CSchematronXML.ATTR_ICON, m_sIcon);
     for (final Object aContent : m_aContent)
       if (aContent instanceof IMicroElement)
-        ret.appendChild (((IMicroElement) aContent).getClone ());
+        ret.addChild (((IMicroElement) aContent).getClone ());
       else
         if (aContent instanceof String)
-          ret.appendText ((String) aContent);
+          ret.addText ((String) aContent);
         else
-          ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+          ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

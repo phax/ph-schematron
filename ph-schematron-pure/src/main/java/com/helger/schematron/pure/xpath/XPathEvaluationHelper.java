@@ -16,9 +16,6 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -29,9 +26,12 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.helger.commons.lang.GenericReflection;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.reflection.GenericReflection;
 import com.helger.xml.XMLHelper;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import net.sf.saxon.dom.DocumentWrapper;
 import net.sf.saxon.expr.ArithmeticExpression;
 import net.sf.saxon.expr.CastExpression;

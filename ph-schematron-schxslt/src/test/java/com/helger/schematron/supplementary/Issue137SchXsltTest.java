@@ -20,18 +20,18 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue137SchXsltTest
 {

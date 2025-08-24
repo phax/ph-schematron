@@ -18,10 +18,10 @@ package com.helger.schematron.resolve;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
+import com.helger.annotation.Nonempty;
+import com.helger.io.resource.IReadableResource;
 
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.io.resource.IReadableResource;
+import jakarta.annotation.Nonnull;
 
 /**
  * Generic include resolver

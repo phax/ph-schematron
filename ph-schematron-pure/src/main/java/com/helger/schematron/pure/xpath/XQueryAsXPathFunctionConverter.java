@@ -21,19 +21,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.iterate.IterableIterator;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.WillClose;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.collection.commons.CommonsIterableIterator;
+import com.helger.io.file.FileHelper;
 import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
+import jakarta.annotation.Nonnull;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.instruct.UserFunction;
@@ -49,8 +48,8 @@ import net.sf.saxon.query.XQueryFunctionLibrary;
 import net.sf.saxon.trans.XPathException;
 
 /**
- * This class loads XQuery modules and provides a list of XPath functions. This
- * class can only be used, if Saxon is on the classpath!
+ * This class loads XQuery modules and provides a list of XPath functions. This class can only be
+ * used, if Saxon is on the classpath!
  *
  * @author Philip Helger
  */
@@ -61,8 +60,8 @@ public class XQueryAsXPathFunctionConverter
   private final String m_sBaseURL;
 
   /**
-   * Default ctor using the current working directory as the base URL for the
-   * XQuery resource resolver.
+   * Default ctor using the current working directory as the base URL for the XQuery resource
+   * resolver.
    *
    * @throws MalformedURLException
    *         In case the conversion to URL failed
@@ -73,12 +72,11 @@ public class XQueryAsXPathFunctionConverter
   }
 
   /**
-   * Constructor using the passed file as a working directory as the base URL
-   * for the XQuery resource resolver.
+   * Constructor using the passed file as a working directory as the base URL for the XQuery
+   * resource resolver.
    *
    * @param aBasePath
-   *        Base path for XQuery resource resolving. May not be
-   *        <code>null</code>.
+   *        Base path for XQuery resource resolving. May not be <code>null</code>.
    * @throws MalformedURLException
    *         In case the conversion to URL failed
    */
@@ -88,12 +86,11 @@ public class XQueryAsXPathFunctionConverter
   }
 
   /**
-   * Constructor using the passed URL as a working directory as the base URL for
-   * the XQuery resource resolver.
+   * Constructor using the passed URL as a working directory as the base URL for the XQuery resource
+   * resolver.
    *
    * @param sBaseURL
-   *        Base URL for XQuery resource resolving. May neither be
-   *        <code>null</code> nor empty.
+   *        Base URL for XQuery resource resolving. May neither be <code>null</code> nor empty.
    */
   public XQueryAsXPathFunctionConverter (@Nonnull @Nonempty final String sBaseURL)
   {
@@ -101,8 +98,7 @@ public class XQueryAsXPathFunctionConverter
   }
 
   /**
-   * @return The base URL provided in the constructor. Neither <code>null</code>
-   *         nor empty.
+   * @return The base URL provided in the constructor. Neither <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -112,19 +108,17 @@ public class XQueryAsXPathFunctionConverter
   }
 
   /**
-   * Load XQuery functions from an input stream. As this function is supposed to
-   * work with Saxon HE, this method allows only for loading full XQuery modules
-   * and not for XQuery libraries.
+   * Load XQuery functions from an input stream. As this function is supposed to work with Saxon HE,
+   * this method allows only for loading full XQuery modules and not for XQuery libraries.
    *
    * @param aXQueryIS
-   *        The Input Stream to read from. May not be <code>null</code>. Will be
-   *        closed automatically in this method.
-   * @return A non-<code>null</code> {@link MapBasedXPathFunctionResolver}
-   *         containing all loaded functions.
+   *        The Input Stream to read from. May not be <code>null</code>. Will be closed
+   *        automatically in this method.
+   * @return A non-<code>null</code> {@link MapBasedXPathFunctionResolver} containing all loaded
+   *         functions.
    * @throws XPathException
-   *         if the syntax of the expression is wrong, or if it references
-   *         namespaces, variables, or functions that have not been declared, or
-   *         any other static error is reported.
+   *         if the syntax of the expression is wrong, or if it references namespaces, variables, or
+   *         functions that have not been declared, or any other static error is reported.
    * @throws IOException
    *         if a failure occurs reading the supplied input.
    */
@@ -167,7 +161,7 @@ public class XQueryAsXPathFunctionConverter
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
             {
               final ExecutableFunctionLibrary aExecNestedFuncLib = (ExecutableFunctionLibrary) aNestedFuncLib;
-              for (final UserFunction aUserFunc : new IterableIterator <> (aExecNestedFuncLib.getAllFunctions ()))
+              for (final UserFunction aUserFunc : new CommonsIterableIterator <> (aExecNestedFuncLib.getAllFunctions ()))
               {
                 // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
                 final StructuredQName aFN = aUserFunc.getFunctionName ();
@@ -199,7 +193,7 @@ public class XQueryAsXPathFunctionConverter
           if (aFuncLib instanceof XQueryFunctionLibrary)
           {
             final XQueryFunctionLibrary aRealFuncLib = (XQueryFunctionLibrary) aFuncLib;
-            for (final XQueryFunction aXQueryFunction : new IterableIterator <> (aRealFuncLib.getFunctionDefinitions ()))
+            for (final XQueryFunction aXQueryFunction : new CommonsIterableIterator <> (aRealFuncLib.getFunctionDefinitions ()))
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();

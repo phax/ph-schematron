@@ -24,8 +24,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.concurrent.ThreadHelper;
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.base.concurrent.ThreadHelper;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.sch.SchematronResourceSCH;

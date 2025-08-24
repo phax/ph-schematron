@@ -18,20 +18,21 @@ package com.helger.schematron.pure.binding.xpath;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.xpath.XPathExpression;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.collection.impl.ICommonsOrderedSet;
-import com.helger.commons.state.EChange;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.EChange;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.collection.commons.ICommonsOrderedSet;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This class manages all variables present in Schematron &lt;let&gt; elements.
@@ -111,7 +112,7 @@ public class PSXPathVariables implements IPSXPathVariables
   @Nonnull
   public EChange remove (@Nullable final String sVarName)
   {
-    if (StringHelper.hasText (sVarName))
+    if (StringHelper.isNotEmpty (sVarName))
       if (m_aMap.remove (PSXPathQueryBinding.PARAM_VARIABLE_PREFIX + sVarName) == null)
         return EChange.CHANGED;
     return EChange.UNCHANGED;
@@ -151,7 +152,7 @@ public class PSXPathVariables implements IPSXPathVariables
 
   public boolean contains (@Nullable final String sName)
   {
-    if (StringHelper.hasNoText (sName))
+    if (StringHelper.isEmpty (sName))
       return false;
     return m_aMap.containsKey (sName);
   }
@@ -159,7 +160,7 @@ public class PSXPathVariables implements IPSXPathVariables
   @Nullable
   public XPathExpression get (@Nullable final String sName)
   {
-    if (StringHelper.hasNoText (sName))
+    if (StringHelper.isEmpty (sName))
       return null;
     return m_aMap.get (sName);
   }

@@ -18,9 +18,6 @@ package com.helger.schematron.sch;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -34,13 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.file.SimpleFileIO;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.timing.StopWatch;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.timing.StopWatch;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.file.SimpleFileIO;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
@@ -51,10 +49,12 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * The XSLT preprocessor used to convert a Schematron XML document into an XSLT
- * document. This implementation uses JAXP with Saxon to be used as the
- * respective parser.
+ * The XSLT preprocessor used to convert a Schematron XML document into an XSLT document. This
+ * implementation uses JAXP with Saxon to be used as the respective parser.
  *
  * @author Philip Helger
  */
@@ -93,9 +93,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   private Templates m_aSchematronXSLTTemplates;
 
   /**
-   * Ensure that all XSLT templates for converting Schematron to XSLT are
-   * cached. That may be called on application startup, otherwise it is done
-   * lazily on demand.
+   * Ensure that all XSLT templates for converting Schematron to XSLT are cached. That may be called
+   * on application startup, otherwise it is done lazily on demand.
    */
   public static void cacheXSLTTemplates ()
   {
@@ -203,7 +202,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       {
         final String sXML = XMLWriter.getNodeAsString (aResult2Doc);
         String sBasename = FilenameHelper.getWithoutPath (aSchematronResource.getPath ());
-        if (StringHelper.hasNoText (sBasename))
+        if (StringHelper.isEmpty (sBasename))
           sBasename = "in-memory";
         final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
                                                  sBasename + ".min-xslt.sch");
@@ -249,7 +248,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       {
         final String sXML = XMLWriter.getNodeAsString (aResult3Doc);
         String sBasename = FilenameHelper.getWithoutPath (aSchematronResource.getPath ());
-        if (StringHelper.hasNoText (sBasename))
+        if (StringHelper.isEmpty (sBasename))
           sBasename = "in-memory";
         final File aIntermediateFile = new File (SchematronDebug.getIntermediateFinalXSLTFolder (),
                                                  sBasename + ".xslt");
@@ -278,8 +277,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
    * @param aSchematronResource
    *        SCH resource. May not be <code>null</code>.
    * @param aTransformerCustomizer
-   *        The customizer for XSLT {@link Transformer} objects. May not be
-   *        <code>null</code>.
+   *        The customizer for XSLT {@link Transformer} objects. May not be <code>null</code>.
    * @throws SchematronInterruptedException
    *         if Schematron validation was interrupted
    */
@@ -294,8 +292,8 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
   }
 
   /**
-   * This call does the main Schematron to XSLT conversion. This method may only
-   * be called once per instance.
+   * This call does the main Schematron to XSLT conversion. This method may only be called once per
+   * instance.
    */
   public void convertSchematronToXSLT ()
   {

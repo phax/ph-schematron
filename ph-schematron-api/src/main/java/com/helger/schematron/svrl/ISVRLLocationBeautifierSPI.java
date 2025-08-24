@@ -16,7 +16,7 @@
  */
 package com.helger.schematron.svrl;
 
-import com.helger.commons.annotation.IsSPIInterface;
+import com.helger.annotation.style.IsSPIInterface;
 
 /**
  * Implement this SPI interface to beautify SVRL error messages by replacing

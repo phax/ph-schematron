@@ -16,9 +16,9 @@
  */
 package com.helger.schematron.pure.validation;
 
-import javax.annotation.Nonnull;
+import com.helger.base.state.EValidity;
 
-import com.helger.commons.state.EValidity;
+import jakarta.annotation.Nonnull;
 
 /**
  * An extension of {@link IPSValidationHandler} that is used to determine the

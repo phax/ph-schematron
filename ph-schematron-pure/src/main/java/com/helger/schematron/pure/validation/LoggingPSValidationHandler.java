@@ -16,28 +16,28 @@
  */
 package com.helger.schematron.pure.validation;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.error.level.IErrorLevel;
-import com.helger.commons.log.LogHelper;
-import com.helger.commons.state.EContinue;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonnegative;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.EContinue;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.diagnostics.error.level.EErrorLevel;
+import com.helger.diagnostics.error.level.IErrorLevel;
+import com.helger.diagnostics.log.LogHelper;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.xml.XMLDebug;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A logging implementation of {@link IPSValidationHandler}

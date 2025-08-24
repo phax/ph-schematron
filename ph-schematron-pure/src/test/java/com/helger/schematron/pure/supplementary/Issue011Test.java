@@ -21,15 +21,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Test class for https://github.com/phax/ph-schematron/issues/11

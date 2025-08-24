@@ -21,9 +21,6 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
@@ -33,12 +30,15 @@ import javax.xml.transform.URIResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.exception.InitializationException;
-import com.helger.commons.lang.ClassLoaderHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.classloader.ClassLoaderHelper;
+import com.helger.base.exception.InitializationException;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import net.sf.saxon.lib.FeatureKeys;
 
 /**

@@ -24,9 +24,9 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.io.resource.ClassPathResource;
 
 /**
  * Test class for class {@link SchematronResourceXSLT}.

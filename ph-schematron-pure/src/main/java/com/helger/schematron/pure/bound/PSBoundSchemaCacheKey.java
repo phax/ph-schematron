@@ -16,21 +16,18 @@
  */
 package com.helger.schematron.pure.bound;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.hashcode.HashCodeGenerator;
-import com.helger.commons.hashcode.IHashCodeGenerator;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.hashcode.HashCodeGenerator;
+import com.helger.base.hashcode.IHashCodeGenerator;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronInterruptedException;
@@ -44,6 +41,9 @@ import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.xml.microdom.serialize.MicroWriter;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This class represents keys for the {@link PSBoundSchemaCache}. It is a

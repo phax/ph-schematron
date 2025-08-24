@@ -18,17 +18,17 @@ package com.helger.schematron.saxon;
 
 import java.util.Iterator;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.namespace.NamespaceContext;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.DevelopersNote;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.misc.DevelopersNote;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import net.sf.saxon.om.NamespaceResolver;
 import net.sf.saxon.om.NamespaceUri;
 
@@ -44,7 +44,7 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
   @Nullable
   public NamespaceUri getURIForPrefix (@Nullable final String sPrefix, final boolean bUseDefault)
   {
-    if (bUseDefault && StringHelper.hasNoText (sPrefix))
+    if (bUseDefault && StringHelper.isEmpty (sPrefix))
       return NamespaceUri.of (m_aCtx.getDefaultNamespaceURI ());
     return NamespaceUri.of (m_aCtx.getCustomNamespaceURI (sPrefix));
   }

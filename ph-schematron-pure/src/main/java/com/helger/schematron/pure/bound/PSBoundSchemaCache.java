@@ -16,17 +16,16 @@
  */
 package com.helger.schematron.pure.bound;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.CGlobal;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.cache.Cache;
+import com.helger.base.CGlobal;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.cache.impl.Cache;
 import com.helger.schematron.SchematronException;
 
+import jakarta.annotation.Nonnull;
+
 /**
- * A cache for {@link IPSBoundSchema} instances. Use {@link #getInstance()} to
- * retrieve a global singleton instance. Alternatively you may instantiate this
- * class regularly.
+ * A cache for {@link IPSBoundSchema} instances. Use {@link #getInstance()} to retrieve a global
+ * singleton instance. Alternatively you may instantiate this class regularly.
  *
  * @author Philip Helger
  */

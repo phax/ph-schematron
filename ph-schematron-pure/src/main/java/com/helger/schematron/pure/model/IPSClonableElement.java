@@ -16,7 +16,7 @@
  */
 package com.helger.schematron.pure.model;
 
-import com.helger.commons.lang.ICloneable;
+import com.helger.base.clone.ICloneable;
 
 /**
  * Base interface for a cloneable Schematron elements

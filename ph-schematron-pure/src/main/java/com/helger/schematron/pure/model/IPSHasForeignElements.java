@@ -16,12 +16,12 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.xml.microdom.IMicroElement;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for Pure Schematron elements that support foreign elements and

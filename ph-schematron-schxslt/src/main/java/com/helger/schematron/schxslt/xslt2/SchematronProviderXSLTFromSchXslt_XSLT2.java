@@ -18,9 +18,6 @@ package com.helger.schematron.schxslt.xslt2;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -34,12 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.file.SimpleFileIO;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.timing.StopWatch;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.timing.StopWatch;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.file.SimpleFileIO;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
@@ -49,6 +47,9 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an

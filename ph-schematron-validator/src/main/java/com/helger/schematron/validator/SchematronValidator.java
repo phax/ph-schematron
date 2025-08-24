@@ -18,8 +18,6 @@ package com.helger.schematron.validator;
 
 import java.io.IOException;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
 import javax.xml.validation.Validator;
 
@@ -29,16 +27,19 @@ import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.diagnostics.error.level.EErrorLevel;
+import com.helger.diagnostics.error.list.IErrorList;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.relaxng.RelaxNGCompactSchemaCache;
 import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.sax.CollectingSAXErrorHandler;
 import com.helger.xml.transform.TransformSourceFactory;
+
+import jakarta.annotation.Nullable;
 
 /**
  * Helper class that validates a Schematron against the RelaxNG Compact scheme.

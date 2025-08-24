@@ -18,14 +18,14 @@ package com.helger.schematron.svrl;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.annotation.CodingStyleguideUnaware;
-import com.helger.commons.annotation.PresentForCodeCoverage;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.CodingStyleguideUnaware;
+import com.helger.annotation.style.PresentForCodeCoverage;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.xsds.xml.CXML_XSD;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * SVRL constants.

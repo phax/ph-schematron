@@ -16,11 +16,11 @@
  */
 package com.helger.schematron.pure.exchange;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Exception when reading Schematron fails.

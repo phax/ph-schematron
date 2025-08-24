@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Test;
@@ -29,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.io.file.FileHelper;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -50,6 +49,8 @@ import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue016Test
 {

@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import javax.annotation.Nonnull;
-
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
@@ -29,6 +27,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.util.ProcessUtil;
 import org.junit.rules.ExternalResource;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Provides access for JUnit tests to execute Ant targets and access execution

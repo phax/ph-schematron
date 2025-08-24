@@ -21,12 +21,10 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.inmemory.ReadableResourceString;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.pure.exchange.PSReader;
@@ -38,6 +36,8 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue048Test
 {

@@ -27,8 +27,8 @@ import javax.xml.XMLConstants;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.io.resource.inmemory.ReadableResourceString;
+import com.helger.io.resource.IReadableResource;
+import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.model.PSSchema;

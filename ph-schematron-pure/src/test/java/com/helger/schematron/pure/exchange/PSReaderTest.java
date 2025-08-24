@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.helger.commons.io.resource.IReadableResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.testfiles.SchematronTestHelper;

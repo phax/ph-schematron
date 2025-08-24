@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.api.xslt.validator;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.state.EValidity;
+import com.helger.base.state.EValidity;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for objects that determine the validity of a Schematron

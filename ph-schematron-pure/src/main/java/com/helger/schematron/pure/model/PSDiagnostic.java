@@ -18,35 +18,34 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
  * A single Schematron diagnostic-element.<br>
- * A natural-language message giving more specific details concerning a failed
- * assertion, such as found versus expected values and repair hints.<br>
- * NOTE: Diagnostics in multiple languages may be supported by using a different
- * diagnostic element for each language, with the appropriate xml:lang language
- * attribute, and referencing all the unique identifiers of the diagnostic
- * elements in the diagnostics attribute of the assertion. Annex G gives a
- * simple example of a multi-lingual schema.<br>
+ * A natural-language message giving more specific details concerning a failed assertion, such as
+ * found versus expected values and repair hints.<br>
+ * NOTE: Diagnostics in multiple languages may be supported by using a different diagnostic element
+ * for each language, with the appropriate xml:lang language attribute, and referencing all the
+ * unique identifiers of the diagnostic elements in the diagnostics attribute of the assertion.
+ * Annex G gives a simple example of a multi-lingual schema.<br>
  * An implementation is not required to make use of this element.
  *
  * @author Philip Helger
@@ -74,7 +73,7 @@ public class PSDiagnostic implements
       if (aContent instanceof IPSElement)
         if (!((IPSElement) aContent).isValid (aErrorHandler))
           return false;
-    if (StringHelper.hasNoText (m_sID))
+    if (StringHelper.isEmpty (m_sID))
     {
       aErrorHandler.error (this, "<diagnostic> has no 'id'");
       return false;
@@ -87,7 +86,7 @@ public class PSDiagnostic implements
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
         ((IPSElement) aContent).validateCompletely (aErrorHandler);
-    if (StringHelper.hasNoText (m_sID))
+    if (StringHelper.isEmpty (m_sID))
       aErrorHandler.error (this, "<diagnostic> has no 'id'");
   }
 
@@ -230,8 +229,8 @@ public class PSDiagnostic implements
   }
 
   /**
-   * @return A list of {@link String}, {@link PSValueOf}, {@link PSEmph},
-   *         {@link PSDir} and {@link PSSpan} elements.
+   * @return A list of {@link String}, {@link PSValueOf}, {@link PSEmph}, {@link PSDir} and
+   *         {@link PSSpan} elements.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -249,12 +248,12 @@ public class PSDiagnostic implements
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
       if (aContent instanceof IMicroElement)
-        ret.appendChild (((IMicroElement) aContent).getClone ());
+        ret.addChild (((IMicroElement) aContent).getClone ());
       else
         if (aContent instanceof String)
-          ret.appendText ((String) aContent);
+          ret.addText ((String) aContent);
         else
-          ret.appendChild (((IPSElement) aContent).getAsMicroElement ());
+          ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

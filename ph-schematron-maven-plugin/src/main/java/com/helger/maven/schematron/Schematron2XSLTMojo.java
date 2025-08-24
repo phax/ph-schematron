@@ -40,20 +40,20 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 
-import com.helger.commons.CGlobal;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.annotation.Since;
-import com.helger.commons.annotation.VisibleForTesting;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.concurrent.ExecutorServiceHelper;
-import com.helger.commons.concurrent.ThreadHelper;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.wrapper.Wrapper;
+import com.helger.annotation.misc.Since;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.annotation.style.VisibleForTesting;
+import com.helger.base.CGlobal;
+import com.helger.base.concurrent.ExecutorServiceHelper;
+import com.helger.base.concurrent.ThreadHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.base.wrapper.Wrapper;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.io.file.FileHelper;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.svrl.CSVRL;
@@ -62,20 +62,17 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Converts one or more Schematron schema files into XSLT scripts.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
 @Mojo (name = "convert", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class Schematron2XSLTMojo extends AbstractMojo
 {
   /**
-   * BuildContext for m2e (it's a pass-though straight to the filesystem when
-   * invoked from the Maven cli)
+   * BuildContext for m2e (it's a pass-though straight to the filesystem when invoked from the Maven
+   * cli)
    */
   @Component
   private BuildContext buildContext;
@@ -93,9 +90,9 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   private File m_aSchematronDirectory;
 
   /**
-   * A pattern for the Schematron files. Can contain Ant-style wildcards and
-   * double wildcards. All files that match the pattern will be converted. Files
-   * in the schematronDirectory and its subdirectories will be considered.
+   * A pattern for the Schematron files. Can contain Ant-style wildcards and double wildcards. All
+   * files that match the pattern will be converted. Files in the schematronDirectory and its
+   * subdirectories will be considered.
    */
   @Parameter (name = "schematronPattern", defaultValue = "**/*.sch", required = true)
   private String m_sSchematronPattern;
@@ -113,22 +110,22 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   private String m_sXsltExtension;
 
   /**
-   * Overwrite existing Schematron files without notice? If this is set to
-   * <code>false</code> than existing XSLT files are not overwritten.
+   * Overwrite existing Schematron files without notice? If this is set to <code>false</code> than
+   * existing XSLT files are not overwritten.
    */
   @Parameter (name = "overwriteWithoutQuestion", defaultValue = "true")
   private boolean m_bOverwriteWithoutQuestion = true;
 
   /**
-   * Define the phase to be used for XSLT creation. By default the
-   * <code>defaultPhase</code> attribute of the Schematron file is used.
+   * Define the phase to be used for XSLT creation. By default the <code>defaultPhase</code>
+   * attribute of the Schematron file is used.
    */
   @Parameter (name = "phaseName")
   private String m_sPhaseName;
 
   /**
-   * Define the language code for the XSLT creation. Default is English.
-   * Supported language codes are: cs, de, en, fr, nl.
+   * Define the language code for the XSLT creation. Default is English. Supported language codes
+   * are: cs, de, en, fr, nl.
    */
   @Parameter (name = "languageCode")
   private String m_sLanguageCode;
@@ -148,25 +145,24 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
-   * A constant header string that should be added to all XSLT files, e.g. as a
-   * version number etc.
+   * A constant header string that should be added to all XSLT files, e.g. as a version number etc.
    */
   @Parameter (name = "xsltHeader")
   @Since ("6.2.2")
   private String m_sXSLTHeader;
 
   /**
-   * If the transformation of a Schematron to XSLT takes longer than 5 seconds,
-   * a message is displayed every 5 seconds to inform you that the
-   * transformation is still in progress. This is enabled by default.
+   * If the transformation of a Schematron to XSLT takes longer than 5 seconds, a message is
+   * displayed every 5 seconds to inform you that the transformation is still in progress. This is
+   * enabled by default.
    */
   @Parameter (name = "showProgress", defaultValue = "true")
   @Since ("6.2.8")
   private boolean m_bShowProgress = true;
 
   /**
-   * If an error occurs, shall the conversion stop or shall the next file be
-   * tried? For backwards compatibility reason, this is enabled by default.
+   * If an error occurs, shall the conversion stop or shall the next file be tried? For backwards
+   * compatibility reason, this is enabled by default.
    */
   @Parameter (name = "stopOnError", defaultValue = "true")
   @Since ("6.3.2")
@@ -256,7 +252,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   public void setXsltHeader (final String s)
   {
     m_sXSLTHeader = s;
-    if (StringHelper.hasText (m_sXSLTHeader))
+    if (StringHelper.isNotEmpty (m_sXSLTHeader))
       getLog ().debug ("Using the XSLT header '" + m_sXSLTHeader + "'");
     else
       getLog ().debug ("No XSLT header is configured");
@@ -288,13 +284,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       throw new MojoExecutionException ("The specified Schematron directory " +
                                         m_aSchematronDirectory +
                                         " is not a directory!");
-    if (StringHelper.hasNoText (m_sSchematronPattern))
+    if (StringHelper.isEmpty (m_sSchematronPattern))
       throw new MojoExecutionException ("No Schematron pattern specified!");
     if (m_aXsltDirectory == null)
       throw new MojoExecutionException ("No XSLT directory specified!");
     if (m_aXsltDirectory.exists () && !m_aXsltDirectory.isDirectory ())
       throw new MojoExecutionException ("The specified XSLT directory " + m_aXsltDirectory + " is not a directory!");
-    if (StringHelper.hasNoText (m_sXsltExtension) || !m_sXsltExtension.startsWith ("."))
+    if (StringHelper.isEmpty (m_sXsltExtension) || !m_sXsltExtension.startsWith ("."))
       throw new MojoExecutionException ("The XSLT extension '" + m_sXsltExtension + "' is invalid!");
 
     if (!m_aXsltDirectory.exists () && !m_aXsltDirectory.mkdirs ())
@@ -377,7 +373,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                                                                                             aCustomizer);
               if (aXsltDoc != null)
               {
-                if (StringHelper.hasText (m_sXSLTHeader))
+                if (StringHelper.isNotEmpty (m_sXSLTHeader))
                 {
                   // Inject the header into the XSLT
                   aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());

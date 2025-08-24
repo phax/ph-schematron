@@ -30,9 +30,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.commons.annotation.Since;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.misc.Since;
+import com.helger.base.string.StringHelper;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -51,21 +51,18 @@ import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.IXMLWriterSettings;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Applies Schematron preprocessing
  *
  * @author Philip Helger
  * @since 5.0.9
  */
-@SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
 @Mojo (name = "preprocess", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class SchematronPreprocessMojo extends AbstractMojo
 {
   /**
-   * BuildContext for m2e (it's a pass-though straight to the filesystem when
-   * invoked from the Maven cli)
+   * BuildContext for m2e (it's a pass-though straight to the filesystem when invoked from the Maven
+   * cli)
    */
   @Component
   private BuildContext buildContext;
@@ -89,43 +86,41 @@ public final class SchematronPreprocessMojo extends AbstractMojo
   private File m_aTargetFile;
 
   /**
-   * Overwrite existing Schematron files without notice? If this is set to
-   * <code>false</code> than existing Schematron files are not overwritten.
+   * Overwrite existing Schematron files without notice? If this is set to <code>false</code> than
+   * existing Schematron files are not overwritten.
    */
   @Parameter (name = "overwriteWithoutNotice", defaultValue = "true")
   private boolean m_bOverwriteWithoutNotice;
 
   /**
-   * If this is set to <code>false</code> than <code>&lt;title&gt;</code>
-   * elements will be removed.
+   * If this is set to <code>false</code> than <code>&lt;title&gt;</code> elements will be removed.
    */
   @Parameter (name = "keepTitles", defaultValue = "false")
   private boolean m_bKeepTitles;
 
   /**
-   * If this is set to <code>false</code> than <code>&lt;diagnostics&gt;</code>
-   * elements will be removed.
+   * If this is set to <code>false</code> than <code>&lt;diagnostics&gt;</code> elements will be
+   * removed.
    */
   @Parameter (name = "keepDiagnostics", defaultValue = "false")
   private boolean m_bKeepDiagnostics;
 
   /**
-   * Should <code>&lt;report&gt;</code> elements be kept or should they be
-   * converted to <code>&lt;assert&gt;</code> elements?
+   * Should <code>&lt;report&gt;</code> elements be kept or should they be converted to
+   * <code>&lt;assert&gt;</code> elements?
    */
   @Parameter (name = "keepReports", defaultValue = "false")
   private boolean m_bKeepReports;
 
   /**
-   * Should <code>&lt;pattern&gt;</code> elements without a single rule be kept
-   * or deleted?
+   * Should <code>&lt;pattern&gt;</code> elements without a single rule be kept or deleted?
    */
   @Parameter (name = "keepEmptyPatterns", defaultValue = "false")
   private boolean m_bKeepEmptyPatterns;
 
   /**
-   * A constant header string that should be added to all preprocessed SCH
-   * files, e.g. as a version number etc.
+   * A constant header string that should be added to all preprocessed SCH files, e.g. as a version
+   * number etc.
    */
   @Parameter (name = "schHeader")
   @Since ("6.2.2")
@@ -197,7 +192,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
   public void setSchHeader (final String s)
   {
     m_sSCHHeader = s;
-    if (StringHelper.hasText (m_sSCHHeader))
+    if (StringHelper.isNotEmpty (m_sSCHHeader))
       getLog ().debug ("Using the SCH header '" + m_sSCHHeader + "'");
     else
       getLog ().debug ("No SCH header is configured");
@@ -257,12 +252,12 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       final IXMLWriterSettings aXWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
                                                               .setNamespaceContext (aNSCtx);
       final IMicroDocument aDoc = new MicroDocument ();
-      if (StringHelper.hasText (m_sSCHHeader))
+      if (StringHelper.isNotEmpty (m_sSCHHeader))
       {
         // Add the optional header as a comment
-        aDoc.appendComment (m_sSCHHeader);
+        aDoc.addComment (m_sSCHHeader);
       }
-      aDoc.appendChild (aPreprocessedSchema.getAsMicroElement ());
+      aDoc.addChild (aPreprocessedSchema.getAsMicroElement ());
 
       if (MicroWriter.writeToFile (aDoc, m_aTargetFile, aXWS).isSuccess ())
         getLog ().info ("Successfully wrote preprocessed Schematron file '" + m_aTargetFile.getPath () + "'");

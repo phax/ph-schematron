@@ -18,8 +18,6 @@ package com.helger.schematron.pure.xpath;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathFunctionResolver;
@@ -28,12 +26,15 @@ import javax.xml.xpath.XPathVariableResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.system.SystemProperties;
+import com.helger.base.CGlobal;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.system.SystemProperties;
+import com.helger.base.tostring.ToStringGenerator;
 import com.helger.xml.xpath.XPathHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Builder class for {@link IXPathConfig}.
@@ -85,8 +86,8 @@ public class XPathConfigBuilder
   }
 
   /**
-   * Set the {@link XPathFactory} class to instantiate. This has priority 2 and
-   * is only used if {@link #getXPathFactory()} is <code>null</code>.
+   * Set the {@link XPathFactory} class to instantiate. This has priority 2 and is only used if
+   * {@link #getXPathFactory()} is <code>null</code>.
    *
    * @param aXPathFactoryClass
    *        The factory to use. May not be <code>null</code>.
@@ -110,16 +111,14 @@ public class XPathConfigBuilder
 
   /**
    * With Java 11+ module path system, you can't access
-   * <code>com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl</code> as
-   * package <code>com.sun.org.apache.xpath.internal.jaxp</code> is declared in
-   * module java.xml, which does not export it.<br>
-   * The only way to use it, is to set/alter the
-   * <code>javax.xml.xpath.XPathFactory</code> system property. However, this
-   * change is <em>global</em> to the application.
+   * <code>com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl</code> as package
+   * <code>com.sun.org.apache.xpath.internal.jaxp</code> is declared in module java.xml, which does
+   * not export it.<br>
+   * The only way to use it, is to set/alter the <code>javax.xml.xpath.XPathFactory</code> system
+   * property. However, this change is <em>global</em> to the application.
    *
    * @param sGlobalXPathFactory
-   *        Fully qualified class name of the 'default' {@link XPathFactory}.
-   *        Most commonly set to
+   *        Fully qualified class name of the 'default' {@link XPathFactory}. Most commonly set to
    *        'com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl'.
    * @return this for chaining
    * @see #setXPathFactory(XPathFactory)
@@ -177,8 +176,8 @@ public class XPathConfigBuilder
 
         try
         {
-          aXPathFactory = m_aXPathFactoryClass.getConstructor (ArrayHelper.EMPTY_CLASS_ARRAY)
-                                              .newInstance (ArrayHelper.EMPTY_OBJECT_ARRAY);
+          aXPathFactory = m_aXPathFactoryClass.getConstructor (CGlobal.EMPTY_CLASS_ARRAY)
+                                              .newInstance (CGlobal.EMPTY_OBJECT_ARRAY);
         }
         catch (final InvocationTargetException ex)
         {
@@ -190,7 +189,7 @@ public class XPathConfigBuilder
         }
       }
       else
-        if (StringHelper.hasText (m_sGlobalXPathFactoryClassName))
+        if (StringHelper.isNotEmpty (m_sGlobalXPathFactoryClassName))
         {
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug ("Trying to set global XPathFactory system property to '" +

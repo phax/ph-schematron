@@ -16,23 +16,23 @@
  */
 package com.helger.schematron.pure.model;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringImplode;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron emph-element.<br>
@@ -91,7 +91,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
   @Nullable
   public String getAsText ()
   {
-    return StringHelper.getImploded (m_aContent);
+    return StringImplode.getImploded (m_aContent);
   }
 
   @Nonnull
@@ -99,7 +99,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_EMPH);
     for (final String sContent : m_aContent)
-      ret.appendText (sContent);
+      ret.addText (sContent);
     return ret;
   }
 

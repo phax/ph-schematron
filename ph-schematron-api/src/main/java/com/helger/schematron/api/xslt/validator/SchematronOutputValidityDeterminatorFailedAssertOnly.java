@@ -16,11 +16,11 @@
  */
 package com.helger.schematron.api.xslt.validator;
 
-import javax.annotation.Nonnull;
-
-import com.helger.commons.state.EValidity;
+import com.helger.base.state.EValidity;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A special implementation of {@link ISchematronOutputValidityDeterminator}

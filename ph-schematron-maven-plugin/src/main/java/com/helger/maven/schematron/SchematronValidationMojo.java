@@ -34,21 +34,21 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.annotation.Since;
-import com.helger.commons.annotation.VisibleForTesting;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.error.IError;
-import com.helger.commons.error.level.EErrorLevel;
-import com.helger.commons.error.list.IErrorList;
-import com.helger.commons.io.file.FileIOError;
-import com.helger.commons.io.file.FileOperationManager;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.misc.Since;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.annotation.style.VisibleForTesting;
+import com.helger.base.array.ArrayHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.diagnostics.error.IError;
+import com.helger.diagnostics.error.level.EErrorLevel;
+import com.helger.diagnostics.error.list.IErrorList;
+import com.helger.io.file.FileIOError;
+import com.helger.io.file.FileOperationManager;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
@@ -65,20 +65,17 @@ import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Applies Schematron validation onto an XML file
  *
  * @author Philip Helger
  */
-@SuppressFBWarnings ({ "NP_UNWRITTEN_FIELD", "UWF_UNWRITTEN_FIELD" })
 @Mojo (name = "validate", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public final class SchematronValidationMojo extends AbstractMojo
 {
   /**
-   * BuildContext for m2e (it's a pass-though straight to the filesystem when
-   * invoked from the Maven cli)
+   * BuildContext for m2e (it's a pass-though straight to the filesystem when invoked from the Maven
+   * cli)
    */
   @Component
   private BuildContext buildContext;
@@ -99,8 +96,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * The processing engine to use. Can be one of the following:
    * <ul>
    * <li>pure - for SCH files</li>
-   * <li>schematron - for SCH files that will be converted to XSLT and applied
-   * from there.</li>
+   * <li>schematron - for SCH files that will be converted to XSLT and applied from there.</li>
    * <li>xslt - apply pre-build XSLT files</li>
    * </ul>
    */
@@ -108,126 +104,114 @@ public final class SchematronValidationMojo extends AbstractMojo
   private String m_sSchematronProcessingEngine = ESchematronMode.SCHEMATRON.getID ();
 
   /**
-   * The directory where the XML files reside that are expected to match the
-   * Schematron rules.
+   * The directory where the XML files reside that are expected to match the Schematron rules.
    */
   @Parameter (name = "xmlDirectory", required = true)
   private File m_aXmlDirectory;
 
   /**
-   * A pattern for the XML files that should be included. Can contain Ant-style
-   * wildcards and double wildcards. All files that match the pattern will be
-   * converted. Files in the xmlDirectory and its subdirectories will be
-   * considered.
+   * A pattern for the XML files that should be included. Can contain Ant-style wildcards and double
+   * wildcards. All files that match the pattern will be converted. Files in the xmlDirectory and
+   * its subdirectories will be considered.
    */
   @Parameter (name = "xmlIncludes", defaultValue = "**/*.xml", required = true)
   private String [] m_aXmlIncludes;
 
   /**
-   * A pattern for the XML files that should be excluded. Can contain Ant-style
-   * wildcards and double wildcards. All files that match the pattern will NOT
-   * be converted. Only files in the xmlDirectory and its subdirectories will be
-   * considered.
+   * A pattern for the XML files that should be excluded. Can contain Ant-style wildcards and double
+   * wildcards. All files that match the pattern will NOT be converted. Only files in the
+   * xmlDirectory and its subdirectories will be considered.
    */
   @Parameter (name = "xmlExcludes")
   private String [] m_aXmlExcludes;
 
   /**
-   * The SVRL path to write to (for positive tests). The filenames are based on
-   * the source XML filenames. If this parameter is not set, the SVRL files are
-   * <b>not</b> written.
+   * The SVRL path to write to (for positive tests). The filenames are based on the source XML
+   * filenames. If this parameter is not set, the SVRL files are <b>not</b> written.
    */
   @Parameter (name = "svrlDirectory")
   private File m_aSvrlDirectory;
 
   /**
-   * The directory where the erroneous XML files reside that are expected to NOT
-   * match the Schematron rules.
+   * The directory where the erroneous XML files reside that are expected to NOT match the
+   * Schematron rules.
    */
   @Parameter (name = "xmlErrorDirectory")
   private File m_aXmlErrorDirectory;
 
   /**
-   * A pattern for the erroneous XML files that should be included. Can contain
-   * Ant-style wildcards and double wildcards. All files that match the pattern
-   * will be converted. Files in the xmlDirectory and its subdirectories will be
-   * considered.
+   * A pattern for the erroneous XML files that should be included. Can contain Ant-style wildcards
+   * and double wildcards. All files that match the pattern will be converted. Files in the
+   * xmlDirectory and its subdirectories will be considered.
    */
   @Parameter (name = "xmlErrorIncludes", defaultValue = "**/*.xml")
   private String [] m_aXmlErrorIncludes;
 
   /**
-   * A pattern for the erroneous XML files that should be excluded. Can contain
-   * Ant-style wildcards and double wildcards. All files that match the pattern
-   * will NOT be converted. Only files in the xmlDirectory and its
-   * subdirectories will be considered.
+   * A pattern for the erroneous XML files that should be excluded. Can contain Ant-style wildcards
+   * and double wildcards. All files that match the pattern will NOT be converted. Only files in the
+   * xmlDirectory and its subdirectories will be considered.
    */
   @Parameter (name = "xmlErrorExcludes")
   private String [] m_aXmlErrorExcludes;
 
   /**
-   * The SVRL path to write to (for negative tests). The filenames are based on
-   * the source XML filenames. If this parameter is not set, the SVRL files are
-   * <b>not</b> written.
+   * The SVRL path to write to (for negative tests). The filenames are based on the source XML
+   * filenames. If this parameter is not set, the SVRL files are <b>not</b> written.
    */
   @Parameter (name = "svrlErrorDirectory")
   private File m_aSvrlErrorDirectory;
 
   /**
-   * Define the phase to be used for Schematron validation. By default the
-   * <code>defaultPhase</code> attribute of the Schematron file is used. This
-   * phase name is only used if the processing engine <code>pure</code> or
-   * <code>schematron</code> are used.
+   * Define the phase to be used for Schematron validation. By default the <code>defaultPhase</code>
+   * attribute of the Schematron file is used. This phase name is only used if the processing engine
+   * <code>pure</code> or <code>schematron</code> are used.
    */
   @Parameter (name = "phaseName")
   private String m_sPhaseName;
 
   /**
-   * Define the language code to be used for Schematron validation. Default is
-   * English. Supported language codes are: cs, de, en, fr, nl. This parameter
-   * takes only effect when using schematronProcessingEngine "schematron".
+   * Define the language code to be used for Schematron validation. Default is English. Supported
+   * language codes are: cs, de, en, fr, nl. This parameter takes only effect when using
+   * schematronProcessingEngine "schematron".
    */
   @Parameter (name = "languageCode")
   private String m_sLanguageCode;
 
   /**
-   * Custom attributes to be used for the SCH to XSLT conversion. This parameter
-   * takes only effect when using schematronProcessingEngine "schematron" or
-   * "xslt".
+   * Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect
+   * when using schematronProcessingEngine "schematron" or "xslt".
    */
   @Parameter (name = "parameters")
   @Since ("5.0.2")
   private Map <String, String> m_aCustomParameters;
 
   /**
-   * When validating multiple files, this flag indicates, whether validation
-   * should fail at the first file with an error (this is the default) or at the
-   * end only.
+   * When validating multiple files, this flag indicates, whether validation should fail at the
+   * first file with an error (this is the default) or at the end only.
    */
   @Parameter (name = "failFast", defaultValue = "true", required = true)
   @Since ("5.0.5")
   private boolean m_bFailFast = true;
 
   /**
-   * Force the results to be cached. This only applies when Schematron to XSLT
-   * conversion is performed.
+   * Force the results to be cached. This only applies when Schematron to XSLT conversion is
+   * performed.
    */
   @Parameter (name = "forceCacheResult", defaultValue = "false")
   @Since ("5.2.1")
   private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
-   * Define if old namespace URIs should be supported or not. By default this is
-   * disabled. This parameter takes only effect when using
-   * schematronProcessingEngine "pure".
+   * Define if old namespace URIs should be supported or not. By default this is disabled. This
+   * parameter takes only effect when using schematronProcessingEngine "pure".
    */
   @Parameter (name = "lenient", defaultValue = "false")
   @Since ("5.4.1")
   private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
 
   /**
-   * <code>true</code> to ignore all warnings, <code>false</code> to also show
-   * warning messages,
+   * <code>true</code> to ignore all warnings, <code>false</code> to also show warning messages,
    */
   @Parameter (name = "ignoreWarnings", defaultValue = "false")
   @Since ("7.1.3")
@@ -264,7 +248,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     m_aXmlIncludes = aPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting XML file includes to " +
-                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
+                       StringImplode.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
   public void setXmlExcludes (@Nullable final String [] aPattern)
@@ -272,7 +256,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     m_aXmlExcludes = aPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting XML file excludes to " +
-                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
+                       StringImplode.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
   public void setSvrlDirectory (@Nonnull final File aDir)
@@ -298,7 +282,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     m_aXmlErrorIncludes = aPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting erroneous XML file includes to " +
-                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
+                       StringImplode.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
   public void setXmlErrorExcludes (@Nullable final String [] aPattern)
@@ -306,7 +290,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     m_aXmlErrorExcludes = aPattern;
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Setting erroneous XML file excludes to " +
-                       StringHelper.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
+                       StringImplode.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
   public void setSvrlErrorDirectory (@Nonnull final File aDir)
@@ -403,14 +387,13 @@ public final class SchematronValidationMojo extends AbstractMojo
    * @param aXMLExcludes
    *        XML exclude mask - may be <code>null</code> or empty
    * @param aSVRLDirectory
-   *        SVRL directory to write to (maybe <code>null</code> in which case
-   *        the SVRL is not written)
+   *        SVRL directory to write to (maybe <code>null</code> in which case the SVRL is not
+   *        written)
    * @param bExpectSuccess
-   *        <code>true</code> if this is a positive validation,
-   *        <code>false</code> if error is expected
+   *        <code>true</code> if this is a positive validation, <code>false</code> if error is
+   *        expected
    * @param aErrorMessages
-   *        The list of collected error messages (only used if fail-fast is
-   *        disabled)
+   *        The list of collected error messages (only used if fail-fast is disabled)
    * @throws MojoExecutionException
    *         Internal error
    * @throws MojoFailureException
@@ -538,9 +521,10 @@ public final class SchematronValidationMojo extends AbstractMojo
       throw new MojoExecutionException ("The specified Schematron file " + m_aSchematronFile + " is not a file!");
     if (m_sSchematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                                        StringHelper.getImplodedMapped (", ",
-                                                                        ESchematronMode.values (),
-                                                                        x -> "'" + x.getID () + "'"));
+                                        StringImplode.imploder ()
+                                                     .source (ESchematronMode.values (), x -> "'" + x.getID () + "'")
+                                                     .separator (", ")
+                                                     .build ());
     if (m_aXmlDirectory == null && m_aXmlErrorDirectory == null)
       throw new MojoExecutionException ("No XML directory specified - positive or negative directory must be present!");
 
@@ -689,7 +673,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     {
       // Build collecting error message
       aErrorMessages.add (0, aErrorMessages.size () + " errors found:");
-      final String sCollectedErrorMessages = StringHelper.getImploded ("\n  ", aErrorMessages);
+      final String sCollectedErrorMessages = StringImplode.imploder ().source (aErrorMessages).separator ("\n  ").build ();
       throw new MojoFailureException (sCollectedErrorMessages);
     }
   }

@@ -21,16 +21,16 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import org.junit.Test;
 
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+
+import jakarta.annotation.Nonnull;
 
 public final class Issue158Test
 {

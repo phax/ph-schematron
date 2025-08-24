@@ -16,20 +16,21 @@
  */
 package com.helger.schematron.relaxng;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
 
-import com.helger.commons.annotation.Singleton;
-import com.helger.commons.system.SystemProperties;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.annotation.misc.Singleton;
+import com.helger.base.system.SystemProperties;
 import com.helger.xml.ls.SimpleLSResourceResolver;
 import com.helger.xml.sax.LoggingSAXErrorHandler;
 import com.helger.xml.schema.SchemaCache;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This class is used to cache Relax NG Compact schema objects.

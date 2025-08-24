@@ -19,13 +19,13 @@ package com.helger.schematron.resolve;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.annotation.Nonempty;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.io.resource.IReadableResource;
+import com.helger.io.resourceresolver.DefaultResourceResolver;
 
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.io.resourceresolver.DefaultResourceResolver;
-import com.helger.commons.string.ToStringGenerator;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * The default implementation of {@link ISchematronIncludeResolver} using the

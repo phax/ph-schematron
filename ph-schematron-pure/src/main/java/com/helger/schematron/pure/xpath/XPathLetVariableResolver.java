@@ -16,16 +16,17 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 @NotThreadSafe
 public class XPathLetVariableResolver implements XPathVariableResolver

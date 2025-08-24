@@ -20,9 +20,6 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -36,18 +33,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.state.EValidity;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
-import com.helger.commons.traits.IGenericImplTrait;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableObject;
+import com.helger.base.debug.GlobalDebug;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.EValidity;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.base.trait.IGenericImplTrait;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.io.file.FileHelper;
+import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
@@ -59,9 +57,11 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+
 /**
- * Abstract implementation of a Schematron resource that is based on XSLT
- * transformations.
+ * Abstract implementation of a Schematron resource that is based on XSLT transformations.
  *
  * @author Philip Helger
  * @param <IMPLTYPE>
@@ -142,8 +142,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the XML to be
-   * validated.
+   * Set the XML entity resolver to be used when reading the XML to be validated.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -158,15 +157,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
-   * @return The XSLT provider passed in the constructor. May be
-   *         <code>null</code>.
+   * @return The XSLT provider passed in the constructor. May be <code>null</code>.
    */
   @Nullable
   public abstract ISchematronXSLTBasedProvider getXSLTProvider ();
 
   /**
-   * @return The Schematron output validator to be used. Never
-   *         <code>null</code>.
+   * @return The Schematron output validator to be used. Never <code>null</code>.
    */
   @Nonnull
   public final ISchematronOutputValidityDeterminator getOutputValidityDeterminator ()
@@ -234,7 +231,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
 
     LOGGER.info ("Applying Schematron XSLT on XML instance" +
-                 (StringHelper.hasText (sBaseURI) ? " with base URI '" + sBaseURI + "'" : ""));
+                 (StringHelper.isNotEmpty (sBaseURI) ? " with base URI '" + sBaseURI + "'" : ""));
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
