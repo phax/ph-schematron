@@ -88,7 +88,7 @@
             <Export-Package>
               com.helger.schematron.testfiles
             </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

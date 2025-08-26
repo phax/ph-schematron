@@ -30,7 +30,6 @@
   <description>Base API for the library for validating XML documents with Schematron</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-api</url>
   <inceptionYear>2014</inceptionYear>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -38,12 +37,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <organization>
     <name>Philip Helger</name>
     <url>https://www.helger.com</url>
   </organization>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -52,7 +49,6 @@
       <url>https://www.helger.com</url>
     </developer>
   </developers>
-
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
@@ -74,12 +70,10 @@
       <groupId>com.helger.xsd</groupId>
       <artifactId>ph-xsds-xml</artifactId>
     </dependency>
-    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
-    <dependency>
+    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->    <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>Saxon-HE</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -96,7 +90,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
   <build>
     <plugins>
       <plugin>
@@ -106,21 +99,19 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.schematron</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.schematron,
+            <Export-Package>com.helger.schematron,
               com.helger.schematron.api.xslt,
               com.helger.schematron.api.xslt.validator,
               com.helger.schematron.config,
               com.helger.schematron.resolve,
               com.helger.schematron.saxon,
               com.helger.schematron.svrl,
-              com.helger.schematron.svrl.jaxb
-            </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+              com.helger.schematron.svrl.jaxb</Export-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
 osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
 osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVRLLocationBeautifierSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
@@ -193,7 +184,7 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
             ${project.build.sourceDirectory}:${project.build.directory}/generated-sources/svrl
           </sourcepath>
         </configuration>
-      </plugin> 
+      </plugin>
     </plugins>
   </build>
 </project>

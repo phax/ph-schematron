@@ -99,7 +99,7 @@
               com.helger.schematron.sch,
               com.helger.schematron.xslt
             </Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
