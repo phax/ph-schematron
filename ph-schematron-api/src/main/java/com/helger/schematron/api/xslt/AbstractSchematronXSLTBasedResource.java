@@ -213,9 +213,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aSOVDeterminator.getSchematronOutputValidity (aSO);
   }
 
+  @Override
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Source aSource)
-      throws TransformerException
+  public final Document applySchematronValidation (@Nonnull final Source aSource) throws TransformerException
   {
     ValueEnforcer.notNull (aSource, "Source");
 
@@ -232,7 +232,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
 
     LOGGER.info ("Applying Schematron XSLT on XML instance" +
-                 (StringHelper.isNotEmpty (aSource.getSystemId()) ? " with base URI '" + aSource.getSystemId() + "'" : ""));
+                 (StringHelper.isNotEmpty (aSource.getSystemId ()) ? " with base URI '" + aSource.getSystemId () + "'"
+                                                                   : ""));
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
@@ -278,10 +279,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation(@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception {
+  public Document applySchematronValidation (@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception
+  {
+    ValueEnforcer.notNull (aXMLNode, "XMLNode");
+
     final DOMSource aSource = new DOMSource (aXMLNode);
     aSource.setSystemId (sBaseURI);
-    return applySchematronValidation(aSource);
+    return applySchematronValidation (aSource);
   }
 
   @Nullable
