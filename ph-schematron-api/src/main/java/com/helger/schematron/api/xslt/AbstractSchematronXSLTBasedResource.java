@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
@@ -213,10 +214,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                                  throws TransformerException
+  public final Document applySchematronValidation (@Nonnull final Source aSource)
+      throws TransformerException
   {
-    ValueEnforcer.notNull (aXMLNode, "XMLNode");
+    ValueEnforcer.notNull (aSource, "Source");
 
     final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
     if (aXSLTProvider == null || !aXSLTProvider.isValidSchematron ())
@@ -231,7 +232,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
 
     LOGGER.info ("Applying Schematron XSLT on XML instance" +
-                 (StringHelper.isNotEmpty (sBaseURI) ? " with base URI '" + sBaseURI + "'" : ""));
+                 (StringHelper.isNotEmpty (aSource.getSystemId()) ? " with base URI '" + aSource.getSystemId() + "'" : ""));
 
     // Create result document
     final Document ret = XMLFactory.newDocument ();
@@ -264,11 +265,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       LOGGER.debug ("Applying Schematron XSLT on XML [start]");
 
     // Do the main transformation
-    {
-      final DOMSource aSource = new DOMSource (aXMLNode);
-      aSource.setSystemId (sBaseURI);
-      aTransformer.transform (aSource, new DOMResult (ret));
-    }
+    aTransformer.transform (aSource, new DOMResult (ret));
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Applying Schematron XSLT on XML [end]");
@@ -278,6 +275,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       LOGGER.info ("Created SVRL:\n" + XMLWriter.getNodeAsString (ret));
 
     return ret;
+  }
+
+  @Nullable
+  public Document applySchematronValidation(@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception {
+    final DOMSource aSource = new DOMSource (aXMLNode);
+    aSource.setSystemId (sBaseURI);
+    return applySchematronValidation(aSource);
   }
 
   @Nullable
