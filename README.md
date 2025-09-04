@@ -1,6 +1,6 @@
 # ph-schematron
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.schematron/ph-schematron-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.schematron/ph-schematron-api) 
+[![Maven Central](https://img.shields.io/maven-central/v/com.helger.schematron/ph-schematron-parent-pom)](https://img.shields.io/maven-central/v/com.helger.schematron/ph-schematron-parent-pom)
 [![javadoc](https://javadoc.io/badge2/com.helger.schematron/ph-schematron-api/javadoc.svg)](https://javadoc.io/doc/com.helger.schematron/ph-schematron-api)
 [![CodeCov](https://codecov.io/gh/phax/ph-schematron/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-schematron)
 
