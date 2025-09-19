@@ -19,13 +19,13 @@ package com.helger.maven.schematron;
 import java.io.File;
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.base.string.StringImplode;
 import com.helger.diagnostics.error.IError;
 import com.helger.xml.transform.AbstractTransformErrorListener;
+
+import jakarta.annotation.Nonnull;
 
 public class PluginErrorListener extends AbstractTransformErrorListener
 {
