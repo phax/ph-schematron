@@ -16,6 +16,9 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EChange;
@@ -23,9 +26,6 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.diagnostics.error.list.IErrorList;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract collecting {@link IPSErrorHandler} that collects all error messages
@@ -38,7 +38,7 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
 {
   private final ErrorList m_aErrorList;
 
-  public AbstractCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList,
+  public AbstractCollectingPSErrorHandler (@NonNull final ErrorList aErrorList,
                                            @Nullable final IPSErrorHandler aNestedErrorHandler)
   {
     super (aNestedErrorHandler);
@@ -46,26 +46,26 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
   }
 
   @Override
-  protected void handleInternally (@Nonnull final IError aError)
+  protected void handleInternally (@NonNull final IError aError)
   {
     m_aErrorList.add (aError);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public IErrorList getErrorList ()
   {
     return m_aErrorList.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public IErrorList getAllFailures ()
   {
     return m_aErrorList.getAllFailures ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public IErrorList getAllErrors ()
   {
@@ -78,7 +78,7 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
    *
    * @return {@link EChange#CHANGED} if at least one item was cleared.
    */
-  @Nonnull
+  @NonNull
   public EChange clearResourceErrors ()
   {
     return m_aErrorList.removeAll ();

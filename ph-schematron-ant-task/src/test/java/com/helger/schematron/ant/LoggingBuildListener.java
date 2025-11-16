@@ -19,10 +19,9 @@ package com.helger.schematron.ant;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.annotation.Nonnull;
 
 final class LoggingBuildListener implements BuildListener
 {
@@ -52,7 +51,7 @@ final class LoggingBuildListener implements BuildListener
   public void targetFinished (final BuildEvent aEvent)
   {}
 
-  public void messageLogged (@Nonnull final BuildEvent aEvent)
+  public void messageLogged (@NonNull final BuildEvent aEvent)
   {
     if (aEvent.getPriority () <= Project.MSG_ERR)
       LOGGER.error (aEvent.getMessage (), aEvent.getException ());

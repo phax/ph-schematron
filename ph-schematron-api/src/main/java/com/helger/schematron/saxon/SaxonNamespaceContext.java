@@ -20,6 +20,9 @@ import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.misc.DevelopersNote;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
@@ -27,8 +30,6 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import net.sf.saxon.om.NamespaceResolver;
 import net.sf.saxon.om.NamespaceUri;
 
@@ -36,7 +37,7 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
 {
   private final MapBasedNamespaceContext m_aCtx;
 
-  public SaxonNamespaceContext (@Nonnull final MapBasedNamespaceContext aCtx)
+  public SaxonNamespaceContext (@NonNull final MapBasedNamespaceContext aCtx)
   {
     m_aCtx = ValueEnforcer.notNull (aCtx, "Ctx");
   }
@@ -49,7 +50,7 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
     return NamespaceUri.of (m_aCtx.getCustomNamespaceURI (sPrefix));
   }
 
-  @Nonnull
+  @NonNull
   public Iterator <String> iteratePrefixes ()
   {
     final ICommonsList <String> aList = new CommonsArrayList <> (m_aCtx.getPrefixToNamespaceURIMap ().keySet ());
@@ -57,21 +58,21 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
     return aList.iterator ();
   }
 
-  @Nonnull
-  public String getNamespaceURI (@Nonnull final String sPrefix)
+  @NonNull
+  public String getNamespaceURI (@NonNull final String sPrefix)
   {
     return m_aCtx.getNamespaceURI (sPrefix);
   }
 
   @Nullable
-  public String getPrefix (@Nonnull final String sNamespaceURI)
+  public String getPrefix (@NonNull final String sNamespaceURI)
   {
     return m_aCtx.getPrefix (sNamespaceURI);
   }
 
-  @Nonnull
+  @NonNull
   @DevelopersNote ("Java 8: Iterator; Java 10: Iterator<String>")
-  public Iterator <String> getPrefixes (@Nonnull final String sNamespaceURI)
+  public Iterator <String> getPrefixes (@NonNull final String sNamespaceURI)
   {
     return m_aCtx.getPrefixes (sNamespaceURI);
   }

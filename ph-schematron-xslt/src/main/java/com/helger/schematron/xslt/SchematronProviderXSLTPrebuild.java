@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -34,8 +35,6 @@ import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.TransformSourceFactory;
-
-import jakarta.annotation.Nullable;
 
 /**
  * This Schematron validator factory uses an existing, precompiled Schematron

@@ -19,15 +19,14 @@ package com.helger.schematron.api.xslt;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.URIResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.EntityResolver;
 
 import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Special Schematron resource for XSLT based implementations.
@@ -48,7 +47,7 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    *        Error listener to use.
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   ISchematronXSLTBasedResource setErrorListener (@Nullable ErrorListener aCustomErrorListener);
 
   /**
@@ -65,14 +64,14 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    *        The {@link URIResolver} to use. May be <code>null</code>,
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   ISchematronXSLTBasedResource setURIResolver (@Nullable URIResolver aCustomURIResolver);
 
   /**
    * @return A mutable (=writable) copy of the parameters map. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   ICommonsOrderedMap <String, Object> parameters ();
 
@@ -101,7 +100,7 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    * @return this for chaining
    * @see #getEntityResolver()
    */
-  @Nonnull
+  @NonNull
   ISchematronXSLTBasedResource setEntityResolver (@Nullable EntityResolver aEntityResolver);
 
   /**
@@ -110,7 +109,7 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    * @return The Schematron output validity determinator to be used. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   ISchematronOutputValidityDeterminator getOutputValidityDeterminator ();
 
   /**
@@ -121,8 +120,8 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    *        Validity determinator instance to use. May not be <code>null</code>.
    * @return this for chaining
    */
-  @Nonnull
-  ISchematronXSLTBasedResource setOutputValidityDeterminator (@Nonnull ISchematronOutputValidityDeterminator aValidityDeterminator);
+  @NonNull
+  ISchematronXSLTBasedResource setOutputValidityDeterminator (@NonNull ISchematronOutputValidityDeterminator aValidityDeterminator);
 
   /**
    * @return <code>true</code> if the created SVRL should be validated or not.
@@ -140,6 +139,6 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    * @return this for chaining
    * @since 6.3.3
    */
-  @Nonnull
+  @NonNull
   ISchematronXSLTBasedResource setValidateSVRL (boolean bValidateSVRL);
 }

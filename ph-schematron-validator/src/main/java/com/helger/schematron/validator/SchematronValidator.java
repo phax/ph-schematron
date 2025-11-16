@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.xml.transform.Source;
 import javax.xml.validation.Validator;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -38,8 +39,6 @@ import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.sax.CollectingSAXErrorHandler;
 import com.helger.xml.transform.TransformSourceFactory;
-
-import jakarta.annotation.Nullable;
 
 /**
  * Helper class that validates a Schematron against the RelaxNG Compact scheme.

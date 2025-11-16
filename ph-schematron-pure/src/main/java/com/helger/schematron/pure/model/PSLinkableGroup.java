@@ -18,14 +18,14 @@ package com.helger.schematron.pure.model;
 
 import java.io.Serializable;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.clone.ICloneable;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
 import com.helger.xml.microdom.IMicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single "linkable" group
@@ -93,13 +93,13 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
     return CSchematronXML.ATTR_ROLE.equals (sAttrName) || CSchematronXML.ATTR_SUBJECT.equals (sAttrName);
   }
 
-  public void fillMicroElement (@Nonnull final IMicroElement aElement)
+  public void fillMicroElement (@NonNull final IMicroElement aElement)
   {
     aElement.setAttribute (CSchematronXML.ATTR_ROLE, m_sRole);
     aElement.setAttribute (CSchematronXML.ATTR_SUBJECT, m_sSubject);
   }
 
-  @Nonnull
+  @NonNull
   public PSLinkableGroup getClone ()
   {
     final PSLinkableGroup ret = new PSLinkableGroup ();

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.io.resource.FileSystemResource;
@@ -27,8 +28,6 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
-
-import jakarta.annotation.Nonnull;
 
 public final class Issue008Test
 {
@@ -39,7 +38,7 @@ public final class Issue008Test
                             new File ("src/test/resources/external/issues/github8/test.xml"));
   }
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 

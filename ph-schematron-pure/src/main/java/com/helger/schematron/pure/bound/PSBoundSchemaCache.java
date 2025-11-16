@@ -16,12 +16,12 @@
  */
 package com.helger.schematron.pure.bound;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.CGlobal;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.cache.impl.Cache;
 import com.helger.schematron.SchematronException;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A cache for {@link IPSBoundSchema} instances. Use {@link #getInstance()} to retrieve a global
@@ -44,7 +44,7 @@ public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSc
     this (PSBoundSchemaCache.class.getName ());
   }
 
-  public PSBoundSchemaCache (@Nonnull final String sCacheName)
+  public PSBoundSchemaCache (@NonNull final String sCacheName)
   {
     super (aKey -> {
       ValueEnforcer.notNull (aKey, "Key");
@@ -61,7 +61,7 @@ public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSc
     }, CGlobal.ILLEGAL_UINT, sCacheName);
   }
 
-  @Nonnull
+  @NonNull
   public static PSBoundSchemaCache getInstance ()
   {
     return SingletonHolder.INSTANCE;

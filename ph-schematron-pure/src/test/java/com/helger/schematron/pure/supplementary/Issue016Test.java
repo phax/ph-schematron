@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,14 +51,12 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue016Test
 {
   public static final class SchematronUtil
   {
-    public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile,
-                                                        @Nonnull final File aXMLFile) throws Exception
+    public static boolean validateXMLViaXSLTSchematron (@NonNull final File aSchematronFile,
+                                                        @NonNull final File aXMLFile) throws Exception
     {
       final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
       if (!aResSCH.isValidSchematron ())
@@ -65,8 +64,8 @@ public final class Issue016Test
       return aResSCH.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
     }
 
-    public static SchematronOutputType validateXMLViaXSLTSchematronFull (@Nonnull final File aSchematronFile,
-                                                                         @Nonnull final File aXMLFile) throws Exception
+    public static SchematronOutputType validateXMLViaXSLTSchematronFull (@NonNull final File aSchematronFile,
+                                                                         @NonNull final File aXMLFile) throws Exception
     {
       final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
       if (!aResSCH.isValidSchematron ())
@@ -74,8 +73,8 @@ public final class Issue016Test
       return aResSCH.applySchematronValidationToSVRL (new StreamSource (aXMLFile));
     }
 
-    public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile,
-                                                        @Nonnull final File aXMLFile) throws Exception
+    public static boolean validateXMLViaPureSchematron (@NonNull final File aSchematronFile,
+                                                        @NonNull final File aXMLFile) throws Exception
     {
       final ISchematronResource aResPure = SchematronResourcePure.fromFile (aSchematronFile);
       if (!aResPure.isValidSchematron ())
@@ -83,8 +82,8 @@ public final class Issue016Test
       return aResPure.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
     }
 
-    public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile,
-                                                         @Nonnull final File aXMLFile) throws Exception
+    public static boolean validateXMLViaPureSchematron2 (@NonNull final File aSchematronFile,
+                                                         @NonNull final File aXMLFile) throws Exception
     {
       // Read the schematron from file
       final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
@@ -106,7 +105,7 @@ public final class Issue016Test
       return aBoundSchema.validatePartially (aXMLNode, FileHelper.getAsURLString (aXMLFile)).isValid ();
     }
 
-    public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) throws Exception
+    public static boolean readModifyAndWrite (@NonNull final File aSchematronFile) throws Exception
     {
       final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
       final PSTitle aTitle = new PSTitle ();

@@ -19,6 +19,7 @@ package com.helger.schematron;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +27,6 @@ import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.log.ConditionalLogger;
 import com.helger.base.log.IConditionalLogger;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Global Schematron debug settings etc.
@@ -77,7 +76,7 @@ public final class SchematronDebug
     setDebugLog (bDebugMode);
   }
 
-  public static void inDebugMode (@Nonnull final Runnable aRun)
+  public static void inDebugMode (@NonNull final Runnable aRun)
   {
     setDebugMode (true);
     try
@@ -116,7 +115,7 @@ public final class SchematronDebug
    *         <code>null</code>. Only used in XSLT based modes if
    *         {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
    */
-  @Nonnull
+  @NonNull
   public static File getIntermediateMinifiedSCHFolder ()
   {
     return s_aIntermediateMinifiedSCHFolder;
@@ -129,7 +128,7 @@ public final class SchematronDebug
    * @param aIntermediateMinifiedSCHFolder
    *        The folder to save to. May not be <code>null</code>.
    */
-  public static void setIntermediateMinifiedSCHFolder (@Nonnull final File aIntermediateMinifiedSCHFolder)
+  public static void setIntermediateMinifiedSCHFolder (@NonNull final File aIntermediateMinifiedSCHFolder)
   {
     ValueEnforcer.notNull (aIntermediateMinifiedSCHFolder, "IntermediateMinifiedSCHFolder");
     s_aIntermediateMinifiedSCHFolder = aIntermediateMinifiedSCHFolder;
@@ -140,7 +139,7 @@ public final class SchematronDebug
    *         <code>null</code>. Only used in XSLT based modes if
    *         {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
    */
-  @Nonnull
+  @NonNull
   public static File getIntermediateFinalXSLTFolder ()
   {
     return s_aIntermediateFinalXSLTFolder;
@@ -153,7 +152,7 @@ public final class SchematronDebug
    * @param aIntermediateFinalXSLTFolder
    *        The folder to save to. May not be <code>null</code>.
    */
-  public static void setIntermediateFinalXSLTFolder (@Nonnull final File aIntermediateFinalXSLTFolder)
+  public static void setIntermediateFinalXSLTFolder (@NonNull final File aIntermediateFinalXSLTFolder)
   {
     ValueEnforcer.notNull (aIntermediateFinalXSLTFolder, "IntermediateFinalXSLTFolder");
     s_aIntermediateFinalXSLTFolder = aIntermediateFinalXSLTFolder;
@@ -277,7 +276,7 @@ public final class SchematronDebug
    * @see #setDebugLog(boolean)
    * @since v8
    */
-  @Nonnull
+  @NonNull
   public static IConditionalLogger getDebugLogger ()
   {
     return COND_LOG;

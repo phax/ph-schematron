@@ -26,9 +26,8 @@ import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.util.ProcessUtil;
+import org.jspecify.annotations.NonNull;
 import org.junit.rules.ExternalResource;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Provides access for JUnit tests to execute Ant targets and access execution
@@ -350,7 +349,7 @@ public final class MyBuildFileRule extends ExternalResource
     }
   }
 
-  @Nonnull
+  @NonNull
   public File getOutputDir ()
   {
     return new File (getProject ().getProperty ("output"));

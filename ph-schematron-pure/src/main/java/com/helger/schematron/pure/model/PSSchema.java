@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -36,9 +39,6 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron schema-element.<br>
@@ -112,7 +112,7 @@ public class PSSchema implements
     return m_aResource;
   }
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (m_aPatterns.isEmpty ())
     {
@@ -147,7 +147,7 @@ public class PSSchema implements
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (m_aPatterns.isEmpty ())
       aErrorHandler.error (this, "<schema> has no <pattern>s");
@@ -236,7 +236,7 @@ public class PSSchema implements
     return true;
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -251,14 +251,14 @@ public class PSSchema implements
     return m_aForeignElements != null && m_aForeignElements.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return new CommonsArrayList <> (m_aForeignElements);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -272,7 +272,7 @@ public class PSSchema implements
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -354,7 +354,7 @@ public class PSSchema implements
     return m_aTitle != null;
   }
 
-  public void addInclude (@Nonnull final PSInclude aInclude)
+  public void addInclude (@NonNull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
     m_aIncludes.add (aInclude);
@@ -365,14 +365,14 @@ public class PSSchema implements
     return m_aIncludes.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
     return m_aIncludes.getClone ();
   }
 
-  public void addNS (@Nonnull final PSNS aNS)
+  public void addNS (@NonNull final PSNS aNS)
   {
     ValueEnforcer.notNull (aNS, "NS");
     m_aNSs.add (aNS);
@@ -383,7 +383,7 @@ public class PSSchema implements
     return m_aNSs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSNS> getAllNSs ()
   {
@@ -393,7 +393,7 @@ public class PSSchema implements
   /**
    * @return All contained namespaces as a single namespace context
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public MapBasedNamespaceContext getAsNamespaceContext ()
   {
@@ -403,20 +403,20 @@ public class PSSchema implements
     return ret;
   }
 
-  public void addStartP (@Nonnull final PSP aP)
+  public void addStartP (@NonNull final PSP aP)
   {
     ValueEnforcer.notNull (aP, "P");
     m_aStartPs.add (aP);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSP> getAllStartPs ()
   {
     return m_aStartPs.getClone ();
   }
 
-  public void addLet (@Nonnull final PSLet aLet)
+  public void addLet (@NonNull final PSLet aLet)
   {
     ValueEnforcer.notNull (aLet, "Let");
     m_aLets.add (aLet);
@@ -427,14 +427,14 @@ public class PSSchema implements
     return m_aLets.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSLet> getAllLets ()
   {
     return m_aLets.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
@@ -444,13 +444,13 @@ public class PSSchema implements
     return ret;
   }
 
-  public void addPhase (@Nonnull final PSPhase aPhase)
+  public void addPhase (@NonNull final PSPhase aPhase)
   {
     ValueEnforcer.notNull (aPhase, "Phase");
     m_aPhases.add (aPhase);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSPhase> getAllPhases ()
   {
@@ -460,7 +460,7 @@ public class PSSchema implements
   /**
    * @return A list with all phase IDs. Only phases having a valid ID are considered.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllPhaseIDs ()
   {
@@ -477,7 +477,7 @@ public class PSSchema implements
     return null;
   }
 
-  public void addPattern (@Nonnull final PSPattern aPattern)
+  public void addPattern (@NonNull final PSPattern aPattern)
   {
     ValueEnforcer.notNull (aPattern, "Pattern");
     m_aPatterns.add (aPattern);
@@ -493,7 +493,7 @@ public class PSSchema implements
     return m_aPatterns.isEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSPattern> getAllPatterns ()
   {
@@ -516,13 +516,13 @@ public class PSSchema implements
     return null;
   }
 
-  public void addEndP (@Nonnull final PSP aP)
+  public void addEndP (@NonNull final PSP aP)
   {
     ValueEnforcer.notNull (aP, "P");
     m_aEndPs.add (aP);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSP> getAllEndPs ()
   {
@@ -545,7 +545,7 @@ public class PSSchema implements
     return m_aDiagnostics;
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_SCHEMA);

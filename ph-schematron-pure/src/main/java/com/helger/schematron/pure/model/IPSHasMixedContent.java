@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for a Schematron element that has {@link String} and
@@ -32,7 +32,7 @@ public interface IPSHasMixedContent extends IPSHasTexts
   /**
    * @return A list of all contained elements.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsList <Object> getAllContentElements ();
 }

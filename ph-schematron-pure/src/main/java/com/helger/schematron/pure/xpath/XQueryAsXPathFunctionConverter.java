@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,6 @@ import com.helger.collection.commons.CommonsIterableIterator;
 import com.helger.io.file.FileHelper;
 import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
-import jakarta.annotation.Nonnull;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.instruct.UserFunction;
@@ -80,7 +80,7 @@ public class XQueryAsXPathFunctionConverter
    * @throws MalformedURLException
    *         In case the conversion to URL failed
    */
-  public XQueryAsXPathFunctionConverter (@Nonnull final File aBasePath) throws MalformedURLException
+  public XQueryAsXPathFunctionConverter (@NonNull final File aBasePath) throws MalformedURLException
   {
     this (FileHelper.getAsURLString (aBasePath));
   }
@@ -92,7 +92,7 @@ public class XQueryAsXPathFunctionConverter
    * @param sBaseURL
    *        Base URL for XQuery resource resolving. May neither be <code>null</code> nor empty.
    */
-  public XQueryAsXPathFunctionConverter (@Nonnull @Nonempty final String sBaseURL)
+  public XQueryAsXPathFunctionConverter (@NonNull @Nonempty final String sBaseURL)
   {
     m_sBaseURL = ValueEnforcer.notEmpty (sBaseURL, "BaseURL");
   }
@@ -100,7 +100,7 @@ public class XQueryAsXPathFunctionConverter
   /**
    * @return The base URL provided in the constructor. Neither <code>null</code> nor empty.
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getBaseURL ()
   {
@@ -122,8 +122,8 @@ public class XQueryAsXPathFunctionConverter
    * @throws IOException
    *         if a failure occurs reading the supplied input.
    */
-  @Nonnull
-  public MapBasedXPathFunctionResolver loadXQuery (@Nonnull @WillClose final InputStream aXQueryIS) throws XPathException,
+  @NonNull
+  public MapBasedXPathFunctionResolver loadXQuery (@NonNull @WillClose final InputStream aXQueryIS) throws XPathException,
                                                                                                     IOException
   {
     ValueEnforcer.notNull (aXQueryIS, "XQueryIS");

@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.validation;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
@@ -24,9 +26,6 @@ import com.helger.base.state.EValidity;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.pure.model.PSAssertReport;
 import com.helger.schematron.pure.model.PSRule;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A simple implementation if {@link IPSValidationHandler} that stops validation
@@ -41,11 +40,11 @@ public class PSValidationHandlerBreakOnFirstFailedAssert implements IPSPartialVa
   private EValidity m_eValidity = EValidity.VALID;
 
   @Override
-  @Nonnull
-  public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
-                                   @Nonnull final PSAssertReport aAssertReport,
-                                   @Nonnull final String sTestExpression,
-                                   @Nonnull final Node aRuleMatchingNode,
+  @NonNull
+  public EContinue onFailedAssert (@NonNull final PSRule aOwningRule,
+                                   @NonNull final PSAssertReport aAssertReport,
+                                   @NonNull final String sTestExpression,
+                                   @NonNull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
                                    @Nullable final Object aContext,
                                    @Nullable final Exception aEvaluationException)
@@ -60,7 +59,7 @@ public class PSValidationHandlerBreakOnFirstFailedAssert implements IPSPartialVa
    *         {@link EValidity#INVALID} otherwise.
    */
   @Override
-  @Nonnull
+  @NonNull
   public EValidity getValidity ()
   {
     return m_eValidity;

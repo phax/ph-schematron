@@ -18,6 +18,9 @@ package com.helger.schematron.pure.bound.xpath;
 
 import javax.xml.xpath.XPathExpression;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -25,9 +28,6 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.schematron.pure.model.PSAssertReport;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class represents a single XPath-bound assert- or report-element.
@@ -43,11 +43,11 @@ public class PSXPathBoundAssertReport
   private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
   private final ICommonsMap <String, PSXPathBoundDiagnostic> m_aBoundDiagnostics;
 
-  public PSXPathBoundAssertReport (@Nonnull final PSAssertReport aAssertReport,
-                                   @Nonnull final String sTestExpression,
-                                   @Nonnull final XPathExpression aBoundTestExpression,
-                                   @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent,
-                                   @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics)
+  public PSXPathBoundAssertReport (@NonNull final PSAssertReport aAssertReport,
+                                   @NonNull final String sTestExpression,
+                                   @NonNull final XPathExpression aBoundTestExpression,
+                                   @NonNull final ICommonsList <PSXPathBoundElement> aBoundContent,
+                                   @NonNull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics)
   {
     ValueEnforcer.notNull (aAssertReport, "AssertReport");
     ValueEnforcer.notNull (sTestExpression, "TestExpression");
@@ -64,7 +64,7 @@ public class PSXPathBoundAssertReport
   /**
    * @return The original assert/report element. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final PSAssertReport getAssertReport ()
   {
     return m_aAssertReport;
@@ -74,7 +74,7 @@ public class PSXPathBoundAssertReport
    * @return The source XPath expression that was compiled. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final String getTestExpression ()
   {
     return m_sTestExpression;
@@ -83,7 +83,7 @@ public class PSXPathBoundAssertReport
   /**
    * @return The pre-compiled XPath expression. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final XPathExpression getBoundTestExpression ()
   {
     return m_aBoundTestExpression;
@@ -93,7 +93,7 @@ public class PSXPathBoundAssertReport
    * @return All contained bound elements. It has the same amount of elements as
    *         the source assert/report.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
   {

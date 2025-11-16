@@ -16,14 +16,14 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.model.PSDiagnostic;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a single XPath-bound diagnostic-element.
@@ -36,8 +36,8 @@ public class PSXPathBoundDiagnostic
   private final PSDiagnostic m_aDiagnostic;
   private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
 
-  public PSXPathBoundDiagnostic (@Nonnull final PSDiagnostic aDiagnostic,
-                                 @Nonnull final ICommonsList <PSXPathBoundElement> aBoundContent)
+  public PSXPathBoundDiagnostic (@NonNull final PSDiagnostic aDiagnostic,
+                                 @NonNull final ICommonsList <PSXPathBoundElement> aBoundContent)
   {
     ValueEnforcer.notNull (aDiagnostic, "Diagnostic");
     ValueEnforcer.notNull (aBoundContent, "BoundContent");
@@ -45,13 +45,13 @@ public class PSXPathBoundDiagnostic
     m_aBoundContent = aBoundContent;
   }
 
-  @Nonnull
+  @NonNull
   public PSDiagnostic getDiagnostic ()
   {
     return m_aDiagnostic;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSXPathBoundElement> getAllBoundContentElements ()
   {

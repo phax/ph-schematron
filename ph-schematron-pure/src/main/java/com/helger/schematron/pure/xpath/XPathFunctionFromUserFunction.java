@@ -21,14 +21,14 @@ import java.util.List;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.JPConverter;
@@ -51,9 +51,9 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
   private final Controller m_aXQController;
   private final UserFunction m_aUserFunc;
 
-  public XPathFunctionFromUserFunction (@Nonnull final Configuration aConfiguration,
-                                        @Nonnull final Controller aXQController,
-                                        @Nonnull final UserFunction aUserFunc)
+  public XPathFunctionFromUserFunction (@NonNull final Configuration aConfiguration,
+                                        @NonNull final Controller aXQController,
+                                        @NonNull final UserFunction aUserFunc)
   {
     m_aConfiguration = ValueEnforcer.notNull (aConfiguration, "Configuration");
     m_aUserFunc = ValueEnforcer.notNull (aUserFunc, "UserFunc");
@@ -63,7 +63,7 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
   /**
    * @return The underlying Saxon user function.
    */
-  @Nonnull
+  @NonNull
   public UserFunction getUserFunction ()
   {
     return m_aUserFunc;
@@ -72,14 +72,14 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
   /**
    * @return The function name.
    */
-  @Nonnull
+  @NonNull
   public StructuredQName getFunctionName ()
   {
     return m_aUserFunc.getFunctionName ();
   }
 
   @Nullable
-  public Object evaluate (@Nonnull final List <?> aArgs) throws XPathFunctionException
+  public Object evaluate (@NonNull final List <?> aArgs) throws XPathFunctionException
   {
     LOGGER.info ("Evaluating user function '" + getFunctionName () + "' with " + aArgs.size () + " parameter(s)");
 

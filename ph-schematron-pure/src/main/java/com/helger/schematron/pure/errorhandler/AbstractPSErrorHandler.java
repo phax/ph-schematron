@@ -16,11 +16,11 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diagnostics.error.IError;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of {@link IPSErrorHandler}.
@@ -57,9 +57,9 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
    * @param aError
    *        The structured error. May not be <code>null</code>.
    */
-  protected abstract void handleInternally (@Nonnull IError aError);
+  protected abstract void handleInternally (@NonNull IError aError);
 
-  public final void handleError (@Nonnull final IError aError)
+  public final void handleError (@NonNull final IError aError)
   {
     handleInternally (aError);
 

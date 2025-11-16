@@ -16,14 +16,14 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.lang.clazz.ClassHelper;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.ISchematronErrorHandler;
 import com.helger.schematron.pure.model.IPSElement;
 import com.helger.schematron.pure.model.IPSHasID;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a Pure Schematron error handler.<br>
@@ -33,7 +33,7 @@ import jakarta.annotation.Nullable;
  */
 public interface IPSErrorHandler extends ISchematronErrorHandler
 {
-  default void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMessage)
+  default void error (@NonNull final IPSElement aSourceElement, @NonNull final String sMessage)
   {
     handleError (SingleError.builderError ()
                             .errorFieldName (getErrorFieldName (aSourceElement))

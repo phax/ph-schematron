@@ -16,8 +16,8 @@
  */
 package com.helger.schematron;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base class for all Schematron exceptions.
@@ -32,7 +32,7 @@ public class SchematronException extends Exception
    * @param sMsg
    *        error message
    */
-  public SchematronException (@Nonnull final String sMsg)
+  public SchematronException (@NonNull final String sMsg)
   {
     super (sMsg);
   }
@@ -45,7 +45,7 @@ public class SchematronException extends Exception
    * @param t
    *        Nested exception
    */
-  public SchematronException (@Nonnull final String sMsg, @Nullable final Throwable t)
+  public SchematronException (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     super (sMsg, t);
   }

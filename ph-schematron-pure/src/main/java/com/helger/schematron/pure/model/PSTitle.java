@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -29,8 +31,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A single Schematron title-element.<br>
@@ -48,7 +48,7 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   public PSTitle ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -57,7 +57,7 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -69,7 +69,7 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
     return false;
   }
 
-  public void addText (@Nonnull @Nonempty final String sText)
+  public void addText (@NonNull @Nonempty final String sText)
   {
     ValueEnforcer.notEmpty (sText, "Text");
     m_aContent.add (sText);
@@ -80,20 +80,20 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
     return m_aContent.containsAny (String.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
     return m_aContent.getAllInstanceOf (String.class);
   }
 
-  public void addDir (@Nonnull final PSDir aDir)
+  public void addDir (@NonNull final PSDir aDir)
   {
     ValueEnforcer.notNull (aDir, "Dir");
     m_aContent.add (aDir);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSDir> getAllDirs ()
   {
@@ -103,14 +103,14 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   /**
    * @return A list of {@link String} and {@link PSDir} elements.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <Object> getAllContentElements ()
   {
     return m_aContent.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_TITLE);
@@ -122,7 +122,7 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSTitle getClone ()
   {
     final PSTitle ret = new PSTitle ();

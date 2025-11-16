@@ -18,6 +18,8 @@ package com.helger.schematron.pure.errorhandler;
 
 import java.util.Locale;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +30,6 @@ import com.helger.diagnostics.error.ErrorTextProvider.EField;
 import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.IErrorTextProvider;
 import com.helger.diagnostics.log.LogHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * An implementation if {@link IPSErrorHandler} that logs to an SLF4J logger.
@@ -66,14 +65,14 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
     super (aNestedErrorHandler);
   }
 
-  @Nonnull
+  @NonNull
   public final IErrorTextProvider getErrorTextProvider ()
   {
     return m_aETP;
   }
 
-  @Nonnull
-  public final LoggingPSErrorHandler setErrorTextProvider (@Nonnull final IErrorTextProvider aETP)
+  @NonNull
+  public final LoggingPSErrorHandler setErrorTextProvider (@NonNull final IErrorTextProvider aETP)
   {
     ValueEnforcer.notNull (aETP, "ErrorTextProvider");
     m_aETP = aETP;
@@ -81,7 +80,7 @@ public class LoggingPSErrorHandler extends AbstractPSErrorHandler
   }
 
   @Override
-  protected void handleInternally (@Nonnull final IError aError)
+  protected void handleInternally (@NonNull final IError aError)
   {
     LogHelper.log (LOGGER,
                    aError.getErrorLevel (),

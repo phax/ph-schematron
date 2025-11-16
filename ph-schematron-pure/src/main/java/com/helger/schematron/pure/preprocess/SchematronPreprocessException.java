@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.preprocess;
 
-import com.helger.schematron.SchematronException;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import com.helger.schematron.SchematronException;
 
 /**
  * Schematron exception that happens during pre-processing.
@@ -34,7 +34,7 @@ public class SchematronPreprocessException extends SchematronException
    * @param sMsg
    *        error message
    */
-  public SchematronPreprocessException (@Nonnull final String sMsg)
+  public SchematronPreprocessException (@NonNull final String sMsg)
   {
     super (sMsg);
   }
@@ -47,7 +47,7 @@ public class SchematronPreprocessException extends SchematronException
    * @param t
    *        Nested exception
    */
-  public SchematronPreprocessException (@Nonnull final String sMsg, @Nullable final Throwable t)
+  public SchematronPreprocessException (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     super (sMsg, t);
   }

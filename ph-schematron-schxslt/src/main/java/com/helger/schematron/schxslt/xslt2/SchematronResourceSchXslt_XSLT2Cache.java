@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.schxslt.xslt2;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +31,6 @@ import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.xml.serialize.write.XMLWriter;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Factory for creating {@link SchematronProviderXSLTFromSchXslt_XSLT2} objects.
@@ -59,8 +58,8 @@ public final class SchematronResourceSchXslt_XSLT2Cache
    * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
   @Nullable
-  public static SchematronProviderXSLTFromSchXslt_XSLT2 createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                                      @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
+  public static SchematronProviderXSLTFromSchXslt_XSLT2 createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
+                                                                                      @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
@@ -106,8 +105,8 @@ public final class SchematronResourceSchXslt_XSLT2Cache
    * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
   @Nullable
-  public static SchematronProviderXSLTFromSchXslt_XSLT2 getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                                   @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
+  public static SchematronProviderXSLTFromSchXslt_XSLT2 getSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
+                                                                                   @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");

@@ -16,11 +16,11 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsOrderedMap;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for all objects having {@link PSLet} elements contained
@@ -39,7 +39,7 @@ public interface IPSHasLets
    * @return A list of all contained {@link PSLet} elements. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsList <PSLet> getAllLets ();
 
@@ -48,7 +48,7 @@ public interface IPSHasLets
    *         name to value. The order must match the declaration order! Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsOrderedMap <String, String> getAllLetsAsMap ();
 
@@ -58,5 +58,5 @@ public interface IPSHasLets
    * @param aLet
    *        The let element to be added. May not be <code>null</code>.
    */
-  void addLet (@Nonnull PSLet aLet);
+  void addLet (@NonNull PSLet aLet);
 }

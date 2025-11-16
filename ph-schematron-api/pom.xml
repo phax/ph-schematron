@@ -108,7 +108,7 @@
               com.helger.schematron.saxon,
               com.helger.schematron.svrl,
               com.helger.schematron.svrl.jaxb</Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
 osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
 osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVRLLocationBeautifierSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>
@@ -148,6 +148,7 @@ osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVR
             <arg>-no-header</arg>
             <arg>-Xph-default-locale</arg>
             <arg>en_US</arg>
+            <arg>-Xph-package-null-marked</arg>
             <arg>-Xph-annotate</arg>
             <arg>-Xph-fields-private</arg>
             <arg>-Xph-code-quality</arg>

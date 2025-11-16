@@ -20,6 +20,7 @@ import java.io.File;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.jspecify.annotations.NonNull;
 import org.w3c.dom.Document;
 
 import com.helger.io.file.FileHelper;
@@ -37,8 +38,6 @@ import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * This class contains code examples that are used in the documentation.
  *
@@ -46,7 +45,7 @@ import jakarta.annotation.Nonnull;
  */
 public final class DocumentationExamples
 {
-  public static boolean validateXMLViaPureSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaPureSchematron (@NonNull final File aSchematronFile, @NonNull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResPure = SchematronResourcePure.fromFile (aSchematronFile);
     if (!aResPure.isValidSchematron ())
@@ -54,7 +53,7 @@ public final class DocumentationExamples
     return aResPure.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
   }
 
-  public static boolean validateXMLViaPureSchematron2 (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaPureSchematron2 (@NonNull final File aSchematronFile, @NonNull final File aXMLFile) throws Exception
   {
     // Read the schematron from file
     final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
@@ -76,7 +75,7 @@ public final class DocumentationExamples
     return aBoundSchema.validatePartially (aXMLNode, FileHelper.getAsURLString (aXMLFile)).isValid ();
   }
 
-  public static boolean readModifyAndWrite (@Nonnull final File aSchematronFile) throws Exception
+  public static boolean readModifyAndWrite (@NonNull final File aSchematronFile) throws Exception
   {
     final PSSchema aSchema = new PSReader (new FileSystemResource (aSchematronFile)).readSchema ();
     final PSTitle aTitle = new PSTitle ();

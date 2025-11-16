@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.io.resource.FileSystemResource;
@@ -29,11 +30,9 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue054Test
 {
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final ISchematronResource aSCH = SchematronResourcePure.fromFile (aSchematron);
 

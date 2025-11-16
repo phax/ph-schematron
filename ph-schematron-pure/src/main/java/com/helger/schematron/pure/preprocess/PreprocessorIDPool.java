@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.preprocess;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +26,6 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsSet;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Utility lookup cache for all used IDs within a schema.
@@ -47,7 +46,7 @@ public class PreprocessorIDPool
    *         value is {@link #DEFAULT_SEPARATOR}.
    * @since 6.3.5
    */
-  @Nonnull
+  @NonNull
   public static String getDefaultSeparator ()
   {
     return s_sDefaultSeparator;
@@ -61,7 +60,7 @@ public class PreprocessorIDPool
    *        Any non-<code>null</code> value is okay.
    * @since 6.3.5
    */
-  public static void setDefaultSeparator (@Nonnull final String sDefaultSeparator)
+  public static void setDefaultSeparator (@NonNull final String sDefaultSeparator)
   {
     ValueEnforcer.notNull (sDefaultSeparator, "separator");
     s_sDefaultSeparator = sDefaultSeparator;
@@ -80,7 +79,7 @@ public class PreprocessorIDPool
    * @see #setDefaultSeparator(String)
    * @since 6.3.5
    */
-  @Nonnull
+  @NonNull
   public String getSeparator ()
   {
     return getDefaultSeparator ();

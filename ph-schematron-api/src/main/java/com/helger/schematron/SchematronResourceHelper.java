@@ -24,6 +24,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -36,9 +38,6 @@ import com.helger.base.string.StringHelper;
 import com.helger.io.resource.URLResource;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This is a common utility class.
@@ -69,7 +68,7 @@ public final class SchematronResourceHelper
    *         in case an unsupported {@link Source} implementation is provided.
    */
   @Nullable
-  public static Node getNodeOfSource (@Nonnull final Source aSource, @Nonnull final DOMReaderSettings aDRS)
+  public static Node getNodeOfSource (@NonNull final Source aSource, @NonNull final DOMReaderSettings aDRS)
   {
     ValueEnforcer.notNull (aSource, "Source");
     ValueEnforcer.notNull (aDRS, "DOMReaderSettings");

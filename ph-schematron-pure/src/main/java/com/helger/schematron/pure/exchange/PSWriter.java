@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.WillClose;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.enforce.ValueEnforcer;
@@ -31,9 +34,6 @@ import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.MicroDocument;
 import com.helger.xml.microdom.serialize.MicroWriter;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class serializes the Schematron created within the domain object
@@ -58,7 +58,7 @@ public class PSWriter
    * @param aWriterSettings
    *        The writer settings to be used. May not be <code>null</code>.
    */
-  public PSWriter (@Nonnull final IPSWriterSettings aWriterSettings)
+  public PSWriter (@NonNull final IPSWriterSettings aWriterSettings)
   {
     m_aWriterSettings = ValueEnforcer.notNull (aWriterSettings, "WriterSettings");
   }
@@ -66,15 +66,15 @@ public class PSWriter
   /**
    * @return The writer settings specified in the constructor.
    */
-  @Nonnull
+  @NonNull
   public IPSWriterSettings getWriterSettings ()
   {
     return m_aWriterSettings;
   }
 
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  protected IMicroNode getAsDocument (@Nonnull final IMicroElement aElement)
+  protected IMicroNode getAsDocument (@NonNull final IMicroElement aElement)
   {
     final IMicroDocument aDoc = new MicroDocument ();
     aDoc.addChild (aElement);
@@ -90,8 +90,8 @@ public class PSWriter
    *        The file to write things to. May not be <code>null</code>.
    * @return {@link ESuccess}.
    */
-  @Nonnull
-  public ESuccess writeToFile (@Nonnull final IPSElement aPSElement, @Nonnull final File aFile)
+  @NonNull
+  public ESuccess writeToFile (@NonNull final IPSElement aPSElement, @NonNull final File aFile)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
@@ -108,8 +108,8 @@ public class PSWriter
    *        automatically closed.
    * @return {@link ESuccess}.
    */
-  @Nonnull
-  public ESuccess writeToStream (@Nonnull final IPSElement aPSElement, @Nonnull @WillClose final OutputStream aOS)
+  @NonNull
+  public ESuccess writeToStream (@NonNull final IPSElement aPSElement, @NonNull @WillClose final OutputStream aOS)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
@@ -126,8 +126,8 @@ public class PSWriter
    *        closed.
    * @return {@link ESuccess}.
    */
-  @Nonnull
-  public ESuccess writeToWriter (@Nonnull final IPSElement aPSElement, @Nonnull @WillClose final Writer aWriter)
+  @NonNull
+  public ESuccess writeToWriter (@NonNull final IPSElement aPSElement, @NonNull @WillClose final Writer aWriter)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
@@ -142,7 +142,7 @@ public class PSWriter
    * @return The passed element as a string or <code>null</code> if serialization failed.
    */
   @Nullable
-  public String getXMLString (@Nonnull final IPSElement aPSElement)
+  public String getXMLString (@NonNull final IPSElement aPSElement)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
@@ -159,7 +159,7 @@ public class PSWriter
    *         if serialization failed
    */
   @Nullable
-  public String getXMLStringNotNull (@Nonnull final IPSElement aPSElement)
+  public String getXMLStringNotNull (@NonNull final IPSElement aPSElement)
   {
     final String ret = getXMLString (aPSElement);
     if (ret == null)

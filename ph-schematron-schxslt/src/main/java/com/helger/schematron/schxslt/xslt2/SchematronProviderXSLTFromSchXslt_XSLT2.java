@@ -27,6 +27,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -47,9 +49,6 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an
@@ -143,9 +142,9 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     }
   }
 
-  @Nonnull
-  public static Document createSchematronXSLT (@Nonnull final IReadableResource aSchematronResource,
-                                               @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer) throws TransformerException
+  @NonNull
+  public static Document createSchematronXSLT (@NonNull final IReadableResource aSchematronResource,
+                                               @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer) throws TransformerException
   {
     if (Thread.interrupted ())
       throw new SchematronInterruptedException ("before XSLT starts");
@@ -278,8 +277,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
    * @throws SchematronInterruptedException
    *         If Schematron compilation was interrupted
    */
-  public SchematronProviderXSLTFromSchXslt_XSLT2 (@Nonnull final IReadableResource aSchematronResource,
-                                                  @Nonnull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
+  public SchematronProviderXSLTFromSchXslt_XSLT2 (@NonNull final IReadableResource aSchematronResource,
+                                                  @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
@@ -325,7 +324,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       throw new SchematronInterruptedException ("after XSLT template was created");
   }
 
-  @Nonnull
+  @NonNull
   public IReadableResource getSchematronResource ()
   {
     return m_aSchematronResource;

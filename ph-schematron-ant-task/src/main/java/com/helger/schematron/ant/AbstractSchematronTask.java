@@ -19,11 +19,10 @@ package com.helger.schematron.ant;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import com.helger.base.debug.GlobalDebug;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract base class with common functionality of Schematron ANT tasks.
@@ -45,42 +44,42 @@ public abstract class AbstractSchematronTask extends Task
     GlobalDebug.setDebugModeDirect (false);
   }
 
-  protected void _debug (@Nonnull final String sMsg)
+  protected void _debug (@NonNull final String sMsg)
   {
     log (sMsg, Project.MSG_DEBUG);
   }
 
-  protected void _info (@Nonnull final String sMsg)
+  protected void _info (@NonNull final String sMsg)
   {
     log (sMsg, Project.MSG_INFO);
   }
 
-  protected void _warn (@Nonnull final String sMsg)
+  protected void _warn (@NonNull final String sMsg)
   {
     _warn (sMsg, null);
   }
 
-  protected void _warn (@Nonnull final String sMsg, @Nullable final Throwable t)
+  protected void _warn (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     log (sMsg, t, Project.MSG_WARN);
   }
 
-  protected void _error (@Nonnull final String sMsg)
+  protected void _error (@NonNull final String sMsg)
   {
     _error (sMsg, null);
   }
 
-  protected void _error (@Nonnull final String sMsg, @Nullable final Throwable t)
+  protected void _error (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     log (sMsg, t, Project.MSG_ERR);
   }
 
-  protected void _errorOrFail (@Nonnull final String sMsg)
+  protected void _errorOrFail (@NonNull final String sMsg)
   {
     _errorOrFail (sMsg, null);
   }
 
-  protected void _errorOrFail (@Nonnull final String sMsg, @Nullable final Throwable t)
+  protected void _errorOrFail (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     if (m_bFailOnError)
       throw new BuildException (sMsg, t);

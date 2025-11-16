@@ -16,11 +16,11 @@
  */
 package com.helger.schematron.pure.exchange;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Exception when reading Schematron fails.
@@ -40,7 +40,7 @@ public class SchematronReadException extends SchematronException
    * @param sMsg
    *        error message
    */
-  public SchematronReadException (@Nonnull final IReadableResource aRes, @Nonnull final String sMsg)
+  public SchematronReadException (@NonNull final IReadableResource aRes, @NonNull final String sMsg)
   {
     this (aRes, sMsg, (Throwable) null);
   }
@@ -56,7 +56,7 @@ public class SchematronReadException extends SchematronException
    * @param t
    *        Nested exception
    */
-  public SchematronReadException (@Nonnull final IReadableResource aRes, @Nonnull final String sMsg, @Nullable final Throwable t)
+  public SchematronReadException (@NonNull final IReadableResource aRes, @NonNull final String sMsg, @Nullable final Throwable t)
   {
     super (aRes.getPath () + ": " + sMsg, t);
     m_aRes = aRes;
@@ -65,7 +65,7 @@ public class SchematronReadException extends SchematronException
   /**
    * @return The resource, in which the error occurred. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public IReadableResource getResource ()
   {
     return m_aRes;

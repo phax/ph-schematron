@@ -16,6 +16,9 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
@@ -24,9 +27,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron include-element.<br>
@@ -45,7 +45,7 @@ public class PSInclude implements IPSElement
   public PSInclude ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sHref))
     {
@@ -55,7 +55,7 @@ public class PSInclude implements IPSElement
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sHref))
       aErrorHandler.error (this, "<include> has no 'href'");
@@ -84,7 +84,7 @@ public class PSInclude implements IPSElement
     return m_sHref;
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_INCLUDE);

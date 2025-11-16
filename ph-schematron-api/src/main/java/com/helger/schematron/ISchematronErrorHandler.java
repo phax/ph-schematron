@@ -16,9 +16,9 @@
  */
 package com.helger.schematron;
 
-import com.helger.diagnostics.error.IError;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.diagnostics.error.IError;
 
 /**
  * Base interface for a Schematron error handler.
@@ -34,5 +34,5 @@ public interface ISchematronErrorHandler
    * @param aError
    *        The structured error. May not be <code>null</code>.
    */
-  void handleError (@Nonnull IError aError);
+  void handleError (@NonNull IError aError);
 }

@@ -22,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -59,9 +61,6 @@ import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * A Schematron resource that is not XSLT based but using the pure (native Java)
  * implementation. This class itself is not thread safe, but the underlying
@@ -88,12 +87,12 @@ public class SchematronResourcePure extends AbstractSchematronResource
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
-  public SchematronResourcePure (@Nonnull final IReadableResource aResource)
+  public SchematronResourcePure (@NonNull final IReadableResource aResource)
   {
     super (aResource);
   }
 
-  public SchematronResourcePure (@Nonnull final IReadableResource aResource,
+  public SchematronResourcePure (@NonNull final IReadableResource aResource,
                                  @Nullable final String sPhase,
                                  @Nullable final IPSErrorHandler aErrorHandler)
   {
@@ -120,7 +119,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        all phases.
    * @return this
    */
-  @Nonnull
+  @NonNull
   public final SchematronResourcePure setPhase (@Nullable final String sPhase)
   {
     if (m_aBoundSchema != null)
@@ -146,7 +145,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The error handler. May be <code>null</code>.
    * @return this
    */
-  @Nonnull
+  @NonNull
   public final SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
   {
     if (m_aBoundSchema != null)
@@ -174,7 +173,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    * @since 5.3.0
    */
-  @Nonnull
+  @NonNull
   public final SchematronResourcePure setCustomValidationHandler (@Nullable final IPSValidationHandler aCustomValidationHandler)
   {
     if (m_aBoundSchema != null)
@@ -187,7 +186,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The contained {@link IXPathConfig}. Never <code>null</code>.
    * @since v8
    */
-  @Nonnull
+  @NonNull
   public final IXPathConfig getXPathConfig ()
   {
     return m_aXPathConfig;
@@ -202,8 +201,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The XPath config to set. May be <code>null</code>.
    * @return this
    */
-  @Nonnull
-  public final SchematronResourcePure setXPathConfig (@Nonnull final IXPathConfig aXPathConfig)
+  @NonNull
+  public final SchematronResourcePure setXPathConfig (@NonNull final IXPathConfig aXPathConfig)
   {
     ValueEnforcer.notNull (aXPathConfig, "XPathConfig");
     if (m_aBoundSchema != null)
@@ -223,7 +222,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    * @since 4.1.1
    */
-  @Nonnull
+  @NonNull
   public SchematronResourcePure setEntityResolver (@Nullable final EntityResolver aEntityResolver)
   {
     if (m_aBoundSchema != null)
@@ -232,7 +231,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return this;
   }
 
-  @Nonnull
+  @NonNull
   protected IPSBoundSchema createBoundSchema ()
   {
     final IReadableResource aResource = getResource ();
@@ -267,7 +266,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *
    * @return The bound schema. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public IPSBoundSchema getOrCreateBoundSchema ()
   {
     // Always caching
@@ -323,7 +322,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @param aErrorHandler
    *        The error handler to use. May not be <code>null</code>.
    */
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
 
@@ -337,8 +336,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
     }
   }
 
-  @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Node aXMLNode,
+  @NonNull
+  public EValidity getSchematronValidity (@NonNull final Node aXMLNode,
                                           @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
@@ -361,8 +360,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @throws SchematronException
    *         in case of a sever error validating the schema
    */
-  @Nonnull
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLNode,
+  @NonNull
+  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLNode,
                                                                @Nullable final String sBaseURI) throws SchematronException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
@@ -377,7 +376,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Node aXMLNode,
+  public Document applySchematronValidation (@NonNull final Node aXMLNode,
                                              @Nullable final String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
@@ -394,8 +393,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The classpath relative path to the Schematron rules.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath)
+  @NonNull
+  public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePure (new ClassPathResource (sSCHPath));
   }
@@ -412,8 +411,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return Never <code>null</code>.
    * @since 6.0.4
    */
-  @Nonnull
-  public static SchematronResourcePure fromClassPath (@Nonnull @Nonempty final String sSCHPath,
+  @NonNull
+  public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath,
                                                       @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourcePure (new ClassPathResource (sSCHPath, aClassLoader));
@@ -427,8 +426,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The file system path to the Schematron rules.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromFile (@Nonnull @Nonempty final String sSCHPath)
+  @NonNull
+  public static SchematronResourcePure fromFile (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePure (new FileSystemResource (sSCHPath));
   }
@@ -441,8 +440,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The file system path to the Schematron rules.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromFile (@Nonnull final File aSCHFile)
+  @NonNull
+  public static SchematronResourcePure fromFile (@NonNull final File aSCHFile)
   {
     return new SchematronResourcePure (new FileSystemResource (aSCHFile));
   }
@@ -458,8 +457,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @throws MalformedURLException
    *         In case an invalid URL is provided
    */
-  @Nonnull
-  public static SchematronResourcePure fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  @NonNull
+  public static SchematronResourcePure fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
     return new SchematronResourcePure (new URLResource (sSCHURL));
   }
@@ -472,8 +471,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The URL to the Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromURL (@Nonnull final URL aSCHURL)
+  @NonNull
+  public static SchematronResourcePure fromURL (@NonNull final URL aSCHURL)
   {
     return new SchematronResourcePure (new URLResource (aSCHURL));
   }
@@ -492,9 +491,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
-  @Nonnull
-  public static SchematronResourcePure fromInputStream (@Nonnull @Nonempty final String sResourceID,
-                                                        @Nonnull final InputStream aSchematronIS)
+  @NonNull
+  public static SchematronResourcePure fromInputStream (@NonNull @Nonempty final String sResourceID,
+                                                        @NonNull final InputStream aSchematronIS)
   {
     return new SchematronResourcePure (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
@@ -509,8 +508,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromByteArray (@Nonnull final byte [] aSchematron)
+  @NonNull
+  public static SchematronResourcePure fromByteArray (@NonNull final byte [] aSchematron)
   {
     return new SchematronResourcePure (new ReadableResourceByteArray (aSchematron));
   }
@@ -527,8 +526,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  @NonNull
+  public static SchematronResourcePure fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }
@@ -542,8 +541,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The Schematron model to be used. May not be <code>null</code> .
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourcePure fromSchema (@Nonnull final PSSchema aSchematron)
+  @NonNull
+  public static SchematronResourcePure fromSchema (@NonNull final PSSchema aSchematron)
   {
     return fromString (new PSWriter ().getXMLString (aSchematron), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
   }

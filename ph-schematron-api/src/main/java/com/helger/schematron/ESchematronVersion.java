@@ -16,12 +16,12 @@
  */
 package com.helger.schematron;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.id.IHasID;
 import com.helger.base.lang.EnumHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This enum defines the different Schematron versions to be able to handle
@@ -40,12 +40,12 @@ public enum ESchematronVersion implements IHasID <String>
 
   private final String m_sID;
 
-  ESchematronVersion (@Nonnull @Nonempty final String sID)
+  ESchematronVersion (@NonNull @Nonempty final String sID)
   {
     m_sID = sID;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getID ()
   {

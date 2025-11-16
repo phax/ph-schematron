@@ -18,6 +18,8 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +41,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron assert- or report-element.<br>
@@ -87,7 +86,7 @@ public class PSAssertReport implements
     m_bIsAssert = bIsAssert;
   }
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -101,7 +100,7 @@ public class PSAssertReport implements
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -121,7 +120,7 @@ public class PSAssertReport implements
     return true;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
@@ -133,7 +132,7 @@ public class PSAssertReport implements
     return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -141,7 +140,7 @@ public class PSAssertReport implements
     m_aContent.add (aForeignElement);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -153,7 +152,7 @@ public class PSAssertReport implements
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -210,7 +209,7 @@ public class PSAssertReport implements
   /**
    * @return List of references to {@link PSDiagnostic} elements.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllDiagnostics ()
   {
@@ -265,7 +264,7 @@ public class PSAssertReport implements
     m_aLinkable = aLinkable;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
@@ -277,72 +276,72 @@ public class PSAssertReport implements
     return m_aContent.containsAny (String.class::isInstance);
   }
 
-  public void addText (@Nonnull @Nonempty final String sText)
+  public void addText (@NonNull @Nonempty final String sText)
   {
     ValueEnforcer.notEmpty (sText, "Text");
     m_aContent.add (sText);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSName> getAllNames ()
   {
     return m_aContent.getAllInstanceOf (PSName.class);
   }
 
-  public void addName (@Nonnull final PSName aName)
+  public void addName (@NonNull final PSName aName)
   {
     ValueEnforcer.notNull (aName, "Name");
     m_aContent.add (aName);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSValueOf> getAllValueOfs ()
   {
     return m_aContent.getAllInstanceOf (PSValueOf.class);
   }
 
-  public void addValueOf (@Nonnull final PSValueOf aValueOf)
+  public void addValueOf (@NonNull final PSValueOf aValueOf)
   {
     ValueEnforcer.notNull (aValueOf, "ValueOf");
     m_aContent.add (aValueOf);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSEmph> getAllEmphs ()
   {
     return m_aContent.getAllInstanceOf (PSEmph.class);
   }
 
-  public void addEmph (@Nonnull final PSEmph aEmph)
+  public void addEmph (@NonNull final PSEmph aEmph)
   {
     ValueEnforcer.notNull (aEmph, "Emph");
     m_aContent.add (aEmph);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSDir> getAllDirs ()
   {
     return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
-  public void addDir (@Nonnull final PSDir aDir)
+  public void addDir (@NonNull final PSDir aDir)
   {
     ValueEnforcer.notNull (aDir, "Dir");
     m_aContent.add (aDir);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSSpan> getAllSpans ()
   {
     return m_aContent.getAllInstanceOf (PSSpan.class);
   }
 
-  public void addSpan (@Nonnull final PSSpan aSpan)
+  public void addSpan (@NonNull final PSSpan aSpan)
   {
     ValueEnforcer.notNull (aSpan, "Span");
     m_aContent.add (aSpan);
@@ -352,14 +351,14 @@ public class PSAssertReport implements
    * @return A list of {@link String}, {@link PSName}, {@link PSValueOf}, {@link PSEmph},
    *         {@link PSDir} and {@link PSSpan} elements.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <Object> getAllContentElements ()
   {
     return m_aContent.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON,
@@ -404,13 +403,13 @@ public class PSAssertReport implements
                                        .getToString ();
   }
 
-  @Nonnull
+  @NonNull
   public static PSAssertReport assertion ()
   {
     return new PSAssertReport (true);
   }
 
-  @Nonnull
+  @NonNull
   public static PSAssertReport report ()
   {
     return new PSAssertReport (false);

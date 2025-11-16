@@ -19,28 +19,27 @@ package com.helger.maven.schematron;
 import java.io.File;
 import java.util.Locale;
 
+import org.jspecify.annotations.NonNull;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.base.string.StringImplode;
 import com.helger.diagnostics.error.IError;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 
-import jakarta.annotation.Nonnull;
-
 public class PluginErrorListener extends AbstractTransformErrorListener
 {
   private final BuildContext m_aBuildContext;
   private final File m_aSourceFile;
 
-  public PluginErrorListener (@Nonnull final BuildContext aBuildContext, @Nonnull final File aSource)
+  public PluginErrorListener (@NonNull final BuildContext aBuildContext, @NonNull final File aSource)
   {
     m_aBuildContext = aBuildContext;
     m_aSourceFile = aSource;
   }
 
-  public static void logIError (@Nonnull final BuildContext aBuildContext,
-                                @Nonnull final File aSourceFile,
-                                @Nonnull final IError aResError)
+  public static void logIError (@NonNull final BuildContext aBuildContext,
+                                @NonNull final File aSourceFile,
+                                @NonNull final IError aResError)
   {
     final int nLine = aResError.getErrorLocation ().getLineNumber ();
     final int nColumn = aResError.getErrorLocation ().getColumnNumber ();
@@ -61,7 +60,7 @@ public class PluginErrorListener extends AbstractTransformErrorListener
   }
 
   @Override
-  protected void internalLog (@Nonnull final IError aResError)
+  protected void internalLog (@NonNull final IError aResError)
   {
     logIError (m_aBuildContext, m_aSourceFile, aResError);
   }

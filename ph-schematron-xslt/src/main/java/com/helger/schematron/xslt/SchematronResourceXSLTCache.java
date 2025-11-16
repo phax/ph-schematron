@@ -21,6 +21,8 @@ import java.util.Locale;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.URIResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +36,6 @@ import com.helger.diagnostics.error.IError;
 import com.helger.io.resource.IReadableResource;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.LoggingTransformErrorListener;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Factory for creating {@link SchematronProviderXSLTPrebuild} objects.
@@ -55,7 +54,7 @@ public final class SchematronResourceXSLTCache
   {}
 
   @Nullable
-  public static SchematronProviderXSLTPrebuild createSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource,
+  public static SchematronProviderXSLTPrebuild createSchematronXSLTProvider (@NonNull final IReadableResource aXSLTResource,
                                                                              @Nullable final ErrorListener aCustomErrorListener,
                                                                              @Nullable final URIResolver aCustomURIResolver)
   {
@@ -103,7 +102,7 @@ public final class SchematronResourceXSLTCache
    *         exist.
    */
   @Nullable
-  public static SchematronProviderXSLTPrebuild getSchematronXSLTProvider (@Nonnull final IReadableResource aXSLTResource,
+  public static SchematronProviderXSLTPrebuild getSchematronXSLTProvider (@NonNull final IReadableResource aXSLTResource,
                                                                           @Nullable final ErrorListener aCustomErrorListener,
                                                                           @Nullable final URIResolver aCustomURIResolver)
   {

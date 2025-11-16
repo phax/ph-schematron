@@ -19,6 +19,9 @@ package com.helger.schematron.pure.model;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -36,9 +39,6 @@ import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.CXMLRegEx;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron pattern-element.<br>
@@ -163,7 +163,7 @@ public class PSPattern implements
   public PSPattern ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     // If abstract, an ID must be present
     if (m_bAbstract && StringHelper.isEmpty (m_sID))
@@ -212,7 +212,7 @@ public class PSPattern implements
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     // If abstract, an ID must be present
     if (m_bAbstract && StringHelper.isEmpty (m_sID))
@@ -267,14 +267,14 @@ public class PSPattern implements
     return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -287,14 +287,14 @@ public class PSPattern implements
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
     return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -351,14 +351,14 @@ public class PSPattern implements
     return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
     return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
-  public void addInclude (@Nonnull final PSInclude aInclude)
+  public void addInclude (@NonNull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
     m_aContent.add (aInclude);
@@ -413,7 +413,7 @@ public class PSPattern implements
     return null;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSRule> getAllRules ()
   {
@@ -431,19 +431,19 @@ public class PSPattern implements
     return m_aContent.getCount (PSRule.class::isInstance);
   }
 
-  public void addRule (@Nonnull final PSRule aRule)
+  public void addRule (@NonNull final PSRule aRule)
   {
     ValueEnforcer.notNull (aRule, "Rule");
     m_aContent.add (aRule);
   }
 
-  public void removeRule (@Nonnull final Predicate <? super PSRule> aRuleFilter)
+  public void removeRule (@NonNull final Predicate <? super PSRule> aRuleFilter)
   {
     ValueEnforcer.notNull (aRuleFilter, "RuleFilter");
     m_aContent.removeIf (x -> x instanceof PSRule && aRuleFilter.test ((PSRule) x));
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSParam> getAllParams ()
   {
@@ -455,20 +455,20 @@ public class PSPattern implements
     return m_aContent.containsAny (PSParam.class::isInstance);
   }
 
-  public void addParam (@Nonnull final PSParam aParam)
+  public void addParam (@NonNull final PSParam aParam)
   {
     ValueEnforcer.notNull (aParam, "Param");
     m_aContent.add (aParam);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSP> getAllPs ()
   {
     return m_aContent.getAllInstanceOf (PSP.class);
   }
 
-  public void addP (@Nonnull final PSP aP)
+  public void addP (@NonNull final PSP aP)
   {
     ValueEnforcer.notNull (aP, "P");
     m_aContent.add (aP);
@@ -479,20 +479,20 @@ public class PSPattern implements
     return m_aContent.containsAny (PSLet.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSLet> getAllLets ()
   {
     return m_aContent.getAllInstanceOf (PSLet.class);
   }
 
-  public void addLet (@Nonnull final PSLet aLet)
+  public void addLet (@NonNull final PSLet aLet)
   {
     ValueEnforcer.notNull (aLet, "Let");
     m_aContent.add (aLet);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
@@ -510,7 +510,7 @@ public class PSPattern implements
    * @return A list consisting of {@link PSP}, {@link PSLet}, {@link PSRule} and {@link PSParam}
    *         parameters
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IPSElement> getAllContentElements ()
   {
@@ -520,7 +520,7 @@ public class PSPattern implements
                                          !(x instanceof PSTitle), IPSElement.class::cast);
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_PATTERN);

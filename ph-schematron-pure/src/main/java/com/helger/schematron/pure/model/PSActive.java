@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -34,9 +37,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron active-element.<br>
@@ -56,7 +56,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   public PSActive ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -70,7 +70,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -88,7 +88,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return true;
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -101,14 +101,14 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -122,7 +122,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -147,7 +147,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return m_sPattern;
   }
 
-  public void addText (@Nonnull @Nonempty final String sText)
+  public void addText (@NonNull @Nonempty final String sText)
   {
     ValueEnforcer.notEmpty (sText, "Text");
     m_aContent.add (sText);
@@ -158,46 +158,46 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return m_aContent.containsAny (String.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
     return m_aContent.getAllInstanceOf (String.class);
   }
 
-  public void addDir (@Nonnull final PSDir aDir)
+  public void addDir (@NonNull final PSDir aDir)
   {
     ValueEnforcer.notNull (aDir, "Dir");
     m_aContent.add (aDir);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSDir> getAllDirs ()
   {
     return m_aContent.getAllInstanceOf (PSDir.class);
   }
 
-  public void addEmph (@Nonnull final PSEmph aEmph)
+  public void addEmph (@NonNull final PSEmph aEmph)
   {
     ValueEnforcer.notNull (aEmph, "Emph");
     m_aContent.add (aEmph);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSEmph> getAllEmphs ()
   {
     return m_aContent.getAllInstanceOf (PSEmph.class);
   }
 
-  public void addSpan (@Nonnull final PSSpan aSpan)
+  public void addSpan (@NonNull final PSSpan aSpan)
   {
     ValueEnforcer.notNull (aSpan, "Span");
     m_aContent.add (aSpan);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSSpan> getAllSpans ()
   {
@@ -207,14 +207,14 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   /**
    * @return A list of {@link String}, {@link PSDir}, {@link PSEmph} and {@link PSSpan} elements.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <Object> getAllContentElements ()
   {
     return m_aContent.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_ACTIVE);
@@ -233,7 +233,7 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSActive getClone ()
   {
     final PSActive ret = new PSActive ();

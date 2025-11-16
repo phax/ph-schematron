@@ -19,6 +19,8 @@ package com.helger.schematron.pure.binding.xpath;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +44,6 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.text.compare.ComparatorHelper;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Default XPath/XSLT query binding
  *
@@ -60,14 +59,14 @@ public class PSXPathQueryBinding implements IPSQueryBinding
   protected PSXPathQueryBinding ()
   {}
 
-  @Nonnull
+  @NonNull
   public static PSXPathQueryBinding getInstance ()
   {
     return INSTANCE;
   }
 
-  @Nonnull
-  public String getNegatedTestExpression (@Nonnull final String sTest)
+  @NonNull
+  public String getNegatedTestExpression (@NonNull final String sTest)
   {
     ValueEnforcer.notNull (sTest, "Test");
 
@@ -80,9 +79,9 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     return "not(" + sTest + ")";
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
-  public ICommonsNavigableMap <String, String> getStringReplacementMap (@Nonnull final List <PSParam> aParams)
+  public ICommonsNavigableMap <String, String> getStringReplacementMap (@NonNull final List <PSParam> aParams)
   {
     // Longest matches must go first
     final ICommonsNavigableMap <String, String> ret = new CommonsTreeMap <> (ComparatorHelper.getComparatorStringLongestFirst ());
@@ -116,8 +115,8 @@ public class PSXPathQueryBinding implements IPSQueryBinding
     return getWithParamTextsReplacedStatic (sText, aStringReplacements);
   }
 
-  @Nonnull
-  public IPSBoundSchema bind (@Nonnull final PSSchema aSchema,
+  @NonNull
+  public IPSBoundSchema bind (@NonNull final PSSchema aSchema,
                               @Nullable final String sPhase,
                               @Nullable final IPSErrorHandler aCustomErrorListener,
                               @Nullable final IPSValidationHandler aCustomValidationHandler,

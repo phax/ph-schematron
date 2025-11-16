@@ -16,9 +16,9 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
-import com.helger.diagnostics.error.list.ErrorList;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nullable;
+import com.helger.diagnostics.error.list.ErrorList;
 
 /**
  * An implementation if {@link IPSErrorHandler} that collects all error

@@ -19,14 +19,14 @@ package com.helger.schematron.pure.xpath;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 @NotThreadSafe
 public class XPathLetVariableResolver implements XPathVariableResolver
@@ -47,7 +47,7 @@ public class XPathLetVariableResolver implements XPathVariableResolver
     m_aDelegatedResolver = aResolver;
   }
 
-  public void setVariableValue (@Nonnull final QName aVariableName, @Nullable final Object aValue)
+  public void setVariableValue (@NonNull final QName aVariableName, @Nullable final Object aValue)
   {
     ValueEnforcer.notNull (aVariableName, "VariableName");
     m_aTLVariables.get ().put (aVariableName, aValue);

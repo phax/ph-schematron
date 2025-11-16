@@ -16,12 +16,12 @@
  */
 package com.helger.schematron.api.xslt.validator;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.state.EValidity;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * The default implementation of {@link ISchematronOutputValidityDeterminator}
@@ -31,8 +31,8 @@ import jakarta.annotation.Nonnull;
  */
 public class SchematronOutputValidityDeterminatorDefault implements ISchematronOutputValidityDeterminator
 {
-  @Nonnull
-  public EValidity getSchematronOutputValidity (@Nonnull final SchematronOutputType aSO)
+  @NonNull
+  public EValidity getSchematronOutputValidity (@NonNull final SchematronOutputType aSO)
   {
     for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
       if (aObj instanceof FailedAssert || aObj instanceof SuccessfulReport)

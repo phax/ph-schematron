@@ -18,15 +18,14 @@ package com.helger.schematron.svrl;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.diagnostics.error.level.IErrorLevel;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The default implementation of {@link ISVRLErrorLevelDeterminator}.<br/>
@@ -63,7 +62,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
    *        Custom error level provider. May not be <code>null</code>.
    * @since 5.0.2
    */
-  public DefaultSVRLErrorLevelDeterminator (@Nonnull final Function <String, ? extends IErrorLevel> aUnknwownErrorLevelHandler)
+  public DefaultSVRLErrorLevelDeterminator (@NonNull final Function <String, ? extends IErrorLevel> aUnknwownErrorLevelHandler)
   {
     m_aUnknwownErrorLevelHandler = ValueEnforcer.notNull (aUnknwownErrorLevelHandler, "UnknwownErrorLevelHandler");
   }
@@ -72,7 +71,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
    * @return The handler for unknown error levels.
    * @since 5.0.2
    */
-  @Nonnull
+  @NonNull
   public Function <String, ? extends IErrorLevel> getUnknwownErrorLevelHandler ()
   {
     return m_aUnknwownErrorLevelHandler;
@@ -109,7 +108,7 @@ public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDetermi
     return null;
   }
 
-  @Nonnull
+  @NonNull
   public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
   {
     final IErrorLevel ret = getDefaultErrorLevelFromString (sFlag);

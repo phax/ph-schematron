@@ -31,6 +31,8 @@ import org.apache.tools.ant.types.XMLCatalog;
 import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.util.ResourceUtils;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.EntityResolver;
 
 import com.helger.annotation.style.OverrideOnDemand;
@@ -68,9 +70,6 @@ import com.helger.typeconvert.collection.StringMap;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * ANT task to perform Schematron validation.
  *
@@ -104,7 +103,7 @@ public class Schematron extends AbstractSchematronTask
       return m_sRole;
     }
 
-    public boolean equalsIgnoreCase (@Nonnull final String sValue)
+    public boolean equalsIgnoreCase (@NonNull final String sValue)
     {
       return sValue.equalsIgnoreCase (m_sRole);
     }
@@ -148,7 +147,7 @@ public class Schematron extends AbstractSchematronTask
       return m_sValue;
     }
 
-    void addToMap (@Nonnull final Map <String, String> aMap)
+    void addToMap (@NonNull final Map <String, String> aMap)
     {
       // Only add parameters that have a name
       // If the value is null it becomes ""
@@ -245,7 +244,7 @@ public class Schematron extends AbstractSchematronTask
   public Schematron ()
   {}
 
-  public void setSchematronFile (@Nonnull final File aFile)
+  public void setSchematronFile (@NonNull final File aFile)
   {
     m_aSchematronFile = aFile;
     if (!m_aSchematronFile.isAbsolute ())
@@ -271,7 +270,7 @@ public class Schematron extends AbstractSchematronTask
     m_aResCollections.add (aResCollection);
   }
 
-  public void setSvrlDirectory (@Nonnull final File aDir)
+  public void setSvrlDirectory (@NonNull final File aDir)
   {
     m_aSvrlDirectory = aDir;
     if (!m_aSvrlDirectory.isAbsolute ())
@@ -317,8 +316,7 @@ public class Schematron extends AbstractSchematronTask
             " to the provided Schematron file");
   }
 
-  @Nonnull
-  public Schematron.ErrorRole createErrorRole ()
+  public Schematron.@NonNull ErrorRole createErrorRole ()
   {
     final Schematron.ErrorRole aErrorRole = new Schematron.ErrorRole ();
     m_aErrorRoles.add (aErrorRole);
@@ -352,14 +350,13 @@ public class Schematron extends AbstractSchematronTask
    * @param aXmlCatalog
    *        the XMLCatalog instance to use to look up DTDs
    */
-  public void addConfiguredXMLCatalog (@Nonnull final XMLCatalog aXmlCatalog)
+  public void addConfiguredXMLCatalog (@NonNull final XMLCatalog aXmlCatalog)
   {
     m_aXmlCatalog.addConfiguredXMLCatalog (aXmlCatalog);
     _debug ("Added XMLCatalog " + aXmlCatalog);
   }
 
-  @Nonnull
-  public Schematron.Parameter createParameter ()
+  public Schematron.@NonNull Parameter createParameter ()
   {
     final Schematron.Parameter aParameter = new Schematron.Parameter ();
     m_aParameters.add (aParameter);
@@ -371,7 +368,7 @@ public class Schematron extends AbstractSchematronTask
    *
    * @return Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
   protected EntityResolver getEntityResolver ()
   {
@@ -383,7 +380,7 @@ public class Schematron extends AbstractSchematronTask
    *
    * @return Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
   protected URIResolver getURIResolver ()
   {
@@ -399,14 +396,14 @@ public class Schematron extends AbstractSchematronTask
 
   private static final File NULL_FILE_PLACEHOLDER = new File ("/dummy_NULL");
 
-  @Nonnull
+  @NonNull
   private static File _getKeyFile (@Nullable final File f)
   {
     return f != null ? f : NULL_FILE_PLACEHOLDER;
   }
 
-  private void _performValidation (@Nonnull final ISchematronResource aSch,
-                                   @Nonnull final ICommonsList <ResourceCollection> aResCollections,
+  private void _performValidation (@NonNull final ISchematronResource aSch,
+                                   @NonNull final ICommonsList <ResourceCollection> aResCollections,
                                    @Nullable final File aSVRLDirectory,
                                    final boolean bExpectSuccess) throws BuildException
   {
@@ -658,7 +655,7 @@ public class Schematron extends AbstractSchematronTask
         SVRLHelper.setErrorLevelDeterminator (new DefaultSVRLErrorLevelDeterminator ()
         {
           @Override
-          @Nonnull
+          @NonNull
           public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
           {
             if (sFlag != null)

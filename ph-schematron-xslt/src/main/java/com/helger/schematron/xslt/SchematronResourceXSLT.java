@@ -22,6 +22,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.io.resource.ClassPathResource;
@@ -32,9 +35,6 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A Schematron resource that is based on an existing, pre-compiled XSLT script.
@@ -50,7 +50,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * @param aXSLTResource
    *        The XSLT resource. May not be <code>null</code>.
    */
-  public SchematronResourceXSLT (@Nonnull final IReadableResource aXSLTResource)
+  public SchematronResourceXSLT (@NonNull final IReadableResource aXSLTResource)
   {
     super (aXSLTResource);
   }
@@ -81,8 +81,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        be <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromClassPath (@Nonnull @Nonempty final String sXSLTPath)
+  @NonNull
+  public static SchematronResourceXSLT fromClassPath (@NonNull @Nonempty final String sXSLTPath)
   {
     return new SchematronResourceXSLT (new ClassPathResource (sXSLTPath));
   }
@@ -98,8 +98,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        be <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromClassPath (@Nonnull @Nonempty final String sXSLTPath,
+  @NonNull
+  public static SchematronResourceXSLT fromClassPath (@NonNull @Nonempty final String sXSLTPath,
                                                       @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourceXSLT (new ClassPathResource (sXSLTPath, aClassLoader));
@@ -113,8 +113,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromFile (@Nonnull @Nonempty final String sXSLTPath)
+  @NonNull
+  public static SchematronResourceXSLT fromFile (@NonNull @Nonempty final String sXSLTPath)
   {
     return new SchematronResourceXSLT (new FileSystemResource (sXSLTPath));
   }
@@ -127,8 +127,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromFile (@Nonnull final File aXSLTFile)
+  @NonNull
+  public static SchematronResourceXSLT fromFile (@NonNull final File aXSLTFile)
   {
     return new SchematronResourceXSLT (new FileSystemResource (aXSLTFile));
   }
@@ -144,8 +144,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * @throws MalformedURLException
    *         In case an invalid URL is provided
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromURL (@Nonnull @Nonempty final String sXSLTURL) throws MalformedURLException
+  @NonNull
+  public static SchematronResourceXSLT fromURL (@NonNull @Nonempty final String sXSLTURL) throws MalformedURLException
   {
     return new SchematronResourceXSLT (new URLResource (sXSLTURL));
   }
@@ -158,8 +158,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        The URL to the XSLT Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromURL (@Nonnull final URL aXSLTURL)
+  @NonNull
+  public static SchematronResourceXSLT fromURL (@NonNull final URL aXSLTURL)
   {
     return new SchematronResourceXSLT (new URLResource (aXSLTURL));
   }
@@ -176,9 +176,9 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        not be <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromInputStream (@Nonnull @Nonempty final String sResourceID,
-                                                        @Nonnull final InputStream aXSLTIS)
+  @NonNull
+  public static SchematronResourceXSLT fromInputStream (@NonNull @Nonempty final String sResourceID,
+                                                        @NonNull final InputStream aXSLTIS)
   {
     return new SchematronResourceXSLT (new ReadableResourceInputStream (sResourceID, aXSLTIS));
   }
@@ -192,8 +192,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromByteArray (@Nonnull final byte [] aXSLT)
+  @NonNull
+  public static SchematronResourceXSLT fromByteArray (@NonNull final byte [] aXSLT)
   {
     return new SchematronResourceXSLT (new ReadableResourceByteArray (aXSLT));
   }
@@ -209,8 +209,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceXSLT fromString (@Nonnull final String sXSLT, @Nonnull final Charset aCharset)
+  @NonNull
+  public static SchematronResourceXSLT fromString (@NonNull final String sXSLT, @NonNull final Charset aCharset)
   {
     return fromByteArray (sXSLT.getBytes (aCharset));
   }

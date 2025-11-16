@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.validation;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -35,9 +37,6 @@ import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
 import com.helger.xml.XMLDebug;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A logging implementation of {@link IPSValidationHandler}
@@ -65,26 +64,26 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
    * @param aLogger
    *        The logger to use. May not be <code>null</code>.
    */
-  public LoggingPSValidationHandler (@Nonnull final Logger aLogger)
+  public LoggingPSValidationHandler (@NonNull final Logger aLogger)
   {
     ValueEnforcer.notNull (aLogger, "Logger");
     m_aLogger = aLogger;
   }
 
-  @Nonnull
+  @NonNull
   public final Logger getLogger ()
   {
     return m_aLogger;
   }
 
-  @Nonnull
+  @NonNull
   public final IErrorLevel getLogLevel ()
   {
     return m_aLogLevel;
   }
 
-  @Nonnull
-  public final LoggingPSValidationHandler setLogLevel (@Nonnull final IErrorLevel aLogLevel)
+  @NonNull
+  public final LoggingPSValidationHandler setLogLevel (@NonNull final IErrorLevel aLogLevel)
   {
     ValueEnforcer.notNull (aLogLevel, "LogLevel");
     m_aLogLevel = aLogLevel;
@@ -97,26 +96,26 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     return m_sLogPrefix;
   }
 
-  @Nonnull
+  @NonNull
   public final LoggingPSValidationHandler setLogPrefix (@Nullable final String sLogPrefix)
   {
     m_sLogPrefix = sLogPrefix;
     return this;
   }
 
-  private void _log (@Nonnull final String sMsg)
+  private void _log (@NonNull final String sMsg)
   {
     LogHelper.log (m_aLogger, m_aLogLevel, StringHelper.getConcatenatedOnDemand (m_sLogPrefix, sMsg));
   }
 
-  @Nonnull
-  public static String getAsString (@Nonnull final Node aNode)
+  @NonNull
+  public static String getAsString (@NonNull final Node aNode)
   {
     return XMLDebug.getNodeTypeAsString (aNode.getNodeType ()) + ": " + aNode.toString ();
   }
 
-  @Nonnull
-  public static String getAsString (@Nonnull final NodeList aNL)
+  @NonNull
+  public static String getAsString (@NonNull final NodeList aNL)
   {
     final int nLen = aNL.getLength ();
     final StringBuilder aSB = new StringBuilder ();
@@ -132,7 +131,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onStart (@Nonnull final PSSchema aSchema,
+  public void onStart (@NonNull final PSSchema aSchema,
                        @Nullable final PSPhase aActivePhase,
                        @Nullable final String sBaseURI) throws SchematronValidationException
   {
@@ -140,33 +139,33 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
+  public void onPattern (@NonNull final PSPattern aPattern) throws SchematronValidationException
   {
     _log ("onPattern (" + aPattern + ")");
   }
 
   @Override
-  public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+  public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
                                                                                               throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
   }
 
   @Override
-  public void onFiredRule (@Nonnull final PSRule aRule,
-                           @Nonnull final String sContext,
+  public void onFiredRule (@NonNull final PSRule aRule,
+                           @NonNull final String sContext,
                            @Nonnegative final int nNodeIndex,
                            @Nonnegative final int nNodeCount) throws SchematronValidationException
   {
     _log ("onFiredRule (" + aRule + ", " + sContext + ", " + nNodeIndex + ", " + nNodeCount + ")");
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
-                                   @Nonnull final PSAssertReport aAssertReport,
-                                   @Nonnull final String sTestExpression,
-                                   @Nonnull final Node aRuleMatchingNode,
+  public EContinue onFailedAssert (@NonNull final PSRule aOwningRule,
+                                   @NonNull final PSAssertReport aAssertReport,
+                                   @NonNull final String sTestExpression,
+                                   @NonNull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
                                    @Nullable final Object aContext,
                                    @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -187,12 +186,12 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
     return EContinue.CONTINUE;
   }
 
-  @Nonnull
+  @NonNull
   @Override
-  public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
-                                       @Nonnull final PSAssertReport aAssertReport,
-                                       @Nonnull final String sTestExpression,
-                                       @Nonnull final Node aRuleMatchingNode,
+  public EContinue onSuccessfulReport (@NonNull final PSRule aOwningRule,
+                                       @NonNull final PSAssertReport aAssertReport,
+                                       @NonNull final String sTestExpression,
+                                       @NonNull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext,
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -214,7 +213,7 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
+  public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
                                                                                             throws SchematronValidationException
   {
     _log ("onEnd (" + aSchema + ", " + aActivePhase + ")");

@@ -16,8 +16,8 @@
  */
 package com.helger.schematron.svrl;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Interface for simplifying namespace URLs.
@@ -44,5 +44,5 @@ public interface ISVRLLocationBeautifier
    *         URI.
    */
   @Nullable
-  String getReplacementText (@Nonnull String sNamespaceURI, @Nonnull String sLocalName);
+  String getReplacementText (@NonNull String sNamespaceURI, @NonNull String sLocalName);
 }

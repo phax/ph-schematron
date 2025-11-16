@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -33,9 +36,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron phase-element.<br>
@@ -65,7 +65,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public PSPhase ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -79,7 +79,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -97,7 +97,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return true;
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -110,14 +110,14 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -131,7 +131,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -160,7 +160,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aRich;
   }
 
-  public void addInclude (@Nonnull final PSInclude aInclude)
+  public void addInclude (@NonNull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
     m_aContent.add (aInclude);
@@ -171,27 +171,27 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
     return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
-  public void addP (@Nonnull final PSP aP)
+  public void addP (@NonNull final PSP aP)
   {
     ValueEnforcer.notNull (aP, "P");
     m_aContent.add (aP);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSP> getAllPs ()
   {
     return m_aContent.getAllInstanceOf (PSP.class);
   }
 
-  public void addLet (@Nonnull final PSLet aLet)
+  public void addLet (@NonNull final PSLet aLet)
   {
     ValueEnforcer.notNull (aLet, "Let");
     m_aContent.add (aLet);
@@ -202,14 +202,14 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aContent.containsAny (PSLet.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSLet> getAllLets ()
   {
     return m_aContent.getAllInstanceOf (PSLet.class);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllLetsAsMap ()
   {
@@ -223,13 +223,13 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return ret;
   }
 
-  public void addActive (@Nonnull final PSActive aActive)
+  public void addActive (@NonNull final PSActive aActive)
   {
     ValueEnforcer.notNull (aActive, "Active");
     m_aContent.add (aActive);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSActive> getAllActives ()
   {
@@ -239,7 +239,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   /**
    * @return A list of {@link PSActive}, {@link PSLet} and {@link PSP} elements.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IPSElement> getAllContentElements ()
   {
@@ -247,7 +247,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aContent.getAllMapped (x -> x instanceof IPSElement && !(x instanceof PSInclude), IPSElement.class::cast);
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_PHASE);

@@ -18,6 +18,8 @@ package com.helger.schematron;
 
 import javax.xml.transform.Source;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
@@ -27,9 +29,6 @@ import com.helger.base.io.iface.IHasInputStream;
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a Schematron resource. The implementation can e.g. be a
@@ -44,7 +43,7 @@ public interface ISchematronResource extends IHasID <String>
    * @return The non-<code>null</code> resource from which to read the
    *         Schematron rules.
    */
-  @Nonnull
+  @NonNull
   IReadableResource getResource ();
 
   /**
@@ -113,8 +112,8 @@ public interface ISchematronResource extends IHasID <String>
    * @throws Exception
    *         in case of a sever error validating the schema
    */
-  @Nonnull
-  EValidity getSchematronValidity (@Nonnull IHasInputStream aXMLResource) throws Exception;
+  @NonNull
+  EValidity getSchematronValidity (@NonNull IHasInputStream aXMLResource) throws Exception;
 
   /**
    * A method to check if the passed DOM node matches the Schematron rules or
@@ -133,8 +132,8 @@ public interface ISchematronResource extends IHasID <String>
    * @throws Exception
    *         in case of a sever error validating the schema
    */
-  @Nonnull
-  EValidity getSchematronValidity (@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
+  @NonNull
+  EValidity getSchematronValidity (@NonNull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
 
   /**
    * A method to check if the passed XML DOM node matches the Schematron rules
@@ -150,8 +149,8 @@ public interface ISchematronResource extends IHasID <String>
    * @throws Exception
    *         in case of a sever error validating the schema
    */
-  @Nonnull
-  EValidity getSchematronValidity (@Nonnull Source aXMLSource) throws Exception;
+  @NonNull
+  EValidity getSchematronValidity (@NonNull Source aXMLSource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML resource and return an
@@ -168,7 +167,7 @@ public interface ISchematronResource extends IHasID <String>
    *      document into a domain object
    */
   @Nullable
-  Document applySchematronValidation (@Nonnull IHasInputStream aXMLResource) throws Exception;
+  Document applySchematronValidation (@NonNull IHasInputStream aXMLResource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed DOM node and return an SVRL
@@ -188,7 +187,7 @@ public interface ISchematronResource extends IHasID <String>
    *      document into a domain object
    */
   @Nullable
-  Document applySchematronValidation (@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
+  Document applySchematronValidation (@NonNull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML source and return an SVRL
@@ -205,7 +204,7 @@ public interface ISchematronResource extends IHasID <String>
    *      document into a domain object
    */
   @Nullable
-  Document applySchematronValidation (@Nonnull Source aXMLSource) throws Exception;
+  Document applySchematronValidation (@NonNull Source aXMLSource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML resource and return a
@@ -220,7 +219,7 @@ public interface ISchematronResource extends IHasID <String>
    *         In case the transformation somehow goes wrong.
    */
   @Nullable
-  SchematronOutputType applySchematronValidationToSVRL (@Nonnull IHasInputStream aXMLResource) throws Exception;
+  SchematronOutputType applySchematronValidationToSVRL (@NonNull IHasInputStream aXMLResource) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed DOM Node and return a
@@ -238,7 +237,7 @@ public interface ISchematronResource extends IHasID <String>
    *         In case the transformation somehow goes wrong.
    */
   @Nullable
-  SchematronOutputType applySchematronValidationToSVRL (@Nonnull Node aXMLNode, @Nullable String sBaseURI)
+  SchematronOutputType applySchematronValidationToSVRL (@NonNull Node aXMLNode, @Nullable String sBaseURI)
                                                                                                            throws Exception;
 
   /**
@@ -254,5 +253,5 @@ public interface ISchematronResource extends IHasID <String>
    *         In case the transformation somehow goes wrong.
    */
   @Nullable
-  SchematronOutputType applySchematronValidationToSVRL (@Nonnull Source aXMLSource) throws Exception;
+  SchematronOutputType applySchematronValidationToSVRL (@NonNull Source aXMLSource) throws Exception;
 }

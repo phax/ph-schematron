@@ -19,9 +19,8 @@ package com.helger.schematron.api.xslt;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
-
-import jakarta.annotation.Nullable;
 
 /**
  * Interface for a factory creating Schematron validators from XSLT. Sometimes

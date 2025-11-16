@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -37,14 +38,12 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.serialize.write.XMLWriter;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue174XsltTest
 {
   private static final File SCH = new File ("src/test/resources/external/issues/github174/schematron.sch");
   private static final File XML = new File ("src/test/resources/external/issues/github174/test.xml");
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 

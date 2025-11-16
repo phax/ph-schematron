@@ -18,6 +18,9 @@ package com.helger.schematron.svrl;
 
 import java.util.regex.Matcher;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -35,9 +38,6 @@ import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Miscellaneous utility methods for handling Schematron output (SVRL).
@@ -76,7 +76,7 @@ public final class SVRLHelper
    *        The schematron output to be used. May be <code>null</code>.
    * @return A non-<code>null</code> list with all failed assertions.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsList <SVRLFailedAssert> getAllFailedAssertions (@Nullable final SchematronOutputType aSchematronOutput)
   {
@@ -98,10 +98,10 @@ public final class SVRLHelper
    *        Minimum error level to be queried
    * @return A non-<code>null</code> list with all failed assertions.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsList <SVRLFailedAssert> getAllFailedAssertionsMoreOrEqualSevereThan (@Nullable final SchematronOutputType aSchematronOutput,
-                                                                                             @Nonnull final IErrorLevel aErrorLevel)
+                                                                                             @NonNull final IErrorLevel aErrorLevel)
   {
     final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
@@ -122,7 +122,7 @@ public final class SVRLHelper
    *        The schematron output to be used. May be <code>null</code>.
    * @return A non-<code>null</code> list with all successful reports.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReports (@Nullable final SchematronOutputType aSchematronOutput)
   {
@@ -144,10 +144,10 @@ public final class SVRLHelper
    *        Minimum error level to be queried
    * @return A non-<code>null</code> list with all successful reports.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsList <SVRLSuccessfulReport> getAllSuccessfulReportsMoreOrEqualSevereThan (@Nullable final SchematronOutputType aSchematronOutput,
-                                                                                                  @Nonnull final IErrorLevel aErrorLevel)
+                                                                                                  @NonNull final IErrorLevel aErrorLevel)
   {
     final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
@@ -169,7 +169,7 @@ public final class SVRLHelper
    * @return A non-<code>null</code> list with all failed assertions and successful reports. Maybe
    *         an empty list if the input is <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsList <AbstractSVRLMessage> getAllFailedAssertionsAndSuccessfulReports (@Nullable final SchematronOutputType aSchematronOutput)
   {
@@ -191,8 +191,8 @@ public final class SVRLHelper
    *        The failed assert to be queried. May not be <code>null</code>.
    * @return The error level and never <code>null</code>.
    */
-  @Nonnull
-  public static IErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
+  @NonNull
+  public static IErrorLevel getErrorLevelFromFailedAssert (@NonNull final FailedAssert aFailedAssert)
   {
     return getErrorLevelDeterminator ().getErrorLevelFromFailedAssert (aFailedAssert);
   }
@@ -204,8 +204,8 @@ public final class SVRLHelper
    *        The failed assert to be queried. May not be <code>null</code>.
    * @return The error level and never <code>null</code>.
    */
-  @Nonnull
-  public static IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  @NonNull
+  public static IErrorLevel getErrorLevelFromSuccessfulReport (@NonNull final SuccessfulReport aSuccessfulReport)
   {
     return getErrorLevelDeterminator ().getErrorLevelFromSuccessfulReport (aSuccessfulReport);
   }
@@ -213,7 +213,7 @@ public final class SVRLHelper
   /**
    * @return The default error level determinator. May not be <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
     return RW_LOCK.readLockedGet ( () -> s_aELD);
@@ -225,7 +225,7 @@ public final class SVRLHelper
    * @param aELD
    *        The determinator to use. May not be <code>null</code>.
    */
-  public static void setErrorLevelDeterminator (@Nonnull final ISVRLErrorLevelDeterminator aELD)
+  public static void setErrorLevelDeterminator (@NonNull final ISVRLErrorLevelDeterminator aELD)
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
@@ -243,8 +243,8 @@ public final class SVRLHelper
    *         string if the pattern was not found.
    * @since 5.0.1
    */
-  @Nonnull
-  public static String getBeautifiedLocation (@Nonnull final String sLocation)
+  @NonNull
+  public static String getBeautifiedLocation (@NonNull final String sLocation)
   {
     return getBeautifiedLocation (sLocation, SVRLLocationBeautifierRegistry::getBeautifiedLocation);
   }
@@ -262,9 +262,9 @@ public final class SVRLHelper
    *         string if the pattern was not found.
    * @since 6.0.4
    */
-  @Nonnull
-  public static String getBeautifiedLocation (@Nonnull final String sLocation,
-                                              @Nonnull final ISVRLLocationBeautifier aLocationBeautifier)
+  @NonNull
+  public static String getBeautifiedLocation (@NonNull final String sLocation,
+                                              @NonNull final ISVRLLocationBeautifier aLocationBeautifier)
   {
     ValueEnforcer.notNull (sLocation, "Location");
     ValueEnforcer.notNull (aLocationBeautifier, "LocationBeautifier");
@@ -289,48 +289,48 @@ public final class SVRLHelper
     return sResult;
   }
 
-  @Nonnull
-  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@Nonnull final FailedAssert aFA)
+  @NonNull
+  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@NonNull final FailedAssert aFA)
   {
     return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                             DiagnosticReference.class::isInstance,
                                             DiagnosticReference.class::cast);
   }
 
-  @Nonnull
-  public static ICommonsList <PropertyReference> getAllPropertyReferences (@Nonnull final FailedAssert aFA)
+  @NonNull
+  public static ICommonsList <PropertyReference> getAllPropertyReferences (@NonNull final FailedAssert aFA)
   {
     return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                             PropertyReference.class::isInstance,
                                             PropertyReference.class::cast);
   }
 
-  @Nonnull
-  public static Text getText (@Nonnull final FailedAssert aFA)
+  @NonNull
+  public static Text getText (@NonNull final FailedAssert aFA)
   {
     return CollectionFind.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                            Text.class::isInstance,
                                            Text.class::cast);
   }
 
-  @Nonnull
-  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@Nonnull final SuccessfulReport aSR)
+  @NonNull
+  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@NonNull final SuccessfulReport aSR)
   {
     return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                             DiagnosticReference.class::isInstance,
                                             DiagnosticReference.class::cast);
   }
 
-  @Nonnull
-  public static ICommonsList <PropertyReference> getAllPropertyReferences (@Nonnull final SuccessfulReport aSR)
+  @NonNull
+  public static ICommonsList <PropertyReference> getAllPropertyReferences (@NonNull final SuccessfulReport aSR)
   {
     return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                             PropertyReference.class::isInstance,
                                             PropertyReference.class::cast);
   }
 
-  @Nonnull
-  public static Text getText (@Nonnull final SuccessfulReport aSR)
+  @NonNull
+  public static Text getText (@NonNull final SuccessfulReport aSR)
   {
     return CollectionFind.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
                                            Text.class::isInstance,

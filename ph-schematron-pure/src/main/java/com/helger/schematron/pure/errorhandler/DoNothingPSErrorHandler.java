@@ -16,9 +16,9 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
-import com.helger.diagnostics.error.IError;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.diagnostics.error.IError;
 
 /**
  * An implementation if {@link IPSErrorHandler} that does nothing and swallows
@@ -29,7 +29,7 @@ import jakarta.annotation.Nonnull;
 public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
 {
   @Override
-  protected void handleInternally (@Nonnull final IError aError)
+  protected void handleInternally (@NonNull final IError aError)
   {
     // Do nothing :)
   }

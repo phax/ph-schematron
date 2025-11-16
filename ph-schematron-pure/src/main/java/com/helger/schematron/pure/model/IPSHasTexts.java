@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.ICommonsList;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for all Schematron objects having text children (as Strings)
@@ -34,7 +34,7 @@ public interface IPSHasTexts
    * @param sText
    *        The text to be added. May not be <code>null</code>.
    */
-  void addText (@Nonnull String sText);
+  void addText (@NonNull String sText);
 
   /**
    * @return <code>true</code> if at least one text element is contained,
@@ -45,7 +45,7 @@ public interface IPSHasTexts
   /**
    * @return A copy of all contained text elements. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsList <String> getAllTexts ();
 }

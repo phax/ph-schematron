@@ -20,11 +20,11 @@ import java.io.File;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class contains code examples that are used in the documentation.
@@ -33,7 +33,7 @@ import jakarta.annotation.Nonnull;
  */
 public final class DocumentationExamples
 {
-  public static boolean validateXMLViaXSLTSchematron (@Nonnull final File aSchematronFile, @Nonnull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaXSLTSchematron (@NonNull final File aSchematronFile, @NonNull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
     if (!aResSCH.isValidSchematron ())
@@ -41,8 +41,8 @@ public final class DocumentationExamples
     return aResSCH.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
   }
 
-  public static SchematronOutputType validateXMLViaXSLTSchematronFull (@Nonnull final File aSchematronFile,
-                                                                       @Nonnull final File aXMLFile) throws Exception
+  public static SchematronOutputType validateXMLViaXSLTSchematronFull (@NonNull final File aSchematronFile,
+                                                                       @NonNull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
     if (!aResSCH.isValidSchematron ())

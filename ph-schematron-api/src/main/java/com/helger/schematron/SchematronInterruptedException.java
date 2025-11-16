@@ -16,7 +16,7 @@
  */
 package com.helger.schematron;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An unchecked "interrupted" exception.
@@ -41,7 +41,7 @@ public class SchematronInterruptedException extends RuntimeException
    * @param sMsg
    *        Message to provide. Should not be <code>null</code>.
    */
-  public SchematronInterruptedException (@Nonnull final String sMsg)
+  public SchematronInterruptedException (@NonNull final String sMsg)
   {
     super ("Interrupted Schematron compilation: " + sMsg);
     SchematronDebug.getDebugLogger ().info ( () -> "Throwing SchematronInterruptedException(" + sMsg + ")");

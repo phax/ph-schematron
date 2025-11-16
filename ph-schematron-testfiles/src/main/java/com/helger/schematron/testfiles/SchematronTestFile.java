@@ -16,13 +16,13 @@
  */
 package com.helger.schematron.testfiles;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Represents a single Schematron test file
@@ -36,9 +36,9 @@ public class SchematronTestFile
   // For easier usage only:
   private final String m_sFileBaseName;
 
-  public SchematronTestFile (@Nonnull @Nonempty final String sParentDirBaseName,
-                             @Nonnull final IReadableResource aRes,
-                             @Nonnull @Nonempty final String sFileBaseName)
+  public SchematronTestFile (@NonNull @Nonempty final String sParentDirBaseName,
+                             @NonNull final IReadableResource aRes,
+                             @NonNull @Nonempty final String sFileBaseName)
   {
     ValueEnforcer.notEmpty (sParentDirBaseName, "ParentDirBaseName");
     ValueEnforcer.notNull (aRes, "Resource");
@@ -49,20 +49,20 @@ public class SchematronTestFile
     m_sFileBaseName = sFileBaseName;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getParentDirBaseName ()
   {
     return m_sParentDirBaseName;
   }
 
-  @Nonnull
+  @NonNull
   public IReadableResource getResource ()
   {
     return m_aRes;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getFileBaseName ()
   {

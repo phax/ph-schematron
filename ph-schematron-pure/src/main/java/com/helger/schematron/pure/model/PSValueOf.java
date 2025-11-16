@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -31,9 +34,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron value-of-element.<br>
@@ -56,7 +56,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
   public PSValueOf ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sSelect))
     {
@@ -66,7 +66,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sSelect))
       aErrorHandler.error (this, "<value-of> has no 'select'");
@@ -77,7 +77,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return true;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -89,7 +89,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -118,7 +118,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     m_sSelect = sSelect;
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_VALUE_OF);
@@ -129,7 +129,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSValueOf getClone ()
   {
     final PSValueOf ret = new PSValueOf ();
@@ -156,7 +156,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
    * @return Never <code>null</code>.
    * @since 6.2.3
    */
-  @Nonnull
+  @NonNull
   public static PSValueOf ofSelect (@Nullable final String sSelect)
   {
     final PSValueOf ret = new PSValueOf ();

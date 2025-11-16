@@ -18,11 +18,11 @@ package com.helger.schematron.svrl;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A wrapper around {@link FailedAssert} with easier error level handling.
@@ -32,20 +32,20 @@ import jakarta.annotation.Nonnull;
 @Immutable
 public class SVRLFailedAssert extends AbstractSVRLMessage
 {
-  public SVRLFailedAssert (@Nonnull final FailedAssert aFailedAssert)
+  public SVRLFailedAssert (@NonNull final FailedAssert aFailedAssert)
   {
     this (aFailedAssert, SVRLHelper::getErrorLevelFromFailedAssert);
   }
 
-  public SVRLFailedAssert (@Nonnull final FailedAssert aFailedAssert,
-                           @Nonnull final Function <? super FailedAssert, ? extends IErrorLevel> aErrLevelProvider)
+  public SVRLFailedAssert (@NonNull final FailedAssert aFailedAssert,
+                           @NonNull final Function <? super FailedAssert, ? extends IErrorLevel> aErrLevelProvider)
   {
     this (aFailedAssert, x -> SVRLHelper.getBeautifiedLocation (x.getLocation ()), aErrLevelProvider);
   }
 
-  public SVRLFailedAssert (@Nonnull final FailedAssert aFailedAssert,
-                           @Nonnull final Function <? super FailedAssert, String> aLocationProvider,
-                           @Nonnull final Function <? super FailedAssert, ? extends IErrorLevel> aErrLevelProvider)
+  public SVRLFailedAssert (@NonNull final FailedAssert aFailedAssert,
+                           @NonNull final Function <? super FailedAssert, String> aLocationProvider,
+                           @NonNull final Function <? super FailedAssert, ? extends IErrorLevel> aErrLevelProvider)
   {
     super (SVRLHelper.getAllDiagnosticReferences (aFailedAssert),
            aFailedAssert.getId (),

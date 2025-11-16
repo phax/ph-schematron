@@ -19,13 +19,13 @@ package com.helger.schematron.resolve;
 import java.io.IOException;
 import java.net.URL;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resourceresolver.DefaultResourceResolver;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The default implementation of {@link ISchematronIncludeResolver} using the
@@ -40,13 +40,13 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
   private ISchematronIncludeResolver m_aCustomIncludeResolver;
 
   @Nullable
-  private static String _getBaseHref (@Nonnull final IReadableResource aResource)
+  private static String _getBaseHref (@NonNull final IReadableResource aResource)
   {
     final URL aURL = aResource.getAsURL ();
     return aURL == null ? null : aURL.toExternalForm ();
   }
 
-  public DefaultSchematronIncludeResolver (@Nonnull final IReadableResource aResource)
+  public DefaultSchematronIncludeResolver (@NonNull final IReadableResource aResource)
   {
     this (_getBaseHref (aResource));
   }
@@ -67,8 +67,8 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
     m_aCustomIncludeResolver = aCustomIncludeResolver;
   }
 
-  @Nonnull
-  public IReadableResource getResolvedSchematronResource (@Nonnull @Nonempty final String sHref) throws IOException
+  @NonNull
+  public IReadableResource getResolvedSchematronResource (@NonNull @Nonempty final String sHref) throws IOException
   {
     if (m_aCustomIncludeResolver != null)
     {

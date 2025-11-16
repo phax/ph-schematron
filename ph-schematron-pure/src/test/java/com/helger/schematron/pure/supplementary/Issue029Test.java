@@ -18,6 +18,8 @@ package com.helger.schematron.pure.supplementary;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -35,9 +37,6 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Test code for issue #29
  *
@@ -48,7 +47,7 @@ public final class Issue029Test
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue029Test.class);
 
   @Nullable
-  static SchematronOutputType validateXmlUsingSchematron (@Nonnull final IReadableResource aRes)
+  static SchematronOutputType validateXmlUsingSchematron (@NonNull final IReadableResource aRes)
   {
     SchematronOutputType ob = null;
 

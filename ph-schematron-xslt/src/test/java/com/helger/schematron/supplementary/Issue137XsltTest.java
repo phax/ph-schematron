@@ -24,6 +24,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,13 +42,11 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.StringStreamSource;
 import com.helger.xml.transform.TransformSourceFactory;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue137XsltTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue137XsltTest.class);
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     if (false)
       SchematronDebug.setDebugMode (true);

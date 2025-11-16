@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +31,11 @@ import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue130Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue130Test.class);
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
 

@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -35,9 +38,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron span-element.<br>
@@ -57,7 +57,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
   public PSSpan ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sClass))
     {
@@ -72,7 +72,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sClass))
       aErrorHandler.error (this, "<span> has no 'class'");
@@ -85,7 +85,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return true;
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -98,14 +98,14 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -119,7 +119,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -137,7 +137,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return m_sClass;
   }
 
-  public void addText (@Nonnull @Nonempty final String sText)
+  public void addText (@NonNull @Nonempty final String sText)
   {
     ValueEnforcer.notEmpty (sText, "Text");
     m_aContent.add (sText);
@@ -148,7 +148,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return m_aContent.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
@@ -161,7 +161,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return StringImplode.getImploded (m_aContent);
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_SPAN);
@@ -177,7 +177,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSSpan getClone ()
   {
     final PSSpan ret = new PSSpan ();

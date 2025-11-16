@@ -21,6 +21,8 @@ import java.io.InputStream;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -41,9 +43,6 @@ import com.helger.xml.sax.DefaultEntityResolver;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
 import com.helger.xml.transform.TransformSourceFactory;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Abstract implementation of the {@link ISchematronResource} interface handling
@@ -70,7 +69,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    * @param aResource
    *        The Schematron resource. May not be <code>null</code>.
    */
-  public AbstractSchematronResource (@Nonnull final IReadableResource aResource)
+  public AbstractSchematronResource (@NonNull final IReadableResource aResource)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
@@ -78,13 +77,13 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     m_aEntityResolver = DefaultEntityResolver.createOnDemand (aResource);
   }
 
-  @Nonnull
+  @NonNull
   public final String getID ()
   {
     return m_sResourceID;
   }
 
-  @Nonnull
+  @NonNull
   public final IReadableResource getResource ()
   {
     return m_aResource;
@@ -137,7 +136,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    *         used.
    * @see #getEntityResolver()
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   protected DOMReaderSettings internalCreateDOMReaderSettings ()
   {
@@ -157,7 +156,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     private final Document m_aDoc;
     private final String m_sBaseURI;
 
-    public NodeAndBaseURI (@Nonnull final Document aDoc, @Nullable final String sBaseURI)
+    public NodeAndBaseURI (@NonNull final Document aDoc, @Nullable final String sBaseURI)
     {
       m_aDoc = aDoc;
       m_sBaseURI = sBaseURI;
@@ -166,7 +165,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
 
   @Nullable
   @OverrideOnDemand
-  protected NodeAndBaseURI getAsNode (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  protected NodeAndBaseURI getAsNode (@NonNull final IHasInputStream aXMLResource) throws Exception
   {
     final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
     InputStream aIS = null;
@@ -195,7 +194,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
 
   @Nullable
   @OverrideOnDemand
-  protected Node getAsNode (@Nonnull final Source aXMLSource) throws Exception
+  protected Node getAsNode (@NonNull final Source aXMLSource) throws Exception
   {
     final DOMReaderSettings aDRS = internalCreateDOMReaderSettings ();
     aDRS.setFeatureValue (EXMLParserFeature.DISALLOW_DOCTYPE_DECL, false);
@@ -203,8 +202,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return SchematronResourceHelper.getNodeOfSource (aXMLSource, aDRS);
   }
 
-  @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  @NonNull
+  public EValidity getSchematronValidity (@NonNull final IHasInputStream aXMLResource) throws Exception
   {
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
@@ -217,8 +216,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return getSchematronValidity (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
   }
 
-  @Nonnull
-  public EValidity getSchematronValidity (@Nonnull final Source aXMLSource) throws Exception
+  @NonNull
+  public EValidity getSchematronValidity (@NonNull final Source aXMLSource) throws Exception
   {
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
@@ -232,7 +231,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  public Document applySchematronValidation (@NonNull final IHasInputStream aXMLResource) throws Exception
   {
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
@@ -246,7 +245,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull final Source aXMLSource) throws Exception
+  public Document applySchematronValidation (@NonNull final Source aXMLSource) throws Exception
   {
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
@@ -260,7 +259,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final IHasInputStream aXMLResource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final IHasInputStream aXMLResource) throws Exception
   {
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
@@ -274,7 +273,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Source aXMLSource) throws Exception
+  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource) throws Exception
   {
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated

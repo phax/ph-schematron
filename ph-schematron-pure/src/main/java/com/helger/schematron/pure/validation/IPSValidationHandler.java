@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.validation;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -26,9 +28,6 @@ import com.helger.schematron.pure.model.PSPattern;
 import com.helger.schematron.pure.model.PSPhase;
 import com.helger.schematron.pure.model.PSRule;
 import com.helger.schematron.pure.model.PSSchema;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a Schematron validation callback handler. It is only
@@ -54,7 +53,7 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onStart (@Nonnull final PSSchema aSchema,
+  default void onStart (@NonNull final PSSchema aSchema,
                         @Nullable final PSPhase aActivePhase,
                         @Nullable final String sBaseURI) throws SchematronValidationException
   {}
@@ -67,7 +66,7 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
+  default void onPattern (@NonNull final PSPattern aPattern) throws SchematronValidationException
   {}
 
   /**
@@ -80,7 +79,7 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of errors
    */
-  default void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+  default void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
                                                                                                throws SchematronValidationException
   {}
 
@@ -101,8 +100,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onFiredRule (@Nonnull final PSRule aRule,
-                            @Nonnull final String sContext,
+  default void onFiredRule (@NonNull final PSRule aRule,
+                            @NonNull final String sContext,
                             @Nonnegative final int nNodeIndex,
                             @Nonnegative final int nNodeCount) throws SchematronValidationException
   {}
@@ -135,11 +134,11 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  @Nonnull
-  default EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
-                                    @Nonnull final PSAssertReport aAssertReport,
-                                    @Nonnull final String sTestExpression,
-                                    @Nonnull final Node aRuleMatchingNode,
+  @NonNull
+  default EContinue onFailedAssert (@NonNull final PSRule aOwningRule,
+                                    @NonNull final PSAssertReport aAssertReport,
+                                    @NonNull final String sTestExpression,
+                                    @NonNull final Node aRuleMatchingNode,
                                     final int nNodeIndex,
                                     @Nullable final Object aContext,
                                     @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -175,11 +174,11 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  @Nonnull
-  default EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
-                                        @Nonnull final PSAssertReport aAssertReport,
-                                        @Nonnull final String sTestExpression,
-                                        @Nonnull final Node aRuleMatchingNode,
+  @NonNull
+  default EContinue onSuccessfulReport (@NonNull final PSRule aOwningRule,
+                                        @NonNull final PSAssertReport aAssertReport,
+                                        @NonNull final String sTestExpression,
+                                        @NonNull final Node aRuleMatchingNode,
                                         final int nNodeIndex,
                                         @Nullable final Object aContext,
                                         @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -200,7 +199,7 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
+  default void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
                                                                                              throws SchematronValidationException
   {}
 
@@ -213,7 +212,7 @@ public interface IPSValidationHandler
    *        <code>null</code>.
    * @return The new validation handler that invokes this and the passed on
    */
-  @Nonnull
+  @NonNull
   default IPSValidationHandler and (@Nullable final IPSValidationHandler rhs)
   {
     if (rhs == null)
@@ -234,7 +233,7 @@ public interface IPSValidationHandler
    * @return The new validation handler that invokes both handlers. May be
    *         <code>null</code> if both are null.
    */
-  @Nonnull
+  @NonNull
   static IPSValidationHandler and (@Nullable final IPSValidationHandler lhs, @Nullable final IPSValidationHandler rhs)
   {
     if (lhs == null)
@@ -246,7 +245,7 @@ public interface IPSValidationHandler
     return new IPSValidationHandler ()
     {
       @Override
-      public void onStart (@Nonnull final PSSchema aSchema,
+      public void onStart (@NonNull final PSSchema aSchema,
                            @Nullable final PSPhase aActivePhase,
                            @Nullable final String sBaseURI) throws SchematronValidationException
       {
@@ -255,14 +254,14 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
+      public void onPattern (@NonNull final PSPattern aPattern) throws SchematronValidationException
       {
         lhs.onPattern (aPattern);
         rhs.onPattern (aPattern);
       }
 
       @Override
-      public void onRuleStart (@Nonnull final PSRule aRule, @Nonnull final NodeList aContextList)
+      public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
                                                                                                   throws SchematronValidationException
       {
         lhs.onRuleStart (aRule, aContextList);
@@ -270,8 +269,8 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onFiredRule (@Nonnull final PSRule aRule,
-                               @Nonnull final String sContext,
+      public void onFiredRule (@NonNull final PSRule aRule,
+                               @NonNull final String sContext,
                                @Nonnegative final int nNodeIndex,
                                @Nonnegative final int nNodeCount) throws SchematronValidationException
       {
@@ -279,12 +278,12 @@ public interface IPSValidationHandler
         rhs.onFiredRule (aRule, sContext, nNodeIndex, nNodeCount);
       }
 
-      @Nonnull
+      @NonNull
       @Override
-      public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
-                                       @Nonnull final PSAssertReport aAssertReport,
-                                       @Nonnull final String sTestExpression,
-                                       @Nonnull final Node aRuleMatchingNode,
+      public EContinue onFailedAssert (@NonNull final PSRule aOwningRule,
+                                       @NonNull final PSAssertReport aAssertReport,
+                                       @NonNull final String sTestExpression,
+                                       @NonNull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext,
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -307,12 +306,12 @@ public interface IPSValidationHandler
         return eCtd;
       }
 
-      @Nonnull
+      @NonNull
       @Override
-      public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
-                                           @Nonnull final PSAssertReport aAssertReport,
-                                           @Nonnull final String sTestExpression,
-                                           @Nonnull final Node aRuleMatchingNode,
+      public EContinue onSuccessfulReport (@NonNull final PSRule aOwningRule,
+                                           @NonNull final PSAssertReport aAssertReport,
+                                           @NonNull final String sTestExpression,
+                                           @NonNull final Node aRuleMatchingNode,
                                            final int nNodeIndex,
                                            @Nullable final Object aContext,
                                            @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -336,7 +335,7 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onEnd (@Nonnull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
+      public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
                                                                                                 throws SchematronValidationException
       {
         lhs.onEnd (aSchema, aActivePhase);

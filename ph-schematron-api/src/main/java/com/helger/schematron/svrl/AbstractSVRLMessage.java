@@ -18,6 +18,9 @@ package com.helger.schematron.svrl;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
@@ -26,9 +29,6 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A wrapper around FailedAssert and SuccessfulReport with easier error level
@@ -63,7 +63,7 @@ public abstract class AbstractSVRLMessage
     m_aFlag = aFlag;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsList <DiagnosticReference> getDiagnosticReferences ()
   {
@@ -100,13 +100,13 @@ public abstract class AbstractSVRLMessage
     return m_sRole;
   }
 
-  @Nonnull
+  @NonNull
   public final IErrorLevel getFlag ()
   {
     return m_aFlag;
   }
 
-  @Nonnull
+  @NonNull
   public SVRLResourceError getAsResourceError (@Nullable final String sResourceName)
   {
     return new SVRLErrorBuilder (m_sTest).errorLevel (m_aFlag)

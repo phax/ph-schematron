@@ -20,10 +20,10 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
-import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 
 /**
  * XPath configuration to use.
@@ -50,7 +50,7 @@ public interface IXPathConfig
   /**
    * @return The {@link XPathFactory} to use. May not be <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   XPathFactory getXPathFactory ();
 
   /**

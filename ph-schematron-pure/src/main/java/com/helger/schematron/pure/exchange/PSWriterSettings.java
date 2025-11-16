@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.exchange;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.clone.ICloneable;
 import com.helger.base.enforce.ValueEnforcer;
@@ -27,8 +29,6 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.IXMLWriterSettings;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class contains the settings to be used with {@link PSWriter}.
@@ -49,28 +49,28 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
   public PSWriterSettings ()
   {}
 
-  public PSWriterSettings (@Nonnull final IPSWriterSettings aOther)
+  public PSWriterSettings (@NonNull final IPSWriterSettings aOther)
   {
     ValueEnforcer.notNull (aOther, "Other");
     m_aXMLWriterSettings = aOther.getXMLWriterSettings ();
   }
 
-  @Nonnull
-  public IPSWriterSettings setXMLWriterSettings (@Nonnull final IXMLWriterSettings aXMLWriterSettings)
+  @NonNull
+  public IPSWriterSettings setXMLWriterSettings (@NonNull final IXMLWriterSettings aXMLWriterSettings)
   {
     ValueEnforcer.notNull (aXMLWriterSettings, "XMLWriterSettings");
     m_aXMLWriterSettings = new XMLWriterSettings (aXMLWriterSettings);
     return this;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public XMLWriterSettings getXMLWriterSettings ()
   {
     return new XMLWriterSettings (m_aXMLWriterSettings);
   }
 
-  @Nonnull
+  @NonNull
   public PSWriterSettings getClone ()
   {
     return new PSWriterSettings (this);
@@ -91,9 +91,9 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
    *        <code>null</code>.
    * @return A non-<code>null</code> but maybe empty namespace context
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
-  public static MapBasedNamespaceContext createNamespaceMapping (@Nonnull final PSSchema aSchema)
+  public static MapBasedNamespaceContext createNamespaceMapping (@NonNull final PSSchema aSchema)
   {
     final MapBasedNamespaceContext ret = new MapBasedNamespaceContext ();
     ret.addDefaultNamespaceURI (CSchematron.NAMESPACE_SCHEMATRON);

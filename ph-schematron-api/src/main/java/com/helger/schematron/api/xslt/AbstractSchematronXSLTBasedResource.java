@@ -28,6 +28,8 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -58,9 +60,6 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT transformations.
  *
@@ -85,7 +84,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
   @Nullable
-  private static String _findBaseURL (@Nonnull final IReadableResource aRes)
+  private static String _findBaseURL (@NonNull final IReadableResource aRes)
   {
     if (aRes instanceof FileSystemResource)
     {
@@ -98,7 +97,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return aBaseURL != null ? aBaseURL.toExternalForm () : null;
   }
 
-  public AbstractSchematronXSLTBasedResource (@Nonnull final IReadableResource aSCHResource)
+  public AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
@@ -115,7 +114,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aCustomErrorListener;
   }
 
-  @Nonnull
+  @NonNull
   public final IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
@@ -128,14 +127,14 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aCustomURIResolver;
   }
 
-  @Nonnull
+  @NonNull
   public final IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
     return thisAsT ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public final ICommonsOrderedMap <String, Object> parameters ()
   {
@@ -150,7 +149,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * @return this
    * @since 4.2.3
    */
-  @Nonnull
+  @NonNull
   public final IMPLTYPE setEntityResolver (@Nullable final EntityResolver aEntityResolver)
   {
     internalSetEntityResolver (aEntityResolver);
@@ -166,14 +165,14 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   /**
    * @return The Schematron output validator to be used. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final ISchematronOutputValidityDeterminator getOutputValidityDeterminator ()
   {
     return m_aSOVDeterminator;
   }
 
-  @Nonnull
-  public final IMPLTYPE setOutputValidityDeterminator (@Nonnull final ISchematronOutputValidityDeterminator aSOVDeterminator)
+  @NonNull
+  public final IMPLTYPE setOutputValidityDeterminator (@NonNull final ISchematronOutputValidityDeterminator aSOVDeterminator)
   {
     ValueEnforcer.notNull (aSOVDeterminator, "SchematronOutputValidityDeterminator");
     m_aSOVDeterminator = aSOVDeterminator;
@@ -185,7 +184,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_bValidateSVRL;
   }
 
-  @Nonnull
+  @NonNull
   public final IMPLTYPE setValidateSVRL (final boolean bValidateSVRL)
   {
     m_bValidateSVRL = bValidateSVRL;
@@ -198,8 +197,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return aXSLTProvider != null && aXSLTProvider.isValidSchematron ();
   }
 
-  @Nonnull
-  public final EValidity getSchematronValidity (@Nonnull final Node aXMLNode, @Nullable final String sBaseURI)
+  @NonNull
+  public final EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
                                                                                                                throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
@@ -215,7 +214,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @Override
   @Nullable
-  public final Document applySchematronValidation (@Nonnull final Source aSource) throws TransformerException
+  public final Document applySchematronValidation (@NonNull final Source aSource) throws TransformerException
   {
     ValueEnforcer.notNull (aSource, "Source");
 
@@ -279,7 +278,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation (@Nonnull Node aXMLNode, @Nullable String sBaseURI) throws Exception
+  public Document applySchematronValidation (@NonNull Node aXMLNode, @Nullable String sBaseURI) throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -289,7 +288,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@Nonnull final Node aXMLSource,
+  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLSource,
                                                                @Nullable final String sBaseURI) throws Exception
   {
     final Document aDoc = applySchematronValidation (aXMLSource, sBaseURI);

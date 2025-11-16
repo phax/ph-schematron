@@ -18,11 +18,11 @@ package com.helger.schematron.svrl;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * A wrapper around {@link SuccessfulReport} with easier error level handling.
@@ -32,20 +32,20 @@ import jakarta.annotation.Nonnull;
 @Immutable
 public class SVRLSuccessfulReport extends AbstractSVRLMessage
 {
-  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  public SVRLSuccessfulReport (@NonNull final SuccessfulReport aSuccessfulReport)
   {
     this (aSuccessfulReport, SVRLHelper::getErrorLevelFromSuccessfulReport);
   }
 
-  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport,
-                               @Nonnull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
+  public SVRLSuccessfulReport (@NonNull final SuccessfulReport aSuccessfulReport,
+                               @NonNull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
   {
     this (aSuccessfulReport, x -> SVRLHelper.getBeautifiedLocation (x.getLocation ()), aErrLevelProvider);
   }
 
-  public SVRLSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport,
-                               @Nonnull final Function <? super SuccessfulReport, String> aLocationProvider,
-                               @Nonnull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
+  public SVRLSuccessfulReport (@NonNull final SuccessfulReport aSuccessfulReport,
+                               @NonNull final Function <? super SuccessfulReport, String> aLocationProvider,
+                               @NonNull final Function <? super SuccessfulReport, ? extends IErrorLevel> aErrLevelProvider)
   {
     super (SVRLHelper.getAllDiagnosticReferences (aSuccessfulReport),
            aSuccessfulReport.getId (),

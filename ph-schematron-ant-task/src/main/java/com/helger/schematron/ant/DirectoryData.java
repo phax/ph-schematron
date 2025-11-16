@@ -18,13 +18,13 @@ package com.helger.schematron.ant;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsLinkedHashSet;
 import com.helger.collection.commons.ICommonsIterable;
 import com.helger.collection.commons.ICommonsOrderedSet;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Stores resolved ResourceCollection data.
@@ -37,13 +37,13 @@ final class DirectoryData
   private final ICommonsOrderedSet <String> m_aDirs = new CommonsLinkedHashSet <> ();
   private final ICommonsOrderedSet <String> m_aFiles = new CommonsLinkedHashSet <> ();
 
-  public DirectoryData (@Nonnull final File aBaseDir)
+  public DirectoryData (@NonNull final File aBaseDir)
   {
     ValueEnforcer.notNull (aBaseDir, "BaseDir");
     m_aBaseDir = aBaseDir;
   }
 
-  @Nonnull
+  @NonNull
   public File getBaseDir ()
   {
     return m_aBaseDir;
@@ -54,7 +54,7 @@ final class DirectoryData
     m_aDirs.add (sDir);
   }
 
-  @Nonnull
+  @NonNull
   public ICommonsIterable <String> getDirs ()
   {
     return m_aDirs;
@@ -65,7 +65,7 @@ final class DirectoryData
     m_aFiles.add (sFile);
   }
 
-  @Nonnull
+  @NonNull
   public ICommonsIterable <String> getFiles ()
   {
     return m_aFiles;

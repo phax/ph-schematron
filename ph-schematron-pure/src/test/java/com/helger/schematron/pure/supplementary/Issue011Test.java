@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.io.resource.FileSystemResource;
@@ -28,8 +29,6 @@ import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Test class for https://github.com/phax/ph-schematron/issues/11
@@ -45,7 +44,7 @@ public final class Issue011Test
                             new File ("src/test/resources/external/issues/github11/test.xml"));
   }
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
     aSCH.setErrorHandler (new LoggingPSErrorHandler ());

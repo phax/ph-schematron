@@ -18,6 +18,8 @@ package com.helger.schematron;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -52,9 +54,6 @@ import com.helger.xml.microdom.IMicroNode;
 import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.sax.InputSourceFactory;
 import com.helger.xml.serialize.read.ISAXReaderSettings;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This is a helper class that provides a way to easily apply an Schematron resource on an XML
@@ -120,7 +119,7 @@ public final class SchematronHelper
    *         URIs.
    * @since 5.4.1
    */
-  @Nonnull
+  @NonNull
   @Nonempty
   @ReturnsMutableCopy
   public static ICommonsList <String> getAllValidSchematronNS (final boolean bLenient)
@@ -141,8 +140,8 @@ public final class SchematronHelper
    *        The name of the resource that was validated (may be a file path etc.)
    * @return List non-<code>null</code> error list of {@link SVRLResourceError} objects.
    */
-  @Nonnull
-  public static IErrorList convertToErrorList (@Nonnull final SchematronOutputType aSchematronOutput,
+  @NonNull
+  public static IErrorList convertToErrorList (@NonNull final SchematronOutputType aSchematronOutput,
                                                @Nullable final String sResourceName)
   {
     ValueEnforcer.notNull (aSchematronOutput, "SchematronOutput");
@@ -153,11 +152,11 @@ public final class SchematronHelper
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   private static ESuccess _recursiveResolveAllSchematronIncludes (@Nullable final IMicroElement eRoot,
-                                                                  @Nonnull final IReadableResource aResource,
+                                                                  @NonNull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler,
+                                                                  @NonNull final ISchematronErrorHandler aErrorHandler,
                                                                   @Nullable final ISchematronIncludeResolver aCustomIncludeResolver,
                                                                   final boolean bLenient)
   {
@@ -229,7 +228,7 @@ public final class SchematronHelper
                                                           new DefaultHierarchyVisitorCallback <IMicroNode> ()
                                                           {
                                                             @Override
-                                                            public EHierarchyVisitorReturn onItemBeforeChildren (@Nonnull final IMicroNode aItem)
+                                                            public EHierarchyVisitorReturn onItemBeforeChildren (@NonNull final IMicroNode aItem)
                                                             {
                                                               if (aItem.isElement ())
                                                               {
@@ -334,8 +333,8 @@ public final class SchematronHelper
    * @return <code>null</code> if the passed resource could not be read as XML document
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
-                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler)
+  public static IMicroDocument getWithResolvedSchematronIncludes (@NonNull final IReadableResource aResource,
+                                                                  @NonNull final ISchematronErrorHandler aErrorHandler)
   {
     return getWithResolvedSchematronIncludes (aResource,
                                               null,
@@ -357,9 +356,9 @@ public final class SchematronHelper
    * @return <code>null</code> if the passed resource could not be read as XML document
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+  public static IMicroDocument getWithResolvedSchematronIncludes (@NonNull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler)
+                                                                  @NonNull final ISchematronErrorHandler aErrorHandler)
   {
     return getWithResolvedSchematronIncludes (aResource,
                                               aSettings,
@@ -384,9 +383,9 @@ public final class SchematronHelper
    * @since 5.4.1
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+  public static IMicroDocument getWithResolvedSchematronIncludes (@NonNull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler,
+                                                                  @NonNull final ISchematronErrorHandler aErrorHandler,
                                                                   final boolean bLenient)
   {
     return getWithResolvedSchematronIncludes (aResource,
@@ -414,9 +413,9 @@ public final class SchematronHelper
    * @since 8.0.5
    */
   @Nullable
-  public static IMicroDocument getWithResolvedSchematronIncludes (@Nonnull final IReadableResource aResource,
+  public static IMicroDocument getWithResolvedSchematronIncludes (@NonNull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
-                                                                  @Nonnull final ISchematronErrorHandler aErrorHandler,
+                                                                  @NonNull final ISchematronErrorHandler aErrorHandler,
                                                                   @Nullable final ISchematronIncludeResolver aCustomIncludeResolver,
                                                                   final boolean bLenient)
   {

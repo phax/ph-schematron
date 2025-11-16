@@ -20,6 +20,9 @@ import java.io.Serializable;
 
 import javax.xml.XMLConstants;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.clone.ICloneable;
@@ -29,9 +32,6 @@ import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.CSchematronXML;
 import com.helger.xml.microdom.IMicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single "rich" group
@@ -48,12 +48,12 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
 
     private final String m_sID;
 
-    ESpace (@Nonnull @Nonempty final String sID)
+    ESpace (@NonNull @Nonempty final String sID)
     {
       m_sID = sID;
     }
 
-    @Nonnull
+    @NonNull
     @Nonempty
     public String getID ()
     {
@@ -169,7 +169,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
            CSchematronXML.ATTR_XML_SPACE.equals (sAttrName);
   }
 
-  public void fillMicroElement (@Nonnull final IMicroElement aElement)
+  public void fillMicroElement (@NonNull final IMicroElement aElement)
   {
     aElement.setAttribute (CSchematronXML.ATTR_ICON, m_sIcon);
     aElement.setAttribute (CSchematronXML.ATTR_SEE, m_sSee);
@@ -179,7 +179,7 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
       aElement.setAttributeNS (XMLConstants.XML_NS_URI, CSchematronXML.ATTR_XML_SPACE, m_eXmlSpace.getID ());
   }
 
-  @Nonnull
+  @NonNull
   public PSRichGroup getClone ()
   {
     final PSRichGroup ret = new PSRichGroup ();

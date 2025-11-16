@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +34,12 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue123Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue123Test.class);
 
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
-                                               @Nonnull final File aXML) throws Exception
+  private static void _validateAndProduceSVRL (@NonNull final File aSchematron,
+                                               @NonNull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
     try

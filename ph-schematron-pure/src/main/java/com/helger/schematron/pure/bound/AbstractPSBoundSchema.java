@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.bound;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
@@ -45,9 +47,6 @@ import com.helger.schematron.pure.validation.xpath.PSXPathValidationHandlerSVRL;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Base implementation of {@link IPSBoundSchema} with all common elements. It is
  * independent of the used query binding.
@@ -66,8 +65,8 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   private final ICommonsList <PSPattern> m_aPatterns = new CommonsArrayList <> ();
   private final IPSValidationHandler m_aCustomValidationHandler;
 
-  public AbstractPSBoundSchema (@Nonnull final IPSQueryBinding aQueryBinding,
-                                @Nonnull final PSSchema aOrigSchema,
+  public AbstractPSBoundSchema (@NonNull final IPSQueryBinding aQueryBinding,
+                                @NonNull final PSSchema aOrigSchema,
                                 @Nullable final String sPhaseID,
                                 @Nullable final IPSErrorHandler aCustomErrorHandler,
                                 @Nullable final IPSValidationHandler aCustomValidationHandler)
@@ -139,7 +138,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     m_aCustomValidationHandler = aCustomValidationHandler;
   }
 
-  @Nonnull
+  @NonNull
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
@@ -151,7 +150,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   }
 
   @OverridingMethodsMustInvokeSuper
-  protected void warn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
+  protected void warn (@NonNull final IPSElement aSourceElement, @NonNull final String sMsg)
   {
     getErrorHandler ().handleError (SingleError.builderWarn ()
                                                .errorLocation (new SimpleLocation (m_aOrigSchema.getResource ()
@@ -162,14 +161,14 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   }
 
   @OverridingMethodsMustInvokeSuper
-  protected void error (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
+  protected void error (@NonNull final IPSElement aSourceElement, @NonNull final String sMsg)
   {
     error (aSourceElement, sMsg, (Throwable) null);
   }
 
   @OverridingMethodsMustInvokeSuper
-  protected void error (@Nonnull final IPSElement aSourceElement,
-                        @Nonnull final String sMsg,
+  protected void error (@NonNull final IPSElement aSourceElement,
+                        @NonNull final String sMsg,
                         @Nullable final Throwable t)
   {
     getErrorHandler ().handleError (SingleError.builderError ()
@@ -181,25 +180,25 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
                                                .build ());
   }
 
-  @Nonnull
+  @NonNull
   public final IPSQueryBinding getQueryBinding ()
   {
     return m_aQueryBinding;
   }
 
-  @Nonnull
+  @NonNull
   public final PSSchema getOriginalSchema ()
   {
     return m_aOrigSchema;
   }
 
-  @Nonnull
+  @NonNull
   public final MapBasedNamespaceContext getNamespaceContext ()
   {
     return m_aNamespaceContext;
   }
 
-  @Nonnull
+  @NonNull
   public final String getPhaseID ()
   {
     return m_sPhaseID;
@@ -216,7 +215,7 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     return m_aPhase != null;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsList <PSPattern> getAllRelevantPatterns ()
   {
@@ -235,15 +234,15 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
    * @return An implementation of {@link IPSPartialValidationHandler} to use for
    *         partial validation. May not be <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
   protected IPSPartialValidationHandler createPartialValidationHandler ()
   {
     return new PSValidationHandlerBreakOnFirstError ();
   }
 
-  @Nonnull
-  public EValidity validatePartially (@Nonnull final Node aNode,
+  @NonNull
+  public EValidity validatePartially (@NonNull final Node aNode,
                                       @Nullable final String sBaseURI) throws SchematronValidationException
   {
     final IPSPartialValidationHandler aValidationHandler = createPartialValidationHandler ();
@@ -251,8 +250,8 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     return aValidationHandler.getValidity ();
   }
 
-  @Nonnull
-  public SchematronOutputType validateComplete (@Nonnull final Node aNode,
+  @NonNull
+  public SchematronOutputType validateComplete (@NonNull final Node aNode,
                                                 @Nullable final String sBaseURI) throws SchematronValidationException
   {
     final PSXPathValidationHandlerSVRL aValidationHandler = new PSXPathValidationHandlerSVRL (getErrorHandler ());

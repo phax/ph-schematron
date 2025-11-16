@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.validation;
 
-import com.helger.schematron.SchematronException;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import com.helger.schematron.SchematronException;
 
 /**
  * Schematron exception that happens during validation.
@@ -34,7 +34,7 @@ public class SchematronValidationException extends SchematronException
    * @param sMsg
    *        error message
    */
-  public SchematronValidationException (@Nonnull final String sMsg)
+  public SchematronValidationException (@NonNull final String sMsg)
   {
     super (sMsg);
   }
@@ -47,7 +47,7 @@ public class SchematronValidationException extends SchematronException
    * @param t
    *        Nested exception
    */
-  public SchematronValidationException (@Nonnull final String sMsg, @Nullable final Throwable t)
+  public SchematronValidationException (@NonNull final String sMsg, @Nullable final Throwable t)
   {
     super (sMsg, t);
   }

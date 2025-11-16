@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.exchange;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -41,9 +43,6 @@ import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.SAXReaderSettings;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Utility class for reading all Schematron elements from a resource.
  *
@@ -65,7 +64,7 @@ public class PSReader
    * @param aResource
    *        The resource to read the Schematron from. May not be <code>null</code>.
    */
-  public PSReader (@Nonnull final IReadableResource aResource)
+  public PSReader (@NonNull final IReadableResource aResource)
   {
     this (aResource, null, null);
   }
@@ -82,7 +81,7 @@ public class PSReader
    *        The XML entity resolver to be used. May be <code>null</code>.
    * @since 4.1.1
    */
-  public PSReader (@Nonnull final IReadableResource aResource,
+  public PSReader (@NonNull final IReadableResource aResource,
                    @Nullable final IPSErrorHandler aErrorHandler,
                    @Nullable final EntityResolver aEntityResolver)
   {
@@ -95,7 +94,7 @@ public class PSReader
   /**
    * @return The resource from which the Schematron schema is read. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final IReadableResource getResource ()
   {
     return m_aResource;
@@ -105,7 +104,7 @@ public class PSReader
    * @return The error handler used. If no error handler was passed in the constructor, than a
    *         {@link LoggingPSErrorHandler} is automatically used.
    */
-  @Nonnull
+  @NonNull
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
@@ -140,7 +139,7 @@ public class PSReader
    * @return this for chaining
    * @since 5.4.1
    */
-  @Nonnull
+  @NonNull
   public final PSReader setLenient (final boolean bLenient)
   {
     m_bLenient = bLenient;
@@ -165,7 +164,7 @@ public class PSReader
    * @return this for chaining
    * @since 8.0.5
    */
-  @Nonnull
+  @NonNull
   public final PSReader setSchematronIncludeResolver (@Nullable final ISchematronIncludeResolver aSchematronIncludeResolver)
   {
     m_aSchematronIncludeResolver = aSchematronIncludeResolver;
@@ -194,7 +193,7 @@ public class PSReader
    * @param sMessage
    *        The main warning message.
    */
-  private void _warn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMessage)
+  private void _warn (@NonNull final IPSElement aSourceElement, @NonNull final String sMessage)
   {
     ValueEnforcer.notNull (aSourceElement, "SourceElement");
     ValueEnforcer.notNull (sMessage, "Message");
@@ -213,8 +212,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSActive readActiveFromXML (@Nonnull final IMicroElement eActive)
+  @NonNull
+  public PSActive readActiveFromXML (@NonNull final IMicroElement eActive)
   {
     final PSActive ret = new PSActive ();
     eActive.forAllAttributes ( (sNS, sAttrName, sVal) -> {
@@ -261,9 +260,9 @@ public class PSReader
     return ret;
   }
 
-  private static void _handleRichGroup (@Nonnull final String sAttrName,
-                                        @Nonnull final String sAttrValue,
-                                        @Nonnull final PSRichGroup aRichGroup)
+  private static void _handleRichGroup (@NonNull final String sAttrName,
+                                        @NonNull final String sAttrValue,
+                                        @NonNull final PSRichGroup aRichGroup)
   {
     if (sAttrName.equals (CSchematronXML.ATTR_ICON))
       aRichGroup.setIcon (sAttrValue);
@@ -281,9 +280,9 @@ public class PSReader
               aRichGroup.setXmlSpace (ESpace.getFromIDOrNull (sAttrValue));
   }
 
-  private static void _handleLinkableGroup (@Nonnull final String sAttrName,
-                                            @Nonnull final String sAttrValue,
-                                            @Nonnull final PSLinkableGroup aLinkableGroup)
+  private static void _handleLinkableGroup (@NonNull final String sAttrName,
+                                            @NonNull final String sAttrValue,
+                                            @NonNull final PSLinkableGroup aLinkableGroup)
   {
     if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
       aLinkableGroup.setRole (sAttrValue);
@@ -299,8 +298,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSAssertReport readAssertReportFromXML (@Nonnull final IMicroElement eAssertReport)
+  @NonNull
+  public PSAssertReport readAssertReportFromXML (@NonNull final IMicroElement eAssertReport)
   {
     final PSAssertReport ret = new PSAssertReport (eAssertReport.getLocalName ()
                                                                 .equals (CSchematronXML.ELEMENT_ASSERT));
@@ -381,8 +380,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSDiagnostic readDiagnosticFromXML (@Nonnull final IMicroElement eDiagnostic)
+  @NonNull
+  public PSDiagnostic readDiagnosticFromXML (@NonNull final IMicroElement eDiagnostic)
   {
     final PSDiagnostic ret = new PSDiagnostic ();
 
@@ -445,8 +444,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSDiagnostics readDiagnosticsFromXML (@Nonnull final IMicroElement eDiagnostics)
+  @NonNull
+  public PSDiagnostics readDiagnosticsFromXML (@NonNull final IMicroElement eDiagnostics)
   {
     final PSDiagnostics ret = new PSDiagnostics ();
 
@@ -479,8 +478,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSDir readDirFromXML (@Nonnull final IMicroElement eDir)
+  @NonNull
+  public PSDir readDirFromXML (@NonNull final IMicroElement eDir)
   {
     final PSDir ret = new PSDir ();
 
@@ -525,8 +524,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSEmph readEmphFromXML (@Nonnull final IMicroElement eEmph)
+  @NonNull
+  public PSEmph readEmphFromXML (@NonNull final IMicroElement eEmph)
   {
     final PSEmph ret = new PSEmph ();
 
@@ -568,8 +567,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSExtends readExtendsFromXML (@Nonnull final IMicroElement eExtends)
+  @NonNull
+  public PSExtends readExtendsFromXML (@NonNull final IMicroElement eExtends)
   {
     final PSExtends ret = new PSExtends ();
 
@@ -599,8 +598,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSInclude readIncludeFromXML (@Nonnull final IMicroElement eInclude)
+  @NonNull
+  public PSInclude readIncludeFromXML (@NonNull final IMicroElement eInclude)
   {
     final PSInclude ret = new PSInclude ();
 
@@ -630,8 +629,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSLet readLetFromXML (@Nonnull final IMicroElement eLet)
+  @NonNull
+  public PSLet readLetFromXML (@NonNull final IMicroElement eLet)
   {
     final PSLet ret = new PSLet ();
 
@@ -664,8 +663,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSName readNameFromXML (@Nonnull final IMicroElement eName)
+  @NonNull
+  public PSName readNameFromXML (@NonNull final IMicroElement eName)
   {
     final PSName ret = new PSName ();
 
@@ -695,8 +694,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSNS readNSFromXML (@Nonnull final IMicroElement eNS)
+  @NonNull
+  public PSNS readNSFromXML (@NonNull final IMicroElement eNS)
   {
     final PSNS ret = new PSNS ();
 
@@ -729,8 +728,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSP readPFromXML (@Nonnull final IMicroElement eP)
+  @NonNull
+  public PSP readPFromXML (@NonNull final IMicroElement eP)
   {
     final PSP ret = new PSP ();
     eP.forAllAttributes ( (sNS, sAttrName, sVal) -> {
@@ -790,8 +789,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSParam readParamFromXML (@Nonnull final IMicroElement eParam)
+  @NonNull
+  public PSParam readParamFromXML (@NonNull final IMicroElement eParam)
   {
     final PSParam ret = new PSParam ();
 
@@ -824,8 +823,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSPattern readPatternFromXML (@Nonnull final IMicroElement ePattern)
+  @NonNull
+  public PSPattern readPatternFromXML (@NonNull final IMicroElement ePattern)
   {
     final PSPattern ret = new PSPattern ();
 
@@ -888,8 +887,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSPhase readPhaseFromXML (@Nonnull final IMicroElement ePhase)
+  @NonNull
+  public PSPhase readPhaseFromXML (@NonNull final IMicroElement ePhase)
   {
     final PSPhase ret = new PSPhase ();
 
@@ -936,8 +935,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSRule readRuleFromXML (@Nonnull final IMicroElement eRule)
+  @NonNull
+  public PSRule readRuleFromXML (@NonNull final IMicroElement eRule)
   {
     final PSRule ret = new PSRule ();
 
@@ -1008,8 +1007,8 @@ public class PSReader
    * @throws SchematronReadException
    *         If reading fails
    */
-  @Nonnull
-  public PSSchema readSchemaFromXML (@Nonnull final IMicroElement eSchema) throws SchematronReadException
+  @NonNull
+  public PSSchema readSchemaFromXML (@NonNull final IMicroElement eSchema) throws SchematronReadException
   {
     ValueEnforcer.notNull (eSchema, "Schema");
 
@@ -1094,8 +1093,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSSpan readSpanFromXML (@Nonnull final IMicroElement eSpan)
+  @NonNull
+  public PSSpan readSpanFromXML (@NonNull final IMicroElement eSpan)
   {
     final PSSpan ret = new PSSpan ();
 
@@ -1140,8 +1139,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSTitle readTitleFromXML (@Nonnull final IMicroElement eTitle)
+  @NonNull
+  public PSTitle readTitleFromXML (@NonNull final IMicroElement eTitle)
   {
     final PSTitle ret = new PSTitle ();
 
@@ -1187,8 +1186,8 @@ public class PSReader
    *        The source micro element. Never <code>null</code>.
    * @return The created domain object. May not be <code>null</code>.
    */
-  @Nonnull
-  public PSValueOf readValueOfFromXML (@Nonnull final IMicroElement eValueOf)
+  @NonNull
+  public PSValueOf readValueOfFromXML (@NonNull final IMicroElement eValueOf)
   {
     final PSValueOf ret = new PSValueOf ();
 
@@ -1219,7 +1218,7 @@ public class PSReader
    * @throws SchematronReadException
    *         If reading fails
    */
-  @Nonnull
+  @NonNull
   public PSSchema readSchema () throws SchematronReadException
   {
     // Resolve all includes as the first action

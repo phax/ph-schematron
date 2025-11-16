@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -36,8 +37,6 @@ import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Test for GitHub issue 182
@@ -62,7 +61,7 @@ public final class Issue182Test
       m_aSCH = SchematronResourcePure.fromFile (SCH);
   }
 
-  private void _validateAndProduceSVRL (@Nonnull final File aXML) throws Exception
+  private void _validateAndProduceSVRL (@NonNull final File aXML) throws Exception
   {
     m_aSCH.validateCompletely (new LoggingPSErrorHandler ());
 

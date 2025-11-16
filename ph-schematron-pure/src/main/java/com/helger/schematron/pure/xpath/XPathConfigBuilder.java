@@ -23,6 +23,8 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +34,6 @@ import com.helger.base.string.StringHelper;
 import com.helger.base.system.SystemProperties;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.xml.xpath.XPathHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Builder class for {@link IXPathConfig}.
@@ -71,8 +70,8 @@ public class XPathConfigBuilder
    *        The factory to use. May not be <code>null</code>.
    * @return this for chaining.
    */
-  @Nonnull
-  public final XPathConfigBuilder setXPathFactory (@Nonnull final XPathFactory aXPathFactory)
+  @NonNull
+  public final XPathConfigBuilder setXPathFactory (@NonNull final XPathFactory aXPathFactory)
   {
     ValueEnforcer.notNull (aXPathFactory, "XPathFactoryClass");
     m_aXPathFactory = aXPathFactory;
@@ -95,8 +94,8 @@ public class XPathConfigBuilder
    * @see #setXPathFactory(XPathFactory)
    * @see #setGlobalXPathFactory(String)
    */
-  @Nonnull
-  public final XPathConfigBuilder setXPathFactoryClass (@Nonnull final Class <? extends XPathFactory> aXPathFactoryClass)
+  @NonNull
+  public final XPathConfigBuilder setXPathFactoryClass (@NonNull final Class <? extends XPathFactory> aXPathFactoryClass)
   {
     ValueEnforcer.notNull (aXPathFactoryClass, "XPathFactoryClass");
     m_aXPathFactoryClass = aXPathFactoryClass;
@@ -124,7 +123,7 @@ public class XPathConfigBuilder
    * @see #setXPathFactory(XPathFactory)
    * @see #setXPathFactoryClass(Class)
    */
-  @Nonnull
+  @NonNull
   public final XPathConfigBuilder setGlobalXPathFactory (@Nullable final String sGlobalXPathFactory)
   {
     m_sGlobalXPathFactoryClassName = sGlobalXPathFactory;
@@ -137,7 +136,7 @@ public class XPathConfigBuilder
     return m_aXPathVariableResolver;
   }
 
-  @Nonnull
+  @NonNull
   public final XPathConfigBuilder setXPathVariableResolver (@Nullable final XPathVariableResolver xPathVariableResolver)
   {
     m_aXPathVariableResolver = xPathVariableResolver;
@@ -150,14 +149,14 @@ public class XPathConfigBuilder
     return m_aXPathFunctionResolver;
   }
 
-  @Nonnull
+  @NonNull
   public final XPathConfigBuilder setXPathFunctionResolver (@Nullable final XPathFunctionResolver xPathFunctionResolver)
   {
     m_aXPathFunctionResolver = xPathFunctionResolver;
     return this;
   }
 
-  @Nonnull
+  @NonNull
   public IXPathConfig build () throws XPathFactoryConfigurationException
   {
     // Check if a predefined XPathFactory is present

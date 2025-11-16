@@ -19,6 +19,8 @@ package com.helger.schematron.relaxng;
 import javax.xml.XMLConstants;
 import javax.xml.validation.SchemaFactory;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.ErrorHandler;
 
@@ -28,9 +30,6 @@ import com.helger.base.system.SystemProperties;
 import com.helger.xml.ls.SimpleLSResourceResolver;
 import com.helger.xml.sax.LoggingSAXErrorHandler;
 import com.helger.xml.schema.SchemaCache;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class is used to cache Relax NG Compact schema objects.
@@ -87,7 +86,7 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
   /**
    * @return The default cache object. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static RelaxNGCompactSchemaCache getInstance ()
   {
     final RelaxNGCompactSchemaCache ret = SingletonHolder.INSTANCE;

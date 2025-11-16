@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.bound;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -31,9 +33,6 @@ import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * Base interface for a bound schema. A bound schema is a {@link PSSchema} with
  * a specific
@@ -45,20 +44,20 @@ public interface IPSBoundSchema
   /**
    * @return The query binding that was used to create this bound schema.
    */
-  @Nonnull
+  @NonNull
   IPSQueryBinding getQueryBinding ();
 
   /**
    * @return The original schema used to bind. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   PSSchema getOriginalSchema ();
 
   /**
    * @return The namespace context as defined by the namespaces in the original
    *         schema. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   MapBasedNamespaceContext getNamespaceContext ();
 
   /**
@@ -66,7 +65,7 @@ public interface IPSBoundSchema
    *         defaultPhase is used. If this is not present, than all patterns are
    *         used and ID of the phase is {@link CSchematron#PHASE_ALL}.
    */
-  @Nonnull
+  @NonNull
   String getPhaseID ();
 
   /**
@@ -87,7 +86,7 @@ public interface IPSBoundSchema
    *         only the patterns matching the selected phase are contained. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsList <PSPattern> getAllRelevantPatterns ();
 
@@ -100,8 +99,8 @@ public interface IPSBoundSchema
    *        The original rule context. May not be <code>null</code>.
    * @return The real validation context to use.
    */
-  @Nonnull
-  String getValidationContext (@Nonnull String sRuleContext);
+  @NonNull
+  String getValidationContext (@NonNull String sRuleContext);
 
   /**
    * The generic validation method. It validates the passed XML node to this
@@ -117,9 +116,9 @@ public interface IPSBoundSchema
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
-  void validate (@Nonnull Node aNode,
+  void validate (@NonNull Node aNode,
                  @Nullable String sBaseURI,
-                 @Nonnull IPSValidationHandler aHandler) throws SchematronValidationException;
+                 @NonNull IPSValidationHandler aHandler) throws SchematronValidationException;
 
   /**
    * Special validation that breaks on the first error. This is a specialized
@@ -134,8 +133,8 @@ public interface IPSBoundSchema
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
-  @Nonnull
-  EValidity validatePartially (@Nonnull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
+  @NonNull
+  EValidity validatePartially (@NonNull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
 
   /**
    * Special validation that creates an SVRL document. This is a specialized
@@ -149,6 +148,6 @@ public interface IPSBoundSchema
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
-  @Nonnull
-  SchematronOutputType validateComplete (@Nonnull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
+  @NonNull
+  SchematronOutputType validateComplete (@NonNull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
 }

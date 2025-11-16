@@ -88,14 +88,14 @@
             <Export-Package>
               com.helger.schematron.testfiles
             </Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
       <plugin>
         <groupId>com.helger.maven</groupId>
         <artifactId>ph-dirindex-maven-plugin</artifactId>
-        <version>5.0.0</version><!--$NO-MVN-MAN-VER$-->
+        <version>5.0.1</version>
         <executions>
           <execution>
             <id>sch</id>

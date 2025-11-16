@@ -104,7 +104,7 @@
             <Automatic-Module-Name>com.helger.schematron.schxslt</Automatic-Module-Name>
             <Export-Package>com.helger.schematron.schxslt.config,
               com.helger.schematron.schxslt.xslt2</Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
             <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
           </instructions>

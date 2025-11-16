@@ -27,6 +27,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -68,8 +70,6 @@ import com.helger.schematron.saxon.SaxonNamespaceContext;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.xpath.XPathHelper;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.lib.ErrorReporter;
 import net.sf.saxon.xpath.XPathEvaluator;
@@ -106,15 +106,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *         If expression cannot be compiled.
    */
   @Nullable
-  private static XPathExpression _compileXPath (@Nonnull final XPath aXPathContext,
-                                                @Nonnull final String sXPathExpression) throws XPathExpressionException
+  private static XPathExpression _compileXPath (@NonNull final XPath aXPathContext,
+                                                @NonNull final String sXPathExpression) throws XPathExpressionException
   {
     return aXPathContext.compile (sXPathExpression);
   }
 
   @Nullable
-  private ICommonsList <PSXPathBoundElement> _createBoundElements (@Nonnull final IPSHasMixedContent aMixedContent,
-                                                                   @Nonnull final XPath aXPathContext)
+  private ICommonsList <PSXPathBoundElement> _createBoundElements (@NonNull final IPSHasMixedContent aMixedContent,
+                                                                   @NonNull final XPath aXPathContext)
   {
     final ICommonsList <PSXPathBoundElement> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
@@ -178,7 +178,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   }
 
   @Nullable
-  private ICommonsMap <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@Nonnull final XPath aXPathContext)
+  private ICommonsMap <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@NonNull final XPath aXPathContext)
   {
     final ICommonsMap <String, PSXPathBoundDiagnostic> ret = new CommonsHashMap <> ();
     boolean bHasAnyError = false;
@@ -227,9 +227,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @return <code>null</code> if an XPath error is contained
    */
   @Nullable
-  private ICommonsList <PSXPathBoundPattern> _createBoundPatterns (@Nonnull final XPath aXPathContext,
-                                                                   @Nonnull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
-                                                                   @Nonnull final PSXPathVariables aSchemaVariables)
+  private ICommonsList <PSXPathBoundPattern> _createBoundPatterns (@NonNull final XPath aXPathContext,
+                                                                   @NonNull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
+                                                                   @NonNull final PSXPathVariables aSchemaVariables)
   {
     final ICommonsList <PSXPathBoundPattern> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
@@ -390,8 +390,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @throws SchematronBindException
    *         In case XPath expressions are incorrect and pre-compilation fails
    */
-  public PSXPathBoundSchema (@Nonnull final IPSQueryBinding aQueryBinding,
-                             @Nonnull final PSSchema aOrigSchema,
+  public PSXPathBoundSchema (@NonNull final IPSQueryBinding aQueryBinding,
+                             @NonNull final PSSchema aOrigSchema,
                              @Nullable final String sPhase,
                              @Nullable final IPSErrorHandler aCustomErrorListener,
                              @Nullable final IPSValidationHandler aCustomValidationHandler,
@@ -415,7 +415,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     m_aXPathVariableResolver = new XPathLetVariableResolver (m_aXPathConfig.getXPathVariableResolver ());
   }
 
-  @Nonnull
+  @NonNull
   private XPath _createXPathContext ()
   {
     final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
@@ -452,7 +452,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     return aXPathContext;
   }
 
-  @Nonnull
+  @NonNull
   public PSXPathBoundSchema bind () throws SchematronBindException
   {
     if (LOGGER.isDebugEnabled ())
@@ -533,14 +533,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @return The underlying {@link IXPathConfig}. Never <code>null</code>.
    * @since v8
    */
-  @Nonnull
+  @NonNull
   public final IXPathConfig getXPathConfig ()
   {
     return m_aXPathConfig;
   }
 
-  @Nonnull
-  public String getValidationContext (@Nonnull final String sRuleContext)
+  @NonNull
+  public String getValidationContext (@NonNull final String sRuleContext)
   {
     // Do we already have an absolute XPath?
     if (sRuleContext.startsWith ("/"))
@@ -557,10 +557,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private int m_nVarForNumber = 0;
   private int m_nVarForNode = 0;
 
-  private void _evaluateVariables (@Nonnull final PSXPathVariables aVariables,
-                                   @Nonnull final Node aNode,
+  private void _evaluateVariables (@NonNull final PSXPathVariables aVariables,
+                                   @NonNull final Node aNode,
                                    @Nullable final String sBaseURI,
-                                   @Nonnull final IPSElement aContextElement)
+                                   @NonNull final IPSElement aContextElement)
   {
     for (final Map.Entry <String, XPathExpression> aEntry : aVariables.getAll ().entrySet ())
     {
@@ -662,15 +662,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
   }
 
-  private void _removeAllVariables (@Nonnull final PSXPathVariables aVariables)
+  private void _removeAllVariables (@NonNull final PSXPathVariables aVariables)
   {
     for (final String sVarName : aVariables.getAllNames ())
       m_aXPathVariableResolver.removeVariable (new QName (sVarName));
   }
 
-  private void _validateSerial (@Nonnull final Node aNode,
+  private void _validateSerial (@NonNull final Node aNode,
                                 @Nullable final String sBaseURI,
-                                @Nonnull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
+                                @NonNull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
   {
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
@@ -853,9 +853,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
   }
 
-  public void validate (@Nonnull final Node aNode,
+  public void validate (@NonNull final Node aNode,
                         @Nullable final String sBaseURI,
-                        @Nonnull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
+                        @NonNull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
   {
     ValueEnforcer.notNull (aNode, "Node");
     ValueEnforcer.notNull (aValidationHandler, "ValidationHandler");

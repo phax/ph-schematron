@@ -29,6 +29,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.annotation.misc.Since;
@@ -61,9 +63,6 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Applies Schematron validation onto an XML file
@@ -217,7 +216,7 @@ public final class SchematronValidationMojo extends AbstractMojo
   @Since ("7.1.3")
   private boolean m_bIgnoreWarnings = false;
 
-  public void setSchematronFile (@Nonnull final File aFile)
+  public void setSchematronFile (@NonNull final File aFile)
   {
     m_aSchematronFile = aFile;
     if (!m_aSchematronFile.isAbsolute ())
@@ -234,7 +233,7 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Schematron processing mode set to '" + eMode + "'");
   }
 
-  public void setXmlDirectory (@Nonnull final File aDir)
+  public void setXmlDirectory (@NonNull final File aDir)
   {
     m_aXmlDirectory = aDir;
     if (!m_aXmlDirectory.isAbsolute ())
@@ -259,7 +258,7 @@ public final class SchematronValidationMojo extends AbstractMojo
                        StringImplode.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
-  public void setSvrlDirectory (@Nonnull final File aDir)
+  public void setSvrlDirectory (@NonNull final File aDir)
   {
     m_aSvrlDirectory = aDir;
     if (!m_aSvrlDirectory.isAbsolute ())
@@ -268,7 +267,7 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Writing SVRL files to directory '" + m_aSvrlDirectory + "'");
   }
 
-  public void setXmlErrorDirectory (@Nonnull final File aDir)
+  public void setXmlErrorDirectory (@NonNull final File aDir)
   {
     m_aXmlErrorDirectory = aDir;
     if (!m_aXmlErrorDirectory.isAbsolute ())
@@ -293,7 +292,7 @@ public final class SchematronValidationMojo extends AbstractMojo
                        StringImplode.imploder ().source (aPattern, x -> "'" + x + "'").separator (", ").build ());
   }
 
-  public void setSvrlErrorDirectory (@Nonnull final File aDir)
+  public void setSvrlErrorDirectory (@NonNull final File aDir)
   {
     m_aSvrlErrorDirectory = aDir;
     if (!m_aSvrlErrorDirectory.isAbsolute ())
@@ -369,7 +368,7 @@ public final class SchematronValidationMojo extends AbstractMojo
       getLog ().debug ("Warning and errors will be displayed");
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   @VisibleForTesting
   ICommonsMap <String, String> getParameters ()
@@ -399,13 +398,13 @@ public final class SchematronValidationMojo extends AbstractMojo
    * @throws MojoFailureException
    *         Validation error
    */
-  private void _performValidation (@Nonnull final ISchematronResource aSch,
-                                   @Nonnull final File aXMLDirectory,
+  private void _performValidation (@NonNull final ISchematronResource aSch,
+                                   @NonNull final File aXMLDirectory,
                                    @Nullable final String [] aXMLIncludes,
                                    @Nullable final String [] aXMLExcludes,
                                    @Nullable final File aSVRLDirectory,
                                    final boolean bExpectSuccess,
-                                   @Nonnull final ICommonsList <String> aErrorMessages) throws MojoExecutionException,
+                                   @NonNull final ICommonsList <String> aErrorMessages) throws MojoExecutionException,
                                                                                         MojoFailureException
   {
     final DirectoryScanner aScanner = new DirectoryScanner ();

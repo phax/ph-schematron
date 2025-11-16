@@ -26,6 +26,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.jspecify.annotations.NonNull;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import com.helger.annotation.misc.Since;
@@ -48,8 +49,6 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.IXMLWriterSettings;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Applies Schematron preprocessing
@@ -126,7 +125,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
   @Since ("6.2.2")
   private String m_sSCHHeader;
 
-  public void setSourceFile (@Nonnull final File aFile)
+  public void setSourceFile (@NonNull final File aFile)
   {
     m_aSourceFile = aFile;
     if (!m_aSourceFile.isAbsolute ())
@@ -135,7 +134,7 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       getLog ().debug ("Using Source file '" + m_aSourceFile + "'");
   }
 
-  public void setTargetFile (@Nonnull final File aFile)
+  public void setTargetFile (@NonNull final File aFile)
   {
     m_aTargetFile = aFile;
     if (!m_aTargetFile.isAbsolute ())

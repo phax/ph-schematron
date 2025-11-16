@@ -22,6 +22,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.OverrideOnDemand;
@@ -34,9 +37,6 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A Schematron resource that is based on the original SCH file.
@@ -56,7 +56,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    */
-  public SchematronResourceSCH (@Nonnull final IReadableResource aSCHResource)
+  public SchematronResourceSCH (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
   }
@@ -107,8 +107,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     m_bForceCacheResult = bForceCacheResult;
   }
 
-  @Nonnull
-  protected final TransformerCustomizerSCH applyDefaultValuesOnTransformerCustomizer (@Nonnull final TransformerCustomizerSCH aTC)
+  @NonNull
+  protected final TransformerCustomizerSCH applyDefaultValuesOnTransformerCustomizer (@NonNull final TransformerCustomizerSCH aTC)
   {
     ValueEnforcer.notNull (aTC, "TransformerCustomizer");
     aTC.setErrorListener (getErrorListener ())
@@ -120,7 +120,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     return aTC;
   }
 
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
   protected TransformerCustomizerSCH createTransformerCustomizer ()
   {
@@ -148,8 +148,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath)
+  @NonNull
+  public static SchematronResourceSCH fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourceSCH (new ClassPathResource (sSCHPath));
   }
@@ -166,8 +166,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @return Never <code>null</code>.
    * @since 6.0.4
    */
-  @Nonnull
-  public static SchematronResourceSCH fromClassPath (@Nonnull @Nonempty final String sSCHPath,
+  @NonNull
+  public static SchematronResourceSCH fromClassPath (@NonNull @Nonempty final String sSCHPath,
                                                      @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourceSCH (new ClassPathResource (sSCHPath, aClassLoader));
@@ -181,8 +181,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull @Nonempty final String sSCHPath)
+  @NonNull
+  public static SchematronResourceSCH fromFile (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourceSCH (new FileSystemResource (sSCHPath));
   }
@@ -194,8 +194,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        The Schematron file. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceSCH fromFile (@Nonnull final File aSCHFile)
+  @NonNull
+  public static SchematronResourceSCH fromFile (@NonNull final File aSCHFile)
   {
     return new SchematronResourceSCH (new FileSystemResource (aSCHFile));
   }
@@ -212,8 +212,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *         In case an invalid URL is provided
    * @since 6.2.6
    */
-  @Nonnull
-  public static SchematronResourceSCH fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  @NonNull
+  public static SchematronResourceSCH fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
     return new SchematronResourceSCH (new URLResource (sSCHURL));
   }
@@ -227,8 +227,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @return Never <code>null</code>.
    * @since 6.2.6
    */
-  @Nonnull
-  public static SchematronResourceSCH fromURL (@Nonnull final URL aSCHURL)
+  @NonNull
+  public static SchematronResourceSCH fromURL (@NonNull final URL aSCHURL)
   {
     return new SchematronResourceSCH (new URLResource (aSCHURL));
   }
@@ -247,9 +247,9 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @return Never <code>null</code>.
    * @since 6.2.6
    */
-  @Nonnull
-  public static SchematronResourceSCH fromInputStream (@Nonnull @Nonempty final String sResourceID,
-                                                       @Nonnull final InputStream aSchematronIS)
+  @NonNull
+  public static SchematronResourceSCH fromInputStream (@NonNull @Nonempty final String sResourceID,
+                                                       @NonNull final InputStream aSchematronIS)
   {
     return new SchematronResourceSCH (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
@@ -265,8 +265,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @return Never <code>null</code>.
    * @since 6.2.6
    */
-  @Nonnull
-  public static SchematronResourceSCH fromByteArray (@Nonnull final byte [] aSchematron)
+  @NonNull
+  public static SchematronResourceSCH fromByteArray (@NonNull final byte [] aSchematron)
   {
     return new SchematronResourceSCH (new ReadableResourceByteArray (aSchematron));
   }
@@ -284,8 +284,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @return Never <code>null</code>.
    * @since 6.2.6
    */
-  @Nonnull
-  public static SchematronResourceSCH fromString (@Nonnull final String sSchematron, @Nonnull final Charset aCharset)
+  @NonNull
+  public static SchematronResourceSCH fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }

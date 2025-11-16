@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -30,9 +33,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron name-element.<br>
@@ -54,12 +54,12 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
   public PSName ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     // Nothing to do
   }
@@ -69,7 +69,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     return true;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
@@ -81,7 +81,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -117,7 +117,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     m_sPath = sPath;
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_NAME);
@@ -128,7 +128,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSName getClone ()
   {
     final PSName ret = new PSName ();
@@ -154,7 +154,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
    * @return Never <code>null</code>.
    * @since 6.2.3
    */
-  @Nonnull
+  @NonNull
   public static PSName ofPath (@Nullable final String sPath)
   {
     final PSName ret = new PSName ();

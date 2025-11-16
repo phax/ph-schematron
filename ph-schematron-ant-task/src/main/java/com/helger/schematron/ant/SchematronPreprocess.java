@@ -19,6 +19,7 @@ package com.helger.schematron.ant;
 import java.io.File;
 
 import org.apache.tools.ant.BuildException;
+import org.jspecify.annotations.NonNull;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
@@ -30,8 +31,6 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * ANT task to perform Schematron preprocessing. It converts an existing schema
@@ -80,7 +79,7 @@ public class SchematronPreprocess extends AbstractSchematronTask
   public SchematronPreprocess ()
   {}
 
-  public void setSrcFile (@Nonnull final File aFile)
+  public void setSrcFile (@NonNull final File aFile)
   {
     m_aSrcFile = aFile;
     if (!m_aSrcFile.isAbsolute ())
@@ -88,7 +87,7 @@ public class SchematronPreprocess extends AbstractSchematronTask
     _debug ("Using source Schematron file '" + m_aSrcFile + "'");
   }
 
-  public void setDstFile (@Nonnull final File aFile)
+  public void setDstFile (@NonNull final File aFile)
   {
     m_aDstFile = aFile;
     if (!m_aDstFile.isAbsolute ())

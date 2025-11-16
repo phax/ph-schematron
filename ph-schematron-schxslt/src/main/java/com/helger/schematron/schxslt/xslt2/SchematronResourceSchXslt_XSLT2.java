@@ -22,6 +22,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.OverrideOnDemand;
@@ -34,9 +37,6 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A Schematron resource that is based on the original SCH file. It uses SchXslt
@@ -58,7 +58,7 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    */
-  public SchematronResourceSchXslt_XSLT2 (@Nonnull final IReadableResource aSCHResource)
+  public SchematronResourceSchXslt_XSLT2 (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
     // Avoid creating the SVRL Metadata, because it is not schema compliant
@@ -109,8 +109,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
     m_bForceCacheResult = bForceCacheResult;
   }
 
-  @Nonnull
-  protected final TransformerCustomizerSchXslt_XSLT2 applyDefaultValuesOnTransformerCustomizer (@Nonnull final TransformerCustomizerSchXslt_XSLT2 aTC)
+  @NonNull
+  protected final TransformerCustomizerSchXslt_XSLT2 applyDefaultValuesOnTransformerCustomizer (@NonNull final TransformerCustomizerSchXslt_XSLT2 aTC)
   {
     ValueEnforcer.notNull (aTC, "TransformerCustomizer");
     aTC.setErrorListener (getErrorListener ())
@@ -122,7 +122,7 @@ public class SchematronResourceSchXslt_XSLT2 extends
     return aTC;
   }
 
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
   protected TransformerCustomizerSchXslt_XSLT2 createTransformerCustomizer ()
   {
@@ -149,8 +149,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@Nonnull @Nonempty final String sSCHPath)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourceSchXslt_XSLT2 (new ClassPathResource (sSCHPath));
   }
@@ -167,8 +167,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @return Never <code>null</code>.
    * @since 6.0.4
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@Nonnull @Nonempty final String sSCHPath,
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@NonNull @Nonempty final String sSCHPath,
                                                                @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourceSchXslt_XSLT2 (new ClassPathResource (sSCHPath, aClassLoader));
@@ -182,8 +182,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromFile (@Nonnull @Nonempty final String sSCHPath)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromFile (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (sSCHPath));
   }
@@ -195,8 +195,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    *        The Schematron file. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromFile (@Nonnull final File aSCHFile)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromFile (@NonNull final File aSCHFile)
   {
     return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (aSCHFile));
   }
@@ -213,8 +213,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    *         In case an invalid URL is provided
    * @since 6.2.5
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromURL (@Nonnull @Nonempty final String sSCHURL) throws MalformedURLException
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
     return new SchematronResourceSchXslt_XSLT2 (new URLResource (sSCHURL));
   }
@@ -228,8 +228,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromURL (@Nonnull final URL aSCHURL)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromURL (@NonNull final URL aSCHURL)
   {
     return new SchematronResourceSchXslt_XSLT2 (new URLResource (aSCHURL));
   }
@@ -247,9 +247,9 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromInputStream (@Nonnull @Nonempty final String sResourceID,
-                                                                 @Nonnull final InputStream aSchematronIS)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromInputStream (@NonNull @Nonempty final String sResourceID,
+                                                                 @NonNull final InputStream aSchematronIS)
   {
     return new SchematronResourceSchXslt_XSLT2 (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
@@ -264,8 +264,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromByteArray (@Nonnull final byte [] aSchematron)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromByteArray (@NonNull final byte [] aSchematron)
   {
     return new SchematronResourceSchXslt_XSLT2 (new ReadableResourceByteArray (aSchematron));
   }
@@ -282,9 +282,9 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
-  @Nonnull
-  public static SchematronResourceSchXslt_XSLT2 fromString (@Nonnull final String sSchematron,
-                                                            @Nonnull final Charset aCharset)
+  @NonNull
+  public static SchematronResourceSchXslt_XSLT2 fromString (@NonNull final String sSchematron,
+                                                            @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }

@@ -18,11 +18,11 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.ICommonsOrderedMap;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for Pure Schematron elements that support foreign attributes.
@@ -31,15 +31,15 @@ import jakarta.annotation.Nonnull;
  */
 public interface IPSHasForeignAttributes
 {
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsOrderedMap <String, String> getAllForeignAttributes ();
 
   boolean hasForeignAttributes ();
 
-  void addForeignAttribute (@Nonnull String sAttrName, @Nonnull String sAttrValue);
+  void addForeignAttribute (@NonNull String sAttrName, @NonNull String sAttrValue);
 
-  default void addForeignAttributes (@Nonnull final Map <String, String> aForeignAttrs)
+  default void addForeignAttributes (@NonNull final Map <String, String> aForeignAttrs)
   {
     ValueEnforcer.notNull (aForeignAttrs, "ForeignAttrs");
     for (final Map.Entry <String, String> aEntry : aForeignAttrs.entrySet ())

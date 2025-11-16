@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,6 @@ import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * Test for GitHub issue 177
  *
@@ -43,7 +42,7 @@ public final class Issue177Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue177Test.class);
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourcePure aSCH = SchematronResourcePure.fromFile (aSchematron);
     aSCH.validateCompletely (new LoggingPSErrorHandler ());

@@ -20,14 +20,14 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunctionResolver;
 import javax.xml.xpath.XPathVariableResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The immutable default implementation of {@link IXPathConfig}
@@ -42,7 +42,7 @@ public class XPathConfig implements IXPathConfig
   private final XPathVariableResolver m_aXPathVariableResolver;
   private final XPathFunctionResolver m_aXPathFunctionResolver;
 
-  public XPathConfig (@Nonnull final XPathFactory aXPathFactory,
+  public XPathConfig (@NonNull final XPathFactory aXPathFactory,
                       @Nullable final XPathVariableResolver aXPathVariableResolver,
                       @Nullable final XPathFunctionResolver aXPathFunctionResolver)
   {
@@ -52,7 +52,7 @@ public class XPathConfig implements IXPathConfig
     m_aXPathFunctionResolver = aXPathFunctionResolver;
   }
 
-  @Nonnull
+  @NonNull
   public XPathFactory getXPathFactory ()
   {
     return m_aXPathFactory;

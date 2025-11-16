@@ -16,14 +16,14 @@
  */
 package com.helger.schematron.svrl;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Interface that helps in determining an error level from SVRL elements.
@@ -41,7 +41,7 @@ public interface ISVRLErrorLevelDeterminator
    * @return The error level and never <code>null</code>.
    * @since 5.0.2
    */
-  @Nonnull
+  @NonNull
   IErrorLevel getErrorLevelFromString (@Nullable String sValue);
 
   /**
@@ -51,8 +51,8 @@ public interface ISVRLErrorLevelDeterminator
    *        The failed assert to be queried. May not be <code>null</code>.
    * @return The error level and never <code>null</code>.
    */
-  @Nonnull
-  default IErrorLevel getErrorLevelFromFailedAssert (@Nonnull final FailedAssert aFailedAssert)
+  @NonNull
+  default IErrorLevel getErrorLevelFromFailedAssert (@NonNull final FailedAssert aFailedAssert)
   {
     ValueEnforcer.notNull (aFailedAssert, "FailedAssert");
 
@@ -73,8 +73,8 @@ public interface ISVRLErrorLevelDeterminator
    *        The failed assert to be queried. May not be <code>null</code>.
    * @return The error level and never <code>null</code>.
    */
-  @Nonnull
-  default IErrorLevel getErrorLevelFromSuccessfulReport (@Nonnull final SuccessfulReport aSuccessfulReport)
+  @NonNull
+  default IErrorLevel getErrorLevelFromSuccessfulReport (@NonNull final SuccessfulReport aSuccessfulReport)
   {
     ValueEnforcer.notNull (aSuccessfulReport, "SuccessfulReport");
 

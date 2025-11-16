@@ -22,6 +22,7 @@ import java.io.File;
 
 import javax.xml.transform.TransformerFactory;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,6 @@ import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
 
-import jakarta.annotation.Nonnull;
 import net.sf.saxon.TransformerFactoryImpl;
 import net.sf.saxon.s9api.ExtensionFunction;
 import net.sf.saxon.s9api.ItemType;
@@ -105,19 +105,19 @@ public final class Issue129Test
     }
   }
 
-  public static void validateAndProduceSVRL (@Nonnull final File aSchematron, final File aXML) throws Exception
+  public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourceSCH aSCH = new SchematronResourceSCH (new FileSystemResource (aSchematron))
     {
       @Override
-      @Nonnull
+      @NonNull
       @OverrideOnDemand
       protected TransformerCustomizerSCH createTransformerCustomizer ()
       {
         final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ()
         {
           @Override
-          public void customize (@Nonnull final TransformerFactory aTransformerFactory)
+          public void customize (@NonNull final TransformerFactory aTransformerFactory)
           {
             super.customize (aTransformerFactory);
 

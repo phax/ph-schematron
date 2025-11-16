@@ -18,10 +18,10 @@ package com.helger.schematron.resolve;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.Nonempty;
 import com.helger.io.resource.IReadableResource;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Generic include resolver
@@ -39,6 +39,6 @@ public interface ISchematronIncludeResolver
    * @throws IOException
    *         In case of a resolution error
    */
-  @Nonnull
-  IReadableResource getResolvedSchematronResource (@Nonnull @Nonempty String sHref) throws IOException;
+  @NonNull
+  IReadableResource getResolvedSchematronResource (@NonNull @Nonempty String sHref) throws IOException;
 }

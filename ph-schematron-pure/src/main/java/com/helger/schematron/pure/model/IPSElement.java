@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for a single Pure Schematron element
@@ -38,7 +38,7 @@ public interface IPSElement
    * @return <code>true</code> if all mandatory fields are set and the element
    *         is valid, <code>false</code> otherwise.
    */
-  boolean isValid (@Nonnull IPSErrorHandler aErrorHandler);
+  boolean isValid (@NonNull IPSErrorHandler aErrorHandler);
 
   /**
    * Check if this element is specified completely. This method performs all
@@ -48,7 +48,7 @@ public interface IPSElement
    *        The error handler where the error details are stored. May not be
    *        <code>null</code>.
    */
-  void validateCompletely (@Nonnull IPSErrorHandler aErrorHandler);
+  void validateCompletely (@NonNull IPSErrorHandler aErrorHandler);
 
   /**
    * @return <code>true</code> if this element conforms to the Schematron
@@ -59,6 +59,6 @@ public interface IPSElement
   /**
    * @return The XML representation of this element. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   IMicroElement getAsMicroElement ();
 }

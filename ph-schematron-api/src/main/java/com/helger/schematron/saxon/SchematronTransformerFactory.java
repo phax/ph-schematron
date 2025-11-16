@@ -27,6 +27,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +39,6 @@ import com.helger.xml.XMLFactory;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import net.sf.saxon.lib.FeatureKeys;
 
 /**
@@ -73,7 +73,7 @@ public final class SchematronTransformerFactory
    * @return The default "Saxon first" {@link TransformerFactory}. Never
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public static TransformerFactory getDefaultSaxonFirst ()
   {
     return SingletonHolder.INSTANCE;
@@ -109,7 +109,7 @@ public final class SchematronTransformerFactory
    * @throws InitializationException
    *         In case initialization fails.
    */
-  @Nonnull
+  @NonNull
   public static TransformerFactory createTransformerFactorySaxonFirst (@Nullable final ClassLoader aClassLoader,
                                                                        @Nullable final ErrorListener aErrorListener,
                                                                        @Nullable final URIResolver aURIResolver)

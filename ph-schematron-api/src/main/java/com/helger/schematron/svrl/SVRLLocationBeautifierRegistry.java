@@ -18,15 +18,14 @@ package com.helger.schematron.svrl;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.base.spi.ServiceLoaderHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A central registry for all {@link ISVRLLocationBeautifierSPI} instances.
@@ -55,7 +54,7 @@ public final class SVRLLocationBeautifierRegistry
    * @return <code>null</code> if no beautification is available
    */
   @Nullable
-  public static String getBeautifiedLocation (@Nonnull final String sNamespaceURI, @Nonnull final String sLocalName)
+  public static String getBeautifiedLocation (@NonNull final String sNamespaceURI, @NonNull final String sLocalName)
   {
     for (final ISVRLLocationBeautifierSPI aBeautifier : LIST)
     {

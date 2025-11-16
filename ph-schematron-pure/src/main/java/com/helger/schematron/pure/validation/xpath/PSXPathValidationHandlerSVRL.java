@@ -21,6 +21,8 @@ import java.util.Map;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
@@ -64,9 +66,6 @@ import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * A special validation handler that creates an SVRL document. This class only
  * works for the XPath binding, as the special {@link PSXPathBoundAssertReport}
@@ -93,19 +92,19 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    * @param aErrorHandler
    *        The error handler to be used. May not be <code>null</code>.
    */
-  public PSXPathValidationHandlerSVRL (@Nonnull final IPSErrorHandler aErrorHandler)
+  public PSXPathValidationHandlerSVRL (@NonNull final IPSErrorHandler aErrorHandler)
   {
     ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
     m_aErrorHandler = aErrorHandler;
   }
 
-  @Nonnull
+  @NonNull
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
   }
 
-  private void _onWarn (@Nonnull final IPSElement aSourceElement, @Nonnull final String sMsg)
+  private void _onWarn (@NonNull final IPSElement aSourceElement, @NonNull final String sMsg)
   {
     if (m_aSchema == null)
       throw new IllegalStateException ("No schema is present!");
@@ -117,8 +116,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                                .build ());
   }
 
-  private void _onError (@Nonnull final IPSElement aSourceElement,
-                         @Nonnull final String sMsg,
+  private void _onError (@NonNull final IPSElement aSourceElement,
+                         @NonNull final String sMsg,
                          @Nullable final Throwable t)
   {
     if (m_aSchema == null)
@@ -153,7 +152,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  public void onStart (@Nonnull final PSSchema aSchema,
+  public void onStart (@NonNull final PSSchema aSchema,
                        @Nullable final PSPhase aActivePhase,
                        @Nullable final String sBaseURI) throws SchematronValidationException
   {
@@ -179,7 +178,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  public void onPattern (@Nonnull final PSPattern aPattern) throws SchematronValidationException
+  public void onPattern (@NonNull final PSPattern aPattern) throws SchematronValidationException
   {
     final ActivePattern aRetPattern = new ActivePattern ();
     // TODO documents
@@ -191,10 +190,10 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  public void onFiredRule (@Nonnull final PSRule aRule,
-                           @Nonnull final String sContext,
-                           @Nonnull final int nNodeIndex,
-                           @Nonnull final int nNodeCount)
+  public void onFiredRule (@NonNull final PSRule aRule,
+                           @NonNull final String sContext,
+                           @NonNull final int nNodeIndex,
+                           @NonNull final int nNodeCount)
   {
     final FiredRule aRetRule = new FiredRule ();
     aRetRule.setContext (sContext);
@@ -231,9 +230,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    * @throws SchematronValidationException
    *         In case evaluating an XPath expression fails.
    */
-  @Nonnull
-  private Text _getErrorText (@Nonnull final List <PSXPathBoundElement> aBoundContentElements,
-                              @Nonnull final Node aSourceNode,
+  @NonNull
+  private Text _getErrorText (@NonNull final List <PSXPathBoundElement> aBoundContentElements,
+                              @NonNull final Node aSourceNode,
                               @Nullable final Exception aEvaluationException,
                               @Nullable final String sTestExpression) throws SchematronValidationException
   {
@@ -337,9 +336,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    * @throws SchematronValidationException
    */
   private void _handleDiagnosticReferences (@Nullable final List <String> aSrcDiagnostics,
-                                            @Nonnull final List <? super DiagnosticReference> aDstList,
-                                            @Nonnull final PSXPathBoundAssertReport aBoundAssertReport,
-                                            @Nonnull final Node aRuleMatchingNode) throws SchematronValidationException
+                                            @NonNull final List <? super DiagnosticReference> aDstList,
+                                            @NonNull final PSXPathBoundAssertReport aBoundAssertReport,
+                                            @NonNull final Node aRuleMatchingNode) throws SchematronValidationException
   {
     if (CollectionHelper.isNotEmpty (aSrcDiagnostics))
     {
@@ -377,8 +376,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     }
   }
 
-  @Nonnull
-  private String _getPathToNode (@Nonnull final Node aNode)
+  @NonNull
+  private String _getPathToNode (@NonNull final Node aNode)
   {
     final String ret = XMLHelper.pathToNodeBuilder ()
                                 .node (aNode)
@@ -395,10 +394,10 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     return ret;
   }
 
-  @Nonnull
-  private String _getLocation (@Nonnull final PSRule aOwningRule,
-                               @Nonnull final PSAssertReport aAssertReport,
-                               @Nonnull final Node aRuleMatchingNode)
+  @NonNull
+  private String _getLocation (@NonNull final PSRule aOwningRule,
+                               @NonNull final PSAssertReport aAssertReport,
+                               @NonNull final Node aRuleMatchingNode)
   {
     String sLocation = null;
     if (aAssertReport.hasLinkable ())
@@ -414,11 +413,11 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  @Nonnull
-  public EContinue onFailedAssert (@Nonnull final PSRule aOwningRule,
-                                   @Nonnull final PSAssertReport aAssertReport,
-                                   @Nonnull final String sTestExpression,
-                                   @Nonnull final Node aRuleMatchingNode,
+  @NonNull
+  public EContinue onFailedAssert (@NonNull final PSRule aOwningRule,
+                                   @NonNull final PSAssertReport aAssertReport,
+                                   @NonNull final String sTestExpression,
+                                   @NonNull final Node aRuleMatchingNode,
                                    final int nNodeIndex,
                                    @Nullable final Object aContext,
                                    @Nullable final Exception aEvaluationException) throws SchematronValidationException
@@ -448,11 +447,11 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   }
 
   @Override
-  @Nonnull
-  public EContinue onSuccessfulReport (@Nonnull final PSRule aOwningRule,
-                                       @Nonnull final PSAssertReport aAssertReport,
-                                       @Nonnull final String sTestExpression,
-                                       @Nonnull final Node aRuleMatchingNode,
+  @NonNull
+  public EContinue onSuccessfulReport (@NonNull final PSRule aOwningRule,
+                                       @NonNull final PSAssertReport aAssertReport,
+                                       @NonNull final String sTestExpression,
+                                       @NonNull final Node aRuleMatchingNode,
                                        final int nNodeIndex,
                                        @Nullable final Object aContext,
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException

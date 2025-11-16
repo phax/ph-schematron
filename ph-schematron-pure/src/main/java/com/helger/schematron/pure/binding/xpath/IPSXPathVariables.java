@@ -20,13 +20,13 @@ import java.io.Serializable;
 
 import javax.xml.xpath.XPathExpression;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.clone.ICloneable;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.collection.commons.ICommonsOrderedSet;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Read-only interface for {@link PSXPathVariables}.
@@ -38,7 +38,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
   /**
    * @return All contained variable key value pairs. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsOrderedMap <String, XPathExpression> getAll ();
 
@@ -46,7 +46,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    * @return All contained variable names. Never <code>null</code>.
    * @since v8
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsOrderedSet <String> getAllNames ();
 

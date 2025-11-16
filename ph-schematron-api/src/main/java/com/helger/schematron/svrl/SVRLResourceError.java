@@ -19,6 +19,9 @@ package com.helger.schematron.svrl;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.location.ILocation;
@@ -28,9 +31,6 @@ import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.diagnostics.error.text.IHasErrorText;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Special SVRL resource error that contains the Schematron &quot;test&quot; as well.
@@ -62,13 +62,13 @@ public class SVRLResourceError extends SingleError
    *        The SVRL test that triggered this error. May not be <code>null</code>.
    */
   public SVRLResourceError (@Nullable final LocalDateTime aErrorDT,
-                            @Nonnull final IErrorLevel aErrorLevel,
+                            @NonNull final IErrorLevel aErrorLevel,
                             @Nullable final String sErrorID,
                             @Nullable final String sErrorFieldName,
                             @Nullable final ILocation aErrorLocation,
                             @Nullable final IHasErrorText aErrorText,
                             @Nullable final Throwable aLinkedException,
-                            @Nonnull final String sTest)
+                            @NonNull final String sTest)
   {
     super (aErrorDT, aErrorLevel, sErrorID, sErrorFieldName, aErrorLocation, aErrorText, aLinkedException);
     m_sTest = ValueEnforcer.notNull (sTest, "Test");
@@ -77,14 +77,14 @@ public class SVRLResourceError extends SingleError
   /**
    * @return The SVRL test that triggered this error.
    */
-  @Nonnull
+  @NonNull
   public String getTest ()
   {
     return m_sTest;
   }
 
   @Override
-  public String getAsString (@Nonnull final Locale aContentLocale)
+  public String getAsString (@NonNull final Locale aContentLocale)
   {
     StringBuilder ret = new StringBuilder ().append (super.getAsString (aContentLocale));
     ret.append (" Test=").append (m_sTest);
@@ -118,20 +118,20 @@ public class SVRLResourceError extends SingleError
   {
     private String m_sTest;
 
-    public SVRLErrorBuilder (@Nonnull final String sTest)
+    public SVRLErrorBuilder (@NonNull final String sTest)
     {
       test (sTest);
     }
 
-    public SVRLErrorBuilder (@Nonnull final IError aError)
+    public SVRLErrorBuilder (@NonNull final IError aError)
     {
       super (aError);
       if (aError instanceof SVRLResourceError)
         test (((SVRLResourceError) aError).getTest ());
     }
 
-    @Nonnull
-    public final SVRLErrorBuilder test (@Nonnull final String sTest)
+    @NonNull
+    public final SVRLErrorBuilder test (@NonNull final String sTest)
     {
       m_sTest = ValueEnforcer.notNull (sTest, "Test");
       return this;

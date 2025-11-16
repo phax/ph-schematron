@@ -24,14 +24,14 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.xml.transform.LoggingTransformErrorListener;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A wrapper for easier customization of the SCH to XSLT transformation.
@@ -59,7 +59,7 @@ public class TransformerCustomizerSCH
     return m_aCustomErrorListener;
   }
 
-  @Nonnull
+  @NonNull
   public TransformerCustomizerSCH setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
     m_aCustomErrorListener = aCustomErrorListener;
@@ -72,7 +72,7 @@ public class TransformerCustomizerSCH
     return m_aCustomURIResolver;
   }
 
-  @Nonnull
+  @NonNull
   public TransformerCustomizerSCH setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
     m_aCustomURIResolver = aCustomURIResolver;
@@ -84,14 +84,14 @@ public class TransformerCustomizerSCH
     return m_aCustomParameters != null && m_aCustomParameters.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, ?> getParameters ()
   {
     return new CommonsLinkedHashMap <> (m_aCustomParameters);
   }
 
-  @Nonnull
+  @NonNull
   public TransformerCustomizerSCH setParameters (@Nullable final Map <String, ?> aCustomParameters)
   {
     m_aCustomParameters = new CommonsLinkedHashMap <> (aCustomParameters);
@@ -104,7 +104,7 @@ public class TransformerCustomizerSCH
     return m_sPhase;
   }
 
-  @Nonnull
+  @NonNull
   public TransformerCustomizerSCH setPhase (@Nullable final String sPhase)
   {
     m_sPhase = sPhase;
@@ -117,7 +117,7 @@ public class TransformerCustomizerSCH
     return m_sLanguageCode;
   }
 
-  @Nonnull
+  @NonNull
   public TransformerCustomizerSCH setLanguageCode (@Nullable final String sLanguageCode)
   {
     m_sLanguageCode = sLanguageCode;
@@ -144,7 +144,7 @@ public class TransformerCustomizerSCH
    * @return this for chaining
    * @since 5.2.1
    */
-  @Nonnull
+  @NonNull
   public TransformerCustomizerSCH setForceCacheResult (final boolean bForceCacheResult)
   {
     m_bForceCacheResult = bForceCacheResult;
@@ -165,7 +165,7 @@ public class TransformerCustomizerSCH
     return !hasParameters () || m_bForceCacheResult;
   }
 
-  public void customize (@Nonnull final TransformerFactory aTransformerFactory)
+  public void customize (@NonNull final TransformerFactory aTransformerFactory)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)
@@ -178,7 +178,7 @@ public class TransformerCustomizerSCH
       aTransformerFactory.setURIResolver (m_aCustomURIResolver);
   }
 
-  public void customize (@Nonnull final EStepSCH eStep, @Nonnull final Transformer aTransformer)
+  public void customize (@NonNull final EStepSCH eStep, @NonNull final Transformer aTransformer)
   {
     // Ensure an error listener is present
     if (m_aCustomErrorListener != null)

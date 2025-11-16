@@ -18,6 +18,9 @@ package com.helger.schematron.pure.model;
 
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -33,9 +36,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron diagnostics-element.<br>
@@ -53,7 +53,7 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   public PSDiagnostics ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -62,7 +62,7 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
       if (aContent instanceof IPSElement)
@@ -74,7 +74,7 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return false;
   }
 
-  public void addForeignElement (@Nonnull final IMicroElement aForeignElement)
+  public void addForeignElement (@NonNull final IMicroElement aForeignElement)
   {
     ValueEnforcer.notNull (aForeignElement, "ForeignElement");
     if (aForeignElement.hasParent ())
@@ -87,14 +87,14 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return m_aContent.containsAny (IMicroElement.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <IMicroElement> getAllForeignElements ()
   {
     return m_aContent.getAllInstanceOf (IMicroElement.class);
   }
 
-  public void addForeignAttribute (@Nonnull final String sAttrName, @Nonnull final String sAttrValue)
+  public void addForeignAttribute (@NonNull final String sAttrName, @NonNull final String sAttrValue)
   {
     ValueEnforcer.notNull (sAttrName, "AttrName");
     ValueEnforcer.notNull (sAttrValue, "AttrValue");
@@ -108,14 +108,14 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return m_aForeignAttrs != null && m_aForeignAttrs.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, String> getAllForeignAttributes ()
   {
     return new CommonsLinkedHashMap <> (m_aForeignAttrs);
   }
 
-  public void addInclude (@Nonnull final PSInclude aInclude)
+  public void addInclude (@NonNull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
     m_aContent.add (aInclude);
@@ -126,14 +126,14 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return m_aContent.containsAny (PSInclude.class::isInstance);
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSInclude> getAllIncludes ()
   {
     return m_aContent.getAllInstanceOf (PSInclude.class);
   }
 
-  public void addDiagnostic (@Nonnull final PSDiagnostic aDiagnostic)
+  public void addDiagnostic (@NonNull final PSDiagnostic aDiagnostic)
   {
     ValueEnforcer.notNull (aDiagnostic, "Diagnostic");
     m_aContent.add (aDiagnostic);
@@ -153,14 +153,14 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
     return null;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSDiagnostic> getAllDiagnostics ()
   {
     return m_aContent.getAllInstanceOf (PSDiagnostic.class);
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_DIAGNOSTICS);

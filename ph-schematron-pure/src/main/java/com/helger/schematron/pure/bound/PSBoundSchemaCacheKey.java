@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.bound;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
@@ -42,9 +44,6 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.xml.microdom.serialize.MicroWriter;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * This class represents keys for the {@link PSBoundSchemaCache}. It is a
  * combination of a resource, a phase and an XPath Configuration (see
@@ -68,11 +67,11 @@ public class PSBoundSchemaCacheKey
   // Status vars
   private int m_nHashCode = IHashCodeGenerator.ILLEGAL_HASHCODE;
 
-  public PSBoundSchemaCacheKey (@Nonnull final IReadableResource aResource,
+  public PSBoundSchemaCacheKey (@NonNull final IReadableResource aResource,
                                 @Nullable final String sPhase,
                                 @Nullable final IPSErrorHandler aErrorHandler,
                                 @Nullable final IPSValidationHandler aCustomValidationHandler,
-                                @Nonnull final IXPathConfig aXPathConfig,
+                                @NonNull final IXPathConfig aXPathConfig,
                                 @Nullable final EntityResolver aEntityResolver,
                                 final boolean bLenient)
   {
@@ -91,7 +90,7 @@ public class PSBoundSchemaCacheKey
   /**
    * @return The resource passed in the constructor. Never <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final IReadableResource getResource ()
   {
     return m_aResource;
@@ -130,7 +129,7 @@ public class PSBoundSchemaCacheKey
    * @return The XPath configuration to be used. May be <code>null</code>.
    * @since 5.5.0
    */
-  @Nonnull
+  @NonNull
   public final IXPathConfig getXPathConfig ()
   {
     return m_aXPathConfig;
@@ -163,9 +162,9 @@ public class PSBoundSchemaCacheKey
    * @throws SchematronException
    *         In case there is an error reading.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  public PSSchema readSchema (@Nonnull final IReadableResource aResource,
+  public PSSchema readSchema (@NonNull final IReadableResource aResource,
                               @Nullable final IPSErrorHandler aErrorHandler,
                               @Nullable final EntityResolver aEntityResolver) throws SchematronException
   {
@@ -181,9 +180,9 @@ public class PSBoundSchemaCacheKey
    * @throws SchematronException
    *         In case the determination fails.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  public IPSQueryBinding getQueryBinding (@Nonnull final PSSchema aSchema) throws SchematronException
+  public IPSQueryBinding getQueryBinding (@NonNull final PSSchema aSchema) throws SchematronException
   {
     return PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());
   }
@@ -197,9 +196,9 @@ public class PSBoundSchemaCacheKey
    *        <code>null</code>.
    * @return The pre-processor to be used.
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  public PSPreprocessor createPreprocessor (@Nonnull final IPSQueryBinding aQueryBinding)
+  public PSPreprocessor createPreprocessor (@NonNull final IPSQueryBinding aQueryBinding)
   {
     return PSPreprocessor.createPreprocessorWithoutInformationLoss (aQueryBinding);
   }
@@ -215,10 +214,10 @@ public class PSBoundSchemaCacheKey
    * @throws SchematronException
    *         In case pre-processing fails
    */
-  @Nonnull
+  @NonNull
   @OverrideOnDemand
-  public PSSchema createPreprocessedSchema (@Nonnull final PSSchema aSchema,
-                                            @Nonnull final IPSQueryBinding aQueryBinding) throws SchematronException
+  public PSSchema createPreprocessedSchema (@NonNull final PSSchema aSchema,
+                                            @NonNull final IPSQueryBinding aQueryBinding) throws SchematronException
   {
     final PSPreprocessor aPreprocessor = createPreprocessor (aQueryBinding);
     final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
@@ -254,7 +253,7 @@ public class PSBoundSchemaCacheKey
    * @throws SchematronException
    *         In case reading or binding fails.
    */
-  @Nonnull
+  @NonNull
   public IPSBoundSchema createBoundSchema () throws SchematronException
   {
     // Read schema from resource

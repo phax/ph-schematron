@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
@@ -32,9 +35,6 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a single query binding.
@@ -53,7 +53,7 @@ public interface IPSQueryBinding extends Serializable
    *        The test expression.
    * @return The negated test expression
    */
-  String getNegatedTestExpression (@Nonnull String sTest);
+  String getNegatedTestExpression (@NonNull String sTest);
 
   /**
    * Convert the passed list of {@link PSParam} elements to a map suitable for
@@ -66,9 +66,9 @@ public interface IPSQueryBinding extends Serializable
    *        Source list. May not be <code>null</code>.
    * @return Non-<code>null</code> String replacement map.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
-  ICommonsNavigableMap <String, String> getStringReplacementMap (@Nonnull List <PSParam> aParams);
+  ICommonsNavigableMap <String, String> getStringReplacementMap (@NonNull List <PSParam> aParams);
 
   /**
    * Apply the Map created by {@link #getNegatedTestExpression(String)} on a
@@ -95,8 +95,8 @@ public interface IPSQueryBinding extends Serializable
 
   // --- requirements for compilation ---
 
-  @Nonnull
-  default IPSBoundSchema bind (@Nonnull final PSSchema aSchema) throws SchematronException
+  @NonNull
+  default IPSBoundSchema bind (@NonNull final PSSchema aSchema) throws SchematronException
   {
     return bind (aSchema, null, null, null, null);
   }
@@ -122,8 +122,8 @@ public interface IPSQueryBinding extends Serializable
    *         In case of a binding error
    * @since 5.5.0
    */
-  @Nonnull
-  IPSBoundSchema bind (@Nonnull PSSchema aSchema,
+  @NonNull
+  IPSBoundSchema bind (@NonNull PSSchema aSchema,
                        @Nullable String sPhase,
                        @Nullable IPSErrorHandler aCustomErrorHandler,
                        @Nullable IPSValidationHandler aCustomValidationHandler,

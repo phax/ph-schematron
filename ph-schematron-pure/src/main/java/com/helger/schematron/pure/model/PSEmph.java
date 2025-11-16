@@ -16,6 +16,9 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -30,9 +33,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron emph-element.<br>
@@ -49,7 +49,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
   public PSEmph ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (m_aContent.isEmpty ())
     {
@@ -59,7 +59,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (m_aContent.isEmpty ())
       aErrorHandler.error (this, "<emph> has no content");
@@ -70,7 +70,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     return true;
   }
 
-  public void addText (@Nonnull @Nonempty final String sText)
+  public void addText (@NonNull @Nonempty final String sText)
   {
     ValueEnforcer.notEmpty (sText, "Text");
     m_aContent.add (sText);
@@ -81,7 +81,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     return m_aContent.isNotEmpty ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()
   {
@@ -94,7 +94,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     return StringImplode.getImploded (m_aContent);
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_EMPH);
@@ -103,7 +103,7 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSEmph getClone ()
   {
     final PSEmph ret = new PSEmph ();

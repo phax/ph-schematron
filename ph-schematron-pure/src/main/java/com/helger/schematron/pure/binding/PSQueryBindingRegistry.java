@@ -16,6 +16,9 @@
  */
 package com.helger.schematron.pure.binding;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.PresentForCodeCoverage;
@@ -26,9 +29,6 @@ import com.helger.base.exception.InitializationException;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * The registry class for all available query bindings. To register your own
@@ -116,8 +116,8 @@ public final class PSQueryBindingRegistry
   private PSQueryBindingRegistry ()
   {}
 
-  public static void registerQueryBinding (@Nonnull @Nonempty final String sName,
-                                           @Nonnull final IPSQueryBinding aQueryBinding) throws SchematronBindException
+  public static void registerQueryBinding (@NonNull @Nonempty final String sName,
+                                           @NonNull final IPSQueryBinding aQueryBinding) throws SchematronBindException
   {
     ValueEnforcer.notEmpty (sName, "Name");
     ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
@@ -156,7 +156,7 @@ public final class PSQueryBindingRegistry
    * @throws SchematronBindException
    *         In case the query binding could not be resolved!
    */
-  @Nonnull
+  @NonNull
   public static IPSQueryBinding getQueryBindingOfNameOrThrow (@Nullable final String sName) throws SchematronBindException
   {
     final IPSQueryBinding aQB = getQueryBindingOfName (sName);
@@ -169,7 +169,7 @@ public final class PSQueryBindingRegistry
    * @return A non-<code>null</code> map with all contained query bindings from
    *         name to object.
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static ICommonsMap <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
   {

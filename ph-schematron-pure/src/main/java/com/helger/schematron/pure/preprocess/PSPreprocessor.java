@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.preprocess;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +46,6 @@ import com.helger.schematron.pure.model.PSSchema;
 import com.helger.schematron.pure.model.PSSpan;
 import com.helger.schematron.pure.model.PSValueOf;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-
 /**
  * This is the pre-processor class for pure Schematron. It converts an existing
  * schema to the minimal syntax (by default) but allows for a certain degree of
@@ -74,7 +73,7 @@ public class PSPreprocessor
   private boolean m_bKeepEmptyPatterns = DEFAULT_KEEP_EMPTY_PATTERNS;
   private boolean m_bKeepEmptySchema = DEFAULT_KEEP_EMPTY_SCHEMA;
 
-  public PSPreprocessor (@Nonnull final IPSQueryBinding aQueryBinding)
+  public PSPreprocessor (@NonNull final IPSQueryBinding aQueryBinding)
   {
     m_aQueryBinding = ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
   }
@@ -82,7 +81,7 @@ public class PSPreprocessor
   /**
    * @return The query binding to be used. Never <code>null</code>!
    */
-  @Nonnull
+  @NonNull
   public IPSQueryBinding getQueryBinding ()
   {
     return m_aQueryBinding;
@@ -104,7 +103,7 @@ public class PSPreprocessor
    *        <code>true</code> to keep titles, <code>false</code> otherwise.
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public PSPreprocessor setKeepTitles (final boolean bKeepTitles)
   {
     m_bKeepTitles = bKeepTitles;
@@ -127,7 +126,7 @@ public class PSPreprocessor
    *        <code>true</code> to keep diagnostics, <code>false</code> otherwise.
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public PSPreprocessor setKeepDiagnostics (final boolean bKeepDiagnostics)
   {
     m_bKeepDiagnostics = bKeepDiagnostics;
@@ -153,7 +152,7 @@ public class PSPreprocessor
    *        <code>false</code> to change them to &lt;assert&gt;-elements
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public PSPreprocessor setKeepReports (final boolean bKeepReports)
   {
     m_bKeepReports = bKeepReports;
@@ -177,7 +176,7 @@ public class PSPreprocessor
    *        <code>false</code> to delete them
    * @return this for chaining
    */
-  @Nonnull
+  @NonNull
   public PSPreprocessor setKeepEmptyPatterns (final boolean bKeepEmptyPatterns)
   {
     m_bKeepEmptyPatterns = bKeepEmptyPatterns;
@@ -202,16 +201,16 @@ public class PSPreprocessor
    *        <code>true</code> to keep them, <code>false</code> to discard them.
    * @return this
    */
-  @Nonnull
+  @NonNull
   public PSPreprocessor setKeepEmptySchema (final boolean bKeepEmptySchema)
   {
     m_bKeepEmptySchema = bKeepEmptySchema;
     return this;
   }
 
-  @Nonnull
-  private static PSPhase _getPreprocessedPhase (@Nonnull final PSPhase aPhase,
-                                                @Nonnull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
+  @NonNull
+  private static PSPhase _getPreprocessedPhase (@NonNull final PSPhase aPhase,
+                                                @NonNull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
   {
     final PSPhase ret = new PSPhase ();
     ret.setID (aIDPool.getUniqueID (aPhase.getID ()));
@@ -232,9 +231,9 @@ public class PSPreprocessor
     return ret;
   }
 
-  @Nonnull
-  private PSAssertReport _getPreprocessedAssert (@Nonnull final PSAssertReport aAssertReport,
-                                                 @Nonnull final PreprocessorIDPool aIDPool,
+  @NonNull
+  private PSAssertReport _getPreprocessedAssert (@NonNull final PSAssertReport aAssertReport,
+                                                 @NonNull final PreprocessorIDPool aIDPool,
                                                  @Nullable final ICommonsMap <String, String> aParamValueMap)
   {
     String sTest = aAssertReport.getTest ();
@@ -296,12 +295,12 @@ public class PSPreprocessor
    * @throws SchematronPreprocessException
    *         If the base rule of an extends object could not be resolved.
    */
-  private void _resolveRuleContent (@Nonnull final PSPattern aOwningPattern,
-                                    @Nonnull final ICommonsList <IPSElement> aRuleContent,
-                                    @Nonnull final PreprocessorLookup aLookup,
-                                    @Nonnull final PreprocessorIDPool aIDPool,
+  private void _resolveRuleContent (@NonNull final PSPattern aOwningPattern,
+                                    @NonNull final ICommonsList <IPSElement> aRuleContent,
+                                    @NonNull final PreprocessorLookup aLookup,
+                                    @NonNull final PreprocessorIDPool aIDPool,
                                     @Nullable final ICommonsMap <String, String> aParamValueMap,
-                                    @Nonnull final PSRule aTargetRule) throws SchematronPreprocessException
+                                    @NonNull final PSRule aTargetRule) throws SchematronPreprocessException
   {
     for (final IPSElement aElement : aRuleContent)
     {
@@ -348,10 +347,10 @@ public class PSPreprocessor
   }
 
   @Nullable
-  private PSRule _getPreprocessedRule (@Nonnull final PSPattern aOwningPattern,
-                                       @Nonnull final PSRule aRule,
-                                       @Nonnull final PreprocessorLookup aLookup,
-                                       @Nonnull final PreprocessorIDPool aIDPool,
+  private PSRule _getPreprocessedRule (@NonNull final PSPattern aOwningPattern,
+                                       @NonNull final PSRule aRule,
+                                       @NonNull final PreprocessorLookup aLookup,
+                                       @NonNull final PreprocessorIDPool aIDPool,
                                        @Nullable final ICommonsMap <String, String> aParamValueMap) throws SchematronPreprocessException
   {
     if (aRule.isAbstract ())
@@ -381,9 +380,9 @@ public class PSPreprocessor
   }
 
   @Nullable
-  private PSPattern _getPreprocessedPattern (@Nonnull final PSPattern aPattern,
-                                             @Nonnull final PreprocessorLookup aLookup,
-                                             @Nonnull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
+  private PSPattern _getPreprocessedPattern (@NonNull final PSPattern aPattern,
+                                             @NonNull final PreprocessorLookup aLookup,
+                                             @NonNull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
   {
     if (aPattern.isAbstract ())
     {
@@ -465,8 +464,8 @@ public class PSPreprocessor
     return ret;
   }
 
-  @Nonnull
-  private static PSDiagnostics _getPreprocessedDiagnostics (@Nonnull final PSDiagnostics aDiagnostics) throws SchematronPreprocessException
+  @NonNull
+  private static PSDiagnostics _getPreprocessedDiagnostics (@NonNull final PSDiagnostics aDiagnostics) throws SchematronPreprocessException
   {
     final PSDiagnostics ret = new PSDiagnostics ();
     if (aDiagnostics.hasAnyInclude ())
@@ -491,7 +490,7 @@ public class PSPreprocessor
    *         In case a preprocessing error occurs
    */
   @Nullable
-  public PSSchema getAsMinimalSchema (@Nonnull final PSSchema aSchema) throws SchematronPreprocessException
+  public PSSchema getAsMinimalSchema (@NonNull final PSSchema aSchema) throws SchematronPreprocessException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
@@ -515,7 +514,7 @@ public class PSPreprocessor
    *         In case a preprocessing error occurs
    */
   @Nullable
-  public PSSchema getAsPreprocessedSchema (@Nonnull final PSSchema aSchema) throws SchematronPreprocessException
+  public PSSchema getAsPreprocessedSchema (@NonNull final PSSchema aSchema) throws SchematronPreprocessException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
@@ -543,7 +542,7 @@ public class PSPreprocessor
    *         In case a preprocessing error occurs
    */
   @Nullable
-  public PSSchema getForcedPreprocessedSchema (@Nonnull final PSSchema aSchema) throws SchematronPreprocessException
+  public PSSchema getForcedPreprocessedSchema (@NonNull final PSSchema aSchema) throws SchematronPreprocessException
   {
     ValueEnforcer.notNull (aSchema, "Schema");
 
@@ -602,8 +601,8 @@ public class PSPreprocessor
                                        .getToString ();
   }
 
-  @Nonnull
-  public static PSPreprocessor createPreprocessorWithoutInformationLoss (@Nonnull final IPSQueryBinding aQueryBinding)
+  @NonNull
+  public static PSPreprocessor createPreprocessorWithoutInformationLoss (@NonNull final IPSQueryBinding aQueryBinding)
   {
     final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
 

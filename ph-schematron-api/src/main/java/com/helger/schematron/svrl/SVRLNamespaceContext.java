@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.svrl;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.misc.Singleton;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * The namespace context to be used as the namespace prefix mapper.
@@ -39,7 +39,7 @@ public class SVRLNamespaceContext extends MapBasedNamespaceContext
     addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
   }
 
-  @Nonnull
+  @NonNull
   public static SVRLNamespaceContext getInstance ()
   {
     return SingletonHolder.INSTANCE;

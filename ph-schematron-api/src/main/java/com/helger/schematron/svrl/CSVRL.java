@@ -18,14 +18,14 @@ package com.helger.schematron.svrl;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.CodingStyleguideUnaware;
 import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.xsds.xml.CXML_XSD;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * SVRL constants.
@@ -35,7 +35,7 @@ import jakarta.annotation.Nonnull;
 @Immutable
 public final class CSVRL
 {
-  @Nonnull
+  @NonNull
   private static ClassLoader _getCL ()
   {
     return CSVRL.class.getClassLoader ();

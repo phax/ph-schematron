@@ -18,6 +18,7 @@ package com.helger.schematron.testfiles;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +35,6 @@ import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroReader;
 
-import jakarta.annotation.Nonnull;
-
 /**
  * A utility class to list all the available test files.
  *
@@ -48,8 +47,8 @@ public final class SchematronTestHelper
   private static final ICommonsList <SchematronTestFile> SVRL = _readDirIndex (new ClassPathResource ("external/test-svrl/dirindex.xml"));
   private static final ICommonsList <SchematronTestFile> XML = _readDirIndex (new ClassPathResource ("external/test-xml/dirindex.xml"));
 
-  @Nonnull
-  private static ICommonsList <SchematronTestFile> _readDirIndex (@Nonnull final IReadableResource aRes)
+  @NonNull
+  private static ICommonsList <SchematronTestFile> _readDirIndex (@NonNull final IReadableResource aRes)
   {
     if (false)
       ClassPathHelper.getAllClassPathEntries ().forEach (x -> {
@@ -84,7 +83,7 @@ public final class SchematronTestHelper
   private SchematronTestHelper ()
   {}
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidSchematronFiles ()
   {
@@ -93,7 +92,7 @@ public final class SchematronTestHelper
                              SchematronTestFile::getResource);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidSchematronFiles ()
   {
@@ -102,7 +101,7 @@ public final class SchematronTestHelper
                              SchematronTestFile::getResource);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidSVRLFiles ()
   {
@@ -110,7 +109,7 @@ public final class SchematronTestHelper
                               SchematronTestFile::getResource);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidSVRLFiles ()
   {
@@ -118,7 +117,7 @@ public final class SchematronTestHelper
                               SchematronTestFile::getResource);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllValidXMLFiles ()
   {
@@ -126,7 +125,7 @@ public final class SchematronTestHelper
                              SchematronTestFile::getResource);
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public static ICommonsList <IReadableResource> getAllInvalidXMLFiles ()
   {

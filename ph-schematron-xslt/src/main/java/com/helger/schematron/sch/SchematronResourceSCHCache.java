@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.sch;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +31,6 @@ import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.xml.serialize.write.XMLWriter;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Factory for creating {@link SchematronProviderXSLTFromSCH} objects.
@@ -59,8 +58,8 @@ public final class SchematronResourceSCHCache
    * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
   @Nullable
-  public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                            @Nonnull final TransformerCustomizerSCH aTransformerCustomizer)
+  public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
+                                                                            @NonNull final TransformerCustomizerSCH aTransformerCustomizer)
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
@@ -109,8 +108,8 @@ public final class SchematronResourceSCHCache
    * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
   @Nullable
-  public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@Nonnull final IReadableResource aSchematronResource,
-                                                                         @Nonnull final TransformerCustomizerSCH aTransformerCustomizer)
+  public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
+                                                                         @NonNull final TransformerCustomizerSCH aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");

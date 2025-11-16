@@ -35,6 +35,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 
@@ -59,9 +61,6 @@ import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * Converts one or more Schematron schema files into XSLT scripts.
@@ -169,7 +168,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("6.3.2")
   private boolean m_bStopOnError = true;
 
-  public void setSchematronDirectory (@Nonnull final File aDir)
+  public void setSchematronDirectory (@NonNull final File aDir)
   {
     m_aSchematronDirectory = aDir;
     if (!m_aSchematronDirectory.isAbsolute ())
@@ -177,13 +176,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     getLog ().debug ("Searching Schematron files in the directory '" + m_aSchematronDirectory + "'");
   }
 
-  public void setSchematronPattern (@Nonnull final String sPattern)
+  public void setSchematronPattern (@NonNull final String sPattern)
   {
     m_sSchematronPattern = sPattern;
     getLog ().debug ("Setting Schematron pattern to '" + sPattern + "'");
   }
 
-  public void setXsltDirectory (@Nonnull final File aDir)
+  public void setXsltDirectory (@NonNull final File aDir)
   {
     m_aXsltDirectory = aDir;
     if (!m_aXsltDirectory.isAbsolute ())
@@ -191,7 +190,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     getLog ().debug ("Writing XSLT files into directory '" + m_aXsltDirectory + "'");
   }
 
-  public void setXsltExtension (@Nonnull final String sExt)
+  public void setXsltExtension (@NonNull final String sExt)
   {
     m_sXsltExtension = sExt;
     getLog ().debug ("Setting XSLT file extension to '" + sExt + "'");
@@ -233,7 +232,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("Using custom parameters " + m_aCustomParameters.toString ());
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   @VisibleForTesting
   ICommonsMap <String, String> getParameters ()

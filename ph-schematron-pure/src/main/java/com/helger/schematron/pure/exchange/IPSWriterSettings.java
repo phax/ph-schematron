@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.exchange;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.xml.serialize.write.IXMLWriterSettings;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Read-only interface with settings for the {@link PSWriter}.
@@ -32,7 +32,7 @@ public interface IPSWriterSettings
    * @return The current XML writer settings to be used. Never <code>null</code>
    *         .
    */
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   IXMLWriterSettings getXMLWriterSettings ();
 }

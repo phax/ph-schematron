@@ -16,6 +16,9 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.string.StringHelper;
@@ -25,9 +28,6 @@ import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * A single Schematron let-element.<br>
@@ -60,7 +60,7 @@ public class PSLet implements IPSClonableElement <PSLet>
   public PSLet ()
   {}
 
-  public boolean isValid (@Nonnull final IPSErrorHandler aErrorHandler)
+  public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sName))
     {
@@ -75,7 +75,7 @@ public class PSLet implements IPSClonableElement <PSLet>
     return true;
   }
 
-  public void validateCompletely (@Nonnull final IPSErrorHandler aErrorHandler)
+  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     if (StringHelper.isEmpty (m_sName))
       aErrorHandler.error (this, "<let> has no 'name'");
@@ -124,7 +124,7 @@ public class PSLet implements IPSClonableElement <PSLet>
     return m_sValue;
   }
 
-  @Nonnull
+  @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_LET);
@@ -133,7 +133,7 @@ public class PSLet implements IPSClonableElement <PSLet>
     return ret;
   }
 
-  @Nonnull
+  @NonNull
   public PSLet getClone ()
   {
     final PSLet ret = new PSLet ();
@@ -148,7 +148,7 @@ public class PSLet implements IPSClonableElement <PSLet>
     return new ToStringGenerator (this).appendIfNotNull ("name", m_sName).appendIfNotNull ("value", m_sValue).getToString ();
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public static PSLet create (@Nullable final String sName, @Nullable final String sValue)
   {

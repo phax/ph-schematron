@@ -16,12 +16,12 @@
  */
 package com.helger.schematron;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.Nonempty;
 import com.helger.base.id.IHasID;
 import com.helger.base.lang.EnumHelper;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * What ways do we have to create SVRL from Schematron rules?
@@ -41,12 +41,12 @@ public enum ESchematronMode implements IHasID <String>
 
   private final String m_sID;
 
-  ESchematronMode (@Nonnull @Nonempty final String sID)
+  ESchematronMode (@NonNull @Nonempty final String sID)
   {
     m_sID = sID;
   }
 
-  @Nonnull
+  @NonNull
   @Nonempty
   public String getID ()
   {

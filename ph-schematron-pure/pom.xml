@@ -118,7 +118,7 @@
               com.helger.schematron.pure.validation.xpath,
               com.helger.schematron.pure.xpath
             </Export-Package>
-            <Import-Package>!jakarta.annotation.*,*</Import-Package>
+            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

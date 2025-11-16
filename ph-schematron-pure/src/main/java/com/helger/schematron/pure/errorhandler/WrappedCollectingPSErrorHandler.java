@@ -16,10 +16,10 @@
  */
 package com.helger.schematron.pure.errorhandler;
 
-import com.helger.diagnostics.error.list.ErrorList;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import com.helger.diagnostics.error.list.ErrorList;
 
 /**
  * An implementation if {@link IPSErrorHandler} that collects all error messages
@@ -30,12 +30,12 @@ import jakarta.annotation.Nullable;
  */
 public class WrappedCollectingPSErrorHandler extends AbstractCollectingPSErrorHandler
 {
-  public WrappedCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList)
+  public WrappedCollectingPSErrorHandler (@NonNull final ErrorList aErrorList)
   {
     super (aErrorList, null);
   }
 
-  public WrappedCollectingPSErrorHandler (@Nonnull final ErrorList aErrorList, @Nullable final IPSErrorHandler aNestedErrorHandler)
+  public WrappedCollectingPSErrorHandler (@NonNull final ErrorList aErrorList, @Nullable final IPSErrorHandler aNestedErrorHandler)
   {
     super (aErrorList, aNestedErrorHandler);
   }

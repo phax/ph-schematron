@@ -18,13 +18,13 @@ package com.helger.schematron.pure.bound.xpath;
 
 import javax.xml.xpath.XPathExpression;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.schematron.pure.model.IPSElement;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * This class represents a single XPath-bound text element that is contained
@@ -39,17 +39,17 @@ public class PSXPathBoundElement
   private final String m_sExpression;
   private final XPathExpression m_aBoundExpression;
 
-  public PSXPathBoundElement (@Nonnull final String sElement)
+  public PSXPathBoundElement (@NonNull final String sElement)
   {
     this (sElement, null, null);
   }
 
-  public PSXPathBoundElement (@Nonnull final IPSElement aElement)
+  public PSXPathBoundElement (@NonNull final IPSElement aElement)
   {
     this (aElement, null, null);
   }
 
-  public PSXPathBoundElement (@Nonnull final Object aElement,
+  public PSXPathBoundElement (@NonNull final Object aElement,
                               @Nullable final String sExpression,
                               @Nullable final XPathExpression aBoundExpression)
   {
@@ -65,7 +65,7 @@ public class PSXPathBoundElement
    * @return {@link String} or {@link IPSElement} objects. May not be
    *         <code>null</code>.
    */
-  @Nonnull
+  @NonNull
   public final Object getElement ()
   {
     return m_aElement;

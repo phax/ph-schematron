@@ -16,9 +16,9 @@
  */
 package com.helger.schematron.pure.validation;
 
-import com.helger.base.state.EValidity;
+import org.jspecify.annotations.NonNull;
 
-import jakarta.annotation.Nonnull;
+import com.helger.base.state.EValidity;
 
 /**
  * An extension of {@link IPSValidationHandler} that is used to determine the
@@ -34,6 +34,6 @@ public interface IPSPartialValidationHandler extends IPSValidationHandler
    *         assertion and no successful report occurred,
    *         {@link EValidity#INVALID} otherwise.
    */
-  @Nonnull
+  @NonNull
   EValidity getValidity ();
 }

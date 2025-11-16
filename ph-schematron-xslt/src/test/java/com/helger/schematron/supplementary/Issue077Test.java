@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.io.resource.FileSystemResource;
@@ -28,12 +29,10 @@ import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
-import jakarta.annotation.Nonnull;
-
 public final class Issue077Test
 {
-  private static void _validateAndProduceSVRL (@Nonnull final File aSchematron,
-                                               @Nonnull final File aXML,
+  private static void _validateAndProduceSVRL (@NonNull final File aSchematron,
+                                               @NonNull final File aXML,
                                                final boolean bValid) throws Exception
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);

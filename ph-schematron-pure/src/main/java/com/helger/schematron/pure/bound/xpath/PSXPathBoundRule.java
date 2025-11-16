@@ -18,6 +18,8 @@ package com.helger.schematron.pure.bound.xpath;
 
 import javax.xml.xpath.XPathExpression;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.annotation.style.ReturnsMutableObject;
@@ -26,8 +28,6 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.model.PSRule;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a single XPath-bound rule-element.
@@ -43,11 +43,11 @@ public class PSXPathBoundRule
   private final ICommonsList <PSXPathBoundAssertReport> m_aBoundAssertReports;
   private final PSXPathVariables m_aVariables;
 
-  public PSXPathBoundRule (@Nonnull final PSRule aRule,
-                           @Nonnull final String sRuleContext,
-                           @Nonnull final XPathExpression aBoundRuleContext,
-                           @Nonnull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports,
-                           @Nonnull final PSXPathVariables aVariables)
+  public PSXPathBoundRule (@NonNull final PSRule aRule,
+                           @NonNull final String sRuleContext,
+                           @NonNull final XPathExpression aBoundRuleContext,
+                           @NonNull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports,
+                           @NonNull final PSXPathVariables aVariables)
   {
     ValueEnforcer.notNull (aRule, "Rule");
     ValueEnforcer.notEmpty (sRuleContext, "RuleContext");
@@ -61,39 +61,39 @@ public class PSXPathBoundRule
     m_aVariables = aVariables;
   }
 
-  @Nonnull
+  @NonNull
   public final PSRule getRule ()
   {
     return m_aRule;
   }
 
-  @Nonnull
+  @NonNull
   public final String getRuleContext ()
   {
     return m_sRuleContext;
   }
 
-  @Nonnull
+  @NonNull
   public final XPathExpression getBoundRuleContext ()
   {
     return m_aBoundRuleContext;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableObject
   public final ICommonsList <PSXPathBoundAssertReport> boundAssertReports ()
   {
     return m_aBoundAssertReports;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public final ICommonsList <PSXPathBoundAssertReport> getAllBoundAssertReports ()
   {
     return m_aBoundAssertReports.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   public final PSXPathVariables getVariables ()
   {
     return m_aVariables;

@@ -16,12 +16,12 @@
  */
 package com.helger.schematron.pure.model;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.xml.microdom.IMicroElement;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for Pure Schematron elements that support foreign elements and
@@ -33,13 +33,13 @@ public interface IPSHasForeignElements extends IPSHasForeignAttributes
 {
   boolean hasForeignElements ();
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   ICommonsList <IMicroElement> getAllForeignElements ();
 
-  void addForeignElement (@Nonnull IMicroElement aForeignElement);
+  void addForeignElement (@NonNull IMicroElement aForeignElement);
 
-  default void addForeignElements (@Nonnull final Iterable <IMicroElement> aForeignElements)
+  default void addForeignElements (@NonNull final Iterable <IMicroElement> aForeignElements)
   {
     ValueEnforcer.notNull (aForeignElements, "ForeignElements");
     for (final IMicroElement aForeignElement : aForeignElements)

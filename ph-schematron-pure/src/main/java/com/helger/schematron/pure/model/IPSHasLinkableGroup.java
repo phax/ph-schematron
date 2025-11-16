@@ -16,7 +16,7 @@
  */
 package com.helger.schematron.pure.model;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base interface for objects having a linkable group.

@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
+import org.jspecify.annotations.NonNull;
+
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -23,8 +25,6 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.model.PSPattern;
-
-import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a single XPath-bound pattern-element.
@@ -38,9 +38,9 @@ public class PSXPathBoundPattern
   private final ICommonsList <PSXPathBoundRule> m_aBoundRules;
   private final PSXPathVariables m_aVariables;
 
-  public PSXPathBoundPattern (@Nonnull final PSPattern aPattern,
-                              @Nonnull final ICommonsList <PSXPathBoundRule> aBoundRules,
-                              @Nonnull final PSXPathVariables aVariables)
+  public PSXPathBoundPattern (@NonNull final PSPattern aPattern,
+                              @NonNull final ICommonsList <PSXPathBoundRule> aBoundRules,
+                              @NonNull final PSXPathVariables aVariables)
   {
     ValueEnforcer.notNull (aPattern, "Pattern");
     ValueEnforcer.notNull (aBoundRules, "BoundRules");
@@ -50,20 +50,20 @@ public class PSXPathBoundPattern
     m_aVariables = aVariables;
   }
 
-  @Nonnull
+  @NonNull
   public PSPattern getPattern ()
   {
     return m_aPattern;
   }
 
-  @Nonnull
+  @NonNull
   @ReturnsMutableCopy
   public ICommonsList <PSXPathBoundRule> getAllBoundRules ()
   {
     return m_aBoundRules.getClone ();
   }
 
-  @Nonnull
+  @NonNull
   public final PSXPathVariables getVariables ()
   {
     return m_aVariables;
