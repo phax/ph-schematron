@@ -56,7 +56,9 @@ import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDetermin
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
+import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
@@ -298,6 +300,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     // Avoid NPE later on
     if (aDoc.getDocumentElement () == null)
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
+
+    if (false)
+      LOGGER.info (XMLWriter.getNodeAsString (aDoc,
+                                              new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
 
     // Now try to read the resulting XML document as a SVRL document - may fail
     final SVRLMarshaller aMarshaller = new SVRLMarshaller (m_bValidateSVRL);
