@@ -37,7 +37,7 @@
       </xs:sequence>
     </xs:sequence>
     <xs:attribute name="title" type="xs:string"/>
-    <xs:attribute name="phase" type="xs:NMTOKEN"/>
+    <xs:attribute name="phase" type="xs:string"/>
     <xs:attribute name="schemaVersion" type="xs:string"/>
   </xs:complexType>
   <!-- only namespaces from sch:ns need to be reported -->
@@ -58,9 +58,9 @@
       <xs:attribute name="id" type="xs:NCName"/>
       <!-- [ph] Schematron 2016 adds this in favor of "document" -->
       <xs:attribute name="documents" type="xs:string"/>
+      <xs:attribute name="document" type="xs:string"/>
       <xs:attribute name="name" type="xs:string"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
-      <xs:attribute name="document" type="xs:string"/>
     </xs:complexType>
   </xs:element>
   <!-- only rules that are fired are reported, -->
@@ -70,6 +70,8 @@
       <xs:attribute name="id" type="xs:NCName"/>
       <!-- [ph] Schematron 2016 adds this -->
       <xs:attribute name="name" type="xs:string"/>
+      <!-- [ph] Schematron 2025 adds this -->
+      <xs:attribute name="document" type="xs:string"/>
       <xs:attribute name="context" type="xs:string" use="required"/>
       <xs:attribute name="role" type="xs:NMTOKEN"/>
       <xs:attribute name="flag" type="xs:NMTOKEN"/>
