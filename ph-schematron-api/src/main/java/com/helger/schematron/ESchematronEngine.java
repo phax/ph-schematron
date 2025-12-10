@@ -13,6 +13,7 @@ import com.helger.collection.commons.ICommonsSet;
  * Defines the Schematron engine to be used.
  *
  * @author Philip Helger
+ * @since 9.1.1
  */
 public enum ESchematronEngine implements IHasID <String>
 {
