@@ -31,7 +31,7 @@
         <artifactId>ph-schematron-maven-plugin</artifactId>
         <version>1.0.0</version>
         <configuration>
-          <schematronEngine>schxslt1</schematronEngine>
+          <schematronEngine>schxslt</schematronEngine>
         </configuration>
       </plugin>
     </plugins>

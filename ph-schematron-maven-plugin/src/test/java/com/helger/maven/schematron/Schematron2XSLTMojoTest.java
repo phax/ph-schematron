@@ -77,7 +77,7 @@ public final class Schematron2XSLTMojoTest
 
     // Test parameters from POM
     final String sEngine = aMojo.getSchematronEngine ();
-    assertEquals ("schxslt1", sEngine);
+    assertEquals ("schxslt", sEngine);
 
     aMojo.execute ();
   }
