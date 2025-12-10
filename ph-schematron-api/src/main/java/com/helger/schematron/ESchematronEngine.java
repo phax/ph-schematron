@@ -17,20 +17,24 @@ import com.helger.collection.commons.ICommonsSet;
  */
 public enum ESchematronEngine implements IHasID <String>
 {
-  PURE ("pure", new CommonsHashSet <> ()),
-  ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron")),
-  SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1")),
-  SCHXSLT2 ("schxslt2", new CommonsHashSet <> ());
+  PURE ("pure", new CommonsHashSet <> (), false),
+  ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron"), true),
+  SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1"), true),
+  SCHXSLT2 ("schxslt2", new CommonsHashSet <> (), true);
 
   private final @NonNull @Nonempty String m_sID;
   private final @NonNull ICommonsSet <String> m_aIDs;
+  private final boolean m_bIsXSLTBased;
 
-  ESchematronEngine (@NonNull @Nonempty final String sID, @NonNull final ICommonsSet <String> aAlternativeIDs)
+  ESchematronEngine (@NonNull @Nonempty final String sID,
+                     @NonNull final ICommonsSet <String> aAlternativeIDs,
+                     final boolean bIsXSLTBased)
   {
     m_sID = sID;
 
     m_aIDs = aAlternativeIDs;
     m_aIDs.add (sID);
+    m_bIsXSLTBased = bIsXSLTBased;
   }
 
   @NonNull
@@ -38,6 +42,11 @@ public enum ESchematronEngine implements IHasID <String>
   public String getID ()
   {
     return m_sID;
+  }
+
+  public boolean isXSLTBased ()
+  {
+    return m_bIsXSLTBased;
   }
 
   @Nullable
