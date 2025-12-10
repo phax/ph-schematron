@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.schxslt2.xslt;
 
-import java.io.File;
-
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -35,8 +33,6 @@ import org.w3c.dom.Document;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.timing.StopWatch;
-import com.helger.io.file.FilenameHelper;
-import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
@@ -44,8 +40,6 @@ import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.XMLFactory;
-import com.helger.xml.serialize.write.XMLWriter;
-import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
@@ -63,7 +57,7 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
   /**
    * The class path to the XSLT to be applied.
    */
-  public static final String XSLT2_STEP1 = "/content/transpile.xsl";
+  public static final String TRANSPILE_PATH = "/content/transpile.xsl";
 
   private static Templates s_aTemplate;
 
@@ -86,9 +80,9 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
     {
       // Step 1
       SchematronDebug.getDebugLogger ().info ("Creating SchXslt2 template");
-      s_aTemplate = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP1, aCL));
+      s_aTemplate = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (TRANSPILE_PATH, aCL));
       if (s_aTemplate == null)
-        throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP1 + "'");
+        throw new IllegalStateException ("Failed to compile '" + TRANSPILE_PATH + "'");
       SchematronDebug.getDebugLogger ().info ("Finished creating SchXslt2 template");
 
       if (Thread.interrupted ())
@@ -105,46 +99,27 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
 
     cacheXSLTTemplate ();
 
-    // perform step 1 (Schematron -> ResultStep1; "include")
     final StreamSource aSrc1;
     final Document aResult1Doc = XMLFactory.newDocument ();
     {
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult1 = new DOMResult (aResult1Doc);
-      final Transformer aTransformer1 = s_aTemplate.newTransformer ();
-      aTransformerCustomizer.customize (aTransformer1);
+      final Transformer aTransformer = s_aTemplate.newTransformer ();
+      aTransformerCustomizer.customize (aTransformer);
       aSrc1 = TransformSourceFactory.create (aSchematronResource);
 
-      SchematronDebug.getDebugLogger ().info ( () -> "Now applying XSLT step 1 on " + aSchematronResource);
-      aTransformer1.transform (aSrc1, aResult1);
+      SchematronDebug.getDebugLogger ().info ( () -> "Now applying SchXslt2 XSLT on " + aSchematronResource);
+      aTransformer.transform (aSrc1, aResult1);
       aSW.stop ();
       SchematronDebug.getDebugLogger ()
-                     .info ( () -> "Finished applying SchXslt step 1 on " +
+                     .info ( () -> "Finished applying SchXslt2 XSLT on " +
                                    aSchematronResource +
                                    " after " +
                                    aSW.getMillis () +
                                    "ms");
 
-      if (SchematronDebug.isSaveIntermediateXSLTFiles ())
-      {
-        final String sXML = XMLWriter.getNodeAsString (aResult1Doc);
-        final File aIntermediateFile = new File (SchematronDebug.getIntermediateMinifiedSCHFolder (),
-                                                 FilenameHelper.getWithoutPath (aSchematronResource.getPath ()) +
-                                                                                                      ".xslt");
-
-        SchematronDebug.getDebugLogger ()
-                       .info ( () -> "Storing intermediate XSLT file to '" +
-                                     aIntermediateFile.getAbsolutePath () +
-                                     "'");
-
-        if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
-          LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
-        else
-          LOGGER.error ("Failed to wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
-      }
-
       if (Thread.interrupted ())
-        throw new SchematronInterruptedException ("After applying XSLT on XML");
+        throw new SchematronInterruptedException ("After applying SchXslt2 XSLT on XML");
     }
 
     return aResult1Doc;
@@ -185,7 +160,7 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
       // Note: Saxon 6.5.5 does not allow to clone the document node!!!!
       m_aSchematronXSLTDoc = createSchematronXSLT (m_aSchematronResource, m_aTransformerCustomizer);
 
-      // compile result of step 3
+      // compile XSLT
       final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
       m_aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
@@ -200,11 +175,11 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
     }
     catch (final Exception ex)
     {
-      LOGGER.error ("SchXslt preprocessor error", ex);
+      LOGGER.error ("SchXslt2 preprocessor error", ex);
     }
 
     if (Thread.interrupted ())
-      throw new SchematronInterruptedException ("after XSLT template was created");
+      throw new SchematronInterruptedException ("after SchXslt2 XSLT template was created");
   }
 
   @NonNull

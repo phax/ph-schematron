@@ -18,10 +18,12 @@ package com.helger.maven.schematron;
 
 import java.io.File;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.ErrorListener;
@@ -47,15 +49,22 @@ import com.helger.base.CGlobal;
 import com.helger.base.concurrent.ExecutorServiceHelper;
 import com.helger.base.concurrent.ThreadHelper;
 import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
 import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.file.FileHelper;
 import com.helger.io.file.FilenameHelper;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
+import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSLT2;
+import com.helger.schematron.schxslt.xslt2.TransformerCustomizerSchXslt_XSLT2;
+import com.helger.schematron.schxslt2.xslt.SchematronProviderXSLTFromSchXslt2;
+import com.helger.schematron.schxslt2.xslt.TransformerCustomizerSchXslt2;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -168,6 +177,14 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("6.3.2")
   private boolean m_bStopOnError = true;
 
+  /**
+   * The Schematron engine to use for the transformation. See {@link ESchematronEngine} for the
+   * possible values.
+   */
+  @Parameter (name = "schematronEngine", defaultValue = "iso-schematron")
+  @Since ("9.1.1")
+  private String m_sSchematronEngine = ESchematronEngine.ISO_SCHEMATRON.getID ();
+
   public void setSchematronDirectory (@NonNull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -276,6 +293,19 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       getLog ().debug ("Stop on error is disabled");
   }
 
+  public void setSchematronEngine (final String s)
+  {
+    m_sSchematronEngine = s;
+    getLog ().debug ("Using the Schematron Engine '" + s + "'");
+  }
+
+  @Nullable
+  @VisibleForTesting
+  String getSchematronEngine ()
+  {
+    return m_sSchematronEngine;
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     if (m_aSchematronDirectory == null)
@@ -295,6 +325,19 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
     if (!m_aXsltDirectory.exists () && !m_aXsltDirectory.mkdirs ())
       throw new MojoExecutionException ("Failed to create the XSLT directory " + m_aXsltDirectory);
+
+    final ESchematronEngine eEngine = ESchematronEngine.getFromIDOrNull (m_sSchematronEngine);
+    if (eEngine == null)
+      throw new MojoExecutionException ("The provided Schematron engine '" +
+                                        m_sSchematronEngine +
+                                        "' is not supported. Supported values are: " +
+                                        StringImplode.imploder ()
+                                                     .source (Arrays.stream (ESchematronEngine.values ())
+                                                                    .filter (ESchematronEngine::isXSLTBased)
+                                                                    .collect (Collectors.toList ()),
+                                                              e -> "'" + e.getID () + "'")
+                                                     .separator (", ")
+                                                     .build ());
 
     // for all Schematron files that match the pattern
     final DirectoryScanner aScanner = new DirectoryScanner ();
@@ -357,52 +400,52 @@ public final class Schematron2XSLTMojo extends AbstractMojo
               // Custom error listener to log to the Mojo logger
               final ErrorListener aMojoErrorListener = new PluginErrorListener (buildContext, aFile);
 
-              // Custom error listener
-              // No custom URI resolver
-              // Specified phase - default = null
-              // Specified language code - default = null
-              final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
-                                                                                          .setPhase (m_sPhaseName)
-                                                                                          .setLanguageCode (m_sLanguageCode)
-                                                                                          .setParameters (m_aCustomParameters)
-                                                                                          .setForceCacheResult (m_bForceCacheResult);
+              getLog ().debug ("Compiling Schematron instance " +
+                               aSchematronResource.toString () +
+                               " with engine " +
+                               eEngine);
 
-              getLog ().debug ("Compiling Schematron instance " + aSchematronResource.toString ());
-
-              final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource,
-                                                                                            aCustomizer);
-              if (aXsltDoc != null)
+              final Document aXsltDoc = switch (eEngine)
               {
-                if (StringHelper.isNotEmpty (m_sXSLTHeader))
+                case ISO_SCHEMATRON:
                 {
-                  // Inject the header into the XSLT
-                  aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());
+                  // Custom error listener
+                  // No custom URI resolver
+                  // Specified phase - default = null
+                  // Specified language code - default = null
+                  final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
+                                                                                              .setPhase (m_sPhaseName)
+                                                                                              .setLanguageCode (m_sLanguageCode)
+                                                                                              .setParameters (m_aCustomParameters)
+                                                                                              .setForceCacheResult (m_bForceCacheResult);
+                  yield SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
                 }
+                case SCHXSLT1:
+                {
+                  final Map <String, String> aEffectiveCustomParams = new CommonsHashMap <> (m_aCustomParameters);
+                  aEffectiveCustomParams.put ("schxslt.compile.metadata", "false");
+                  final TransformerCustomizerSchXslt_XSLT2 aCustomizer2 = new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aMojoErrorListener)
+                                                                                                                   .setPhase (m_sPhaseName)
+                                                                                                                   .setLanguageCode (m_sLanguageCode)
+                                                                                                                   .setParameters (aEffectiveCustomParams)
+                                                                                                                   .setForceCacheResult (m_bForceCacheResult);
+                  yield SchematronProviderXSLTFromSchXslt_XSLT2.createSchematronXSLT (aSchematronResource,
+                                                                                      aCustomizer2);
+                }
+                case SCHXSLT2:
+                {
+                  final TransformerCustomizerSchXslt2 aCustomizer2 = new TransformerCustomizerSchXslt2 ().setErrorListener (aMojoErrorListener)
+                                                                                                         .setPhase (m_sPhaseName)
+                                                                                                         .setLanguageCode (m_sLanguageCode)
+                                                                                                         .setParameters (m_aCustomParameters)
+                                                                                                         .setForceCacheResult (m_bForceCacheResult);
+                  yield SchematronProviderXSLTFromSchXslt2.createSchematronXSLT (aSchematronResource, aCustomizer2);
+                }
+                default:
+                  throw new MojoExecutionException ("Unsupported Schematron Engine - must be XSLT based: " + eEngine);
+              };
 
-                // Write the resulting XSLT file to disk
-                final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ().addMapping ("svrl",
-                                                                                                        CSVRL.SVRL_NAMESPACE_URI);
-                // Add all namespaces from XSLT document root
-                final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
-                XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
-                  if (sAttrName.startsWith (sNSPrefix))
-                    aNSContext.addMapping (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
-                });
-
-                final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
-                                                                       .setPutNamespaceContextPrefixesInRoot (true);
-
-                final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
-                if (aOS == null)
-                  throw new IllegalStateException ("Failed to open output stream for file " +
-                                                   aXSLTFile.getAbsolutePath ());
-                XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
-
-                getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
-
-                buildContext.refresh (aXsltFileDirectory);
-              }
-              else
+              if (aXsltDoc == null)
               {
                 final String message = "Failed to convert '" +
                                        aFile.getPath () +
@@ -410,6 +453,40 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 getLog ().error (message);
                 throw new MojoFailureException (message);
               }
+
+              if (StringHelper.isNotEmpty (m_sXSLTHeader))
+              {
+                // Inject the header into the XSLT
+                aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());
+              }
+
+              // Add all namespaces from XSLT document root
+              final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
+              final ICommonsMap <String, String> aMapFromXml = new CommonsLinkedHashMap <> ();
+              XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
+                if (sAttrName.startsWith (sNSPrefix))
+                  aMapFromXml.put (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
+              });
+
+              // Write the resulting XSLT file to disk
+              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ();
+              if (!aMapFromXml.containsKey ("svrl"))
+                aNSContext.addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
+              for (final var e : aMapFromXml.entrySet ())
+                aNSContext.addMapping (e.getKey (), e.getValue ());
+
+              final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
+                                                                     .setPutNamespaceContextPrefixesInRoot (true);
+
+              final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
+              if (aOS == null)
+                throw new IllegalStateException ("Failed to open output stream for file " +
+                                                 aXSLTFile.getAbsolutePath ());
+              XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
+
+              getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
+
+              buildContext.refresh (aXsltFileDirectory);
             }
             catch (final MojoFailureException up)
             {

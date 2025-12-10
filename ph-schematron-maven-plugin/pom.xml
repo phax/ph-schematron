@@ -84,6 +84,7 @@
       <version>${maven.annot.version}</version>
       <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-xslt</artifactId>
@@ -91,6 +92,10 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-schxslt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-schxslt2</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
@@ -123,7 +128,12 @@
       <artifactId>easymock</artifactId>
       <version>${easymock.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

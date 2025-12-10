@@ -41,7 +41,8 @@ public final class Schematron2XSLTMojoTest
     assertTrue (aPOM.exists ());
 
     // Use "Configured" to get default values injected
-    final Schematron2XSLTMojo aMojo = (Schematron2XSLTMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (), "convert");
+    final Schematron2XSLTMojo aMojo = (Schematron2XSLTMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
+                                                                                          "convert");
     assertNotNull (aMojo);
     // Making the files is essential, otherwise the paths are interpreted
     // relative to the test POM!
@@ -54,6 +55,53 @@ public final class Schematron2XSLTMojoTest
     assertEquals (2, aParams.size ());
     assertEquals ("true", aParams.get ("allow-foreign"));
     assertEquals ("else", aParams.get ("anything"));
+
+    aMojo.execute ();
+  }
+
+  @Test
+  public void testUseSchXslt1 () throws Exception
+  {
+    final File aPOM = new File ("src/test/resources/poms/test-sch2xslt2/pom.xml");
+    assertNotNull (aPOM);
+    assertTrue (aPOM.exists ());
+
+    // Use "Configured" to get default values injected
+    final Schematron2XSLTMojo aMojo = (Schematron2XSLTMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
+                                                                                          "convert");
+    assertNotNull (aMojo);
+    // Making the files is essential, otherwise the paths are interpreted
+    // relative to the test POM!
+    aMojo.setSchematronDirectory (new File ("src/test/resources/schematron").getAbsoluteFile ());
+    aMojo.setXsltDirectory (new File ("target/test/schematron-via-maven-plugin2").getAbsoluteFile ());
+
+    // Test parameters from POM
+    final String sEngine = aMojo.getSchematronEngine ();
+    assertEquals ("schxslt1", sEngine);
+
+    aMojo.execute ();
+  }
+
+  @Test
+  public void testUseSchXslt2 () throws Exception
+  {
+    final File aPOM = new File ("src/test/resources/poms/test-sch2xslt3/pom.xml");
+    assertNotNull (aPOM);
+    assertTrue (aPOM.exists ());
+
+    // Use "Configured" to get default values injected
+    final Schematron2XSLTMojo aMojo = (Schematron2XSLTMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
+                                                                                          "convert");
+    assertNotNull (aMojo);
+
+    // Making the files is essential, otherwise the paths are interpreted
+    // relative to the test POM!
+    aMojo.setSchematronDirectory (new File ("src/test/resources/schematron").getAbsoluteFile ());
+    aMojo.setXsltDirectory (new File ("target/test/schematron-via-maven-plugin2").getAbsoluteFile ());
+
+    // Test parameters from POM
+    final String sEngine = aMojo.getSchematronEngine ();
+    assertEquals ("schxslt2", sEngine);
 
     aMojo.execute ();
   }
