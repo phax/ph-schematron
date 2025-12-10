@@ -36,7 +36,7 @@ public final class ThirdPartyModuleProvider_ph_schematron_schxslt2 implements IT
   public static final IThirdPartyModule SCHXSLT2 = new ThirdPartyModule ("SchXslt2",
                                                                          "David Maus",
                                                                          ELicense.MIT,
-                                                                         new Version (1, 7),
+                                                                         new Version (1, 7, 1),
                                                                          "https://codeberg.org/SchXslt/schxslt2/");
 
   @Nullable
