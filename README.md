@@ -1,8 +1,9 @@
 # ph-schematron
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.helger.schematron/ph-schematron-parent-pom)](https://img.shields.io/maven-central/v/com.helger.schematron/ph-schematron-parent-pom)
-[![javadoc](https://javadoc.io/badge2/com.helger.schematron/ph-schematron-api/javadoc.svg)](https://javadoc.io/doc/com.helger.schematron/ph-schematron-api)
-[![CodeCov](https://codecov.io/gh/phax/ph-schematron/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-schematron)
+<!-- ph-badge-start -->
+[![Sonatype Central](https://maven-badges.sml.io/sonatype-central/com.helger.schematron/ph-schematron-parent-pom/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.helger.schematron/ph-schematron-parent-pom/)
+[![javadoc](https://javadoc.io/badge2/com.helger.schematron/ph-schematron-testfiles/javadoc.svg)](https://javadoc.io/doc/com.helger.schematron/ph-schematron-testfiles)
+<!-- ph-badge-end -->
 
 ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com), [SchXslt](https://github.com/schxslt/schxslt) or a Java "pure" implementation.
 
