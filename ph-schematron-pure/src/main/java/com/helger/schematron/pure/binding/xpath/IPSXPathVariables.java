@@ -44,7 +44,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
 
   /**
    * @return All contained variable names. Never <code>null</code>.
-   * @since v8
+   * @since 8.0.0
    */
   @NonNull
   @ReturnsMutableCopy
@@ -60,8 +60,8 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
   /**
    * @param sName
    *        Variable name
-   * @return The variable value of the variable with the specified name or
-   *         <code>null</code> if no such variable is present.
+   * @return The variable value of the variable with the specified name or <code>null</code> if no
+   *         such variable is present.
    */
   @Nullable
   XPathExpression get (@Nullable String sName);

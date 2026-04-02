@@ -92,10 +92,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private PSXPathVariables m_aSchemaVariables;
 
   /**
-   * Compile an XPath expression string to an {@link XPathExpressionException}
-   * object. If expression contains any variables, the
-   * {@link XPathVariableResolver} will be used to resolve them within this
-   * method!
+   * Compile an XPath expression string to an {@link XPathExpressionException} object. If expression
+   * contains any variables, the {@link XPathVariableResolver} will be used to resolve them within
+   * this method!
    *
    * @param aXPathContext
    *        Context to use. May not be <code>null</code>.
@@ -121,9 +120,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     for (final Object aContentElement : aMixedContent.getAllContentElements ())
     {
-      if (aContentElement instanceof PSName)
+      if (aContentElement instanceof final PSName aName)
       {
-        final PSName aName = (PSName) aContentElement;
         if (aName.hasPath ())
         {
           final String sPath = aName.getPath ();
@@ -145,10 +143,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         }
       }
       else
-        if (aContentElement instanceof PSValueOf)
+        if (aContentElement instanceof final PSValueOf aValueOf)
         {
-          final PSValueOf aValueOf = (PSValueOf) aContentElement;
-
           final String sSelect = aValueOf.getSelect ();
           try
           {
@@ -219,11 +215,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @param aXPathContext
    *        Global XPath object to use. May not be <code>null</code>.
    * @param aBoundDiagnostics
-   *        A map from DiagnosticID to its mapped counterpart. May not be
-   *        <code>null</code>.
+   *        A map from DiagnosticID to its mapped counterpart. May not be <code>null</code>.
    * @param aSchemaVariables
-   *        The schema-global Schematron-let variables. May not be
-   *        <code>null</code>.
+   *        The schema-global Schematron-let variables. May not be <code>null</code>.
    * @return <code>null</code> if an XPath error is contained
    */
   @Nullable
@@ -364,25 +358,22 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   }
 
   /**
-   * Create a new bound schema. All the XPath pre-compilation happens inside
-   * this constructor, so that the
-   * {@link #validate(Node, String, IPSValidationHandler)} method can be called
-   * many times without compiling the XPath statements again and again.
+   * Create a new bound schema. All the XPath pre-compilation happens inside this constructor, so
+   * that the {@link #validate(Node, String, IPSValidationHandler)} method can be called many times
+   * without compiling the XPath statements again and again.
    *
    * @param aQueryBinding
    *        The query binding to be used. May not be <code>null</code>.
    * @param aOrigSchema
-   *        The original schema that should be bound. May not be
-   *        <code>null</code>.
+   *        The original schema that should be bound. May not be <code>null</code>.
    * @param sPhase
-   *        The selected phase. May be <code>null</code> indicating that the
-   *        default phase of the schema should be used (if present) or all
-   *        patterns should be evaluated if no default phase is present.
+   *        The selected phase. May be <code>null</code> indicating that the default phase of the
+   *        schema should be used (if present) or all patterns should be evaluated if no default
+   *        phase is present.
    * @param aCustomErrorListener
-   *        A custom error listener to be used. May be <code>null</code> in
-   *        which case a
-   *        {@link com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler}
-   *        is used internally.
+   *        A custom error listener to be used. May be <code>null</code> in which case a
+   *        {@link com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler} is used
+   *        internally.
    * @param aCustomValidationHandler
    *        The custom PS validation handler. May be <code>null</code>.
    * @param aXPathConfig
@@ -531,7 +522,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   /**
    * @return The underlying {@link IXPathConfig}. Never <code>null</code>.
-   * @since v8
+   * @since 8.0.0
    */
   @NonNull
   public final IXPathConfig getXPathConfig ()

@@ -112,7 +112,7 @@ public class PSReader
 
   /**
    * @return The entity handler provided in the constructor. May be <code>null</code>.
-   * @since v8
+   * @since 8.0.0
    */
   @Nullable
   public final EntityResolver getEntityResolver ()

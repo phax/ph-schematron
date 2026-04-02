@@ -62,16 +62,13 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
- * A Schematron resource that is not XSLT based but using the pure (native Java)
- * implementation. This class itself is not thread safe, but the underlying
- * cache is thread safe. So once you configured this object fully (with all the
- * setter), it can be considered thread safe.<br>
- * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no
- * XSLT functions in Schematron asserts and reports! If your Schematrons use
- * XSLT functionality you're better off using the
- * <code>com.helger.schematron.sch.SchematronResourceSCH</code> or
- * <code>com.helger.schematron.xslt.SchematronResourceXSLT</code> classes
- * instead!
+ * A Schematron resource that is not XSLT based but using the pure (native Java) implementation.
+ * This class itself is not thread safe, but the underlying cache is thread safe. So once you
+ * configured this object fully (with all the setter), it can be considered thread safe.<br>
+ * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no XSLT functions in
+ * Schematron asserts and reports! If your Schematrons use XSLT functionality you're better off
+ * using the <code>com.helger.schematron.sch.SchematronResourceSCH</code> or
+ * <code>com.helger.schematron.xslt.SchematronResourceXSLT</code> classes instead!
  *
  * @author Philip Helger
  */
@@ -111,12 +108,11 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Set the Schematron phase to be evaluated. Changing the phase will result in
-   * a newly bound schema!
+   * Set the Schematron phase to be evaluated. Changing the phase will result in a newly bound
+   * schema!
    *
    * @param sPhase
-   *        The name of the phase to use. May be <code>null</code> which means
-   *        all phases.
+   *        The name of the phase to use. May be <code>null</code> which means all phases.
    * @return this
    */
   @NonNull
@@ -129,8 +125,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * @return The error handler to be used to bind the schema. May be
-   *         <code>null</code>.
+   * @return The error handler to be used to bind the schema. May be <code>null</code>.
    */
   @Nullable
   public final IPSErrorHandler getErrorHandler ()
@@ -155,8 +150,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * @return The custom validation handler to be used to bind the schema. May be
-   *         <code>null</code>.
+   * @return The custom validation handler to be used to bind the schema. May be <code>null</code>.
    * @since 5.3.0
    */
   @Nullable
@@ -184,7 +178,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   /**
    * @return The contained {@link IXPathConfig}. Never <code>null</code>.
-   * @since v8
+   * @since 8.0.0
    */
   @NonNull
   public final IXPathConfig getXPathConfig ()
@@ -193,9 +187,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Set the {@link XPathConfig} to be used in the XPath statements. This can
-   * only be set before the Schematron is bound. If it is already bound an
-   * exception is thrown to indicate the unnecessity of the call.
+   * Set the {@link XPathConfig} to be used in the XPath statements. This can only be set before the
+   * Schematron is bound. If it is already bound an exception is thrown to indicate the unnecessity
+   * of the call.
    *
    * @param aXPathConfig
    *        The XPath config to set. May be <code>null</code>.
@@ -212,10 +206,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the Schematron or the
-   * XML to be validated. This can only be set before the Schematron is bound.
-   * If it is already bound an exception is thrown to indicate the unnecessity
-   * of the call.
+   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
+   * This can only be set before the Schematron is bound. If it is already bound an exception is
+   * thrown to indicate the unnecessity of the call.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -305,8 +298,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Use the internal error handler to validate all elements in the schematron.
-   * It tries to catch as many errors as possible.
+   * Use the internal error handler to validate all elements in the schematron. It tries to catch as
+   * many errors as possible.
    */
   public void validateCompletely ()
   {
@@ -316,8 +309,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Use the provided error handler to validate all elements in the schematron.
-   * It tries to catch as many errors as possible.
+   * Use the provided error handler to validate all elements in the schematron. It tries to catch as
+   * many errors as possible.
    *
    * @param aErrorHandler
    *        The error handler to use. May not be <code>null</code>.
@@ -337,8 +330,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @NonNull
-  public EValidity getSchematronValidity (@NonNull final Node aXMLNode,
-                                          @Nullable final String sBaseURI) throws Exception
+  public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                         throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -354,8 +347,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @param aXMLNode
    *        The source node to be validated. May not be <code>null</code>.
    * @param sBaseURI
-   *        Base URI of the XML document to be validated. May be
-   *        <code>null</code>.
+   *        Base URI of the XML document to be validated. May be <code>null</code>.
    * @return The SVRL document. Never <code>null</code>.
    * @throws SchematronException
    *         in case of a sever error validating the schema
@@ -376,8 +368,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   @Nullable
-  public Document applySchematronValidation (@NonNull final Node aXMLNode,
-                                             @Nullable final String sBaseURI) throws Exception
+  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                            throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -386,8 +378,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from a Classpath Schematron
-   * rules
+   * Create a new {@link SchematronResourcePure} from a Classpath Schematron rules
    *
    * @param sSCHPath
    *        The classpath relative path to the Schematron rules.
@@ -400,14 +391,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from a Classpath Schematron
-   * rules
+   * Create a new {@link SchematronResourcePure} from a Classpath Schematron rules
    *
    * @param sSCHPath
    *        The classpath relative path to the Schematron rules.
    * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May
-   *        be <code>null</code>.
+   *        The class loader to be used to retrieve the classpath resource. May be
+   *        <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.0.4
    */
@@ -419,8 +409,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from file system Schematron
-   * rules
+   * Create a new {@link SchematronResourcePure} from file system Schematron rules
    *
    * @param sSCHPath
    *        The file system path to the Schematron rules.
@@ -433,8 +422,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from file system Schematron
-   * rules
+   * Create a new {@link SchematronResourcePure} from file system Schematron rules
    *
    * @param aSCHFile
    *        The file system path to the Schematron rules.
@@ -447,12 +435,10 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided
-   * at a URL
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided at a URL
    *
    * @param sSCHURL
-   *        The URL to the Schematron rules. May neither be <code>null</code>
-   *        nor empty.
+   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
    * @return Never <code>null</code>.
    * @throws MalformedURLException
    *         In case an invalid URL is provided
@@ -464,8 +450,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided
-   * at a URL
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided at a URL
    *
    * @param aSCHURL
    *        The URL to the Schematron rules. May not be <code>null</code>.
@@ -478,16 +463,14 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided
-   * by an arbitrary {@link InputStream}.<br>
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary
+   * {@link InputStream}.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be
-   *        <code>null</code> nor empty.
+   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
    * @param aSchematronIS
-   *        The {@link InputStream} to read the Schematron rules from. May not
-   *        be <code>null</code>.
+   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
@@ -499,13 +482,12 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided
-   * by an arbitrary byte array.<br>
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary byte
+   * array.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param aSchematron
-   *        The byte array representing the Schematron. May not be
-   *        <code>null</code>.
+   *        The byte array representing the Schematron. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
   @NonNull
@@ -515,13 +497,12 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided
-   * by an arbitrary String.<br>
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary
+   * String.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param sSchematron
-   *        The String representing the Schematron. May not be <code>null</code>
-   *        .
+   *        The String representing the Schematron. May not be <code>null</code> .
    * @param aCharset
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
@@ -533,8 +514,8 @@ public class SchematronResourcePure extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided
-   * by a domain model.<br>
+   * Create a new {@link SchematronResourcePure} from Schematron rules provided by a domain
+   * model.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param aSchematron

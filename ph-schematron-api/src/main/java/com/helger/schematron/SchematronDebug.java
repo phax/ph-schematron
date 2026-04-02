@@ -57,8 +57,7 @@ public final class SchematronDebug
    * Globally enable/disable debug mode
    *
    * @param bDebugMode
-   *        <code>true</code> to enable debug mode, <code>false</code>
-   *        otherwise.
+   *        <code>true</code> to enable debug mode, <code>false</code> otherwise.
    * @see #setSaveIntermediateXSLTFiles(boolean)
    * @see #setShowCreatedXSLT(boolean)
    * @see #setShowCreatedSVRL(boolean)
@@ -90,8 +89,8 @@ public final class SchematronDebug
   }
 
   /**
-   * @return <code>true</code> if the intermediate files during XSLT creation.
-   *         Applied only in XSTL based modes.
+   * @return <code>true</code> if the intermediate files during XSLT creation. Applied only in XSTL
+   *         based modes.
    */
   public static boolean isSaveIntermediateXSLTFiles ()
   {
@@ -111,9 +110,9 @@ public final class SchematronDebug
   }
 
   /**
-   * @return The folder to which the minified SCH should be stored. Never
-   *         <code>null</code>. Only used in XSLT based modes if
-   *         {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
+   * @return The folder to which the minified SCH should be stored. Never <code>null</code>. Only
+   *         used in XSLT based modes if {@link #isSaveIntermediateXSLTFiles()} is
+   *         <code>true</code>.
    */
   @NonNull
   public static File getIntermediateMinifiedSCHFolder ()
@@ -122,8 +121,7 @@ public final class SchematronDebug
   }
 
   /**
-   * Set the folder to which the intermediate minified SCH files should be save
-   * to
+   * Set the folder to which the intermediate minified SCH files should be save to
    *
    * @param aIntermediateMinifiedSCHFolder
    *        The folder to save to. May not be <code>null</code>.
@@ -135,9 +133,8 @@ public final class SchematronDebug
   }
 
   /**
-   * @return The folder to which the final XSLT should be stored. Never
-   *         <code>null</code>. Only used in XSLT based modes if
-   *         {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
+   * @return The folder to which the final XSLT should be stored. Never <code>null</code>. Only used
+   *         in XSLT based modes if {@link #isSaveIntermediateXSLTFiles()} is <code>true</code>.
    */
   @NonNull
   public static File getIntermediateFinalXSLTFolder ()
@@ -146,8 +143,7 @@ public final class SchematronDebug
   }
 
   /**
-   * Set the folder to which the intermediate minified SCH files should be save
-   * to.
+   * Set the folder to which the intermediate minified SCH files should be save to.
    *
    * @param aIntermediateFinalXSLTFolder
    *        The folder to save to. May not be <code>null</code>.
@@ -159,8 +155,8 @@ public final class SchematronDebug
   }
 
   /**
-   * @return <code>true</code> if the created XSLT should be logged. Only
-   *         applied in XSLT based mode.
+   * @return <code>true</code> if the created XSLT should be logged. Only applied in XSLT based
+   *         mode.
    */
   public static boolean isShowCreatedXSLT ()
   {
@@ -171,8 +167,7 @@ public final class SchematronDebug
    * Log the created XSLT files or not
    *
    * @param bShow
-   *        <code>true</code> to enable logging, <code>false</code> to disable
-   *        it.
+   *        <code>true</code> to enable logging, <code>false</code> to disable it.
    * @see #setDebugMode(boolean) to trigger all debug options at once
    */
   public static void setShowCreatedXSLT (final boolean bShow)
@@ -192,8 +187,7 @@ public final class SchematronDebug
    * Log the created SVRL results or not
    *
    * @param bShow
-   *        <code>true</code> to enable logging, <code>false</code> to disable
-   *        it.
+   *        <code>true</code> to enable logging, <code>false</code> to disable it.
    * @see #setDebugMode(boolean) to trigger all debug options at once
    */
   public static void setShowCreatedSVRL (final boolean bShow)
@@ -202,8 +196,8 @@ public final class SchematronDebug
   }
 
   /**
-   * @return <code>true</code> to log the read, with includes resolved,
-   *         Schematron. This is only applied in pure mode.
+   * @return <code>true</code> to log the read, with includes resolved, Schematron. This is only
+   *         applied in pure mode.
    */
   public static boolean isShowResolvedSourceSchematron ()
   {
@@ -214,8 +208,7 @@ public final class SchematronDebug
    * Log the created Schematron with the includes resolved
    *
    * @param bShow
-   *        <code>true</code> to enable logging, <code>false</code> to disable
-   *        it.
+   *        <code>true</code> to enable logging, <code>false</code> to disable it.
    * @see #setDebugMode(boolean) to trigger all debug options at once
    */
   public static void setShowResolvedSourceSchematron (final boolean bShow)
@@ -224,8 +217,8 @@ public final class SchematronDebug
   }
 
   /**
-   * @return <code>true</code> to log the created preprocessed Schematron. This
-   *         is only applied in pure mode.
+   * @return <code>true</code> to log the created preprocessed Schematron. This is only applied in
+   *         pure mode.
    */
   public static boolean isShowPreprocessedSchematron ()
   {
@@ -236,8 +229,7 @@ public final class SchematronDebug
    * Log the complete created preprocessed Schematron
    *
    * @param bShow
-   *        <code>true</code> to enable logging, <code>false</code> to disable
-   *        it.
+   *        <code>true</code> to enable logging, <code>false</code> to disable it.
    * @see #setDebugMode(boolean) to trigger all debug options at once
    */
   public static void setShowPreprocessedSchematron (final boolean bShow)
@@ -249,7 +241,7 @@ public final class SchematronDebug
    * @return <code>true</code> if debug logging is enabled.
    * @see #setDebugLog(boolean)
    * @see #getDebugLogger()
-   * @since v8
+   * @since 8.0.0
    */
   public static boolean isDebugLog ()
   {
@@ -263,7 +255,7 @@ public final class SchematronDebug
    *        <code>true</code> to enable it, <code>false</code> to disable it.
    * @see #isDebugLog()
    * @see #getDebugLogger()
-   * @since v8
+   * @since 8.0.0
    */
   public static void setDebugLog (final boolean b)
   {
@@ -274,7 +266,7 @@ public final class SchematronDebug
    * @return The debug aware logger to use. Never <code>null</code>.
    * @see #isDebugLog()
    * @see #setDebugLog(boolean)
-   * @since v8
+   * @since 8.0.0
    */
   @NonNull
   public static IConditionalLogger getDebugLogger ()
