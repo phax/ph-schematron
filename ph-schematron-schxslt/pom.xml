@@ -54,7 +54,7 @@
       <dependency>
         <groupId>name.dmaus.schxslt</groupId>
         <artifactId>schxslt</artifactId>
-        <version>${schxslt.version}</version>
+        <version>${schxslt1.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
