@@ -77,7 +77,7 @@
 
     <ant.version>1.10.17</ant.version>
     <schxslt1.version>1.10.1</schxslt1.version>
-    <schxslt2.version>1.10.2</schxslt2.version>
+    <schxslt2.version>1.10.3</schxslt2.version>
   </properties>
   
   <dependencyManagement>
