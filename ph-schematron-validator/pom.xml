@@ -25,11 +25,10 @@
     <version>9.1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-validator</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-schematron-validator</name>
   <url>https://github.com/phax/ph-schematron/ph-schematron-validator</url>
   <inceptionYear>2014</inceptionYear>
-  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,12 +36,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
   <organization>
     <name>Philip Helger</name>
     <url>https://www.helger.com</url>
   </organization>
-  
   <developers>
     <developer>
       <id>philip</id>
@@ -51,7 +48,6 @@
       <url>https://www.helger.com</url>
     </developer>
   </developers>
-  
   <dependencyManagement>
     <dependencies>
       <!-- RelaxNG -->
@@ -75,7 +71,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
       <!-- Trang -->
       <dependency>
         <groupId>org.relaxng</groupId>
@@ -94,13 +89,11 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-xml</artifactId>
     </dependency>
-    
     <!-- RelaxNG -->
     <dependency>
       <groupId>com.helger</groupId>
@@ -110,7 +103,6 @@
       <groupId>org.relaxng</groupId>
       <artifactId>jing</artifactId>
     </dependency>
-    
     <!-- Trang -->
     <dependency>
       <groupId>org.relaxng</groupId>
@@ -143,24 +135,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.schematron.validator</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.schematron.relaxng,
-              com.helger.schematron.validator
-            </Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

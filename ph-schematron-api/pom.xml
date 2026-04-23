@@ -25,7 +25,7 @@
     <version>9.1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-api</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-schematron-api</name>
   <description>Base API for the library for validating XML documents with Schematron</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-api</url>
@@ -93,29 +93,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.schematron</Automatic-Module-Name>
-            <Export-Package>com.helger.schematron,
-              com.helger.schematron.api.xslt,
-              com.helger.schematron.api.xslt.validator,
-              com.helger.schematron.config,
-              com.helger.schematron.resolve,
-              com.helger.schematron.saxon,
-              com.helger.schematron.svrl,
-              com.helger.schematron.svrl.jaxb</Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)",
-osgi.extender; filter:="(osgi.extender=osgi.serviceloader.processor)",
-osgi.serviceloader; filter:="(osgi.serviceloader=com.helger.schematron.svrl.ISVRLLocationBeautifierSPI)"; cardinality:=multiple; resolution:=optional</Require-Capability>
-            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.base.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>${jaxb-plugin.group}</groupId>
         <artifactId>${jaxb-plugin.artifact}</artifactId>

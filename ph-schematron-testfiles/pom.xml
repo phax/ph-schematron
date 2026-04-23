@@ -25,12 +25,11 @@
     <version>9.1.2-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-testfiles</artifactId>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
   <name>ph-schematron-testfiles</name>
   <description>Schematron test files</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-testfiles</url>
   <inceptionYear>2014</inceptionYear>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -38,12 +37,10 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <organization>
     <name>Philip Helger</name>
     <url>https://www.helger.com</url>
   </organization>
-
   <developers>
     <developer>
       <id>philip</id>
@@ -52,13 +49,11 @@
       <url>https://www.helger.com</url>
     </developer>
   </developers>
-
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-xml</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -75,23 +70,8 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Automatic-Module-Name>com.helger.schematron.testfiles</Automatic-Module-Name>
-            <Export-Package>
-              com.helger.schematron.testfiles
-            </Export-Package>
-            <Import-Package>!org.jspecify.annotations.*,*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>com.helger.maven</groupId>
         <artifactId>ph-dirindex-maven-plugin</artifactId>
@@ -133,7 +113,7 @@
               <targetFilename>dirindex.xml</targetFilename>
             </configuration>
           </execution>
-<!--  
+          <!--  
 -->
         </executions>
       </plugin>
