@@ -46,4 +46,16 @@ public final class XsltStylesheetGeneratorTest
     final XMLWriterSettings aWS = new XMLWriterSettings ().setNamespaceContext (XsltStylesheetGenerator.namespaceContextFor (aSchema));
     LOGGER.info ("Generated XSLT for github137:\n" + MicroWriter.getNodeAsString (aDoc, aWS));
   }
+
+  @org.junit.Test
+  public void testDumpGeneratedXsltForXslFunction () throws Exception
+  {
+    final FileSystemResource aRes = new FileSystemResource (new File ("src/test/resources/external/xsl-function/schematron.sch"));
+    final PSSchema aSchema = new PSReader (aRes).readSchema ();
+    assertNotNull (aSchema);
+    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema);
+    assertNotNull (aDoc);
+    final XMLWriterSettings aWS = new XMLWriterSettings ().setNamespaceContext (XsltStylesheetGenerator.namespaceContextFor (aSchema));
+    LOGGER.info ("Generated XSLT for xsl-function:\n" + MicroWriter.getNodeAsString (aDoc, aWS));
+  }
 }

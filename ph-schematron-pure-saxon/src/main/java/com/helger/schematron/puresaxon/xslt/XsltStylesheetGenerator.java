@@ -54,9 +54,13 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
  * {@code <sch:assert test>}, {@code <sch:report test>}, {@code <sch:value-of select>} and
  * {@code <sch:name path>} interpolation in message text, {@code <sch:phase>} /
  * {@code <sch:active>} phase selection (including {@code #ALL} and {@code #DEFAULT}),
- * {@code <sch:let>} variable bindings at schema/phase/pattern/rule scope, and
- * {@code <sch:diagnostic>} references on asserts and reports. Properties, abstract patterns and
- * abstract rules are silently skipped (with a WARN log).
+ * {@code <sch:let>} variable bindings at schema/phase/pattern/rule scope,
+ * {@code <sch:diagnostic>} references on asserts and reports, and pass-through of XSLT
+ * declarations ({@code <xsl:function>}, {@code <xsl:include>}, {@code <xsl:import>},
+ * {@code <xsl:key>}, {@code <xsl:variable>}, ...) declared as foreign children of the schema
+ * element. Properties and rich text spans are silently skipped (with a WARN log). Abstract
+ * patterns / {@code <sch:extends>} / {@code <sch:include>} are expected to be expanded by a
+ * preprocessor before this generator runs.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -115,6 +119,12 @@ public final class XsltStylesheetGenerator
     aOutput.setAttribute ("method", "xml");
     aOutput.setAttribute ("indent", "no");
 
+    // Pass through schema-level <xsl:*> foreign elements (xsl:function, xsl:include, xsl:key,
+    // xsl:import, xsl:variable, ...). These give Saxon-native schemas the ability to declare
+    // helper functions and modules that are then callable from <sch:assert> / <sch:report>
+    // expressions - the differentiating feature of this engine vs ph-schematron-pure.
+    _appendXsltForeignElements (aStylesheet, aSchema.getAllForeignElements ());
+
     // Schema-level <sch:let> become global <xsl:variable>s. Visible in all rule templates.
     _appendLetsAsXsltVariables (aStylesheet, aSchema.getAllLets ());
 
@@ -140,6 +150,28 @@ public final class XsltStylesheetGenerator
   }
 
   /**
+   * Clone each foreign element whose namespace is the XSLT namespace into the generated
+   * stylesheet root. Non-XSLT foreign elements (e.g. random vendor-specific extensions) are
+   * skipped with a WARN log - those can be added in a later phase.
+   */
+  private static void _appendXsltForeignElements (@NonNull final IMicroElement aStylesheet,
+                                                  @NonNull final ICommonsList <IMicroElement> aForeignElements)
+  {
+    for (final IMicroElement aForeign : aForeignElements)
+    {
+      if (XSLT_NS.equals (aForeign.getNamespaceURI ()))
+      {
+        aStylesheet.addChild (aForeign.getClone ());
+      }
+      else
+      {
+        LOGGER.warn ("Skipping foreign element {" + aForeign.getNamespaceURI () + "}" + aForeign.getLocalName () +
+                     " - only XSLT-namespace pass-through is supported");
+      }
+    }
+  }
+
+  /**
    * Append one {@code <xsl:variable name="..." select="..."/>} per {@link PSLet}. Used to bind
    * Schematron {@code <sch:let>} variables at whichever XSLT scope (stylesheet root for
    * schema/phase, rule template for pattern/rule) the parent element represents.
@@ -156,8 +188,15 @@ public final class XsltStylesheetGenerator
       }
       final IMicroElement aVar = aParent.addElementNS (XSLT_NS, "variable");
       aVar.setAttribute ("name", aLet.getName ());
+      // Preference: select attribute wins (one-liner expression form). If the let has body
+      // elements (XSLT sequence constructor form preserved by PSReader's
+      // preserveLetBodyElements flag), clone them as the variable body instead.
       if (StringHelper.isNotEmpty (aLet.getValue ()))
         aVar.setAttribute ("select", aLet.getValue ());
+      else
+        if (aLet.hasBodyElements ())
+          for (final IMicroElement aBody : aLet.getAllBodyElements ())
+            aVar.addChild (aBody.getClone ());
     }
   }
 

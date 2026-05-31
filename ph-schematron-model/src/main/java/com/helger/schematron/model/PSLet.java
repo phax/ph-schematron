@@ -21,8 +21,11 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
@@ -56,6 +59,7 @@ public class PSLet implements IPSClonableElement <PSLet>
 {
   private String m_sName;
   private String m_sValue;
+  private ICommonsList <IMicroElement> m_aBodyElements;
 
   public PSLet ()
   {}
@@ -67,9 +71,9 @@ public class PSLet implements IPSClonableElement <PSLet>
       aErrorHandler.error (this, "<let> has no 'name'");
       return false;
     }
-    if (StringHelper.isEmpty (m_sValue))
+    if (StringHelper.isEmpty (m_sValue) && !hasBodyElements ())
     {
-      aErrorHandler.error (this, "<let> has no 'value'");
+      aErrorHandler.error (this, "<let> has no 'value' and no body content");
       return false;
     }
     return true;
@@ -79,8 +83,8 @@ public class PSLet implements IPSClonableElement <PSLet>
   {
     if (StringHelper.isEmpty (m_sName))
       aErrorHandler.error (this, "<let> has no 'name'");
-    if (StringHelper.isEmpty (m_sValue))
-      aErrorHandler.error (this, "<let> has no 'value'");
+    if (StringHelper.isEmpty (m_sValue) && !hasBodyElements ())
+      aErrorHandler.error (this, "<let> has no 'value' and no body content");
   }
 
   public boolean isMinimal ()
@@ -124,12 +128,56 @@ public class PSLet implements IPSClonableElement <PSLet>
     return m_sValue;
   }
 
+  /**
+   * Add a foreign body element to this {@code <let>}. Body elements model XSLT-style sequence
+   * constructors carried in the element content (e.g. {@code <xsl:choose>...</xsl:choose>}). They
+   * are only preserved when {@link com.helger.schematron.exchange.PSReader#setPreserveLetBodyElements(boolean)}
+   * is enabled; downstream engines that understand XSLT (such as {@code SchematronResourceSaxon})
+   * emit them as the body of the generated {@code <xsl:variable>}.
+   *
+   * @param aBodyElement
+   *        The body element. May not be <code>null</code>.
+   * @since 10.0.0
+   */
+  public void addBodyElement (@NonNull final IMicroElement aBodyElement)
+  {
+    ValueEnforcer.notNull (aBodyElement, "BodyElement");
+    if (m_aBodyElements == null)
+      m_aBodyElements = new CommonsArrayList <> ();
+    m_aBodyElements.add (aBodyElement);
+  }
+
+  /**
+   * @return A defensive copy of the body elements declared inside this {@code <let>}. Never
+   *         <code>null</code> but may be empty.
+   * @since 10.0.0
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <IMicroElement> getAllBodyElements ()
+  {
+    return m_aBodyElements == null ? new CommonsArrayList <> () : m_aBodyElements.getClone ();
+  }
+
+  /**
+   * @return <code>true</code> if this let has at least one body element.
+   * @since 10.0.0
+   */
+  public boolean hasBodyElements ()
+  {
+    return m_aBodyElements != null && m_aBodyElements.isNotEmpty ();
+  }
+
   @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_LET);
     ret.setAttribute (CSchematronXML.ATTR_NAME, m_sName);
-    ret.setAttribute (CSchematronXML.ATTR_VALUE, m_sValue);
+    if (StringHelper.isNotEmpty (m_sValue))
+      ret.setAttribute (CSchematronXML.ATTR_VALUE, m_sValue);
+    if (m_aBodyElements != null)
+      for (final IMicroElement aBody : m_aBodyElements)
+        ret.addChild (aBody.getClone ());
     return ret;
   }
 
@@ -139,6 +187,9 @@ public class PSLet implements IPSClonableElement <PSLet>
     final PSLet ret = new PSLet ();
     ret.setName (m_sName);
     ret.setValue (m_sValue);
+    if (m_aBodyElements != null)
+      for (final IMicroElement aBody : m_aBodyElements)
+        ret.addBodyElement (aBody.getClone ());
     return ret;
   }
 

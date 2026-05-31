@@ -270,6 +270,46 @@ public final class SchematronResourceSaxonTest
   }
 
   @Test
+  public void testXsltFunctionPassThrough () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/xsl-function/schematron.sch");
+    final File aValid = new File ("src/test/resources/external/xsl-function/valid.xml");
+    final File aInvalid = new File ("src/test/resources/external/xsl-function/invalid.xml");
+
+    // valid: single book with non-empty title -> my:isNonEmpty returns true -> no failure
+    final SchematronOutputType aValidSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aValid));
+    assertEquals ("expected no failures for non-empty title", 0, _countFailedAsserts (aValidSVRL));
+
+    // invalid: one book with empty title, one with no @title -> 2 failures
+    final SchematronOutputType aInvalidSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aInvalid));
+    LOGGER.info ("SVRL (xsl-function):\n" + new SVRLMarshaller (false).getAsString (aInvalidSVRL));
+    assertEquals ("expected my:isNonEmpty to fire failures for empty/missing @title", 2, _countFailedAsserts (aInvalidSVRL));
+  }
+
+  @Test
+  public void testLetBodyXsltChoose () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/let-body/schematron.sch");
+    final File aLarge = new File ("src/test/resources/external/let-body/large.xml");
+    final File aSmall = new File ("src/test/resources/external/let-body/small.xml");
+
+    // 11 chapters -> $sizeBucket = "large" -> assert passes
+    final SchematronOutputType aLargeSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aLarge));
+    assertEquals ("large book should pass", 0, _countFailedAsserts (aLargeSVRL));
+
+    // 1 chapter -> $sizeBucket = "small" -> assert fires
+    final SchematronOutputType aSmallSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aSmall));
+    LOGGER.info ("SVRL (let-body small):\n" + new SVRLMarshaller (false).getAsString (aSmallSVRL));
+    assertEquals ("small book should fail", 1, _countFailedAsserts (aSmallSVRL));
+    final String sMsg = _firstFailedAssertText (aSmallSVRL);
+    assertTrue ("expected interpolated 'small' from $sizeBucket, got: " + sMsg, sMsg.contains ("small"));
+  }
+
+  @Test
   public void testGetSchematronValidity () throws Exception
   {
     final File aSchBad = new File ("src/test/resources/external/issues/github137/schematron.sch");

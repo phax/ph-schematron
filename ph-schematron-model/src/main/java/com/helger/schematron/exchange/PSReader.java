@@ -58,6 +58,7 @@ public class PSReader
   private ISchematronIncludeResolver m_aSchematronIncludeResolver;
   private final EntityResolver m_aEntityResolver;
   private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+  private boolean m_bPreserveLetBodyElements = false;
 
   /**
    * Constructor without an error handler
@@ -144,6 +145,36 @@ public class PSReader
   public final PSReader setLenient (final boolean bLenient)
   {
     m_bLenient = bLenient;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if child elements of {@code <sch:let>} are preserved on the
+   *         resulting {@link PSLet}. Default is <code>false</code>: child elements are not stored
+   *         and a warning is emitted (matching the pre-10.0 behaviour).
+   * @since 10.0.0
+   */
+  public final boolean isPreserveLetBodyElements ()
+  {
+    return m_bPreserveLetBodyElements;
+  }
+
+  /**
+   * Control whether the reader preserves child elements of {@code <sch:let>}. Engines that hand
+   * the schema to an XSLT processor (such as {@code SchematronResourceSaxon}) want this enabled
+   * so XSLT-shaped {@code <let>} bodies (sequence constructors like
+   * {@code <xsl:choose>...</xsl:choose>}) flow through to the generated stylesheet. The default
+   * pure XPath engine does not understand sequence constructors, so the default is off.
+   *
+   * @param bPreserveLetBodyElements
+   *        <code>true</code> to preserve, <code>false</code> to drop with a warning.
+   * @return this for chaining
+   * @since 10.0.0
+   */
+  @NonNull
+  public final PSReader setPreserveLetBodyElements (final boolean bPreserveLetBodyElements)
+  {
+    m_bPreserveLetBodyElements = bPreserveLetBodyElements;
     return this;
   }
 
@@ -653,29 +684,29 @@ public class PSReader
     // come through as their text content and fail at XPath compile with a precise location -
     // which is at least more actionable than the previous "<let> has no 'value'".
     //
-    // Note: a separate engine module that supports element-content <let> bodies via Saxon's
-    // XSLT compiler (and benchmarks Saxon XPath+XSLT end-to-end against the current pure path)
-    // would let us cover the full spec here. Until that exists, document the limitation and
-    // surface a clear error.
-    if (StringHelper.isEmpty (ret.getValue ()))
-    {
-      final String sBodyText = eLet.getTextContent ();
-      if (StringHelper.isNotEmpty (sBodyText) && StringHelper.isNotEmpty (sBodyText.trim ()))
-        ret.setValue (sBodyText.trim ());
-    }
-
+    // Engines that understand XSLT (ph-schematron-pure-saxon) opt into
+    // setPreserveLetBodyElements(true): the child elements are then attached to the PSLet and
+    // emitted as the body of the generated <xsl:variable>. In that case the text-content
+    // fallback below is skipped, because the actual value comes from the cloned children, not
+    // from their stringified text.
     eLet.forAllChildElements (eLetChild -> {
       if (isValidSchematronNS (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
       else
-      {
-        // Element-content bodies are accepted per spec, but only their text content survives.
-        // XSLT instruction children (xsl:for-each, xsl:value-of, ...) cannot be evaluated by the
-        // pure engine - log once per body so the user knows why the resulting XPath may not
-        // compile.
-        _warn (ret,
+        if (m_bPreserveLetBodyElements)
+        {
+          // Engine opt-in: preserve the foreign child so an XSLT-aware downstream can pick it up
+          ret.addBodyElement (eLetChild.getClone ());
+        }
+        else
+        {
+          // Element-content bodies are accepted per spec, but only their text content survives.
+          // XSLT instruction children (xsl:for-each, xsl:value-of, ...) cannot be evaluated by the
+          // pure engine - log once per body so the user knows why the resulting XPath may not
+          // compile.
+          _warn (ret,
                "Element <let> body contains '" +
                     eLetChild.getLocalName () +
                     "' from namespace '" +
@@ -685,6 +716,17 @@ public class PSReader
                     "XPath 3.x expression in the body, or switch to the SCH/XSLT engine.");
       }
     });
+
+    // Text-content fallback for the bare XPath form `<let name="x">expr</let>`. Skipped if body
+    // elements were preserved - in that case the stringified text would be junk concatenated from
+    // mixed XSLT instructions (e.g. `<xsl:choose><xsl:when>...</xsl:when>...</xsl:choose>` would
+    // collapse to "large medium small") and break XPath compilation downstream.
+    if (StringHelper.isEmpty (ret.getValue ()) && !ret.hasBodyElements ())
+    {
+      final String sBodyText = eLet.getTextContent ();
+      if (StringHelper.isNotEmpty (sBodyText) && StringHelper.isNotEmpty (sBodyText.trim ()))
+        ret.setValue (sBodyText.trim ());
+    }
     return ret;
   }
 
