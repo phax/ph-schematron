@@ -34,7 +34,7 @@ import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSTitle;
-import com.helger.schematron.pure.preprocess.PSPreprocessor;
+import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.serialize.read.DOMReader;
 

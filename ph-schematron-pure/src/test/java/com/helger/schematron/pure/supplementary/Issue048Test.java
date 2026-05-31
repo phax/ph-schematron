@@ -32,7 +32,7 @@ import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.exchange.PSWriter;
 import com.helger.schematron.exchange.PSWriterSettings;
 import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.pure.preprocess.PSPreprocessor;
+import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;

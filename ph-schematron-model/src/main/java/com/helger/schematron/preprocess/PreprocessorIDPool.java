@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.pure.preprocess;
+package com.helger.schematron.preprocess;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -41,9 +41,8 @@ public class PreprocessorIDPool
   private static String s_sDefaultSeparator = DEFAULT_SEPARATOR;
 
   /**
-   * @return The separator to be used between the original ID and the counter
-   *         added to make the ID unique. Never <code>null</code>. The default
-   *         value is {@link #DEFAULT_SEPARATOR}.
+   * @return The separator to be used between the original ID and the counter added to make the ID
+   *         unique. Never <code>null</code>. The default value is {@link #DEFAULT_SEPARATOR}.
    * @since 6.3.5
    */
   @NonNull
@@ -53,8 +52,7 @@ public class PreprocessorIDPool
   }
 
   /**
-   * Set the separator to be used between the original ID and the counter added
-   * internally.
+   * Set the separator to be used between the original ID and the counter added internally.
    *
    * @param sDefaultSeparator
    *        Any non-<code>null</code> value is okay.
@@ -72,9 +70,8 @@ public class PreprocessorIDPool
   {}
 
   /**
-   * @return The separator to be used between the original ID and the counter
-   *         added to make the ID unique. Never <code>null</code>. The default
-   *         value is {@link #DEFAULT_SEPARATOR}.
+   * @return The separator to be used between the original ID and the counter added to make the ID
+   *         unique. Never <code>null</code>. The default value is {@link #DEFAULT_SEPARATOR}.
    * @see #getDefaultSeparator()
    * @see #setDefaultSeparator(String)
    * @since 6.3.5
@@ -86,13 +83,13 @@ public class PreprocessorIDPool
   }
 
   /**
-   * Create a unique ID based on the passed one. If the passed ID is not yet
-   * contained, than a numeric index is appended until the ID is unique.
+   * Create a unique ID based on the passed one. If the passed ID is not yet contained, than a
+   * numeric index is appended until the ID is unique.
    *
    * @param sID
    *        The source ID. May be <code>null</code>.
-   * @return <code>null</code> if the passed ID is <code>null</code> indicating
-   *         that no ID is present. Otherwise a unique ID is returned.
+   * @return <code>null</code> if the passed ID is <code>null</code> indicating that no ID is
+   *         present. Otherwise a unique ID is returned.
    */
   @Nullable
   public String getUniqueID (@Nullable final String sID)
@@ -133,6 +130,6 @@ public class PreprocessorIDPool
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("usedIDs", m_aUsedIDs).getToString ();
+    return new ToStringGenerator (this).append ("UsedIDs", m_aUsedIDs).getToString ();
   }
 }

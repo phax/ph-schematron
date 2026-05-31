@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.pure.preprocess;
+package com.helger.schematron.preprocess;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -32,9 +32,8 @@ import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
 
 /**
- * Utility lookup cache for ID to pattern and ID to rule, to avoid the linear
- * access when scanning a schema or a pattern. This cache only contains abstract
- * patterns and rules.
+ * Utility lookup cache for ID to pattern and ID to rule, to avoid the linear access when scanning a
+ * schema or a pattern. This cache only contains abstract patterns and rules.
  *
  * @author Philip Helger
  */
@@ -102,6 +101,6 @@ final class PreprocessorLookup
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("patterns", m_aPatterns).append ("rules", m_aRules).getToString ();
+    return new ToStringGenerator (this).append ("Patterns", m_aPatterns).append ("Rules", m_aRules).getToString ();
   }
 }

@@ -37,7 +37,7 @@ import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.pure.preprocess.PSPreprocessor;
+import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;

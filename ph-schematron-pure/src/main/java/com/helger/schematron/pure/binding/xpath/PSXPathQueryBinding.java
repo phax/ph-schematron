@@ -39,7 +39,7 @@ import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.model.PSParam;
 import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.pure.preprocess.PSPreprocessor;
+import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.text.compare.ComparatorHelper;

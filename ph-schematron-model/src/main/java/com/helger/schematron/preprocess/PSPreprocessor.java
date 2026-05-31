@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.pure.preprocess;
+package com.helger.schematron.preprocess;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -27,8 +27,8 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsNavigableMap;
-import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.model.IPSElement;
+import com.helger.schematron.model.IPSQueryBindingTransform;
 import com.helger.schematron.model.PSActive;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSDiagnostic;
@@ -66,14 +66,14 @@ public class PSPreprocessor
   public static final boolean DEFAULT_KEEP_EMPTY_SCHEMA = true;
   private static final Logger LOGGER = LoggerFactory.getLogger (PSPreprocessor.class);
 
-  private final IPSQueryBinding m_aQueryBinding;
+  private final IPSQueryBindingTransform m_aQueryBinding;
   private boolean m_bKeepTitles = DEFAULT_KEEP_TITLES;
   private boolean m_bKeepDiagnostics = DEFAULT_KEEP_DIAGNOSTICS;
   private boolean m_bKeepReports = DEFAULT_KEEP_REPORTS;
   private boolean m_bKeepEmptyPatterns = DEFAULT_KEEP_EMPTY_PATTERNS;
   private boolean m_bKeepEmptySchema = DEFAULT_KEEP_EMPTY_SCHEMA;
 
-  public PSPreprocessor (@NonNull final IPSQueryBinding aQueryBinding)
+  public PSPreprocessor (@NonNull final IPSQueryBindingTransform aQueryBinding)
   {
     m_aQueryBinding = ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
   }
@@ -82,7 +82,7 @@ public class PSPreprocessor
    * @return The query binding to be used. Never <code>null</code>!
    */
   @NonNull
-  public IPSQueryBinding getQueryBinding ()
+  public IPSQueryBindingTransform getQueryBinding ()
   {
     return m_aQueryBinding;
   }
@@ -602,7 +602,7 @@ public class PSPreprocessor
   }
 
   @NonNull
-  public static PSPreprocessor createPreprocessorWithoutInformationLoss (@NonNull final IPSQueryBinding aQueryBinding)
+  public static PSPreprocessor createPreprocessorWithoutInformationLoss (@NonNull final IPSQueryBindingTransform aQueryBinding)
   {
     final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding);
 

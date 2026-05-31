@@ -16,83 +16,26 @@
  */
 package com.helger.schematron.pure.binding;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import com.helger.annotation.style.ReturnsMutableCopy;
-import com.helger.collection.commons.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
-import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
-import com.helger.schematron.model.PSAssertReport;
-import com.helger.schematron.model.PSParam;
-import com.helger.schematron.model.PSRule;
+import com.helger.schematron.model.IPSQueryBindingTransform;
 import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.model.PSValueOf;
+import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 
 /**
- * Base interface for a single query binding.
+ * Base interface for a single query binding. Extends
+ * {@link IPSQueryBindingTransform} with the engine-specific binding step that
+ * produces a bound, executable schema.
  *
  * @author Philip Helger
  */
-public interface IPSQueryBinding extends Serializable
+public interface IPSQueryBinding extends IPSQueryBindingTransform
 {
-  // --- requirements to create a minimal syntax/pre-process ---
-
-  /**
-   * Negate the passed test statement. This is required in the creation of a
-   * minified Schematron, when report elements are converted to assert elements.
-   *
-   * @param sTest
-   *        The test expression.
-   * @return The negated test expression
-   */
-  String getNegatedTestExpression (@NonNull String sTest);
-
-  /**
-   * Convert the passed list of {@link PSParam} elements to a map suitable for
-   * String replacement. This is needed to resolve placeholders in abstract
-   * patterns. The default query binding e.g. adds a "$" in front of each
-   * parameter name. The so created map is used to resolve abstract rule and
-   * pattern data to real values.
-   *
-   * @param aParams
-   *        Source list. May not be <code>null</code>.
-   * @return Non-<code>null</code> String replacement map.
-   */
-  @NonNull
-  @ReturnsMutableCopy
-  ICommonsNavigableMap <String, String> getStringReplacementMap (@NonNull List <PSParam> aParams);
-
-  /**
-   * Apply the Map created by {@link #getNegatedTestExpression(String)} on a
-   * single string.<br>
-   * According to iso_abstract_expand.xsl, line 233 the text replacements happen
-   * for the following attributes:
-   * <ul>
-   * <li>test - only in {@link PSAssertReport}</li>
-   * <li>context - only in {@link PSRule}</li>
-   * <li>select - only in {@link PSValueOf}</li>
-   * </ul>
-   * As an experimental option in line 244 the replacement is also applied to
-   * all text nodes. This is currently not supported!
-   *
-   * @param sText
-   *        The original text. May be <code>null</code>.
-   * @param aStringReplacements
-   *        All replacements as map from source to target. The map should be
-   *        ordered by longest keys first.
-   * @return <code>null</code> if the input string was <code>null</code>.
-   */
-  @Nullable
-  String getWithParamTextsReplaced (@Nullable String sText, @Nullable Map <String, String> aStringReplacements);
-
   // --- requirements for compilation ---
 
   @NonNull
