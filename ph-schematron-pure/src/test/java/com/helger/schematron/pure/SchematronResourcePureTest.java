@@ -38,6 +38,7 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.pure.xpath.EXPathVersion;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
@@ -148,6 +149,52 @@ public final class SchematronResourcePureTest
     assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
                   3,
                   aErrorHandler.getErrorList ().size ());
+  }
+
+  /**
+   * Demonstrates that the configured {@link EXPathVersion} actually reaches the Saxon compiler:
+   * the test expression uses <code>fn:head(...)</code>, which was introduced in XPath 3.0. With the
+   * default {@link EXPathVersion#XPATH_3_1} the schema binds and the assertion passes. With
+   * {@link EXPathVersion#XPATH_2_0} the compiler does not know <code>fn:head</code>, so binding
+   * fails.
+   */
+  @Test
+  public void testXPathVersionPicksFunctions () throws Exception
+  {
+    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                           "  <iso:pattern>\n" +
+                           "    <iso:rule context='/root'>\n" +
+                           "      <iso:assert test=\"head(('first','second')) = 'first'\">head() must return 'first'</iso:assert>\n" +
+                           "    </iso:rule>\n" +
+                           "  </iso:pattern>\n" +
+                           "</iso:schema>";
+
+    final Document aDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><root/>");
+
+    // XPath 3.1 (default) - head() is known, schema binds, assertion passes
+    final SchematronOutputType aOK = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                           .applySchematronValidationToSVRL (aDoc, null);
+    assertNotNull (aOK);
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOK).size ());
+
+    // Same check, but explicitly picking XPath 3.1 - identical outcome
+    final IXPathConfig aXPathConfig31 = new XPathConfigBuilder ().setXPathVersion (EXPathVersion.XPATH_3_1).build ();
+    final SchematronOutputType aOK31 = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                             .setXPathConfig (aXPathConfig31)
+                                                             .applySchematronValidationToSVRL (aDoc, null);
+    assertNotNull (aOK31);
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOK31).size ());
+
+    // XPath 2.0 - head() does not exist, binding must fail
+    final IXPathConfig aXPathConfig20 = new XPathConfigBuilder ().setXPathVersion (EXPathVersion.XPATH_2_0).build ();
+    final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
+    final SchematronResourcePure aSch20 = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                                .setXPathConfig (aXPathConfig20)
+                                                                .setErrorHandler (aErrorHandler);
+    assertFalse (aSch20.isValidSchematron ());
+    assertTrue ("Expected an XPath compile error, got: " + aErrorHandler.getErrorList (),
+                aErrorHandler.getErrorList ().isNotEmpty ());
   }
 
   /**
