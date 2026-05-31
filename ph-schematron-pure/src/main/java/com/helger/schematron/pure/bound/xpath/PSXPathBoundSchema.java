@@ -16,34 +16,27 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.Map;
-import java.util.function.Function;
-
-import javax.xml.namespace.QName;
-import javax.xml.transform.SourceLocator;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactoryConfigurationException;
 import javax.xml.xpath.XPathVariableResolver;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.helger.annotation.CheckForSigned;
+import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.location.SimpleLocation;
+import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
-import com.helger.diagnostics.error.SingleError;
-import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
 import com.helger.schematron.pure.binding.SchematronBindException;
@@ -64,28 +57,59 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
+import com.helger.schematron.pure.xpath.XPathEvaluationContext;
 import com.helger.schematron.pure.xpath.XPathEvaluationHelper;
 import com.helger.schematron.pure.xpath.XPathLetVariableResolver;
-import com.helger.schematron.saxon.SaxonNamespaceContext;
+import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
-import com.helger.xml.xpath.XPathHelper;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.lib.ErrorReporter;
-import net.sf.saxon.xpath.XPathEvaluator;
+import net.sf.saxon.dom.DOMNodeWrapper;
+import net.sf.saxon.dom.DocumentWrapper;
+import net.sf.saxon.dom.NodeOverNodeInfo;
+import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XPathExecutable;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
- * The default XPath binding for the pure Schematron implementation.
+ * The default XPath binding for the pure Schematron implementation, based on the Saxon s9api.
  *
  * @author Philip Helger
  */
 @NotThreadSafe
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
+  private static final class MyNodeList implements NodeList
+  {
+    private final @NonNull ICommonsList <Node> m_aNodes;
+
+    private MyNodeList (@NonNull final ICommonsList <Node> aNodes)
+    {
+      m_aNodes = aNodes;
+    }
+
+    public @Nullable Node item (final @CheckForSigned int nIndex)
+    {
+      if (nIndex < 0 || nIndex >= m_aNodes.size ())
+        return null;
+      return m_aNodes.get (nIndex);
+    }
+
+    public @Nonnegative int getLength ()
+    {
+      return m_aNodes.size ();
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
 
   private final IXPathConfig m_aXPathConfig;
-  private final XPathLetVariableResolver m_aXPathVariableResolver;
+  private final XPathLetVariableResolver m_aLetVars;
 
   // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
@@ -100,20 +124,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *        Context to use. May not be <code>null</code>.
    * @param sXPathExpression
    *        The expression to be compiled. May not be <code>null</code>.
-   * @return The precompiled {@link XPathExpression}
-   * @throws XPathExpressionException
+   * @return The precompiled {@link XPathExecutable}
+   * @throws SaxonApiException
    *         If expression cannot be compiled.
    */
-  @Nullable
-  private static XPathExpression _compileXPath (@NonNull final XPath aXPathContext,
-                                                @NonNull final String sXPathExpression) throws XPathExpressionException
+  @NonNull
+  private static XPathExecutable _compileXPath (@NonNull final XPathCompiler aCompiler,
+                                                @NonNull final String sXPathExpression) throws SaxonApiException
   {
-    return aXPathContext.compile (sXPathExpression);
+    return aCompiler.compile (sXPathExpression);
   }
 
   @Nullable
   private ICommonsList <PSXPathBoundElement> _createBoundElements (@NonNull final IPSHasMixedContent aMixedContent,
-                                                                   @NonNull final XPath aXPathContext)
+                                                                   @NonNull final XPathCompiler aCompiler)
   {
     final ICommonsList <PSXPathBoundElement> ret = new CommonsArrayList <> ();
     boolean bHasAnyError = false;
@@ -127,10 +151,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           final String sPath = aName.getPath ();
           try
           {
-            final XPathExpression aXpathExpression = _compileXPath (aXPathContext, sPath);
-            ret.add (new PSXPathBoundElement (aName, sPath, aXpathExpression));
+            final XPathExecutable aBound = _compileXPath (aCompiler, sPath);
+            ret.add (new PSXPathBoundElement (aName, sPath, aBound));
           }
-          catch (final XPathExpressionException ex)
+          catch (final SaxonApiException ex)
           {
             error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex);
             bHasAnyError = true;
@@ -148,10 +172,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           final String sSelect = aValueOf.getSelect ();
           try
           {
-            final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sSelect);
-            ret.add (new PSXPathBoundElement (aValueOf, sSelect, aXPathExpression));
+            final XPathExecutable aBound = _compileXPath (aCompiler, sSelect);
+            ret.add (new PSXPathBoundElement (aValueOf, sSelect, aBound));
           }
-          catch (final XPathExpressionException ex)
+          catch (final SaxonApiException ex)
           {
             error (aValueOf, "Failed to compile XPath expression in <value-of>: '" + sSelect + "'", ex);
             bHasAnyError = true;
@@ -174,7 +198,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   }
 
   @Nullable
-  private ICommonsMap <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@NonNull final XPath aXPathContext)
+  private ICommonsMap <String, PSXPathBoundDiagnostic> _createBoundDiagnostics (@NonNull final XPathCompiler aCompiler)
   {
     final ICommonsMap <String, PSXPathBoundDiagnostic> ret = new CommonsHashMap <> ();
     boolean bHasAnyError = false;
@@ -185,7 +209,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // For all contained diagnostic elements
       for (final PSDiagnostic aDiagnostic : aSchema.getDiagnostics ().getAllDiagnostics ())
       {
-        final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic, aXPathContext);
+        final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aDiagnostic, aCompiler);
         if (aBoundElements == null)
         {
           // error already emitted
@@ -212,8 +236,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   /**
    * Pre-compile all patterns incl. their content
    *
-   * @param aXPathContext
-   *        Global XPath object to use. May not be <code>null</code>.
+   * @param aCompiler
+   *        XPath compiler to use. May not be <code>null</code>.
    * @param aBoundDiagnostics
    *        A map from DiagnosticID to its mapped counterpart. May not be <code>null</code>.
    * @param aSchemaVariables
@@ -221,7 +245,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    * @return <code>null</code> if an XPath error is contained
    */
   @Nullable
-  private ICommonsList <PSXPathBoundPattern> _createBoundPatterns (@NonNull final XPath aXPathContext,
+  private ICommonsList <PSXPathBoundPattern> _createBoundPatterns (@NonNull final XPathCompiler aCompiler,
                                                                    @NonNull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics,
                                                                    @NonNull final PSXPathVariables aSchemaVariables)
   {
@@ -237,20 +261,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       {
         // The pattern has special variables, so we need to store them in the
         // bound pattern
-        for (final Map.Entry <String, String> aEntry : aPattern.getAllLetsAsMap ().entrySet ())
+        for (final var aEntry : aPattern.getAllLetsAsMap ().entrySet ())
         {
           final String sLetName = aEntry.getKey ();
           final String sLetValue = aEntry.getValue ();
           try
           {
-            final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
-            aPatternVariables.add (sLetName, aXPathExpression);
+            final XPathExecutable aBound = _compileXPath (aCompiler, sLetValue);
+            aPatternVariables.add (sLetName, aBound);
 
             // Already defined on a higher level?
             if (aSchemaVariables.contains (sLetName))
               error (aPattern, "Duplicate <let> with name '" + sLetName + "' in <pattern>");
           }
-          catch (final XPathExpressionException ex)
+          catch (final SaxonApiException ex)
           {
             error (aPattern,
                    "Failed to compile XPath expression '" + sLetValue + "' in <let> with name '" + sLetName + "'",
@@ -269,20 +293,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         {
           // The rule has special variables, so we to store them in the bound
           // rule
-          for (final Map.Entry <String, String> aEntry : aRule.getAllLetsAsMap ().entrySet ())
+          for (final var aEntry : aRule.getAllLetsAsMap ().entrySet ())
           {
             final String sLetName = aEntry.getKey ();
             final String sLetValue = aEntry.getValue ();
             try
             {
-              final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
-              aRuleVariables.add (sLetName, aXPathExpression);
+              final XPathExecutable aBound = _compileXPath (aCompiler, sLetValue);
+              aRuleVariables.add (sLetName, aBound);
 
               // Already defined on a higher level?
               if (aSchemaVariables.contains (sLetName) || aPatternVariables.contains (sLetName))
                 error (aRule, "Duplicate <let> with name '" + sLetName + "' in <rule>");
             }
-            catch (final XPathExpressionException ex)
+            catch (final SaxonApiException ex)
             {
               error (aPattern,
                      "Failed to compile XPath expression '" + sLetValue + "' in <let> with name '" + sLetName + "'",
@@ -298,9 +322,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           final String sTest = aAssertReport.getTest ();
           try
           {
-            final XPathExpression aTestExpr = _compileXPath (aXPathContext, sTest);
-            final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport,
-                                                                                            aXPathContext);
+            final XPathExecutable aTestExpr = _compileXPath (aCompiler, sTest);
+            final ICommonsList <PSXPathBoundElement> aBoundElements = _createBoundElements (aAssertReport, aCompiler);
             if (aBoundElements == null)
             {
               // Error already emitted
@@ -332,14 +355,16 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
         // Evaluate base node set for this rule
         final String sRuleContext = getValidationContext (aRule.getContext ());
-        PSXPathBoundRule aBoundRule = null;
         try
         {
-          final XPathExpression aRuleContext = _compileXPath (aXPathContext, sRuleContext);
-          aBoundRule = new PSXPathBoundRule (aRule, sRuleContext, aRuleContext, aBoundAssertReports, aRuleVariables);
-          aBoundRules.add (aBoundRule);
+          final XPathExecutable aRuleCtxExec = _compileXPath (aCompiler, sRuleContext);
+          aBoundRules.add (new PSXPathBoundRule (aRule,
+                                                 sRuleContext,
+                                                 aRuleCtxExec,
+                                                 aBoundAssertReports,
+                                                 aRuleVariables));
         }
-        catch (final XPathExpressionException ex)
+        catch (final SaxonApiException ex)
         {
           error (aRule, "Failed to compile XPath expression in <rule>: '" + sRuleContext + "'", ex);
           bHasAnyError = true;
@@ -347,8 +372,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       }
 
       // Create the bound pattern
-      final PSXPathBoundPattern aBoundPattern = new PSXPathBoundPattern (aPattern, aBoundRules, aPatternVariables);
-      ret.add (aBoundPattern);
+      ret.add (new PSXPathBoundPattern (aPattern, aBoundRules, aPatternVariables));
     }
 
     if (bHasAnyError)
@@ -371,9 +395,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *        schema should be used (if present) or all patterns should be evaluated if no default
    *        phase is present.
    * @param aCustomErrorListener
-   *        A custom error listener to be used. May be <code>null</code> in which case a
-   *        {@link com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler} is used
-   *        internally.
+   *        A custom error listener to be used. May be <code>null</code>.
    * @param aCustomValidationHandler
    *        The custom PS validation handler. May be <code>null</code>.
    * @param aXPathConfig
@@ -391,56 +413,27 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     super (aQueryBinding, aOrigSchema, sPhase, aCustomErrorListener, aCustomValidationHandler);
 
     // Create a default if none is present
-    if (aXPathConfig != null)
-      m_aXPathConfig = aXPathConfig;
-    else
-      try
-      {
-        m_aXPathConfig = new XPathConfigBuilder ().build ();
-      }
-      catch (final XPathFactoryConfigurationException ex)
-      {
-        throw new SchematronBindException ("Failed to create XPath configuration", ex);
-      }
+    m_aXPathConfig = aXPathConfig != null ? aXPathConfig : new XPathConfigBuilder ().build ();
     // Create our own variable resolver
-    m_aXPathVariableResolver = new XPathLetVariableResolver (m_aXPathConfig.getXPathVariableResolver ());
+    m_aLetVars = new XPathLetVariableResolver (m_aXPathConfig.getAllExternalVariables ());
   }
 
   @NonNull
-  private XPath _createXPathContext ()
+  private XPathCompiler _createXPathCompiler ()
   {
+    final XPathCompiler aCompiler = m_aXPathConfig.getProcessor ().newXPathCompiler ();
+    aCompiler.setLanguageVersion (m_aXPathConfig.getXPathVersion ().getVersion ());
+    aCompiler.setAllowUndeclaredVariables (true);
+
     final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
-    final XPath aXPathContext = XPathHelper.createNewXPath (m_aXPathConfig.getXPathFactory (),
-                                                            m_aXPathVariableResolver,
-                                                            m_aXPathConfig.getXPathFunctionResolver (),
-                                                            aNamespaceContext);
+    final String sDefaultNS = aNamespaceContext.getDefaultNamespaceURI ();
+    if (StringHelper.isNotEmpty (sDefaultNS))
+      aCompiler.declareNamespace ("", sDefaultNS);
 
-    if ("net.sf.saxon.xpath.XPathEvaluator".equals (aXPathContext.getClass ().getName ()))
-    {
-      // Saxon implementation special handling
-      final XPathEvaluator aSaxonXPath = (XPathEvaluator) aXPathContext;
+    for (final var aEntry : aNamespaceContext.getPrefixToNamespaceURIMap ().entrySet ())
+      aCompiler.declareNamespace (aEntry.getKey (), aEntry.getValue ());
 
-      // Since 9.7.0-4 it must implement NamespaceResolver
-      aSaxonXPath.setNamespaceContext (new SaxonNamespaceContext (aNamespaceContext));
-
-      // Wrap the PSErrorHandler to a ErrorListener
-      final Function <Configuration, ? extends ErrorReporter> aErrReporterFactory = cfg -> {
-        final IPSErrorHandler aPSErrHdl = getErrorHandler ();
-        return aSaxonError -> aPSErrHdl.handleError (SingleError.builder ()
-                                                                .errorLevel (aSaxonError.isWarning () ? EErrorLevel.WARN
-                                                                                                      : EErrorLevel.ERROR)
-                                                                .errorID (aSaxonError.getErrorCode () != null
-                                                                                                              ? aSaxonError.getErrorCode ()
-                                                                                                                           .toString ()
-                                                                                                              : null)
-                                                                .errorLocation (SimpleLocation.create ((SourceLocator) aSaxonError.getLocation ()))
-                                                                .errorText (aSaxonError.getMessage ())
-                                                                .linkedException (aSaxonError.getCause ())
-                                                                .build ());
-      };
-      aSaxonXPath.getConfiguration ().setErrorReporterFactory (aErrReporterFactory);
-    }
-    return aXPathContext;
+    return aCompiler;
   }
 
   @NonNull
@@ -455,24 +448,24 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
 
-    final XPath aXPathContext = _createXPathContext ();
+    final XPathCompiler aCompiler = _createXPathCompiler ();
 
     // Get all "global" variables that are defined in the schema
     m_aSchemaVariables = new PSXPathVariables ();
     if (aSchema.hasAnyLet ())
     {
       // Add all global variables
-      for (final Map.Entry <String, String> aEntry : aSchema.getAllLetsAsMap ().entrySet ())
+      for (final var aEntry : aSchema.getAllLetsAsMap ().entrySet ())
       {
         final String sLetName = aEntry.getKey ();
         final String sLetValue = aEntry.getValue ();
         try
         {
-          final XPathExpression aXPathExpression = _compileXPath (aXPathContext, sLetValue);
-          if (m_aSchemaVariables.add (sLetName, aXPathExpression).isUnchanged ())
+          final XPathExecutable aBound = _compileXPath (aCompiler, sLetValue);
+          if (m_aSchemaVariables.add (sLetName, aBound).isUnchanged ())
             error (aSchema, "Duplicate <let> with name '" + sLetName + "' in global <schema>");
         }
-        catch (final XPathExpressionException ex)
+        catch (final SaxonApiException ex)
         {
           error (aSchema,
                  "Failed to compile XPath expression '" + sLetValue + "' in <let> with name '" + sLetName + "'",
@@ -485,18 +478,18 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     {
       // Get all variables that are defined in the specified phase,
       // and add them to the global variables
-      for (final Map.Entry <String, String> aEntry : aPhase.getAllLetsAsMap ().entrySet ())
+      for (final var aEntry : aPhase.getAllLetsAsMap ().entrySet ())
       {
         final String sLetName = aEntry.getKey ();
         final String sLetValue = aEntry.getValue ();
         try
         {
-          final XPathExpression xpathExpression = _compileXPath (aXPathContext, sLetValue);
-          if (m_aSchemaVariables.add (sLetName, xpathExpression).isUnchanged ())
+          final XPathExecutable aBound = _compileXPath (aCompiler, sLetValue);
+          if (m_aSchemaVariables.add (sLetName, aBound).isUnchanged ())
             error (aSchema,
                    "Duplicate <let> with name '" + sLetName + "' in <phase> with name '" + getPhaseID () + "'");
         }
-        catch (final XPathExpressionException ex)
+        catch (final SaxonApiException ex)
         {
           error (aSchema,
                  "Failed to compile XPath expression '" + sLetValue + "' in <let> with name '" + sLetName + "'",
@@ -506,7 +499,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
 
     // Pre-compile all diagnostics first
-    final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aXPathContext);
+    final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics = _createBoundDiagnostics (aCompiler);
     if (aBoundDiagnostics == null)
       throw new SchematronBindException ("Failed to precompile the diagnostics of the supplied schema. Check the " +
                                          (isDefaultErrorHandler () ? "log output" : "error listener") +
@@ -514,7 +507,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     // Perform the pre-compilation of all XPath expressions in the patterns,
     // rules, asserts/reports and the content elements
-    m_aBoundPatterns = _createBoundPatterns (aXPathContext, aBoundDiagnostics, m_aSchemaVariables);
+    m_aBoundPatterns = _createBoundPatterns (aCompiler, aBoundDiagnostics, m_aSchemaVariables);
     if (m_aBoundPatterns == null)
       throw new SchematronBindException ("Failed to precompile the supplied schema.");
     return this;
@@ -545,110 +538,45 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private int m_nVarForNodeLists = 0;
   private int m_nVarForString = 0;
   private int m_nVarForBoolean = 0;
-  private int m_nVarForNumber = 0;
   private int m_nVarForNode = 0;
 
   private void _evaluateVariables (@NonNull final PSXPathVariables aVariables,
-                                   @NonNull final Node aNode,
-                                   @Nullable final String sBaseURI,
+                                   @NonNull final XdmItem aContext,
                                    @NonNull final IPSElement aContextElement)
   {
-    for (final Map.Entry <String, XPathExpression> aEntry : aVariables.getAll ().entrySet ())
+    for (final var aEntry : aVariables.getAll ().entrySet ())
     {
       final String sVariableName = aEntry.getKey ();
-      final XPathExpression aXPathExpression = aEntry.getValue ();
+      final XPathExecutable aXPathExecutable = aEntry.getValue ();
 
-      Object aEvalResult;
-
-      // First we try type auto detection magic, that only works if Saxon is on
-      // the classpath. See #170 for the original intention
       try
       {
-        aEvalResult = XPathEvaluationHelper.evaluateWithTypeAutodetect (aXPathExpression, aNode, sBaseURI);
-      }
-      catch (final XPathExpressionException ex)
-      {
-        // ignore
-        aEvalResult = null;
-      }
+        final XdmValue aResult = XPathEvaluationHelper.evaluate (aXPathExecutable,
+                                                                 aContext,
+                                                                 m_aLetVars.getCurrentVariables ());
 
-      // We don't know the type returned by the XPath expression, so we try
-      // them one after another
-      // Based on some common cases, the chances for "NodeList" results and
-      // "String" results are highest, so they are tried first
-
-      if (aEvalResult == null)
-        try
-        {
-          aEvalResult = XPathEvaluationHelper.evaluateAsNodeList (aXPathExpression, aNode, sBaseURI);
-          m_nVarForNodeLists++;
-        }
-        catch (final XPathExpressionException ex)
-        {
-          // ignore
-        }
-
-      // Number first, so that e.g. "sum()" is evaluated as a Number
-      // Numbers can be converted to boolean and to string
-      if (aEvalResult == null)
-        try
-        {
-          final Double aValue = XPathEvaluationHelper.evaluateAsNumber (aXPathExpression, aNode, sBaseURI);
-          if (aValue != null && !aValue.isNaN ())
-          {
-            aEvalResult = aValue;
-            m_nVarForNumber++;
-          }
-        }
-        catch (final XPathExpressionException ex)
-        {
-          // ignore
-        }
-
-      // Next as boolean
-      // Boolean can be converted to a string
-      if (aEvalResult == null)
-        try
-        {
-          aEvalResult = XPathEvaluationHelper.evaluateAsBooleanObj (aXPathExpression, aNode, sBaseURI);
+        // Debug histogram of result kinds.
+        final int nSize = aResult.size ();
+        if (nSize == 0)
           m_nVarForBoolean++;
-        }
-        catch (final XPathExpressionException ex)
-        {
-          // ignore
-        }
+        else
+          if (nSize > 1)
+            m_nVarForNodeLists++;
+          else
+          {
+            final XdmItem aSingle = aResult.itemAt (0);
+            if (aSingle.isNode ())
+              m_nVarForNode++;
+            else
+              m_nVarForString++;
+          }
 
-      if (aEvalResult == null)
-        try
-        {
-          aEvalResult = XPathEvaluationHelper.evaluateAsString (aXPathExpression, aNode, sBaseURI);
-          m_nVarForString++;
-        }
-        catch (final XPathExpressionException ex)
-        {
-          // ignore
-        }
-
-      if (aEvalResult == null)
-        try
-        {
-          aEvalResult = XPathEvaluationHelper.evaluateAsNode (aXPathExpression, aNode, sBaseURI);
-          m_nVarForNode++;
-        }
-        catch (final XPathExpressionException ex)
-        {
-          // ignore
-        }
-
-      if (aEvalResult == null)
-      {
-        error (aContextElement,
-               "Failed to evaluate XPath expression '" + aXPathExpression + "' for variable '" + sVariableName + "'");
+        // Variables from <let> are stored without namespace
+        m_aLetVars.setVariableValue (new QName (sVariableName), aResult);
       }
-      else
+      catch (final SaxonApiException ex)
       {
-        // Variable from <let> do not have any namespace
-        m_aXPathVariableResolver.setVariableValue (new QName (sVariableName), aEvalResult);
+        error (aContextElement, "Failed to evaluate XPath expression for variable '" + sVariableName + "'", ex);
       }
     }
   }
@@ -656,10 +584,31 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private void _removeAllVariables (@NonNull final PSXPathVariables aVariables)
   {
     for (final String sVarName : aVariables.getAllNames ())
-      m_aXPathVariableResolver.removeVariable (new QName (sVarName));
+      m_aLetVars.removeVariable (new QName (sVarName));
   }
 
-  private void _validateSerial (@NonNull final Node aNode,
+  @Nullable
+  private static Node _xdmToDomNode (@NonNull final XdmNode aXdmNode)
+  {
+    // For Saxon DOM trees the wrapped DOM node is exposed as the "external node"
+    final Object aExternal = aXdmNode.getExternalNode ();
+    if (aExternal instanceof final Node aNode)
+      return aNode;
+
+    final Object aUnderlying = aXdmNode.getUnderlyingNode ();
+
+    // DOM wrappers: unwrap to the original DOM node
+    if (aUnderlying instanceof final DOMNodeWrapper aDNW)
+      return aDNW.getUnderlyingNode ();
+
+    // TinyTree (or any other non-DOM NodeInfo): present it as a DOM facade
+    if (aUnderlying instanceof final NodeInfo aNodeInfo)
+      return NodeOverNodeInfo.wrap (aNodeInfo);
+
+    return null;
+  }
+
+  private void _validateSerial (@NonNull final XdmNode aDocXdm,
                                 @Nullable final String sBaseURI,
                                 @NonNull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
   {
@@ -670,7 +619,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     aValidationHandler.onStart (aSchema, aPhase, sBaseURI);
 
     // Evaluate schema-global variables
-    _evaluateVariables (m_aSchemaVariables, aNode, sBaseURI, aSchema);
+    _evaluateVariables (m_aSchemaVariables, aDocXdm, aSchema);
 
     // For all bound patterns
     for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
@@ -679,7 +628,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       aValidationHandler.onPattern (aPattern);
 
       // Evaluate pattern variables
-      _evaluateVariables (aBoundPattern.getVariables (), aNode, sBaseURI, aPattern);
+      _evaluateVariables (aBoundPattern.getVariables (), aDocXdm, aPattern);
 
       // For all bound rules
       for (final PSXPathBoundRule aBoundRule : aBoundPattern.getAllBoundRules ())
@@ -687,14 +636,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         final PSRule aRule = aBoundRule.getRule ();
 
         // Find all nodes matching the rules
-        final NodeList aRuleContextNodes;
+        final ICommonsList <XdmNode> aRuleContextXdmNodes;
         try
         {
-          aRuleContextNodes = XPathEvaluationHelper.evaluateAsNodeList (aBoundRule.getBoundRuleContext (),
-                                                                        aNode,
-                                                                        sBaseURI);
+          aRuleContextXdmNodes = XPathEvaluationHelper.evaluateAsXdmNodes (aBoundRule.getBoundRuleContext (),
+                                                                           aDocXdm,
+                                                                           m_aLetVars.getCurrentVariables ());
         }
-        catch (final XPathExpressionException ex)
+        catch (final SaxonApiException ex)
         {
           // Handle the cause, because it is usually a wrapper only
           error (aRule,
@@ -703,33 +652,43 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           continue;
         }
 
-        aValidationHandler.onRuleStart (aRule, aRuleContextNodes);
+        final ICommonsList <Node> aRuleContextDomNodes = new CommonsArrayList <> (aRuleContextXdmNodes.size ());
+        for (final XdmNode aMatch : aRuleContextXdmNodes)
+        {
+          final Node aDomNode = _xdmToDomNode (aMatch);
+          if (aDomNode != null)
+            aRuleContextDomNodes.add (aDomNode);
+        }
+
+        aValidationHandler.onRuleStart (aRule, new MyNodeList (aRuleContextDomNodes));
 
         // Check each node, if it matches the assert/report
-        final int nRuleMatchingNodes = aRuleContextNodes.getLength ();
+        final int nRuleMatchingNodes = aRuleContextXdmNodes.size ();
         for (int nMatchedNode = 0; nMatchedNode < nRuleMatchingNodes; ++nMatchedNode)
         {
           // XSLT does "fired-rule" for each node
           aValidationHandler.onFiredRule (aRule, aBoundRule.getRuleContext (), nMatchedNode, nRuleMatchingNodes);
 
-          final Node aRuleMatchingNode = aRuleContextNodes.item (nMatchedNode);
+          final XdmNode aMatchedXdm = aRuleContextXdmNodes.get (nMatchedNode);
+          final Node aMatchedDom = nMatchedNode < aRuleContextDomNodes.size () ? aRuleContextDomNodes.get (nMatchedNode)
+                                                                               : _xdmToDomNode (aMatchedXdm);
 
           // Evaluate variables declared in the rule with the context of the
           // matching node
-          _evaluateVariables (aBoundRule.getVariables (), aRuleMatchingNode, sBaseURI, aRule);
+          _evaluateVariables (aBoundRule.getVariables (), aMatchedXdm, aRule);
 
           // For all contained assert and report elements
           for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.getAllBoundAssertReports ())
           {
             final PSAssertReport aAssertReport = aBoundAssertReport.getAssertReport ();
             final boolean bIsAssert = aAssertReport.isAssert ();
-            final XPathExpression aTestExpression = aBoundAssertReport.getBoundTestExpression ();
+            final XPathExecutable aTestExecutable = aBoundAssertReport.getBoundTestExpression ();
 
             try
             {
-              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExpression,
-                                                                                   aRuleMatchingNode,
-                                                                                   sBaseURI);
+              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExecutable,
+                                                                                   aMatchedXdm,
+                                                                                   m_aLetVars.getCurrentVariables ());
               if (bIsAssert)
               {
                 // It's an assert
@@ -739,7 +698,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                   if (aValidationHandler.onFailedAssert (aBoundRule.getRule (),
                                                          aAssertReport,
                                                          aBoundAssertReport.getTestExpression (),
-                                                         aRuleMatchingNode,
+                                                         aMatchedDom,
                                                          nMatchedNode,
                                                          aBoundAssertReport,
                                                          null).isBreak ())
@@ -757,7 +716,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                   if (aValidationHandler.onSuccessfulReport (aBoundRule.getRule (),
                                                              aAssertReport,
                                                              aBoundAssertReport.getTestExpression (),
-                                                             aRuleMatchingNode,
+                                                             aMatchedDom,
                                                              nMatchedNode,
                                                              aBoundAssertReport,
                                                              null).isBreak ())
@@ -767,7 +726,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 }
               }
             }
-            catch (final XPathExpressionException ex)
+            catch (final SaxonApiException ex)
             {
               // As the exception will be emitted as a failed assert, no need to
               // additionally log it here
@@ -784,7 +743,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 if (aValidationHandler.onFailedAssert (aBoundRule.getRule (),
                                                        aAssertReport,
                                                        aBoundAssertReport.getTestExpression (),
-                                                       aRuleMatchingNode,
+                                                       aMatchedDom,
                                                        nMatchedNode,
                                                        aBoundAssertReport,
                                                        ex).isBreak ())
@@ -798,7 +757,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 if (aValidationHandler.onSuccessfulReport (aBoundRule.getRule (),
                                                            aAssertReport,
                                                            aBoundAssertReport.getTestExpression (),
-                                                           aRuleMatchingNode,
+                                                           aMatchedDom,
                                                            nMatchedNode,
                                                            aBoundAssertReport,
                                                            ex).isBreak ())
@@ -824,11 +783,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     // Call the "end" callback method
     aValidationHandler.onEnd (aSchema, aPhase);
 
-    if (m_nVarForNodeLists > 0 ||
-        m_nVarForString > 0 ||
-        m_nVarForNode > 0 ||
-        m_nVarForBoolean > 0 ||
-        m_nVarForNumber > 0)
+    if (m_nVarForNodeLists > 0 || m_nVarForString > 0 || m_nVarForNode > 0 || m_nVarForBoolean > 0)
     {
       SchematronDebug.getDebugLogger ()
                      .info ( () -> "Variables result types: NodeList=" +
@@ -837,10 +792,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                    m_nVarForString +
                                    "; Node=" +
                                    m_nVarForNode +
-                                   "; Boolean=" +
-                                   m_nVarForBoolean +
-                                   "; Number=" +
-                                   m_nVarForNumber);
+                                   "; Boolean/Empty=" +
+                                   m_nVarForBoolean);
     }
   }
 
@@ -854,14 +807,52 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     if (m_aBoundPatterns == null)
       throw new IllegalStateException ("bind was never called!");
 
-    // Validate non-parallelized
-    _validateSerial (aNode, sBaseURI, aValidationHandler);
+    final Processor aProcessor = m_aXPathConfig.getProcessor ();
+
+    final XdmNode aContextXdm;
+    final DocumentWrapper aDocWrapper;
+    if (aNode instanceof final NodeOverNodeInfo aSaxonFacade)
+    {
+      // Fast path: the input is already a Saxon-backed tree (e.g. TinyTree built via the
+      // Saxon DocumentBuilder) wrapped behind a DOM facade. Use the underlying NodeInfo
+      // directly and skip the DocumentWrapper, which would otherwise force every XPath
+      // step through the slower DOM bridge.
+      aContextXdm = (XdmNode) XdmValue.wrap (aSaxonFacade.getUnderlyingNodeInfo ());
+      aDocWrapper = null;
+    }
+    else
+    {
+      // DOM path: the input is a real org.w3c.dom Node. Wrap the owning document once and
+      // reuse it for every per-call evaluation.
+      final Document aOwnerDoc = XMLHelper.getOwnerDocument (aNode);
+      aDocWrapper = new DocumentWrapper (aOwnerDoc,
+                                         sBaseURI != null ? sBaseURI : "",
+                                         aProcessor.getUnderlyingConfiguration ());
+      aContextXdm = (XdmNode) XdmValue.wrap (aDocWrapper.wrap (aNode));
+    }
+
+    final XPathEvaluationContext aEvalContext = new XPathEvaluationContext (aProcessor,
+                                                                            aDocWrapper,
+                                                                            m_aLetVars,
+                                                                            sBaseURI);
+
+    try
+    {
+      XPathEvaluationContext.set (aEvalContext);
+      _validateSerial (aContextXdm, sBaseURI, aValidationHandler);
+    }
+    finally
+    {
+      XPathEvaluationContext.clear ();
+    }
   }
 
   @Override
   public String toString ()
   {
     return ToStringGenerator.getDerived (super.toString ())
+                            .append ("XPathConfig", m_aXPathConfig)
+                            .append ("LetVars", m_aLetVars)
                             .append ("BoundPatterns", m_aBoundPatterns)
                             .append ("SchemaVariables", m_aSchemaVariables)
                             .getToString ();

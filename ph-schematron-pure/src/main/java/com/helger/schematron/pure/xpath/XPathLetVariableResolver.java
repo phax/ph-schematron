@@ -16,79 +16,117 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathVariableResolver;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
 
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmValue;
+
+/**
+ * Stores the currently effective Schematron &lt;let&gt; variable bindings during validation. The
+ * bindings are kept per thread, so that nested validations of multiple threads do not interfere
+ * with each other.
+ *
+ * @author Philip Helger
+ */
 @NotThreadSafe
-public class XPathLetVariableResolver implements XPathVariableResolver
+public class XPathLetVariableResolver
 {
-  private final ThreadLocal <ICommonsMap <QName, Object>> m_aTLVariables = new ThreadLocal <> ()
-  {
-    @Override
-    protected ICommonsMap <QName, Object> initialValue ()
-    {
-      return new CommonsHashMap <> ();
-    }
-  };
+  private final ICommonsMap <QName, XdmValue> m_aSeedVariables;
+  private final ThreadLocal <ICommonsMap <QName, XdmValue>> m_aTLVariables = ThreadLocal.withInitial (CommonsHashMap::new);
 
-  private final XPathVariableResolver m_aDelegatedResolver;
-
-  public XPathLetVariableResolver (@Nullable final XPathVariableResolver aResolver)
+  /**
+   * Constructor with optional seed variables that are always available.
+   *
+   * @param aSeedVariables
+   *        Initial variable bindings. May be <code>null</code> for none.
+   */
+  public XPathLetVariableResolver (@Nullable final ICommonsMap <QName, XdmValue> aSeedVariables)
   {
-    m_aDelegatedResolver = aResolver;
-  }
-
-  public void setVariableValue (@NonNull final QName aVariableName, @Nullable final Object aValue)
-  {
-    ValueEnforcer.notNull (aVariableName, "VariableName");
-    m_aTLVariables.get ().put (aVariableName, aValue);
+    m_aSeedVariables = aSeedVariables;
   }
 
   /**
-   * Remove all variables with the specified names
+   * Bind the given variable to the given value for the current thread.
    *
-   * @param aVariableName
-   *        The variable name to be removed. May be <code>null</code>.
+   * @param aName
+   *        Variable name. May not be <code>null</code>.
+   * @param aValue
+   *        Variable value. May not be <code>null</code>.
    */
-  public void removeVariable (@Nullable final QName aVariableName)
+  public void setVariableValue (@NonNull final QName aName, @NonNull final XdmValue aValue)
   {
-    if (aVariableName != null)
-      m_aTLVariables.get ().remove (aVariableName);
+    ValueEnforcer.notNull (aName, "Name");
+    ValueEnforcer.notNull (aValue, "Value");
+    m_aTLVariables.get ().put (aName, aValue);
   }
 
-  @Override
-  public Object resolveVariable (@Nullable final QName aVariableName)
+  /**
+   * Remove the binding for the given variable name from the current thread.
+   *
+   * @param aName
+   *        Variable name. May be <code>null</code> in which case nothing happens.
+   */
+  public void removeVariable (@Nullable final QName aName)
   {
-    if (aVariableName != null)
-    {
-      // 1. variables
-      final Object result = m_aTLVariables.get ().get (aVariableName);
-      if (result != null)
-        return result;
+    if (aName != null)
+      m_aTLVariables.get ().remove (aName);
+  }
 
-      // 2. delegated resolver
-      if (m_aDelegatedResolver != null)
-        return m_aDelegatedResolver.resolveVariable (aVariableName);
-    }
+  /**
+   * @return The currently effective per-thread variable map (let variables overlaid on top of seed
+   *         variables). Never <code>null</code>.
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public ICommonsMap <QName, XdmValue> getCurrentVariables ()
+  {
+    final ICommonsMap <QName, XdmValue> aLetVars = m_aTLVariables.get ();
+    if (m_aSeedVariables == null || m_aSeedVariables.isEmpty ())
+      return aLetVars;
 
-    // 3. no match
+    // Combine seed + let, with let taking precedence
+    final ICommonsMap <QName, XdmValue> ret = new CommonsHashMap <> (m_aSeedVariables);
+    ret.putAll (aLetVars);
+    return ret;
+  }
+
+  /**
+   * Resolve a variable, looking first at the per-thread let variables and then at the seed
+   * variables.
+   *
+   * @param aName
+   *        Variable name. May be <code>null</code>.
+   * @return The variable value, or <code>null</code> if not found.
+   */
+  @Nullable
+  public XdmValue resolveVariable (@Nullable final QName aName)
+  {
+    if (aName == null)
+      return null;
+
+    final XdmValue aLetValue = m_aTLVariables.get ().get (aName);
+    if (aLetValue != null)
+      return aLetValue;
+
+    if (m_aSeedVariables != null)
+      return m_aSeedVariables.get (aName);
+
     return null;
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Variables", m_aTLVariables.get ())
-                                       .append ("DelegatedResolver", m_aDelegatedResolver)
+    return new ToStringGenerator (this).appendIfNotNull ("SeedVariables", m_aSeedVariables)
+                                       .append ("Variables", m_aTLVariables.get ())
                                        .getToString ();
   }
 }

@@ -22,41 +22,49 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import javax.xml.validation.Schema;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import com.helger.base.classloader.ClassLoaderHelper;
 import com.helger.base.io.stream.StringInputStream;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
+import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.pure.model.PSRule;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
+import com.helger.schematron.pure.xpath.EXPathVersion;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
+
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.schema.XMLSchemaCache;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
-import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
-import com.helger.xml.xpath.MapBasedXPathVariableResolver;
+
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.ItemType;
+import net.sf.saxon.s9api.OccurrenceIndicator;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SequenceType;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
  * Test class for class {@link SchematronResourcePure}.
@@ -150,8 +158,140 @@ public final class SchematronResourcePureTest
                   aErrorHandler.getErrorList ().size ());
   }
 
+  /**
+   * Demonstrates that the configured {@link EXPathVersion} actually reaches the Saxon compiler:
+   * the test expression uses <code>fn:head(...)</code>, which was introduced in XPath 3.0. With the
+   * default {@link EXPathVersion#XPATH_3_1} the schema binds and the assertion passes. With
+   * {@link EXPathVersion#XPATH_2_0} the compiler does not know <code>fn:head</code>, so binding
+   * fails.
+   */
   @Test
-  public void testResolveVariables () throws SchematronException, XPathFactoryConfigurationException
+  public void testXPathVersionPicksFunctions () throws Exception
+  {
+    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                           "  <iso:pattern>\n" +
+                           "    <iso:rule context='/root'>\n" +
+                           "      <iso:assert test=\"head(('first','second')) = 'first'\">head() must return 'first'</iso:assert>\n" +
+                           "    </iso:rule>\n" +
+                           "  </iso:pattern>\n" +
+                           "</iso:schema>";
+
+    final Document aDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><root/>");
+
+    // XPath 3.1 (default) - head() is known, schema binds, assertion passes
+    final SchematronOutputType aOK = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                           .applySchematronValidationToSVRL (aDoc, null);
+    assertNotNull (aOK);
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOK).size ());
+
+    // Same check, but explicitly picking XPath 3.1 - identical outcome
+    final IXPathConfig aXPathConfig31 = new XPathConfigBuilder ().setXPathVersion (EXPathVersion.XPATH_3_1).build ();
+    final SchematronOutputType aOK31 = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                             .setXPathConfig (aXPathConfig31)
+                                                             .applySchematronValidationToSVRL (aDoc, null);
+    assertNotNull (aOK31);
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOK31).size ());
+
+    // XPath 2.0 - head() does not exist, binding must fail
+    final IXPathConfig aXPathConfig20 = new XPathConfigBuilder ().setXPathVersion (EXPathVersion.XPATH_2_0).build ();
+    final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
+    final SchematronResourcePure aSch20 = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                                .setXPathConfig (aXPathConfig20)
+                                                                .setErrorHandler (aErrorHandler);
+    assertFalse (aSch20.isValidSchematron ());
+    assertTrue ("Expected an XPath compile error, got: " + aErrorHandler.getErrorList (),
+                aErrorHandler.getErrorList ().isNotEmpty ());
+  }
+
+  /**
+   * Validates that when the XML is provided through {@link SchematronResourcePure#getAsNode} the
+   * document ends up parsed straight into a Saxon TinyTree exposed behind a
+   * {@link net.sf.saxon.dom.NodeOverNodeInfo} facade — instead of a regular DOM document — and
+   * that validation still works end-to-end. Also checks the fall-back to plain DOM parsing when a
+   * custom XML entity resolver is configured.
+   */
+  @Test
+  public void testSaxonTinyTreeFastPath () throws Exception
+  {
+    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                           "  <iso:pattern>\n" +
+                           "    <iso:rule context='/root'>\n" +
+                           "      <iso:assert test='count(item) = 3'>three items expected</iso:assert>\n" +
+                           "    </iso:rule>\n" +
+                           "  </iso:pattern>\n" +
+                           "</iso:schema>";
+
+    final byte [] aXmlBytes = "<root><item/><item/><item/></root>".getBytes (StandardCharsets.UTF_8);
+
+    // Capture the runtime type of the DOM node fed into the validation handler for the matched
+    // rule context. With the TinyTree fast path it must be a Saxon-backed facade.
+    final Class <?> [] aCapturedNodeClass = new Class <?> [1];
+    final IPSValidationHandler aSpyHandler = new IPSValidationHandler ()
+    {
+      @Override
+      public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
+      {
+        if (aContextList.getLength () > 0 && aCapturedNodeClass[0] == null)
+          aCapturedNodeClass[0] = aContextList.item (0).getClass ();
+      }
+    };
+
+    // Fast path: no entity resolver -> Saxon TinyTree
+    final SchematronResourcePure aSCH = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                              .setCustomValidationHandler (aSpyHandler);
+    final SchematronOutputType aOT = aSCH.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
+    assertNotNull (aOT);
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+    assertNotNull ("onRuleStart never fired", aCapturedNodeClass[0]);
+    assertTrue ("Expected a Saxon NodeOverNodeInfo facade for the matched rule context node, got: " +
+                aCapturedNodeClass[0].getName (),
+                NodeOverNodeInfo.class.isAssignableFrom (aCapturedNodeClass[0]));
+
+    // Fallback path: an entity resolver forces the DOM parsing route. The matched node must NOT
+    // be a Saxon facade then.
+    aCapturedNodeClass[0] = null;
+    final SchematronResourcePure aSCH2 = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                               .setCustomValidationHandler (aSpyHandler);
+    aSCH2.setEntityResolver ( (publicId, systemId) -> null);
+    final SchematronOutputType aOT2 = aSCH2.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
+    assertNotNull (aOT2);
+    assertNotNull ("onRuleStart never fired", aCapturedNodeClass[0]);
+    assertFalse ("Expected a real DOM node when an entity resolver is configured, got: " +
+                 aCapturedNodeClass[0].getName (),
+                 NodeOverNodeInfo.class.isAssignableFrom (aCapturedNodeClass[0]));
+  }
+
+  /**
+   * Simple {@link ExtensionFunction} that returns the number of items in its single argument.
+   */
+  private static final class MyCountFunction implements ExtensionFunction
+  {
+    public QName getName ()
+    {
+      return new QName ("http://helger.com/schematron/test", "my-count");
+    }
+
+    public SequenceType [] getArgumentTypes ()
+    {
+      return new SequenceType [] { SequenceType.ANY };
+    }
+
+    @Override
+    public SequenceType getResultType ()
+    {
+      return ItemType.INTEGER.one ();
+    }
+
+    public XdmValue call (final XdmValue [] aArgs)
+    {
+      return new XdmAtomicValue (aArgs[0].size ());
+    }
+  }
+
+  @Test
+  public void testResolveVariables () throws SchematronException
   {
     final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
@@ -186,16 +326,9 @@ public final class SchematronResourcePureTest
                                        .isValidSchematron ());
 
     // Test with variable and function resolver
-    final MapBasedXPathVariableResolver aVarResolver = new MapBasedXPathVariableResolver ();
-    aVarResolver.addUniqueVariable ("title-element", "title");
-
-    final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
-    aFunctionResolver.addUniqueFunction ("http://helger.com/schematron/test", "my-count", 1, args -> {
-      final List <?> aArg = (List <?>) args.get (0);
-      return Integer.valueOf (aArg.size ());
-    });
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathVariableResolver (aVarResolver)
-                                                               .setXPathFunctionResolver (aFunctionResolver)
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addExternalVariable (new QName ("title-element"),
+                                                                                      new XdmAtomicValue ("title"))
+                                                               .addExtensionFunction (new MyCountFunction ())
                                                                .build ();
 
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><chapter><title /><para>First para</para><para>Second para</para></chapter>");
@@ -209,8 +342,52 @@ public final class SchematronResourcePureTest
     assertEquals ("\n      2 paragraphs found".trim (), SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
+  /**
+   * Extension function that joins each node's name and text content.
+   */
+  private static final class GetNodelistDetailsFunction implements ExtensionFunction
+  {
+    public QName getName ()
+    {
+      return new QName ("http://helger.com/schematron/test", "get-nodelist-details");
+    }
+
+    public SequenceType [] getArgumentTypes ()
+    {
+      return new SequenceType [] { SequenceType.makeSequenceType (ItemType.ANY_NODE, OccurrenceIndicator.ZERO_OR_MORE) };
+    }
+
+    @Override
+    public SequenceType getResultType ()
+    {
+      return ItemType.STRING.one ();
+    }
+
+    public XdmValue call (final XdmValue [] aArgs)
+    {
+      assertEquals (1, aArgs.length);
+      final XdmValue aFirstArg = aArgs[0];
+      final StringBuilder ret = new StringBuilder ();
+      boolean bFirst = true;
+      for (final XdmItem aItem : aFirstArg)
+      {
+        assertTrue (aItem instanceof XdmNode);
+        final XdmNode aXdmNode = (XdmNode) aItem;
+
+        if (bFirst)
+          bFirst = false;
+        else
+          ret.append (", ");
+
+        ret.append (aXdmNode.getNodeName ().getLocalName ()).append ("[").append (aXdmNode.getStringValue ()).append (
+                                                                                                                      "]");
+      }
+      return new XdmAtomicValue (ret.toString ());
+    }
+  }
+
   @Test
-  public void testResolveFunctions () throws SchematronException, XPathFactoryConfigurationException
+  public void testResolveFunctions () throws SchematronException
   {
     final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
                          "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
@@ -234,41 +411,14 @@ public final class SchematronResourcePureTest
                          "\n" +
                          "</iso:schema>";
 
-    // Test with variable and function resolver
-    final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
-    aFunctionResolver.addUniqueFunction ("http://helger.com/schematron/test", "get-nodelist-details", 1, args -> {
-      // We expect exactly one argument
-      assertEquals (1, args.size ());
-      // The type of the first argument
-      // itself is also a list
-      final List <?> aFirstArg = (List <?>) args.get (0);
-      // Ensure that the first argument
-      // only contains Nodes
-      final StringBuilder ret = new StringBuilder ();
-      boolean bFirst = true;
-      for (final Object aFirstArgItem : aFirstArg)
-      {
-        assertTrue (aFirstArgItem instanceof Node);
-        final Node aNode = (Node) aFirstArgItem;
-
-        if (bFirst)
-          bFirst = false;
-        else
-          ret.append (", ");
-
-        ret.append (aNode.getNodeName ()).append ("[").append (aNode.getTextContent ()).append ("]");
-      }
-
-      return ret;
-    });
-
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
                                                     "<chapter>" +
                                                     "<title />" +
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addExtensionFunction (new GetNodelistDetailsFunction ())
+                                                               .build ();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                                            .setXPathConfig (aXPathConfig)
                                                            .applySchematronValidationToSVRL (aTestDoc, null);
@@ -305,7 +455,8 @@ public final class SchematronResourcePureTest
                          "\n" +
                          "</iso:schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addAllExtensionFunctions (new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ)))
+                                                               .build ();
 
     // Test with variable and function resolver
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
@@ -314,15 +465,15 @@ public final class SchematronResourcePureTest
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                                            .setXPathConfig (aXPathConfig)
                                                            .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
     assertEquals (1, SVRLHelper.getAllSuccessfulReports (aOT).size ());
-    // Note: the text contains all whitespaces!
-    assertEquals ("\n      Node kind: element - end".trim (),
+    // Under XPath 2.0/3.0, applying functx:node-kind to a 2-node sequence yields one result per
+    // node (space-separated), instead of the XPath-1.0 first-only behavior we used to rely on.
+    assertEquals ("\n      Node kind: element element - end".trim (),
                   SVRLHelper.getAllSuccessfulReports (aOT).get (0).getText ());
   }
 
@@ -348,7 +499,8 @@ public final class SchematronResourcePureTest
                          "  </iso:pattern>\n" +
                          "</iso:schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addAllExtensionFunctions (new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ)))
+                                                               .build ();
 
     // Test with variable and function resolver
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
@@ -358,7 +510,6 @@ public final class SchematronResourcePureTest
                                                     "<para>200</para>" +
                                                     "</chapter>");
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler (new LoggingPSErrorHandler ());
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                                            .setXPathConfig (aXPathConfig)
                                                            .setErrorHandler (aErrorHandler)
@@ -367,51 +518,6 @@ public final class SchematronResourcePureTest
     // XXX fails :(
     assertTrue (aErrorHandler.getAllErrors ().toString (), aErrorHandler.isEmpty ());
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
-  }
-
-  @Test
-  @Ignore
-  public void testResolveXQueryAreDistinctValues () throws Exception
-  {
-    final XPath xPath = XPathFactory.newInstance (XPathFactory.DEFAULT_OBJECT_MODEL_URI,
-                                                  "net.sf.saxon.xpath.XPathFactoryImpl",
-                                                  ClassLoaderHelper.getContextClassLoader ())
-                                    .newXPath ();
-    assertNotNull (xPath);
-    assertTrue (xPath instanceof net.sf.saxon.xpath.XPathEvaluator);
-
-    final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?>" +
-                                                    "<chapter>" +
-                                                    "<title />" +
-                                                    "<para>100</para>" +
-                                                    "<para>200</para>" +
-                                                    "</chapter>");
-
-    // Check contents of function
-    Object ret = xPath.evaluate ("count(para)", aTestDoc.getDocumentElement (), XPathConstants.NUMBER);
-    assertEquals (Double.valueOf (2), ret);
-
-    // Check contents of function
-    ret = xPath.evaluate ("count(distinct-values(para))", aTestDoc.getDocumentElement (), XPathConstants.NUMBER);
-    assertEquals (Double.valueOf (2), ret);
-
-    // Run as XQuery function
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
-    xPath.setXPathFunctionResolver (aFunctionResolver);
-    xPath.setNamespaceContext (new MapBasedNamespaceContext ().addMapping ("functx", "http://www.functx.com"));
-
-    // fails here
-    /**
-     * Caused by: java.lang.ClassCastException: class
-     * net.sf.saxon.dom.DOMNodeWrapper cannot be cast to class
-     * net.sf.saxon.value.AtomicValue (net.sf.saxon.dom.DOMNodeWrapper and
-     * net.sf.saxon.value.AtomicValue are in unnamed module of loader 'app') at
-     * net.sf.saxon.functions.DistinctValues$DistinctIterator.next(DistinctValues.java:80)
-     * at
-     * net.sf.saxon.functions.DistinctValues$DistinctIterator.next(DistinctValues.java:48)
-     */
-    ret = xPath.evaluate ("functx:are-distinct-values(para)", aTestDoc.getDocumentElement (), XPathConstants.BOOLEAN);
-    assertEquals (Boolean.TRUE, ret);
   }
 
   @Test
@@ -430,7 +536,8 @@ public final class SchematronResourcePureTest
                          "  </pattern>\n" +
                          "</schema>";
 
-    final MapBasedXPathFunctionResolver aFunctionResolver = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addAllExtensionFunctions (new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ)))
+                                                               .build ();
 
     final Schema aSchema = XMLSchemaCache.getInstance ()
                                          .getSchema (new ClassPathResource ("external/issues/20141124/chapter.xsd"));
@@ -442,7 +549,6 @@ public final class SchematronResourcePureTest
                                                     "</chapter>",
                                                     new DOMReaderSettings ().setSchema (aSchema));
 
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver (aFunctionResolver).build ();
     final SchematronOutputType aOT = SchematronResourcePure.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                                            .setXPathConfig (aXPathConfig)
                                                            .applySchematronValidationToSVRL (aTestDoc, null);

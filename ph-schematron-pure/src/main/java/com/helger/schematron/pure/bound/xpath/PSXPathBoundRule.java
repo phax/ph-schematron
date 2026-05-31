@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import javax.xml.xpath.XPathExpression;
-
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.concurrent.Immutable;
@@ -29,6 +27,8 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
 import com.helger.schematron.pure.model.PSRule;
 
+import net.sf.saxon.s9api.XPathExecutable;
+
 /**
  * This class represents a single XPath-bound rule-element.
  *
@@ -39,13 +39,13 @@ public class PSXPathBoundRule
 {
   private final PSRule m_aRule;
   private final String m_sRuleContext;
-  private final XPathExpression m_aBoundRuleContext;
+  private final XPathExecutable m_aBoundRuleContext;
   private final ICommonsList <PSXPathBoundAssertReport> m_aBoundAssertReports;
   private final PSXPathVariables m_aVariables;
 
   public PSXPathBoundRule (@NonNull final PSRule aRule,
                            @NonNull final String sRuleContext,
-                           @NonNull final XPathExpression aBoundRuleContext,
+                           @NonNull final XPathExecutable aBoundRuleContext,
                            @NonNull final ICommonsList <PSXPathBoundAssertReport> aBoundAssertReports,
                            @NonNull final PSXPathVariables aVariables)
   {
@@ -74,7 +74,7 @@ public class PSXPathBoundRule
   }
 
   @NonNull
-  public final XPathExpression getBoundRuleContext ()
+  public final XPathExecutable getBoundRuleContext ()
   {
     return m_aBoundRuleContext;
   }

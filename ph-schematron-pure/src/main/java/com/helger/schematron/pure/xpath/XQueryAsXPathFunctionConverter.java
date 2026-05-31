@@ -29,9 +29,10 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.WillClose;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.stream.StreamHelper;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsIterableIterator;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.file.FileHelper;
-import com.helger.xml.xpath.MapBasedXPathFunctionResolver;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
@@ -45,11 +46,12 @@ import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
 import net.sf.saxon.query.XQueryFunction;
 import net.sf.saxon.query.XQueryFunctionLibrary;
+import net.sf.saxon.s9api.ExtensionFunction;
 import net.sf.saxon.trans.XPathException;
 
 /**
- * This class loads XQuery modules and provides a list of XPath functions. This class can only be
- * used, if Saxon is on the classpath!
+ * Load an XQuery module and expose its functions as Saxon {@link ExtensionFunction}s, ready to be
+ * registered on a {@link net.sf.saxon.s9api.Processor}.
  *
  * @author Philip Helger
  */
@@ -114,8 +116,8 @@ public class XQueryAsXPathFunctionConverter
    * @param aXQueryIS
    *        The Input Stream to read from. May not be <code>null</code>. Will be closed
    *        automatically in this method.
-   * @return A non-<code>null</code> {@link MapBasedXPathFunctionResolver} containing all loaded
-   *         functions.
+   * @return A non-<code>null</code> list of {@link ExtensionFunction}s — one per declared XQuery
+   *         user function.
    * @throws XPathException
    *         if the syntax of the expression is wrong, or if it references namespaces, variables, or
    *         functions that have not been declared, or any other static error is reported.
@@ -123,21 +125,19 @@ public class XQueryAsXPathFunctionConverter
    *         if a failure occurs reading the supplied input.
    */
   @NonNull
-  public MapBasedXPathFunctionResolver loadXQuery (@NonNull @WillClose final InputStream aXQueryIS) throws XPathException,
-                                                                                                    IOException
+  public ICommonsList <ExtensionFunction> loadXQuery (@NonNull @WillClose final InputStream aXQueryIS) throws XPathException,
+                                                                                                       IOException
   {
     ValueEnforcer.notNull (aXQueryIS, "XQueryIS");
 
     try
     {
-      final MapBasedXPathFunctionResolver aFunctionResolver = new MapBasedXPathFunctionResolver ();
+      final ICommonsList <ExtensionFunction> aResult = new CommonsArrayList <> ();
 
-      // create a Configuration object
       final Configuration aConfiguration = new Configuration ();
       final DynamicQueryContext aDynamicQueryContext = new DynamicQueryContext (aConfiguration);
       final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
 
-      // The base URI required for resolving within the XQuery
       aStaticQueryCtx.setBaseURI (m_sBaseURL);
 
       // null == auto detect
@@ -146,43 +146,34 @@ public class XQueryAsXPathFunctionConverter
       final XQueryExpression exp = aStaticQueryCtx.compileQuery (aXQueryIS, sEncoding);
       final Controller aXQController = exp.newController (aDynamicQueryContext);
 
-      // find all loaded methods and convert them to XPath functions
       final FunctionLibraryList aFuncLibList = exp.getExecutable ().getFunctionLibrary ();
       for (final FunctionLibrary aFuncLib : aFuncLibList.getLibraryList ())
       {
         if (aFuncLib instanceof FunctionLibraryList)
         {
-          // This block works with Saxon HE 9.5.1-x :)
-          // This is the custom function library list
           final FunctionLibraryList aRealFuncLib = (FunctionLibraryList) aFuncLib;
           for (final FunctionLibrary aNestedFuncLib : aRealFuncLib.getLibraryList ())
           {
-            // Currently the user functions are in ExecutableFunctionLibrary
             if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
             {
               final ExecutableFunctionLibrary aExecNestedFuncLib = (ExecutableFunctionLibrary) aNestedFuncLib;
               for (final UserFunction aUserFunc : new CommonsIterableIterator <> (aExecNestedFuncLib.getAllFunctions ()))
               {
-                // Saxon 9.7 changes "getNumberOfArguments" to "getArity"
-                final StructuredQName aFN = aUserFunc.getFunctionName ();
-                aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getNamespaceUri ().toString (),
-                                                     aFN.getLocalPart (),
-                                                     aUserFunc.getArity (),
-                                                     new XPathFunctionFromUserFunction (aConfiguration,
-                                                                                        aXQController,
-                                                                                        aUserFunc));
+                aResult.add (new XPathFunctionFromUserFunction (aConfiguration, aXQController, aUserFunc));
                 if (LOGGER.isDebugEnabled ())
+                {
+                  final StructuredQName aFN = aUserFunc.getFunctionName ();
                   LOGGER.debug ("Registered user function '" +
                                 aFN.getNamespaceBinding ().getPrefix () +
                                 ":" +
                                 aFN.getLocalPart () +
                                 "' with arity of " +
                                 aUserFunc.getArity ());
+                }
               }
             }
             else
             {
-              // Ignore all Vendor, System etc. internal libraries
               if (LOGGER.isDebugEnabled ())
                 LOGGER.debug ("Ignoring other nested function library of type " +
                               aNestedFuncLib.getClass ().getName ());
@@ -197,34 +188,29 @@ public class XQueryAsXPathFunctionConverter
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();
-
-              final StructuredQName aFN = aXQueryFunction.getFunctionName ();
-
-              aFunctionResolver.addUniqueFunction (aFN.getNamespaceBinding ().getNamespaceUri ().toString (),
-                                                   aFN.getLocalPart (),
-                                                   aXQueryFunction.getNumberOfParameters (),
-                                                   new XPathFunctionFromUserFunction (aConfiguration,
-                                                                                      aXQController,
-                                                                                      aXQueryFunction.getUserFunction ()));
-
+              aResult.add (new XPathFunctionFromUserFunction (aConfiguration,
+                                                              aXQController,
+                                                              aXQueryFunction.getUserFunction ()));
               if (LOGGER.isDebugEnabled ())
+              {
+                final StructuredQName aFN = aXQueryFunction.getFunctionName ();
                 LOGGER.debug ("Registered user function '" +
                               aFN.getNamespaceBinding ().getPrefix () +
                               ":" +
                               aFN.getLocalPart () +
                               "' with arity of " +
                               aXQueryFunction.getNumberOfParameters ());
+              }
             }
           }
           else
           {
-            // Ignore all Vendor, System etc. internal libraries
             if (LOGGER.isDebugEnabled ())
               LOGGER.debug ("Ignoring other function library of type " + aFuncLib.getClass ().getName ());
           }
       }
 
-      return aFunctionResolver;
+      return aResult;
     }
     finally
     {

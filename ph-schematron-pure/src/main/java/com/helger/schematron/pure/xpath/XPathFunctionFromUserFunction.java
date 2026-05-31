@@ -16,13 +16,7 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import java.util.List;
-
-import javax.xml.xpath.XPathFunction;
-import javax.xml.xpath.XPathFunctionException;
-
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,37 +25,50 @@ import com.helger.base.tostring.ToStringGenerator;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
-import net.sf.saxon.expr.JPConverter;
-import net.sf.saxon.expr.XPathContextMajor;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.om.Sequence;
-import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.SequenceType;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
- * A proxy for an {@link XPathFunction} that is implemented as a Saxon
- * {@link UserFunction}. This works only if Saxon is present in the classpath.
+ * A Saxon {@link ExtensionFunction} that proxies an XQuery {@link UserFunction}. This class is
+ * used by {@link XQueryAsXPathFunctionConverter} to expose XQuery user functions as XPath
+ * extension functions.
  *
  * @author Philip Helger
  */
-public final class XPathFunctionFromUserFunction implements XPathFunction
+public final class XPathFunctionFromUserFunction implements ExtensionFunction
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (XPathFunctionFromUserFunction.class);
 
   private final Configuration m_aConfiguration;
   private final Controller m_aXQController;
   private final UserFunction m_aUserFunc;
+  private final QName m_aName;
+  private final SequenceType [] m_aArgumentTypes;
 
   public XPathFunctionFromUserFunction (@NonNull final Configuration aConfiguration,
                                         @NonNull final Controller aXQController,
                                         @NonNull final UserFunction aUserFunc)
   {
     m_aConfiguration = ValueEnforcer.notNull (aConfiguration, "Configuration");
-    m_aUserFunc = ValueEnforcer.notNull (aUserFunc, "UserFunc");
     m_aXQController = ValueEnforcer.notNull (aXQController, "XQController");
+    m_aUserFunc = ValueEnforcer.notNull (aUserFunc, "UserFunc");
+    m_aName = new QName (aUserFunc.getFunctionName ());
+
+    // Pin the arity; argument types are kept opaque (ANY) so we accept whatever the caller
+    // passes - the underlying UserFunction will enforce its declared signature on invocation.
+    final int nArity = aUserFunc.getArity ();
+    m_aArgumentTypes = new SequenceType [nArity];
+    for (int i = 0; i < nArity; i++)
+      m_aArgumentTypes[i] = SequenceType.ANY;
   }
 
   /**
-   * @return The underlying Saxon user function.
+   * @return The underlying Saxon user function. Never <code>null</code>.
    */
   @NonNull
   public UserFunction getUserFunction ()
@@ -69,46 +76,43 @@ public final class XPathFunctionFromUserFunction implements XPathFunction
     return m_aUserFunc;
   }
 
-  /**
-   * @return The function name.
-   */
   @NonNull
-  public StructuredQName getFunctionName ()
+  public QName getName ()
   {
-    return m_aUserFunc.getFunctionName ();
+    return m_aName;
   }
 
-  @Nullable
-  public Object evaluate (@NonNull final List <?> aArgs) throws XPathFunctionException
+  @NonNull
+  public SequenceType [] getArgumentTypes ()
   {
-    LOGGER.info ("Evaluating user function '" + getFunctionName () + "' with " + aArgs.size () + " parameter(s)");
+    return m_aArgumentTypes;
+  }
+
+  @Override
+  @NonNull
+  public SequenceType getResultType ()
+  {
+    return SequenceType.ANY;
+  }
+
+  @NonNull
+  public XdmValue call (@NonNull final XdmValue [] aArgs) throws SaxonApiException
+  {
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Evaluating user function '" + m_aName + "' with " + aArgs.length + " parameter(s)");
 
     try
     {
-      // Convert the parameters
-      final Sequence [] aSequences = new Sequence [aArgs.size ()];
-      if (!aArgs.isEmpty ())
-      {
-        // Create a new context per evaluation
-        final XPathContextMajor aXPathContext = m_aXQController.newXPathContext ();
+      final Sequence [] aSequences = new Sequence [aArgs.length];
+      for (int i = 0; i < aArgs.length; i++)
+        aSequences[i] = aArgs[i].getUnderlyingValue ();
 
-        int nIndex = 0;
-        for (final Object aArg : aArgs)
-        {
-          // Ripped from Saxon itself; genericType is not needed
-          final JPConverter aConverter = JPConverter.allocate (aArg.getClass (), null, m_aConfiguration);
-          // Convert to Sequence
-          aSequences[nIndex] = aConverter.convert (aArg, aXPathContext);
-          ++nIndex;
-        }
-      }
-      // Finally invoke user function
-      return m_aUserFunc.call (aSequences, m_aXQController);
+      final Sequence aResult = m_aUserFunc.call (aSequences, m_aXQController);
+      return XdmValue.wrap (aResult);
     }
     catch (final Exception ex)
     {
-      // Wrap all exceptions
-      throw new XPathFunctionException (ex);
+      throw new SaxonApiException (ex);
     }
   }
 

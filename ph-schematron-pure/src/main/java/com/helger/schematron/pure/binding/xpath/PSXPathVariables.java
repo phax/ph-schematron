@@ -18,8 +18,6 @@ package com.helger.schematron.pure.binding.xpath;
 
 import java.util.Map;
 
-import javax.xml.xpath.XPathExpression;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -34,6 +32,8 @@ import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.collection.commons.ICommonsOrderedSet;
 
+import net.sf.saxon.s9api.XPathExecutable;
+
 /**
  * This class manages all variables present in Schematron &lt;let&gt; elements.
  *
@@ -44,12 +44,12 @@ public class PSXPathVariables implements IPSXPathVariables
 {
   @NonNull
   @ReturnsMutableCopy
-  private static ICommonsOrderedMap <String, XPathExpression> _createMap ()
+  private static ICommonsOrderedMap <String, XPathExecutable> _createMap ()
   {
     return new CommonsLinkedHashMap <> ();
   }
 
-  private final ICommonsOrderedMap <String, XPathExpression> m_aMap;
+  private final ICommonsOrderedMap <String, XPathExecutable> m_aMap;
 
   public PSXPathVariables ()
   {
@@ -71,7 +71,7 @@ public class PSXPathVariables implements IPSXPathVariables
    *         <code>null</code>.
    */
   @NonNull
-  public EChange add (final Map.@NonNull Entry <String, XPathExpression> aEntry)
+  public EChange add (final Map.@NonNull Entry <String, XPathExecutable> aEntry)
   {
     return add (aEntry.getKey (), aEntry.getValue ());
   }
@@ -81,21 +81,21 @@ public class PSXPathVariables implements IPSXPathVariables
    *
    * @param sName
    *        The name of the variable. May neither be <code>null</code> nor empty.
-   * @param sValue
-   *        The value of the variable. May neither be <code>null</code> nor empty.
+   * @param aValue
+   *        The value of the variable. May not be <code>null</code>.
    * @return {@link EChange#UNCHANGED} if a variable with the same name is already present. Never
    *         <code>null</code>.
    */
   @NonNull
-  public EChange add (@NonNull @Nonempty final String sName, @NonNull @Nonempty final XPathExpression sValue)
+  public EChange add (@NonNull @Nonempty final String sName, @NonNull final XPathExecutable aValue)
   {
     ValueEnforcer.notEmpty (sName, "Name");
-    ValueEnforcer.notNull (sValue, "Value");
+    ValueEnforcer.notNull (aValue, "Value");
 
     if (m_aMap.containsKey (sName))
       return EChange.UNCHANGED;
 
-    m_aMap.put (sName, sValue);
+    m_aMap.put (sName, aValue);
     return EChange.CHANGED;
   }
 
@@ -136,7 +136,7 @@ public class PSXPathVariables implements IPSXPathVariables
 
   @NonNull
   @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, XPathExpression> getAll ()
+  public ICommonsOrderedMap <String, XPathExecutable> getAll ()
   {
     return m_aMap.getClone ();
   }
@@ -156,7 +156,7 @@ public class PSXPathVariables implements IPSXPathVariables
   }
 
   @Nullable
-  public XPathExpression get (@Nullable final String sName)
+  public XPathExecutable get (@Nullable final String sName)
   {
     if (StringHelper.isEmpty (sName))
       return null;

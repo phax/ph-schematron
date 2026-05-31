@@ -19,8 +19,12 @@ package com.helger.schematron.pure;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -33,8 +37,10 @@ import org.xml.sax.EntityResolver;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.iface.IHasInputStream;
 import com.helger.base.location.SimpleLocation;
 import com.helger.base.state.EValidity;
+import com.helger.base.string.StringHelper;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
@@ -60,6 +66,12 @@ import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.xml.transform.TransformSourceFactory;
+
+import net.sf.saxon.dom.NodeOverNodeInfo;
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmNode;
 
 /**
  * A Schematron resource that is not XSLT based but using the pure (native Java) implementation.
@@ -222,6 +234,88 @@ public class SchematronResourcePure extends AbstractSchematronResource
       throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
     internalSetEntityResolver (aEntityResolver);
     return this;
+  }
+
+  @NonNull
+  private Document _buildSaxonDocument (@NonNull final Source aSource) throws SaxonApiException
+  {
+    final DocumentBuilder aBuilder = m_aXPathConfig.getProcessor ().newDocumentBuilder ();
+    final String sSystemId = aSource.getSystemId ();
+    if (StringHelper.isNotEmpty (sSystemId))
+      try
+      {
+        aBuilder.setBaseURI (new URI (sSystemId));
+      }
+      catch (final Exception ex)
+      {
+        // Not a valid URI - skip; Saxon will fall back to whatever the Source carries
+      }
+
+    final XdmNode aXdm = aBuilder.build (aSource);
+    final Node aDom = NodeOverNodeInfo.wrap (aXdm.getUnderlyingNode ());
+    if (aDom instanceof final Document aDoc)
+      return aDoc;
+
+    throw new IllegalStateException ("Saxon DocumentBuilder did not return a document NodeInfo: " + aDom);
+  }
+
+  /**
+   * Read the XML through Saxon's {@link DocumentBuilder} and present it as a DOM facade over the
+   * resulting TinyTree. Downstream {@code validate(...)} detects the facade and skips the slower
+   * {@code DocumentWrapper} bridge, giving a significant speed-up for large inputs.
+   * <p>
+   * The TinyTree fast path is skipped when a custom XML entity resolver is configured — in that
+   * case the default DOM parsing path (which honours the resolver) is used instead.
+   * </p>
+   */
+  @Override
+  @Nullable
+  protected NodeAndBaseURI getAsNode (@NonNull final IHasInputStream aXMLResource) throws Exception
+  {
+    if (getEntityResolver () != null)
+    {
+      // Defer to the DOM-based default so the entity resolver is honoured
+      return super.getAsNode (aXMLResource);
+    }
+
+    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
+    InputStream aIS = null;
+    try
+    {
+      aIS = aStreamSrc.getInputStream ();
+    }
+    catch (final IllegalStateException ex)
+    {
+      // Happens e.g. for non-existing resources - fall through
+    }
+    if (aIS == null)
+    {
+      LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
+      return null;
+    }
+
+    final String sBaseURI = aStreamSrc.getSystemId ();
+    final StreamSource aSrcWithURI = new StreamSource (aIS, sBaseURI);
+    final Document aDoc = _buildSaxonDocument (aSrcWithURI);
+    LOGGER.info ("Read XML resource " + aXMLResource + " into Saxon TinyTree");
+    return new NodeAndBaseURI (aDoc, sBaseURI);
+  }
+
+  /**
+   * Read a {@link Source} through Saxon's {@link DocumentBuilder} and present it as a DOM facade
+   * over the resulting TinyTree. The TinyTree fast path is skipped when a custom XML entity
+   * resolver is configured.
+   */
+  @Override
+  @Nullable
+  protected Node getAsNode (@NonNull final Source aXMLSource) throws Exception
+  {
+    if (getEntityResolver () != null)
+    {
+      // Defer to the DOM-based default so the entity resolver is honoured
+      return super.getAsNode (aXMLSource);
+    }
+    return _buildSaxonDocument (aXMLSource);
   }
 
   @NonNull
