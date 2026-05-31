@@ -843,6 +843,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     }
     finally
     {
+      // ALWAYS drop the per-thread state, regardless of how _validateSerial exited:
+      // - normal completion: the scoped _removeAllVariables calls inside _validateSerial already
+      //   removed every <let> binding, so this is a no-op;
+      // - IPSValidationHandler returns BREAK mid-loop: the in-flight pattern/rule/schema let
+      //   variables are still bound on this thread - clear them so the next request on this
+      //   thread-pool worker does not see stale bindings;
+      // - RuntimeException out of a handler callback: same as above.
+      m_aLetVars.clearAllForCurrentThread ();
       XPathEvaluationContext.clear ();
     }
   }

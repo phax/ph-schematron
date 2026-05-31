@@ -81,6 +81,23 @@ public class XPathLetVariableResolver
   }
 
   /**
+   * Drop every &lt;let&gt; binding that the current thread is holding. Called from a {@code finally}
+   * block in {@code PSXPathBoundSchema.validate(...)} so that early returns
+   * (e.g. {@code IPSValidationHandler} requesting {@code BREAK}) and exceptions out of validation
+   * callbacks cannot leak per-request bindings into the next request handled by the same
+   * thread-pool worker. Seed variables (supplied by the {@link com.helger.schematron.pure.xpath.IXPathConfig})
+   * are not affected.
+   *
+   * @since 9.2.0
+   */
+  public void clearAllForCurrentThread ()
+  {
+    // Use remove() rather than clear() on the held map: this also detaches the ThreadLocal entry
+    // itself, so an idle worker drops the (small) map allocation.
+    m_aTLVariables.remove ();
+  }
+
+  /**
    * @return The currently effective per-thread variable map (let variables overlaid on top of seed
    *         variables). Never <code>null</code>.
    */

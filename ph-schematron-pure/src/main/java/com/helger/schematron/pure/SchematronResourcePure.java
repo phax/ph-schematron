@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
@@ -65,6 +68,7 @@ import com.helger.schematron.pure.xpath.XPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.xml.serialize.read.SAXReaderFactory;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 
@@ -251,7 +255,41 @@ public class SchematronResourcePure extends AbstractSchematronResource
         // Not a valid URI - skip; Saxon will fall back to whatever the Source carries
       }
 
-    final XdmNode aXdm = aBuilder.build (aSource);
+    // Bridge through a hardened XMLReader so Saxon's TinyTree fast path inherits XXE protection.
+    // StreamSource is the only Source flavour that Saxon parses itself - SAXSource carries its
+    // own XMLReader, DOMSource / StAXSource walk a pre-built tree (no parsing).
+    final Source aSafeSource;
+    if (aSource instanceof final StreamSource aStreamSrc)
+    {
+      final XMLReader aXMLReader = SAXReaderFactory.createXMLReader ();
+
+      final InputSource aInputSrc;
+      if (aStreamSrc.getInputStream () != null)
+        aInputSrc = new InputSource (aStreamSrc.getInputStream ());
+      else
+        if (aStreamSrc.getReader () != null)
+          aInputSrc = new InputSource (aStreamSrc.getReader ());
+        else
+          aInputSrc = new InputSource (aStreamSrc.getSystemId ());
+
+      if (StringHelper.isNotEmpty (aStreamSrc.getSystemId ()))
+        aInputSrc.setSystemId (aStreamSrc.getSystemId ());
+      if (StringHelper.isNotEmpty (aStreamSrc.getPublicId ()))
+        aInputSrc.setPublicId (aStreamSrc.getPublicId ());
+
+      final SAXSource aSAXSrc = new SAXSource (aXMLReader, aInputSrc);
+      if (StringHelper.isNotEmpty (aStreamSrc.getSystemId ()))
+        aSAXSrc.setSystemId (aStreamSrc.getSystemId ());
+
+      aSafeSource = aSAXSrc;
+    }
+    else
+    {
+      // Non-StreamSource - parsing is the caller's responsibility (or there is none).
+      aSafeSource = aSource;
+    }
+
+    final XdmNode aXdm = aBuilder.build (aSafeSource);
     final Node aDom = NodeOverNodeInfo.wrap (aXdm.getUnderlyingNode ());
     if (aDom instanceof final Document aDoc)
       return aDoc;

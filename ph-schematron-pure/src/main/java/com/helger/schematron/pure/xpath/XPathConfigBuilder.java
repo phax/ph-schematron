@@ -176,9 +176,26 @@ public class XPathConfigBuilder implements IBuilder <IXPathConfig>
   @NonNull
   public IXPathConfig build ()
   {
-    final Processor aProcessor = m_aProcessor != null ? m_aProcessor : DEFAULT_PROCESSOR;
+    // Choose the target Processor:
+    // - If the caller supplied a Processor explicitly, use it (the caller owns its lifecycle and
+    //   accepts that registerExtensionFunction will mutate it).
+    // - Otherwise, when there is nothing to register, return the shared DEFAULT_PROCESSOR
+    //   untouched.
+    // - When there ARE extension functions to register and no explicit Processor was given,
+    //   allocate a fresh Processor instead of mutating the shared DEFAULT_PROCESSOR. The
+    //   alternative - registering on the shared singleton - was a process-wide side effect
+    //   that leaked extension functions across unrelated callers and races inside Saxon's
+    //   HashMap-backed function registry (which is not thread-safe).
+    final Processor aProcessor;
+    if (m_aProcessor != null)
+      aProcessor = m_aProcessor;
+    else
+      if (m_aExtensionFunctions.isEmpty ())
+        aProcessor = DEFAULT_PROCESSOR;
+      else
+        aProcessor = new Processor (false);
 
-    // Register extension functions on the Processor
+    // Register extension functions on the chosen Processor
     for (final ExtensionFunction aFunc : m_aExtensionFunctions)
       aProcessor.registerExtensionFunction (aFunc);
 

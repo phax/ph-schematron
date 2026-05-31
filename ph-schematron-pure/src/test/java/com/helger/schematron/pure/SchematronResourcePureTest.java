@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.nio.charset.StandardCharsets;
 
@@ -265,6 +266,114 @@ public final class SchematronResourcePureTest
     assertFalse ("Expected a real DOM node when an entity resolver is configured, got: " +
                  aCapturedNodeClass[0].getName (),
                  NodeOverNodeInfo.class.isAssignableFrom (aCapturedNodeClass[0]));
+  }
+
+  /**
+   * Regression test for the security review of the 9.2.0 Saxon TinyTree fast path. Saxon's default
+   * {@code DocumentBuilder} route uses an unhardened JAXP {@code SAXParser} - i.e. with
+   * {@code FEATURE_SECURE_PROCESSING=false}, DOCTYPE allowed and external entities enabled. The
+   * {@code _buildSaxonDocument} helper wraps the input through a hardened {@link XMLReader}; this
+   * test feeds an XML document carrying a DOCTYPE declaration and asserts the parser refuses it
+   * up front (DISALLOW_DOCTYPE_DECL fires before any external resolution would be attempted).
+   */
+  @Test
+  public void testFastPathHardenedAgainstXXE ()
+  {
+    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                           "  <iso:pattern>\n" +
+                           "    <iso:rule context='/root'>\n" +
+                           "      <iso:assert test='true()'>ok</iso:assert>\n" +
+                           "    </iso:rule>\n" +
+                           "  </iso:pattern>\n" +
+                           "</iso:schema>";
+
+    // Hostile XML: an external-entity reference that would, if resolved, fetch /etc/passwd.
+    final String sHostileXml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                               "<!DOCTYPE root [\n" +
+                               "  <!ENTITY xxe SYSTEM \"file:///etc/passwd\">\n" +
+                               "]>\n" +
+                               "<root>&xxe;</root>";
+
+    final SchematronResourcePure aSCH = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8);
+    Throwable thrown = null;
+    try
+    {
+      aSCH.applySchematronValidationToSVRL (new ReadableResourceByteArray (sHostileXml.getBytes (StandardCharsets.UTF_8)));
+    }
+    catch (final Exception ex)
+    {
+      thrown = ex;
+    }
+    assertNotNull ("Expected the hardened parser to reject the DOCTYPE-bearing input", thrown);
+    // Surface the SAX cause to make sure we are failing on the hardened-feature path and not on
+    // an unrelated downstream error.
+    Throwable cause = thrown;
+    boolean bSawDoctypeRejection = false;
+    while (cause != null)
+    {
+      final String sMsg = cause.getMessage ();
+      if (sMsg != null && sMsg.toLowerCase ().contains ("doctype"))
+      {
+        bSawDoctypeRejection = true;
+        break;
+      }
+      cause = cause.getCause ();
+    }
+    assertTrue ("Expected failure to mention DOCTYPE rejection but got: " + thrown, bSawDoctypeRejection);
+  }
+
+  /**
+   * Regression test for the security review: {@code XPathConfigBuilder.build()} must not mutate
+   * the shared {@code DEFAULT_PROCESSOR} when extension functions are added without an explicit
+   * processor. Otherwise a function registered for caller A leaks into every other caller using
+   * the default config (cross-tenant function poisoning).
+   */
+  @Test
+  public void testBuildDoesNotPoisonDefaultProcessor () throws Exception
+  {
+    final ExtensionFunction aFn = new ExtensionFunction ()
+    {
+      public QName getName ()
+      {
+        return new QName ("http://helger.com/schematron/test", "tenant-A-secret");
+      }
+
+      public SequenceType [] getArgumentTypes ()
+      {
+        return new SequenceType [0];
+      }
+
+      @Override
+      public SequenceType getResultType ()
+      {
+        return ItemType.STRING.one ();
+      }
+
+      public XdmValue call (final XdmValue [] args)
+      {
+        return new XdmAtomicValue ("leaked");
+      }
+    };
+
+    final IXPathConfig aTenantA = new XPathConfigBuilder ().addExtensionFunction (aFn).build ();
+    assertTrue ("Tenant A should have got its own Processor (not the shared default)",
+                aTenantA.getProcessor () != XPathConfigBuilder.DEFAULT_PROCESSOR);
+
+    // Now tenant B uses XPathConfigBuilder.DEFAULT - calling tenant A's function must fail. With
+    // the old code, DEFAULT_PROCESSOR had been mutated by tenant A's build() and tenant B's
+    // expression would succeed.
+    final XPathCompiler aXPathC = XPathConfigBuilder.DEFAULT_PROCESSOR.newXPathCompiler ();
+    aXPathC.declareNamespace ("t", "http://helger.com/schematron/test");
+    try
+    {
+      aXPathC.compile ("t:tenant-A-secret()");
+      fail ("Tenant A's extension function leaked into the shared DEFAULT_PROCESSOR");
+    }
+    catch (final net.sf.saxon.s9api.SaxonApiException expected)
+    {
+      // good - the function is not visible on the shared processor
+    }
   }
 
   /**
