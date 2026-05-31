@@ -59,13 +59,13 @@ public final class SchematronResourceSchXslt2Cache
    */
   @Nullable
   public static SchematronProviderXSLTFromSchXslt2 createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
-                                                                                      @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
+                                                                                 @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
 
     final SchematronProviderXSLTFromSchXslt2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt2 (aSchematronResource,
-                                                                                                                   aTransformerCustomizer);
+                                                                                                         aTransformerCustomizer);
     // This is the call to convert Schematron to XSLT
     aXSLTPreprocessor.convertSchematronToXSLT ();
     if (!aXSLTPreprocessor.isValidSchematron ())
@@ -106,7 +106,7 @@ public final class SchematronResourceSchXslt2Cache
    */
   @Nullable
   public static SchematronProviderXSLTFromSchXslt2 getSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
-                                                                                   @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
+                                                                              @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
   {
     ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
     ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
@@ -142,7 +142,7 @@ public final class SchematronResourceSchXslt2Cache
       {
         // Create new object outside of the write lock
         final SchematronProviderXSLTFromSchXslt2 aProviderNew = createSchematronXSLTProvider (aSchematronResource,
-                                                                                                   aTransformerCustomizer);
+                                                                                              aTransformerCustomizer);
         if (aProviderNew != null)
         {
           // Put in cache
