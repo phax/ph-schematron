@@ -28,6 +28,7 @@ import net.sf.saxon.Controller;
 import net.sf.saxon.expr.instruct.UserFunction;
 import net.sf.saxon.om.Sequence;
 import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SequenceType;
@@ -36,7 +37,9 @@ import net.sf.saxon.s9api.XdmValue;
 /**
  * A Saxon {@link ExtensionFunction} that proxies an XQuery {@link UserFunction}. This class is
  * used by {@link XQueryAsXPathFunctionConverter} to expose XQuery user functions as XPath
- * extension functions.
+ * extension functions. The argument and result {@link SequenceType}s are taken from the
+ * underlying {@link UserFunction}, so Saxon performs the same automatic coercion (atomization,
+ * cardinality checks, etc.) at call time that it would for any built-in function.
  *
  * @author Philip Helger
  */
@@ -49,6 +52,7 @@ public final class XPathFunctionFromUserFunction implements ExtensionFunction
   private final UserFunction m_aUserFunc;
   private final QName m_aName;
   private final SequenceType [] m_aArgumentTypes;
+  private final SequenceType m_aResultType;
 
   public XPathFunctionFromUserFunction (@NonNull final Configuration aConfiguration,
                                         @NonNull final Controller aXQController,
@@ -59,12 +63,22 @@ public final class XPathFunctionFromUserFunction implements ExtensionFunction
     m_aUserFunc = ValueEnforcer.notNull (aUserFunc, "UserFunc");
     m_aName = new QName (aUserFunc.getFunctionName ());
 
-    // Pin the arity; argument types are kept opaque (ANY) so we accept whatever the caller
-    // passes - the underlying UserFunction will enforce its declared signature on invocation.
+    // Translate the UserFunction's argument and result SequenceTypes into the s9api flavor so
+    // that Saxon applies the same coercion (atomization, cardinality, type promotion, ...) that
+    // it would for the corresponding XQuery call. Without this, e.g. calling
+    // functx:are-distinct-values (which declares xs:anyAtomicType*) with a sequence of element
+    // nodes throws ClassCastException inside distinct-values().
+    final Processor aProc = (Processor) aConfiguration.getProcessor ();
+    if (aProc == null)
+      throw new IllegalStateException ("Saxon Configuration has no s9api Processor attached. " +
+                                       "Use net.sf.saxon.s9api.Processor.getUnderlyingConfiguration() to obtain a Configuration.");
+
     final int nArity = aUserFunc.getArity ();
     m_aArgumentTypes = new SequenceType [nArity];
     for (int i = 0; i < nArity; i++)
-      m_aArgumentTypes[i] = SequenceType.ANY;
+      m_aArgumentTypes[i] = SequenceType.fromUnderlyingSequenceType (aProc, aUserFunc.getArgumentType (i));
+
+    m_aResultType = SequenceType.fromUnderlyingSequenceType (aProc, aUserFunc.getResultType ());
   }
 
   /**
@@ -92,7 +106,7 @@ public final class XPathFunctionFromUserFunction implements ExtensionFunction
   @NonNull
   public SequenceType getResultType ()
   {
-    return SequenceType.ANY;
+    return m_aResultType;
   }
 
   @NonNull

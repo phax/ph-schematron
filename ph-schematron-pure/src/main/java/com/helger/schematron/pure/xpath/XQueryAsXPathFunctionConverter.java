@@ -47,6 +47,7 @@ import net.sf.saxon.query.XQueryExpression;
 import net.sf.saxon.query.XQueryFunction;
 import net.sf.saxon.query.XQueryFunctionLibrary;
 import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.trans.XPathException;
 
 /**
@@ -134,7 +135,12 @@ public class XQueryAsXPathFunctionConverter
     {
       final ICommonsList <ExtensionFunction> aResult = new CommonsArrayList <> ();
 
-      final Configuration aConfiguration = new Configuration ();
+      // Create the Configuration through a Processor so that Configuration.getProcessor() is wired
+      // up - XPathFunctionFromUserFunction relies on it to translate Saxon-internal SequenceTypes
+      // to s9api SequenceTypes (which in turn lets Saxon coerce argument values at call time, e.g.
+      // atomize node sequences when the user function declares xs:anyAtomicType*).
+      final Processor aXQProcessor = new Processor (false);
+      final Configuration aConfiguration = aXQProcessor.getUnderlyingConfiguration ();
       final DynamicQueryContext aDynamicQueryContext = new DynamicQueryContext (aConfiguration);
       final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();
 
@@ -149,14 +155,12 @@ public class XQueryAsXPathFunctionConverter
       final FunctionLibraryList aFuncLibList = exp.getExecutable ().getFunctionLibrary ();
       for (final FunctionLibrary aFuncLib : aFuncLibList.getLibraryList ())
       {
-        if (aFuncLib instanceof FunctionLibraryList)
+        if (aFuncLib instanceof final FunctionLibraryList aRealFuncLib)
         {
-          final FunctionLibraryList aRealFuncLib = (FunctionLibraryList) aFuncLib;
           for (final FunctionLibrary aNestedFuncLib : aRealFuncLib.getLibraryList ())
           {
-            if (aNestedFuncLib instanceof ExecutableFunctionLibrary)
+            if (aNestedFuncLib instanceof final ExecutableFunctionLibrary aExecNestedFuncLib)
             {
-              final ExecutableFunctionLibrary aExecNestedFuncLib = (ExecutableFunctionLibrary) aNestedFuncLib;
               for (final UserFunction aUserFunc : new CommonsIterableIterator <> (aExecNestedFuncLib.getAllFunctions ()))
               {
                 aResult.add (new XPathFunctionFromUserFunction (aConfiguration, aXQController, aUserFunc));
@@ -181,9 +185,8 @@ public class XQueryAsXPathFunctionConverter
           }
         }
         else
-          if (aFuncLib instanceof XQueryFunctionLibrary)
+          if (aFuncLib instanceof final XQueryFunctionLibrary aRealFuncLib)
           {
-            final XQueryFunctionLibrary aRealFuncLib = (XQueryFunctionLibrary) aFuncLib;
             for (final XQueryFunction aXQueryFunction : new CommonsIterableIterator <> (aRealFuncLib.getFunctionDefinitions ()))
             {
               // Ensure the function is compiled

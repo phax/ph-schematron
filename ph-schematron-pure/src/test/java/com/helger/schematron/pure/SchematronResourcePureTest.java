@@ -23,17 +23,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 
 import org.jspecify.annotations.NonNull;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.io.stream.StringInputStream;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
@@ -47,8 +49,6 @@ import com.helger.schematron.pure.xpath.EXPathVersion;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
-
-import net.sf.saxon.dom.NodeOverNodeInfo;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
@@ -56,11 +56,15 @@ import com.helger.xml.schema.XMLSchemaCache;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.read.DOMReaderSettings;
 
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.s9api.ExtensionFunction;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.OccurrenceIndicator;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SequenceType;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XPathSelector;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
@@ -159,8 +163,8 @@ public final class SchematronResourcePureTest
   }
 
   /**
-   * Demonstrates that the configured {@link EXPathVersion} actually reaches the Saxon compiler:
-   * the test expression uses <code>fn:head(...)</code>, which was introduced in XPath 3.0. With the
+   * Demonstrates that the configured {@link EXPathVersion} actually reaches the Saxon compiler: the
+   * test expression uses <code>fn:head(...)</code>, which was introduced in XPath 3.0. With the
    * default {@link EXPathVersion#XPATH_3_1} the schema binds and the assertion passes. With
    * {@link EXPathVersion#XPATH_2_0} the compiler does not know <code>fn:head</code>, so binding
    * fails.
@@ -207,9 +211,9 @@ public final class SchematronResourcePureTest
   /**
    * Validates that when the XML is provided through {@link SchematronResourcePure#getAsNode} the
    * document ends up parsed straight into a Saxon TinyTree exposed behind a
-   * {@link net.sf.saxon.dom.NodeOverNodeInfo} facade — instead of a regular DOM document — and
-   * that validation still works end-to-end. Also checks the fall-back to plain DOM parsing when a
-   * custom XML entity resolver is configured.
+   * {@link net.sf.saxon.dom.NodeOverNodeInfo} facade — instead of a regular DOM document — and that
+   * validation still works end-to-end. Also checks the fall-back to plain DOM parsing when a custom
+   * XML entity resolver is configured.
    */
   @Test
   public void testSaxonTinyTreeFastPath () throws Exception
@@ -327,7 +331,7 @@ public final class SchematronResourcePureTest
 
     // Test with variable and function resolver
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addExternalVariable (new QName ("title-element"),
-                                                                                      new XdmAtomicValue ("title"))
+                                                                                     new XdmAtomicValue ("title"))
                                                                .addExtensionFunction (new MyCountFunction ())
                                                                .build ();
 
@@ -354,7 +358,8 @@ public final class SchematronResourcePureTest
 
     public SequenceType [] getArgumentTypes ()
     {
-      return new SequenceType [] { SequenceType.makeSequenceType (ItemType.ANY_NODE, OccurrenceIndicator.ZERO_OR_MORE) };
+      return new SequenceType [] { SequenceType.makeSequenceType (ItemType.ANY_NODE,
+                                                                  OccurrenceIndicator.ZERO_OR_MORE) };
     }
 
     @Override
@@ -379,8 +384,10 @@ public final class SchematronResourcePureTest
         else
           ret.append (", ");
 
-        ret.append (aXdmNode.getNodeName ().getLocalName ()).append ("[").append (aXdmNode.getStringValue ()).append (
-                                                                                                                      "]");
+        ret.append (aXdmNode.getNodeName ().getLocalName ())
+           .append ("[")
+           .append (aXdmNode.getStringValue ())
+           .append ("]");
       }
       return new XdmAtomicValue (ret.toString ());
     }
@@ -478,7 +485,6 @@ public final class SchematronResourcePureTest
   }
 
   @Test
-  @Ignore
   public void testResolveFunctXAreDistinctValuesQueryFunctions () throws Exception
   {
     final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
@@ -518,6 +524,55 @@ public final class SchematronResourcePureTest
     // XXX fails :(
     assertTrue (aErrorHandler.getAllErrors ().toString (), aErrorHandler.isEmpty ());
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+  }
+
+  /**
+   * Standalone XPath-only test (no Schematron) that proves the {@code functx:are-distinct-values}
+   * user function can be called via the Saxon s9api. Originally this exercised the JAXP XPath API
+   * and hit a {@code ClassCastException} between {@code DOMNodeWrapper} and {@code AtomicValue}
+   * inside {@code distinct-values}; the s9api path with a TinyTree-built document avoids the DOM
+   * bridge entirely and behaves correctly.
+   *
+   * @throws Exception
+   *         on error
+   */
+  @Test
+  public void testResolveXQueryAreDistinctValues () throws Exception
+  {
+    final Processor aProc = new Processor (false);
+
+    // Register all functx extension functions on the processor
+    final ICommonsList <ExtensionFunction> aFunctions = new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ));
+    for (final ExtensionFunction aFn : aFunctions)
+      aProc.registerExtensionFunction (aFn);
+
+    // Build the input document as a Saxon TinyTree
+    final byte [] aXmlBytes = ("<?xml version='1.0'?>" +
+                               "<chapter>" +
+                               "<title/>" +
+                               "<para>100</para>" +
+                               "<para>200</para>" +
+                               "</chapter>").getBytes (StandardCharsets.UTF_8);
+    final XdmNode aDocXdm = aProc.newDocumentBuilder ()
+                                 .build (new StreamSource (new NonBlockingByteArrayInputStream (aXmlBytes)));
+
+    final XPathCompiler aXPathC = aProc.newXPathCompiler ();
+    aXPathC.declareNamespace ("functx", "http://www.functx.com");
+
+    // count(/chapter/para) == 2
+    XPathSelector sel = aXPathC.compile ("count(/chapter/para)").load ();
+    sel.setContextItem (aDocXdm);
+    assertEquals (2L, ((XdmAtomicValue) sel.evaluateSingle ()).getLongValue ());
+
+    // count(distinct-values(/chapter/para)) == 2
+    sel = aXPathC.compile ("count(distinct-values(/chapter/para))").load ();
+    sel.setContextItem (aDocXdm);
+    assertEquals (2L, ((XdmAtomicValue) sel.evaluateSingle ()).getLongValue ());
+
+    // functx:are-distinct-values(/chapter/para) == true
+    sel = aXPathC.compile ("functx:are-distinct-values(/chapter/para)").load ();
+    sel.setContextItem (aDocXdm);
+    assertTrue (((XdmAtomicValue) sel.evaluateSingle ()).getBooleanValue ());
   }
 
   @Test
