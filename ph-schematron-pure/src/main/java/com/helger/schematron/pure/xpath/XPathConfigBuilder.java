@@ -16,217 +16,156 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import java.lang.reflect.InvocationTargetException;
-
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
+import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.helger.base.CGlobal;
+import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.string.StringHelper;
-import com.helger.base.system.SystemProperties;
 import com.helger.base.tostring.ToStringGenerator;
-import com.helger.xml.xpath.XPathHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
- * Builder class for {@link IXPathConfig}.
+ * Builder class for {@link IXPathConfig}. Since v9.2.0 this is based on the Saxon s9api.
  *
- * @author Thomas Pasch
+ * @author Philip Helger
  * @since 5.5.0
  */
-public class XPathConfigBuilder
+public class XPathConfigBuilder implements IBuilder <IXPathConfig>
 {
-  public static final XPathFactory XPATH_FACTORY_SAXON_FIRST = XPathHelper.createXPathFactorySaxonFirst ();
-  public static final IXPathConfig DEFAULT = new XPathConfig (XPATH_FACTORY_SAXON_FIRST, null, null);
+  /**
+   * The default Saxon {@link Processor} used when no explicit one is provided. It uses Saxon-HE in
+   * non-licensed mode.
+   */
+  public static final Processor DEFAULT_PROCESSOR = new Processor (false);
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (XPathConfigBuilder.class);
+  /**
+   * The default {@link IXPathConfig} when nothing is customized.
+   */
+  public static final IXPathConfig DEFAULT = new XPathConfig (DEFAULT_PROCESSOR, null, null);
 
-  private XPathFactory m_aXPathFactory;
-  private Class <? extends XPathFactory> m_aXPathFactoryClass;
-  private String m_sGlobalXPathFactoryClassName;
-  private XPathVariableResolver m_aXPathVariableResolver;
-  private XPathFunctionResolver m_aXPathFunctionResolver;
+  private Processor m_aProcessor;
+  private final ICommonsList <ExtensionFunction> m_aExtensionFunctions = new CommonsArrayList <> ();
+  private final ICommonsMap <QName, XdmValue> m_aExternalVariables = new CommonsHashMap <> ();
 
   public XPathConfigBuilder ()
   {}
 
   @Nullable
-  public final XPathFactory getXPathFactory ()
+  public final Processor getProcessor ()
   {
-    return m_aXPathFactory;
+    return m_aProcessor;
   }
 
   /**
-   * Set the {@link XPathFactory} to use. This instance always has priority 1.
+   * Set the Saxon {@link Processor} to use. If never set, {@link #DEFAULT_PROCESSOR} is used by
+   * {@link #build()}.
    *
-   * @param aXPathFactory
-   *        The factory to use. May not be <code>null</code>.
-   * @return this for chaining.
-   */
-  @NonNull
-  public final XPathConfigBuilder setXPathFactory (@NonNull final XPathFactory aXPathFactory)
-  {
-    ValueEnforcer.notNull (aXPathFactory, "XPathFactoryClass");
-    m_aXPathFactory = aXPathFactory;
-    return this;
-  }
-
-  @Nullable
-  public final Class <? extends XPathFactory> getXPathFactoryClass ()
-  {
-    return m_aXPathFactoryClass;
-  }
-
-  /**
-   * Set the {@link XPathFactory} class to instantiate. This has priority 2 and is only used if
-   * {@link #getXPathFactory()} is <code>null</code>.
-   *
-   * @param aXPathFactoryClass
-   *        The factory to use. May not be <code>null</code>.
-   * @return this for chaining.
-   * @see #setXPathFactory(XPathFactory)
-   * @see #setGlobalXPathFactory(String)
-   */
-  @NonNull
-  public final XPathConfigBuilder setXPathFactoryClass (@NonNull final Class <? extends XPathFactory> aXPathFactoryClass)
-  {
-    ValueEnforcer.notNull (aXPathFactoryClass, "XPathFactoryClass");
-    m_aXPathFactoryClass = aXPathFactoryClass;
-    return this;
-  }
-
-  @Nullable
-  public final String getGlobalXPathFactory ()
-  {
-    return m_sGlobalXPathFactoryClassName;
-  }
-
-  /**
-   * With Java 11+ module path system, you can't access
-   * <code>com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl</code> as package
-   * <code>com.sun.org.apache.xpath.internal.jaxp</code> is declared in module java.xml, which does
-   * not export it.<br>
-   * The only way to use it, is to set/alter the <code>javax.xml.xpath.XPathFactory</code> system
-   * property. However, this change is <em>global</em> to the application.
-   *
-   * @param sGlobalXPathFactory
-   *        Fully qualified class name of the 'default' {@link XPathFactory}. Most commonly set to
-   *        'com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl'.
+   * @param aProcessor
+   *        The Saxon Processor to use. May not be <code>null</code>.
    * @return this for chaining
-   * @see #setXPathFactory(XPathFactory)
-   * @see #setXPathFactoryClass(Class)
    */
   @NonNull
-  public final XPathConfigBuilder setGlobalXPathFactory (@Nullable final String sGlobalXPathFactory)
+  public final XPathConfigBuilder setProcessor (@NonNull final Processor aProcessor)
   {
-    m_sGlobalXPathFactoryClassName = sGlobalXPathFactory;
+    ValueEnforcer.notNull (aProcessor, "Processor");
+    m_aProcessor = aProcessor;
     return this;
   }
 
-  @Nullable
-  public final XPathVariableResolver getXPathVariableResolver ()
-  {
-    return m_aXPathVariableResolver;
-  }
-
+  /**
+   * Add a Saxon {@link ExtensionFunction} to be registered on the {@link Processor}.
+   *
+   * @param aFunction
+   *        The function to add. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @NonNull
-  public final XPathConfigBuilder setXPathVariableResolver (@Nullable final XPathVariableResolver xPathVariableResolver)
+  public final XPathConfigBuilder addExtensionFunction (@NonNull final ExtensionFunction aFunction)
   {
-    m_aXPathVariableResolver = xPathVariableResolver;
+    ValueEnforcer.notNull (aFunction, "Function");
+    m_aExtensionFunctions.add (aFunction);
     return this;
   }
 
-  @Nullable
-  public final XPathFunctionResolver getXPathFunctionResolver ()
+  /**
+   * Add several Saxon {@link ExtensionFunction}s to be registered on the {@link Processor}.
+   *
+   * @param aFunctions
+   *        The functions to add. May be <code>null</code>.
+   * @return this for chaining
+   */
+  @NonNull
+  public final XPathConfigBuilder addAllExtensionFunctions (@Nullable final Iterable <? extends ExtensionFunction> aFunctions)
   {
-    return m_aXPathFunctionResolver;
+    if (aFunctions != null)
+      for (final ExtensionFunction aFunc : aFunctions)
+        if (aFunc != null)
+          m_aExtensionFunctions.add (aFunc);
+    return this;
   }
 
+  /**
+   * Add an external XPath variable binding.
+   *
+   * @param aName
+   *        The variable name. May not be <code>null</code>.
+   * @param aValue
+   *        The variable value as an {@link XdmValue}. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @NonNull
-  public final XPathConfigBuilder setXPathFunctionResolver (@Nullable final XPathFunctionResolver xPathFunctionResolver)
+  public final XPathConfigBuilder addExternalVariable (@NonNull final QName aName, @NonNull final XdmValue aValue)
   {
-    m_aXPathFunctionResolver = xPathFunctionResolver;
+    ValueEnforcer.notNull (aName, "Name");
+    ValueEnforcer.notNull (aValue, "Value");
+    m_aExternalVariables.put (aName, aValue);
+    return this;
+  }
+
+  /**
+   * Add several external XPath variable bindings.
+   *
+   * @param aVariables
+   *        Variable name to value mapping. May be <code>null</code>.
+   * @return this for chaining
+   */
+  @NonNull
+  public final XPathConfigBuilder addAllExternalVariables (@Nullable final Map <QName, ? extends XdmValue> aVariables)
+  {
+    if (aVariables != null)
+      for (final Map.Entry <QName, ? extends XdmValue> aEntry : aVariables.entrySet ())
+        m_aExternalVariables.put (aEntry.getKey (), aEntry.getValue ());
     return this;
   }
 
   @NonNull
-  public IXPathConfig build () throws XPathFactoryConfigurationException
+  public IXPathConfig build ()
   {
-    // Check if a predefined XPathFactory is present
-    XPathFactory aXPathFactory = m_aXPathFactory;
-    if (aXPathFactory != null)
-    {
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Using provided XPathFactory instance");
-    }
-    else
-    {
-      if (m_aXPathFactoryClass != null)
-      {
-        if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Trying to instantiate XPathFactory class " + m_aXPathFactoryClass);
+    final Processor aProcessor = m_aProcessor != null ? m_aProcessor : DEFAULT_PROCESSOR;
 
-        try
-        {
-          aXPathFactory = m_aXPathFactoryClass.getConstructor (CGlobal.EMPTY_CLASS_ARRAY)
-                                              .newInstance (CGlobal.EMPTY_OBJECT_ARRAY);
-        }
-        catch (final InvocationTargetException ex)
-        {
-          throw new XPathFactoryConfigurationException (ex.getCause ());
-        }
-        catch (final Exception ex)
-        {
-          throw new XPathFactoryConfigurationException (ex);
-        }
-      }
-      else
-        if (StringHelper.isNotEmpty (m_sGlobalXPathFactoryClassName))
-        {
-          if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("Trying to set global XPathFactory system property to '" +
-                          m_sGlobalXPathFactoryClassName +
-                          "'");
+    // Register extension functions on the Processor
+    for (final ExtensionFunction aFunc : m_aExtensionFunctions)
+      aProcessor.registerExtensionFunction (aFunc);
 
-          if (SystemProperties.setPropertyValue ("javax.xml.xpath.XPathFactory", m_sGlobalXPathFactoryClassName)
-                              .isChanged ())
-          {
-            LOGGER.info ("Setting global system property 'javax.xml.xpath.XPathFactory' to '" +
-                         m_sGlobalXPathFactoryClassName +
-                         "'");
-          }
-
-          // Fall back to the global XPath factory
-          aXPathFactory = XPathFactory.newInstance ();
-        }
-        else
-        {
-          if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("The XPathConfigBuilder contains no clue what XPathFactory to use - using default.");
-
-          // DEFAULT as fallback
-          aXPathFactory = XPATH_FACTORY_SAXON_FIRST;
-        }
-    }
-
-    return new XPathConfig (aXPathFactory, m_aXPathVariableResolver, m_aXPathFunctionResolver);
+    return new XPathConfig (aProcessor, m_aExtensionFunctions, m_aExternalVariables);
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("XPathFactory", m_aXPathFactory)
-                                       .append ("XPathFactoryClass", m_aXPathFactoryClass)
-                                       .append ("GlobalXPathFactoryClassName", m_sGlobalXPathFactoryClassName)
-                                       .append ("XPathVariableResolver", m_aXPathVariableResolver)
-                                       .append ("XPathFunctionResolver", m_aXPathFunctionResolver)
+    return new ToStringGenerator (this).append ("Processor", m_aProcessor)
+                                       .append ("ExtensionFunctions", m_aExtensionFunctions)
+                                       .append ("ExternalVariables", m_aExternalVariables)
                                        .getToString ();
   }
 }

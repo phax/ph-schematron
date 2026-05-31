@@ -16,29 +16,27 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
-
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.style.MustImplementEqualsAndHashcode;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
  * XPath configuration to use.
  * <p>
- * This is a counter-measure against
- * <a href="https://github.com/phax/ph-schematron/issues/96">#96</a>: When using
- * Saxon-HE, you have stripped down XPath support (no XPath higher order
- * functions according to the <a href=
- * "https://www.saxonica.com/html/products/feature-matrix-9-9.html">saxon
- * feature matrix</a>). In this case, you perhaps want to use a different
- * <em>XPath implementation</em> (most commonly the XPath implementation shipped
- * with Java).
+ * Since v9.2.0 this is based on the Saxon s9api (XPath 2.0/3.x). The configuration carries the
+ * Saxon {@link Processor} that is used for compiling and evaluating XPath expressions, an optional
+ * list of Saxon {@link ExtensionFunction}s to be registered on the processor, and an optional map
+ * of external variables to be pre-bound before each evaluation.
  * </p>
  *
- * @author Thomas Pasch
+ * @author Philip Helger
  * @since 5.5.0
  * @see com.helger.schematron.pure.SchematronResourcePure
  * @see com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema
@@ -48,21 +46,23 @@ import com.helger.annotation.style.MustImplementEqualsAndHashcode;
 public interface IXPathConfig
 {
   /**
-   * @return The {@link XPathFactory} to use. May not be <code>null</code>.
+   * @return The Saxon {@link Processor} to use. Never <code>null</code>.
    */
   @NonNull
-  XPathFactory getXPathFactory ();
+  Processor getProcessor ();
 
   /**
-   * @return The {@link XPathVariableResolver} to use. May be <code>null</code>.
+   * @return The Saxon {@link ExtensionFunction} instances to be registered on the {@link Processor}
+   *         when this configuration is activated. Never <code>null</code> but maybe empty.
    */
-  @Nullable
-  XPathVariableResolver getXPathVariableResolver ();
+  @NonNull
+  ICommonsList <ExtensionFunction> getAllExtensionFunctions ();
 
   /**
-   * @return The {@link XPathFunctionResolver} to use. May not be
-   *         <code>null</code>.
+   * @return The external XPath variables, as a map from variable name to its sequence value. These
+   *         are bound before every XPath evaluation in addition to schema-local
+   *         &lt;let&gt;-variables. Never <code>null</code> but maybe empty.
    */
-  @Nullable
-  XPathFunctionResolver getXPathFunctionResolver ();
+  @NonNull
+  ICommonsMap <QName, XdmValue> getAllExternalVariables ();
 }

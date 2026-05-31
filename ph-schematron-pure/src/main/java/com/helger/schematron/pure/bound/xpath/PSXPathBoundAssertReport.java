@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import javax.xml.xpath.XPathExpression;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -29,6 +27,8 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.schematron.pure.model.PSAssertReport;
 
+import net.sf.saxon.s9api.XPathExecutable;
+
 /**
  * This class represents a single XPath-bound assert- or report-element.
  *
@@ -39,13 +39,13 @@ public class PSXPathBoundAssertReport
 {
   private final PSAssertReport m_aAssertReport;
   private final String m_sTestExpression;
-  private final XPathExpression m_aBoundTestExpression;
+  private final XPathExecutable m_aBoundTestExpression;
   private final ICommonsList <PSXPathBoundElement> m_aBoundContent;
   private final ICommonsMap <String, PSXPathBoundDiagnostic> m_aBoundDiagnostics;
 
   public PSXPathBoundAssertReport (@NonNull final PSAssertReport aAssertReport,
                                    @NonNull final String sTestExpression,
-                                   @NonNull final XPathExpression aBoundTestExpression,
+                                   @NonNull final XPathExecutable aBoundTestExpression,
                                    @NonNull final ICommonsList <PSXPathBoundElement> aBoundContent,
                                    @NonNull final ICommonsMap <String, PSXPathBoundDiagnostic> aBoundDiagnostics)
   {
@@ -84,7 +84,7 @@ public class PSXPathBoundAssertReport
    * @return The pre-compiled XPath expression. Never <code>null</code>.
    */
   @NonNull
-  public final XPathExpression getBoundTestExpression ()
+  public final XPathExecutable getBoundTestExpression ()
   {
     return m_aBoundTestExpression;
   }

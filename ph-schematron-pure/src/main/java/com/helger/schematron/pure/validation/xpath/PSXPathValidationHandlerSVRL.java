@@ -19,8 +19,6 @@ package com.helger.schematron.pure.validation.xpath;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -33,6 +31,7 @@ import com.helger.base.location.SimpleLocation;
 import com.helger.base.state.EContinue;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
 import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
@@ -54,6 +53,7 @@ import com.helger.schematron.pure.model.PSTitle;
 import com.helger.schematron.pure.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
+import com.helger.schematron.pure.xpath.XPathEvaluationContext;
 import com.helger.schematron.pure.xpath.XPathEvaluationHelper;
 import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
@@ -66,12 +66,15 @@ import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmValue;
+
 /**
- * A special validation handler that creates an SVRL document. This class only
- * works for the XPath binding, as the special {@link PSXPathBoundAssertReport}
- * class is referenced!<br>
- * See https://schematron.com/document/3464.html for the proposed default
- * mapping from SCH to SVRL
+ * A special validation handler that creates an SVRL document. This class only works for the XPath
+ * binding, as the special {@link PSXPathBoundAssertReport} class is referenced!<br>
+ * See https://schematron.com/document/3464.html for the proposed default mapping from SCH to SVRL
  *
  * @author Philip Helger
  */
@@ -84,7 +87,6 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   private SchematronOutputType m_aSchematronOutput;
   private PSSchema m_aSchema;
   private MapBasedNamespaceContext m_aNSContext;
-  private String m_sBaseURI;
 
   /**
    * Constructor
@@ -162,11 +164,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     aSchematronOutput.setSchemaVersion (aSchema.getSchemaVersion ());
     aSchematronOutput.setTitle (_getTitleAsString (aSchema.getTitle ()));
 
-    // Add namespace prefixes
     m_aSchematronOutput = aSchematronOutput;
     m_aSchema = aSchema;
     m_aNSContext = aSchema.getAsNamespaceContext ();
-    m_sBaseURI = sBaseURI;
 
     for (final Map.Entry <String, String> aEntry : m_aNSContext.getPrefixToNamespaceURIMap ().entrySet ())
     {
@@ -181,11 +181,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   public void onPattern (@NonNull final PSPattern aPattern) throws SchematronValidationException
   {
     final ActivePattern aRetPattern = new ActivePattern ();
-    // TODO documents
     aRetPattern.setId (aPattern.getID ());
     if (aPattern.hasTitle ())
       aRetPattern.setName (_getTitleAsString (aPattern.getTitle ()));
-    // TODO role
     m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aRetPattern);
   }
 
@@ -214,21 +212,20 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aRetRule);
   }
 
+  @Nullable
+  private static String _evaluateAsString (@NonNull final PSXPathBoundElement aBoundElement,
+                                           @NonNull final Node aSourceNode) throws SaxonApiException
+  {
+    final XPathEvaluationContext aCtx = XPathEvaluationContext.current ();
+    if (aCtx == null)
+      return null;
+    final XdmNode aCtxXdm = aCtx.wrap (aSourceNode);
+    final ICommonsMap <QName, XdmValue> aVars = aCtx.getCurrentVariables ();
+    return XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aCtxXdm, aVars, " ");
+  }
+
   /**
    * Get the error text from an assert or report element.
-   *
-   * @param aBoundContentElements
-   *        The list of bound elements to be evaluated.
-   * @param aSourceNode
-   *        The XML node of the document currently validated.
-   * @param aEvaluationException
-   *        An optional exception that may occur while evaluating the test
-   *        expression. May be <code>null</code>.
-   * @param sTestExpression
-   *        The test expression that was evaluated. May be <code>null</code>.
-   * @return A non-<code>null</code> String
-   * @throws SchematronValidationException
-   *         In case evaluating an XPath expression fails.
    */
   @NonNull
   private Text _getErrorText (@NonNull final List <PSXPathBoundElement> aBoundContentElements,
@@ -253,49 +250,43 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
         if (aContent instanceof String)
           aSB.append ((String) aContent);
         else
-          if (aContent instanceof PSName)
+          if (aContent instanceof final PSName aName)
           {
-            final PSName aName = (PSName) aContent;
             if (aName.hasPath ())
             {
-              // XPath present
               try
               {
-                aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                    aSourceNode,
-                                                                    m_sBaseURI));
+                final String sValue = _evaluateAsString (aBoundElement, aSourceNode);
+                if (sValue != null)
+                  aSB.append (sValue);
               }
-              catch (final XPathExpressionException ex)
+              catch (final SaxonApiException ex)
               {
                 _onError (aName,
                           "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
                           ex.getCause () != null ? ex.getCause () : ex);
-                // Append the path so that something is present in the output
                 aSB.append (aName.getPath ());
               }
             }
             else
             {
-              // No XPath present
               aSB.append (aSourceNode.getNodeName ());
             }
           }
           else
-            if (aContent instanceof PSValueOf)
+            if (aContent instanceof final PSValueOf aValueOf)
             {
-              final PSValueOf aValueOf = (PSValueOf) aContent;
               try
               {
-                aSB.append (XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (),
-                                                                    aSourceNode,
-                                                                    m_sBaseURI));
+                final String sValue = _evaluateAsString (aBoundElement, aSourceNode);
+                if (sValue != null)
+                  aSB.append (sValue);
               }
-              catch (final XPathExpressionException ex)
+              catch (final SaxonApiException ex)
               {
                 _onError (aValueOf,
                           "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
                           ex);
-                // Append the path so that something is present in the output
                 aSB.append (aValueOf.getSelect ());
               }
             }
@@ -320,20 +311,6 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
 
   /**
    * Handle the diagnostic references of a single assert/report element
-   *
-   * @param aSrcDiagnostics
-   *        The list of diagnostic reference IDs in the source assert/report
-   *        element. May be <code>null</code> if no diagnostic references are
-   *        present
-   * @param aDstList
-   *        The diagnostic reference list of the SchematronOutput to be filled.
-   *        May not be <code>null</code>.
-   * @param aBoundAssertReport
-   *        The bound assert report element. Never <code>null</code>.
-   * @param aRuleMatchingNode
-   *        The XML node of the XML document currently validated. Never
-   *        <code>null</code>.
-   * @throws SchematronValidationException
    */
   private void _handleDiagnosticReferences (@Nullable final List <String> aSrcDiagnostics,
                                             @NonNull final List <? super DiagnosticReference> aDstList,
@@ -352,7 +329,6 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             _onWarn (aDiagnostics, "Failed to resolve diagnostics with ID '" + sDiagnosticID + "'");
           else
           {
-            // Create the SVRL diagnostic-reference element
             final DiagnosticReference aDR = new DiagnosticReference ();
             aDR.setDiagnostic (sDiagnosticID);
             final PSRichGroup aRich = aDiagnostic.getDiagnostic ().getRich ();
@@ -407,7 +383,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       if (aOwningRule.hasLinkable ())
         sLocation = aOwningRule.getLinkable ().getSubject ();
       if (StringHelper.isEmpty (sLocation))
-        sLocation = true ? _getPathToNode (aRuleMatchingNode) : aOwningRule.getContext ();
+        sLocation = _getPathToNode (aRuleMatchingNode);
     }
     return sLocation;
   }
@@ -422,11 +398,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                    @Nullable final Object aContext,
                                    @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
-    if (!(aContext instanceof PSXPathBoundAssertReport))
+    if (!(aContext instanceof final PSXPathBoundAssertReport aBoundAssertReport))
       throw new SchematronValidationException ("The passed context must be a PSXPathBoundAssertReport object but is a " +
                                                aContext);
-    final PSXPathBoundAssertReport aBoundAssertReport = (PSXPathBoundAssertReport) aContext;
-
     final FailedAssert aFailedAssert = new FailedAssert ();
     aFailedAssert.setFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
@@ -456,11 +430,9 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
                                        @Nullable final Object aContext,
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
-    if (!(aContext instanceof PSXPathBoundAssertReport))
+    if (!(aContext instanceof final PSXPathBoundAssertReport aBoundAssertReport))
       throw new SchematronValidationException ("The passed context must be a PSXPathBoundAssertReport object but is a " +
                                                aContext);
-    final PSXPathBoundAssertReport aBoundAssertReport = (PSXPathBoundAssertReport) aContext;
-
     final SuccessfulReport aSuccessfulReport = new SuccessfulReport ();
     aSuccessfulReport.setFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());

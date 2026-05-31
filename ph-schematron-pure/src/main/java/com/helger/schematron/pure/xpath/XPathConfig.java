@@ -16,58 +16,66 @@
  */
 package com.helger.schematron.pure.xpath;
 
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+
+import net.sf.saxon.s9api.ExtensionFunction;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmValue;
 
 /**
- * The immutable default implementation of {@link IXPathConfig}
+ * The immutable default implementation of {@link IXPathConfig}.
  *
- * @author Thomas Pasch
+ * @author Philip Helger
  * @since 5.5.0
  */
 @Immutable
 public class XPathConfig implements IXPathConfig
 {
-  private final XPathFactory m_aXPathFactory;
-  private final XPathVariableResolver m_aXPathVariableResolver;
-  private final XPathFunctionResolver m_aXPathFunctionResolver;
+  private final Processor m_aProcessor;
+  private final ICommonsList <ExtensionFunction> m_aExtensionFunctions;
+  private final ICommonsMap <QName, XdmValue> m_aExternalVariables;
 
-  public XPathConfig (@NonNull final XPathFactory aXPathFactory,
-                      @Nullable final XPathVariableResolver aXPathVariableResolver,
-                      @Nullable final XPathFunctionResolver aXPathFunctionResolver)
+  public XPathConfig (@NonNull final Processor aProcessor,
+                      @Nullable final ICommonsList <ExtensionFunction> aExtensionFunctions,
+                      @Nullable final ICommonsMap <QName, XdmValue> aExternalVariables)
   {
-    ValueEnforcer.notNull (aXPathFactory, "XPathFactory");
-    m_aXPathFactory = aXPathFactory;
-    m_aXPathVariableResolver = aXPathVariableResolver;
-    m_aXPathFunctionResolver = aXPathFunctionResolver;
+    ValueEnforcer.notNull (aProcessor, "Processor");
+    m_aProcessor = aProcessor;
+    m_aExtensionFunctions = aExtensionFunctions != null ? aExtensionFunctions.getClone () : new CommonsArrayList <> ();
+    m_aExternalVariables = aExternalVariables != null ? aExternalVariables.getClone () : new CommonsHashMap <> ();
   }
 
   @NonNull
-  public XPathFactory getXPathFactory ()
+  public Processor getProcessor ()
   {
-    return m_aXPathFactory;
+    return m_aProcessor;
   }
 
-  @Nullable
-  public XPathVariableResolver getXPathVariableResolver ()
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <ExtensionFunction> getAllExtensionFunctions ()
   {
-    return m_aXPathVariableResolver;
+    return m_aExtensionFunctions.getClone ();
   }
 
-  @Nullable
-  public XPathFunctionResolver getXPathFunctionResolver ()
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsMap <QName, XdmValue> getAllExternalVariables ()
   {
-    return m_aXPathFunctionResolver;
+    return m_aExternalVariables.getClone ();
   }
 
   @Override
@@ -78,26 +86,26 @@ public class XPathConfig implements IXPathConfig
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final XPathConfig rhs = (XPathConfig) o;
-    return m_aXPathFactory.equals (rhs.m_aXPathFactory) &&
-           EqualsHelper.equals (m_aXPathVariableResolver, rhs.m_aXPathVariableResolver) &&
-           EqualsHelper.equals (m_aXPathFunctionResolver, rhs.m_aXPathFunctionResolver);
+    return m_aProcessor.equals (rhs.m_aProcessor) &&
+           EqualsHelper.equals (m_aExtensionFunctions, rhs.m_aExtensionFunctions) &&
+           EqualsHelper.equals (m_aExternalVariables, rhs.m_aExternalVariables);
   }
 
   @Override
   public int hashCode ()
   {
-    return new HashCodeGenerator (this).append (m_aXPathFactory)
-                                       .append (m_aXPathVariableResolver)
-                                       .append (m_aXPathFunctionResolver)
+    return new HashCodeGenerator (this).append (m_aProcessor)
+                                       .append (m_aExtensionFunctions)
+                                       .append (m_aExternalVariables)
                                        .getHashCode ();
   }
 
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("XPathFactory", m_aXPathFactory)
-                                       .append ("XPathVariableResolver", m_aXPathVariableResolver)
-                                       .append ("XPathFunctionResolver", m_aXPathFunctionResolver)
+    return new ToStringGenerator (this).append ("Processor", m_aProcessor)
+                                       .append ("ExtensionFunctions", m_aExtensionFunctions)
+                                       .append ("ExternalVariables", m_aExternalVariables)
                                        .getToString ();
   }
 }

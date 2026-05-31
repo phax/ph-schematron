@@ -18,8 +18,6 @@ package com.helger.schematron.pure.binding.xpath;
 
 import java.io.Serializable;
 
-import javax.xml.xpath.XPathExpression;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -27,6 +25,8 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.clone.ICloneable;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.collection.commons.ICommonsOrderedSet;
+
+import net.sf.saxon.s9api.XPathExecutable;
 
 /**
  * Read-only interface for {@link PSXPathVariables}.
@@ -40,7 +40,7 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    */
   @NonNull
   @ReturnsMutableCopy
-  ICommonsOrderedMap <String, XPathExpression> getAll ();
+  ICommonsOrderedMap <String, XPathExecutable> getAll ();
 
   /**
    * @return All contained variable names. Never <code>null</code>.
@@ -64,5 +64,5 @@ public interface IPSXPathVariables extends ICloneable <PSXPathVariables>, Serial
    *         such variable is present.
    */
   @Nullable
-  XPathExpression get (@Nullable String sName);
+  XPathExecutable get (@Nullable String sName);
 }

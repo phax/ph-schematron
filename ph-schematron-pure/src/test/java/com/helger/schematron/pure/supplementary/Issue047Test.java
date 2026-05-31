@@ -32,13 +32,10 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 public final class Issue047Test
 {
-
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().setXPathFunctionResolver ( (aFunctionName, aArity) -> {
-      System.out.println (aFunctionName + " - " + aArity);
-      return null;
-    }).build ();
+    // No-op customization - Saxon resolves all referenced functions on its own here.
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().build ();
     final SchematronResourcePure aSCH = new SchematronResourcePure (new FileSystemResource (aSchematron)).setXPathConfig (aXPathConfig);
 
     // Perform validation
