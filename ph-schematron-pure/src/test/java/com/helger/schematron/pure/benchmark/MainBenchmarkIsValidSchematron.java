@@ -24,7 +24,7 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
+import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;

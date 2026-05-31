@@ -25,7 +25,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
-import com.helger.schematron.pure.model.PSRule;
+import com.helger.schematron.model.PSRule;
 
 import net.sf.saxon.s9api.XPathExecutable;
 

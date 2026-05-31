@@ -24,8 +24,8 @@ import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.state.EContinue;
 import com.helger.base.state.EValidity;
 import com.helger.base.tostring.ToStringGenerator;
-import com.helger.schematron.pure.model.PSAssertReport;
-import com.helger.schematron.pure.model.PSRule;
+import com.helger.schematron.model.PSAssertReport;
+import com.helger.schematron.model.PSRule;
 
 /**
  * A simple implementation if {@link IPSValidationHandler} that stops validation

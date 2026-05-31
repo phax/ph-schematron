@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 
 public final class Issue004Test
 {

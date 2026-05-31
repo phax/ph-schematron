@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>9.2.1-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-pure</artifactId>
   <packaging>jar</packaging>
@@ -62,7 +62,11 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
     </dependency>
-    
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-model</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -71,6 +75,11 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-testfiles</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-isosch</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

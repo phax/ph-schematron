@@ -24,7 +24,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
-import com.helger.schematron.pure.model.PSPattern;
+import com.helger.schematron.model.PSPattern;
 
 /**
  * This class represents a single XPath-bound pattern-element.

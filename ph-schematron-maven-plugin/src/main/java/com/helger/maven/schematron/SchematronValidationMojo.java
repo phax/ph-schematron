@@ -52,7 +52,7 @@ import com.helger.schematron.CSchematron;
 import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;

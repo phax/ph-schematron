@@ -31,11 +31,11 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.diagnostics.log.LogHelper;
-import com.helger.schematron.pure.model.PSAssertReport;
-import com.helger.schematron.pure.model.PSPattern;
-import com.helger.schematron.pure.model.PSPhase;
-import com.helger.schematron.pure.model.PSRule;
-import com.helger.schematron.pure.model.PSSchema;
+import com.helger.schematron.model.PSAssertReport;
+import com.helger.schematron.model.PSPattern;
+import com.helger.schematron.model.PSPhase;
+import com.helger.schematron.model.PSRule;
+import com.helger.schematron.model.PSSchema;
 import com.helger.xml.XMLDebug;
 
 /**

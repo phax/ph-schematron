@@ -23,11 +23,11 @@ import org.w3c.dom.NodeList;
 
 import com.helger.annotation.Nonnegative;
 import com.helger.base.state.EContinue;
-import com.helger.schematron.pure.model.PSAssertReport;
-import com.helger.schematron.pure.model.PSPattern;
-import com.helger.schematron.pure.model.PSPhase;
-import com.helger.schematron.pure.model.PSRule;
-import com.helger.schematron.pure.model.PSSchema;
+import com.helger.schematron.model.PSAssertReport;
+import com.helger.schematron.model.PSPattern;
+import com.helger.schematron.model.PSPhase;
+import com.helger.schematron.model.PSRule;
+import com.helger.schematron.model.PSSchema;
 
 /**
  * Base interface for a Schematron validation callback handler. It is only

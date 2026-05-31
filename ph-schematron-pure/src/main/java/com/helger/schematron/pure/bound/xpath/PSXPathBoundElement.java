@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
-import com.helger.schematron.pure.model.IPSElement;
+import com.helger.schematron.model.IPSElement;
 
 import net.sf.saxon.s9api.XPathExecutable;
 

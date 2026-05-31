@@ -23,7 +23,7 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
-import com.helger.schematron.pure.model.PSDiagnostic;
+import com.helger.schematron.model.PSDiagnostic;
 
 /**
  * This class represents a single XPath-bound diagnostic-element.

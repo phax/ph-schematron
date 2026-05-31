@@ -27,9 +27,9 @@ import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.CommonsTreeSet;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsSortedSet;
-import com.helger.schematron.pure.model.PSPattern;
-import com.helger.schematron.pure.model.PSRule;
-import com.helger.schematron.pure.model.PSSchema;
+import com.helger.schematron.model.PSPattern;
+import com.helger.schematron.model.PSRule;
+import com.helger.schematron.model.PSSchema;
 
 /**
  * Utility lookup cache for ID to pattern and ID to rule, to avoid the linear

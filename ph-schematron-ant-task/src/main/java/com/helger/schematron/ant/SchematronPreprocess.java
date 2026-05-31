@@ -23,11 +23,11 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
-import com.helger.schematron.pure.exchange.PSReader;
-import com.helger.schematron.pure.exchange.PSWriter;
-import com.helger.schematron.pure.exchange.PSWriterSettings;
-import com.helger.schematron.pure.exchange.SchematronReadException;
-import com.helger.schematron.pure.model.PSSchema;
+import com.helger.schematron.exchange.PSReader;
+import com.helger.schematron.exchange.PSWriter;
+import com.helger.schematron.exchange.PSWriterSettings;
+import com.helger.schematron.exchange.SchematronReadException;
+import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.pure.preprocess.PSPreprocessor;
 import com.helger.schematron.pure.preprocess.SchematronPreprocessException;
 import com.helger.xml.serialize.write.XMLWriterSettings;

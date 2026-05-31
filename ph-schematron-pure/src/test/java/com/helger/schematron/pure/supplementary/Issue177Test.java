@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;

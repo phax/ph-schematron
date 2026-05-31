@@ -28,8 +28,8 @@ import org.w3c.dom.Node;
 
 import com.helger.base.state.EContinue;
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.model.PSAssertReport;
-import com.helger.schematron.pure.model.PSRule;
+import com.helger.schematron.model.PSAssertReport;
+import com.helger.schematron.model.PSRule;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 

@@ -28,7 +28,7 @@ import org.junit.Test;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;

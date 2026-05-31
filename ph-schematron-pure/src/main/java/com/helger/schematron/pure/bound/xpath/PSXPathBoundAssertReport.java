@@ -25,7 +25,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
-import com.helger.schematron.pure.model.PSAssertReport;
+import com.helger.schematron.model.PSAssertReport;
 
 import net.sf.saxon.s9api.XPathExecutable;
 

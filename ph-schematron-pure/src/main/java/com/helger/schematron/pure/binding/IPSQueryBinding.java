@@ -27,12 +27,12 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.ICommonsNavigableMap;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
-import com.helger.schematron.pure.errorhandler.IPSErrorHandler;
-import com.helger.schematron.pure.model.PSAssertReport;
-import com.helger.schematron.pure.model.PSParam;
-import com.helger.schematron.pure.model.PSRule;
-import com.helger.schematron.pure.model.PSSchema;
-import com.helger.schematron.pure.model.PSValueOf;
+import com.helger.schematron.errorhandler.IPSErrorHandler;
+import com.helger.schematron.model.PSAssertReport;
+import com.helger.schematron.model.PSParam;
+import com.helger.schematron.model.PSRule;
+import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.model.PSValueOf;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 
