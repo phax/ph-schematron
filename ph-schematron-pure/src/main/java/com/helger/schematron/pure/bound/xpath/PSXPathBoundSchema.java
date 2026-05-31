@@ -16,8 +16,6 @@
  */
 package com.helger.schematron.pure.bound.xpath;
 
-import java.util.Map;
-
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathVariableResolver;
 
@@ -65,7 +63,10 @@ import com.helger.schematron.pure.xpath.XPathLetVariableResolver;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
+import net.sf.saxon.dom.DOMNodeWrapper;
 import net.sf.saxon.dom.DocumentWrapper;
+import net.sf.saxon.dom.NodeOverNodeInfo;
+import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -123,7 +124,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
    *        Context to use. May not be <code>null</code>.
    * @param sXPathExpression
    *        The expression to be compiled. May not be <code>null</code>.
-   * @return The precompiled {@link XPathExpression}
+   * @return The precompiled {@link XPathExecutable}
    * @throws SaxonApiException
    *         If expression cannot be compiled.
    */
@@ -260,7 +261,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       {
         // The pattern has special variables, so we need to store them in the
         // bound pattern
-        for (final Map.Entry <String, String> aEntry : aPattern.getAllLetsAsMap ().entrySet ())
+        for (final var aEntry : aPattern.getAllLetsAsMap ().entrySet ())
         {
           final String sLetName = aEntry.getKey ();
           final String sLetValue = aEntry.getValue ();
@@ -292,7 +293,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         {
           // The rule has special variables, so we to store them in the bound
           // rule
-          for (final Map.Entry <String, String> aEntry : aRule.getAllLetsAsMap ().entrySet ())
+          for (final var aEntry : aRule.getAllLetsAsMap ().entrySet ())
           {
             final String sLetName = aEntry.getKey ();
             final String sLetValue = aEntry.getValue ();
@@ -543,7 +544,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                    @NonNull final XdmItem aContext,
                                    @NonNull final IPSElement aContextElement)
   {
-    for (final Map.Entry <String, XPathExecutable> aEntry : aVariables.getAll ().entrySet ())
+    for (final var aEntry : aVariables.getAll ().entrySet ())
     {
       final String sVariableName = aEntry.getKey ();
       final XPathExecutable aXPathExecutable = aEntry.getValue ();
@@ -589,16 +590,20 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   @Nullable
   private static Node _xdmToDomNode (@NonNull final XdmNode aXdmNode)
   {
-    // For Saxon DOM trees, the underlying NodeInfo is a DOMNodeWrapper whose
-    // underlying object is the org.w3c.dom.Node. For non-DOM trees this is null.
+    // For Saxon DOM trees the wrapped DOM node is exposed as the "external node"
     final Object aExternal = aXdmNode.getExternalNode ();
     if (aExternal instanceof final Node aNode)
       return aNode;
 
-    // Fallback for DOM wrappers: the underlying node info
     final Object aUnderlying = aXdmNode.getUnderlyingNode ();
-    if (aUnderlying instanceof final net.sf.saxon.dom.DOMNodeWrapper aDNW)
+
+    // DOM wrappers: unwrap to the original DOM node
+    if (aUnderlying instanceof final DOMNodeWrapper aDNW)
       return aDNW.getUnderlyingNode ();
+
+    // TinyTree (or any other non-DOM NodeInfo): present it as a DOM facade
+    if (aUnderlying instanceof final NodeInfo aNodeInfo)
+      return NodeOverNodeInfo.wrap (aNodeInfo);
 
     return null;
   }
@@ -803,11 +808,28 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       throw new IllegalStateException ("bind was never called!");
 
     final Processor aProcessor = m_aXPathConfig.getProcessor ();
-    final Document aOwnerDoc = XMLHelper.getOwnerDocument (aNode);
-    final DocumentWrapper aDocWrapper = new DocumentWrapper (aOwnerDoc,
-                                                             sBaseURI != null ? sBaseURI : "",
-                                                             aProcessor.getUnderlyingConfiguration ());
-    final XdmNode aContextXdm = (XdmNode) XdmValue.wrap (aDocWrapper.wrap (aNode));
+
+    final XdmNode aContextXdm;
+    final DocumentWrapper aDocWrapper;
+    if (aNode instanceof final NodeOverNodeInfo aSaxonFacade)
+    {
+      // Fast path: the input is already a Saxon-backed tree (e.g. TinyTree built via the
+      // Saxon DocumentBuilder) wrapped behind a DOM facade. Use the underlying NodeInfo
+      // directly and skip the DocumentWrapper, which would otherwise force every XPath
+      // step through the slower DOM bridge.
+      aContextXdm = (XdmNode) XdmValue.wrap (aSaxonFacade.getUnderlyingNodeInfo ());
+      aDocWrapper = null;
+    }
+    else
+    {
+      // DOM path: the input is a real org.w3c.dom Node. Wrap the owning document once and
+      // reuse it for every per-call evaluation.
+      final Document aOwnerDoc = XMLHelper.getOwnerDocument (aNode);
+      aDocWrapper = new DocumentWrapper (aOwnerDoc,
+                                         sBaseURI != null ? sBaseURI : "",
+                                         aProcessor.getUnderlyingConfiguration ());
+      aContextXdm = (XdmNode) XdmValue.wrap (aDocWrapper.wrap (aNode));
+    }
 
     final XPathEvaluationContext aEvalContext = new XPathEvaluationContext (aProcessor,
                                                                             aDocWrapper,

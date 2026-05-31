@@ -25,23 +25,30 @@ import java.nio.charset.StandardCharsets;
 
 import javax.xml.validation.Schema;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.helger.base.io.stream.StringInputStream;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
+import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.errorhandler.LoggingPSErrorHandler;
+import com.helger.schematron.pure.model.PSRule;
+import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.EXPathVersion;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
+
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
@@ -195,6 +202,65 @@ public final class SchematronResourcePureTest
     assertFalse (aSch20.isValidSchematron ());
     assertTrue ("Expected an XPath compile error, got: " + aErrorHandler.getErrorList (),
                 aErrorHandler.getErrorList ().isNotEmpty ());
+  }
+
+  /**
+   * Validates that when the XML is provided through {@link SchematronResourcePure#getAsNode} the
+   * document ends up parsed straight into a Saxon TinyTree exposed behind a
+   * {@link net.sf.saxon.dom.NodeOverNodeInfo} facade — instead of a regular DOM document — and
+   * that validation still works end-to-end. Also checks the fall-back to plain DOM parsing when a
+   * custom XML entity resolver is configured.
+   */
+  @Test
+  public void testSaxonTinyTreeFastPath () throws Exception
+  {
+    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                           "  <iso:pattern>\n" +
+                           "    <iso:rule context='/root'>\n" +
+                           "      <iso:assert test='count(item) = 3'>three items expected</iso:assert>\n" +
+                           "    </iso:rule>\n" +
+                           "  </iso:pattern>\n" +
+                           "</iso:schema>";
+
+    final byte [] aXmlBytes = "<root><item/><item/><item/></root>".getBytes (StandardCharsets.UTF_8);
+
+    // Capture the runtime type of the DOM node fed into the validation handler for the matched
+    // rule context. With the TinyTree fast path it must be a Saxon-backed facade.
+    final Class <?> [] aCapturedNodeClass = new Class <?> [1];
+    final IPSValidationHandler aSpyHandler = new IPSValidationHandler ()
+    {
+      @Override
+      public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
+      {
+        if (aContextList.getLength () > 0 && aCapturedNodeClass[0] == null)
+          aCapturedNodeClass[0] = aContextList.item (0).getClass ();
+      }
+    };
+
+    // Fast path: no entity resolver -> Saxon TinyTree
+    final SchematronResourcePure aSCH = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                              .setCustomValidationHandler (aSpyHandler);
+    final SchematronOutputType aOT = aSCH.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
+    assertNotNull (aOT);
+    assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
+    assertNotNull ("onRuleStart never fired", aCapturedNodeClass[0]);
+    assertTrue ("Expected a Saxon NodeOverNodeInfo facade for the matched rule context node, got: " +
+                aCapturedNodeClass[0].getName (),
+                NodeOverNodeInfo.class.isAssignableFrom (aCapturedNodeClass[0]));
+
+    // Fallback path: an entity resolver forces the DOM parsing route. The matched node must NOT
+    // be a Saxon facade then.
+    aCapturedNodeClass[0] = null;
+    final SchematronResourcePure aSCH2 = SchematronResourcePure.fromString (sSchema, StandardCharsets.UTF_8)
+                                                               .setCustomValidationHandler (aSpyHandler);
+    aSCH2.setEntityResolver ( (publicId, systemId) -> null);
+    final SchematronOutputType aOT2 = aSCH2.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
+    assertNotNull (aOT2);
+    assertNotNull ("onRuleStart never fired", aCapturedNodeClass[0]);
+    assertFalse ("Expected a real DOM node when an entity resolver is configured, got: " +
+                 aCapturedNodeClass[0].getName (),
+                 NodeOverNodeInfo.class.isAssignableFrom (aCapturedNodeClass[0]));
   }
 
   /**

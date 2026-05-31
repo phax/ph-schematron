@@ -25,6 +25,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.ICommonsMap;
 
 import net.sf.saxon.dom.DocumentWrapper;
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmNode;
@@ -34,8 +35,14 @@ import net.sf.saxon.s9api.XdmValue;
  * Per-thread context that lets the SVRL validation handler (or any other code invoked downstream
  * from
  * {@link com.helger.schematron.pure.bound.xpath.PSXPathBoundSchema#validate(Node, String, com.helger.schematron.pure.validation.IPSValidationHandler)})
- * re-wrap DOM nodes into Saxon {@link XdmNode}s using the same {@link DocumentWrapper} as the
- * bound schema, and access the currently effective Schematron variable bindings.
+ * re-wrap DOM nodes into Saxon {@link XdmNode}s and access the currently effective Schematron
+ * variable bindings.
+ * <p>
+ * If validation runs over a real DOM input, a {@link DocumentWrapper} is supplied to bridge DOM
+ * nodes to Saxon. When validation runs over a Saxon-built tree (TinyTree wrapped behind
+ * {@link NodeOverNodeInfo}), {@link #wrap(Node)} short-circuits to the underlying NodeInfo and the
+ * {@link DocumentWrapper} is not needed.
+ * </p>
  *
  * @author Philip Helger
  * @since 9.2.0
@@ -51,12 +58,12 @@ public final class XPathEvaluationContext
   private final String m_sBaseURI;
 
   public XPathEvaluationContext (@NonNull final Processor aProcessor,
-                                 @NonNull final DocumentWrapper aDocumentWrapper,
+                                 @Nullable final DocumentWrapper aDocumentWrapper,
                                  @NonNull final XPathLetVariableResolver aLetVars,
                                  @Nullable final String sBaseURI)
   {
     m_aProcessor = ValueEnforcer.notNull (aProcessor, "Processor");
-    m_aDocumentWrapper = ValueEnforcer.notNull (aDocumentWrapper, "DocumentWrapper");
+    m_aDocumentWrapper = aDocumentWrapper;
     m_aLetVars = ValueEnforcer.notNull (aLetVars, "LetVars");
     m_sBaseURI = sBaseURI;
   }
@@ -67,7 +74,11 @@ public final class XPathEvaluationContext
     return m_aProcessor;
   }
 
-  @NonNull
+  /**
+   * @return The {@link DocumentWrapper} used to bridge DOM nodes to Saxon, or <code>null</code> if
+   *         the current validation operates on a Saxon-built tree directly (no DOM bridge needed).
+   */
+  @Nullable
   public DocumentWrapper getDocumentWrapper ()
   {
     return m_aDocumentWrapper;
@@ -89,17 +100,26 @@ public final class XPathEvaluationContext
   }
 
   /**
-   * Wrap a DOM {@link Node} into a Saxon {@link XdmNode} using the document wrapper of the current
-   * validation.
+   * Wrap a DOM {@link Node} into a Saxon {@link XdmNode}. Saxon-backed DOM facades
+   * ({@link NodeOverNodeInfo}) are unwrapped directly to their underlying NodeInfo; "real" DOM
+   * nodes go through the {@link DocumentWrapper} of the current validation.
    *
    * @param aDomNode
    *        The DOM node to wrap. Must not be <code>null</code>.
    * @return The wrapped {@link XdmNode}. Never <code>null</code>.
+   * @throws IllegalStateException
+   *         If the node is a real DOM node but no {@link DocumentWrapper} was provided.
    */
   @NonNull
   public XdmNode wrap (@NonNull final Node aDomNode)
   {
     ValueEnforcer.notNull (aDomNode, "DomNode");
+
+    if (aDomNode instanceof final NodeOverNodeInfo aSaxonFacade)
+      return (XdmNode) XdmValue.wrap (aSaxonFacade.getUnderlyingNodeInfo ());
+
+    if (m_aDocumentWrapper == null)
+      throw new IllegalStateException ("Cannot wrap a non-Saxon DOM node without a DocumentWrapper.");
     return (XdmNode) XdmValue.wrap (m_aDocumentWrapper.wrap (aDomNode));
   }
 
