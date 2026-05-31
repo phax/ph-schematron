@@ -18,12 +18,10 @@ package com.helger.schematron.puresaxon;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
@@ -37,6 +35,7 @@ import org.w3c.dom.Node;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.nonblocking.NonBlockingStringReader;
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
@@ -50,9 +49,13 @@ import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.preprocess.PSPreprocessor;
+import com.helger.schematron.puresaxon.binding.SaxonQueryBindingTransform;
 import com.helger.schematron.puresaxon.xslt.XsltStylesheetGenerator;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.xml.XMLFactory;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -71,9 +74,9 @@ import net.sf.saxon.s9api.XsltExecutable;
  * external ISO Schematron XSLT preprocessing chain that {@code SchematronResourceSCH} uses.
  * <p>
  * <b>Phase 1 status:</b> handles {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule>},
- * {@code <sch:assert>} with plain text content. Reports, lets, phases, value-of, names,
- * diagnostics and abstract patterns are not yet supported and will be silently skipped (logged at
- * WARN level by the generator).
+ * {@code <sch:assert>} with plain text content. Reports, lets, phases, value-of, names, diagnostics
+ * and abstract patterns are not yet supported and will be silently skipped (logged at WARN level by
+ * the generator).
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -220,7 +223,12 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
   {
     if (m_aCompiledXslt == null)
     {
-      final PSSchema aSchema = getOrReadSchema ();
+      final PSSchema aRaw = getOrReadSchema ();
+      // Expand abstract patterns / <sch:extends> / <sch:include> before generating XSLT. The
+      // preprocessor lives in ph-schematron-model and is driven by the small XPath-style
+      // SaxonQueryBindingTransform; it does NOT pull in ph-schematron-pure.
+      final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
+      final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
       final IMicroDocument aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase);
       final MapBasedNamespaceContext aNsCtx = XsltStylesheetGenerator.namespaceContextFor (aSchema);
       final XMLWriterSettings aWriterSettings = new XMLWriterSettings ().setNamespaceContext (aNsCtx);
@@ -229,27 +237,31 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
         LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" + sXslt);
 
       final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
-      m_aCompiledXslt = aCompiler.compile (new StreamSource (new StringReader (sXslt)));
+      m_aCompiledXslt = aCompiler.compile (new StreamSource (new NonBlockingStringReader (sXslt)));
     }
     return m_aCompiledXslt;
   }
 
   @Override
   @NonNull
-  public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                         throws Exception
   {
     final SchematronOutputType aSVRL = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     if (aSVRL == null)
       return EValidity.INVALID;
+
     for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (aObj instanceof com.helger.schematron.svrl.jaxb.FailedAssert)
+      if (aObj instanceof FailedAssert)
         return EValidity.INVALID;
+
     return EValidity.VALID;
   }
 
   @Override
   @Nullable
-  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                            throws Exception
   {
     final SchematronOutputType aSVRL = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     if (aSVRL == null)
@@ -263,7 +275,7 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
                                                                @Nullable final String sBaseURI) throws Exception
   {
     final XsltExecutable aExecutable = getOrCompileXslt ();
-    final Document aResultDoc = DocumentBuilderFactory.newInstance ().newDocumentBuilder ().newDocument ();
+    final Document aResultDoc = XMLFactory.newDocument ();
     final DOMDestination aDestination = new DOMDestination (aResultDoc);
 
     final var aTransformer = aExecutable.load30 ();

@@ -245,6 +245,31 @@ public final class SchematronResourceSaxonTest
   }
 
   @Test
+  public void testAbstractPatternWithIsA () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/abstract-pattern/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/abstract-pattern/test.xml");
+    final SchematronOutputType aSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    LOGGER.info ("SVRL (abstract):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
+    // Two concrete patterns derived from the abstract one. Book has no @isbn, author has no @name
+    // -> 2 failures total.
+    assertEquals ("expected 2 failed-asserts from the two expanded patterns", 2, _countFailedAsserts (aSVRL));
+  }
+
+  @Test
+  public void testExtendsRule () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/extends-rule/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/extends-rule/test.xml");
+    final SchematronOutputType aSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    LOGGER.info ("SVRL (extends):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
+    // The book is missing both @id (inherited assert) and @isbn (own assert) -> 2 failures
+    assertEquals ("expected the inherited assert AND the own assert to both fire", 2, _countFailedAsserts (aSVRL));
+  }
+
+  @Test
   public void testGetSchematronValidity () throws Exception
   {
     final File aSchBad = new File ("src/test/resources/external/issues/github137/schematron.sch");
