@@ -24,6 +24,7 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.location.SimpleLocation;
+import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringParser;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diagnostics.error.SingleError;
@@ -645,13 +646,44 @@ public class PSReader
           _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
     });
 
+    // Per ISO 19757-3 §5.4.4 (and confirmed in
+    // https://github.com/phax/ph-schematron/issues/189): if no 'value' attribute is given, the
+    // body of <let> carries the expression. Pure can only evaluate XPath expressions, so the body
+    // is taken as a literal XPath string here. XSLT-style bodies (e.g. <xsl:for-each> ...) will
+    // come through as their text content and fail at XPath compile with a precise location -
+    // which is at least more actionable than the previous "<let> has no 'value'".
+    //
+    // Note: a separate engine module that supports element-content <let> bodies via Saxon's
+    // XSLT compiler (and benchmarks Saxon XPath+XSLT end-to-end against the current pure path)
+    // would let us cover the full spec here. Until that exists, document the limitation and
+    // surface a clear error.
+    if (StringHelper.isEmpty (ret.getValue ()))
+    {
+      final String sBodyText = eLet.getTextContent ();
+      if (StringHelper.isNotEmpty (sBodyText) && StringHelper.isNotEmpty (sBodyText.trim ()))
+        ret.setValue (sBodyText.trim ());
+    }
+
     eLet.forAllChildElements (eLetChild -> {
       if (isValidSchematronNS (eLetChild.getNamespaceURI ()))
       {
         _warn (ret, "Unsupported Schematron element '" + eLetChild.getLocalName () + "'");
       }
       else
-        _warn (ret, "Unsupported namespace URI '" + eLetChild.getNamespaceURI () + "'");
+      {
+        // Element-content bodies are accepted per spec, but only their text content survives.
+        // XSLT instruction children (xsl:for-each, xsl:value-of, ...) cannot be evaluated by the
+        // pure engine - log once per body so the user knows why the resulting XPath may not
+        // compile.
+        _warn (ret,
+               "Element <let> body contains '" +
+                    eLetChild.getLocalName () +
+                    "' from namespace '" +
+                    eLetChild.getNamespaceURI () +
+                    "'; the pure engine evaluates the <let> body as a plain XPath expression and " +
+                    "cannot execute XSLT instructions. Either rewrite as a 'value' attribute, an " +
+                    "XPath 3.x expression in the body, or switch to the SCH/XSLT engine.");
+      }
     });
     return ret;
   }
