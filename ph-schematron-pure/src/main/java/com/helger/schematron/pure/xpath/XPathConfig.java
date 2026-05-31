@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.equals.EqualsHelper;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsArrayList;
@@ -45,15 +44,19 @@ import net.sf.saxon.s9api.XdmValue;
 public class XPathConfig implements IXPathConfig
 {
   private final Processor m_aProcessor;
+  private final EXPathVersion m_eXPathVersion;
   private final ICommonsList <ExtensionFunction> m_aExtensionFunctions;
   private final ICommonsMap <QName, XdmValue> m_aExternalVariables;
 
   public XPathConfig (@NonNull final Processor aProcessor,
+                      @NonNull final EXPathVersion eXPathVersion,
                       @Nullable final ICommonsList <ExtensionFunction> aExtensionFunctions,
                       @Nullable final ICommonsMap <QName, XdmValue> aExternalVariables)
   {
     ValueEnforcer.notNull (aProcessor, "Processor");
+    ValueEnforcer.notNull (eXPathVersion, "XPathVersion");
     m_aProcessor = aProcessor;
+    m_eXPathVersion = eXPathVersion;
     m_aExtensionFunctions = aExtensionFunctions != null ? aExtensionFunctions.getClone () : new CommonsArrayList <> ();
     m_aExternalVariables = aExternalVariables != null ? aExternalVariables.getClone () : new CommonsHashMap <> ();
   }
@@ -62,6 +65,12 @@ public class XPathConfig implements IXPathConfig
   public Processor getProcessor ()
   {
     return m_aProcessor;
+  }
+
+  @NonNull
+  public EXPathVersion getXPathVersion ()
+  {
+    return m_eXPathVersion;
   }
 
   @NonNull
@@ -87,14 +96,16 @@ public class XPathConfig implements IXPathConfig
       return false;
     final XPathConfig rhs = (XPathConfig) o;
     return m_aProcessor.equals (rhs.m_aProcessor) &&
-           EqualsHelper.equals (m_aExtensionFunctions, rhs.m_aExtensionFunctions) &&
-           EqualsHelper.equals (m_aExternalVariables, rhs.m_aExternalVariables);
+           m_eXPathVersion.equals (rhs.m_eXPathVersion) &&
+           m_aExtensionFunctions.equals (rhs.m_aExtensionFunctions) &&
+           m_aExternalVariables.equals (rhs.m_aExternalVariables);
   }
 
   @Override
   public int hashCode ()
   {
     return new HashCodeGenerator (this).append (m_aProcessor)
+                                       .append (m_eXPathVersion)
                                        .append (m_aExtensionFunctions)
                                        .append (m_aExternalVariables)
                                        .getHashCode ();
@@ -104,6 +115,7 @@ public class XPathConfig implements IXPathConfig
   public String toString ()
   {
     return new ToStringGenerator (this).append ("Processor", m_aProcessor)
+                                       .append ("XPathVersion", m_eXPathVersion)
                                        .append ("ExtensionFunctions", m_aExtensionFunctions)
                                        .append ("ExternalVariables", m_aExternalVariables)
                                        .getToString ();

@@ -30,10 +30,11 @@ import net.sf.saxon.s9api.XdmValue;
 /**
  * XPath configuration to use.
  * <p>
- * Since v9.2.0 this is based on the Saxon s9api (XPath 2.0/3.x). The configuration carries the
- * Saxon {@link Processor} that is used for compiling and evaluating XPath expressions, an optional
- * list of Saxon {@link ExtensionFunction}s to be registered on the processor, and an optional map
- * of external variables to be pre-bound before each evaluation.
+ * Since v9.2.0 this is based on the Saxon s9api (XPath 2.0/3.x/4.x). The configuration carries the
+ * Saxon {@link Processor} that is used for compiling and evaluating XPath expressions, the
+ * {@link EXPathVersion} that the compiler should target, an optional list of Saxon
+ * {@link ExtensionFunction}s to be registered on the processor, and an optional map of external
+ * variables to be pre-bound before each evaluation.
  * </p>
  *
  * @author Philip Helger
@@ -50,6 +51,15 @@ public interface IXPathConfig
    */
   @NonNull
   Processor getProcessor ();
+
+  /**
+   * @return The XPath language version that the Saxon {@code XPathCompiler} is asked to apply.
+   *         Never <code>null</code>.
+   * @since 9.2.0
+   * @see net.sf.saxon.s9api.XPathCompiler#setLanguageVersion(String)
+   */
+  @NonNull
+  EXPathVersion getXPathVersion ();
 
   /**
    * @return The Saxon {@link ExtensionFunction} instances to be registered on the {@link Processor}

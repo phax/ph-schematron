@@ -51,9 +51,10 @@ public class XPathConfigBuilder implements IBuilder <IXPathConfig>
   /**
    * The default {@link IXPathConfig} when nothing is customized.
    */
-  public static final IXPathConfig DEFAULT = new XPathConfig (DEFAULT_PROCESSOR, null, null);
+  public static final IXPathConfig DEFAULT = new XPathConfig (DEFAULT_PROCESSOR, EXPathVersion.DEFAULT, null, null);
 
   private Processor m_aProcessor;
+  private EXPathVersion m_eXPathVersion = EXPathVersion.DEFAULT;
   private final ICommonsList <ExtensionFunction> m_aExtensionFunctions = new CommonsArrayList <> ();
   private final ICommonsMap <QName, XdmValue> m_aExternalVariables = new CommonsHashMap <> ();
 
@@ -79,6 +80,30 @@ public class XPathConfigBuilder implements IBuilder <IXPathConfig>
   {
     ValueEnforcer.notNull (aProcessor, "Processor");
     m_aProcessor = aProcessor;
+    return this;
+  }
+
+  @NonNull
+  public final EXPathVersion getXPathVersion ()
+  {
+    return m_eXPathVersion;
+  }
+
+  /**
+   * Set the XPath language version applied to the Saxon {@code XPathCompiler}. Defaults to
+   * {@link EXPathVersion#DEFAULT}.
+   *
+   * @param eXPathVersion
+   *        The XPath version. May not be <code>null</code>.
+   * @return this for chaining
+   * @see net.sf.saxon.s9api.XPathCompiler#setLanguageVersion(String)
+   * @since 9.2.0
+   */
+  @NonNull
+  public final XPathConfigBuilder setXPathVersion (@NonNull final EXPathVersion eXPathVersion)
+  {
+    ValueEnforcer.notNull (eXPathVersion, "XPathVersion");
+    m_eXPathVersion = eXPathVersion;
     return this;
   }
 
@@ -157,13 +182,14 @@ public class XPathConfigBuilder implements IBuilder <IXPathConfig>
     for (final ExtensionFunction aFunc : m_aExtensionFunctions)
       aProcessor.registerExtensionFunction (aFunc);
 
-    return new XPathConfig (aProcessor, m_aExtensionFunctions, m_aExternalVariables);
+    return new XPathConfig (aProcessor, m_eXPathVersion, m_aExtensionFunctions, m_aExternalVariables);
   }
 
   @Override
   public String toString ()
   {
     return new ToStringGenerator (this).append ("Processor", m_aProcessor)
+                                       .append ("XPathVersion", m_eXPathVersion)
                                        .append ("ExtensionFunctions", m_aExtensionFunctions)
                                        .append ("ExternalVariables", m_aExternalVariables)
                                        .getToString ();

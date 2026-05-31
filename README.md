@@ -37,6 +37,9 @@ surface and in the bound-schema internals:
     `setGlobalXPathFactory(...)`, `setXPathVariableResolver(...)` and
     `setXPathFunctionResolver(...)` on `XPathConfigBuilder` are removed.
   - Replacements: `setProcessor(Processor)`,
+    `setXPathVersion(EXPathVersion)` (default `EXPathVersion.XPATH_3_1`,
+    passed to Saxon's `XPathCompiler.setLanguageVersion`; `1.0`, `2.0`,
+    `3.0`, `3.1`, `4.0`),
     `addExtensionFunction(ExtensionFunction)` /
     `addAllExtensionFunctions(...)`, and
     `addExternalVariable(QName, XdmValue)` /

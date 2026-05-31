@@ -421,8 +421,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private XPathCompiler _createXPathCompiler ()
   {
     final XPathCompiler aCompiler = m_aXPathConfig.getProcessor ().newXPathCompiler ();
-    // Basically one of: 2.0, 3.0, 3.1 or 4.0
-    aCompiler.setLanguageVersion ("3.1");
+    aCompiler.setLanguageVersion (m_aXPathConfig.getXPathVersion ().getVersion ());
     aCompiler.setAllowUndeclaredVariables (true);
 
     final MapBasedNamespaceContext aNamespaceContext = getNamespaceContext ();
