@@ -1,0 +1,22 @@
+=============================================================================
+= NOTICE file corresponding to section 4d of the Apache License Version 2.0 =
+=============================================================================
+This product includes Open Source Software developed by
+Philip Helger - https://www.helger.com/
+
+This product includes Open Source Software developed by phloc systems (http://www.phloc.com/)
+
+This product depends on the Java Microbenchmark Harness (JMH) for benchmark
+execution and result reporting:
+
+  Java Microbenchmark Harness (JMH)
+  Copyright (c) 2014, Oracle America, Inc.
+  https://openjdk.org/projects/code-tools/jmh/
+
+JMH is licensed under the GNU General Public License, version 2, *with the
+Classpath Exception*. The Classpath Exception explicitly allows linking with
+software released under other licenses (including the Apache License 2.0
+under which this project is distributed) without requiring the combined work
+to itself be licensed under the GPL. See:
+
+  https://openjdk.org/legal/gplv2+ce.html

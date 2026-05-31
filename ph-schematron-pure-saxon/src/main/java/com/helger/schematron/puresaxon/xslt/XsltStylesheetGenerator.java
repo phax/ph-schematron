@@ -71,7 +71,13 @@ public final class XsltStylesheetGenerator
   public static final String XSLT_NS = "http://www.w3.org/1999/XSL/Transform";
   public static final String XSLT_PREFIX = "xsl";
   public static final String SVRL_PREFIX = "svrl";
-  public static final String XSLT_VERSION = "3.0";
+
+  /**
+   * @deprecated Use {@link EXsltVersion#DEFAULT} ({@code EXsltVersion.XSLT_3_0}) instead. Kept as a
+   *             constant string for API stability of any callers that read it.
+   */
+  @Deprecated
+  public static final String XSLT_VERSION = EXsltVersion.DEFAULT.getVersion ();
 
   private static final Logger LOGGER = LoggerFactory.getLogger (XsltStylesheetGenerator.class);
 
@@ -79,7 +85,8 @@ public final class XsltStylesheetGenerator
   {}
 
   /**
-   * Generate an XSLT 3.0 stylesheet from the passed Schematron schema, processing all patterns.
+   * Generate a stylesheet at the default XSLT version ({@link EXsltVersion#DEFAULT}) from the
+   * passed Schematron schema, processing all patterns.
    *
    * @param aSchema
    *        The parsed schema. May not be <code>null</code>.
@@ -88,12 +95,12 @@ public final class XsltStylesheetGenerator
   @NonNull
   public static IMicroDocument generate (@NonNull final PSSchema aSchema)
   {
-    return generate (aSchema, null);
+    return generate (aSchema, null, EXsltVersion.DEFAULT);
   }
 
   /**
-   * Generate an XSLT 3.0 stylesheet from the passed Schematron schema, restricted to the patterns
-   * activated by the named phase.
+   * Generate a stylesheet at the default XSLT version ({@link EXsltVersion#DEFAULT}) from the
+   * passed Schematron schema, restricted to the patterns activated by the named phase.
    *
    * @param aSchema
    *        The parsed schema. May not be <code>null</code>.
@@ -106,13 +113,37 @@ public final class XsltStylesheetGenerator
   @NonNull
   public static IMicroDocument generate (@NonNull final PSSchema aSchema, @Nullable final String sPhase)
   {
+    return generate (aSchema, sPhase, EXsltVersion.DEFAULT);
+  }
+
+  /**
+   * Generate an XSLT stylesheet from the passed Schematron schema, restricted to the patterns
+   * activated by the named phase, targeting the given XSLT language version.
+   *
+   * @param aSchema
+   *        The parsed schema. May not be <code>null</code>.
+   * @param sPhase
+   *        The phase to evaluate. May be <code>null</code>, empty or {@link CSchematron#PHASE_ALL}
+   *        (process all patterns), {@link CSchematron#PHASE_DEFAULT} (use
+   *        {@link PSSchema#getDefaultPhase()}), or a specific phase id.
+   * @param eVersion
+   *        The XSLT language version to declare on the generated stylesheet's {@code version}
+   *        attribute. May not be <code>null</code>.
+   * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static IMicroDocument generate (@NonNull final PSSchema aSchema,
+                                         @Nullable final String sPhase,
+                                         @NonNull final EXsltVersion eVersion)
+  {
     final String sResolvedPhase = _resolvePhase (aSchema, sPhase);
     final var aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
     final PSDiagnostics aDiagnostics = aSchema.getDiagnostics ();
 
     final IMicroDocument aDoc = new MicroDocument ();
     final IMicroElement aStylesheet = aDoc.addElementNS (XSLT_NS, "stylesheet");
-    aStylesheet.setAttribute ("version", XSLT_VERSION);
+    aStylesheet.setAttribute ("version", eVersion.getVersion ());
 
     // <xsl:output method="xml" indent="no"/>
     final IMicroElement aOutput = aStylesheet.addElementNS (XSLT_NS, "output");

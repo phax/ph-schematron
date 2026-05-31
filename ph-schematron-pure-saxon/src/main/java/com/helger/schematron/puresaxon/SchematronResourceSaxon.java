@@ -53,6 +53,7 @@ import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.puresaxon.binding.SaxonQueryBindingTransform;
+import com.helger.schematron.puresaxon.xslt.EXsltVersion;
 import com.helger.schematron.puresaxon.xslt.XsltStylesheetGenerator;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
@@ -63,6 +64,8 @@ import com.helger.xml.microdom.serialize.MicroWriter;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
+import net.sf.saxon.lib.ErrorReporterToListener;
+import net.sf.saxon.lib.ResourceResolverWrappingURIResolver;
 import net.sf.saxon.s9api.DOMDestination;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XsltCompiler;
@@ -81,10 +84,10 @@ import net.sf.saxon.s9api.XsltExecutable;
  * {@code <sch:diagnostic>} references, abstract patterns with {@code is-a} parameter substitution,
  * {@code <sch:extends>} on rules and {@code <sch:include>} (the last three expanded by
  * {@link PSPreprocessor} before XSLT generation). XSLT extensions ({@code <xsl:function>},
- * {@code <xsl:include>}, {@code <xsl:key>}, ...) declared at schema level are passed through to
- * the generated stylesheet so Saxon compiles them as-is. Rich text spans
- * ({@code <sch:emph>} / {@code <sch:dir>} / {@code <sch:span>}) and {@code <sch:property>}
- * references are not yet handled.
+ * {@code <xsl:include>}, {@code <xsl:key>}, ...) declared at schema level are passed through to the
+ * generated stylesheet so Saxon compiles them as-is. Rich text spans ({@code <sch:emph>} /
+ * {@code <sch:dir>} / {@code <sch:span>}) and {@code <sch:property>} references are not yet
+ * handled.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -99,6 +102,7 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
   private Processor m_aProcessor = new Processor (false);
   private URIResolver m_aURIResolver;
   private ErrorListener m_aErrorListener;
+  private EXsltVersion m_eXsltVersion = EXsltVersion.DEFAULT;
   // Status vars
   private PSSchema m_aSchema;
   private XsltExecutable m_aCompiledXslt;
@@ -222,8 +226,8 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
 
   /**
    * Install a custom {@link URIResolver}. Applied to both the {@link XsltCompiler} (so it can
-   * resolve href references in any {@code <xsl:include>} / {@code <xsl:import>} passed through
-   * from the schema's foreign elements) and the runtime {@code Xslt30Transformer} (so XPath
+   * resolve href references in any {@code <xsl:include>} / {@code <xsl:import>} passed through from
+   * the schema's foreign elements) and the runtime {@code Xslt30Transformer} (so XPath
    * {@code document()} calls in asserts and reports route through it too).
    *
    * @param aURIResolver
@@ -251,10 +255,10 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
 
   /**
    * Install a custom JAXP {@link ErrorListener} for Saxon stylesheet compilation. The listener
-   * receives every compile-time warning, error and fatal error from Saxon (including any
-   * surfacing from {@code <xsl:*>} foreign content passed through from the schema). It does
-   * <em>not</em> receive Schematron-source parse problems &mdash; those go through
-   * {@link IPSErrorHandler} set via {@link #setErrorHandler(IPSErrorHandler)}.
+   * receives every compile-time warning, error and fatal error from Saxon (including any surfacing
+   * from {@code <xsl:*>} foreign content passed through from the schema). It does <em>not</em>
+   * receive Schematron-source parse problems &mdash; those go through {@link IPSErrorHandler} set
+   * via {@link #setErrorHandler(IPSErrorHandler)}.
    *
    * @param aErrorListener
    *        The listener. May be <code>null</code> to clear.
@@ -266,6 +270,38 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
     if (m_aCompiledXslt != null)
       throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
     m_aErrorListener = aErrorListener;
+    return this;
+  }
+
+  /**
+   * @return The XSLT language version written to the generated stylesheet's {@code version}
+   *         attribute. Never <code>null</code>; defaults to {@link EXsltVersion#DEFAULT}.
+   * @since 10.0.0
+   */
+  @NonNull
+  public final EXsltVersion getXsltVersion ()
+  {
+    return m_eXsltVersion;
+  }
+
+  /**
+   * Set the XSLT language version for the generated stylesheet. The default is XSLT&nbsp;3.0, which
+   * gives access to {@code fn:path()} for the SVRL {@code location} attribute and 3.0 extension
+   * functions. Choose {@link EXsltVersion#XSLT_2_0} only if you need strict XSLT&nbsp;2.0
+   * compatibility - some 3.0-only features (notably {@code fn:path()}) will then fail compilation.
+   *
+   * @param eVersion
+   *        The version. May not be <code>null</code>.
+   * @return this
+   * @since 10.0.0
+   */
+  @NonNull
+  public final SchematronResourceSaxon setXsltVersion (@NonNull final EXsltVersion eVersion)
+  {
+    ValueEnforcer.notNull (eVersion, "XsltVersion");
+    if (m_aCompiledXslt != null)
+      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
+    m_eXsltVersion = eVersion;
     return this;
   }
 
@@ -301,7 +337,7 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
       // SaxonQueryBindingTransform; it does NOT pull in ph-schematron-pure.
       final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
       final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
-      final IMicroDocument aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase);
+      final IMicroDocument aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
       final MapBasedNamespaceContext aNsCtx = XsltStylesheetGenerator.namespaceContextFor (aSchema);
       // Force all namespace-context prefixes to be emitted as xmlns:* on the stylesheet root so
       // that prefixes referenced only from XPath attribute values (e.g. my:func() inside test=)
@@ -315,9 +351,9 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
 
       final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
       if (m_aURIResolver != null)
-        aCompiler.setURIResolver (m_aURIResolver);
+        aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
       if (m_aErrorListener != null)
-        aCompiler.setErrorListener (m_aErrorListener);
+        aCompiler.setErrorReporter (new ErrorReporterToListener (m_aErrorListener));
       m_aCompiledXslt = aCompiler.compile (new StreamSource (new NonBlockingStringReader (sXslt)));
     }
     return m_aCompiledXslt;
@@ -361,7 +397,7 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
 
     final var aTransformer = aExecutable.load30 ();
     if (m_aURIResolver != null)
-      aTransformer.setURIResolver (m_aURIResolver);
+      aTransformer.setResourceResolver(new ResourceResolverWrappingURIResolver (m_aURIResolver));
     if (m_aErrorListener != null)
       aTransformer.setErrorListener (m_aErrorListener);
     if (sBaseURI != null)
