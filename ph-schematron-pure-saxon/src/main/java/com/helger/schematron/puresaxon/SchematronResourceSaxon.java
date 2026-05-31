@@ -221,7 +221,7 @@ public class SchematronResourceSaxon extends AbstractSchematronResource
     if (m_aCompiledXslt == null)
     {
       final PSSchema aSchema = getOrReadSchema ();
-      final IMicroDocument aXsltDoc = XsltStylesheetGenerator.generate (aSchema);
+      final IMicroDocument aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase);
       final MapBasedNamespaceContext aNsCtx = XsltStylesheetGenerator.namespaceContextFor (aSchema);
       final XMLWriterSettings aWriterSettings = new XMLWriterSettings ().setNamespaceContext (aNsCtx);
       final String sXslt = MicroWriter.getNodeAsString (aXsltDoc, aWriterSettings);

@@ -17,17 +17,29 @@
 package com.helger.schematron.puresaxon.xslt;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringHelper;
-import com.helger.base.string.StringImplode;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashSet;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsSet;
+import com.helger.schematron.CSchematron;
+import com.helger.schematron.model.PSActive;
 import com.helger.schematron.model.PSAssertReport;
+import com.helger.schematron.model.PSDiagnostic;
+import com.helger.schematron.model.PSDiagnostics;
+import com.helger.schematron.model.PSLet;
+import com.helger.schematron.model.PSName;
 import com.helger.schematron.model.PSNS;
 import com.helger.schematron.model.PSPattern;
+import com.helger.schematron.model.PSPhase;
 import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.model.PSValueOf;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
@@ -38,10 +50,13 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
  * Generates an XSLT 3.0 stylesheet from a parsed {@link PSSchema} that, when applied to an XML
  * instance, produces SVRL output.
  * <p>
- * <b>Phase 1 scope:</b> handles {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule context>}
- * and {@code <sch:assert test>} with plain text content. Abstract patterns, reports, lets, phases,
- * {@code <sch:value-of>}, {@code <sch:name>} and diagnostics are silently skipped (with a WARN
- * log). These will be added in subsequent phases.
+ * <b>Supported scope:</b> {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule context>},
+ * {@code <sch:assert test>}, {@code <sch:report test>}, {@code <sch:value-of select>} and
+ * {@code <sch:name path>} interpolation in message text, {@code <sch:phase>} /
+ * {@code <sch:active>} phase selection (including {@code #ALL} and {@code #DEFAULT}),
+ * {@code <sch:let>} variable bindings at schema/phase/pattern/rule scope, and
+ * {@code <sch:diagnostic>} references on asserts and reports. Properties, abstract patterns and
+ * abstract rules are silently skipped (with a WARN log).
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -60,7 +75,7 @@ public final class XsltStylesheetGenerator
   {}
 
   /**
-   * Generate an XSLT 3.0 stylesheet from the passed Schematron schema.
+   * Generate an XSLT 3.0 stylesheet from the passed Schematron schema, processing all patterns.
    *
    * @param aSchema
    *        The parsed schema. May not be <code>null</code>.
@@ -69,6 +84,28 @@ public final class XsltStylesheetGenerator
   @NonNull
   public static IMicroDocument generate (@NonNull final PSSchema aSchema)
   {
+    return generate (aSchema, null);
+  }
+
+  /**
+   * Generate an XSLT 3.0 stylesheet from the passed Schematron schema, restricted to the patterns
+   * activated by the named phase.
+   *
+   * @param aSchema
+   *        The parsed schema. May not be <code>null</code>.
+   * @param sPhase
+   *        The phase to evaluate. May be <code>null</code>, empty or {@link CSchematron#PHASE_ALL}
+   *        (process all patterns), {@link CSchematron#PHASE_DEFAULT} (use
+   *        {@link PSSchema#getDefaultPhase()}), or a specific phase id.
+   * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
+   */
+  @NonNull
+  public static IMicroDocument generate (@NonNull final PSSchema aSchema, @Nullable final String sPhase)
+  {
+    final String sResolvedPhase = _resolvePhase (aSchema, sPhase);
+    final var aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
+    final PSDiagnostics aDiagnostics = aSchema.getDiagnostics ();
+
     final IMicroDocument aDoc = new MicroDocument ();
     final IMicroElement aStylesheet = aDoc.addElementNS (XSLT_NS, "stylesheet");
     aStylesheet.setAttribute ("version", XSLT_VERSION);
@@ -78,11 +115,99 @@ public final class XsltStylesheetGenerator
     aOutput.setAttribute ("method", "xml");
     aOutput.setAttribute ("indent", "no");
 
+    // Schema-level <sch:let> become global <xsl:variable>s. Visible in all rule templates.
+    _appendLetsAsXsltVariables (aStylesheet, aSchema.getAllLets ());
+
+    // Phase-level <sch:let>: if a specific phase was selected, its lets are additionally global.
+    if (sResolvedPhase != null)
+    {
+      final PSPhase aPhase = aSchema.getPhaseOfID (sResolvedPhase);
+      if (aPhase != null)
+        _appendLetsAsXsltVariables (aStylesheet, aPhase.getAllLets ());
+    }
+
     // Root template: emit <svrl:schematron-output> and walk patterns
-    _appendRootTemplate (aStylesheet, aSchema);
+    _appendRootTemplate (aStylesheet, aSchema, aActivePatterns, sResolvedPhase);
 
     // Per pattern: emit rule context templates + catch-all
     int nPatternIdx = 0;
+    for (final PSPattern aPattern : aActivePatterns)
+    {
+      _appendPatternTemplates (aStylesheet, aPattern, nPatternIdx, aDiagnostics);
+      nPatternIdx++;
+    }
+    return aDoc;
+  }
+
+  /**
+   * Append one {@code <xsl:variable name="..." select="..."/>} per {@link PSLet}. Used to bind
+   * Schematron {@code <sch:let>} variables at whichever XSLT scope (stylesheet root for
+   * schema/phase, rule template for pattern/rule) the parent element represents.
+   */
+  private static void _appendLetsAsXsltVariables (@NonNull final IMicroElement aParent,
+                                                  @NonNull final ICommonsList <PSLet> aLets)
+  {
+    for (final PSLet aLet : aLets)
+    {
+      if (StringHelper.isEmpty (aLet.getName ()))
+      {
+        LOGGER.warn ("Skipping <sch:let> with empty name attribute");
+        continue;
+      }
+      final IMicroElement aVar = aParent.addElementNS (XSLT_NS, "variable");
+      aVar.setAttribute ("name", aLet.getName ());
+      if (StringHelper.isNotEmpty (aLet.getValue ()))
+        aVar.setAttribute ("select", aLet.getValue ());
+    }
+  }
+
+  /**
+   * Resolve the special phase tokens {@code null} / empty / {@code #ALL} / {@code #DEFAULT}
+   * against the schema and return either {@code null} (meaning "all patterns active") or a concrete
+   * phase id.
+   */
+  @Nullable
+  private static String _resolvePhase (@NonNull final PSSchema aSchema, @Nullable final String sPhase)
+  {
+    if (StringHelper.isEmpty (sPhase) || CSchematron.PHASE_ALL.equals (sPhase))
+      return null;
+    if (CSchematron.PHASE_DEFAULT.equals (sPhase))
+    {
+      final String sDefault = aSchema.getDefaultPhase ();
+      if (StringHelper.isEmpty (sDefault) || CSchematron.PHASE_ALL.equals (sDefault))
+        return null;
+      return sDefault;
+    }
+    return sPhase;
+  }
+
+  /**
+   * Return the concrete (non-abstract) patterns active in the given resolved phase id. A
+   * {@code null} phase means all concrete patterns are active.
+   */
+  @NonNull
+  private static ICommonsList <PSPattern> _resolveActivePatterns (@NonNull final PSSchema aSchema,
+                                                                                                @Nullable final String sResolvedPhase)
+  {
+    final ICommonsList <PSPattern> ret = new CommonsArrayList <> ();
+    final ICommonsSet <String> aAllowedIDs;
+    if (sResolvedPhase == null)
+    {
+      aAllowedIDs = null;
+    }
+    else
+    {
+      final PSPhase aPhase = aSchema.getPhaseOfID (sResolvedPhase);
+      if (aPhase == null)
+      {
+        LOGGER.warn ("Phase '" + sResolvedPhase + "' is not defined in the schema; processing zero patterns");
+        return ret;
+      }
+      aAllowedIDs = new CommonsHashSet <> ();
+      for (final PSActive aActive : aPhase.getAllActives ())
+        if (StringHelper.isNotEmpty (aActive.getPattern ()))
+          aAllowedIDs.add (aActive.getPattern ());
+    }
     for (final PSPattern aPattern : aSchema.getAllPatterns ())
     {
       if (aPattern.isAbstract ())
@@ -92,13 +217,17 @@ public final class XsltStylesheetGenerator
                      "' - abstract patterns are not yet supported in the Saxon-native engine");
         continue;
       }
-      _appendPatternTemplates (aStylesheet, aPattern, nPatternIdx);
-      nPatternIdx++;
+      if (aAllowedIDs != null && !aAllowedIDs.contains (aPattern.getID ()))
+        continue;
+      ret.add (aPattern);
     }
-    return aDoc;
+    return ret;
   }
 
-  private static void _appendRootTemplate (@NonNull final IMicroElement aStylesheet, @NonNull final PSSchema aSchema)
+  private static void _appendRootTemplate (@NonNull final IMicroElement aStylesheet,
+                                           @NonNull final PSSchema aSchema,
+                                           @NonNull final ICommonsList <PSPattern> aActivePatterns,
+                                           @Nullable final String sResolvedPhase)
   {
     final IMicroElement aTemplate = aStylesheet.addElementNS (XSLT_NS, "template");
     aTemplate.setAttribute ("match", "/");
@@ -106,6 +235,8 @@ public final class XsltStylesheetGenerator
     final IMicroElement aSchemaOutput = aTemplate.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "schematron-output");
     if (StringHelper.isNotEmpty (aSchema.getSchemaVersion ()))
       aSchemaOutput.setAttribute ("schemaVersion", aSchema.getSchemaVersion ());
+    if (StringHelper.isNotEmpty (sResolvedPhase))
+      aSchemaOutput.setAttribute ("phase", sResolvedPhase);
 
     // <svrl:ns-prefix-in-attribute-values> per <sch:ns>
     for (final PSNS aNS : aSchema.getAllNSs ())
@@ -120,10 +251,8 @@ public final class XsltStylesheetGenerator
 
     // Per pattern: <svrl:active-pattern/> + <xsl:apply-templates select="/" mode="M{idx}"/>
     int nPatternIdx = 0;
-    for (final PSPattern aPattern : aSchema.getAllPatterns ())
+    for (final PSPattern aPattern : aActivePatterns)
     {
-      if (aPattern.isAbstract ())
-        continue;
       final IMicroElement aActive = aSchemaOutput.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "active-pattern");
       if (StringHelper.isNotEmpty (aPattern.getID ()))
         aActive.setAttribute ("id", aPattern.getID ());
@@ -137,7 +266,8 @@ public final class XsltStylesheetGenerator
 
   private static void _appendPatternTemplates (@NonNull final IMicroElement aStylesheet,
                                                @NonNull final PSPattern aPattern,
-                                               final int nPatternIdx)
+                                               final int nPatternIdx,
+                                               @Nullable final PSDiagnostics aDiagnostics)
   {
     final String sMode = _modeName (nPatternIdx);
     final var aRules = aPattern.getAllRules ();
@@ -156,7 +286,7 @@ public final class XsltStylesheetGenerator
         LOGGER.warn ("Skipping rule with empty context in pattern '" + aPattern.getID () + "'");
         continue;
       }
-      _appendRuleTemplate (aStylesheet, aRule, sMode, aRules.size () - nRuleIdx);
+      _appendRuleTemplate (aStylesheet, aPattern, aRule, sMode, aRules.size () - nRuleIdx, aDiagnostics);
       nRuleIdx++;
     }
 
@@ -171,14 +301,22 @@ public final class XsltStylesheetGenerator
   }
 
   private static void _appendRuleTemplate (@NonNull final IMicroElement aStylesheet,
+                                           @NonNull final PSPattern aPattern,
                                            @NonNull final PSRule aRule,
                                            @NonNull final String sMode,
-                                           final int nPriority)
+                                           final int nPriority,
+                                           @Nullable final PSDiagnostics aDiagnostics)
   {
     final IMicroElement aTemplate = aStylesheet.addElementNS (XSLT_NS, "template");
     aTemplate.setAttribute ("match", aRule.getContext ());
     aTemplate.setAttribute ("priority", Integer.toString (nPriority));
     aTemplate.setAttribute ("mode", sMode);
+
+    // Pattern- and rule-level <sch:let> become <xsl:variable> at the top of the rule template.
+    // Pattern lets are duplicated across every rule template in the pattern (rather than factored
+    // out) because they must be in scope inside whichever rule context fires.
+    _appendLetsAsXsltVariables (aTemplate, aPattern.getAllLets ());
+    _appendLetsAsXsltVariables (aTemplate, aRule.getAllLets ());
 
     // <svrl:fired-rule context="..."/>
     final IMicroElement aFired = aTemplate.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "fired-rule");
@@ -190,7 +328,7 @@ public final class XsltStylesheetGenerator
 
     // Per assert/report
     for (final PSAssertReport aAR : aRule.getAllAssertReports ())
-      _appendAssertReport (aTemplate, aAR);
+      _appendAssertReport (aTemplate, aAR, aDiagnostics);
 
     // Descend
     final IMicroElement aApply = aTemplate.addElementNS (XSLT_NS, "apply-templates");
@@ -198,7 +336,8 @@ public final class XsltStylesheetGenerator
   }
 
   private static void _appendAssertReport (@NonNull final IMicroElement aRuleTemplate,
-                                           @NonNull final PSAssertReport aAR)
+                                           @NonNull final PSAssertReport aAR,
+                                           @Nullable final PSDiagnostics aDiagnostics)
   {
     final String sTest = aAR.getTest ();
     if (StringHelper.isEmpty (sTest))
@@ -206,41 +345,140 @@ public final class XsltStylesheetGenerator
       LOGGER.warn ("Skipping " + (aAR.isAssert () ? "assert" : "report") + " with empty test expression");
       return;
     }
-    if (aAR.isReport ())
-    {
-      LOGGER.warn ("Skipping <sch:report> with test '" +
-                   sTest +
-                   "' - reports are not yet supported in the Saxon-native engine (Phase 1)");
-      return;
-    }
-    // <xsl:if test="not({test})"><svrl:failed-assert
-    // test="{test}"><svrl:text>...</svrl:text></svrl:failed-assert></xsl:if>
+    // Assert: fail when test is FALSE  ->  guard "not(test)" emits <svrl:failed-assert>
+    // Report: fire when test is TRUE   ->  guard "test"      emits <svrl:successful-report>
+    final boolean bIsAssert = aAR.isAssert ();
     final IMicroElement aIf = aRuleTemplate.addElementNS (XSLT_NS, "if");
-    aIf.setAttribute ("test", "not(" + sTest + ")");
+    aIf.setAttribute ("test", bIsAssert ? "not(" + sTest + ")" : sTest);
 
-    final IMicroElement aFailed = aIf.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "failed-assert");
-    aFailed.setAttribute ("test", _escapeAvt (sTest));
+    final String sSvrlElementName = bIsAssert ? "failed-assert" : "successful-report";
+    final IMicroElement aOut = aIf.addElementNS (CSVRL.SVRL_NAMESPACE_URI, sSvrlElementName);
+    aOut.setAttribute ("test", _escapeAvt (sTest));
     // XSLT attribute value template: Saxon evaluates fn:path(.) at runtime and substitutes
     // the canonical XPath of the offending context node. Required by the SVRL XSD.
-    aFailed.setAttribute ("location", "{path(.)}");
+    aOut.setAttribute ("location", "{path(.)}");
     if (StringHelper.isNotEmpty (aAR.getID ()))
-      aFailed.setAttribute ("id", _escapeAvt (aAR.getID ()));
+      aOut.setAttribute ("id", _escapeAvt (aAR.getID ()));
     if (StringHelper.isNotEmpty (aAR.getFlag ()))
-      aFailed.setAttribute ("flag", _escapeAvt (aAR.getFlag ()));
+      aOut.setAttribute ("flag", _escapeAvt (aAR.getFlag ()));
 
-    final IMicroElement aText = aFailed.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "text");
-    aText.addText (_joinTexts (aAR));
+    // Diagnostic-references must come before the text child per the SVRL XSD ordering
+    _appendDiagnosticReferences (aOut, aAR, aDiagnostics);
+
+    final IMicroElement aText = aOut.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "text");
+    _appendMessageContent (aText, aAR);
   }
 
-  @NonNull
-  private static String _joinTexts (@NonNull final PSAssertReport aAR)
+  /**
+   * Emit one {@code <svrl:diagnostic-reference diagnostic="id">} per id in the assert/report's
+   * {@code diagnostics} attribute. The reference's text content is the resolved diagnostic's mixed
+   * content (text + value-of + name) - interpolated the same way as assert/report messages.
+   */
+  private static void _appendDiagnosticReferences (@NonNull final IMicroElement aSvrlParent,
+                                                   @NonNull final PSAssertReport aAR,
+                                                   @Nullable final PSDiagnostics aDiagnostics)
   {
-    final var aTexts = aAR.getAllTexts ();
-    if (aTexts.isEmpty ())
-      return "";
-    if (aTexts.size () == 1)
-      return aTexts.getFirstOrNull ();
-    return StringImplode.imploder ().source (aTexts).separator (' ').build ();
+    final ICommonsList <String> aIDs = aAR.getAllDiagnostics ();
+    if (aIDs == null || aIDs.isEmpty ())
+      return;
+    if (aDiagnostics == null)
+    {
+      LOGGER.warn ("Assert/report references diagnostics " + aIDs +
+                   " but the schema has no <sch:diagnostics> container");
+      return;
+    }
+    for (final String sID : aIDs)
+    {
+      final PSDiagnostic aDiag = aDiagnostics.getDiagnosticOfID (sID);
+      if (aDiag == null)
+      {
+        LOGGER.warn ("Diagnostic id '" + sID + "' referenced by an assert/report is not defined");
+        continue;
+      }
+      final IMicroElement aRef = aSvrlParent.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "diagnostic-reference");
+      aRef.setAttribute ("diagnostic", sID);
+      _appendDiagnosticContent (aRef, aDiag);
+    }
+  }
+
+  /**
+   * Walk the mixed content of a {@link PSDiagnostic} in source order, emitting plain text and
+   * {@code <xsl:value-of>} for {@link PSValueOf} / {@link PSName} pieces. Mirrors
+   * {@link #_appendMessageContent} but for diagnostics (which have the same content model).
+   */
+  private static void _appendDiagnosticContent (@NonNull final IMicroElement aSvrlRef,
+                                                @NonNull final PSDiagnostic aDiag)
+  {
+    for (final Object aPiece : aDiag.getAllContentElements ())
+    {
+      if (aPiece instanceof final String sText)
+      {
+        aSvrlRef.addText (sText);
+      }
+      else
+        if (aPiece instanceof final PSValueOf aValueOf)
+        {
+          final String sSelect = aValueOf.getSelect ();
+          if (StringHelper.isEmpty (sSelect))
+            continue;
+          final IMicroElement aVO = aSvrlRef.addElementNS (XSLT_NS, "value-of");
+          aVO.setAttribute ("select", sSelect);
+        }
+        else
+          if (aPiece instanceof final PSName aName)
+          {
+            final IMicroElement aVO = aSvrlRef.addElementNS (XSLT_NS, "value-of");
+            final String sPath = aName.getPath ();
+            aVO.setAttribute ("select", StringHelper.isEmpty (sPath) ? "name()" : "name(" + sPath + ")");
+          }
+          else
+          {
+            LOGGER.warn ("Skipping unsupported diagnostic content of type " + aPiece.getClass ().getSimpleName ());
+          }
+    }
+  }
+
+  /**
+   * Walk the mixed message content of an assert/report in order, emitting plain text for
+   * {@link String} pieces and {@code <xsl:value-of>} for {@link PSValueOf} and {@link PSName} pieces.
+   * Other foreign / rich-text children (PSEmph, PSDir, PSSpan, foreign elements) are skipped for
+   * now and will be added in a later phase.
+   */
+  private static void _appendMessageContent (@NonNull final IMicroElement aTextElement,
+                                             @NonNull final PSAssertReport aAR)
+  {
+    for (final Object aPiece : aAR.getAllContentElements ())
+    {
+      if (aPiece instanceof final String sText)
+      {
+        aTextElement.addText (sText);
+      }
+      else
+        if (aPiece instanceof final PSValueOf aValueOf)
+        {
+          final String sSelect = aValueOf.getSelect ();
+          if (StringHelper.isEmpty (sSelect))
+          {
+            LOGGER.warn ("Skipping <sch:value-of> with empty select expression");
+            continue;
+          }
+          final IMicroElement aVO = aTextElement.addElementNS (XSLT_NS, "value-of");
+          aVO.setAttribute ("select", sSelect);
+        }
+        else
+          if (aPiece instanceof final PSName aName)
+          {
+            final IMicroElement aVO = aTextElement.addElementNS (XSLT_NS, "value-of");
+            // <sch:name/>          -> name()      i.e. name of the current context node
+            // <sch:name path="X"/> -> name(X)
+            final String sPath = aName.getPath ();
+            aVO.setAttribute ("select", StringHelper.isEmpty (sPath) ? "name()" : "name(" + sPath + ")");
+          }
+          else
+          {
+            LOGGER.warn ("Skipping unsupported assert/report content of type " + aPiece.getClass ().getSimpleName ());
+          }
+    }
   }
 
   @NonNull

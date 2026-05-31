@@ -150,6 +150,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.schematron</groupId>
+        <artifactId>ph-schematron-pure-saxon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.schematron</groupId>
         <artifactId>ph-schematron-validator</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -169,6 +174,7 @@
     <module>ph-schematron-schxslt2</module>
     <module>ph-schematron-model</module>
     <module>ph-schematron-pure</module>
+    <module>ph-schematron-pure-saxon</module>
     <module>ph-schematron-validator</module>
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>

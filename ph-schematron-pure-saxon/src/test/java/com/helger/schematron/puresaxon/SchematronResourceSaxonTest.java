@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,9 @@ import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.DiagnosticReference;
+import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.Text;
 
 /**
  * Phase 1 smoke tests for {@link SchematronResourceSaxon}.
@@ -48,6 +52,31 @@ public final class SchematronResourceSaxonTest
       if (aObj instanceof FailedAssert)
         n++;
     return n;
+  }
+
+  private static int _countSuccessfulReports (final SchematronOutputType aSVRL)
+  {
+    int n = 0;
+    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+      if (aObj instanceof SuccessfulReport)
+        n++;
+    return n;
+  }
+
+  @NonNull
+  private static String _firstFailedAssertText (final SchematronOutputType aSVRL)
+  {
+    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+      if (aObj instanceof final FailedAssert aFA)
+      {
+        final StringBuilder aSB = new StringBuilder ();
+        for (final Object aChild : aFA.getDiagnosticReferenceOrPropertyReferenceOrText ())
+          if (aChild instanceof final Text aText)
+            for (final Object aPart : aText.getContent ())
+              aSB.append (aPart == null ? "" : aPart.toString ());
+        return aSB.toString ();
+      }
+    throw new AssertionError ("No FailedAssert in SVRL");
   }
 
   @Test
@@ -97,6 +126,122 @@ public final class SchematronResourceSaxonTest
     LOGGER.info ("SVRL (multi-pattern invalid):\n" + new SVRLMarshaller (false).getAsString (aInvalidSVRL));
     final int nFailures = _countFailedAsserts (aInvalidSVRL);
     assertTrue ("multi-pattern invalid: expected at least 2 failed-asserts, got " + nFailures, nFailures >= 2);
+  }
+
+  @Test
+  public void testReportFiresOnTrueTest () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/report/schematron.sch");
+    final File aFires = new File ("src/test/resources/external/report/fires.xml");
+    final File aSilent = new File ("src/test/resources/external/report/silent.xml");
+
+    final SchematronOutputType aFiresSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aFires));
+    LOGGER.info ("SVRL (report fires):\n" + new SVRLMarshaller (false).getAsString (aFiresSVRL));
+    assertEquals ("report should fire when @deprecated='true'", 1, _countSuccessfulReports (aFiresSVRL));
+    assertEquals (0, _countFailedAsserts (aFiresSVRL));
+
+    final SchematronOutputType aSilentSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aSilent));
+    assertEquals ("report should NOT fire when @deprecated is missing", 0, _countSuccessfulReports (aSilentSVRL));
+  }
+
+  @Test
+  public void testValueOfAndNameInterpolation () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/valueof/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/valueof/test.xml");
+    final SchematronOutputType aSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    LOGGER.info ("SVRL (valueof):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
+    assertEquals (1, _countFailedAsserts (aSVRL));
+    final String sMsg = _firstFailedAssertText (aSVRL);
+    // <sch:name path="title"/> resolves to "title" (the element name, not its content) per sch spec
+    assertTrue ("expected message to include the resolved <sch:name> element name 'title', got: " + sMsg,
+                sMsg.contains ("title"));
+    // <sch:value-of select="@isbn"/> on a book without @isbn produces an empty string, which is
+    // exactly the failure context we want to verify is reported. Confirm by string shape.
+    assertTrue ("expected message shape 'Book ... is missing an ISBN (got '')', got: " + sMsg,
+                sMsg.contains ("is missing an ISBN") && sMsg.contains ("got ''"));
+  }
+
+  @Test
+  public void testPhaseSelectionLenientVsStrict () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/phases/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/phases/test.xml");
+
+    // Lenient phase: only p-isbn active -> 1 failure (missing ISBN)
+    final SchematronOutputType aLenient = SchematronResourceSaxon.fromFile (aSch)
+        .setPhase ("lenient")
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertEquals ("lenient phase should report only the ISBN failure", 1, _countFailedAsserts (aLenient));
+
+    // Strict phase: both patterns active -> 2 failures
+    final SchematronOutputType aStrict = SchematronResourceSaxon.fromFile (aSch)
+        .setPhase ("strict")
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertEquals ("strict phase should report both failures", 2, _countFailedAsserts (aStrict));
+
+    // #DEFAULT resolves to strict (declared on the schema)
+    final SchematronOutputType aDefault = SchematronResourceSaxon.fromFile (aSch)
+        .setPhase ("#DEFAULT")
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertEquals ("#DEFAULT should match declared defaultPhase='strict'", 2, _countFailedAsserts (aDefault));
+
+    // #ALL processes every concrete pattern
+    final SchematronOutputType aAll = SchematronResourceSaxon.fromFile (aSch)
+        .setPhase ("#ALL")
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertEquals ("#ALL should process both patterns", 2, _countFailedAsserts (aAll));
+  }
+
+  @Test
+  public void testLetsAtAllScopes () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/lets/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/lets/test.xml");
+    final SchematronOutputType aSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    LOGGER.info ("SVRL (lets):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
+    // valid library: 1 book >= bookCountThreshold (1) -> no failure on library rule
+    // invalid book: 1 author < minAuthors (2)         -> 1 failure on book rule
+    assertEquals ("expected 1 failure (book rule using schema-level $minAuthors)", 1, _countFailedAsserts (aSVRL));
+    final String sMsg = _firstFailedAssertText (aSVRL);
+    // The interpolated message should embed the schema-level let value "2" and the rule-level
+    // let value "1"; this proves both scope levels resolved.
+    assertTrue ("expected message to include '2' (schema let) and '1' (rule let), got: " + sMsg,
+                sMsg.contains ("2") && sMsg.contains ("1"));
+  }
+
+  @Test
+  public void testDiagnosticReferences () throws Exception
+  {
+    final File aSch = new File ("src/test/resources/external/diagnostics/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/diagnostics/test.xml");
+    final SchematronOutputType aSVRL = SchematronResourceSaxon.fromFile (aSch)
+        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    LOGGER.info ("SVRL (diagnostics):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
+    assertEquals (1, _countFailedAsserts (aSVRL));
+
+    boolean bFoundRef = false;
+    String sRefText = "";
+    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+      if (aObj instanceof final FailedAssert aFA)
+        for (final Object aChild : aFA.getDiagnosticReferenceOrPropertyReferenceOrText ())
+          if (aChild instanceof final DiagnosticReference aRef)
+          {
+            bFoundRef = true;
+            assertEquals ("d-isbn", aRef.getDiagnostic ());
+            final StringBuilder aSB = new StringBuilder ();
+            for (final Object aPart : aRef.getContent ())
+              aSB.append (aPart == null ? "" : aPart.toString ());
+            sRefText = aSB.toString ();
+          }
+    assertTrue ("expected svrl:diagnostic-reference with diagnostic='d-isbn'", bFoundRef);
+    assertTrue ("expected diagnostic text to mention ISBN, got: " + sRefText, sRefText.contains ("ISBN"));
+    assertTrue ("expected diagnostic value-of to resolve title 'Old Book', got: " + sRefText,
+                sRefText.contains ("Old Book"));
   }
 
   @Test
