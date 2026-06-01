@@ -44,13 +44,13 @@ public final class SchematronTestHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTestHelper.class);
   private static final ICommonsList <SchematronTestFile> SCH = _readDirIndex (new ClassPathResource ("external/test-sch/dirindex.xml",
-                                                                                                     _getCL ()));
+                                                                                                     getCL ()));
   private static final ICommonsList <SchematronTestFile> SVRL = _readDirIndex (new ClassPathResource ("external/test-svrl/dirindex.xml",
-                                                                                                      _getCL ()));
+                                                                                                      getCL ()));
   private static final ICommonsList <SchematronTestFile> XML = _readDirIndex (new ClassPathResource ("external/test-xml/dirindex.xml",
-                                                                                                     _getCL ()));
+                                                                                                     getCL ()));
 
-  private static @NonNull ClassLoader _getCL ()
+  public static @NonNull ClassLoader getCL ()
   {
     return SchematronTestHelper.class.getClassLoader ();
   }

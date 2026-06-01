@@ -90,7 +90,11 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-pure</artifactId>
     </dependency>
-    
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-pure-xslt</artifactId>
+    </dependency>
+
     <!-- Ant -->
     <dependency>
       <groupId>org.apache.ant</groupId>

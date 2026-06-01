@@ -80,7 +80,7 @@
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-pure-saxon</artifactId>
+      <artifactId>ph-schematron-pure-xslt</artifactId>
     </dependency>
     <dependency>
       <groupId>org.openjdk.jmh</groupId>

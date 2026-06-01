@@ -52,8 +52,9 @@ import com.helger.io.file.FileOperations;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ESchematronMode;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.SchematronResourcePureXPath;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
@@ -680,14 +681,28 @@ public class Schematron extends AbstractSchematronTask
       switch (m_eSchematronProcessingEngine)
       {
         case PURE:
+        case PURE_XPATH:
         {
-          // pure
+          // Pure-Java XPath engine
           final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-          final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
+          final SchematronResourcePureXPath aRealSCH = new SchematronResourcePureXPath (new FileSystemResource (m_aSchematronFile));
           aRealSCH.setPhase (m_sPhaseName);
           aRealSCH.setErrorHandler (aErrorHdl);
           aRealSCH.setEntityResolver (getEntityResolver ());
           aRealSCH.validateCompletely ();
+
+          aSch = aRealSCH;
+          aSCHErrors = aErrorHdl.getAllErrors ();
+          break;
+        }
+        case PURE_XSLT:
+        {
+          // Pure-Java engine generating XSLT 3.0 and running via Saxon s9api
+          final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
+          final SchematronResourcePureXslt aRealSCH = new SchematronResourcePureXslt (new FileSystemResource (m_aSchematronFile));
+          aRealSCH.setPhase (m_sPhaseName);
+          aRealSCH.setErrorHandler (aErrorHdl);
+          aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
           aSCHErrors = aErrorHdl.getAllErrors ();

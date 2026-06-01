@@ -38,6 +38,7 @@ import org.w3c.dom.Node;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.xml.serialize.read.DOMReader;
 
@@ -82,7 +83,7 @@ public class BenchmarkDomVsTinyTree
   public int itemCount;
 
   private byte [] m_aXmlBytes;
-  private SchematronResourcePure m_aSchemaPure;
+  private SchematronResourcePureXPath m_aSchemaPure;
   private DocumentBuilder m_aSaxonDomBuilder;
   private Document m_aPreparsedDom;
   private Node m_aPreparsedFacade;
@@ -97,7 +98,7 @@ public class BenchmarkDomVsTinyTree
     aSB.append ("</root>\n");
     m_aXmlBytes = aSB.toString ().getBytes (StandardCharsets.UTF_8);
 
-    m_aSchemaPure = SchematronResourcePure.fromString (SCHEMATRON, StandardCharsets.UTF_8);
+    m_aSchemaPure = SchematronResourcePureXPath.fromString (SCHEMATRON, StandardCharsets.UTF_8);
     m_aSchemaPure.getOrCreateBoundSchema ();
     m_aSaxonDomBuilder = XPathConfigBuilder.DEFAULT_PROCESSOR.newDocumentBuilder ();
 

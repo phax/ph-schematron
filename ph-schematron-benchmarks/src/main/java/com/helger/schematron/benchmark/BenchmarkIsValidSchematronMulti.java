@@ -31,41 +31,34 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import com.helger.io.resource.ClassPathResource;
-import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.puresaxon.SchematronResourceSaxon;
+import com.helger.schematron.pure.SchematronResourcePureXPath;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;
 
 /**
- * End-to-end SVRL-producing validation, one fixed Schematron and one fixed XML, repeated across
- * engines. Each iteration creates a fresh resource instance to include the bind/compile cost.
+ * Compares {@code isValidSchematron()} across all engine for a single file. Measures the parse +
+ * bind cost rather than the validate cost.
  *
  * @author Philip Helger
  */
 @State (Scope.Benchmark)
 @BenchmarkMode (Mode.AverageTime)
-@OutputTimeUnit (TimeUnit.MICROSECONDS)
+@OutputTimeUnit (TimeUnit.NANOSECONDS)
 @Warmup (iterations = 3, time = 2)
 @Measurement (iterations = 5, time = 3)
 @Fork (1)
-public class BenchmarkSchematronGetSVRL
+public class BenchmarkIsValidSchematronMulti
 {
-  private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid03.sch");
-  private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid03.xml");
+  private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid03.sch",
+                                                                                   SchematronTestHelper.getCL ());
 
   @Setup
   public void setup ()
   {
     // Touch the resources once so any classpath discovery cost is paid before timing starts.
     VALID_SCHEMATRON.exists ();
-    VALID_XMLINSTANCE.exists ();
-  }
-
-  @Benchmark
-  public void pure (final Blackhole bh) throws Exception
-  {
-    final SchematronResourcePure r = new SchematronResourcePure (VALID_SCHEMATRON);
-    bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }
 
   @Benchmark
@@ -73,13 +66,20 @@ public class BenchmarkSchematronGetSVRL
   {
     final SchematronResourceSCH r = new SchematronResourceSCH (VALID_SCHEMATRON);
     r.setErrorListener (new DoNothingTransformErrorListener ());
-    bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
+    bh.consume (r.isValidSchematron ());
   }
 
   @Benchmark
-  public void saxon (final Blackhole bh) throws Exception
+  public void pureXPath (final Blackhole bh) throws Exception
   {
-    final SchematronResourceSaxon r = new SchematronResourceSaxon (VALID_SCHEMATRON);
-    bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
+    final SchematronResourcePureXPath r = new SchematronResourcePureXPath (VALID_SCHEMATRON);
+    bh.consume (r.isValidSchematron ());
+  }
+
+  @Benchmark
+  public void pureXslt (final Blackhole bh) throws Exception
+  {
+    final SchematronResourcePureXslt r = new SchematronResourcePureXslt (VALID_SCHEMATRON);
+    bh.consume (r.isValidSchematron ());
   }
 }

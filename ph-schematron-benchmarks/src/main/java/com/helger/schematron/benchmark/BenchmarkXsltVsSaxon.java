@@ -33,8 +33,9 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
-import com.helger.schematron.puresaxon.SchematronResourceSaxon;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;
 
 /**
@@ -43,7 +44,7 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
  * <li>{@link SchematronResourceSCH} - "regular XSLT": preprocesses the schema through the ISO
  * Schematron XSL stylesheet chain via JAXP {@code TransformerFactory}, then applies the resulting
  * XSLT via JAXP as well.</li>
- * <li>{@link SchematronResourceSaxon} - "new pure XSLT": walks the parsed {@code PSSchema} in Java
+ * <li>{@link SchematronResourcePureXslt} - "new pure XSLT": walks the parsed {@code PSSchema} in Java
  * and emits an XSLT&nbsp;3.0 stylesheet directly, then compiles and runs it via Saxon
  * {@code s9api}.</li>
  * </ul>
@@ -66,12 +67,14 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkXsltVsSaxon
 {
-  private static final ClassPathResource SCHEMATRON = new ClassPathResource ("external/test-sch/valid03.sch");
-  private static final ClassPathResource XMLINSTANCE = new ClassPathResource ("external/test-xml/valid03.xml");
+  private static final ClassPathResource SCHEMATRON = new ClassPathResource ("external/test-sch/valid03.sch",
+                                                                             SchematronTestHelper.getCL ());
+  private static final ClassPathResource XMLINSTANCE = new ClassPathResource ("external/test-xml/valid03.xml",
+                                                                              SchematronTestHelper.getCL ());
 
   // Long-lived, pre-compiled resources used by the warm variants
   private SchematronResourceSCH m_aWarmSch;
-  private SchematronResourceSaxon m_aWarmSaxon;
+  private SchematronResourcePureXslt m_aWarmSaxon;
 
   @Setup (Level.Trial)
   public void setup () throws Exception
@@ -81,7 +84,7 @@ public class BenchmarkXsltVsSaxon
     // Force one validation to materialize the cached XSLT before the timed loop starts
     m_aWarmSch.getSchematronValidity (XMLINSTANCE);
 
-    m_aWarmSaxon = new SchematronResourceSaxon (SCHEMATRON);
+    m_aWarmSaxon = new SchematronResourcePureXslt (SCHEMATRON);
     m_aWarmSaxon.setErrorHandler (new DoNothingPSErrorHandler ());
     m_aWarmSaxon.getSchematronValidity (XMLINSTANCE);
   }
@@ -99,7 +102,7 @@ public class BenchmarkXsltVsSaxon
   @Benchmark
   public void coldSaxon (final Blackhole bh) throws Exception
   {
-    final SchematronResourceSaxon r = new SchematronResourceSaxon (SCHEMATRON);
+    final SchematronResourcePureXslt r = new SchematronResourcePureXslt (SCHEMATRON);
     r.setErrorHandler (new DoNothingPSErrorHandler ());
     bh.consume (r.getSchematronValidity (XMLINSTANCE));
   }

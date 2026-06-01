@@ -35,8 +35,8 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
-import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.puresaxon.SchematronResourceSaxon;
+import com.helger.schematron.pure.SchematronResourcePureXPath;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;
@@ -50,7 +50,7 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
  */
 @State (Scope.Benchmark)
 @BenchmarkMode (Mode.AverageTime)
-@OutputTimeUnit (TimeUnit.MILLISECONDS)
+@OutputTimeUnit (TimeUnit.NANOSECONDS)
 @Warmup (iterations = 2, time = 3)
 @Measurement (iterations = 5, time = 5)
 @Fork (1)
@@ -75,18 +75,6 @@ public class BenchmarkIsValidSchematron
   }
 
   @Benchmark
-  public void pure (final Blackhole bh)
-  {
-    for (final IReadableResource aRes : m_aSchemas)
-    {
-      final SchematronResourcePure r = new SchematronResourcePure (aRes,
-                                                                   CSchematron.PHASE_ALL,
-                                                                   new DoNothingPSErrorHandler ());
-      bh.consume (r.isValidSchematron ());
-    }
-  }
-
-  @Benchmark
   public void sch (final Blackhole bh)
   {
     for (final IReadableResource aRes : m_aSchemas)
@@ -98,11 +86,23 @@ public class BenchmarkIsValidSchematron
   }
 
   @Benchmark
-  public void saxon (final Blackhole bh)
+  public void pureXPath (final Blackhole bh)
   {
     for (final IReadableResource aRes : m_aSchemas)
     {
-      final SchematronResourceSaxon r = new SchematronResourceSaxon (aRes).setErrorHandler (new DoNothingPSErrorHandler ());
+      final SchematronResourcePureXPath r = new SchematronResourcePureXPath (aRes,
+                                                                             CSchematron.PHASE_ALL,
+                                                                             new DoNothingPSErrorHandler ());
+      bh.consume (r.isValidSchematron ());
+    }
+  }
+
+  @Benchmark
+  public void pureSaxon (final Blackhole bh)
+  {
+    for (final IReadableResource aRes : m_aSchemas)
+    {
+      final SchematronResourcePureXslt r = new SchematronResourcePureXslt (aRes).setErrorHandler (new DoNothingPSErrorHandler ());
       bh.consume (r.isValidSchematron ());
     }
   }
