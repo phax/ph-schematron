@@ -57,6 +57,7 @@ import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
+import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -93,11 +94,26 @@ public final class SchematronValidationMojo extends AbstractMojo
   private File m_aSchematronFile;
 
   /**
-   * The processing engine to use. Can be one of the following:
+   * The processing engine to use. Recognised values (case-insensitive) and their pre-v10 aliases:
    * <ul>
-   * <li>pure - for SCH files</li>
-   * <li>schematron - for SCH files that will be converted to XSLT and applied from there.</li>
-   * <li>xslt - apply pre-build XSLT files</li>
+   * <li><code>pure-xpath</code> (alias: <code>pure</code>) &mdash; pure-Java XPath-only engine
+   * ({@code SchematronResourcePureXPath}). Reads the SCH directly; honours
+   * {@code phaseName}.</li>
+   * <li><code>pure-xslt</code> (alias: <code>pure-saxon</code>) &mdash; pure-Java engine that
+   * generates an XSLT 3.0 stylesheet in Java and runs it through Saxon s9api
+   * ({@code SchematronResourcePureXslt}). Honours {@code phaseName}. {@code languageCode} and
+   * {@code parameters} are ignored.</li>
+   * <li><code>iso-schematron</code> (aliases: <code>schematron</code>, <code>sch</code>,
+   * <code>iso</code>, <code>isoschematron</code>) &mdash; SCH file preprocessed to XSLT through
+   * the canonical ISO Schematron stylesheet chain ({@code SchematronResourceSCH}). Honours
+   * {@code phaseName}, {@code languageCode}, {@code parameters}.</li>
+   * <li><code>schxslt</code> (aliases: <code>schxslt1</code>, <code>schxslt-xslt2</code>) &mdash;
+   * SchXslt v1 (XSLT 2). Honours {@code phaseName}, {@code languageCode}, {@code parameters}.</li>
+   * <li><code>schxslt2</code> &mdash; SchXslt v2 (XSLT 3). Honours {@code phaseName},
+   * {@code languageCode}, {@code parameters}.</li>
+   * <li><code>xslt</code> &mdash; apply a pre-built XSLT file directly ({@code SchematronResourceXSLT}).
+   * {@code phaseName} and {@code languageCode} are ignored. Default is
+   * {@code iso-schematron}.</li>
    * </ul>
    */
   @Parameter (name = "schematronProcessingEngine", required = true)
@@ -164,23 +180,27 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   /**
    * Define the phase to be used for Schematron validation. By default the <code>defaultPhase</code>
-   * attribute of the Schematron file is used. This phase name is only used if the processing engine
-   * <code>pure</code> or <code>schematron</code> are used.
+   * attribute of the Schematron file is used. Honoured by the {@code pure-xpath},
+   * {@code pure-xslt}, {@code iso-schematron}, {@code schxslt} and {@code schxslt2} engines;
+   * ignored by {@code xslt} (the phase is baked into the pre-built stylesheet at build time).
    */
   @Parameter (name = "phaseName")
   private String m_sPhaseName;
 
   /**
-   * Define the language code to be used for Schematron validation. Default is English. Supported
-   * language codes are: cs, de, en, fr, nl. This parameter takes only effect when using
-   * schematronProcessingEngine "schematron".
+   * Define the language code to be used for Schematron diagnostic messages. Default is English.
+   * Supported codes: cs, de, en, fr, nl. Honoured by the {@code iso-schematron}, {@code schxslt}
+   * and {@code schxslt2} engines (where it is forwarded to the ISO / SchXslt stylesheet chain).
+   * Ignored by {@code pure-xpath}, {@code pure-xslt} and {@code xslt}.
    */
   @Parameter (name = "languageCode")
   private String m_sLanguageCode;
 
   /**
-   * Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect
-   * when using schematronProcessingEngine "schematron" or "xslt".
+   * Custom parameters forwarded to the SCH-to-XSLT preprocessing stage (used as
+   * {@code <xsl:param>} bindings on the generated stylesheet). Honoured by {@code iso-schematron},
+   * {@code schxslt}, {@code schxslt2} and {@code xslt}. Ignored by {@code pure-xpath} and
+   * {@code pure-xslt}.
    */
   @Parameter (name = "parameters")
   @Since ("5.0.2")
@@ -513,7 +533,6 @@ public final class SchematronValidationMojo extends AbstractMojo
     }
   }
 
-  @SuppressWarnings ("removal")
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     if (m_aSchematronFile == null)
@@ -616,6 +635,22 @@ public final class SchematronValidationMojo extends AbstractMojo
         // SchXslt v1 (XSLT 2)
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceSchXslt_XSLT2 aRealSCH = new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (m_aSchematronFile));
+        aRealSCH.setPhase (m_sPhaseName);
+        aRealSCH.setLanguageCode (m_sLanguageCode);
+        aRealSCH.setForceCacheResult (m_bForceCacheResult);
+        aRealSCH.parameters ().setAll (m_aCustomParameters);
+        aRealSCH.setErrorListener (aErrorHdl);
+        aRealSCH.isValidSchematron ();
+
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getErrorList ();
+        break;
+      }
+      case SCHXSLT2:
+      {
+        // SchXslt v2 (XSLT 3)
+        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+        final SchematronResourceSchXslt2 aRealSCH = new SchematronResourceSchXslt2 (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
         aRealSCH.setLanguageCode (m_sLanguageCode);
         aRealSCH.setForceCacheResult (m_bForceCacheResult);
