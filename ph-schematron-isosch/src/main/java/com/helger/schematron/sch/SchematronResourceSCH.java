@@ -39,7 +39,8 @@ import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
 /**
- * A Schematron resource that is based on the original SCH file.
+ * A Schematron resource that is based on the original SCH file. It uses ISO Schematron XSLT to
+ * convert the SCH file to an XSLT before applying this XSLT onto the XML to be validated.
  *
  * @author Philip Helger
  */
@@ -84,8 +85,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * @return <code>true</code> if internal caching of the result should be
-   *         forced, <code>false</code> if not.
+   * @return <code>true</code> if internal caching of the result should be forced,
+   *         <code>false</code> if not.
    * @since 5.2.1
    */
   public final boolean isForceCacheResult ()
@@ -94,12 +95,12 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * Force the caching of results. This only applies when Schematron to XSLT
-   * conversion is performed.
+   * Force the caching of results. This only applies when Schematron to XSLT conversion is
+   * performed.
    *
    * @param bForceCacheResult
-   *        <code>true</code> to force result caching, <code>false</code> to
-   *        cache only if no parameters are present.
+   *        <code>true</code> to force result caching, <code>false</code> to cache only if no
+   *        parameters are present.
    * @since 5.2.1
    */
   public final void setForceCacheResult (final boolean bForceCacheResult)
@@ -144,8 +145,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * Create a new Schematron resource.
    *
    * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
+   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
+   *        empty.
    * @return Never <code>null</code>.
    */
   @NonNull
@@ -158,11 +159,11 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * Create a new Schematron resource.
    *
    * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
+   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
+   *        empty.
    * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May
-   *        be <code>null</code>.
+   *        The class loader to be used to retrieve the classpath resource. May be
+   *        <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.0.4
    */
@@ -177,8 +178,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * Create a new Schematron resource.
    *
    * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be
-   *        <code>null</code> nor empty.
+   *        The file system path to the Schematron file. May neither be <code>null</code> nor empty.
    * @return Never <code>null</code>.
    */
   @NonNull
@@ -201,12 +201,10 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
-   * at a URL
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided at a URL
    *
    * @param sSCHURL
-   *        The URL to the Schematron rules. May neither be <code>null</code>
-   *        nor empty.
+   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
    * @return Never <code>null</code>.
    * @throws MalformedURLException
    *         In case an invalid URL is provided
@@ -219,8 +217,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
-   * at a URL
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided at a URL
    *
    * @param aSCHURL
    *        The URL to the Schematron rules. May not be <code>null</code>.
@@ -234,16 +231,14 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
-   * by an arbitrary {@link InputStream}.<br>
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided by an arbitrary
+   * {@link InputStream}.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be
-   *        <code>null</code> nor empty.
+   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
    * @param aSchematronIS
-   *        The {@link InputStream} to read the Schematron rules from. May not
-   *        be <code>null</code>.
+   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.2.6
    */
@@ -255,13 +250,12 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
-   * by an arbitrary byte array.<br>
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided by an arbitrary byte
+   * array.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param aSchematron
-   *        The byte array representing the Schematron. May not be
-   *        <code>null</code>.
+   *        The byte array representing the Schematron. May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.2.6
    */
@@ -272,13 +266,12 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided
-   * by an arbitrary String.<br>
+   * Create a new {@link SchematronResourceSCH} from Schematron rules provided by an arbitrary
+   * String.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param sSchematron
-   *        The String representing the Schematron. May not be <code>null</code>
-   *        .
+   *        The String representing the Schematron. May not be <code>null</code> .
    * @param aCharset
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
