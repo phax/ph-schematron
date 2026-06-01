@@ -49,7 +49,6 @@ import com.helger.schematron.model.PSSchema;
  * @author Philip Helger
  * @since 10.0.0
  */
-@SuppressWarnings ("deprecation")
 @NotThreadSafe
 public class SchematronResourcePureXPath extends SchematronResourcePure
 {
@@ -198,7 +197,8 @@ public class SchematronResourcePureXPath extends SchematronResourcePure
    *         <code>null</code>.
    */
   @NonNull
-  public static SchematronResourcePureXPath fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
+  public static SchematronResourcePureXPath fromString (@NonNull final String sSchematron,
+                                                        @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }

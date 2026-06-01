@@ -50,7 +50,7 @@ import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.diagnostics.error.list.IErrorList;
 import com.helger.io.file.FileOperations;
 import com.helger.io.resource.FileSystemResource;
-import com.helger.schematron.ESchematronMode;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
@@ -170,7 +170,7 @@ public class Schematron extends AbstractSchematronTask
    * <li>xslt - apply pre-build XSLT files</li>
    * </ul>
    */
-  private ESchematronMode m_eSchematronProcessingEngine = ESchematronMode.SCHEMATRON;
+  private ESchematronEngine m_eSchematronProcessingEngine = ESchematronEngine.ISO_SCHEMATRON;
 
   /**
    * The collection for resources (like FileSets etc.) which are to be validated.
@@ -255,7 +255,7 @@ public class Schematron extends AbstractSchematronTask
 
   public void setSchematronProcessingEngine (@Nullable final String sEngine)
   {
-    m_eSchematronProcessingEngine = ESchematronMode.getFromIDOrNull (sEngine);
+    m_eSchematronProcessingEngine = ESchematronEngine.getFromIDOrNull (sEngine);
     _debug ("Schematron processing mode set to '" + m_eSchematronProcessingEngine + "'");
   }
 
@@ -636,7 +636,7 @@ public class Schematron extends AbstractSchematronTask
         if (m_eSchematronProcessingEngine == null)
           _errorOrFail ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
                         StringImplode.imploder ()
-                                     .source (ESchematronMode.values (), x -> "'" + x.getID () + "'")
+                                     .source (ESchematronEngine.values (), x -> "'" + x.getID () + "'")
                                      .separator (", ")
                                      .build ());
         else
@@ -708,9 +708,9 @@ public class Schematron extends AbstractSchematronTask
           aSCHErrors = aErrorHdl.getAllErrors ();
           break;
         }
-        case SCHEMATRON:
+        case ISO_SCHEMATRON:
         {
-          // SCH
+          // ISO Schematron - SCH file converted to XSLT through the ISO stylesheet chain
           final IStringMap aParams = new StringMap ();
           m_aParameters.forEach (x -> x.addToMap (aParams));
           if (aParams.isNotEmpty ())
@@ -731,9 +731,9 @@ public class Schematron extends AbstractSchematronTask
           aSCHErrors = aErrorHdl.getErrorList ();
           break;
         }
-        case SCHXSLT_XSLT2:
+        case SCHXSLT1:
         {
-          // SchXslt
+          // SchXslt v1 (XSLT 2)
           final IStringMap aParams = new StringMap ();
           m_aParameters.forEach (x -> x.addToMap (aParams));
           if (aParams.isNotEmpty ())
@@ -754,9 +754,9 @@ public class Schematron extends AbstractSchematronTask
           aSCHErrors = aErrorHdl.getErrorList ();
           break;
         }
-        case XSLT:
+        case XSLT_PREBUILT:
         {
-          // XSLT
+          // Apply a pre-built XSLT directly
           final IStringMap aParams = new StringMap ();
           m_aParameters.forEach (x -> x.addToMap (aParams));
           if (aParams.isNotEmpty ())

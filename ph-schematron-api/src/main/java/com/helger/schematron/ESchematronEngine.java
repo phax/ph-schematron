@@ -35,15 +35,38 @@ public enum ESchematronEngine implements IHasID <String>
 {
   /** Pure-Java XPath-only engine; same as {@link #PURE}. */
   PURE_XPATH ("pure-xpath", new CommonsHashSet <> ("pure"), false),
+
   /**
    * Pure-Java engine that generates an XSLT 3.0 stylesheet in Java (no external ISO Schematron
    * stylesheet chain) and runs it through Saxon s9api. Suitable both as a validation engine and as
    * a {@code SCH -> XSLT} converter.
    */
-  PURE_XSLT ("pure-xslt", new CommonsHashSet <> (), true),
-  ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron"), true),
-  SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1"), true),
-  SCHXSLT2 ("schxslt2", new CommonsHashSet <> (), true);
+  PURE_XSLT ("pure-xslt", new CommonsHashSet <> ("pure-saxon"), true),
+
+  /**
+   * ISO Schematron: SCH-to-XSLT preprocessing through the canonical ISO Schematron XSL stylesheet
+   * chain. The {@code "schematron"} and {@code "sch"} aliases mirror the pre-v10
+   * {@code ESchematronMode.SCHEMATRON} id.
+   */
+  ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron", "schematron", "sch"), true),
+
+  /**
+   * SchXslt v1 (XSLT 2). The {@code "schxslt-xslt2"} alias mirrors the pre-v10
+   * {@code ESchematronMode.SCHXSLT_XSLT2} id.
+   */
+  SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1", "schxslt-xslt2"), true),
+
+  /** SchXslt v2 (XSLT 3). */
+  SCHXSLT2 ("schxslt2", new CommonsHashSet <> (), true),
+
+  /**
+   * Apply a pre-built XSLT stylesheet directly to the XML instance (does not perform any
+   * SCH-to-XSLT step). Used by {@code SchematronResourceXSLT}. {@link #isXSLTBased()} returns
+   * {@code false} because this engine consumes ready-made XSLT rather than generating it &mdash;
+   * the flag is consumed by {@code Schematron2XSLTMojo} which only accepts engines that can produce
+   * XSLT from SCH.
+   */
+  XSLT_PREBUILT ("xslt", new CommonsHashSet <> (), false);
 
   /** Pure-Java XPath-only engine (alias of {@link #PURE_XPATH}; kept for compatibility) */
   @Deprecated (forRemoval = true, since = "10.0.0")

@@ -33,7 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.helger.schematron.ESchematronMode;
+import com.helger.schematron.ESchematronEngine;
 
 public final class SchematronValidationMojoFuncTest
 {
@@ -54,7 +54,7 @@ public final class SchematronValidationMojoFuncTest
     replay (project);
 
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
-    OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
+    OUT.setSchematronProcessingEngine (ESchematronEngine.PURE_XPATH.getID ());
     OUT.setXmlDirectory (new File ("src/test/resources/data"));
     OUT.setXmlIncludes (new String [] { "*.xml" });
     OUT.setXmlExcludes (new String [] { "*-invalid.xml" });
@@ -70,7 +70,7 @@ public final class SchematronValidationMojoFuncTest
     replay (project);
 
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
-    OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
+    OUT.setSchematronProcessingEngine (ESchematronEngine.PURE_XPATH.getID ());
     OUT.setXmlErrorDirectory (new File ("src/test/resources/data"));
     OUT.setXmlErrorIncludes (new String [] { "*-invalid.xml" });
     OUT.execute ();
@@ -85,7 +85,7 @@ public final class SchematronValidationMojoFuncTest
     replay (project);
 
     OUT.setSchematronFile (new File ("src/test/resources/schematron/check-classifications.sch"));
-    OUT.setSchematronProcessingEngine (ESchematronMode.PURE.getID ());
+    OUT.setSchematronProcessingEngine (ESchematronEngine.PURE_XPATH.getID ());
     OUT.setXmlDirectory (new File ("src/test/resources/data"));
     OUT.setXmlIncludes (new String [] { "*.xml" });
     OUT.setXmlExcludes (new String [] { "*-valid.xml" });

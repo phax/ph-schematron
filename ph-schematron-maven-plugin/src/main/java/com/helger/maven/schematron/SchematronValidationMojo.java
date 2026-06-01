@@ -49,7 +49,7 @@ import com.helger.io.file.FileIOError;
 import com.helger.io.file.FileOperationManager;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.CSchematron;
-import com.helger.schematron.ESchematronMode;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
@@ -101,7 +101,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * </ul>
    */
   @Parameter (name = "schematronProcessingEngine", required = true)
-  private String m_sSchematronProcessingEngine = ESchematronMode.SCHEMATRON.getID ();
+  private String m_sSchematronProcessingEngine = ESchematronEngine.ISO_SCHEMATRON.getID ();
 
   /**
    * The directory where the XML files reside that are expected to match the Schematron rules.
@@ -228,10 +228,10 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   public void setSchematronProcessingEngine (@Nullable final String sEngine)
   {
-    final ESchematronMode eMode = ESchematronMode.getFromIDOrNull (sEngine);
-    m_sSchematronProcessingEngine = eMode == null ? null : eMode.getID ();
+    final ESchematronEngine eEngine = ESchematronEngine.getFromIDOrNull (sEngine);
+    m_sSchematronProcessingEngine = eEngine == null ? null : eEngine.getID ();
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Schematron processing mode set to '" + eMode + "'");
+      getLog ().debug ("Schematron processing engine set to '" + eEngine + "'");
   }
 
   public void setXmlDirectory (@NonNull final File aDir)
@@ -523,7 +523,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (m_sSchematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
                                         StringImplode.imploder ()
-                                                     .source (ESchematronMode.values (), x -> "'" + x.getID () + "'")
+                                                     .source (ESchematronEngine.values (), x -> "'" + x.getID () + "'")
                                                      .separator (", ")
                                                      .build ());
     if (m_aXmlDirectory == null && m_aXmlErrorDirectory == null)
@@ -562,7 +562,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     // 1. Parse Schematron file
     ISchematronResource aSch;
     IErrorList aSCHErrors;
-    switch (ESchematronMode.getFromIDOrNull (m_sSchematronProcessingEngine))
+    switch (ESchematronEngine.getFromIDOrNull (m_sSchematronProcessingEngine))
     {
       case PURE_XPATH:
       {
@@ -595,9 +595,9 @@ public final class SchematronValidationMojo extends AbstractMojo
         aSCHErrors = aErrorHdl.getAllErrors ();
         break;
       }
-      case SCHEMATRON:
+      case ISO_SCHEMATRON:
       {
-        // SCH
+        // ISO Schematron - SCH file converted to XSLT through the ISO stylesheet chain
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
@@ -611,9 +611,9 @@ public final class SchematronValidationMojo extends AbstractMojo
         aSCHErrors = aErrorHdl.getErrorList ();
         break;
       }
-      case SCHXSLT_XSLT2:
+      case SCHXSLT1:
       {
-        // SchXslt
+        // SchXslt v1 (XSLT 2)
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
         final SchematronResourceSchXslt_XSLT2 aRealSCH = new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (m_aSchematronFile));
         aRealSCH.setPhase (m_sPhaseName);
@@ -627,7 +627,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         aSCHErrors = aErrorHdl.getErrorList ();
         break;
       }
-      case XSLT:
+      case XSLT_PREBUILT:
       {
         // SCH
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
