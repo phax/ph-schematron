@@ -41,7 +41,7 @@ public final class XsltStylesheetGeneratorTest
     final FileSystemResource aRes = new FileSystemResource (new File ("src/test/resources/external/issues/github137/schematron.sch"));
     final PSSchema aSchema = new PSReader (aRes).readSchema ();
     assertNotNull (aSchema);
-    final Document aDoc = XsltStylesheetGenerator.generate (aSchema);
+    final Document aDoc = PureXsltStylesheetGenerator.generate (aSchema);
     assertNotNull (aDoc);
     LOGGER.info ("Generated XSLT for github137:\n" + XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
   }
@@ -52,7 +52,7 @@ public final class XsltStylesheetGeneratorTest
     final FileSystemResource aRes = new FileSystemResource (new File ("src/test/resources/external/xsl-function/schematron.sch"));
     final PSSchema aSchema = new PSReader (aRes).readSchema ();
     assertNotNull (aSchema);
-    final Document aDoc = XsltStylesheetGenerator.generate (aSchema);
+    final Document aDoc = PureXsltStylesheetGenerator.generate (aSchema);
     assertNotNull (aDoc);
     LOGGER.info ("Generated XSLT for xsl-function:\n" + XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
   }

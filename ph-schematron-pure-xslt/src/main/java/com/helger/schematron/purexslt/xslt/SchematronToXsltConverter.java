@@ -41,13 +41,13 @@ import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
-import com.helger.schematron.purexslt.binding.SaxonQueryBindingTransform;
+import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * Standalone tool that converts a Schematron schema into the XSLT&nbsp;3.0 stylesheet produced by
- * {@link XsltStylesheetGenerator}, and emits it in a variety of forms. Use this when you want the
+ * {@link PureXsltStylesheetGenerator}, and emits it in a variety of forms. Use this when you want the
  * generated stylesheet on its own &mdash; e.g. to ship it in a build artifact, apply it through a
  * non-Saxon XSLT processor, or simply inspect what the Saxon-native engine compiles internally.
  * <p>
@@ -55,8 +55,8 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * {@code SchematronResourcePureXslt}: the schema is read with {@link PSReader} (with let-body
  * elements preserved), preprocessed via {@link PSPreprocessor} (so abstract patterns,
  * {@code <sch:extends>} and {@code <sch:include>} are all expanded), then handed to
- * {@link XsltStylesheetGenerator}. The preprocessing step can be disabled if you want a 1:1 view
- * of the source schema with no expansions.
+ * {@link PureXsltStylesheetGenerator}. The preprocessing step can be disabled if you want a 1:1 view of
+ * the source schema with no expansions.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -68,7 +68,7 @@ public final class SchematronToXsltConverter
   private PSSchema m_aSchema;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
   private String m_sPhase;
-  private EXsltVersion m_eVersion = EXsltVersion.DEFAULT;
+  private EPureXsltVersion m_eVersion = EPureXsltVersion.DEFAULT;
   private boolean m_bPreprocess = true;
   private XMLWriterSettings m_aWriterSettings;
 
@@ -81,44 +81,6 @@ public final class SchematronToXsltConverter
   {
     m_aSchema = ValueEnforcer.notNull (aSchema, "Schema");
     m_aResource = null;
-  }
-
-  // --- factories ---
-
-  @NonNull
-  public static SchematronToXsltConverter fromSchema (@NonNull final PSSchema aSchema)
-  {
-    return new SchematronToXsltConverter (aSchema);
-  }
-
-  @NonNull
-  public static SchematronToXsltConverter fromResource (@NonNull final IReadableResource aResource)
-  {
-    return new SchematronToXsltConverter (aResource);
-  }
-
-  @NonNull
-  public static SchematronToXsltConverter fromFile (@NonNull final File aSCHFile)
-  {
-    return new SchematronToXsltConverter (new FileSystemResource (aSCHFile));
-  }
-
-  @NonNull
-  public static SchematronToXsltConverter fromClassPath (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronToXsltConverter (new ClassPathResource (sSCHPath));
-  }
-
-  @NonNull
-  public static SchematronToXsltConverter fromByteArray (@NonNull final byte [] aSchematron)
-  {
-    return new SchematronToXsltConverter (new ReadableResourceByteArray (aSchematron));
-  }
-
-  @NonNull
-  public static SchematronToXsltConverter fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
-  {
-    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
   // --- configuration ---
@@ -157,14 +119,14 @@ public final class SchematronToXsltConverter
 
   /**
    * Set the XSLT language version written on the generated {@code xsl:stylesheet/@version}
-   * attribute. Default is {@link EXsltVersion#DEFAULT}.
+   * attribute. Default is {@link EPureXsltVersion#DEFAULT}.
    *
    * @param eVersion
    *        The version. May not be <code>null</code>.
    * @return this
    */
   @NonNull
-  public SchematronToXsltConverter setXsltVersion (@NonNull final EXsltVersion eVersion)
+  public SchematronToXsltConverter setXsltVersion (@NonNull final EPureXsltVersion eVersion)
   {
     ValueEnforcer.notNull (eVersion, "XsltVersion");
     m_eVersion = eVersion;
@@ -172,8 +134,8 @@ public final class SchematronToXsltConverter
   }
 
   /**
-   * Control whether {@link PSPreprocessor} runs over the schema before generation. Disable when
-   * you want a 1:1 view of the source schema (abstract patterns and {@code <sch:extends>} not
+   * Control whether {@link PSPreprocessor} runs over the schema before generation. Disable when you
+   * want a 1:1 view of the source schema (abstract patterns and {@code <sch:extends>} not
    * expanded). Default is <code>true</code> &mdash; matches the runtime behaviour of
    * {@code SchematronResourcePureXslt}.
    *
@@ -189,11 +151,11 @@ public final class SchematronToXsltConverter
   }
 
   /**
-   * Override the {@link XMLWriterSettings} used for serialization. If not set,
-   * {@link XMLWriter}'s defaults are used. The DOM document returned by
-   * {@link XsltStylesheetGenerator} already carries {@code xmlns:xsl}, {@code xmlns:svrl} and one
-   * {@code xmlns:<prefix>} per schema {@code <sch:ns>} on its root element, so callers do not have
-   * to configure a namespace context just for prefix preservation.
+   * Override the {@link XMLWriterSettings} used for serialization. If not set, {@link XMLWriter}'s
+   * defaults are used. The DOM document returned by {@link PureXsltStylesheetGenerator} already carries
+   * {@code xmlns:xsl}, {@code xmlns:svrl} and one {@code xmlns:<prefix>} per schema
+   * {@code <sch:ns>} on its root element, so callers do not have to configure a namespace context
+   * just for prefix preservation.
    *
    * @param aWriterSettings
    *        The settings. May be <code>null</code> to revert to the default.
@@ -208,6 +170,27 @@ public final class SchematronToXsltConverter
 
   // --- output ---
 
+  @NonNull
+  private PSSchema _resolveSchema () throws SchematronException, SchematronReadException
+  {
+    if (m_aSchema == null)
+    {
+      final PSReader aReader = new PSReader (m_aResource, m_aErrorHandler, null);
+      // Same opt-in as SchematronResourcePureXslt so XSLT-shaped <sch:let> bodies survive
+      aReader.setPreserveLetBodyElements (true);
+      final PSSchema aRaw = aReader.readSchema ();
+      if (aRaw == null)
+        throw new SchematronReadException (m_aResource, "Failed to read Schematron from " + m_aResource);
+      m_aSchema = aRaw;
+    }
+    if (m_bPreprocess)
+    {
+      final PSPreprocessor aPre = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
+      return aPre.getAsPreprocessedSchema (m_aSchema);
+    }
+    return m_aSchema;
+  }
+
   /**
    * Build the XSLT stylesheet as an in-memory DOM {@link Document}. The same document the
    * Saxon-native runtime hands to its {@code XsltCompiler}.
@@ -219,7 +202,21 @@ public final class SchematronToXsltConverter
   @NonNull
   public Document getAsDocument () throws SchematronException
   {
-    return XsltStylesheetGenerator.generate (_resolveSchema (), m_sPhase, m_eVersion);
+    return PureXsltStylesheetGenerator.generate (_resolveSchema (), m_sPhase, m_eVersion);
+  }
+
+  /**
+   * Pick the writer settings for the textual sinks. If the caller provided their own settings via
+   * {@link #setWriterSettings}, those win unmodified. Otherwise we honor the {@code xmlns:*}
+   * declarations the DOM tree already carries (so {@code xsl:} / {@code svrl:} / schema prefixes
+   * survive serialization instead of being rewritten to {@code ns0:} etc.).
+   */
+  @NonNull
+  private XMLWriterSettings _resolveWriterSettings ()
+  {
+    if (m_aWriterSettings != null)
+      return m_aWriterSettings;
+    return new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true);
   }
 
   /**
@@ -236,8 +233,8 @@ public final class SchematronToXsltConverter
   }
 
   /**
-   * Write the generated XSLT to an {@link OutputStream}. The stream is closed by
-   * {@link XMLWriter} on completion.
+   * Write the generated XSLT to an {@link OutputStream}. The stream is closed by {@link XMLWriter}
+   * on completion.
    *
    * @param aOS
    *        The target stream. May not be <code>null</code>.
@@ -287,40 +284,42 @@ public final class SchematronToXsltConverter
     return writeTo (aOS);
   }
 
-  // --- internals ---
+  // --- factories ---
 
   @NonNull
-  private PSSchema _resolveSchema () throws SchematronException, SchematronReadException
+  public static SchematronToXsltConverter fromSchema (@NonNull final PSSchema aSchema)
   {
-    if (m_aSchema == null)
-    {
-      final PSReader aReader = new PSReader (m_aResource, m_aErrorHandler, null);
-      // Same opt-in as SchematronResourcePureXslt so XSLT-shaped <sch:let> bodies survive
-      aReader.setPreserveLetBodyElements (true);
-      final PSSchema aRaw = aReader.readSchema ();
-      if (aRaw == null)
-        throw new SchematronReadException (m_aResource, "Failed to read Schematron from " + m_aResource);
-      m_aSchema = aRaw;
-    }
-    if (m_bPreprocess)
-    {
-      final PSPreprocessor aPre = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
-      return aPre.getAsPreprocessedSchema (m_aSchema);
-    }
-    return m_aSchema;
+    return new SchematronToXsltConverter (aSchema);
   }
 
-  /**
-   * Pick the writer settings for the textual sinks. If the caller provided their own settings via
-   * {@link #setWriterSettings}, those win unmodified. Otherwise we honor the {@code xmlns:*}
-   * declarations the DOM tree already carries (so {@code xsl:} / {@code svrl:} / schema prefixes
-   * survive serialization instead of being rewritten to {@code ns0:} etc.).
-   */
   @NonNull
-  private XMLWriterSettings _resolveWriterSettings ()
+  public static SchematronToXsltConverter fromResource (@NonNull final IReadableResource aResource)
   {
-    if (m_aWriterSettings != null)
-      return m_aWriterSettings;
-    return new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true);
+    return new SchematronToXsltConverter (aResource);
+  }
+
+  @NonNull
+  public static SchematronToXsltConverter fromFile (@NonNull final File aSCHFile)
+  {
+    return new SchematronToXsltConverter (new FileSystemResource (aSCHFile));
+  }
+
+  @NonNull
+  public static SchematronToXsltConverter fromClassPath (@NonNull @Nonempty final String sSCHPath)
+  {
+    return new SchematronToXsltConverter (new ClassPathResource (sSCHPath));
+  }
+
+  @NonNull
+  public static SchematronToXsltConverter fromByteArray (@NonNull final byte [] aSchematron)
+  {
+    return new SchematronToXsltConverter (new ReadableResourceByteArray (aSchematron));
+  }
+
+  @NonNull
+  public static SchematronToXsltConverter fromString (@NonNull final String sSchematron,
+                                                      @NonNull final Charset aCharset)
+  {
+    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 }

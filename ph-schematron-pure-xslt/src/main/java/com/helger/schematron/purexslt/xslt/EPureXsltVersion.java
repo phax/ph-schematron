@@ -24,7 +24,7 @@ import com.helger.base.id.IHasID;
 import com.helger.base.lang.EnumHelper;
 
 /**
- * The XSLT language version that {@link XsltStylesheetGenerator} sets on the
+ * The XSLT language version that {@link PureXsltStylesheetGenerator} sets on the
  * {@code xsl:stylesheet/@version} attribute of the generated stylesheet. Saxon-HE 12 supports both
  * XSLT&nbsp;2.0 and 3.0; the default is XSLT&nbsp;3.0, which gives access to {@code fn:path()}
  * (used to populate the SVRL {@code location} attribute) and other 3.0-only constructs.
@@ -32,7 +32,7 @@ import com.helger.base.lang.EnumHelper;
  * @author Philip Helger
  * @since 10.0.0
  */
-public enum EXsltVersion implements IHasID <String>
+public enum EPureXsltVersion implements IHasID <String>
 {
   XSLT_2_0 ("2.0"),
   XSLT_3_0 ("3.0");
@@ -40,11 +40,11 @@ public enum EXsltVersion implements IHasID <String>
   /**
    * The default version used when nothing is configured explicitly.
    */
-  public static final EXsltVersion DEFAULT = XSLT_3_0;
+  public static final EPureXsltVersion DEFAULT = XSLT_3_0;
 
   private final String m_sVersion;
 
-  EXsltVersion (@NonNull @Nonempty final String sVersion)
+  EPureXsltVersion (@NonNull @Nonempty final String sVersion)
   {
     m_sVersion = sVersion;
   }
@@ -71,15 +71,15 @@ public enum EXsltVersion implements IHasID <String>
   }
 
   /**
-   * Resolve an {@link EXsltVersion} from its version string (e.g. <code>"3.0"</code>).
+   * Resolve an {@link EPureXsltVersion} from its version string (e.g. <code>"3.0"</code>).
    *
    * @param sVersion
    *        The version string to resolve. May be <code>null</code>.
-   * @return The matching {@link EXsltVersion} or <code>null</code> if none matches.
+   * @return The matching {@link EPureXsltVersion} or <code>null</code> if none matches.
    */
   @Nullable
-  public static EXsltVersion getFromIDOrNull (@Nullable final String sVersion)
+  public static EPureXsltVersion getFromIDOrNull (@Nullable final String sVersion)
   {
-    return EnumHelper.getFromIDOrNull (EXsltVersion.class, sVersion);
+    return EnumHelper.getFromIDOrNull (EPureXsltVersion.class, sVersion);
   }
 }

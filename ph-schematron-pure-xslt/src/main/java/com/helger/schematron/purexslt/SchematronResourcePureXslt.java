@@ -36,6 +36,7 @@ import org.w3c.dom.Node;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.functional.IThrowingSupplier;
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
@@ -50,10 +51,10 @@ import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
-import com.helger.schematron.purexslt.binding.SaxonQueryBindingTransform;
-import com.helger.schematron.purexslt.telemetry.SaxonTelemetry;
-import com.helger.schematron.purexslt.xslt.EXsltVersion;
-import com.helger.schematron.purexslt.xslt.XsltStylesheetGenerator;
+import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
+import com.helger.schematron.purexslt.telemetry.PureXsltTelemetry;
+import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -106,7 +107,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   private Processor m_aProcessor = new Processor (false);
   private URIResolver m_aURIResolver;
   private ErrorListener m_aErrorListener;
-  private EXsltVersion m_eXsltVersion = EXsltVersion.DEFAULT;
+  private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
   private boolean m_bTelemetry = false;
   private boolean m_bPerAssertionTelemetry = false;
   private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
@@ -282,10 +283,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * @return The XSLT language version written to the generated stylesheet's {@code version}
-   *         attribute. Never <code>null</code>; defaults to {@link EXsltVersion#DEFAULT}.
+   *         attribute. Never <code>null</code>; defaults to {@link EPureXsltVersion#DEFAULT}.
    */
   @NonNull
-  public final EXsltVersion getXsltVersion ()
+  public final EPureXsltVersion getXsltVersion ()
   {
     return m_eXsltVersion;
   }
@@ -293,7 +294,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   /**
    * Set the XSLT language version for the generated stylesheet. The default is XSLT&nbsp;3.0, which
    * gives access to {@code fn:path()} for the SVRL {@code location} attribute and 3.0 extension
-   * functions. Choose {@link EXsltVersion#XSLT_2_0} only if you need strict XSLT&nbsp;2.0
+   * functions. Choose {@link EPureXsltVersion#XSLT_2_0} only if you need strict XSLT&nbsp;2.0
    * compatibility - some 3.0-only features (notably {@code fn:path()}) will then fail compilation.
    *
    * @param eVersion
@@ -301,7 +302,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @return this
    */
   @NonNull
-  public final SchematronResourcePureXslt setXsltVersion (@NonNull final EXsltVersion eVersion)
+  public final SchematronResourcePureXslt setXsltVersion (@NonNull final EPureXsltVersion eVersion)
   {
     ValueEnforcer.notNull (eVersion, "XsltVersion");
     if (m_aCompiledXslt != null)
@@ -322,7 +323,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * Enable or disable aggregate-level runtime telemetry. When enabled, every call to
-   * {@code applySchematronValidationToSVRL} is wrapped in a {@link SaxonTelemetry#SPAN_VALIDATE}
+   * {@code applySchematronValidationToSVRL} is wrapped in a {@link PureXsltTelemetry#SPAN_VALIDATE}
    * span with child spans for each pipeline phase (parse, preprocess, generate, compile, execute).
    * After the transform completes the SVRL output is walked to emit counters for failed asserts,
    * fired reports, fired rules and active patterns, as well as a
@@ -356,7 +357,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * Enable per-assertion telemetry. When on, the post-hoc walk over the SVRL emits one
-   * {@link SaxonTelemetry#SPAN_ASSERTION} span per failed-assert / successful-report carrying its
+   * {@link PureXsltTelemetry#SPAN_ASSERTION} span per failed-assert / successful-report carrying its
    * test expression, location and (when present) id. The Saxon transform is one opaque step, so the
    * spans carry no individual timing &mdash; only metadata for trace inspection. Has no effect when
    * {@link #isTelemetry()} is <code>false</code>.
@@ -460,17 +461,17 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     }
 
     // Inline path - bypasses the cache, exposes each pipeline phase to telemetry.
-    final PSSchema aRaw = _phase (SaxonTelemetry.SPAN_PARSE, this::getOrReadSchema);
+    final PSSchema aRaw = _phase (PureXsltTelemetry.SPAN_PARSE, this::getOrReadSchema);
 
-    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
-    final PSSchema aSchema = _phase (SaxonTelemetry.SPAN_PREPROCESS,
+    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
+    final PSSchema aSchema = _phase (PureXsltTelemetry.SPAN_PREPROCESS,
                                      () -> aPreprocessor.getAsPreprocessedSchema (aRaw));
 
     final Document aXsltDoc;
     {
-      try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_GENERATE))
+      try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_GENERATE))
       {
-        aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
+        aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
       }
     }
 
@@ -479,7 +480,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
                     XMLWriter.getNodeAsString (aXsltDoc,
                                                new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
 
-    try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_COMPILE))
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_COMPILE))
     {
       final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
       if (m_aURIResolver != null)
@@ -496,10 +497,12 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * body runs directly with no span overhead.
    */
   @Nullable
-  private <T> T _phase (@NonNull final String sSpanName, @NonNull final _CheckedSupplier <T> aBody) throws Exception
+  private <T> T _phase (@NonNull final String sSpanName, @NonNull final IThrowingSupplier <T, Exception> aBody)
+                                                                                                                throws Exception
   {
     if (!m_bTelemetry)
       return aBody.get ();
+
     try (final ITelemetrySpan aSpan = Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL))
     {
       try
@@ -521,12 +524,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   {
     return m_bTelemetry ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL)
                         : Telemetry.NoOpTelemetrySpan.INSTANCE;
-  }
-
-  @FunctionalInterface
-  private interface _CheckedSupplier <T>
-  {
-    T get () throws Exception;
   }
 
   @Override
@@ -565,17 +562,17 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       return _doValidate (aXMLNode, sBaseURI);
 
     final long nStartNanos = System.nanoTime ();
-    try (final ITelemetrySpan aRootSpan = Telemetry.startSpan (SaxonTelemetry.SPAN_VALIDATE,
+    try (final ITelemetrySpan aRootSpan = Telemetry.startSpan (PureXsltTelemetry.SPAN_VALIDATE,
                                                                ETelemetrySpanKind.INTERNAL))
     {
-      aRootSpan.setAttribute (SaxonTelemetry.ATTR_ENGINE, SaxonTelemetry.ENGINE_VALUE);
+      aRootSpan.setAttribute (PureXsltTelemetry.ATTR_ENGINE, PureXsltTelemetry.ENGINE_VALUE);
       if (m_sPhase != null)
-        aRootSpan.setAttribute (SaxonTelemetry.ATTR_PHASE, m_sPhase);
+        aRootSpan.setAttribute (PureXsltTelemetry.ATTR_PHASE, m_sPhase);
       try
       {
         final SchematronOutputType aSVRL = _doValidate (aXMLNode, sBaseURI);
         final double dDurationMs = (System.nanoTime () - nStartNanos) / 1_000_000.0;
-        SaxonTelemetry.emitPostHoc (aSVRL, m_bPerAssertionTelemetry, dDurationMs);
+        PureXsltTelemetry.emitPostHoc (aSVRL, m_bPerAssertionTelemetry, dDurationMs);
         aRootSpan.setStatusOk ();
         return aSVRL;
       }
@@ -595,7 +592,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     final Document aResultDoc = XMLFactory.newDocument ();
     final DOMDestination aDestination = new DOMDestination (aResultDoc);
 
-    try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_EXECUTE))
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_EXECUTE))
     {
       final var aTransformer = aExecutable.load30 ();
       if (m_aURIResolver != null)

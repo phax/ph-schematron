@@ -47,12 +47,11 @@ import com.helger.schematron.model.PSSpan;
 import com.helger.schematron.model.PSValueOf;
 
 /**
- * This is the pre-processor class for pure Schematron. It converts an existing
- * schema to the minimal syntax (by default) but allows for a certain degree of
- * customization by keeping certain elements in the resulting schema. The actual
- * query binding is used, so that report test expressions can be converted to
- * assertions, and to replace the content of &lt;param&gt; elements into actual
- * values.
+ * This is the pre-processor class for pure Schematron. It converts an existing schema to the
+ * minimal syntax (by default) but allows for a certain degree of customization by keeping certain
+ * elements in the resulting schema. The actual query binding is used, so that report test
+ * expressions can be converted to assertions, and to replace the content of &lt;param&gt; elements
+ * into actual values.
  *
  * @author Philip Helger
  */
@@ -88,8 +87,8 @@ public class PSPreprocessor
   }
 
   /**
-   * @return <code>true</code> if &lt;title&gt;-elements should be kept. Default
-   *         is {@value #DEFAULT_KEEP_TITLES}.
+   * @return <code>true</code> if &lt;title&gt;-elements should be kept. Default is
+   *         {@value #DEFAULT_KEEP_TITLES}.
    */
   public boolean isKeepTitles ()
   {
@@ -111,8 +110,8 @@ public class PSPreprocessor
   }
 
   /**
-   * @return <code>true</code> if &lt;diagnostics&gt;-elements should be kept.
-   *         Default is {@value #DEFAULT_KEEP_DIAGNOSTICS}.
+   * @return <code>true</code> if &lt;diagnostics&gt;-elements should be kept. Default is
+   *         {@value #DEFAULT_KEEP_DIAGNOSTICS}.
    */
   public boolean isKeepDiagnostics ()
   {
@@ -134,9 +133,9 @@ public class PSPreprocessor
   }
 
   /**
-   * @return <code>true</code> if &lt;report&gt;-elements should be kept,
-   *         <code>false</code> if they should be converted to
-   *         &lt;assert&gt;-elements. Default is {@value #DEFAULT_KEEP_REPORTS}.
+   * @return <code>true</code> if &lt;report&gt;-elements should be kept, <code>false</code> if they
+   *         should be converted to &lt;assert&gt;-elements. Default is
+   *         {@value #DEFAULT_KEEP_REPORTS}.
    */
   public boolean isKeepReports ()
   {
@@ -144,12 +143,11 @@ public class PSPreprocessor
   }
 
   /**
-   * Should &lt;report&gt;-elements be kept or should they be converted to
-   * &lt;assert&gt;-elements?
+   * Should &lt;report&gt;-elements be kept or should they be converted to &lt;assert&gt;-elements?
    *
    * @param bKeepReports
-   *        <code>true</code> to keep &lt;report&gt;-elements,
-   *        <code>false</code> to change them to &lt;assert&gt;-elements
+   *        <code>true</code> to keep &lt;report&gt;-elements, <code>false</code> to change them to
+   *        &lt;assert&gt;-elements
    * @return this for chaining
    */
   @NonNull
@@ -160,8 +158,8 @@ public class PSPreprocessor
   }
 
   /**
-   * @return <code>true</code> if &lt;pattern&gt;-elements without a rule should
-   *         be kept. Default is {@value #DEFAULT_KEEP_EMPTY_PATTERNS}.
+   * @return <code>true</code> if &lt;pattern&gt;-elements without a rule should be kept. Default is
+   *         {@value #DEFAULT_KEEP_EMPTY_PATTERNS}.
    */
   public boolean isKeepEmptyPatterns ()
   {
@@ -172,8 +170,8 @@ public class PSPreprocessor
    * Should &lt;pattern&gt;-elements without a single rule be kept or deleted?
    *
    * @param bKeepEmptyPatterns
-   *        <code>true</code> to keep &lt;pattern&gt;-elements without a rule,
-   *        <code>false</code> to delete them
+   *        <code>true</code> to keep &lt;pattern&gt;-elements without a rule, <code>false</code> to
+   *        delete them
    * @return this for chaining
    */
   @NonNull
@@ -184,8 +182,8 @@ public class PSPreprocessor
   }
 
   /**
-   * @return <code>true</code> if &lt;schema&gt;-elements without a pattern
-   *         should be kept. Default is {@value #DEFAULT_KEEP_EMPTY_SCHEMA}.
+   * @return <code>true</code> if &lt;schema&gt;-elements without a pattern should be kept. Default
+   *         is {@value #DEFAULT_KEEP_EMPTY_SCHEMA}.
    */
   public boolean isKeepEmptySchema ()
   {
@@ -193,9 +191,9 @@ public class PSPreprocessor
   }
 
   /**
-   * Should schema objects without a pattern be kept? It makes only sense to set
-   * it to <code>false</code> if {@link #setKeepEmptyPatterns(boolean)} is also
-   * set to false, because otherwise patterns without rules are kept.
+   * Should schema objects without a pattern be kept? It makes only sense to set it to
+   * <code>false</code> if {@link #setKeepEmptyPatterns(boolean)} is also set to false, because
+   * otherwise patterns without rules are kept.
    *
    * @param bKeepEmptySchema
    *        <code>true</code> to keep them, <code>false</code> to discard them.
@@ -254,27 +252,28 @@ public class PSPreprocessor
     ret.setLinkable (aAssertReport.getLinkableClone ());
     for (final Object aContent : aAssertReport.getAllContentElements ())
     {
-      if (aContent instanceof String)
-        ret.addText ((String) aContent);
+      if (aContent instanceof final String sValue)
+        ret.addText (sValue);
       else
-        if (aContent instanceof PSName)
-          ret.addName (((PSName) aContent).getClone ());
+        if (aContent instanceof final PSName aName)
+          ret.addName (aName.getClone ());
         else
-          if (aContent instanceof PSValueOf)
+          if (aContent instanceof final PSValueOf aValueOf)
           {
-            final PSValueOf aValueOf = ((PSValueOf) aContent).getClone ();
-            aValueOf.setSelect (m_aQueryBinding.getWithParamTextsReplaced (aValueOf.getSelect (), aParamValueMap));
-            ret.addValueOf (aValueOf);
+            final PSValueOf aNewValueOf = aValueOf.getClone ();
+            aNewValueOf.setSelect (m_aQueryBinding.getWithParamTextsReplaced (aNewValueOf.getSelect (),
+                                                                              aParamValueMap));
+            ret.addValueOf (aNewValueOf);
           }
           else
-            if (aContent instanceof PSEmph)
-              ret.addEmph (((PSEmph) aContent).getClone ());
+            if (aContent instanceof final PSEmph aEmph)
+              ret.addEmph (aEmph.getClone ());
             else
-              if (aContent instanceof PSDir)
-                ret.addDir (((PSDir) aContent).getClone ());
+              if (aContent instanceof final PSDir aDir)
+                ret.addDir (aDir.getClone ());
               else
-                if (aContent instanceof PSSpan)
-                  ret.addSpan (((PSSpan) aContent).getClone ());
+                if (aContent instanceof final PSSpan aSpan)
+                  ret.addSpan (aSpan.getClone ());
     }
     ret.addForeignElements (aAssertReport.getAllForeignElements ());
     ret.addForeignAttributes (aAssertReport.getAllForeignAttributes ());
@@ -282,12 +281,12 @@ public class PSPreprocessor
   }
 
   /**
-   * Resolve all &lt;extends&gt; elements. This method calls itself recursively
-   * until all extends elements are resolved.
+   * Resolve all &lt;extends&gt; elements. This method calls itself recursively until all extends
+   * elements are resolved.
    *
    * @param aRuleContent
-   *        A list consisting of {@link PSAssertReport} and {@link PSExtends}
-   *        objects. Never <code>null</code>.
+   *        A list consisting of {@link PSAssertReport} and {@link PSExtends} objects. Never
+   *        <code>null</code>.
    * @param aLookup
    *        The rule lookup object. Never <code>null</code>.
    * @param aIDPool
@@ -304,9 +303,8 @@ public class PSPreprocessor
   {
     for (final IPSElement aElement : aRuleContent)
     {
-      if (aElement instanceof PSAssertReport)
+      if (aElement instanceof final PSAssertReport aAssertReport)
       {
-        final PSAssertReport aAssertReport = (PSAssertReport) aElement;
         aTargetRule.addAssertReport (_getPreprocessedAssert (aAssertReport, aIDPool, aParamValueMap));
       }
       else
@@ -482,10 +480,9 @@ public class PSPreprocessor
    *
    * @param aSchema
    *        The schema to be made minimal. May not be <code>null</code>
-   * @return The original schema object, if it is already minimal - a minimal
-   *         copy otherwise! May be <code>null</code> if the original schema is
-   *         not yet minimal and {@link #isKeepEmptySchema()} is set to
-   *         <code>false</code>.
+   * @return The original schema object, if it is already minimal - a minimal copy otherwise! May be
+   *         <code>null</code> if the original schema is not yet minimal and
+   *         {@link #isKeepEmptySchema()} is set to <code>false</code>.
    * @throws SchematronPreprocessException
    *         In case a preprocessing error occurs
    */
@@ -506,9 +503,8 @@ public class PSPreprocessor
    *
    * @param aSchema
    *        The schema to pre-process. May not be <code>null</code>
-   * @return The original schema object, if it is already pre-processed - a
-   *         pre-processed copy otherwise! May be <code>null</code> if the
-   *         original schema is not yet pre-processed and
+   * @return The original schema object, if it is already pre-processed - a pre-processed copy
+   *         otherwise! May be <code>null</code> if the original schema is not yet pre-processed and
    *         {@link #isKeepEmptySchema()} is set to <code>false</code>.
    * @throws SchematronPreprocessException
    *         In case a preprocessing error occurs
@@ -530,14 +526,13 @@ public class PSPreprocessor
   }
 
   /**
-   * Convert the passed schema to a pre-processed schema independent if it is
-   * already minimal or not.
+   * Convert the passed schema to a pre-processed schema independent if it is already minimal or
+   * not.
    *
    * @param aSchema
    *        The schema to be made minimal. May not be <code>null</code>
-   * @return A minimal copy of the schema. May be <code>null</code> if the
-   *         original schema is not yet minimal and {@link #isKeepEmptySchema()}
-   *         is set to <code>false</code>.
+   * @return A minimal copy of the schema. May be <code>null</code> if the original schema is not
+   *         yet minimal and {@link #isKeepEmptySchema()} is set to <code>false</code>.
    * @throws SchematronPreprocessException
    *         In case a preprocessing error occurs
    */

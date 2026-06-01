@@ -51,11 +51,11 @@ public final class SchematronToXsltConverterTest
     assertNotNull (aDoc);
     final Element aRoot = aDoc.getDocumentElement ();
     assertNotNull (aRoot);
-    assertEquals (XsltStylesheetGenerator.XSLT_NS, aRoot.getNamespaceURI ());
+    assertEquals (PureXsltStylesheetGenerator.XSLT_NS, aRoot.getNamespaceURI ());
     assertEquals ("stylesheet", aRoot.getLocalName ());
-    assertEquals (EXsltVersion.DEFAULT.getVersion (), aRoot.getAttribute ("version"));
+    assertEquals (EPureXsltVersion.DEFAULT.getVersion (), aRoot.getAttribute ("version"));
     // At least one <xsl:template> for the rule context
-    final NodeList aTemplates = aRoot.getElementsByTagNameNS (XsltStylesheetGenerator.XSLT_NS, "template");
+    final NodeList aTemplates = aRoot.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "template");
     assertTrue ("expected at least one xsl:template", aTemplates.getLength () > 0);
   }
 
@@ -94,7 +94,7 @@ public final class SchematronToXsltConverterTest
   public void testXslt2VersionAttribute () throws Exception
   {
     final String s = SchematronToXsltConverter.fromResource (new FileSystemResource (SCH))
-                                               .setXsltVersion (EXsltVersion.XSLT_2_0)
+                                               .setXsltVersion (EPureXsltVersion.XSLT_2_0)
                                                .getAsString ();
     assertTrue ("expected version=\"2.0\", got:\n" + s, s.contains ("version=\"2.0\""));
   }

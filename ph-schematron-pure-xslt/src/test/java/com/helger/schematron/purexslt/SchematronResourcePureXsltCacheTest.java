@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
-import com.helger.schematron.purexslt.xslt.EXsltVersion;
+import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XsltExecutable;
@@ -63,7 +63,7 @@ public final class SchematronResourcePureXsltCacheTest
 
     final XsltExecutable aFirst = SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                                                    null,
-                                                                                   EXsltVersion.DEFAULT,
+                                                                                   EPureXsltVersion.DEFAULT,
                                                                                    aProcessor,
                                                                                    null,
                                                                                    null,
@@ -73,7 +73,7 @@ public final class SchematronResourcePureXsltCacheTest
 
     final XsltExecutable aSecond = SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                                                     null,
-                                                                                    EXsltVersion.DEFAULT,
+                                                                                    EPureXsltVersion.DEFAULT,
                                                                                     aProcessor,
                                                                                     null,
                                                                                     null,
@@ -93,7 +93,7 @@ public final class SchematronResourcePureXsltCacheTest
 
     final XsltExecutable aWithA = SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                                                    null,
-                                                                                   EXsltVersion.DEFAULT,
+                                                                                   EPureXsltVersion.DEFAULT,
                                                                                    aProcA,
                                                                                    null,
                                                                                    null,
@@ -101,7 +101,7 @@ public final class SchematronResourcePureXsltCacheTest
                                                                                    null);
     final XsltExecutable aWithB = SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                                                    null,
-                                                                                   EXsltVersion.DEFAULT,
+                                                                                   EPureXsltVersion.DEFAULT,
                                                                                    aProcB,
                                                                                    null,
                                                                                    null,
@@ -119,7 +119,7 @@ public final class SchematronResourcePureXsltCacheTest
 
     final XsltExecutable aAll = SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                                                  null,
-                                                                                 EXsltVersion.DEFAULT,
+                                                                                 EPureXsltVersion.DEFAULT,
                                                                                  aProcessor,
                                                                                  null,
                                                                                  null,
@@ -127,7 +127,7 @@ public final class SchematronResourcePureXsltCacheTest
                                                                                  null);
     final XsltExecutable aDefault = SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                                                      "#DEFAULT",
-                                                                                     EXsltVersion.DEFAULT,
+                                                                                     EPureXsltVersion.DEFAULT,
                                                                                      aProcessor,
                                                                                      null,
                                                                                      null,
@@ -143,7 +143,7 @@ public final class SchematronResourcePureXsltCacheTest
     final ReadableResourceByteArray aRes = new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8));
     SchematronResourcePureXsltCache.getCompiledXslt (aRes,
                                                      null,
-                                                     EXsltVersion.DEFAULT,
+                                                     EPureXsltVersion.DEFAULT,
                                                      new Processor (false),
                                                      null,
                                                      null,

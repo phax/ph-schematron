@@ -44,17 +44,17 @@ import com.helger.text.compare.ComparatorHelper;
  * @author Philip Helger
  * @since 10.0.0
  */
-public final class SaxonQueryBindingTransform implements IPSQueryBindingTransform
+public final class PureXsltQueryBindingTransform implements IPSQueryBindingTransform
 {
   public static final char PARAM_VARIABLE_PREFIX = '$';
 
-  private static final SaxonQueryBindingTransform INSTANCE = new SaxonQueryBindingTransform ();
+  private static final PureXsltQueryBindingTransform INSTANCE = new PureXsltQueryBindingTransform ();
 
-  private SaxonQueryBindingTransform ()
+  private PureXsltQueryBindingTransform ()
   {}
 
   @NonNull
-  public static SaxonQueryBindingTransform getInstance ()
+  public static PureXsltQueryBindingTransform getInstance ()
   {
     return INSTANCE;
   }

@@ -37,7 +37,7 @@ import com.helger.xml.serialize.read.DOMReader;
  * Verifies that {@link SchematronResourcePureXslt#setTelemetry(boolean)} emits the expected phase
  * spans (parse, preprocess, generate, compile, execute) plus post-hoc counters derived from the
  * SVRL output, and that {@link SchematronResourcePureXslt#setPerAssertionTelemetry(boolean)}
- * produces one {@link SaxonTelemetry#SPAN_ASSERTION} span per assertion fired during the run.
+ * produces one {@link PureXsltTelemetry#SPAN_ASSERTION} span per assertion fired during the run.
  *
  * @author Philip Helger
  */
@@ -83,23 +83,23 @@ public final class SchematronResourcePureXsltTelemetryTest
     assertNotNull (aSVRL);
 
     // Expect exactly one of each phase span plus one root validate span
-    assertEquals (1, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_VALIDATE));
-    assertEquals (1, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_PARSE));
-    assertEquals (1, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_PREPROCESS));
-    assertEquals (1, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_GENERATE));
-    assertEquals (1, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_COMPILE));
-    assertEquals (1, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_EXECUTE));
+    assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_VALIDATE));
+    assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_PARSE));
+    assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_PREPROCESS));
+    assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_GENERATE));
+    assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_COMPILE));
+    assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_EXECUTE));
     // No per-assertion spans without the second flag
-    assertEquals (0, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_ASSERTION));
+    assertEquals (0, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_ASSERTION));
 
     // Post-hoc counters: 2 failed asserts, 1 fired rule, 1 active pattern
-    assertEquals (2, m_aCapture.getCounterValue (SaxonTelemetry.METRIC_ASSERTIONS_FAILED));
-    assertEquals (1, m_aCapture.getCounterValue (SaxonTelemetry.METRIC_RULES_FIRED));
-    assertEquals (1, m_aCapture.getCounterValue (SaxonTelemetry.METRIC_PATTERNS_ACTIVE));
+    assertEquals (2, m_aCapture.getCounterValue (PureXsltTelemetry.METRIC_ASSERTIONS_FAILED));
+    assertEquals (1, m_aCapture.getCounterValue (PureXsltTelemetry.METRIC_RULES_FIRED));
+    assertEquals (1, m_aCapture.getCounterValue (PureXsltTelemetry.METRIC_PATTERNS_ACTIVE));
 
     // Duration histogram entry
-    assertEquals (1, m_aCapture.getHistogramValues (SaxonTelemetry.METRIC_VALIDATE_DURATION).size ());
-    assertTrue (m_aCapture.getHistogramValues (SaxonTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >= 0.0);
+    assertEquals (1, m_aCapture.getHistogramValues (PureXsltTelemetry.METRIC_VALIDATE_DURATION).size ());
+    assertTrue (m_aCapture.getHistogramValues (PureXsltTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >= 0.0);
   }
 
   @Test
@@ -108,15 +108,15 @@ public final class SchematronResourcePureXsltTelemetryTest
     final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8))).setTelemetry (true)
                                                                                                                                                          .setPerAssertionTelemetry (true);
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
-    assertEquals (2, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_ASSERTION));
+    assertEquals (2, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_ASSERTION));
 
     m_aCapture.getSpans ()
               .stream ()
-              .filter (x -> SaxonTelemetry.SPAN_ASSERTION.equals (x.getName ()))
+              .filter (x -> PureXsltTelemetry.SPAN_ASSERTION.equals (x.getName ()))
               .forEach (x -> {
-                assertEquals ("assert", x.getAttributes ().get (SaxonTelemetry.ATTR_ASSERT_KIND));
-                assertEquals (Boolean.TRUE, x.getAttributes ().get (SaxonTelemetry.ATTR_ASSERT_FAILED));
-                assertNotNull (x.getAttributes ().get (SaxonTelemetry.ATTR_ASSERT_TEST));
+                assertEquals ("assert", x.getAttributes ().get (PureXsltTelemetry.ATTR_ASSERT_KIND));
+                assertEquals (Boolean.TRUE, x.getAttributes ().get (PureXsltTelemetry.ATTR_ASSERT_FAILED));
+                assertNotNull (x.getAttributes ().get (PureXsltTelemetry.ATTR_ASSERT_TEST));
               });
   }
 
@@ -127,7 +127,7 @@ public final class SchematronResourcePureXsltTelemetryTest
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 
     assertEquals (0, m_aCapture.getSpans ().size ());
-    assertEquals (0, m_aCapture.getCounterValue (SaxonTelemetry.METRIC_ASSERTIONS_FAILED));
-    assertEquals (0, m_aCapture.getHistogramValues (SaxonTelemetry.METRIC_VALIDATE_DURATION).size ());
+    assertEquals (0, m_aCapture.getCounterValue (PureXsltTelemetry.METRIC_ASSERTIONS_FAILED));
+    assertEquals (0, m_aCapture.getHistogramValues (PureXsltTelemetry.METRIC_VALIDATE_DURATION).size ());
   }
 }

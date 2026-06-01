@@ -40,7 +40,7 @@ import com.helger.telemetry.TelemetryMetrics;
  * @author Philip Helger
  * @since 10.0.0
  */
-public final class SaxonTelemetry
+public final class PureXsltTelemetry
 {
   // === span names ===
   public static final String SPAN_VALIDATE = "schematron.validate";
@@ -90,7 +90,7 @@ public final class SaxonTelemetry
                                                                                        "Schematron validation duration",
                                                                                        "ms");
 
-  private SaxonTelemetry ()
+  private PureXsltTelemetry ()
   {}
 
   /**

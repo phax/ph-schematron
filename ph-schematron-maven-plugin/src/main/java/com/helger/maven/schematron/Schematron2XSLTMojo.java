@@ -65,7 +65,7 @@ import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSL
 import com.helger.schematron.schxslt.xslt2.TransformerCustomizerSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronProviderXSLTFromSchXslt2;
 import com.helger.schematron.schxslt2.xslt.TransformerCustomizerSchXslt2;
-import com.helger.schematron.purexslt.xslt.EXsltVersion;
+import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.SchematronToXsltConverter;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
@@ -450,7 +450,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                   // don't apply to the Java generator. Phase selection IS honoured.
                   yield SchematronToXsltConverter.fromResource (aSchematronResource)
                                                  .setPhase (m_sPhaseName)
-                                                 .setXsltVersion (EXsltVersion.DEFAULT)
+                                                 .setXsltVersion (EPureXsltVersion.DEFAULT)
                                                  .getAsDocument ();
                 }
                 default:

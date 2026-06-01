@@ -43,9 +43,9 @@ import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
-import com.helger.schematron.purexslt.binding.SaxonQueryBindingTransform;
-import com.helger.schematron.purexslt.xslt.EXsltVersion;
-import com.helger.schematron.purexslt.xslt.XsltStylesheetGenerator;
+import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
+import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
@@ -117,7 +117,7 @@ public final class SchematronResourcePureXsltCache
   @NonNull
   public static XsltExecutable createCompiledXslt (@NonNull final IReadableResource aResource,
                                                    @Nullable final String sPhase,
-                                                   @NonNull final EXsltVersion eVersion,
+                                                   @NonNull final EPureXsltVersion eVersion,
                                                    @NonNull final Processor aProcessor,
                                                    @Nullable final IPSErrorHandler aErrorHandler,
                                                    @Nullable final EntityResolver aEntityResolver,
@@ -137,10 +137,10 @@ public final class SchematronResourcePureXsltCache
     if (aRaw == null)
       throw new SchematronReadException (aResource, "Failed to read Schematron from " + aResource);
 
-    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
+    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
     final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
 
-    final Document aXsltDoc = XsltStylesheetGenerator.generate (aSchema, sPhase, eVersion);
+    final Document aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, sPhase, eVersion);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" +
                     XMLWriter.getNodeAsString (aXsltDoc,
@@ -185,7 +185,7 @@ public final class SchematronResourcePureXsltCache
   @NonNull
   public static XsltExecutable getCompiledXslt (@NonNull final IReadableResource aResource,
                                                 @Nullable final String sPhase,
-                                                @NonNull final EXsltVersion eVersion,
+                                                @NonNull final EPureXsltVersion eVersion,
                                                 @NonNull final Processor aProcessor,
                                                 @Nullable final IPSErrorHandler aErrorHandler,
                                                 @Nullable final EntityResolver aEntityResolver,
