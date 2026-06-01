@@ -19,81 +19,32 @@ package com.helger.schematron.pure;
 import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
-
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
-import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.io.iface.IHasInputStream;
-import com.helger.base.location.SimpleLocation;
-import com.helger.base.state.EValidity;
-import com.helger.base.string.StringHelper;
-import com.helger.diagnostics.error.SingleError;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.URLResource;
-import com.helger.io.resource.inmemory.AbstractMemoryReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
-import com.helger.schematron.AbstractSchematronResource;
-import com.helger.schematron.ESchematronEngine;
-import com.helger.schematron.SchematronDebug;
-import com.helger.schematron.SchematronException;
-import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
-import com.helger.schematron.exchange.PSWriter;
 import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.pure.bound.IPSBoundSchema;
-import com.helger.schematron.pure.bound.PSBoundSchemaCache;
-import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
-import com.helger.schematron.pure.validation.telemetry.TelemetryValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
-import com.helger.schematron.pure.xpath.XPathConfig;
-import com.helger.schematron.pure.xpath.XPathConfigBuilder;
-import com.helger.schematron.svrl.SVRLMarshaller;
-import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.telemetry.ETelemetrySpanKind;
-import com.helger.telemetry.ITelemetrySpan;
-import com.helger.telemetry.Telemetry;
-import com.helger.xml.serialize.read.SAXReaderFactory;
-import com.helger.xml.serialize.write.XMLWriterSettings;
-import com.helger.xml.transform.TransformSourceFactory;
-
-import net.sf.saxon.dom.NodeOverNodeInfo;
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmNode;
 
 /**
- * A Schematron resource that is not XSLT based but using the pure (native Java) implementation.
- * This class itself is not thread safe, but the underlying cache is thread safe. So once you
- * configured this object fully (with all the setter), it can be considered thread safe.<br>
- * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no XSLT functions in
- * Schematron asserts and reports! If your Schematrons use XSLT functionality you're better off
- * using the <code>com.helger.schematron.sch.SchematronResourceSCH</code> or
- * <code>com.helger.schematron.purexslt.SchematronResourcePureXslt</code> classes instead!
+ * Pre-v10 name for {@link SchematronResourcePureXPath}. Preserved as a deprecated source-compatible
+ * subclass for callers that already use the older type name; the implementation lives entirely on
+ * the parent class. New code should use {@link SchematronResourcePureXPath} directly.
  * <p>
- * <b>Deprecated name:</b> as of v10.0.0 the canonical name for this engine is
- * {@link SchematronResourcePureXPath}. {@code SchematronResourcePure} is preserved as a
- * source-compatible alias and is no longer the recommended type in new code.
+ * Setter methods are overridden with covariant return type so that existing chained code that
+ * assigns the result back to a {@code SchematronResourcePure} variable continues to compile.
  *
  * @author Philip Helger
  * @deprecated Use {@link SchematronResourcePureXPath} instead. Will remain as a deprecated alias
@@ -101,593 +52,80 @@ import net.sf.saxon.s9api.XdmNode;
  */
 @Deprecated (since = "10.0.0", forRemoval = false)
 @NotThreadSafe
-public class SchematronResourcePure extends AbstractSchematronResource
+public class SchematronResourcePure extends SchematronResourcePureXPath
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePure.class);
-
-  private String m_sPhase;
-  private IPSErrorHandler m_aErrorHandler;
-  private IPSValidationHandler m_aCustomValidationHandler;
-  private IXPathConfig m_aXPathConfig = XPathConfigBuilder.DEFAULT;
-  private boolean m_bTelemetry = false;
-  private boolean m_bPerAssertionTelemetry = false;
-  // Status var
-  private IPSBoundSchema m_aBoundSchema;
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePure (@NonNull final IReadableResource aResource)
   {
     super (aResource);
   }
 
-  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePure (@NonNull final IReadableResource aResource,
                                  @Nullable final String sPhase,
                                  @Nullable final IPSErrorHandler aErrorHandler)
   {
-    super (aResource);
-    setPhase (sPhase);
-    setErrorHandler (aErrorHandler);
+    super (aResource, sPhase, aErrorHandler);
   }
 
-  /**
-   * @return The phase to be used. May be <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Nullable
-  public final String getPhase ()
-  {
-    return m_sPhase;
-  }
+  // === Covariant setters so old `SchematronResourcePure x = new SchematronResourcePure(r).setPhase(...);`
+  // chained code keeps compiling without explicit casts ===
 
-  /**
-   * Set the Schematron phase to be evaluated. Changing the phase will result in a newly bound
-   * schema!
-   *
-   * @param sPhase
-   *        The name of the phase to use. May be <code>null</code> which means all phases.
-   * @return this
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
+  @Override
   @NonNull
   public final SchematronResourcePure setPhase (@Nullable final String sPhase)
   {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_sPhase = sPhase;
+    super.setPhase (sPhase);
     return this;
   }
 
-  /**
-   * @return The error handler to be used to bind the schema. May be <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Nullable
-  public final IPSErrorHandler getErrorHandler ()
-  {
-    return m_aErrorHandler;
-  }
-
-  /**
-   * Set the error handler to be used during binding.
-   *
-   * @param aErrorHandler
-   *        The error handler. May be <code>null</code>.
-   * @return this
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
+  @Override
   @NonNull
   public final SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
   {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aErrorHandler = aErrorHandler;
+    super.setErrorHandler (aErrorHandler);
     return this;
   }
 
-  /**
-   * @return The custom validation handler to be used to bind the schema. May be <code>null</code>.
-   * @since 5.3.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Nullable
-  public final IPSValidationHandler getCustomValidationHandler ()
-  {
-    return m_aCustomValidationHandler;
-  }
-
-  /**
-   * Set the custom validation handler to be used during binding.
-   *
-   * @param aCustomValidationHandler
-   *        The validation handler. May be <code>null</code>.
-   * @return this
-   * @since 5.3.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
+  @Override
   @NonNull
   public final SchematronResourcePure setCustomValidationHandler (@Nullable final IPSValidationHandler aCustomValidationHandler)
   {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aCustomValidationHandler = aCustomValidationHandler;
+    super.setCustomValidationHandler (aCustomValidationHandler);
     return this;
   }
 
-  /**
-   * @return The contained {@link IXPathConfig}. Never <code>null</code>.
-   * @since 8.0.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IXPathConfig getXPathConfig ()
-  {
-    return m_aXPathConfig;
-  }
-
-  /**
-   * Set the {@link XPathConfig} to be used in the XPath statements. This can only be set before the
-   * Schematron is bound. If it is already bound an exception is thrown to indicate the unnecessity
-   * of the call.
-   *
-   * @param aXPathConfig
-   *        The XPath config to set. May be <code>null</code>.
-   * @return this
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
+  @Override
   @NonNull
   public final SchematronResourcePure setXPathConfig (@NonNull final IXPathConfig aXPathConfig)
   {
-    ValueEnforcer.notNull (aXPathConfig, "XPathConfig");
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aXPathConfig = aXPathConfig;
+    super.setXPathConfig (aXPathConfig);
     return this;
   }
 
-  /**
-   * @return <code>true</code> if runtime telemetry (spans + counters + duration histogram) is
-   *         emitted via ph-telemetry during validation. Default is <code>false</code>.
-   * @since 10.0.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final boolean isTelemetry ()
-  {
-    return m_bTelemetry;
-  }
-
-  /**
-   * Enable or disable aggregate-level runtime telemetry. When enabled, every call to
-   * {@code applySchematronValidationToSVRL} is wrapped in a
-   * {@link TelemetryValidationHandler#SPAN_VALIDATE} span, and a {@link TelemetryValidationHandler}
-   * is chained into the custom validation handler so it emits counters for failed asserts, fired
-   * reports, fired rules and active patterns as well as a {@code schematron.validate.duration}
-   * histogram entry on completion. Setup is zero-cost when no
-   * {@link com.helger.telemetry.ITelemetryTracerSPI} /
-   * {@link com.helger.telemetry.ITelemetryMeterSPI} is registered &mdash; ph-telemetry degrades to
-   * no-op silently.
-   * <p>
-   * Can only be set before the Schematron is bound.
-   *
-   * @param bTelemetry
-   *        <code>true</code> to enable, <code>false</code> to disable.
-   * @return this
-   * @since 10.0.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
+  @Override
   @NonNull
   public final SchematronResourcePure setTelemetry (final boolean bTelemetry)
   {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_bTelemetry = bTelemetry;
+    super.setTelemetry (bTelemetry);
     return this;
   }
 
-  /**
-   * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
-   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
-   *         <code>true</code>. Default is <code>false</code>.
-   * @since 10.0.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final boolean isPerAssertionTelemetry ()
-  {
-    return m_bPerAssertionTelemetry;
-  }
-
-  /**
-   * Enable per-assertion telemetry spans. Each assert / report evaluation produces an extra
-   * {@link TelemetryValidationHandler#SPAN_ASSERTION} child span carrying attributes
-   * {@code schematron.assert.test}, {@code schematron.assert.kind},
-   * {@code schematron.assert.failed}, {@code schematron.rule.context} and others. Significant
-   * runtime overhead &mdash; only enable for diagnostic deep-dives. Has no effect when
-   * {@link #isTelemetry()} is <code>false</code>.
-   * <p>
-   * Can only be set before the Schematron is bound.
-   *
-   * @param bPerAssertionTelemetry
-   *        <code>true</code> to enable.
-   * @return this
-   * @since 10.0.0
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
+  @Override
   @NonNull
   public final SchematronResourcePure setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
   {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_bPerAssertionTelemetry = bPerAssertionTelemetry;
+    super.setPerAssertionTelemetry (bPerAssertionTelemetry);
     return this;
   }
 
-  /**
-   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
-   * This can only be set before the Schematron is bound. If it is already bound an exception is
-   * thrown to indicate the unnecessity of the call.
-   *
-   * @param aEntityResolver
-   *        The entity resolver to set. May be <code>null</code>.
-   * @return this
-   * @since 4.1.1
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePure setEntityResolver (@Nullable final EntityResolver aEntityResolver)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    internalSetEntityResolver (aEntityResolver);
-    return this;
-  }
+  // === Covariant static factories so `SchematronResourcePure x = SchematronResourcePure.fromFile(f);`
+  // chained code keeps compiling. These hide (not override) the parent's static methods. ===
 
-  @NonNull
-  private Document _buildSaxonDocument (@NonNull final Source aSource) throws SaxonApiException
-  {
-    final DocumentBuilder aBuilder = m_aXPathConfig.getProcessor ().newDocumentBuilder ();
-    final String sSystemId = aSource.getSystemId ();
-    if (StringHelper.isNotEmpty (sSystemId))
-      try
-      {
-        aBuilder.setBaseURI (new URI (sSystemId));
-      }
-      catch (final Exception ex)
-      {
-        // Not a valid URI - skip; Saxon will fall back to whatever the Source carries
-      }
-
-    // Bridge through a hardened XMLReader so Saxon's TinyTree fast path inherits XXE protection.
-    // StreamSource is the only Source flavour that Saxon parses itself - SAXSource carries its
-    // own XMLReader, DOMSource / StAXSource walk a pre-built tree (no parsing).
-    final Source aSafeSource;
-    if (aSource instanceof final StreamSource aStreamSrc)
-    {
-      final XMLReader aXMLReader = SAXReaderFactory.createXMLReader ();
-
-      final InputSource aInputSrc;
-      if (aStreamSrc.getInputStream () != null)
-        aInputSrc = new InputSource (aStreamSrc.getInputStream ());
-      else
-        if (aStreamSrc.getReader () != null)
-          aInputSrc = new InputSource (aStreamSrc.getReader ());
-        else
-          aInputSrc = new InputSource (aStreamSrc.getSystemId ());
-
-      if (StringHelper.isNotEmpty (aStreamSrc.getSystemId ()))
-        aInputSrc.setSystemId (aStreamSrc.getSystemId ());
-      if (StringHelper.isNotEmpty (aStreamSrc.getPublicId ()))
-        aInputSrc.setPublicId (aStreamSrc.getPublicId ());
-
-      final SAXSource aSAXSrc = new SAXSource (aXMLReader, aInputSrc);
-      if (StringHelper.isNotEmpty (aStreamSrc.getSystemId ()))
-        aSAXSrc.setSystemId (aStreamSrc.getSystemId ());
-
-      aSafeSource = aSAXSrc;
-    }
-    else
-    {
-      // Non-StreamSource - parsing is the caller's responsibility (or there is none).
-      aSafeSource = aSource;
-    }
-
-    final XdmNode aXdm = aBuilder.build (aSafeSource);
-    final Node aDom = NodeOverNodeInfo.wrap (aXdm.getUnderlyingNode ());
-    if (aDom instanceof final Document aDoc)
-      return aDoc;
-
-    throw new IllegalStateException ("Saxon DocumentBuilder did not return a document NodeInfo: " + aDom);
-  }
-
-  /**
-   * Read the XML through Saxon's {@link DocumentBuilder} and present it as a DOM facade over the
-   * resulting TinyTree. Downstream {@code validate(...)} detects the facade and skips the slower
-   * {@code DocumentWrapper} bridge, giving a significant speed-up for large inputs.
-   * <p>
-   * The TinyTree fast path is skipped when a custom XML entity resolver is configured — in that
-   * case the default DOM parsing path (which honours the resolver) is used instead.
-   * </p>
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Override
-  @Nullable
-  protected NodeAndBaseURI getAsNode (@NonNull final IHasInputStream aXMLResource) throws Exception
-  {
-    if (getEntityResolver () != null)
-    {
-      // Defer to the DOM-based default so the entity resolver is honoured
-      return super.getAsNode (aXMLResource);
-    }
-
-    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
-    InputStream aIS = null;
-    try
-    {
-      aIS = aStreamSrc.getInputStream ();
-    }
-    catch (final IllegalStateException ex)
-    {
-      // Happens e.g. for non-existing resources - fall through
-    }
-    if (aIS == null)
-    {
-      LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
-      return null;
-    }
-
-    final String sBaseURI = aStreamSrc.getSystemId ();
-    final StreamSource aSrcWithURI = new StreamSource (aIS, sBaseURI);
-    final Document aDoc = _buildSaxonDocument (aSrcWithURI);
-    LOGGER.info ("Read XML resource " + aXMLResource + " into Saxon TinyTree");
-    return new NodeAndBaseURI (aDoc, sBaseURI);
-  }
-
-  /**
-   * Read a {@link Source} through Saxon's {@link DocumentBuilder} and present it as a DOM facade
-   * over the resulting TinyTree. The TinyTree fast path is skipped when a custom XML entity
-   * resolver is configured.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Override
-  @Nullable
-  protected Node getAsNode (@NonNull final Source aXMLSource) throws Exception
-  {
-    if (getEntityResolver () != null)
-    {
-      // Defer to the DOM-based default so the entity resolver is honoured
-      return super.getAsNode (aXMLSource);
-    }
-    return _buildSaxonDocument (aXMLSource);
-  }
-
-  /**
-   * @return The effective validation handler used during binding. Equal to
-   *         {@link #getCustomValidationHandler()} unless {@link #setTelemetry(boolean) telemetry}
-   *         is enabled, in which case a {@link TelemetryValidationHandler} is chained in.
-   */
-  @Nullable
-  private IPSValidationHandler _resolveEffectiveValidationHandler ()
-  {
-    if (!m_bTelemetry)
-      return m_aCustomValidationHandler;
-    final TelemetryValidationHandler aTelemetry = new TelemetryValidationHandler (ESchematronEngine.PURE_XPATH,
-                                                                                  m_bPerAssertionTelemetry);
-    return IPSValidationHandler.and (m_aCustomValidationHandler, aTelemetry);
-  }
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  protected IPSBoundSchema createBoundSchema ()
-  {
-    final IReadableResource aResource = getResource ();
-    final PSBoundSchemaCacheKey aCacheKey = new PSBoundSchemaCacheKey (aResource,
-                                                                       m_sPhase,
-                                                                       m_aErrorHandler,
-                                                                       _resolveEffectiveValidationHandler (),
-                                                                       m_aXPathConfig,
-                                                                       getEntityResolver (),
-                                                                       isLenient ());
-    if (aResource instanceof AbstractMemoryReadableResource || !isUseCache ())
-    {
-      // No need to cache anything for memory resources
-      try
-      {
-        return aCacheKey.createBoundSchema ();
-      }
-      catch (final SchematronException ex)
-      {
-        // Convert to runtime exception
-        throw new IllegalStateException ("Failed to bind Schematron", ex);
-      }
-    }
-
-    // Resolve from cache - inside the cacheKey the reading and binding
-    // happens
-    return PSBoundSchemaCache.getInstance ().getFromCache (aCacheKey);
-  }
-
-  /**
-   * Get the cached bound schema or create a new one.
-   *
-   * @return The bound schema. Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public IPSBoundSchema getOrCreateBoundSchema ()
-  {
-    // Always caching
-    if (m_aBoundSchema == null)
-      try
-      {
-        m_aBoundSchema = createBoundSchema ();
-      }
-      catch (final RuntimeException ex)
-      {
-        if (m_aErrorHandler != null)
-          m_aErrorHandler.handleError (SingleError.builderError ()
-                                                  .errorLocation (new SimpleLocation (getResource ().getPath ()))
-                                                  .errorText ("Error creating bound schema")
-                                                  .linkedException (ex)
-                                                  .build ());
-        throw ex;
-      }
-
-    return m_aBoundSchema;
-  }
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public boolean isValidSchematron ()
-  {
-    // Use the provided error handler (if any)
-    try
-    {
-      final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler : new DoNothingPSErrorHandler ();
-      return getOrCreateBoundSchema ().getOriginalSchema ().isValid (aErrorHandler);
-    }
-    catch (final RuntimeException ex)
-    {
-      // May happen when XPath errors are contained
-      return false;
-    }
-  }
-
-  /**
-   * Use the internal error handler to validate all elements in the schematron. It tries to catch as
-   * many errors as possible.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public void validateCompletely ()
-  {
-    // Use the provided error handler (if any)
-    final IPSErrorHandler aErrorHandler = m_aErrorHandler != null ? m_aErrorHandler : new DoNothingPSErrorHandler ();
-    validateCompletely (aErrorHandler);
-  }
-
-  /**
-   * Use the provided error handler to validate all elements in the schematron. It tries to catch as
-   * many errors as possible.
-   *
-   * @param aErrorHandler
-   *        The error handler to use. May not be <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
-  {
-    ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
-
-    try
-    {
-      getOrCreateBoundSchema ().getOriginalSchema ().validateCompletely (aErrorHandler);
-    }
-    catch (final RuntimeException ex)
-    {
-      // May happen when XPath errors are contained
-    }
-  }
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                         throws Exception
-  {
-    ValueEnforcer.notNull (aXMLNode, "XMLNode");
-
-    if (!isValidSchematron ())
-      return EValidity.INVALID;
-
-    return getOrCreateBoundSchema ().validatePartially (aXMLNode, sBaseURI);
-  }
-
-  /**
-   * The main method to convert a node to an SVRL document.
-   *
-   * @param aXMLNode
-   *        The source node to be validated. May not be <code>null</code>.
-   * @param sBaseURI
-   *        Base URI of the XML document to be validated. May be <code>null</code>.
-   * @return The SVRL document. Never <code>null</code>.
-   * @throws SchematronException
-   *         in case of a sever error validating the schema
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLNode,
-                                                               @Nullable final String sBaseURI) throws SchematronException
-  {
-    ValueEnforcer.notNull (aXMLNode, "XMLNode");
-
-    final SchematronOutputType aSOT;
-    if (m_bTelemetry)
-    {
-      // Tracing span wraps the whole validation; the chained TelemetryValidationHandler emits the
-      // counters and (optionally) per-assert child spans.
-      final var aBound = getOrCreateBoundSchema ();
-      try (final ITelemetrySpan aSpan = Telemetry.startSpan (TelemetryValidationHandler.SPAN_VALIDATE,
-                                                             ETelemetrySpanKind.INTERNAL))
-      {
-        aSpan.setAttribute (TelemetryValidationHandler.ATTR_ENGINE, "pure");
-        if (m_sPhase != null)
-          aSpan.setAttribute (TelemetryValidationHandler.ATTR_PHASE, m_sPhase);
-        try
-        {
-          aSOT = aBound.validateComplete (aXMLNode, sBaseURI);
-          aSpan.setStatusOk ();
-        }
-        catch (final SchematronException ex)
-        {
-          aSpan.recordException (ex).setStatusError (ex.getMessage ());
-          throw ex;
-        }
-      }
-    }
-    else
-    {
-      aSOT = getOrCreateBoundSchema ().validateComplete (aXMLNode, sBaseURI);
-    }
-
-    // Debug print the created SVRL document
-    if (SchematronDebug.isShowCreatedSVRL ())
-      LOGGER.info ("Created SVRL:\n" + new SVRLMarshaller (false).getAsString (aSOT));
-
-    return aSOT;
-  }
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Nullable
-  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                            throws Exception
-  {
-    ValueEnforcer.notNull (aXMLNode, "XMLNode");
-
-    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
-    return new SVRLMarshaller ().getAsDocument (aSO);
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePure} from a Classpath Schematron rules
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron rules.
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePure (new ClassPathResource (sSCHPath));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from a Classpath Schematron rules
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron rules.
-   * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.0.4
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath,
                                                       @Nullable final ClassLoader aClassLoader)
@@ -695,77 +133,30 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return new SchematronResourcePure (new ClassPathResource (sSCHPath, aClassLoader));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from file system Schematron rules
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron rules.
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromFile (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePure (new FileSystemResource (sSCHPath));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from file system Schematron rules
-   *
-   * @param aSCHFile
-   *        The file system path to the Schematron rules.
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromFile (@NonNull final File aSCHFile)
   {
     return new SchematronResourcePure (new FileSystemResource (aSCHFile));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided at a URL
-   *
-   * @param sSCHURL
-   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
-   * @return Never <code>null</code>.
-   * @throws MalformedURLException
-   *         In case an invalid URL is provided
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
     return new SchematronResourcePure (new URLResource (sSCHURL));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided at a URL
-   *
-   * @param aSCHURL
-   *        The URL to the Schematron rules. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromURL (@NonNull final URL aSCHURL)
   {
     return new SchematronResourcePure (new URLResource (aSCHURL));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary
-   * {@link InputStream}.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
-   * @param aSchematronIS
-   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.5
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromInputStream (@NonNull @Nonempty final String sResourceID,
                                                         @NonNull final InputStream aSchematronIS)
@@ -773,53 +164,25 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return new SchematronResourcePure (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary byte
-   * array.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param aSchematron
-   *        The byte array representing the Schematron. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromByteArray (@NonNull final byte [] aSchematron)
   {
     return new SchematronResourcePure (new ReadableResourceByteArray (aSchematron));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary
-   * String.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param sSchematron
-   *        The String representing the Schematron. May not be <code>null</code> .
-   * @param aCharset
-   *        The charset to be used to convert the String to a byte array.
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
-  /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by a domain
-   * model.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param aSchematron
-   *        The Schematron model to be used. May not be <code>null</code> .
-   * @return Never <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromSchema (@NonNull final PSSchema aSchematron)
   {
-    return fromString (new PSWriter ().getXMLString (aSchematron), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
+    // Round-trip via SchematronResourcePureXPath.fromSchema's serialization, but wrap the result
+    // in a SchematronResourcePure so callers that typed the variable as SchematronResourcePure
+    // still compile.
+    final SchematronResourcePureXPath aXPath = SchematronResourcePureXPath.fromSchema (aSchematron);
+    return new SchematronResourcePure (aXPath.getResource ());
   }
 }
