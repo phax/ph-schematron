@@ -20,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.annotation.style.ReturnsMutableCopy;
@@ -31,8 +32,8 @@ import com.helger.collection.commons.ICommonsMap;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 
 /**
- * The registry class for all available query bindings. To register your own
- * query binding, call {@link #registerQueryBinding(String, IPSQueryBinding)}.
+ * The registry class for all available query bindings. To register your own query binding, call
+ * {@link #registerQueryBinding(String, IPSQueryBinding)}.
  *
  * @author Philip Helger
  */
@@ -45,14 +46,12 @@ public final class PSQueryBindingRegistry
   public static final String QUERY_BINDING_XSLT = "xslt";
 
   /**
-   * Name of a query binding in the ISO standard for which the default binding
-   * is registered.
+   * Name of a query binding in the ISO standard for which the default binding is registered.
    */
   public static final String QUERY_BINDING_XSLT2 = "xslt2";
 
   /**
-   * Name of a query binding in the ISO standard for which the default binding
-   * is registered.
+   * Name of a query binding in the ISO standard for which the default binding is registered.
    */
   public static final String QUERY_BINDING_XSLT3 = "xslt3";
 
@@ -62,14 +61,12 @@ public final class PSQueryBindingRegistry
   public static final String QUERY_BINDING_XPATH = "xpath";
 
   /**
-   * Name of a query binding in the ISO standard for which the default binding
-   * is registered.
+   * Name of a query binding in the ISO standard for which the default binding is registered.
    */
   public static final String QUERY_BINDING_XPATH2 = "xpath2";
 
   /**
-   * Name of a query binding in the ISO standard for which the default binding
-   * is registered.
+   * Name of a query binding in the ISO standard for which the default binding is registered.
    */
   public static final String QUERY_BINDING_XPATH3 = "xpath3";
 
@@ -86,23 +83,25 @@ public final class PSQueryBindingRegistry
   /**
    * The default XPath binding object to be used
    */
-  public static final IPSQueryBinding DEFAULT_QUERY_BINDING = PSXPathQueryBinding.getInstance ();
+  public static final IPSQueryBinding XPATH_QUERY_BINDING = PSXPathQueryBinding.getInstance ();
 
   private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
-  private static final ICommonsMap <String, IPSQueryBinding> s_aMap = new CommonsHashMap <> ();
+  @GuardedBy ("RW_LOCK")
+  private static final ICommonsMap <String, IPSQueryBinding> BINDING_MAP = new CommonsHashMap <> ();
 
   static
   {
     try
     {
       // This is more or less fully supported
-      registerQueryBinding (QUERY_BINDING_XPATH, DEFAULT_QUERY_BINDING);
-      registerQueryBinding (QUERY_BINDING_XPATH2, DEFAULT_QUERY_BINDING);
-      registerQueryBinding (QUERY_BINDING_XPATH3, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XPATH, XPATH_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XPATH2, XPATH_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XPATH3, XPATH_QUERY_BINDING);
+
       // This is only supported so that custom functions can be provided
-      registerQueryBinding (QUERY_BINDING_XSLT, DEFAULT_QUERY_BINDING);
-      registerQueryBinding (QUERY_BINDING_XSLT2, DEFAULT_QUERY_BINDING);
-      registerQueryBinding (QUERY_BINDING_XSLT3, DEFAULT_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XSLT, XPATH_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XSLT2, XPATH_QUERY_BINDING);
+      registerQueryBinding (QUERY_BINDING_XSLT3, XPATH_QUERY_BINDING);
     }
     catch (final SchematronBindException ex)
     {
@@ -123,9 +122,9 @@ public final class PSQueryBindingRegistry
     ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
 
     RW_LOCK.writeLockedThrowing ( () -> {
-      if (s_aMap.containsKey (sName))
+      if (BINDING_MAP.containsKey (sName))
         throw new SchematronBindException ("A queryBinding with the name '" + sName + "' is already registered!");
-      s_aMap.put (sName, aQueryBinding);
+      BINDING_MAP.put (sName, aQueryBinding);
     });
   }
 
@@ -133,18 +132,17 @@ public final class PSQueryBindingRegistry
    * Get the query binding with the specified name.
    *
    * @param sName
-   *        The name to the query binding to retrieve. May be <code>null</code>.
-   *        If it is <code>null</code> than the {@link #DEFAULT_QUERY_BINDING}
-   *        object is returned.
+   *        The name to the query binding to retrieve. May be <code>null</code>. If it is
+   *        <code>null</code> than the {@link #XPATH_QUERY_BINDING} object is returned.
    * @return <code>null</code> if no such query binding was found.
    */
   @Nullable
   public static IPSQueryBinding getQueryBindingOfName (@Nullable final String sName)
   {
     if (sName == null)
-      return DEFAULT_QUERY_BINDING;
+      return XPATH_QUERY_BINDING;
 
-    return RW_LOCK.readLockedGet ( () -> s_aMap.get (sName));
+    return RW_LOCK.readLockedGet ( () -> BINDING_MAP.get (sName));
   }
 
   /**
@@ -166,13 +164,12 @@ public final class PSQueryBindingRegistry
   }
 
   /**
-   * @return A non-<code>null</code> map with all contained query bindings from
-   *         name to object.
+   * @return A non-<code>null</code> map with all contained query bindings from name to object.
    */
   @NonNull
   @ReturnsMutableCopy
   public static ICommonsMap <String, IPSQueryBinding> getAllRegisteredQueryBindings ()
   {
-    return RW_LOCK.readLockedGet (s_aMap::getClone);
+    return RW_LOCK.readLockedGet (BINDING_MAP::getClone);
   }
 }
