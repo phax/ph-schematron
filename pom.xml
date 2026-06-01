@@ -85,7 +85,7 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.2.6</version>
+        <version>12.2.7-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -150,7 +150,7 @@
       </dependency>
       <dependency>
         <groupId>com.helger.schematron</groupId>
-        <artifactId>ph-schematron-pure-saxon</artifactId>
+        <artifactId>ph-schematron-pure-xslt</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -173,13 +173,13 @@
   <modules>
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron-api</module>
-    <module>ph-schematron-isosch</module>
     <module>ph-schematron-xslt</module>
+    <module>ph-schematron-isosch</module>
     <module>ph-schematron-schxslt</module>
     <module>ph-schematron-schxslt2</module>
     <module>ph-schematron-model</module>
-    <module>ph-schematron-pure</module>
-    <module>ph-schematron-pure-saxon</module>
+    <module>ph-schematron-pure-xpath</module>
+    <module>ph-schematron-pure-xslt</module>
     <module>ph-schematron-validator</module>
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>
