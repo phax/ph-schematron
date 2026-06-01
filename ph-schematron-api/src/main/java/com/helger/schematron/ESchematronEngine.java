@@ -33,7 +33,17 @@ import com.helger.collection.commons.ICommonsSet;
  */
 public enum ESchematronEngine implements IHasID <String>
 {
-  PURE ("pure", new CommonsHashSet <> (), false),
+  /** Pure-Java XPath-only engine (alias of {@link #PURE_XPATH}; kept for compatibility) */
+  @Deprecated (forRemoval = true, since = "10.0.0")
+  PURE("pure", new CommonsHashSet <> (), false),
+  /** Pure-Java XPath-only engine; same as {@link #PURE}. */
+  PURE_XPATH ("pure-xpath", new CommonsHashSet <> (), false),
+  /**
+   * Pure-Java engine that generates an XSLT 3.0 stylesheet in Java (no external ISO Schematron
+   * stylesheet chain) and runs it through Saxon s9api. Suitable both as a validation engine and as
+   * a {@code SCH -> XSLT} converter.
+   */
+  PURE_XSLT ("pure-xslt", new CommonsHashSet <> (), true),
   ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron"), true),
   SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1"), true),
   SCHXSLT2 ("schxslt2", new CommonsHashSet <> (), true);

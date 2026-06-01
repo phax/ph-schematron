@@ -161,7 +161,7 @@ public class PSReader
 
   /**
    * Control whether the reader preserves child elements of {@code <sch:let>}. Engines that hand
-   * the schema to an XSLT processor (such as {@code SchematronResourcePureXSLT}) want this enabled
+   * the schema to an XSLT processor (such as {@code SchematronResourcePureXslt}) want this enabled
    * so XSLT-shaped {@code <let>} bodies (sequence constructors like
    * {@code <xsl:choose>...</xsl:choose>}) flow through to the generated stylesheet. The default
    * pure XPath engine does not understand sequence constructors, so the default is off.

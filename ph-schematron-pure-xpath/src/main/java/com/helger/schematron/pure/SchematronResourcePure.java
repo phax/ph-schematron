@@ -53,25 +53,26 @@ import com.helger.io.resource.inmemory.AbstractMemoryReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
-import com.helger.schematron.pure.bound.IPSBoundSchema;
-import com.helger.schematron.pure.bound.PSBoundSchemaCache;
-import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.exchange.PSWriter;
 import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.pure.bound.IPSBoundSchema;
+import com.helger.schematron.pure.bound.PSBoundSchemaCache;
+import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.telemetry.TelemetryValidationHandler;
-import com.helger.telemetry.ETelemetrySpanKind;
-import com.helger.telemetry.ITelemetrySpan;
-import com.helger.telemetry.Telemetry;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.telemetry.ETelemetrySpanKind;
+import com.helger.telemetry.ITelemetrySpan;
+import com.helger.telemetry.Telemetry;
 import com.helger.xml.serialize.read.SAXReaderFactory;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
@@ -88,7 +89,7 @@ import net.sf.saxon.s9api.XdmNode;
  * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no XSLT functions in
  * Schematron asserts and reports! If your Schematrons use XSLT functionality you're better off
  * using the <code>com.helger.schematron.sch.SchematronResourceSCH</code> or
- * <code>com.helger.schematron.purexslt.SchematronResourcePureXSLT</code> classes instead!
+ * <code>com.helger.schematron.purexslt.SchematronResourcePureXslt</code> classes instead!
  * <p>
  * <b>Deprecated name:</b> as of v10.0.0 the canonical name for this engine is
  * {@link SchematronResourcePureXPath}. {@code SchematronResourcePure} is preserved as a
@@ -113,11 +114,13 @@ public class SchematronResourcePure extends AbstractSchematronResource
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePure (@NonNull final IReadableResource aResource)
   {
     super (aResource);
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePure (@NonNull final IReadableResource aResource,
                                  @Nullable final String sPhase,
                                  @Nullable final IPSErrorHandler aErrorHandler)
@@ -130,6 +133,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   /**
    * @return The phase to be used. May be <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public final String getPhase ()
   {
@@ -144,6 +148,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The name of the phase to use. May be <code>null</code> which means all phases.
    * @return this
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePure setPhase (@Nullable final String sPhase)
   {
@@ -156,6 +161,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
   /**
    * @return The error handler to be used to bind the schema. May be <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public final IPSErrorHandler getErrorHandler ()
   {
@@ -169,6 +175,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The error handler. May be <code>null</code>.
    * @return this
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
   {
@@ -182,6 +189,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The custom validation handler to be used to bind the schema. May be <code>null</code>.
    * @since 5.3.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public final IPSValidationHandler getCustomValidationHandler ()
   {
@@ -196,6 +204,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    * @since 5.3.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePure setCustomValidationHandler (@Nullable final IPSValidationHandler aCustomValidationHandler)
   {
@@ -209,6 +218,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return The contained {@link IXPathConfig}. Never <code>null</code>.
    * @since 8.0.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IXPathConfig getXPathConfig ()
   {
@@ -224,6 +234,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The XPath config to set. May be <code>null</code>.
    * @return this
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePure setXPathConfig (@NonNull final IXPathConfig aXPathConfig)
   {
@@ -239,6 +250,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *         emitted via ph-telemetry during validation. Default is <code>false</code>.
    * @since 10.0.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public final boolean isTelemetry ()
   {
     return m_bTelemetry;
@@ -251,8 +263,9 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * is chained into the custom validation handler so it emits counters for failed asserts, fired
    * reports, fired rules and active patterns as well as a {@code schematron.validate.duration}
    * histogram entry on completion. Setup is zero-cost when no
-   * {@link com.helger.telemetry.ITelemetryTracerSPI} / {@link com.helger.telemetry.ITelemetryMeterSPI}
-   * is registered &mdash; ph-telemetry degrades to no-op silently.
+   * {@link com.helger.telemetry.ITelemetryTracerSPI} /
+   * {@link com.helger.telemetry.ITelemetryMeterSPI} is registered &mdash; ph-telemetry degrades to
+   * no-op silently.
    * <p>
    * Can only be set before the Schematron is bound.
    *
@@ -261,6 +274,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    * @since 10.0.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePure setTelemetry (final boolean bTelemetry)
   {
@@ -272,10 +286,11 @@ public class SchematronResourcePure extends AbstractSchematronResource
 
   /**
    * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
-   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also <code>true</code>.
-   *         Default is <code>false</code>.
+   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
+   *         <code>true</code>. Default is <code>false</code>.
    * @since 10.0.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public final boolean isPerAssertionTelemetry ()
   {
     return m_bPerAssertionTelemetry;
@@ -296,6 +311,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    * @since 10.0.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePure setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
   {
@@ -315,6 +331,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return this
    * @since 4.1.1
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public SchematronResourcePure setEntityResolver (@Nullable final EntityResolver aEntityResolver)
   {
@@ -390,6 +407,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * case the default DOM parsing path (which honours the resolver) is used instead.
    * </p>
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @Nullable
   protected NodeAndBaseURI getAsNode (@NonNull final IHasInputStream aXMLResource) throws Exception
@@ -428,6 +446,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * over the resulting TinyTree. The TinyTree fast path is skipped when a custom XML entity
    * resolver is configured.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @Nullable
   protected Node getAsNode (@NonNull final Source aXMLSource) throws Exception
@@ -450,10 +469,12 @@ public class SchematronResourcePure extends AbstractSchematronResource
   {
     if (!m_bTelemetry)
       return m_aCustomValidationHandler;
-    final TelemetryValidationHandler aTelemetry = new TelemetryValidationHandler ("pure", m_bPerAssertionTelemetry);
+    final TelemetryValidationHandler aTelemetry = new TelemetryValidationHandler (ESchematronEngine.PURE_XPATH,
+                                                                                  m_bPerAssertionTelemetry);
     return IPSValidationHandler.and (m_aCustomValidationHandler, aTelemetry);
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   protected IPSBoundSchema createBoundSchema ()
   {
@@ -489,6 +510,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *
    * @return The bound schema. Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public IPSBoundSchema getOrCreateBoundSchema ()
   {
@@ -512,6 +534,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return m_aBoundSchema;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public boolean isValidSchematron ()
   {
     // Use the provided error handler (if any)
@@ -531,6 +554,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * Use the internal error handler to validate all elements in the schematron. It tries to catch as
    * many errors as possible.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public void validateCompletely ()
   {
     // Use the provided error handler (if any)
@@ -545,6 +569,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @param aErrorHandler
    *        The error handler to use. May not be <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
@@ -559,6 +584,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     }
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
                                                                                                          throws Exception
@@ -582,6 +608,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @throws SchematronException
    *         in case of a sever error validating the schema
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLNode,
                                                                @Nullable final String sBaseURI) throws SchematronException
@@ -624,6 +651,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
     return aSOT;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
                                                                                                             throws Exception
@@ -641,6 +669,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The classpath relative path to the Schematron rules.
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
@@ -658,6 +687,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return Never <code>null</code>.
    * @since 6.0.4
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath,
                                                       @Nullable final ClassLoader aClassLoader)
@@ -672,6 +702,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The file system path to the Schematron rules.
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromFile (@NonNull @Nonempty final String sSCHPath)
   {
@@ -685,6 +716,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The file system path to the Schematron rules.
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromFile (@NonNull final File aSCHFile)
   {
@@ -700,6 +732,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @throws MalformedURLException
    *         In case an invalid URL is provided
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
@@ -713,6 +746,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The URL to the Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromURL (@NonNull final URL aSCHURL)
   {
@@ -731,6 +765,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    * @return Never <code>null</code>.
    * @since 6.2.5
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromInputStream (@NonNull @Nonempty final String sResourceID,
                                                         @NonNull final InputStream aSchematronIS)
@@ -747,6 +782,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The byte array representing the Schematron. May not be <code>null</code>.
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromByteArray (@NonNull final byte [] aSchematron)
   {
@@ -764,6 +800,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
   {
@@ -779,6 +816,7 @@ public class SchematronResourcePure extends AbstractSchematronResource
    *        The Schematron model to be used. May not be <code>null</code> .
    * @return Never <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromSchema (@NonNull final PSSchema aSchematron)
   {

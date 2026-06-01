@@ -32,7 +32,7 @@ import com.helger.telemetry.TelemetryAttributes;
 import com.helger.telemetry.TelemetryMetrics;
 
 /**
- * Telemetry constants and helpers used by {@code SchematronResourcePureXSLT}. The metric /
+ * Telemetry constants and helpers used by {@code SchematronResourcePureXslt}. The metric /
  * attribute name strings are deliberately identical to those defined on
  * {@code TelemetryValidationHandler} in {@code ph-schematron-pure} so dashboards can aggregate
  * across both engines via the {@link #ATTR_ENGINE} dimension.

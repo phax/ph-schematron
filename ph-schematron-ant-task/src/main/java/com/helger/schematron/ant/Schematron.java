@@ -622,6 +622,7 @@ public class Schematron extends AbstractSchematronTask
     }
   }
 
+  @SuppressWarnings ("removal")
   @Override
   public void execute () throws BuildException
   {
@@ -680,7 +681,6 @@ public class Schematron extends AbstractSchematronTask
 
       switch (m_eSchematronProcessingEngine)
       {
-        case PURE:
         case PURE_XPATH:
         {
           // Pure-Java XPath engine

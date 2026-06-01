@@ -42,7 +42,7 @@ import com.helger.schematron.model.PSSchema;
  * Canonical name for the pure-Java XPath-driven Schematron engine, introduced in v10.0.0. Identical
  * behaviour to the older {@link SchematronResourcePure} (which remains as a deprecated alias for
  * source compatibility) &mdash; this class only differs in name. Use {@code PureXPath} in new code
- * to make the engine choice obvious alongside {@code SchematronResourcePureXSLT} (the Saxon-native
+ * to make the engine choice obvious alongside {@code SchematronResourcePureXslt} (the Saxon-native
  * XSLT engine) and {@code SchematronResourceSCH} / {@code SchematronResourceXSLT} (the ISO-XSLT
  * engines).
  *

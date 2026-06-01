@@ -564,7 +564,6 @@ public final class SchematronValidationMojo extends AbstractMojo
     IErrorList aSCHErrors;
     switch (ESchematronMode.getFromIDOrNull (m_sSchematronProcessingEngine))
     {
-      case PURE:
       case PURE_XPATH:
       {
         // Pure-Java XPath engine

@@ -65,8 +65,13 @@ import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSL
 import com.helger.schematron.schxslt.xslt2.TransformerCustomizerSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronProviderXSLTFromSchXslt2;
 import com.helger.schematron.schxslt2.xslt.TransformerCustomizerSchXslt2;
+import com.helger.schematron.purexslt.xslt.EXsltVersion;
+import com.helger.schematron.purexslt.xslt.SchematronToXsltConverter;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.serialize.MicroWriter;
+import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -440,6 +445,21 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                                                                                                          .setParameters (m_aCustomParameters)
                                                                                                          .setForceCacheResult (m_bForceCacheResult);
                   yield SchematronProviderXSLTFromSchXslt2.createSchematronXSLT (aSchematronResource, aCustomizer2);
+                }
+                case PURE_XSLT:
+                {
+                  // Java-side PSSchema -> XSLT 3.0 conversion (no external ISO stylesheet chain).
+                  // Language code and parameter map are ignored - they are SCH/SchXslt knobs that
+                  // don't apply to the Java generator. Phase selection IS honoured.
+                  final IMicroDocument aMicroDoc = SchematronToXsltConverter.fromResource (aSchematronResource)
+                                                                            .setPhase (m_sPhaseName)
+                                                                            .setXsltVersion (EXsltVersion.DEFAULT)
+                                                                            .getAsMicroDocument ();
+                  // The mojo's downstream serialization path operates on a W3C DOM Document; round
+                  // trip through string-as-XML rather than maintaining a parallel MicroDOM branch
+                  // (one extra parse, but the SCH -> XSLT conversion happens at build time so the
+                  // cost is irrelevant in practice).
+                  yield DOMReader.readXMLDOM (MicroWriter.getNodeAsString (aMicroDoc));
                 }
                 default:
                   throw new MojoExecutionException ("Unsupported Schematron Engine - must be XSLT based: " + eEngine);

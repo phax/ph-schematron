@@ -30,19 +30,24 @@ import com.helger.base.lang.EnumHelper;
  */
 public enum ESchematronMode implements IHasID <String>
 {
-  /** Pure-Java XPath engine (alias of {@link #PURE_XPATH}, kept for compatibility) */
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  PURE("pure"),
   /** Pure-Java XPath engine. Same as {@link #PURE}; preferred id since v10.0.0. */
   PURE_XPATH ("pure-xpath"),
+
   /** Pure-Java engine that generates an XSLT stylesheet in Java and runs it via Saxon s9api. */
   PURE_XSLT ("pure-xslt"),
+
   /** ISO Schematron, SCH version */
   SCHEMATRON ("schematron"),
+
   /** SchXslt Schematron, SCH version */
   SCHXSLT_XSLT2 ("schxslt-xslt2"),
+
   /** XSLT version */
   XSLT ("xslt");
+
+  /** Pure-Java XPath engine (alias of {@link #PURE_XPATH}, kept for compatibility) */
+  @Deprecated (forRemoval = true, since = "10.0.0")
+  public static final ESchematronMode PURE = PURE_XPATH;
 
   private final String m_sID;
 
@@ -64,6 +69,11 @@ public enum ESchematronMode implements IHasID <String>
     // Allowing "sch" as synonym for "schematron"
     if ("sch".equalsIgnoreCase (sID))
       return SCHEMATRON;
+
+    // Old name of "pure-xpath"
+    if ("pure".equalsIgnoreCase (sID))
+      return PURE_XPATH;
+
     return EnumHelper.getFromIDCaseInsensitiveOrNull (ESchematronMode.class, sID);
   }
 }

@@ -22,7 +22,9 @@ import org.w3c.dom.Node;
 
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.CGlobal;
 import com.helger.base.state.EContinue;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSPattern;
 import com.helger.schematron.model.PSPhase;
@@ -86,10 +88,10 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   public static final String OUTCOME_INVALID = "invalid";
 
   // Pre-resolved instruments. Created once on class load; emit-time cost is just a SPI call.
-  private static final ITelemetryCounter COUNTER_FAILED = TelemetryMetrics.counter (METRIC_ASSERTIONS_FAILED,
+  private static final ITelemetryCounter COUNTER_FAILED_ASSERTS = TelemetryMetrics.counter (METRIC_ASSERTIONS_FAILED,
                                                                                     "Number of failed Schematron assertions",
                                                                                     "{count}");
-  private static final ITelemetryCounter COUNTER_REPORTS = TelemetryMetrics.counter (METRIC_REPORTS_FIRED,
+  private static final ITelemetryCounter COUNTER_SUCCESSFUL_REPORTS = TelemetryMetrics.counter (METRIC_REPORTS_FIRED,
                                                                                      "Number of fired Schematron reports",
                                                                                      "{count}");
   private static final ITelemetryCounter COUNTER_RULES = TelemetryMetrics.counter (METRIC_RULES_FIRED,
@@ -114,17 +116,16 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   private String m_sCurrentPhase;
 
   /**
-   * @param sEngine
-   *        Short identifier for the engine emitting events (e.g. {@code "pure"} or
-   *        {@code "pure-saxon"}). Becomes the value of the {@link #ATTR_ENGINE} attribute on every
-   *        span and metric.
+   * @param eEngine
+   *        Schematron engine emitting events (e.g. {@code "pure"} or {@code "pure-saxon"}). Becomes
+   *        the value of the {@link #ATTR_ENGINE} attribute on every span and metric.
    * @param bPerAssertionSpans
    *        <code>true</code> to additionally emit one {@link #SPAN_ASSERTION} span per assert /
    *        report evaluation.
    */
-  public TelemetryValidationHandler (@NonNull final String sEngine, final boolean bPerAssertionSpans)
+  public TelemetryValidationHandler (@NonNull final ESchematronEngine eEngine, final boolean bPerAssertionSpans)
   {
-    m_sEngine = sEngine;
+    m_sEngine = eEngine.getID ();
     m_bPerAssertionSpans = bPerAssertionSpans;
   }
 
@@ -188,7 +189,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
                                    @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     m_nFailedAsserts++;
-    COUNTER_FAILED.add (1, m_aEngineAttributes);
+    COUNTER_FAILED_ASSERTS.add (1, m_aEngineAttributes);
     if (m_bPerAssertionSpans)
       _emitAssertionSpan (aOwningRule, aAssertReport, sTestExpression, true);
     return EContinue.CONTINUE;
@@ -205,7 +206,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
                                        @Nullable final Exception aEvaluationException) throws SchematronValidationException
   {
     m_nFiredReports++;
-    COUNTER_REPORTS.add (1, m_aEngineAttributes);
+    COUNTER_SUCCESSFUL_REPORTS.add (1, m_aEngineAttributes);
     if (m_bPerAssertionSpans)
       _emitAssertionSpan (aOwningRule, aAssertReport, sTestExpression, false);
     return EContinue.CONTINUE;
@@ -215,7 +216,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
                                                                                             throws SchematronValidationException
   {
-    final double dDurationMs = (System.nanoTime () - m_nStartNanos) / 1_000_000.0;
+    final double dDurationMs = (System.nanoTime () - m_nStartNanos) / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
     final String sOutcome = (m_nFailedAsserts == 0 && m_nFiredReports == 0) ? OUTCOME_VALID : OUTCOME_INVALID;
     final TelemetryAttributes aDurAttrs = TelemetryAttributes.builder ()
                                                              .put (ATTR_ENGINE, m_sEngine)

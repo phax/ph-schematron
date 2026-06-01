@@ -52,7 +52,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * non-Saxon XSLT processor, or simply inspect what the Saxon-native engine compiles internally.
  * <p>
  * By default the pipeline mirrors the one used at runtime inside
- * {@code SchematronResourcePureXSLT}: the schema is read with {@link PSReader} (with let-body
+ * {@code SchematronResourcePureXslt}: the schema is read with {@link PSReader} (with let-body
  * elements preserved), preprocessed via {@link PSPreprocessor} (so abstract patterns,
  * {@code <sch:extends>} and {@code <sch:include>} are all expanded), then handed to
  * {@link XsltStylesheetGenerator}. The preprocessing step can be disabled if you want a 1:1 view
@@ -175,7 +175,7 @@ public final class SchematronToXsltConverter
    * Control whether {@link PSPreprocessor} runs over the schema before generation. Disable when
    * you want a 1:1 view of the source schema (abstract patterns and {@code <sch:extends>} not
    * expanded). Default is <code>true</code> &mdash; matches the runtime behaviour of
-   * {@code SchematronResourcePureXSLT}.
+   * {@code SchematronResourcePureXslt}.
    *
    * @param bPreprocess
    *        <code>true</code> to preprocess, <code>false</code> to skip.
@@ -300,7 +300,7 @@ public final class SchematronToXsltConverter
     if (m_aSchema == null)
     {
       final PSReader aReader = new PSReader (m_aResource, m_aErrorHandler, null);
-      // Same opt-in as SchematronResourcePureXSLT so XSLT-shaped <sch:let> bodies survive
+      // Same opt-in as SchematronResourcePureXslt so XSLT-shaped <sch:let> bodies survive
       aReader.setPreserveLetBodyElements (true);
       final PSSchema aRaw = aReader.readSchema ();
       if (aRaw == null)
