@@ -26,15 +26,16 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.helger.base.state.ESuccess;
 import com.helger.io.resource.FileSystemResource;
-import com.helger.xml.microdom.IMicroDocument;
-import com.helger.xml.microdom.IMicroElement;
 
 /**
  * Tests for {@link SchematronToXsltConverter}: same generated stylesheet must come out across all
- * output sinks ({@link IMicroDocument}, String, {@link java.io.OutputStream}, {@link java.io.Writer},
+ * output sinks ({@link Document}, String, {@link java.io.OutputStream}, {@link java.io.Writer},
  * {@link File}).
  *
  * @author Philip Helger
@@ -44,18 +45,18 @@ public final class SchematronToXsltConverterTest
   private static final File SCH = new File ("src/test/resources/external/issues/github137/schematron.sch");
 
   @Test
-  public void testAsMicroDocument () throws Exception
+  public void testAsDocument () throws Exception
   {
-    final IMicroDocument aDoc = SchematronToXsltConverter.fromResource (new FileSystemResource (SCH)).getAsMicroDocument ();
+    final Document aDoc = SchematronToXsltConverter.fromResource (new FileSystemResource (SCH)).getAsDocument ();
     assertNotNull (aDoc);
-    final IMicroElement aRoot = aDoc.getDocumentElement ();
+    final Element aRoot = aDoc.getDocumentElement ();
     assertNotNull (aRoot);
     assertEquals (XsltStylesheetGenerator.XSLT_NS, aRoot.getNamespaceURI ());
     assertEquals ("stylesheet", aRoot.getLocalName ());
-    assertEquals (EXsltVersion.DEFAULT.getVersion (), aRoot.getAttributeValue ("version"));
+    assertEquals (EXsltVersion.DEFAULT.getVersion (), aRoot.getAttribute ("version"));
     // At least one <xsl:template> for the rule context
-    assertTrue ("expected at least one xsl:template",
-                !aRoot.getAllChildElements (XsltStylesheetGenerator.XSLT_NS, "template").isEmpty ());
+    final NodeList aTemplates = aRoot.getElementsByTagNameNS (XsltStylesheetGenerator.XSLT_NS, "template");
+    assertTrue ("expected at least one xsl:template", aTemplates.getLength () > 0);
   }
 
   @Test

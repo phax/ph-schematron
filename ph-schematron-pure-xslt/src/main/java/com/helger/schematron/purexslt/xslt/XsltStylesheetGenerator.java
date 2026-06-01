@@ -16,10 +16,14 @@
  */
 package com.helger.schematron.purexslt.xslt;
 
+import javax.xml.XMLConstants;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringHelper;
@@ -41,14 +45,17 @@ import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSValueOf;
 import com.helger.schematron.svrl.CSVRL;
-import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.XMLFactory;
+import com.helger.xml.microdom.IMicroCDATA;
 import com.helger.xml.microdom.IMicroElement;
-import com.helger.xml.microdom.MicroDocument;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
+import com.helger.xml.microdom.IMicroNode;
+import com.helger.xml.microdom.IMicroText;
 
 /**
  * Generates an XSLT 3.0 stylesheet from a parsed {@link PSSchema} that, when applied to an XML
- * instance, produces SVRL output.
+ * instance, produces SVRL output. The result is a {@link Document} so that downstream consumers can
+ * feed it directly to Saxon's {@code XsltCompiler} via {@link javax.xml.transform.dom.DOMSource}
+ * (no intermediate serialize-then-parse round trip).
  * <p>
  * <b>Supported scope:</b> {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule context>},
  * {@code <sch:assert test>}, {@code <sch:report test>}, {@code <sch:value-of select>} and
@@ -93,7 +100,7 @@ public final class XsltStylesheetGenerator
    * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
    */
   @NonNull
-  public static IMicroDocument generate (@NonNull final PSSchema aSchema)
+  public static Document generate (@NonNull final PSSchema aSchema)
   {
     return generate (aSchema, null, EXsltVersion.DEFAULT);
   }
@@ -111,7 +118,7 @@ public final class XsltStylesheetGenerator
    * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
    */
   @NonNull
-  public static IMicroDocument generate (@NonNull final PSSchema aSchema, @Nullable final String sPhase)
+  public static Document generate (@NonNull final PSSchema aSchema, @Nullable final String sPhase)
   {
     return generate (aSchema, sPhase, EXsltVersion.DEFAULT);
   }
@@ -133,20 +140,27 @@ public final class XsltStylesheetGenerator
    * @since 10.0.0
    */
   @NonNull
-  public static IMicroDocument generate (@NonNull final PSSchema aSchema,
-                                         @Nullable final String sPhase,
-                                         @NonNull final EXsltVersion eVersion)
+  public static Document generate (@NonNull final PSSchema aSchema,
+                                   @Nullable final String sPhase,
+                                   @NonNull final EXsltVersion eVersion)
   {
     final String sResolvedPhase = _resolvePhase (aSchema, sPhase);
-    final var aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
+    final ICommonsList <PSPattern> aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
     final PSDiagnostics aDiagnostics = aSchema.getDiagnostics ();
 
-    final IMicroDocument aDoc = new MicroDocument ();
-    final IMicroElement aStylesheet = aDoc.addElementNS (XSLT_NS, "stylesheet");
+    final Document aDoc = XMLFactory.newDocument ();
+    final Element aStylesheet = aDoc.createElementNS (XSLT_NS, XSLT_PREFIX + ":stylesheet");
+    aDoc.appendChild (aStylesheet);
+
+    // Declare all in-scope namespace prefixes on the root so Saxon can resolve the prefixes that
+    // appear in XPath attribute values (e.g. my:func() inside test="..."). Without this, only the
+    // namespaces referenced as element or attribute names would have visible xmlns bindings.
+    _declareNamespacesOnStylesheet (aStylesheet, aSchema);
+
     aStylesheet.setAttribute ("version", eVersion.getVersion ());
 
     // <xsl:output method="xml" indent="no"/>
-    final IMicroElement aOutput = aStylesheet.addElementNS (XSLT_NS, "output");
+    final Element aOutput = _addXsltChild (aStylesheet, "output");
     aOutput.setAttribute ("method", "xml");
     aOutput.setAttribute ("indent", "no");
 
@@ -181,18 +195,71 @@ public final class XsltStylesheetGenerator
   }
 
   /**
-   * Clone each foreign element whose namespace is the XSLT namespace into the generated
+   * Declare {@code xmlns:xsl}, {@code xmlns:svrl} and one {@code xmlns:<prefix>} per
+   * {@code <sch:ns>} on the stylesheet root. Required so Saxon can resolve prefixes that occur
+   * only inside XPath attribute values (e.g. {@code test="my:func(.)"}).
+   */
+  private static void _declareNamespacesOnStylesheet (@NonNull final Element aStylesheet,
+                                                      @NonNull final PSSchema aSchema)
+  {
+    aStylesheet.setAttributeNS (XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+                                XMLConstants.XMLNS_ATTRIBUTE + ":" + XSLT_PREFIX,
+                                XSLT_NS);
+    aStylesheet.setAttributeNS (XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+                                XMLConstants.XMLNS_ATTRIBUTE + ":" + SVRL_PREFIX,
+                                CSVRL.SVRL_NAMESPACE_URI);
+    final ICommonsSet <String> aAlreadyDeclared = new CommonsHashSet <> ();
+    aAlreadyDeclared.add (XSLT_PREFIX);
+    aAlreadyDeclared.add (SVRL_PREFIX);
+    for (final PSNS aNS : aSchema.getAllNSs ())
+    {
+      final String sPrefix = aNS.getPrefix ();
+      final String sURI = aNS.getUri ();
+      if (StringHelper.isNotEmpty (sPrefix) && StringHelper.isNotEmpty (sURI) && aAlreadyDeclared.add (sPrefix))
+        aStylesheet.setAttributeNS (XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+                                    XMLConstants.XMLNS_ATTRIBUTE + ":" + sPrefix,
+                                    sURI);
+    }
+  }
+
+  /**
+   * Append a new element in the XSLT namespace (with the {@code xsl:} prefix) as the last child of
+   * {@code aParent}.
+   */
+  @NonNull
+  private static Element _addXsltChild (@NonNull final Element aParent, @NonNull final String sLocalName)
+  {
+    final Element aChild = aParent.getOwnerDocument ().createElementNS (XSLT_NS, XSLT_PREFIX + ":" + sLocalName);
+    aParent.appendChild (aChild);
+    return aChild;
+  }
+
+  /**
+   * Append a new element in the SVRL namespace (with the {@code svrl:} prefix) as the last child
+   * of {@code aParent}.
+   */
+  @NonNull
+  private static Element _addSvrlChild (@NonNull final Element aParent, @NonNull final String sLocalName)
+  {
+    final Element aChild = aParent.getOwnerDocument ()
+                                   .createElementNS (CSVRL.SVRL_NAMESPACE_URI, SVRL_PREFIX + ":" + sLocalName);
+    aParent.appendChild (aChild);
+    return aChild;
+  }
+
+  /**
+   * Copy each foreign element whose namespace is the XSLT namespace into the generated
    * stylesheet root. Non-XSLT foreign elements (e.g. random vendor-specific extensions) are
    * skipped with a WARN log - those can be added in a later phase.
    */
-  private static void _appendXsltForeignElements (@NonNull final IMicroElement aStylesheet,
+  private static void _appendXsltForeignElements (@NonNull final Element aStylesheet,
                                                   @NonNull final ICommonsList <IMicroElement> aForeignElements)
   {
     for (final IMicroElement aForeign : aForeignElements)
     {
       if (XSLT_NS.equals (aForeign.getNamespaceURI ()))
       {
-        aStylesheet.addChild (aForeign.getClone ());
+        _appendMicroAsDom (aStylesheet, aForeign);
       }
       else
       {
@@ -203,11 +270,64 @@ public final class XsltStylesheetGenerator
   }
 
   /**
+   * Recursively materialize the given Micro-DOM subtree as a DOM child of {@code aDomParent}.
+   * Used to graft schema-level {@code <xsl:*>} foreign elements (which the {@link PSSchema} stores
+   * as {@link IMicroElement}) into the DOM stylesheet without going through a serialize-and-reparse
+   * round trip. Honors XSLT/SVRL prefix conventions on element names so the result serializes
+   * cleanly.
+   */
+  private static void _appendMicroAsDom (@NonNull final Element aDomParent, @NonNull final IMicroElement aSrc)
+  {
+    final Document aDoc = aDomParent.getOwnerDocument ();
+    final String sNS = aSrc.getNamespaceURI ();
+    final String sLocal = aSrc.getLocalName ();
+    final Element aDomElem;
+    if (StringHelper.isEmpty (sNS))
+      aDomElem = aDoc.createElement (sLocal);
+    else
+    {
+      final String sQName;
+      if (XSLT_NS.equals (sNS))
+        sQName = XSLT_PREFIX + ":" + sLocal;
+      else
+        if (CSVRL.SVRL_NAMESPACE_URI.equals (sNS))
+          sQName = SVRL_PREFIX + ":" + sLocal;
+        else
+          sQName = sLocal;
+      aDomElem = aDoc.createElementNS (sNS, sQName);
+    }
+    aDomParent.appendChild (aDomElem);
+
+    aSrc.forAllAttributes ( (sAttrNS, sAttrName, sAttrValue) -> {
+      if (StringHelper.isEmpty (sAttrNS))
+        aDomElem.setAttribute (sAttrName, sAttrValue);
+      else
+        aDomElem.setAttributeNS (sAttrNS, sAttrName, sAttrValue);
+    });
+
+    final ICommonsList <IMicroNode> aChildren = aSrc.getAllChildren ();
+    if (aChildren != null)
+      for (final IMicroNode aChild : aChildren)
+      {
+        if (aChild instanceof final IMicroElement aChildElem)
+          _appendMicroAsDom (aDomElem, aChildElem);
+        else
+          if (aChild instanceof final IMicroText aText)
+            aDomElem.appendChild (aDoc.createTextNode (aText.getData ().toString ()));
+          else
+            if (aChild instanceof final IMicroCDATA aCDATA)
+              aDomElem.appendChild (aDoc.createCDATASection (aCDATA.getData ().toString ()));
+            else
+              LOGGER.warn ("Skipping unsupported foreign node " + aChild.getClass ().getSimpleName ());
+      }
+  }
+
+  /**
    * Append one {@code <xsl:variable name="..." select="..."/>} per {@link PSLet}. Used to bind
    * Schematron {@code <sch:let>} variables at whichever XSLT scope (stylesheet root for
    * schema/phase, rule template for pattern/rule) the parent element represents.
    */
-  private static void _appendLetsAsXsltVariables (@NonNull final IMicroElement aParent,
+  private static void _appendLetsAsXsltVariables (@NonNull final Element aParent,
                                                   @NonNull final ICommonsList <PSLet> aLets)
   {
     for (final PSLet aLet : aLets)
@@ -217,17 +337,17 @@ public final class XsltStylesheetGenerator
         LOGGER.warn ("Skipping <sch:let> with empty name attribute");
         continue;
       }
-      final IMicroElement aVar = aParent.addElementNS (XSLT_NS, "variable");
+      final Element aVar = _addXsltChild (aParent, "variable");
       aVar.setAttribute ("name", aLet.getName ());
       // Preference: select attribute wins (one-liner expression form). If the let has body
       // elements (XSLT sequence constructor form preserved by PSReader's
-      // preserveLetBodyElements flag), clone them as the variable body instead.
+      // preserveLetBodyElements flag), copy them as the variable body instead.
       if (StringHelper.isNotEmpty (aLet.getValue ()))
         aVar.setAttribute ("select", aLet.getValue ());
       else
         if (aLet.hasBodyElements ())
           for (final IMicroElement aBody : aLet.getAllBodyElements ())
-            aVar.addChild (aBody.getClone ());
+            _appendMicroAsDom (aVar, aBody);
     }
   }
 
@@ -257,7 +377,7 @@ public final class XsltStylesheetGenerator
    */
   @NonNull
   private static ICommonsList <PSPattern> _resolveActivePatterns (@NonNull final PSSchema aSchema,
-                                                                                                @Nullable final String sResolvedPhase)
+                                                                  @Nullable final String sResolvedPhase)
   {
     final ICommonsList <PSPattern> ret = new CommonsArrayList <> ();
     final ICommonsSet <String> aAllowedIDs;
@@ -294,15 +414,15 @@ public final class XsltStylesheetGenerator
     return ret;
   }
 
-  private static void _appendRootTemplate (@NonNull final IMicroElement aStylesheet,
+  private static void _appendRootTemplate (@NonNull final Element aStylesheet,
                                            @NonNull final PSSchema aSchema,
                                            @NonNull final ICommonsList <PSPattern> aActivePatterns,
                                            @Nullable final String sResolvedPhase)
   {
-    final IMicroElement aTemplate = aStylesheet.addElementNS (XSLT_NS, "template");
+    final Element aTemplate = _addXsltChild (aStylesheet, "template");
     aTemplate.setAttribute ("match", "/");
 
-    final IMicroElement aSchemaOutput = aTemplate.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "schematron-output");
+    final Element aSchemaOutput = _addSvrlChild (aTemplate, "schematron-output");
     if (StringHelper.isNotEmpty (aSchema.getSchemaVersion ()))
       aSchemaOutput.setAttribute ("schemaVersion", aSchema.getSchemaVersion ());
     if (StringHelper.isNotEmpty (sResolvedPhase))
@@ -313,8 +433,7 @@ public final class XsltStylesheetGenerator
     {
       if (StringHelper.isEmpty (aNS.getPrefix ()) || StringHelper.isEmpty (aNS.getUri ()))
         continue;
-      final IMicroElement aSvrlNS = aSchemaOutput.addElementNS (CSVRL.SVRL_NAMESPACE_URI,
-                                                                "ns-prefix-in-attribute-values");
+      final Element aSvrlNS = _addSvrlChild (aSchemaOutput, "ns-prefix-in-attribute-values");
       aSvrlNS.setAttribute ("prefix", aNS.getPrefix ());
       aSvrlNS.setAttribute ("uri", aNS.getUri ());
     }
@@ -323,24 +442,24 @@ public final class XsltStylesheetGenerator
     int nPatternIdx = 0;
     for (final PSPattern aPattern : aActivePatterns)
     {
-      final IMicroElement aActive = aSchemaOutput.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "active-pattern");
+      final Element aActive = _addSvrlChild (aSchemaOutput, "active-pattern");
       if (StringHelper.isNotEmpty (aPattern.getID ()))
         aActive.setAttribute ("id", aPattern.getID ());
 
-      final IMicroElement aApply = aSchemaOutput.addElementNS (XSLT_NS, "apply-templates");
+      final Element aApply = _addXsltChild (aSchemaOutput, "apply-templates");
       aApply.setAttribute ("select", "/");
       aApply.setAttribute ("mode", _modeName (nPatternIdx));
       nPatternIdx++;
     }
   }
 
-  private static void _appendPatternTemplates (@NonNull final IMicroElement aStylesheet,
+  private static void _appendPatternTemplates (@NonNull final Element aStylesheet,
                                                @NonNull final PSPattern aPattern,
                                                final int nPatternIdx,
                                                @Nullable final PSDiagnostics aDiagnostics)
   {
     final String sMode = _modeName (nPatternIdx);
-    final var aRules = aPattern.getAllRules ();
+    final ICommonsList <PSRule> aRules = aPattern.getAllRules ();
     int nRuleIdx = 0;
     for (final PSRule aRule : aRules)
     {
@@ -361,23 +480,23 @@ public final class XsltStylesheetGenerator
     }
 
     // Catch-all for this mode: descend without firing rules
-    final IMicroElement aCatchAll = aStylesheet.addElementNS (XSLT_NS, "template");
+    final Element aCatchAll = _addXsltChild (aStylesheet, "template");
     aCatchAll.setAttribute ("match", "@*|node()");
     aCatchAll.setAttribute ("priority", "-1");
     aCatchAll.setAttribute ("mode", sMode);
-    final IMicroElement aApply = aCatchAll.addElementNS (XSLT_NS, "apply-templates");
+    final Element aApply = _addXsltChild (aCatchAll, "apply-templates");
     aApply.setAttribute ("select", "@*|node()");
     aApply.setAttribute ("mode", sMode);
   }
 
-  private static void _appendRuleTemplate (@NonNull final IMicroElement aStylesheet,
+  private static void _appendRuleTemplate (@NonNull final Element aStylesheet,
                                            @NonNull final PSPattern aPattern,
                                            @NonNull final PSRule aRule,
                                            @NonNull final String sMode,
                                            final int nPriority,
                                            @Nullable final PSDiagnostics aDiagnostics)
   {
-    final IMicroElement aTemplate = aStylesheet.addElementNS (XSLT_NS, "template");
+    final Element aTemplate = _addXsltChild (aStylesheet, "template");
     aTemplate.setAttribute ("match", aRule.getContext ());
     aTemplate.setAttribute ("priority", Integer.toString (nPriority));
     aTemplate.setAttribute ("mode", sMode);
@@ -389,7 +508,7 @@ public final class XsltStylesheetGenerator
     _appendLetsAsXsltVariables (aTemplate, aRule.getAllLets ());
 
     // <svrl:fired-rule context="..."/>
-    final IMicroElement aFired = aTemplate.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "fired-rule");
+    final Element aFired = _addSvrlChild (aTemplate, "fired-rule");
     aFired.setAttribute ("context", _escapeAvt (aRule.getContext ()));
     if (StringHelper.isNotEmpty (aRule.getID ()))
       aFired.setAttribute ("id", _escapeAvt (aRule.getID ()));
@@ -401,11 +520,11 @@ public final class XsltStylesheetGenerator
       _appendAssertReport (aTemplate, aAR, aDiagnostics);
 
     // Descend
-    final IMicroElement aApply = aTemplate.addElementNS (XSLT_NS, "apply-templates");
+    final Element aApply = _addXsltChild (aTemplate, "apply-templates");
     aApply.setAttribute ("mode", sMode);
   }
 
-  private static void _appendAssertReport (@NonNull final IMicroElement aRuleTemplate,
+  private static void _appendAssertReport (@NonNull final Element aRuleTemplate,
                                            @NonNull final PSAssertReport aAR,
                                            @Nullable final PSDiagnostics aDiagnostics)
   {
@@ -418,11 +537,11 @@ public final class XsltStylesheetGenerator
     // Assert: fail when test is FALSE  ->  guard "not(test)" emits <svrl:failed-assert>
     // Report: fire when test is TRUE   ->  guard "test"      emits <svrl:successful-report>
     final boolean bIsAssert = aAR.isAssert ();
-    final IMicroElement aIf = aRuleTemplate.addElementNS (XSLT_NS, "if");
+    final Element aIf = _addXsltChild (aRuleTemplate, "if");
     aIf.setAttribute ("test", bIsAssert ? "not(" + sTest + ")" : sTest);
 
     final String sSvrlElementName = bIsAssert ? "failed-assert" : "successful-report";
-    final IMicroElement aOut = aIf.addElementNS (CSVRL.SVRL_NAMESPACE_URI, sSvrlElementName);
+    final Element aOut = _addSvrlChild (aIf, sSvrlElementName);
     aOut.setAttribute ("test", _escapeAvt (sTest));
     // XSLT attribute value template: Saxon evaluates fn:path(.) at runtime and substitutes
     // the canonical XPath of the offending context node. Required by the SVRL XSD.
@@ -435,7 +554,7 @@ public final class XsltStylesheetGenerator
     // Diagnostic-references must come before the text child per the SVRL XSD ordering
     _appendDiagnosticReferences (aOut, aAR, aDiagnostics);
 
-    final IMicroElement aText = aOut.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "text");
+    final Element aText = _addSvrlChild (aOut, "text");
     _appendMessageContent (aText, aAR);
   }
 
@@ -444,7 +563,7 @@ public final class XsltStylesheetGenerator
    * {@code diagnostics} attribute. The reference's text content is the resolved diagnostic's mixed
    * content (text + value-of + name) - interpolated the same way as assert/report messages.
    */
-  private static void _appendDiagnosticReferences (@NonNull final IMicroElement aSvrlParent,
+  private static void _appendDiagnosticReferences (@NonNull final Element aSvrlParent,
                                                    @NonNull final PSAssertReport aAR,
                                                    @Nullable final PSDiagnostics aDiagnostics)
   {
@@ -465,7 +584,7 @@ public final class XsltStylesheetGenerator
         LOGGER.warn ("Diagnostic id '" + sID + "' referenced by an assert/report is not defined");
         continue;
       }
-      final IMicroElement aRef = aSvrlParent.addElementNS (CSVRL.SVRL_NAMESPACE_URI, "diagnostic-reference");
+      final Element aRef = _addSvrlChild (aSvrlParent, "diagnostic-reference");
       aRef.setAttribute ("diagnostic", sID);
       _appendDiagnosticContent (aRef, aDiag);
     }
@@ -476,14 +595,14 @@ public final class XsltStylesheetGenerator
    * {@code <xsl:value-of>} for {@link PSValueOf} / {@link PSName} pieces. Mirrors
    * {@link #_appendMessageContent} but for diagnostics (which have the same content model).
    */
-  private static void _appendDiagnosticContent (@NonNull final IMicroElement aSvrlRef,
-                                                @NonNull final PSDiagnostic aDiag)
+  private static void _appendDiagnosticContent (@NonNull final Element aSvrlRef, @NonNull final PSDiagnostic aDiag)
   {
+    final Document aDoc = aSvrlRef.getOwnerDocument ();
     for (final Object aPiece : aDiag.getAllContentElements ())
     {
       if (aPiece instanceof final String sText)
       {
-        aSvrlRef.addText (sText);
+        aSvrlRef.appendChild (aDoc.createTextNode (sText));
       }
       else
         if (aPiece instanceof final PSValueOf aValueOf)
@@ -491,13 +610,13 @@ public final class XsltStylesheetGenerator
           final String sSelect = aValueOf.getSelect ();
           if (StringHelper.isEmpty (sSelect))
             continue;
-          final IMicroElement aVO = aSvrlRef.addElementNS (XSLT_NS, "value-of");
+          final Element aVO = _addXsltChild (aSvrlRef, "value-of");
           aVO.setAttribute ("select", sSelect);
         }
         else
           if (aPiece instanceof final PSName aName)
           {
-            final IMicroElement aVO = aSvrlRef.addElementNS (XSLT_NS, "value-of");
+            final Element aVO = _addXsltChild (aSvrlRef, "value-of");
             final String sPath = aName.getPath ();
             aVO.setAttribute ("select", StringHelper.isEmpty (sPath) ? "name()" : "name(" + sPath + ")");
           }
@@ -514,14 +633,14 @@ public final class XsltStylesheetGenerator
    * Other foreign / rich-text children (PSEmph, PSDir, PSSpan, foreign elements) are skipped for
    * now and will be added in a later phase.
    */
-  private static void _appendMessageContent (@NonNull final IMicroElement aTextElement,
-                                             @NonNull final PSAssertReport aAR)
+  private static void _appendMessageContent (@NonNull final Element aTextElement, @NonNull final PSAssertReport aAR)
   {
+    final Document aDoc = aTextElement.getOwnerDocument ();
     for (final Object aPiece : aAR.getAllContentElements ())
     {
       if (aPiece instanceof final String sText)
       {
-        aTextElement.addText (sText);
+        aTextElement.appendChild (aDoc.createTextNode (sText));
       }
       else
         if (aPiece instanceof final PSValueOf aValueOf)
@@ -532,13 +651,13 @@ public final class XsltStylesheetGenerator
             LOGGER.warn ("Skipping <sch:value-of> with empty select expression");
             continue;
           }
-          final IMicroElement aVO = aTextElement.addElementNS (XSLT_NS, "value-of");
+          final Element aVO = _addXsltChild (aTextElement, "value-of");
           aVO.setAttribute ("select", sSelect);
         }
         else
           if (aPiece instanceof final PSName aName)
           {
-            final IMicroElement aVO = aTextElement.addElementNS (XSLT_NS, "value-of");
+            final Element aVO = _addXsltChild (aTextElement, "value-of");
             // <sch:name/>          -> name()      i.e. name of the current context node
             // <sch:name path="X"/> -> name(X)
             final String sPath = aName.getPath ();
@@ -572,33 +691,4 @@ public final class XsltStylesheetGenerator
     return sValue.replace ("{", "{{").replace ("}", "}}");
   }
 
-  /**
-   * Build the namespace context used to serialize the generated stylesheet. Maps:
-   * <ul>
-   * <li>The XSLT namespace to the {@code xsl} prefix (so XSLT elements render as
-   * {@code xsl:*})</li>
-   * <li>The SVRL namespace to the {@code svrl} prefix</li>
-   * <li>Each schema-declared {@code <sch:ns>} to its own prefix so XPath expressions referencing
-   * those prefixes resolve correctly when Saxon compiles and runs the stylesheet</li>
-   * </ul>
-   *
-   * @param aSchema
-   *        The schema. May not be <code>null</code>.
-   * @return A namespace context suitable for {@code XMLWriterSettings.setNamespaceContext}.
-   */
-  @NonNull
-  public static MapBasedNamespaceContext namespaceContextFor (@NonNull final PSSchema aSchema)
-  {
-    final MapBasedNamespaceContext ret = new MapBasedNamespaceContext ();
-    ret.addMapping (XSLT_PREFIX, XSLT_NS);
-    ret.addMapping (SVRL_PREFIX, CSVRL.SVRL_NAMESPACE_URI);
-    for (final PSNS aNS : aSchema.getAllNSs ())
-    {
-      final String sPrefix = aNS.getPrefix ();
-      final String sURI = aNS.getUri ();
-      if (StringHelper.isNotEmpty (sPrefix) && StringHelper.isNotEmpty (sURI) && !ret.isPrefixMapped (sPrefix))
-        ret.addMapping (sPrefix, sURI);
-    }
-    return ret;
-  }
 }

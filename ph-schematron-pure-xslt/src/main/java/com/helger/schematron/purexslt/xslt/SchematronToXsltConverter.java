@@ -23,11 +23,13 @@ import java.nio.charset.Charset;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Document;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
+import com.helger.io.file.FileHelper;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
@@ -40,9 +42,7 @@ import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.purexslt.binding.SaxonQueryBindingTransform;
-import com.helger.xml.microdom.IMicroDocument;
-import com.helger.xml.microdom.serialize.MicroWriter;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
+import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
@@ -189,11 +189,11 @@ public final class SchematronToXsltConverter
   }
 
   /**
-   * Override the {@link XMLWriterSettings} used for serialization. If not set, a sensible default
-   * is built lazily from the schema: namespace context derived from {@code <sch:ns>} declarations
-   * plus the XSLT and SVRL prefixes, with {@code putNamespaceContextPrefixesInRoot=true} so that
-   * prefixes referenced only from XPath attribute values resolve when Saxon compiles the
-   * stylesheet.
+   * Override the {@link XMLWriterSettings} used for serialization. If not set,
+   * {@link XMLWriter}'s defaults are used. The DOM document returned by
+   * {@link XsltStylesheetGenerator} already carries {@code xmlns:xsl}, {@code xmlns:svrl} and one
+   * {@code xmlns:<prefix>} per schema {@code <sch:ns>} on its root element, so callers do not have
+   * to configure a namespace context just for prefix preservation.
    *
    * @param aWriterSettings
    *        The settings. May be <code>null</code> to revert to the default.
@@ -209,7 +209,7 @@ public final class SchematronToXsltConverter
   // --- output ---
 
   /**
-   * Build the XSLT stylesheet as an in-memory {@link IMicroDocument}. The same document the
+   * Build the XSLT stylesheet as an in-memory DOM {@link Document}. The same document the
    * Saxon-native runtime hands to its {@code XsltCompiler}.
    *
    * @return The generated stylesheet. Never <code>null</code>.
@@ -217,7 +217,7 @@ public final class SchematronToXsltConverter
    *         if the input cannot be read as a Schematron.
    */
   @NonNull
-  public IMicroDocument getAsMicroDocument () throws SchematronException
+  public Document getAsDocument () throws SchematronException
   {
     return XsltStylesheetGenerator.generate (_resolveSchema (), m_sPhase, m_eVersion);
   }
@@ -232,14 +232,12 @@ public final class SchematronToXsltConverter
   @NonNull
   public String getAsString () throws SchematronException
   {
-    final PSSchema aSchema = _resolveSchema ();
-    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eVersion);
-    return MicroWriter.getNodeAsString (aDoc, _resolveWriterSettings (aSchema));
+    return XMLWriter.getNodeAsString (getAsDocument (), _resolveWriterSettings ());
   }
 
   /**
    * Write the generated XSLT to an {@link OutputStream}. The stream is closed by
-   * {@link MicroWriter} on completion.
+   * {@link XMLWriter} on completion.
    *
    * @param aOS
    *        The target stream. May not be <code>null</code>.
@@ -251,9 +249,7 @@ public final class SchematronToXsltConverter
   public ESuccess writeTo (@NonNull final OutputStream aOS) throws SchematronException
   {
     ValueEnforcer.notNull (aOS, "OutputStream");
-    final PSSchema aSchema = _resolveSchema ();
-    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eVersion);
-    return MicroWriter.writeToStream (aDoc, aOS, _resolveWriterSettings (aSchema));
+    return XMLWriter.writeToStream (getAsDocument (), aOS, _resolveWriterSettings ());
   }
 
   /**
@@ -269,9 +265,7 @@ public final class SchematronToXsltConverter
   public ESuccess writeTo (@NonNull final Writer aWriter) throws SchematronException
   {
     ValueEnforcer.notNull (aWriter, "Writer");
-    final PSSchema aSchema = _resolveSchema ();
-    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eVersion);
-    return MicroWriter.writeToWriter (aDoc, aWriter, _resolveWriterSettings (aSchema));
+    return XMLWriter.writeToWriter (getAsDocument (), aWriter, _resolveWriterSettings ());
   }
 
   /**
@@ -287,9 +281,10 @@ public final class SchematronToXsltConverter
   public ESuccess writeTo (@NonNull final File aFile) throws SchematronException
   {
     ValueEnforcer.notNull (aFile, "File");
-    final PSSchema aSchema = _resolveSchema ();
-    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eVersion);
-    return MicroWriter.writeToFile (aDoc, aFile, _resolveWriterSettings (aSchema));
+    final OutputStream aOS = FileHelper.getOutputStream (aFile);
+    if (aOS == null)
+      return ESuccess.FAILURE;
+    return writeTo (aOS);
   }
 
   // --- internals ---
@@ -315,12 +310,17 @@ public final class SchematronToXsltConverter
     return m_aSchema;
   }
 
+  /**
+   * Pick the writer settings for the textual sinks. If the caller provided their own settings via
+   * {@link #setWriterSettings}, those win unmodified. Otherwise we honor the {@code xmlns:*}
+   * declarations the DOM tree already carries (so {@code xsl:} / {@code svrl:} / schema prefixes
+   * survive serialization instead of being rewritten to {@code ns0:} etc.).
+   */
   @NonNull
-  private XMLWriterSettings _resolveWriterSettings (@NonNull final PSSchema aSchema)
+  private XMLWriterSettings _resolveWriterSettings ()
   {
     if (m_aWriterSettings != null)
       return m_aWriterSettings;
-    final MapBasedNamespaceContext aCtx = XsltStylesheetGenerator.namespaceContextFor (aSchema);
-    return new XMLWriterSettings ().setNamespaceContext (aCtx).setPutNamespaceContextPrefixesInRoot (true);
+    return new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true);
   }
 }

@@ -75,7 +75,10 @@ public final class SchematronResourcePureXsltTelemetryTest
   @Test
   public void testAggregateTelemetryEmitsPhaseSpansAndCounters () throws Exception
   {
+    // setUseCache(false) so the cache does not short-circuit the pipeline; this test exists to
+    // verify the per-phase spans fire on a fresh compile.
     final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8))).setTelemetry (true);
+    aSch.setUseCache (false);
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
     assertNotNull (aSVRL);
 

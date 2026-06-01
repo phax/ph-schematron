@@ -23,12 +23,12 @@ import java.io.File;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.model.PSSchema;
-import com.helger.xml.microdom.IMicroDocument;
-import com.helger.xml.microdom.serialize.MicroWriter;
+import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 public final class XsltStylesheetGeneratorTest
@@ -41,21 +41,19 @@ public final class XsltStylesheetGeneratorTest
     final FileSystemResource aRes = new FileSystemResource (new File ("src/test/resources/external/issues/github137/schematron.sch"));
     final PSSchema aSchema = new PSReader (aRes).readSchema ();
     assertNotNull (aSchema);
-    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema);
+    final Document aDoc = XsltStylesheetGenerator.generate (aSchema);
     assertNotNull (aDoc);
-    final XMLWriterSettings aWS = new XMLWriterSettings ().setNamespaceContext (XsltStylesheetGenerator.namespaceContextFor (aSchema));
-    LOGGER.info ("Generated XSLT for github137:\n" + MicroWriter.getNodeAsString (aDoc, aWS));
+    LOGGER.info ("Generated XSLT for github137:\n" + XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
   }
 
-  @org.junit.Test
+  @Test
   public void testDumpGeneratedXsltForXslFunction () throws Exception
   {
     final FileSystemResource aRes = new FileSystemResource (new File ("src/test/resources/external/xsl-function/schematron.sch"));
     final PSSchema aSchema = new PSReader (aRes).readSchema ();
     assertNotNull (aSchema);
-    final IMicroDocument aDoc = XsltStylesheetGenerator.generate (aSchema);
+    final Document aDoc = XsltStylesheetGenerator.generate (aSchema);
     assertNotNull (aDoc);
-    final XMLWriterSettings aWS = new XMLWriterSettings ().setNamespaceContext (XsltStylesheetGenerator.namespaceContextFor (aSchema));
-    LOGGER.info ("Generated XSLT for xsl-function:\n" + MicroWriter.getNodeAsString (aDoc, aWS));
+    LOGGER.info ("Generated XSLT for xsl-function:\n" + XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
   }
 }

@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -37,7 +36,6 @@ import org.w3c.dom.Node;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.io.nonblocking.NonBlockingStringReader;
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
@@ -63,9 +61,6 @@ import com.helger.telemetry.ETelemetrySpanKind;
 import com.helger.telemetry.ITelemetrySpan;
 import com.helger.telemetry.Telemetry;
 import com.helger.xml.XMLFactory;
-import com.helger.xml.microdom.IMicroDocument;
-import com.helger.xml.microdom.serialize.MicroWriter;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -103,6 +98,9 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXslt.class);
 
+  /** Default for {@link #setForceCacheResult(boolean)}. */
+  public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
+
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
   private Processor m_aProcessor = new Processor (false);
@@ -111,6 +109,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   private EXsltVersion m_eXsltVersion = EXsltVersion.DEFAULT;
   private boolean m_bTelemetry = false;
   private boolean m_bPerAssertionTelemetry = false;
+  private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
   // Status vars
   private PSSchema m_aSchema;
   private XsltExecutable m_aCompiledXslt;
@@ -284,7 +283,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   /**
    * @return The XSLT language version written to the generated stylesheet's {@code version}
    *         attribute. Never <code>null</code>; defaults to {@link EXsltVersion#DEFAULT}.
-   * @since 10.0.0
    */
   @NonNull
   public final EXsltVersion getXsltVersion ()
@@ -301,7 +299,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param eVersion
    *        The version. May not be <code>null</code>.
    * @return this
-   * @since 10.0.0
    */
   @NonNull
   public final SchematronResourcePureXslt setXsltVersion (@NonNull final EXsltVersion eVersion)
@@ -317,7 +314,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @return <code>true</code> if runtime telemetry (phase spans + post-hoc counters + duration
    *         histogram) is emitted via ph-telemetry during validation. Default is
    *         <code>false</code>.
-   * @since 10.0.0
    */
   public final boolean isTelemetry ()
   {
@@ -338,7 +334,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param bTelemetry
    *        <code>true</code> to enable.
    * @return this
-   * @since 10.0.0
    */
   @NonNull
   public final SchematronResourcePureXslt setTelemetry (final boolean bTelemetry)
@@ -351,9 +346,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
-   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also <code>true</code>.
-   *         Default is <code>false</code>.
-   * @since 10.0.0
+   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
+   *         <code>true</code>. Default is <code>false</code>.
    */
   public final boolean isPerAssertionTelemetry ()
   {
@@ -363,14 +357,13 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   /**
    * Enable per-assertion telemetry. When on, the post-hoc walk over the SVRL emits one
    * {@link SaxonTelemetry#SPAN_ASSERTION} span per failed-assert / successful-report carrying its
-   * test expression, location and (when present) id. The Saxon transform is one opaque step, so
-   * the spans carry no individual timing &mdash; only metadata for trace inspection. Has no effect
-   * when {@link #isTelemetry()} is <code>false</code>.
+   * test expression, location and (when present) id. The Saxon transform is one opaque step, so the
+   * spans carry no individual timing &mdash; only metadata for trace inspection. Has no effect when
+   * {@link #isTelemetry()} is <code>false</code>.
    *
    * @param bPerAssertionTelemetry
    *        <code>true</code> to enable.
    * @return this
-   * @since 10.0.0
    */
   @NonNull
   public final SchematronResourcePureXslt setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
@@ -378,6 +371,38 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     if (m_aCompiledXslt != null)
       throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
     m_bPerAssertionTelemetry = bPerAssertionTelemetry;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if {@link SchematronResourcePureXsltCache} is consulted even when a
+   *         custom {@link URIResolver} or {@link ErrorListener} is installed. Default is
+   *         {@link #DEFAULT_FORCE_CACHE_RESULT}.
+   */
+  public final boolean isForceCacheResult ()
+  {
+    return m_bForceCacheResult;
+  }
+
+  /**
+   * By default the cache in {@link SchematronResourcePureXsltCache} is bypassed when a custom
+   * {@link URIResolver} or {@link ErrorListener} is installed, because those hooks can affect what
+   * Saxon emits in ways the cache key does not capture. Setting this to <code>true</code> tells the
+   * engine that the hooks are deterministic for a given
+   * {@code (resource, phase, version, processor)} tuple and allows the cache to participate.
+   * <p>
+   * Can only be set before the Schematron is compiled.
+   *
+   * @param bForceCacheResult
+   *        <code>true</code> to force cache use.
+   * @return this
+   */
+  @NonNull
+  public final SchematronResourcePureXslt setForceCacheResult (final boolean bForceCacheResult)
+  {
+    if (m_aCompiledXslt != null)
+      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
+    m_bForceCacheResult = bForceCacheResult;
     return this;
   }
 
@@ -405,45 +430,63 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   @NonNull
   protected final XsltExecutable getOrCompileXslt () throws Exception
   {
-    if (m_aCompiledXslt == null)
+    if (m_aCompiledXslt != null)
+      return m_aCompiledXslt;
+
+    // Cache participation:
+    // isUseCache() (inherited) controls the shared module-level cache as a whole;
+    // m_bForceCacheResult overrides the safety bypass when custom hooks are installed.
+    // Custom URI/Error hooks bypass the cache unless setForceCacheResult(true) was called, because
+    // the cache key encodes (resource, phase, version, processor) only and the hooks can change
+    // what Saxon compiles.
+    final boolean bHaveCustomHooks = m_aURIResolver != null || m_aErrorListener != null;
+    final boolean bCacheable = isUseCache () && (!bHaveCustomHooks || m_bForceCacheResult);
+
+    if (bCacheable)
     {
-      // Each phase is optionally wrapped in a telemetry span; phase spans nest under the
-      // schematron.validate root span started in applySchematronValidationToSVRL via thread-local
-      // current-span context.
-      final PSSchema aRaw = _phase (SaxonTelemetry.SPAN_PARSE, this::getOrReadSchema);
+      // One-shot compile through the cache. Phase spans (parse / preprocess / generate / compile)
+      // intentionally do not fire here: on a cache hit no work happens; on a cache miss the spans
+      // would only paint a misleading picture compared to the cached fast path. The
+      // schematron.validate.duration histogram still reflects the wall-clock cost.
+      m_aCompiledXslt = SchematronResourcePureXsltCache.getCompiledXslt (getResource (),
+                                                                         m_sPhase,
+                                                                         m_eXsltVersion,
+                                                                         m_aProcessor,
+                                                                         m_aErrorHandler,
+                                                                         getEntityResolver (),
+                                                                         m_aURIResolver,
+                                                                         m_aErrorListener);
+      return m_aCompiledXslt;
+    }
 
-      final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
-      final PSSchema aSchema = _phase (SaxonTelemetry.SPAN_PREPROCESS, () -> aPreprocessor.getAsPreprocessedSchema (aRaw));
+    // Inline path - bypasses the cache, exposes each pipeline phase to telemetry.
+    final PSSchema aRaw = _phase (SaxonTelemetry.SPAN_PARSE, this::getOrReadSchema);
 
-      final IMicroDocument aXsltDoc;
-      final MapBasedNamespaceContext aNsCtx;
+    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (SaxonQueryBindingTransform.getInstance ());
+    final PSSchema aSchema = _phase (SaxonTelemetry.SPAN_PREPROCESS,
+                                     () -> aPreprocessor.getAsPreprocessedSchema (aRaw));
+
+    final Document aXsltDoc;
+    {
+      try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_GENERATE))
       {
-        try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_GENERATE))
-        {
-          aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
-          aNsCtx = XsltStylesheetGenerator.namespaceContextFor (aSchema);
-        }
+        aXsltDoc = XsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
       }
+    }
 
-      // Force all namespace-context prefixes to be emitted as xmlns:* on the stylesheet root so
-      // that prefixes referenced only from XPath attribute values (e.g. my:func() inside test=)
-      // are resolvable when Saxon compiles the stylesheet. Without this, MicroWriter only emits
-      // xmlns declarations for prefixes that appear as element/attribute names.
-      final XMLWriterSettings aWriterSettings = new XMLWriterSettings ().setNamespaceContext (aNsCtx)
-                                                                        .setPutNamespaceContextPrefixesInRoot (true);
-      final String sXslt = MicroWriter.getNodeAsString (aXsltDoc, aWriterSettings);
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" + sXslt);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" +
+                    XMLWriter.getNodeAsString (aXsltDoc,
+                                               new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
 
-      try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_COMPILE))
-      {
-        final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
-        if (m_aURIResolver != null)
-          aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
-        if (m_aErrorListener != null)
-          aCompiler.setErrorReporter (new ErrorReporterToListener (m_aErrorListener));
-        m_aCompiledXslt = aCompiler.compile (new StreamSource (new NonBlockingStringReader (sXslt)));
-      }
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (SaxonTelemetry.SPAN_COMPILE))
+    {
+      final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
+      if (m_aURIResolver != null)
+        aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
+      if (m_aErrorListener != null)
+        aCompiler.setErrorReporter (new ErrorReporterToListener (m_aErrorListener));
+      m_aCompiledXslt = aCompiler.compile (new DOMSource (aXsltDoc));
     }
     return m_aCompiledXslt;
   }
@@ -453,8 +496,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * body runs directly with no span overhead.
    */
   @Nullable
-  private <T> T _phase (@NonNull final String sSpanName,
-                        @NonNull final _CheckedSupplier <T> aBody) throws Exception
+  private <T> T _phase (@NonNull final String sSpanName, @NonNull final _CheckedSupplier <T> aBody) throws Exception
   {
     if (!m_bTelemetry)
       return aBody.get ();
@@ -477,7 +519,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   @NonNull
   private ITelemetrySpan _maybeStartSpan (@NonNull final String sSpanName)
   {
-    return m_bTelemetry ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL) : Telemetry.NoOpTelemetrySpan.INSTANCE;
+    return m_bTelemetry ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL)
+                        : Telemetry.NoOpTelemetrySpan.INSTANCE;
   }
 
   @FunctionalInterface
@@ -545,7 +588,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   @NonNull
-  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                           throws Exception
   {
     final XsltExecutable aExecutable = getOrCompileXslt ();
     final Document aResultDoc = XMLFactory.newDocument ();
@@ -605,7 +649,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   @NonNull
   public static SchematronResourcePureXslt fromInputStream (@NonNull @Nonempty final String sResourceID,
-                                                         @NonNull final InputStream aSchematronIS)
+                                                            @NonNull final InputStream aSchematronIS)
   {
     return new SchematronResourcePureXslt (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
@@ -617,7 +661,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   @NonNull
-  public static SchematronResourcePureXslt fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
+  public static SchematronResourcePureXslt fromString (@NonNull final String sSchematron,
+                                                       @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }
