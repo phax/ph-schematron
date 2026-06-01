@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.CommonsLinkedHashMap;
@@ -227,6 +228,12 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
     }
   }
 
+  /**
+   * Shared read/write lock guarding {@link #m_aSpans}, {@link #m_aCounters} and
+   * {@link #m_aHistograms}. Reads (inspection helpers) share the lock; mutations (new spans,
+   * counter additions, histogram recordings, {@link #reset()}) acquire it exclusively.
+   */
+  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   private final ICommonsList <CapturedSpan> m_aSpans = new CommonsArrayList <> ();
   private final ICommonsMap <String, AtomicLong> m_aCounters = new CommonsHashMap <> ();
   private final ICommonsMap <String, ICommonsList <Double>> m_aHistograms = new CommonsHashMap <> ();
@@ -238,10 +245,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
   public ITelemetrySpan startSpan (@NonNull final String sName, @NonNull final ETelemetrySpanKind eKind)
   {
     final CapturedSpan aSpan = new CapturedSpan (sName, eKind);
-    synchronized (m_aSpans)
-    {
-      m_aSpans.add (aSpan);
-    }
+    m_aRWLock.writeLocked ( () -> m_aSpans.add (aSpan));
     return aSpan;
   }
 
@@ -253,11 +257,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                           @Nullable final String sDescription,
                                           @Nullable final String sUnit)
   {
-    final AtomicLong aAgg;
-    synchronized (m_aCounters)
-    {
-      aAgg = m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ());
-    }
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ()));
+    // AtomicLong is itself thread-safe so the per-add path is lock-free
     return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
   }
 
@@ -267,11 +268,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                                       @Nullable final String sDescription,
                                                       @Nullable final String sUnit)
   {
-    final AtomicLong aAgg;
-    synchronized (m_aCounters)
-    {
-      aAgg = m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ());
-    }
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ()));
     return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
   }
 
@@ -281,17 +278,9 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                               @Nullable final String sDescription,
                                               @Nullable final String sUnit)
   {
-    final ICommonsList <Double> aValues;
-    synchronized (m_aHistograms)
-    {
-      aValues = m_aHistograms.computeIfAbsent (sName, x -> new CommonsArrayList <> ());
-    }
-    return (dValue, aAttrs) -> {
-      synchronized (aValues)
-      {
-        aValues.add (Double.valueOf (dValue));
-      }
-    };
+    final ICommonsList <Double> aValues = m_aRWLock.writeLockedGet ( () -> m_aHistograms.computeIfAbsent (sName,
+                                                                                                         x -> new CommonsArrayList <> ()));
+    return (dValue, aAttrs) -> m_aRWLock.writeLocked ( () -> aValues.add (Double.valueOf (dValue)));
   }
 
   @Override
@@ -314,10 +303,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
   @ReturnsMutableCopy
   public ICommonsList <CapturedSpan> getSpans ()
   {
-    synchronized (m_aSpans)
-    {
-      return m_aSpans.getClone ();
-    }
+    return m_aRWLock.readLockedGet (m_aSpans::getClone);
   }
 
   /**
@@ -329,10 +315,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    */
   public long countSpansNamed (@NonNull final String sName)
   {
-    synchronized (m_aSpans)
-    {
-      return m_aSpans.stream ().filter (x -> sName.equals (x.getName ())).count ();
-    }
+    return m_aRWLock.readLockedLong ( () -> m_aSpans.stream ().filter (x -> sName.equals (x.getName ())).count ());
   }
 
   /**
@@ -343,11 +326,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    */
   public long getCounterValue (@NonNull final String sName)
   {
-    final AtomicLong aAgg;
-    synchronized (m_aCounters)
-    {
-      aAgg = m_aCounters.get (sName);
-    }
+    final AtomicLong aAgg = m_aRWLock.readLockedGet ( () -> m_aCounters.get (sName));
     return aAgg == null ? 0L : aAgg.get ();
   }
 
@@ -361,17 +340,10 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
   @ReturnsMutableCopy
   public ICommonsList <Double> getHistogramValues (@NonNull final String sName)
   {
-    final ICommonsList <Double> aValues;
-    synchronized (m_aHistograms)
-    {
-      aValues = m_aHistograms.get (sName);
-    }
-    if (aValues == null)
-      return new CommonsArrayList <> ();
-    synchronized (aValues)
-    {
-      return aValues.getClone ();
-    }
+    return m_aRWLock.readLockedGet ( () -> {
+      final ICommonsList <Double> aValues = m_aHistograms.get (sName);
+      return aValues == null ? new CommonsArrayList <> () : aValues.getClone ();
+    });
   }
 
   /**
@@ -380,17 +352,10 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    */
   public void reset ()
   {
-    synchronized (m_aSpans)
-    {
+    m_aRWLock.writeLocked ( () -> {
       m_aSpans.clear ();
-    }
-    synchronized (m_aCounters)
-    {
       m_aCounters.clear ();
-    }
-    synchronized (m_aHistograms)
-    {
       m_aHistograms.clear ();
-    }
+    });
   }
 }
