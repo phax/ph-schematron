@@ -132,7 +132,7 @@ public class PSLet implements IPSClonableElement <PSLet>
    * Add a foreign body element to this {@code <let>}. Body elements model XSLT-style sequence
    * constructors carried in the element content (e.g. {@code <xsl:choose>...</xsl:choose>}). They
    * are only preserved when {@link com.helger.schematron.exchange.PSReader#setPreserveLetBodyElements(boolean)}
-   * is enabled; downstream engines that understand XSLT (such as {@code SchematronResourceSaxon})
+   * is enabled; downstream engines that understand XSLT (such as {@code SchematronResourcePureXSLT})
    * emit them as the body of the generated {@code <xsl:variable>}.
    *
    * @param aBodyElement
