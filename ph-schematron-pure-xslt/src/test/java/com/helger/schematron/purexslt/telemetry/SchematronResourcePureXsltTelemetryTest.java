@@ -27,21 +27,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
-import com.helger.schematron.purexslt.SchematronResourcePureXSLT;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.telemetry.Telemetry;
 import com.helger.telemetry.TelemetryMetrics;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
- * Verifies that {@link SchematronResourcePureXSLT#setTelemetry(boolean)} emits the expected phase
+ * Verifies that {@link SchematronResourcePureXslt#setTelemetry(boolean)} emits the expected phase
  * spans (parse, preprocess, generate, compile, execute) plus post-hoc counters derived from the
- * SVRL output, and that {@link SchematronResourcePureXSLT#setPerAssertionTelemetry(boolean)}
+ * SVRL output, and that {@link SchematronResourcePureXslt#setPerAssertionTelemetry(boolean)}
  * produces one {@link SaxonTelemetry#SPAN_ASSERTION} span per assertion fired during the run.
  *
  * @author Philip Helger
  */
-public final class SchematronResourcePureXSLTTelemetryTest
+public final class SchematronResourcePureXsltTelemetryTest
 {
   private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
                                            "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
@@ -75,7 +75,7 @@ public final class SchematronResourcePureXSLTTelemetryTest
   @Test
   public void testAggregateTelemetryEmitsPhaseSpansAndCounters () throws Exception
   {
-    final SchematronResourcePureXSLT aSch = new SchematronResourcePureXSLT (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8))).setTelemetry (true);
+    final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8))).setTelemetry (true);
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
     assertNotNull (aSVRL);
 
@@ -102,7 +102,7 @@ public final class SchematronResourcePureXSLTTelemetryTest
   @Test
   public void testPerAssertionTelemetryEmitsOneSpanPerAssertion () throws Exception
   {
-    final SchematronResourcePureXSLT aSch = new SchematronResourcePureXSLT (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8))).setTelemetry (true)
+    final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8))).setTelemetry (true)
                                                                                                                                                          .setPerAssertionTelemetry (true);
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
     assertEquals (2, m_aCapture.countSpansNamed (SaxonTelemetry.SPAN_ASSERTION));
@@ -120,7 +120,7 @@ public final class SchematronResourcePureXSLTTelemetryTest
   @Test
   public void testTelemetryOffEmitsNothing () throws Exception
   {
-    final SchematronResourcePureXSLT aSch = new SchematronResourcePureXSLT (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8)));
+    final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8)));
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 
     assertEquals (0, m_aCapture.getSpans ().size ());

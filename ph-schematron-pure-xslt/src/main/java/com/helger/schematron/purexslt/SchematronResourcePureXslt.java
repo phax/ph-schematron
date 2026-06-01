@@ -99,9 +99,9 @@ import net.sf.saxon.s9api.XsltExecutable;
  * @since 10.0.0
  */
 @NotThreadSafe
-public class SchematronResourcePureXSLT extends AbstractSchematronResource
+public class SchematronResourcePureXslt extends AbstractSchematronResource
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXSLT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXslt.class);
 
   private String m_sPhase;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
@@ -115,7 +115,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
   private PSSchema m_aSchema;
   private XsltExecutable m_aCompiledXslt;
 
-  public SchematronResourcePureXSLT (@NonNull final IReadableResource aResource)
+  public SchematronResourcePureXslt (@NonNull final IReadableResource aResource)
   {
     super (aResource);
   }
@@ -137,7 +137,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @return this
    */
   @NonNull
-  public final SchematronResourcePureXSLT setPhase (@Nullable final String sPhase)
+  public final SchematronResourcePureXslt setPhase (@Nullable final String sPhase)
   {
     if (m_aSchema != null)
       throw new IllegalStateException ("Schematron was already read and can therefore not be altered!");
@@ -162,7 +162,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @return this
    */
   @NonNull
-  public final SchematronResourcePureXSLT setErrorHandler (@NonNull final IPSErrorHandler aErrorHandler)
+  public final SchematronResourcePureXslt setErrorHandler (@NonNull final IPSErrorHandler aErrorHandler)
   {
     ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
     if (m_aSchema != null)
@@ -212,7 +212,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @return this
    */
   @NonNull
-  public final SchematronResourcePureXSLT setProcessor (@NonNull final Processor aProcessor)
+  public final SchematronResourcePureXslt setProcessor (@NonNull final Processor aProcessor)
   {
     ValueEnforcer.notNull (aProcessor, "Processor");
     if (m_aCompiledXslt != null)
@@ -243,7 +243,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @return this
    */
   @NonNull
-  public final SchematronResourcePureXSLT setURIResolver (@Nullable final URIResolver aURIResolver)
+  public final SchematronResourcePureXslt setURIResolver (@Nullable final URIResolver aURIResolver)
   {
     if (m_aCompiledXslt != null)
       throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
@@ -273,7 +273,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @return this
    */
   @NonNull
-  public final SchematronResourcePureXSLT setErrorListener (@Nullable final ErrorListener aErrorListener)
+  public final SchematronResourcePureXslt setErrorListener (@Nullable final ErrorListener aErrorListener)
   {
     if (m_aCompiledXslt != null)
       throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
@@ -304,7 +304,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @since 10.0.0
    */
   @NonNull
-  public final SchematronResourcePureXSLT setXsltVersion (@NonNull final EXsltVersion eVersion)
+  public final SchematronResourcePureXslt setXsltVersion (@NonNull final EXsltVersion eVersion)
   {
     ValueEnforcer.notNull (eVersion, "XsltVersion");
     if (m_aCompiledXslt != null)
@@ -341,7 +341,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @since 10.0.0
    */
   @NonNull
-  public final SchematronResourcePureXSLT setTelemetry (final boolean bTelemetry)
+  public final SchematronResourcePureXslt setTelemetry (final boolean bTelemetry)
   {
     if (m_aCompiledXslt != null)
       throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
@@ -373,7 +373,7 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
    * @since 10.0.0
    */
   @NonNull
-  public final SchematronResourcePureXSLT setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
+  public final SchematronResourcePureXslt setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
   {
     if (m_aCompiledXslt != null)
       throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
@@ -574,50 +574,50 @@ public class SchematronResourcePureXSLT extends AbstractSchematronResource
   // --- factory methods ---
 
   @NonNull
-  public static SchematronResourcePureXSLT fromClassPath (@NonNull @Nonempty final String sSCHPath)
+  public static SchematronResourcePureXslt fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
-    return new SchematronResourcePureXSLT (new ClassPathResource (sSCHPath));
+    return new SchematronResourcePureXslt (new ClassPathResource (sSCHPath));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromFile (@NonNull @Nonempty final String sSCHPath)
+  public static SchematronResourcePureXslt fromFile (@NonNull @Nonempty final String sSCHPath)
   {
-    return new SchematronResourcePureXSLT (new FileSystemResource (sSCHPath));
+    return new SchematronResourcePureXslt (new FileSystemResource (sSCHPath));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromFile (@NonNull final File aSCHFile)
+  public static SchematronResourcePureXslt fromFile (@NonNull final File aSCHFile)
   {
-    return new SchematronResourcePureXSLT (new FileSystemResource (aSCHFile));
+    return new SchematronResourcePureXslt (new FileSystemResource (aSCHFile));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
+  public static SchematronResourcePureXslt fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
-    return new SchematronResourcePureXSLT (new URLResource (sSCHURL));
+    return new SchematronResourcePureXslt (new URLResource (sSCHURL));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromURL (@NonNull final URL aSCHURL)
+  public static SchematronResourcePureXslt fromURL (@NonNull final URL aSCHURL)
   {
-    return new SchematronResourcePureXSLT (new URLResource (aSCHURL));
+    return new SchematronResourcePureXslt (new URLResource (aSCHURL));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromInputStream (@NonNull @Nonempty final String sResourceID,
+  public static SchematronResourcePureXslt fromInputStream (@NonNull @Nonempty final String sResourceID,
                                                          @NonNull final InputStream aSchematronIS)
   {
-    return new SchematronResourcePureXSLT (new ReadableResourceInputStream (sResourceID, aSchematronIS));
+    return new SchematronResourcePureXslt (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromByteArray (@NonNull final byte [] aSchematron)
+  public static SchematronResourcePureXslt fromByteArray (@NonNull final byte [] aSchematron)
   {
-    return new SchematronResourcePureXSLT (new ReadableResourceByteArray (aSchematron));
+    return new SchematronResourcePureXslt (new ReadableResourceByteArray (aSchematron));
   }
 
   @NonNull
-  public static SchematronResourcePureXSLT fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
+  public static SchematronResourcePureXslt fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }

@@ -28,16 +28,16 @@ import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
- * Sweep test: runs {@link SchematronResourcePureXSLT} over every Schematron file shipped by
+ * Sweep test: runs {@link SchematronResourcePureXslt} over every Schematron file shipped by
  * {@code ph-schematron-testfiles#getAllValidSchematronFiles()}. Catches broad regressions in
  * schema parsing / XSLT generation / Saxon compilation. Per-file failures are accumulated and
  * reported together at the end of the run so all gaps surface in one pass.
  *
  * @author Philip Helger
  */
-public final class SchematronResourcePureXSLTSweepTest
+public final class SchematronResourcePureXsltSweepTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXSLTSweepTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXsltSweepTest.class);
 
   @Test
   public void testParseAndCompileAllValidSchematrons ()
@@ -48,7 +48,7 @@ public final class SchematronResourcePureXSLTSweepTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       nTotal++;
-      final SchematronResourcePureXSLT aSch = new SchematronResourcePureXSLT (aRes).setErrorHandler (new DoNothingPSErrorHandler ());
+      final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (aRes).setErrorHandler (new DoNothingPSErrorHandler ());
       try
       {
         // Both lazy reading and XSLT generation/compilation are exercised by isValidSchematron

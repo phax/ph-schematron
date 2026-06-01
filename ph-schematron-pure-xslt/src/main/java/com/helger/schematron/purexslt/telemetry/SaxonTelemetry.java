@@ -32,8 +32,8 @@ import com.helger.telemetry.TelemetryAttributes;
 import com.helger.telemetry.TelemetryMetrics;
 
 /**
- * Telemetry constants and helpers used by {@code SchematronResourcePureXSLT}. The metric / attribute
- * name strings are deliberately identical to those defined on
+ * Telemetry constants and helpers used by {@code SchematronResourcePureXSLT}. The metric /
+ * attribute name strings are deliberately identical to those defined on
  * {@code TelemetryValidationHandler} in {@code ph-schematron-pure} so dashboards can aggregate
  * across both engines via the {@link #ATTR_ENGINE} dimension.
  *
@@ -128,7 +128,7 @@ public final class SaxonTelemetry
         sCurrentPatternID = aAP.getId ();
       }
       else
-        if (aObj instanceof final FiredRule aFR)
+        if (aObj instanceof FiredRule)
         {
           COUNTER_RULES.add (1, aEngineAttrs);
         }
@@ -151,8 +151,8 @@ public final class SaxonTelemetry
 
     final TelemetryAttributes aDurAttrs = TelemetryAttributes.builder ()
                                                              .put (ATTR_ENGINE, ENGINE_VALUE)
-                                                             .put (ATTR_OUTCOME, nFailed == 0 ? OUTCOME_VALID
-                                                                                              : OUTCOME_INVALID)
+                                                             .put (ATTR_OUTCOME,
+                                                                   nFailed == 0 ? OUTCOME_VALID : OUTCOME_INVALID)
                                                              .build ();
     HIST_DURATION.record (dDurationMs, aDurAttrs);
   }

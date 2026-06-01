@@ -31,13 +31,13 @@ import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
- * Acceptance test for {@link SchematronResourcePureXSLT} ported from
+ * Acceptance test for {@link SchematronResourcePureXslt} ported from
  * {@code com.helger.schematron.SchematronResourceSCHTest} in {@code ph-schematron-xslt}. Same
  * happy-path / null-edge-case coverage adapted to the Saxon-native engine.
  *
  * @author Philip Helger
  */
-public final class SchematronResourcePureXSLTAcceptanceTest
+public final class SchematronResourcePureXsltAcceptanceTest
 {
   private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
@@ -45,7 +45,7 @@ public final class SchematronResourcePureXSLTAcceptanceTest
   @Test
   public void testReadValidSchematronValidXML () throws Exception
   {
-    final ISchematronResource aSchematron = SchematronResourcePureXSLT.fromClassPath (VALID_SCHEMATRON);
+    final ISchematronResource aSchematron = SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON);
     final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
     final SchematronOutputType aSO = aSchematron.applySchematronValidationToSVRL (aXML);
     assertNotNull ("Failed to parse Schematron output", aSO);
@@ -54,7 +54,7 @@ public final class SchematronResourcePureXSLTAcceptanceTest
   @Test
   public void testReadValidSchematronInvalidXML () throws Exception
   {
-    final SchematronOutputType aSO = SchematronResourcePureXSLT.fromClassPath (VALID_SCHEMATRON)
+    final SchematronOutputType aSO = SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON)
                                                             .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
                                                                                                                      ".does.not.exist"));
     assertNull ("Invalid XML", aSO);
@@ -65,7 +65,7 @@ public final class SchematronResourcePureXSLTAcceptanceTest
   {
     try
     {
-      SchematronResourcePureXSLT.fromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON + ".does.not.exist")
                              .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE));
       fail ("Expected an exception or a null result when the Schematron source is missing");
     }
@@ -80,7 +80,7 @@ public final class SchematronResourcePureXSLTAcceptanceTest
   {
     try
     {
-      SchematronResourcePureXSLT.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((IReadableResource) null);
+      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((IReadableResource) null);
       fail ();
     }
     catch (final Exception ex)
@@ -90,7 +90,7 @@ public final class SchematronResourcePureXSLTAcceptanceTest
 
     try
     {
-      SchematronResourcePureXSLT.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((Source) null);
+      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((Source) null);
       fail ();
     }
     catch (final Exception ex)
@@ -102,14 +102,14 @@ public final class SchematronResourcePureXSLTAcceptanceTest
   @Test
   public void testReadISOSchematron2006SCH ()
   {
-    final SchematronResourcePureXSLT aSch = SchematronResourcePureXSLT.fromClassPath ("external/schematron/iso-schematron-2006.sch");
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.fromClassPath ("external/schematron/iso-schematron-2006.sch");
     assertTrue (aSch.isValidSchematron ());
   }
 
   @Test
   public void testReadISOSchematron2016SCH ()
   {
-    final SchematronResourcePureXSLT aSch = SchematronResourcePureXSLT.fromClassPath ("external/schematron/iso-schematron-2016.sch");
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.fromClassPath ("external/schematron/iso-schematron-2016.sch");
     assertTrue (aSch.isValidSchematron ());
   }
 }

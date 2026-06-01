@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
-import com.helger.schematron.purexslt.SchematronResourcePureXSLT;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
@@ -35,14 +35,14 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  *
  * @author Philip Helger
  */
-public final class IssueXsltKeyPureXSLTTest
+public final class IssueXsltKeyPureXsltTest
 {
   @Test
   public void testIssueXsltKey () throws Exception
   {
     final IReadableResource aSch = new FileSystemResource (new File ("src/test/resources/external/issues/xslt-key/schematron.sch").getAbsoluteFile ());
     final IReadableResource aXML = new FileSystemResource (new File ("src/test/resources/external/issues/xslt-key/test.xml").getAbsoluteFile ());
-    final SchematronOutputType aSVRL = new SchematronResourcePureXSLT (aSch).applySchematronValidationToSVRL (aXML);
+    final SchematronOutputType aSVRL = new SchematronResourcePureXslt (aSch).applySchematronValidationToSVRL (aXML);
     assertNotNull ("Expected SVRL output (xsl:key passed through and key() resolved)", aSVRL);
   }
 }

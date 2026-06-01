@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
-import com.helger.schematron.purexslt.SchematronResourcePureXSLT;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
@@ -37,9 +37,9 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  *
  * @author Philip Helger
  */
-public final class IssueGlobalLetPureXSLTTest
+public final class IssueGlobalLetPureXsltTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (IssueGlobalLetPureXSLTTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (IssueGlobalLetPureXsltTest.class);
 
   @Test
   public void testIssueGlobalLet () throws Exception
@@ -52,7 +52,7 @@ public final class IssueGlobalLetPureXSLTTest
   {
     final IReadableResource aSchRes = new FileSystemResource (aSchematron.getAbsoluteFile ());
     final IReadableResource aXMLRes = new FileSystemResource (aXML.getAbsoluteFile ());
-    final SchematronResourcePureXSLT aSch = new SchematronResourcePureXSLT (aSchRes);
+    final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (aSchRes);
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (aXMLRes);
     assertNotNull (aSVRL);
     if (false)
