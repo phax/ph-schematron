@@ -622,7 +622,6 @@ public class Schematron extends AbstractSchematronTask
     }
   }
 
-  @SuppressWarnings ("removal")
   @Override
   public void execute () throws BuildException
   {
