@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
 
@@ -116,13 +116,13 @@ public final class SchematronResourcePureXsltTest
 
     // valid.xml: ISBN present, author has name, library has one book -> no failures
     final SchematronOutputType aValidSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aValidXml));
+                                                                      .applySchematronValidationToSVRL (new FileSystemResource (aValidXml));
     assertEquals ("multi-pattern valid: expected no failed-assert", 0, _countFailedAsserts (aValidSVRL));
 
     // invalid.xml: ISBN missing AND empty author name -> at least 2 failures (could be more
     // depending on whether nested context matches fire under the catch-all)
     final SchematronOutputType aInvalidSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aInvalidXml));
+                                                                        .applySchematronValidationToSVRL (new FileSystemResource (aInvalidXml));
     LOGGER.info ("SVRL (multi-pattern invalid):\n" + new SVRLMarshaller (false).getAsString (aInvalidSVRL));
     final int nFailures = _countFailedAsserts (aInvalidSVRL);
     assertTrue ("multi-pattern invalid: expected at least 2 failed-asserts, got " + nFailures, nFailures >= 2);
@@ -136,13 +136,13 @@ public final class SchematronResourcePureXsltTest
     final File aSilent = new File ("src/test/resources/external/report/silent.xml");
 
     final SchematronOutputType aFiresSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aFires));
+                                                                      .applySchematronValidationToSVRL (new FileSystemResource (aFires));
     LOGGER.info ("SVRL (report fires):\n" + new SVRLMarshaller (false).getAsString (aFiresSVRL));
     assertEquals ("report should fire when @deprecated='true'", 1, _countSuccessfulReports (aFiresSVRL));
     assertEquals (0, _countFailedAsserts (aFiresSVRL));
 
     final SchematronOutputType aSilentSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aSilent));
+                                                                       .applySchematronValidationToSVRL (new FileSystemResource (aSilent));
     assertEquals ("report should NOT fire when @deprecated is missing", 0, _countSuccessfulReports (aSilentSVRL));
   }
 
@@ -152,7 +152,7 @@ public final class SchematronResourcePureXsltTest
     final File aSch = new File ("src/test/resources/external/valueof/schematron.sch");
     final File aXML = new File ("src/test/resources/external/valueof/test.xml");
     final SchematronOutputType aSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                 .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     LOGGER.info ("SVRL (valueof):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
     assertEquals (1, _countFailedAsserts (aSVRL));
     final String sMsg = _firstFailedAssertText (aSVRL);
@@ -173,26 +173,26 @@ public final class SchematronResourcePureXsltTest
 
     // Lenient phase: only p-isbn active -> 1 failure (missing ISBN)
     final SchematronOutputType aLenient = SchematronResourcePureXslt.fromFile (aSch)
-        .setPhase ("lenient")
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                    .setPhase ("lenient")
+                                                                    .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertEquals ("lenient phase should report only the ISBN failure", 1, _countFailedAsserts (aLenient));
 
     // Strict phase: both patterns active -> 2 failures
     final SchematronOutputType aStrict = SchematronResourcePureXslt.fromFile (aSch)
-        .setPhase ("strict")
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                   .setPhase ("strict")
+                                                                   .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertEquals ("strict phase should report both failures", 2, _countFailedAsserts (aStrict));
 
     // #DEFAULT resolves to strict (declared on the schema)
     final SchematronOutputType aDefault = SchematronResourcePureXslt.fromFile (aSch)
-        .setPhase ("#DEFAULT")
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                    .setPhase ("#DEFAULT")
+                                                                    .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertEquals ("#DEFAULT should match declared defaultPhase='strict'", 2, _countFailedAsserts (aDefault));
 
     // #ALL processes every concrete pattern
     final SchematronOutputType aAll = SchematronResourcePureXslt.fromFile (aSch)
-        .setPhase ("#ALL")
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                .setPhase ("#ALL")
+                                                                .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertEquals ("#ALL should process both patterns", 2, _countFailedAsserts (aAll));
   }
 
@@ -202,10 +202,10 @@ public final class SchematronResourcePureXsltTest
     final File aSch = new File ("src/test/resources/external/lets/schematron.sch");
     final File aXML = new File ("src/test/resources/external/lets/test.xml");
     final SchematronOutputType aSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                 .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     LOGGER.info ("SVRL (lets):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
     // valid library: 1 book >= bookCountThreshold (1) -> no failure on library rule
-    // invalid book: 1 author < minAuthors (2)         -> 1 failure on book rule
+    // invalid book: 1 author < minAuthors (2) -> 1 failure on book rule
     assertEquals ("expected 1 failure (book rule using schema-level $minAuthors)", 1, _countFailedAsserts (aSVRL));
     final String sMsg = _firstFailedAssertText (aSVRL);
     // The interpolated message should embed the schema-level let value "2" and the rule-level
@@ -220,7 +220,7 @@ public final class SchematronResourcePureXsltTest
     final File aSch = new File ("src/test/resources/external/diagnostics/schematron.sch");
     final File aXML = new File ("src/test/resources/external/diagnostics/test.xml");
     final SchematronOutputType aSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                 .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     LOGGER.info ("SVRL (diagnostics):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
     assertEquals (1, _countFailedAsserts (aSVRL));
 
@@ -250,7 +250,7 @@ public final class SchematronResourcePureXsltTest
     final File aSch = new File ("src/test/resources/external/abstract-pattern/schematron.sch");
     final File aXML = new File ("src/test/resources/external/abstract-pattern/test.xml");
     final SchematronOutputType aSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                 .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     LOGGER.info ("SVRL (abstract):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
     // Two concrete patterns derived from the abstract one. Book has no @isbn, author has no @name
     // -> 2 failures total.
@@ -263,7 +263,7 @@ public final class SchematronResourcePureXsltTest
     final File aSch = new File ("src/test/resources/external/extends-rule/schematron.sch");
     final File aXML = new File ("src/test/resources/external/extends-rule/test.xml");
     final SchematronOutputType aSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aXML));
+                                                                 .applySchematronValidationToSVRL (new FileSystemResource (aXML));
     LOGGER.info ("SVRL (extends):\n" + new SVRLMarshaller (false).getAsString (aSVRL));
     // The book is missing both @id (inherited assert) and @isbn (own assert) -> 2 failures
     assertEquals ("expected the inherited assert AND the own assert to both fire", 2, _countFailedAsserts (aSVRL));
@@ -278,14 +278,16 @@ public final class SchematronResourcePureXsltTest
 
     // valid: single book with non-empty title -> my:isNonEmpty returns true -> no failure
     final SchematronOutputType aValidSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aValid));
+                                                                      .applySchematronValidationToSVRL (new FileSystemResource (aValid));
     assertEquals ("expected no failures for non-empty title", 0, _countFailedAsserts (aValidSVRL));
 
     // invalid: one book with empty title, one with no @title -> 2 failures
     final SchematronOutputType aInvalidSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aInvalid));
+                                                                        .applySchematronValidationToSVRL (new FileSystemResource (aInvalid));
     LOGGER.info ("SVRL (xsl-function):\n" + new SVRLMarshaller (false).getAsString (aInvalidSVRL));
-    assertEquals ("expected my:isNonEmpty to fire failures for empty/missing @title", 2, _countFailedAsserts (aInvalidSVRL));
+    assertEquals ("expected my:isNonEmpty to fire failures for empty/missing @title",
+                  2,
+                  _countFailedAsserts (aInvalidSVRL));
   }
 
   @Test
@@ -297,12 +299,12 @@ public final class SchematronResourcePureXsltTest
 
     // 11 chapters -> $sizeBucket = "large" -> assert passes
     final SchematronOutputType aLargeSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aLarge));
+                                                                      .applySchematronValidationToSVRL (new FileSystemResource (aLarge));
     assertEquals ("large book should pass", 0, _countFailedAsserts (aLargeSVRL));
 
     // 1 chapter -> $sizeBucket = "small" -> assert fires
     final SchematronOutputType aSmallSVRL = SchematronResourcePureXslt.fromFile (aSch)
-        .applySchematronValidationToSVRL (new FileSystemResource (aSmall));
+                                                                      .applySchematronValidationToSVRL (new FileSystemResource (aSmall));
     LOGGER.info ("SVRL (let-body small):\n" + new SVRLMarshaller (false).getAsString (aSmallSVRL));
     assertEquals ("small book should fail", 1, _countFailedAsserts (aSmallSVRL));
     final String sMsg = _firstFailedAssertText (aSmallSVRL);
@@ -315,11 +317,13 @@ public final class SchematronResourcePureXsltTest
     final File aSchBad = new File ("src/test/resources/external/issues/github137/schematron.sch");
     final File aXMLBad = new File ("src/test/resources/external/issues/github137/test.xml");
     assertEquals (EValidity.INVALID,
-                  SchematronResourcePureXslt.fromFile (aSchBad).getSchematronValidity (new FileSystemResource (aXMLBad)));
+                  SchematronResourcePureXslt.fromFile (aSchBad)
+                                            .getSchematronValidity (new FileSystemResource (aXMLBad)));
 
     final File aSchGood = new File ("src/test/resources/external/issues/valid-simple/schematron.sch");
     final File aXMLGood = new File ("src/test/resources/external/issues/valid-simple/test.xml");
     assertEquals (EValidity.VALID,
-                  SchematronResourcePureXslt.fromFile (aSchGood).getSchematronValidity (new FileSystemResource (aXMLGood)));
+                  SchematronResourcePureXslt.fromFile (aSchGood)
+                                            .getSchematronValidity (new FileSystemResource (aXMLGood)));
   }
 }

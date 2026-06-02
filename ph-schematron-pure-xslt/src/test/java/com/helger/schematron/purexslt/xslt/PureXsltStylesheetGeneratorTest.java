@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,9 +31,9 @@ import com.helger.schematron.model.PSSchema;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
-public final class XsltStylesheetGeneratorTest
+public final class PureXsltStylesheetGeneratorTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (XsltStylesheetGeneratorTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PureXsltStylesheetGeneratorTest.class);
 
   @Test
   public void testDumpGeneratedXsltForGithub137 () throws Exception
@@ -43,7 +43,8 @@ public final class XsltStylesheetGeneratorTest
     assertNotNull (aSchema);
     final Document aDoc = PureXsltStylesheetGenerator.generate (aSchema);
     assertNotNull (aDoc);
-    LOGGER.info ("Generated XSLT for github137:\n" + XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
+    LOGGER.info ("Generated XSLT for github137:\n" +
+                 XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
   }
 
   @Test
@@ -54,6 +55,7 @@ public final class XsltStylesheetGeneratorTest
     assertNotNull (aSchema);
     final Document aDoc = PureXsltStylesheetGenerator.generate (aSchema);
     assertNotNull (aDoc);
-    LOGGER.info ("Generated XSLT for xsl-function:\n" + XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
+    LOGGER.info ("Generated XSLT for xsl-function:\n" +
+                 XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
   }
 }

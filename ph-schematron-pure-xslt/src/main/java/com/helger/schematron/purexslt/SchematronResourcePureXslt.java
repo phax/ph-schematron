@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,9 +35,11 @@ import org.w3c.dom.Node;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.CGlobal;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.functional.IThrowingSupplier;
 import com.helger.base.state.EValidity;
+import com.helger.base.timing.StopWatch;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
@@ -357,10 +359,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * Enable per-assertion telemetry. When on, the post-hoc walk over the SVRL emits one
-   * {@link PureXsltTelemetry#SPAN_ASSERTION} span per failed-assert / successful-report carrying its
-   * test expression, location and (when present) id. The Saxon transform is one opaque step, so the
-   * spans carry no individual timing &mdash; only metadata for trace inspection. Has no effect when
-   * {@link #isTelemetry()} is <code>false</code>.
+   * {@link PureXsltTelemetry#SPAN_ASSERTION} span per failed-assert / successful-report carrying
+   * its test expression, location and (when present) id. The Saxon transform is one opaque step, so
+   * the spans carry no individual timing &mdash; only metadata for trace inspection. Has no effect
+   * when {@link #isTelemetry()} is <code>false</code>.
    *
    * @param bPerAssertionTelemetry
    *        <code>true</code> to enable.
@@ -419,6 +421,40 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       LOGGER.error ("Schematron source could not be read: " + ex.getMessage ());
       return false;
     }
+  }
+
+  /**
+   * Run {@code aBody} optionally wrapped in a telemetry span. When {@link #m_bTelemetry} is off the
+   * body runs directly with no span overhead.
+   */
+  @Nullable
+  private <T> T _phase (@NonNull final String sSpanName, @NonNull final IThrowingSupplier <T, Exception> aBody)
+                                                                                                                throws Exception
+  {
+    if (!m_bTelemetry)
+      return aBody.get ();
+
+    try (final ITelemetrySpan aSpan = Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL))
+    {
+      try
+      {
+        final T r = aBody.get ();
+        aSpan.setStatusOk ();
+        return r;
+      }
+      catch (final Exception ex)
+      {
+        aSpan.recordException (ex).setStatusError (ex.getMessage ());
+        throw ex;
+      }
+    }
+  }
+
+  @NonNull
+  private ITelemetrySpan _maybeStartSpan (@NonNull final String sSpanName)
+  {
+    return m_bTelemetry ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL)
+                        : Telemetry.NoOpTelemetrySpan.INSTANCE;
   }
 
   /**
@@ -492,38 +528,32 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     return m_aCompiledXslt;
   }
 
-  /**
-   * Run {@code aBody} optionally wrapped in a telemetry span. When {@link #m_bTelemetry} is off the
-   * body runs directly with no span overhead.
-   */
-  @Nullable
-  private <T> T _phase (@NonNull final String sSpanName, @NonNull final IThrowingSupplier <T, Exception> aBody)
-                                                                                                                throws Exception
-  {
-    if (!m_bTelemetry)
-      return aBody.get ();
-
-    try (final ITelemetrySpan aSpan = Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL))
-    {
-      try
-      {
-        final T r = aBody.get ();
-        aSpan.setStatusOk ();
-        return r;
-      }
-      catch (final Exception ex)
-      {
-        aSpan.recordException (ex).setStatusError (ex.getMessage ());
-        throw ex;
-      }
-    }
-  }
-
   @NonNull
-  private ITelemetrySpan _maybeStartSpan (@NonNull final String sSpanName)
+  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                           throws Exception
   {
-    return m_bTelemetry ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL)
-                        : Telemetry.NoOpTelemetrySpan.INSTANCE;
+    final XsltExecutable aExecutable = getOrCompileXslt ();
+    final Document aResultDoc = XMLFactory.newDocument ();
+    final DOMDestination aDestination = new DOMDestination (aResultDoc);
+
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_EXECUTE))
+    {
+      final var aTransformer = aExecutable.load30 ();
+      if (m_aURIResolver != null)
+        aTransformer.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
+      if (m_aErrorListener != null)
+        aTransformer.setErrorListener (m_aErrorListener);
+      if (sBaseURI != null)
+        aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
+      aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
+    }
+
+    final SchematronOutputType aSVRL = new SVRLMarshaller (false).read (aResultDoc);
+    if (aSVRL == null)
+      throw new IllegalStateException ("Saxon transformation did not produce a parseable SVRL document:\n" +
+                                       XMLWriter.getNodeAsString (aResultDoc,
+                                                                  new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
+    return aSVRL;
   }
 
   @Override
@@ -561,7 +591,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     if (!m_bTelemetry)
       return _doValidate (aXMLNode, sBaseURI);
 
-    final long nStartNanos = System.nanoTime ();
+    final StopWatch aSW = StopWatch.createdStarted ();
     try (final ITelemetrySpan aRootSpan = Telemetry.startSpan (PureXsltTelemetry.SPAN_VALIDATE,
                                                                ETelemetrySpanKind.INTERNAL))
     {
@@ -571,7 +601,9 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       try
       {
         final SchematronOutputType aSVRL = _doValidate (aXMLNode, sBaseURI);
-        final double dDurationMs = (System.nanoTime () - nStartNanos) / 1_000_000.0;
+
+        aSW.stop ();
+        final double dDurationMs = aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
         PureXsltTelemetry.emitPostHoc (aSVRL, m_bPerAssertionTelemetry, dDurationMs);
         aRootSpan.setStatusOk ();
         return aSVRL;
@@ -582,34 +614,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
         throw ex;
       }
     }
-  }
-
-  @NonNull
-  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                           throws Exception
-  {
-    final XsltExecutable aExecutable = getOrCompileXslt ();
-    final Document aResultDoc = XMLFactory.newDocument ();
-    final DOMDestination aDestination = new DOMDestination (aResultDoc);
-
-    try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_EXECUTE))
-    {
-      final var aTransformer = aExecutable.load30 ();
-      if (m_aURIResolver != null)
-        aTransformer.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
-      if (m_aErrorListener != null)
-        aTransformer.setErrorListener (m_aErrorListener);
-      if (sBaseURI != null)
-        aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
-      aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
-    }
-
-    final SchematronOutputType aSVRL = new SVRLMarshaller (false).read (aResultDoc);
-    if (aSVRL == null)
-      throw new IllegalStateException ("Saxon transformation did not produce a parseable SVRL document:\n" +
-                                       XMLWriter.getNodeAsString (aResultDoc,
-                                                                  new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
-    return aSVRL;
   }
 
   // --- factory methods ---

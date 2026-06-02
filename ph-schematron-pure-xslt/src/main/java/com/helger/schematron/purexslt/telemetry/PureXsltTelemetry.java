@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,15 +74,15 @@ public final class PureXsltTelemetry
   public static final String OUTCOME_VALID = "valid";
   public static final String OUTCOME_INVALID = "invalid";
 
-  private static final ITelemetryCounter COUNTER_FAILED = TelemetryMetrics.counter (METRIC_ASSERTIONS_FAILED,
-                                                                                    "Number of failed Schematron assertions",
-                                                                                    "{count}");
-  private static final ITelemetryCounter COUNTER_REPORTS = TelemetryMetrics.counter (METRIC_REPORTS_FIRED,
-                                                                                     "Number of fired Schematron reports",
-                                                                                     "{count}");
-  private static final ITelemetryCounter COUNTER_RULES = TelemetryMetrics.counter (METRIC_RULES_FIRED,
-                                                                                   "Number of fired Schematron rules",
-                                                                                   "{count}");
+  private static final ITelemetryCounter COUNTER_FAILED_ASSERTS = TelemetryMetrics.counter (METRIC_ASSERTIONS_FAILED,
+                                                                                            "Number of failed Schematron assertions",
+                                                                                            "{count}");
+  private static final ITelemetryCounter COUNTER_SUCCESSFUL_REPORTS = TelemetryMetrics.counter (METRIC_REPORTS_FIRED,
+                                                                                                "Number of fired Schematron reports",
+                                                                                                "{count}");
+  private static final ITelemetryCounter COUNTER_FIRED_RULES = TelemetryMetrics.counter (METRIC_RULES_FIRED,
+                                                                                         "Number of fired Schematron rules",
+                                                                                         "{count}");
   private static final ITelemetryCounter COUNTER_PATTERNS = TelemetryMetrics.counter (METRIC_PATTERNS_ACTIVE,
                                                                                       "Number of active Schematron patterns visited",
                                                                                       "{count}");
@@ -92,6 +92,28 @@ public final class PureXsltTelemetry
 
   private PureXsltTelemetry ()
   {}
+
+  private static void _emitAssertSpan (final String sID,
+                                       final String sTest,
+                                       final String sLocation,
+                                       final String sPatternID,
+                                       final boolean bFailed)
+  {
+    try (final ITelemetrySpan aSpan = Telemetry.startSpan (SPAN_ASSERTION, ETelemetrySpanKind.INTERNAL))
+    {
+      aSpan.setAttribute (ATTR_ENGINE, ENGINE_VALUE);
+      aSpan.setAttribute (ATTR_ASSERT_KIND, bFailed ? "assert" : "report");
+      aSpan.setAttribute (ATTR_ASSERT_FAILED, bFailed);
+      if (sTest != null)
+        aSpan.setAttribute (ATTR_ASSERT_TEST, sTest);
+      if (sLocation != null)
+        aSpan.setAttribute (ATTR_ASSERT_LOCATION, sLocation);
+      if (sID != null)
+        aSpan.setAttribute (ATTR_ASSERT_ID, sID);
+      if (sPatternID != null)
+        aSpan.setAttribute (ATTR_PATTERN_ID, sPatternID);
+    }
+  }
 
   /**
    * Walk the SVRL output and emit:
@@ -130,20 +152,21 @@ public final class PureXsltTelemetry
       else
         if (aObj instanceof FiredRule)
         {
-          COUNTER_RULES.add (1, aEngineAttrs);
+          COUNTER_FIRED_RULES.add (1, aEngineAttrs);
         }
         else
           if (aObj instanceof final FailedAssert aFA)
           {
             nFailed++;
-            COUNTER_FAILED.add (1, aEngineAttrs);
+            COUNTER_FAILED_ASSERTS.add (1, aEngineAttrs);
             if (bPerAssertionSpans)
               _emitAssertSpan (aFA.getId (), aFA.getTest (), aFA.getLocation (), sCurrentPatternID, true);
           }
           else
             if (aObj instanceof final SuccessfulReport aSR)
             {
-              COUNTER_REPORTS.add (1, aEngineAttrs);
+              nFailed++;
+              COUNTER_SUCCESSFUL_REPORTS.add (1, aEngineAttrs);
               if (bPerAssertionSpans)
                 _emitAssertSpan (aSR.getId (), aSR.getTest (), aSR.getLocation (), sCurrentPatternID, false);
             }
@@ -155,27 +178,5 @@ public final class PureXsltTelemetry
                                                                    nFailed == 0 ? OUTCOME_VALID : OUTCOME_INVALID)
                                                              .build ();
     HIST_DURATION.record (dDurationMs, aDurAttrs);
-  }
-
-  private static void _emitAssertSpan (final String sID,
-                                       final String sTest,
-                                       final String sLocation,
-                                       final String sPatternID,
-                                       final boolean bFailed)
-  {
-    try (final ITelemetrySpan aSpan = Telemetry.startSpan (SPAN_ASSERTION, ETelemetrySpanKind.INTERNAL))
-    {
-      aSpan.setAttribute (ATTR_ENGINE, ENGINE_VALUE);
-      aSpan.setAttribute (ATTR_ASSERT_KIND, bFailed ? "assert" : "report");
-      aSpan.setAttribute (ATTR_ASSERT_FAILED, bFailed);
-      if (sTest != null)
-        aSpan.setAttribute (ATTR_ASSERT_TEST, sTest);
-      if (sLocation != null)
-        aSpan.setAttribute (ATTR_ASSERT_LOCATION, sLocation);
-      if (sID != null)
-        aSpan.setAttribute (ATTR_ASSERT_ID, sID);
-      if (sPatternID != null)
-        aSpan.setAttribute (ATTR_PATTERN_ID, sPatternID);
-    }
   }
 }

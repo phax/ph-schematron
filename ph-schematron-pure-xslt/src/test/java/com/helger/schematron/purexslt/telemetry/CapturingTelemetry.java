@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -140,7 +140,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
     }
 
     /**
-     * @return The error message passed to {@link #setStatusError(String)}. May be <code>null</code>.
+     * @return The error message passed to {@link #setStatusError(String)}. May be
+     *         <code>null</code>.
      */
     @Nullable
     public String getStatusMessage ()
@@ -149,7 +150,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
     }
 
     /**
-     * @return The exception passed to {@link #recordException(Throwable)}. May be <code>null</code>.
+     * @return The exception passed to {@link #recordException(Throwable)}. May be
+     *         <code>null</code>.
      */
     @Nullable
     public Throwable getRecordedException ()
@@ -257,7 +259,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                           @Nullable final String sDescription,
                                           @Nullable final String sUnit)
   {
-    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ()));
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName,
+                                                                                          x -> new AtomicLong ()));
     // AtomicLong is itself thread-safe so the per-add path is lock-free
     return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
   }
@@ -268,7 +271,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                                       @Nullable final String sDescription,
                                                       @Nullable final String sUnit)
   {
-    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ()));
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName,
+                                                                                          x -> new AtomicLong ()));
     return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
   }
 
@@ -279,7 +283,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                               @Nullable final String sUnit)
   {
     final ICommonsList <Double> aValues = m_aRWLock.writeLockedGet ( () -> m_aHistograms.computeIfAbsent (sName,
-                                                                                                         x -> new CommonsArrayList <> ()));
+                                                                                                          x -> new CommonsArrayList <> ()));
     return (dValue, aAttrs) -> m_aRWLock.writeLocked ( () -> aValues.add (Double.valueOf (dValue)));
   }
 

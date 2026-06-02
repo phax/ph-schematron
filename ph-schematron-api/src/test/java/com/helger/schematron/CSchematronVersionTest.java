@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2014-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.errorhandler;
+package com.helger.schematron;
 
-import org.jspecify.annotations.Nullable;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
-import com.helger.diagnostics.error.list.ErrorList;
+import org.junit.Test;
 
 /**
- * An implementation if {@link IPSErrorHandler} that collects all error
- * messages.
+ * Test class for class {@link CSchematronVersion}.
  *
  * @author Philip Helger
  */
-public class CollectingPSErrorHandler extends AbstractCollectingPSErrorHandler
+public final class CSchematronVersionTest
 {
-  public CollectingPSErrorHandler ()
+  @Test
+  public void testBasic ()
   {
-    this (null);
-  }
+    assertNotEquals ("undefined", CSchematronVersion.BUILD_VERSION);
+    assertNotEquals ("undefined", CSchematronVersion.BUILD_TIMESTAMP);
 
-  public CollectingPSErrorHandler (@Nullable final IPSErrorHandler aNestedErrorHandler)
-  {
-    super (new ErrorList (), aNestedErrorHandler);
+    // Check variable resolution
+    assertFalse (CSchematronVersion.BUILD_VERSION.contains ("${"));
+    assertFalse (CSchematronVersion.BUILD_TIMESTAMP.contains ("${"));
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2014-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.CGlobal;
 import com.helger.base.state.EContinue;
+import com.helger.base.timing.StopWatch;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSPattern;
@@ -89,11 +90,11 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
 
   // Pre-resolved instruments. Created once on class load; emit-time cost is just a SPI call.
   private static final ITelemetryCounter COUNTER_FAILED_ASSERTS = TelemetryMetrics.counter (METRIC_ASSERTIONS_FAILED,
-                                                                                    "Number of failed Schematron assertions",
-                                                                                    "{count}");
+                                                                                            "Number of failed Schematron assertions",
+                                                                                            "{count}");
   private static final ITelemetryCounter COUNTER_SUCCESSFUL_REPORTS = TelemetryMetrics.counter (METRIC_REPORTS_FIRED,
-                                                                                     "Number of fired Schematron reports",
-                                                                                     "{count}");
+                                                                                                "Number of fired Schematron reports",
+                                                                                                "{count}");
   private static final ITelemetryCounter COUNTER_RULES = TelemetryMetrics.counter (METRIC_RULES_FIRED,
                                                                                    "Number of fired Schematron rules",
                                                                                    "{count}");
@@ -109,7 +110,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
 
   // Per-validation state. Reset on every onStart - this handler is not safe to share concurrently
   // (the @NotThreadSafe annotation makes that explicit).
-  private long m_nStartNanos;
+  private StopWatch m_aSW;
   private int m_nFailedAsserts;
   private int m_nFiredReports;
   private TelemetryAttributes m_aEngineAttributes;
@@ -134,7 +135,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
                        @Nullable final PSPhase aActivePhase,
                        @Nullable final String sBaseURI) throws SchematronValidationException
   {
-    m_nStartNanos = System.nanoTime ();
+    m_aSW = StopWatch.createdStarted ();
     m_nFailedAsserts = 0;
     m_nFiredReports = 0;
     m_sCurrentPhase = aActivePhase == null ? null : aActivePhase.getID ();
@@ -216,7 +217,8 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
                                                                                             throws SchematronValidationException
   {
-    final double dDurationMs = (System.nanoTime () - m_nStartNanos) / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
+    m_aSW.stop ();
+    final double dDurationMs = m_aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
     final String sOutcome = (m_nFailedAsserts == 0 && m_nFiredReports == 0) ? OUTCOME_VALID : OUTCOME_INVALID;
     final TelemetryAttributes aDurAttrs = TelemetryAttributes.builder ()
                                                              .put (ATTR_ENGINE, m_sEngine)

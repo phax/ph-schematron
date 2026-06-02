@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,9 +29,9 @@ import com.helger.schematron.testfiles.SchematronTestHelper;
 
 /**
  * Sweep test: runs {@link SchematronResourcePureXslt} over every Schematron file shipped by
- * {@code ph-schematron-testfiles#getAllValidSchematronFiles()}. Catches broad regressions in
- * schema parsing / XSLT generation / Saxon compilation. Per-file failures are accumulated and
- * reported together at the end of the run so all gaps surface in one pass.
+ * {@code ph-schematron-testfiles#getAllValidSchematronFiles()}. Catches broad regressions in schema
+ * parsing / XSLT generation / Saxon compilation. Per-file failures are accumulated and reported
+ * together at the end of the run so all gaps surface in one pass.
  *
  * @author Philip Helger
  */
@@ -65,7 +65,12 @@ public final class SchematronResourcePureXsltSweepTest
       }
       catch (final Throwable t)
       {
-        aFailures.append ("\n  - ").append (aRes.getPath ()).append (" :: ").append (t.getClass ().getSimpleName ()).append (": ").append (t.getMessage ());
+        aFailures.append ("\n  - ")
+                 .append (aRes.getPath ())
+                 .append (" :: ")
+                 .append (t.getClass ().getSimpleName ())
+                 .append (": ")
+                 .append (t.getMessage ());
       }
     }
     LOGGER.info ("Sweep: " + nOk + " / " + nTotal + " valid schematrons parsed and compiled cleanly");

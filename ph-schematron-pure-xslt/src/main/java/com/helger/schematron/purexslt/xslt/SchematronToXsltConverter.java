@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,16 +47,16 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * Standalone tool that converts a Schematron schema into the XSLT&nbsp;3.0 stylesheet produced by
- * {@link PureXsltStylesheetGenerator}, and emits it in a variety of forms. Use this when you want the
- * generated stylesheet on its own &mdash; e.g. to ship it in a build artifact, apply it through a
- * non-Saxon XSLT processor, or simply inspect what the Saxon-native engine compiles internally.
+ * {@link PureXsltStylesheetGenerator}, and emits it in a variety of forms. Use this when you want
+ * the generated stylesheet on its own &mdash; e.g. to ship it in a build artifact, apply it through
+ * a non-Saxon XSLT processor, or simply inspect what the Saxon-native engine compiles internally.
  * <p>
  * By default the pipeline mirrors the one used at runtime inside
  * {@code SchematronResourcePureXslt}: the schema is read with {@link PSReader} (with let-body
  * elements preserved), preprocessed via {@link PSPreprocessor} (so abstract patterns,
  * {@code <sch:extends>} and {@code <sch:include>} are all expanded), then handed to
- * {@link PureXsltStylesheetGenerator}. The preprocessing step can be disabled if you want a 1:1 view of
- * the source schema with no expansions.
+ * {@link PureXsltStylesheetGenerator}. The preprocessing step can be disabled if you want a 1:1
+ * view of the source schema with no expansions.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -152,8 +152,8 @@ public final class SchematronToXsltConverter
 
   /**
    * Override the {@link XMLWriterSettings} used for serialization. If not set, {@link XMLWriter}'s
-   * defaults are used. The DOM document returned by {@link PureXsltStylesheetGenerator} already carries
-   * {@code xmlns:xsl}, {@code xmlns:svrl} and one {@code xmlns:<prefix>} per schema
+   * defaults are used. The DOM document returned by {@link PureXsltStylesheetGenerator} already
+   * carries {@code xmlns:xsl}, {@code xmlns:svrl} and one {@code xmlns:<prefix>} per schema
    * {@code <sch:ns>} on its root element, so callers do not have to configure a namespace context
    * just for prefix preservation.
    *

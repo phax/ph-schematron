@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,7 +81,8 @@ public final class PureXsltQueryBindingTransform implements IPSQueryBindingTrans
   }
 
   @Nullable
-  public String getWithParamTextsReplaced (@Nullable final String sText, @Nullable final Map <String, String> aStringReplacements)
+  public String getWithParamTextsReplaced (@Nullable final String sText,
+                                           @Nullable final Map <String, String> aStringReplacements)
   {
     if (sText == null)
       return null;

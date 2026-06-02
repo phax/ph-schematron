@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,12 +26,17 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.helger.base.state.ESuccess;
 import com.helger.io.resource.FileSystemResource;
+import com.helger.xml.serialize.write.EXMLSerializeIndent;
+import com.helger.xml.serialize.write.XMLWriter;
+import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * Tests for {@link SchematronToXsltConverter}: same generated stylesheet must come out across all
@@ -42,6 +47,7 @@ import com.helger.io.resource.FileSystemResource;
  */
 public final class SchematronToXsltConverterTest
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronToXsltConverterTest.class);
   private static final File SCH = new File ("src/test/resources/external/issues/github137/schematron.sch");
 
   @Test
@@ -51,9 +57,17 @@ public final class SchematronToXsltConverterTest
     assertNotNull (aDoc);
     final Element aRoot = aDoc.getDocumentElement ();
     assertNotNull (aRoot);
+
+    // Debug log only
+    if (false)
+      LOGGER.info (XMLWriter.getNodeAsString (aDoc,
+                                              new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
+                                                                      .setUseExistingNamespaceDeclarations (true)));
+
     assertEquals (PureXsltStylesheetGenerator.XSLT_NS, aRoot.getNamespaceURI ());
     assertEquals ("stylesheet", aRoot.getLocalName ());
     assertEquals (EPureXsltVersion.DEFAULT.getVersion (), aRoot.getAttribute ("version"));
+
     // At least one <xsl:template> for the rule context
     final NodeList aTemplates = aRoot.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "template");
     assertTrue ("expected at least one xsl:template", aTemplates.getLength () > 0);
@@ -66,8 +80,7 @@ public final class SchematronToXsltConverterTest
     assertTrue ("expected xsl:stylesheet root, got:\n" + s, s.contains ("<xsl:stylesheet"));
     assertTrue ("expected version=\"3.0\", got:\n" + s, s.contains ("version=\"3.0\""));
     // The github137 schema's rule context "tag1" must appear as a template match
-    assertTrue ("expected template match='tag1' for the rule context, got:\n" + s,
-                s.contains ("match=\"tag1\""));
+    assertTrue ("expected template match='tag1' for the rule context, got:\n" + s, s.contains ("match=\"tag1\""));
   }
 
   @Test
@@ -94,8 +107,8 @@ public final class SchematronToXsltConverterTest
   public void testXslt2VersionAttribute () throws Exception
   {
     final String s = SchematronToXsltConverter.fromResource (new FileSystemResource (SCH))
-                                               .setXsltVersion (EPureXsltVersion.XSLT_2_0)
-                                               .getAsString ();
+                                              .setXsltVersion (EPureXsltVersion.XSLT_2_0)
+                                              .getAsString ();
     assertTrue ("expected version=\"2.0\", got:\n" + s, s.contains ("version=\"2.0\""));
   }
 
@@ -104,12 +117,13 @@ public final class SchematronToXsltConverterTest
   {
     final File aAbstractSch = new File ("src/test/resources/external/abstract-pattern/schematron.sch");
     final String sWith = SchematronToXsltConverter.fromResource (new FileSystemResource (aAbstractSch))
-                                                   .setPreprocess (true)
-                                                   .getAsString ();
+                                                  .setPreprocess (true)
+                                                  .getAsString ();
     final String sWithout = SchematronToXsltConverter.fromResource (new FileSystemResource (aAbstractSch))
-                                                      .setPreprocess (false)
-                                                      .getAsString ();
-    // With preprocessing the abstract pattern expands to 2 concrete patterns -> bookIsbn + authorName
+                                                     .setPreprocess (false)
+                                                     .getAsString ();
+    // With preprocessing the abstract pattern expands to 2 concrete patterns -> bookIsbn +
+    // authorName
     // contexts (book + author) are present as xsl:template @match. Without preprocessing the
     // abstract pattern is skipped (logged WARN by the generator), so neither template appears.
     assertTrue ("preprocess=true should expand to author rule context, got:\n" + sWith,

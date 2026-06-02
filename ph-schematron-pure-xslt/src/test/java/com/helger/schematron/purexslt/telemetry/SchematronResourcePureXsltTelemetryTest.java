@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,7 +99,8 @@ public final class SchematronResourcePureXsltTelemetryTest
 
     // Duration histogram entry
     assertEquals (1, m_aCapture.getHistogramValues (PureXsltTelemetry.METRIC_VALIDATE_DURATION).size ());
-    assertTrue (m_aCapture.getHistogramValues (PureXsltTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >= 0.0);
+    assertTrue (m_aCapture.getHistogramValues (PureXsltTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
+                0.0);
   }
 
   @Test

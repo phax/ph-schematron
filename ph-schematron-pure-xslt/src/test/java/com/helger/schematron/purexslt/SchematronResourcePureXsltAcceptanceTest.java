@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,8 +55,8 @@ public final class SchematronResourcePureXsltAcceptanceTest
   public void testReadValidSchematronInvalidXML () throws Exception
   {
     final SchematronOutputType aSO = SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON)
-                                                            .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
-                                                                                                                     ".does.not.exist"));
+                                                               .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
+                                                                                                                        ".does.not.exist"));
     assertNull ("Invalid XML", aSO);
   }
 
@@ -66,7 +66,7 @@ public final class SchematronResourcePureXsltAcceptanceTest
     try
     {
       SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON + ".does.not.exist")
-                             .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE));
+                                .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE));
       fail ("Expected an exception or a null result when the Schematron source is missing");
     }
     catch (final Exception ex)
@@ -80,7 +80,8 @@ public final class SchematronResourcePureXsltAcceptanceTest
   {
     try
     {
-      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((IReadableResource) null);
+      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON)
+                                .applySchematronValidationToSVRL ((IReadableResource) null);
       fail ();
     }
     catch (final Exception ex)

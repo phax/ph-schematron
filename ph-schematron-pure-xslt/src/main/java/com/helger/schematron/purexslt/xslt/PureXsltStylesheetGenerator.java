@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2026 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,7 @@ import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.schematron.CSchematron;
+import com.helger.schematron.CSchematronVersion;
 import com.helger.schematron.model.PSActive;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSDiagnostic;
@@ -340,7 +341,7 @@ public final class PureXsltStylesheetGenerator
   }
 
   @NonNull
-  private static String _modeName (final int nPatternIdx)
+  private static String _getModeName (final int nPatternIdx)
   {
     return "M" + nPatternIdx;
   }
@@ -392,7 +393,7 @@ public final class PureXsltStylesheetGenerator
 
       final Element aApply = _addXsltChild (aSchemaOutput, "apply-templates");
       aApply.setAttribute ("select", "/");
-      aApply.setAttribute ("mode", _modeName (nPatternIdx));
+      aApply.setAttribute ("mode", _getModeName (nPatternIdx));
       nPatternIdx++;
     }
   }
@@ -602,7 +603,7 @@ public final class PureXsltStylesheetGenerator
                                                final int nPatternIdx,
                                                @Nullable final PSDiagnostics aDiagnostics)
   {
-    final String sMode = _modeName (nPatternIdx);
+    final String sMode = _getModeName (nPatternIdx);
     final ICommonsList <PSRule> aRules = aPattern.getAllRules ();
     int nRuleIdx = 0;
     for (final PSRule aRule : aRules)
@@ -659,6 +660,9 @@ public final class PureXsltStylesheetGenerator
     final PSDiagnostics aDiagnostics = aSchema.getDiagnostics ();
 
     final Document aDoc = XMLFactory.newDocument ();
+    aDoc.appendChild (aDoc.createComment (" Created by ph-schematron-pure-xslt " +
+                                          CSchematronVersion.BUILD_VERSION +
+                                          " "));
     final Element aStylesheet = aDoc.createElementNS (XSLT_NS, XSLT_PREFIX + ":stylesheet");
     aDoc.appendChild (aStylesheet);
 
