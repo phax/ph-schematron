@@ -26,29 +26,29 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.ThreadSafe;
-import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.collection.commons.CommonsHashMap;
-import com.helger.collection.commons.ICommonsMap;
 import com.helger.diagnostics.error.IError;
 import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.SchematronException;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
- * Factory for creating {@link SchematronProviderXSLTPrebuild} objects.
+ * Legacy static facade for the pre-built XSLT compilation cache. Since v10.0.0 this is a thin
+ * wrapper around {@link SchematronXSLTCache#shared()}; prefer the new API
+ * ({@link SchematronXSLTConfig}, {@link SchematronXSLTCache}, {@link SchematronXSLT}) for new
+ * code.
  *
  * @author Philip Helger
+ * @deprecated Use {@link SchematronXSLTCache#shared()} and the {@link SchematronXSLTConfig}
+ *             builder instead.
  */
+@Deprecated (since = "10.0.0", forRemoval = false)
 @ThreadSafe
 public final class SchematronResourceXSLTCache
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceXSLTCache.class);
-  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
-  @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, SchematronProviderXSLTPrebuild> MAP = new CommonsHashMap <> ();
 
   private SchematronResourceXSLTCache ()
   {}
@@ -58,7 +58,7 @@ public final class SchematronResourceXSLTCache
                                                                              @Nullable final ErrorListener aCustomErrorListener,
                                                                              @Nullable final URIResolver aCustomURIResolver)
   {
-    LOGGER.info ("Compiling XSLT instance " + aXSLTResource.toString ());
+    LOGGER.info ("Compiling XSLT instance " + aXSLTResource);
 
     final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
     final SchematronProviderXSLTPrebuild aXSLTPreprocessor = new SchematronProviderXSLTPrebuild (aXSLTResource,
@@ -68,38 +68,21 @@ public final class SchematronResourceXSLTCache
                                                                                                  aCustomURIResolver);
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
-      // Schematron is invalid -> parsing failed
       LOGGER.warn ("The XSLT resource '" + aXSLTResource.getResourceID () + "' is invalid!");
       for (final IError aError : aCEH.getErrorList ())
         LOGGER.warn ("  " + aError.getAsStringLocaleIndepdent ());
       return null;
     }
-    // If it is a valid schematron, there must be a result XSLT present!
     if (aXSLTPreprocessor.getXSLTDocument () == null)
-    {
-      // Note: this should never occur, as it is in the Prebuild implementation
-      // the same as "isValidSchematron" but to be implementation agnostic, we
-      // leave the check anyway.
       throw new IllegalStateException ("No XSLT document retrieved from XSLT resource '" +
                                        aXSLTResource.getResourceID () +
                                        "'!");
-    }
-    // Create the main validator for the schematron
     return aXSLTPreprocessor;
   }
 
   /**
-   * Return an existing or create a new Schematron XSLT provider for the passed
-   * resource.
-   *
-   * @param aXSLTResource
-   *        The resource of the Schematron rules. May not be <code>null</code>.
-   * @param aCustomErrorListener
-   *        The custom error listener to be used. May be <code>null</code>.
-   * @param aCustomURIResolver
-   *        The custom URI resolver to be used. May be <code>null</code>.
-   * @return <code>null</code> if the passed Schematron XSLT resource does not
-   *         exist.
+   * Return an existing or create a new Schematron XSLT provider for the passed resource via the
+   * {@link SchematronXSLTCache#shared() shared cache}.
    */
   @Nullable
   public static SchematronProviderXSLTPrebuild getSchematronXSLTProvider (@NonNull final IReadableResource aXSLTResource,
@@ -112,39 +95,27 @@ public final class SchematronResourceXSLTCache
       LOGGER.warn ("XSLT resource " + aXSLTResource + " does not exist!");
       return null;
     }
-    // Determine the unique resource ID for caching
-    final String sResourceID = aXSLTResource.getResourceID ();
-
-    // Validator already in the cache?
-    SchematronProviderXSLTPrebuild aProvider = RW_LOCK.readLockedGet ( () -> MAP.get (sResourceID));
-    if (aProvider == null)
+    final SchematronXSLTConfig aConfig = SchematronXSLTConfig.builder (aXSLTResource)
+                                                             .errorListener (aCustomErrorListener)
+                                                             .uriResolver (aCustomURIResolver)
+                                                             .build ();
+    try
     {
-      // Check again in write lock
-      aProvider = RW_LOCK.writeLockedGet ( () -> MAP.get (sResourceID));
-      if (aProvider == null)
-      {
-        // Create new object outside of the write lock
-        final SchematronProviderXSLTPrebuild aProviderNew = createSchematronXSLTProvider (aXSLTResource,
-                                                                                          aCustomErrorListener,
-                                                                                          aCustomURIResolver);
-        if (aProviderNew != null)
-        {
-          // Put in the cache
-          RW_LOCK.writeLocked ( () -> MAP.put (sResourceID, aProviderNew));
-        }
-        aProvider = aProviderNew;
-      }
+      return (SchematronProviderXSLTPrebuild) SchematronXSLTCache.shared ().getOrCompile (aConfig);
     }
-    return aProvider;
+    catch (final SchematronException ex)
+    {
+      throw new IllegalStateException ("Failed to compile XSLT", ex);
+    }
   }
 
   /**
-   * Clear the internal cache.
+   * Clear the {@link SchematronXSLTCache#shared() shared cache}.
    *
    * @since 5.6.5
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked (MAP::clear);
+    SchematronXSLTCache.shared ().clear ();
   }
 }

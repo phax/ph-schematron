@@ -55,22 +55,35 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
     super (aXSLTResource);
   }
 
+  /**
+   * @return The new builder-style config matching this resource's current state.
+   * @since 10.0.0
+   */
+  @NonNull
+  public final SchematronXSLTConfig toConfig ()
+  {
+    return SchematronXSLTConfig.builder (getResource ())
+                               .errorListener (getErrorListener ())
+                               .uriResolver (getURIResolver ())
+                               .parameters (parameters ())
+                               .build ();
+  }
+
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
-    if (isUseCache ())
+    final SchematronXSLTConfig aConfig = toConfig ();
+    try
     {
-      // Get or create
-      return SchematronResourceXSLTCache.getSchematronXSLTProvider (getResource (),
-                                                                    getErrorListener (),
-                                                                    getURIResolver ());
+      if (isUseCache ())
+        return SchematronXSLTCache.shared ().getOrCompile (aConfig);
+      return aConfig.compile ();
     }
-
-    // Always create a new one
-    return SchematronResourceXSLTCache.createSchematronXSLTProvider (getResource (),
-                                                                     getErrorListener (),
-                                                                     getURIResolver ());
+    catch (final com.helger.schematron.SchematronException ex)
+    {
+      throw new IllegalStateException ("Failed to compile XSLT", ex);
+    }
   }
 
   /**

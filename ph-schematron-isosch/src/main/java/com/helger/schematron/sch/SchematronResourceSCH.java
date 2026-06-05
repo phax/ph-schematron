@@ -128,17 +128,44 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     return applyDefaultValuesOnTransformerCustomizer (new TransformerCustomizerSCH ());
   }
 
+  /**
+   * @return The new builder-style config matching this resource's current state. Useful when
+   *         migrating to the {@link SchematronSCH} API.
+   * @since 10.0.0
+   */
+  @NonNull
+  public final SchematronSCHConfig toConfig ()
+  {
+    return SchematronSCHConfig.builder (getResource ())
+                              .phase (m_sPhase)
+                              .languageCode (m_sLanguageCode)
+                              .errorListener (getErrorListener ())
+                              .uriResolver (getURIResolver ())
+                              .parameters (parameters ())
+                              .forceCacheResult (m_bForceCacheResult)
+                              .build ();
+  }
+
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
-    final TransformerCustomizerSCH aTransformerCustomizer = createTransformerCustomizer ();
+    final TransformerCustomizerSCH aTC = createTransformerCustomizer ();
+    // When the customizer has been subclassed (e.g. to register Saxon extension functions
+    // during compile), the new builder-style Config cannot capture that override, so we
+    // must bypass the new shared cache and compile through the legacy direct path.
+    final boolean bPlainCustomizer = aTC.getClass () == TransformerCustomizerSCH.class;
+    if (!bPlainCustomizer || !isUseCache ())
+      return SchematronResourceSCHCache.createSchematronXSLTProvider (getResource (), aTC);
 
-    if (isUseCache ())
-      return SchematronResourceSCHCache.getSchematronXSLTProvider (getResource (), aTransformerCustomizer);
-
-    // Always create a new one
-    return SchematronResourceSCHCache.createSchematronXSLTProvider (getResource (), aTransformerCustomizer);
+    try
+    {
+      return SchematronSCHCache.shared ().getOrCompile (toConfig ());
+    }
+    catch (final com.helger.schematron.SchematronException ex)
+    {
+      throw new IllegalStateException ("Failed to compile Schematron", ex);
+    }
   }
 
   /**

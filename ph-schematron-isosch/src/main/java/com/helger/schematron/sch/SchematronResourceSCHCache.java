@@ -21,35 +21,34 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.ThreadSafe;
-import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.string.StringHelper;
-import com.helger.base.string.StringImplode;
-import com.helger.collection.commons.CommonsHashMap;
-import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.SchematronException;
 import com.helger.xml.serialize.write.XMLWriter;
 
 /**
- * Factory for creating {@link SchematronProviderXSLTFromSCH} objects.
+ * Legacy static facade for the SCH compilation cache. Since v10.0.0 this is a thin wrapper around
+ * {@link SchematronSCHCache#shared()}; prefer the new API ({@link SchematronSCHConfig},
+ * {@link SchematronSCHCache}, {@link SchematronSCH}) for new code — the new API supports
+ * multiple cache instances, bounded eviction and a fluent builder.
  *
  * @author Philip Helger
+ * @deprecated Use {@link SchematronSCHCache#shared()} and the {@link SchematronSCHConfig} builder
+ *             instead.
  */
+@Deprecated (since = "10.0.0", forRemoval = false)
 @ThreadSafe
 public final class SchematronResourceSCHCache
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCache.class);
-  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
-  @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, SchematronProviderXSLTFromSCH> MAP = new CommonsHashMap <> ();
 
   private SchematronResourceSCHCache ()
   {}
 
   /**
-   * Create a new Schematron validator for the passed resource.
+   * Create a new Schematron validator for the passed resource — uncached, equivalent to
+   * {@link SchematronSCHConfig#compile()}.
    *
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
@@ -62,44 +61,33 @@ public final class SchematronResourceSCHCache
                                                                             @NonNull final TransformerCustomizerSCH aTransformerCustomizer)
   {
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Compiling Schematron instance " + aSchematronResource.toString ());
+      LOGGER.debug ("Compiling Schematron instance " + aSchematronResource);
 
     final SchematronProviderXSLTFromSCH aXSLTPreprocessor = new SchematronProviderXSLTFromSCH (aSchematronResource,
                                                                                                aTransformerCustomizer);
-    // Main conversion call
     aXSLTPreprocessor.convertSchematronToXSLT ();
 
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
-      // Schematron is invalid -> parsing failed
       LOGGER.warn ("The Schematron resource '" + aSchematronResource.getResourceID () + "' is invalid!");
       if (LOGGER.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
-      {
-        // Log the created XSLT document for better error tracking
         LOGGER.debug ("  Created XSLT document:\n" + XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
-      }
       return null;
     }
 
-    // If it is a valid schematron, there must be a result XSLT present!
     if (aXSLTPreprocessor.getXSLTDocument () == null)
-    {
       throw new IllegalStateException ("No XSLT document retrieved from Schematron resource '" +
                                        aSchematronResource.getResourceID () +
                                        "'!");
-    }
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Finished compiling Schematron instance " + aSchematronResource.toString ());
-
-    // Create the main validator for the schematron
+      LOGGER.debug ("Finished compiling Schematron instance " + aSchematronResource);
     return aXSLTPreprocessor;
   }
 
   /**
-   * Get the Schematron validator for the passed resource. If no custom parameter are present, the
-   * result is cached. The respective cache key is a combination of the Schematron resource path,
-   * the phase and the language code.
+   * Get the Schematron validator for the passed resource via the
+   * {@link SchematronSCHCache#shared() shared cache}.
    *
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
@@ -121,49 +109,35 @@ public final class SchematronResourceSCHCache
     }
 
     if (!aTransformerCustomizer.canCacheResult ())
-    {
-      // Create new object and return without cache handling because the custom
-      // parameters may have side effects on the created XSLT!
       return createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
-    }
 
-    // Determine the unique resource ID for caching
-    final String sCacheKey = StringImplode.imploder ()
-                                          .source (aSchematronResource.getResourceID (),
-                                                   StringHelper.getNotNull (aTransformerCustomizer.getPhase ()),
-                                                   StringHelper.getNotNull (aTransformerCustomizer.getLanguageCode ()))
-                                          .separator (':')
-                                          .build ();
-
-    // Validator already in the cache?
-    SchematronProviderXSLTFromSCH aProvider = RW_LOCK.readLockedGet ( () -> MAP.get (sCacheKey));
-    if (aProvider == null)
+    final SchematronSCHConfig aConfig = SchematronSCHConfig.builder (aSchematronResource)
+                                                           .phase (aTransformerCustomizer.getPhase ())
+                                                           .languageCode (aTransformerCustomizer.getLanguageCode ())
+                                                           .errorListener (aTransformerCustomizer.getErrorListener ())
+                                                           .uriResolver (aTransformerCustomizer.getURIResolver ())
+                                                           .parameters (aTransformerCustomizer.getParameters ())
+                                                           .forceCacheResult (aTransformerCustomizer.isForceCacheResult ())
+                                                           .build ();
+    try
     {
-      // Validator already in the cache?
-      aProvider = RW_LOCK.writeLockedGet ( () -> MAP.get (sCacheKey));
-      if (aProvider == null)
-      {
-        // Create new object outside of the write lock
-        final SchematronProviderXSLTFromSCH aProviderNew = createSchematronXSLTProvider (aSchematronResource,
-                                                                                         aTransformerCustomizer);
-        if (aProviderNew != null)
-        {
-          // Put in cache
-          RW_LOCK.writeLocked ( () -> MAP.put (sCacheKey, aProviderNew));
-        }
-        aProvider = aProviderNew;
-      }
+      // Cast: the cache stores ISchematronXSLTBasedProvider, but here it is always a
+      // SchematronProviderXSLTFromSCH (set by SchematronSCHConfig.compile).
+      return (SchematronProviderXSLTFromSCH) SchematronSCHCache.shared ().getOrCompile (aConfig);
     }
-    return aProvider;
+    catch (final SchematronException ex)
+    {
+      throw new IllegalStateException ("Failed to compile Schematron", ex);
+    }
   }
 
   /**
-   * Clear the internal cache.
+   * Clear the {@link SchematronSCHCache#shared() shared cache}.
    *
    * @since 5.6.5
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked (MAP::clear);
+    SchematronSCHCache.shared ().clear ();
   }
 }

@@ -27,14 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 
-import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.ThreadSafe;
-import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.string.StringHelper;
-import com.helger.base.string.StringImplode;
-import com.helger.collection.commons.CommonsHashMap;
-import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
@@ -74,9 +68,6 @@ import net.sf.saxon.s9api.XsltExecutable;
 public final class SchematronResourcePureXsltCache
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXsltCache.class);
-  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
-  @GuardedBy ("RW_LOCK")
-  private static final ICommonsMap <String, XsltExecutable> MAP = new CommonsHashMap <> ();
 
   private SchematronResourcePureXsltCache ()
   {}
@@ -197,35 +188,21 @@ public final class SchematronResourcePureXsltCache
     ValueEnforcer.notNull (eVersion, "Version");
     ValueEnforcer.notNull (aProcessor, "Processor");
 
-    final String sCacheKey = StringImplode.imploder ()
-                                          .source (aResource.getResourceID (),
-                                                   StringHelper.getNotNull (sPhase),
-                                                   eVersion.getID (),
-                                                   Integer.toHexString (System.identityHashCode (aProcessor)))
-                                          .separator (':')
-                                          .build ();
-
-    // Fast path: read-locked lookup
-    XsltExecutable aCached = RW_LOCK.readLockedGet ( () -> MAP.get (sCacheKey));
-    if (aCached != null)
-      return aCached;
-
-    // Slow path: write-locked re-check then compile-on-miss. Compilation itself runs OUTSIDE the
-    // write lock so concurrent compiles for *different* keys don't serialize on each other.
-    aCached = RW_LOCK.writeLockedGet ( () -> MAP.get (sCacheKey));
-    if (aCached != null)
-      return aCached;
-
-    final XsltExecutable aFresh = createCompiledXslt (aResource,
-                                                      sPhase,
-                                                      eVersion,
-                                                      aProcessor,
-                                                      aErrorHandler,
-                                                      aEntityResolver,
-                                                      aURIResolver,
-                                                      aErrorListener);
-    RW_LOCK.writeLocked ( () -> MAP.put (sCacheKey, aFresh));
-    return aFresh;
+    final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (aResource)
+                                                                     .phase (sPhase)
+                                                                     .xsltVersion (eVersion)
+                                                                     .processor (aProcessor)
+                                                                     .errorHandler (aErrorHandler != null ? aErrorHandler
+                                                                                                          : new LoggingPSErrorHandler ())
+                                                                     .entityResolver (aEntityResolver)
+                                                                     .uriResolver (aURIResolver)
+                                                                     .errorListener (aErrorListener)
+                                                                     .forceCacheResult (true)
+                                                                     .build ();
+    final XsltExecutable aResult = SchematronPureXsltCache.shared ().getOrCompile (aConfig);
+    if (aResult == null)
+      throw new SchematronException ("Failed to compile pure-XSLT for " + aResource);
+    return aResult;
   }
 
   /**
@@ -234,7 +211,7 @@ public final class SchematronResourcePureXsltCache
    */
   public static void clearCache ()
   {
-    RW_LOCK.writeLocked (MAP::clear);
+    SchematronPureXsltCache.shared ().clear ();
   }
 
   /**
@@ -242,6 +219,6 @@ public final class SchematronResourcePureXsltCache
    */
   public static int getCachedEntryCount ()
   {
-    return RW_LOCK.readLockedInt (MAP::size);
+    return SchematronPureXsltCache.shared ().size ();
   }
 }

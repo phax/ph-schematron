@@ -16,7 +16,6 @@
  */
 package com.helger.schematron.api.xslt;
 
-import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 
@@ -46,8 +45,6 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.trait.IGenericImplTrait;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
-import com.helger.io.file.FileHelper;
-import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronDebug;
@@ -85,26 +82,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   private ISchematronOutputValidityDeterminator m_aSOVDeterminator = new SchematronOutputValidityDeterminatorDefault ();
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
-  @Nullable
-  private static String _findBaseURL (@NonNull final IReadableResource aRes)
-  {
-    if (aRes instanceof FileSystemResource)
-    {
-      // Use parent file as resolution base
-      return FileHelper.getAsURLString (((FileSystemResource) aRes).getAsFile ().getParentFile ());
-    }
-
-    // Generic URL
-    final URL aBaseURL = aRes.getAsURL ();
-    return aBaseURL != null ? aBaseURL.toExternalForm () : null;
-  }
-
   public AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
     // the SCH
-    final String sBaseURL = _findBaseURL (aSCHResource);
+    final String sBaseURL = SchematronXSLTBaseURL.findBaseURL (aSCHResource);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Using '" + sBaseURL + "' as base URL for SCH resource " + aSCHResource);
     setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (sBaseURL));

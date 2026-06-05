@@ -24,8 +24,8 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
- * The default implementation of {@link ISchematronOutputValidityDeterminator}
- * that interprets both failed asserts and successful reports as errors.
+ * The default implementation of {@link ISchematronOutputValidityDeterminator} that interprets both
+ * failed asserts and successful reports as errors.
  *
  * @author Philip Helger
  */
