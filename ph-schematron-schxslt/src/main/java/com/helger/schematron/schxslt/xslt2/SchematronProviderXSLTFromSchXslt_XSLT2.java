@@ -303,7 +303,12 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       m_aSchematronXSLTDoc = createSchematronXSLT (m_aSchematronResource, m_aTransformerCustomizer);
 
       // compile result of step 3
-      final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
+      // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
+      // so that per-template events fire at execution time.
+      final TransformerFactory aTF = m_aTransformerCustomizer.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (m_aTransformerCustomizer.getErrorListener (),
+                                                                                                                                           m_aTransformerCustomizer.getURIResolver (),
+                                                                                                                                           true)
+                                                                                  : SchematronTransformerFactory.getDefault ();
       m_aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));

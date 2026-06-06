@@ -38,7 +38,6 @@ import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
-import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
@@ -50,6 +49,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
 import com.helger.xml.transform.DefaultTransformURIResolver;
@@ -58,7 +58,7 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
  * Immutable configuration describing how to compile an ISO Schematron <code>.sch</code> resource
  * into an XSLT-based validator. Build instances via {@link #builder(IReadableResource)}.
  * <p>
- * The cache-key dimensions are <code>(resourceID, phase, languageCode)</code>; runtime hooks
+ * The cache-key dimensions are <code>(resourceID, phase, languageCode, tracingEnabled)</code>; runtime hooks
  * ({@link ErrorListener}, {@link URIResolver}, custom XSLT parameters) do not participate in
  * caching but are applied during compilation and transformation. Custom parameters cause
  * {@link #canCacheResult()} to return <code>false</code> unless
@@ -79,6 +79,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
   private final URIResolver m_aURIResolver;
   private final ICommonsOrderedMap <String, Object> m_aParameters;
   private final boolean m_bForceCacheResult;
+  private final ISchematronTemplateTelemetry m_aTelemetry;
   // Memoized cache key
   private final CacheKey m_aCacheKey;
 
@@ -91,7 +92,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     m_aURIResolver = aBuilder.m_aURIResolver;
     m_aParameters = new CommonsLinkedHashMap <> (aBuilder.m_aParameters);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
-    m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_sLanguageCode);
+    m_aTelemetry = aBuilder.m_aTelemetry;
+    m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_sLanguageCode, m_aTelemetry != null);
   }
 
   @Override
@@ -169,6 +171,29 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     return m_bForceCacheResult;
   }
 
+  /**
+   * @return The per-template telemetry callback configured for the XSLT transformation, or
+   *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the final
+   *         validation stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and
+   *         the trace-enabled provider is cached under a separate key.
+   * @since 10.0.0
+   */
+  @Nullable
+  public ISchematronTemplateTelemetry getTelemetry ()
+  {
+    return m_aTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the final
+   *         validation stylesheet should be compiled with Saxon tracing enabled.
+   * @since 10.0.0
+   */
+  public boolean isTracingEnabled ()
+  {
+    return m_aTelemetry != null;
+  }
+
   @Override
   @NonNull
   public Object getCacheKey ()
@@ -194,7 +219,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
                                           .setParameters (m_aParameters)
                                           .setPhase (m_sPhase)
                                           .setLanguageCode (m_sLanguageCode)
-                                          .setForceCacheResult (m_bForceCacheResult);
+                                          .setForceCacheResult (m_bForceCacheResult)
+                                          .setTelemetry (m_aTelemetry);
   }
 
   @Override
@@ -228,7 +254,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
                                     .errorListener (m_aErrorListener)
                                     .uriResolver (m_aURIResolver)
                                     .parameters (m_aParameters)
-                                    .forceCacheResult (m_bForceCacheResult);
+                                    .forceCacheResult (m_bForceCacheResult)
+                                    .telemetry (m_aTelemetry);
   }
 
   @Override
@@ -241,6 +268,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
                                        .appendIfNotNull ("URIResolver", m_aURIResolver)
                                        .append ("Parameters", m_aParameters)
                                        .append ("ForceCacheResult", m_bForceCacheResult)
+                                       .appendIfNotNull ("Telemetry", m_aTelemetry)
                                        .getToString ();
   }
 
@@ -390,16 +418,19 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     private final String m_sResourceID;
     private final String m_sPhase;
     private final String m_sLanguageCode;
+    private final boolean m_bTracingEnabled;
     private final int m_nHashCode;
 
     private CacheKey (@NonNull final String sResourceID,
                       @Nullable final String sPhase,
-                      @Nullable final String sLanguageCode)
+                      @Nullable final String sLanguageCode,
+                      final boolean bTracingEnabled)
     {
       m_sResourceID = sResourceID;
       m_sPhase = sPhase;
       m_sLanguageCode = sLanguageCode;
-      m_nHashCode = Objects.hash (sResourceID, sPhase, sLanguageCode);
+      m_bTracingEnabled = bTracingEnabled;
+      m_nHashCode = Objects.hash (sResourceID, sPhase, sLanguageCode, Boolean.valueOf (bTracingEnabled));
     }
 
     @Override
@@ -411,7 +442,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
         return false;
       return m_sResourceID.equals (other.m_sResourceID) &&
              Objects.equals (m_sPhase, other.m_sPhase) &&
-             Objects.equals (m_sLanguageCode, other.m_sLanguageCode);
+             Objects.equals (m_sLanguageCode, other.m_sLanguageCode) &&
+             m_bTracingEnabled == other.m_bTracingEnabled;
     }
 
     @Override
@@ -423,13 +455,11 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     @Override
     public String toString ()
     {
-      return "SchematronSCHConfig.CacheKey[" +
-             m_sResourceID +
-             ":" +
-             StringHelper.getNotNull (m_sPhase) +
-             ":" +
-             StringHelper.getNotNull (m_sLanguageCode) +
-             "]";
+      return new ToStringGenerator (this).append ("ResourceID", m_sResourceID)
+                                         .appendIfNotNull ("Phase", m_sPhase)
+                                         .appendIfNotNull ("LanguageCode", m_sLanguageCode)
+                                         .append ("TracingEnabled", m_bTracingEnabled)
+                                         .getToString ();
     }
   }
 
@@ -448,6 +478,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     private URIResolver m_aURIResolver;
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
     private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
+    private ISchematronTemplateTelemetry m_aTelemetry;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -559,6 +590,25 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     public Builder forceCacheResult (final boolean bForceCacheResult)
     {
       m_bForceCacheResult = bForceCacheResult;
+      return this;
+    }
+
+    /**
+     * Set the per-template telemetry callback. When non-<code>null</code>, the final validation
+     * stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache
+     * entry) and a {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is
+     * installed on each transform.
+     *
+     * @param a
+     *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
+     *        <code>null</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
+    {
+      m_aTelemetry = a;
       return this;
     }
 

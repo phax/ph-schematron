@@ -28,27 +28,29 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import com.helger.base.concurrent.ExecutorServiceHelper;
+import com.helger.base.timing.StopWatch;
 import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.list.IErrorList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
-import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.testfiles.SchematronTestHelper;
+import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.CollectingTransformErrorListener;
 
 /**
- * Test class for class {@link SchematronResourceSCHCache}
+ * Test class for class {@link SchematronSCHCache}.
  *
  * @author Philip Helger
  */
-public final class SchematronResourceSCHCacheTest
+public final class SchematronSCHCacheTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourceSCHCacheTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronSCHCacheTest.class);
   private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
   private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
 
@@ -58,22 +60,24 @@ public final class SchematronResourceSCHCacheTest
   public void testValidSynchronous () throws Exception
   {
     // Ensure that the Schematron is cached
-    SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
+    SchematronSCH.builder (new ClassPathResource (VALID_SCHEMATRON)).buildCached ();
+    final Node aXML = DOMReader.readXMLDOM (new ClassPathResource (VALID_XMLINSTANCE));
+    assertNotNull (aXML);
 
-    final long nStart = System.nanoTime ();
+    final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
-      final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
-      final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
+      final SchematronSCH aSV = SchematronSCH.builder (new ClassPathResource (VALID_SCHEMATRON)).buildCached ();
+      final Document aDoc = aSV.applyValidation (aXML, null);
       assertNotNull (aDoc);
       if (false)
         LOGGER.info (XMLWriter.getNodeAsString (aDoc));
     }
-    final long nEnd = System.nanoTime ();
+    aSW.stop ();
     LOGGER.info ("Sync Total: " +
-                 ((nEnd - nStart) / 1000) +
+                 (aSW.getNanos () / 1000) +
                  " microsecs btw. " +
-                 ((nEnd - nStart) / 1000 / RUNS) +
+                 (aSW.getNanos () / 1000 / RUNS) +
                  " microsecs/run");
   }
 
@@ -81,21 +85,22 @@ public final class SchematronResourceSCHCacheTest
   public void testValidAsynchronous () throws Exception
   {
     // Ensure that the Schematron is cached
-    SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
+    SchematronSCH.builder (new ClassPathResource (VALID_SCHEMATRON)).buildCached ();
+    final Node aXML = DOMReader.readXMLDOM (new ClassPathResource (VALID_XMLINSTANCE));
+    assertNotNull (aXML);
 
     // Create Thread pool with fixed number of threads
     final ExecutorService aSenderThreadPool = Executors.newFixedThreadPool (Runtime.getRuntime ()
-                                                                                   .availableProcessors () *
-                                                                            2);
+                                                                                   .availableProcessors () * 2);
 
-    final long nStart = System.nanoTime ();
+    final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
       aSenderThreadPool.submit ( () -> {
         try
         {
-          final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
-          final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
+          final SchematronSCH aSV = SchematronSCH.builder (new ClassPathResource (VALID_SCHEMATRON)).buildCached ();
+          final Document aDoc = aSV.applyValidation (aXML, null);
           assertNotNull (aDoc);
         }
         catch (final Exception ex)
@@ -105,26 +110,34 @@ public final class SchematronResourceSCHCacheTest
       });
     }
     ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aSenderThreadPool);
-    final long nEnd = System.nanoTime ();
+    aSW.stop ();
     LOGGER.info ("Async Total: " +
-                 ((nEnd - nStart) / 1000) +
+                 (aSW.getNanos () / 1000) +
                  " microsecs btw. " +
-                 ((nEnd - nStart) / 1000 / RUNS) +
+                 (aSW.getNanos () / 1000 / RUNS) +
                  " microsecs/run");
   }
 
   @Test
-  public void testInvalidSchematron ()
+  public void testInvalidSchematron () throws Exception
   {
-    assertFalse (new SchematronResourceSCH (new ClassPathResource ("external/test-sch/invalid01.sch")).isValidSchematron ());
-    assertFalse (new SchematronResourceSCH (new ClassPathResource ("external/test-sch/this.file.does.not.exists")).isValidSchematron ());
+    assertFalse (SchematronSCH.builder (new ClassPathResource ("external/test-sch/invalid01.sch"))
+                              .buildUncached ()
+                              .isValidSchematron ());
+    assertFalse (SchematronSCH.builder (new ClassPathResource ("external/test-sch/this.file.does.not.exists"))
+                              .buildUncached ()
+                              .isValidSchematron ());
 
-    assertFalse (new SchematronResourceSCH (new FileSystemResource ("src/test/resources/external/test-sch/invalid01.sch")).isValidSchematron ());
-    assertFalse (new SchematronResourceSCH (new FileSystemResource ("src/test/resources/external/test-sch/this.file.does.not.exists")).isValidSchematron ());
+    assertFalse (SchematronSCH.builder (new FileSystemResource ("src/test/resources/external/test-sch/invalid01.sch"))
+                              .buildUncached ()
+                              .isValidSchematron ());
+    assertFalse (SchematronSCH.builder (new FileSystemResource ("src/test/resources/external/test-sch/this.file.does.not.exists"))
+                              .buildUncached ()
+                              .isValidSchematron ());
   }
 
   @Test
-  public void testXSLTPreprocessor ()
+  public void testXSLTPreprocessor () throws Exception
   {
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
       // BIICORE-UBL-*.sch works but takes forever
@@ -146,9 +159,11 @@ public final class SchematronResourceSCHCacheTest
         assertTrue ("Not existing " + aRes, aRes.exists ());
 
         final CollectingTransformErrorListener aCEH = new CollectingTransformErrorListener ();
-        final ISchematronXSLTBasedProvider aPreprocessor = SchematronResourceSCHCache.createSchematronXSLTProvider (aRes,
-                                                                                                                    new TransformerCustomizerSCH ().setErrorListener (aCEH)
-                                                                                                                                                   .setLanguageCode ("de"));
+        final ISchematronXSLTBasedProvider aPreprocessor = SchematronSCHConfig.builder (aRes)
+                                                                              .errorListener (aCEH)
+                                                                              .languageCode ("de")
+                                                                              .build ()
+                                                                              .compile ();
         assertNotNull ("Failed to parse: " + aRes.toString (), aPreprocessor);
         assertTrue (aRes.getPath (), aPreprocessor.isValidSchematron ());
         assertNotNull (aPreprocessor.getXSLTDocument ());

@@ -112,8 +112,36 @@ public final class SchematronTransformerFactory
   public static TransformerFactory createTransformerFactory (@Nullable final ErrorListener aErrorListener,
                                                              @Nullable final URIResolver aURIResolver)
   {
+    return createTransformerFactory (aErrorListener, aURIResolver, false);
+  }
+
+  /**
+   * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
+   * applied: line numbering (#52) and XInclude (#86) are enabled. Optionally enables Saxon's
+   * {@code COMPILE_WITH_TRACING} feature so that stylesheets compiled by the returned factory emit
+   * per-instruction events to a {@link net.sf.saxon.lib.TraceListener} at execution time.
+   * <p>
+   * Tracing disables several Saxon optimisations and typically costs 1.5&times;&ndash;3&times;
+   * wall-clock per transform; callers should treat trace-enabled factories as distinct from the
+   * normal cached factory.
+   *
+   * @param aErrorListener
+   *        An optional XSLT error listener to be used. May be <code>null</code>.
+   * @param aURIResolver
+   *        An optional XSLT URI resolver to be used. May be <code>null</code>.
+   * @param bEnableTracing
+   *        <code>true</code> to enable Saxon's {@code COMPILE_WITH_TRACING} on the returned
+   *        factory.
+   * @return A new {@link TransformerFactory} and not <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static TransformerFactory createTransformerFactory (@Nullable final ErrorListener aErrorListener,
+                                                             @Nullable final URIResolver aURIResolver,
+                                                             final boolean bEnableTracing)
+  {
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Calling createTransformerFactory");
+      LOGGER.debug ("Calling createTransformerFactory (tracing=" + bEnableTracing + ")");
 
     final TransformerFactory aFactory = new TransformerFactoryImpl ();
 
@@ -121,6 +149,8 @@ public final class SchematronTransformerFactory
     aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
     // Allow XInclude #86
     aFactory.setAttribute (FeatureKeys.XINCLUDE, Boolean.TRUE);
+    if (bEnableTracing)
+      aFactory.setAttribute (FeatureKeys.COMPILE_WITH_TRACING, Boolean.TRUE);
 
     if (aErrorListener != null)
       aFactory.setErrorListener (aErrorListener);

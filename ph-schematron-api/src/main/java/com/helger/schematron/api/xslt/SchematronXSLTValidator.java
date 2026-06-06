@@ -38,6 +38,9 @@ import com.helger.base.debug.GlobalDebug;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
+import com.helger.schematron.api.telemetry.SaxonTraceListenerInstaller;
+import com.helger.schematron.api.telemetry.SchematronTraceListener;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
@@ -86,6 +89,44 @@ public final class SchematronXSLTValidator
                                           @Nullable final URIResolver aURIResolver,
                                           @Nullable final Map <String, ?> aParameters) throws TransformerException
   {
+    return applyValidation (aProvider, aSource, aErrorListener, aURIResolver, aParameters, null);
+  }
+
+  /**
+   * Apply the compiled Schematron provider to the given XML source, optionally dispatching
+   * per-template events to the supplied telemetry callback. Telemetry only fires when the provider
+   * was compiled with Saxon's {@code COMPILE_WITH_TRACING} feature.
+   *
+   * @param aProvider
+   *        The compiled provider. May be <code>null</code>; in that case a warning is logged and
+   *        <code>null</code> is returned.
+   * @param aSource
+   *        The XML source to validate. May not be <code>null</code>.
+   * @param aErrorListener
+   *        Optional transformer error listener. When <code>null</code>, a logging default is
+   *        installed.
+   * @param aURIResolver
+   *        Optional URI resolver applied to the transformer.
+   * @param aParameters
+   *        Optional XSLT parameters applied to the transformer.
+   * @param aTelemetry
+   *        Optional per-template telemetry callback. When non-<code>null</code>, a Saxon
+   *        {@link net.sf.saxon.lib.TraceListener} bridging to this callback is installed on the
+   *        underlying Saxon controller for the duration of the transform.
+   * @return The SVRL DOM document or <code>null</code> if the provider is unusable.
+   * @throws TransformerException
+   *         If the XSLT transformation fails.
+   * @since 10.0.0
+   */
+  @Nullable
+  public static Document applyValidation (@Nullable final ISchematronXSLTBasedProvider aProvider,
+                                          @NonNull final Source aSource,
+                                          @Nullable final ErrorListener aErrorListener,
+                                          @Nullable final URIResolver aURIResolver,
+                                          @Nullable final Map <String, ?> aParameters,
+                                          @Nullable final ISchematronTemplateTelemetry aTelemetry)
+                                                                                                    throws TransformerException
+  {
     ValueEnforcer.notNull (aSource, "Source");
 
     if (aProvider == null || !aProvider.isValidSchematron ())
@@ -119,6 +160,9 @@ public final class SchematronXSLTValidator
           LOGGER.debug ("Adding XSLT parameter '" + aEntry.getKey () + "' = '" + aEntry.getValue () + "'");
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
       }
+
+    if (aTelemetry != null)
+      SaxonTraceListenerInstaller.install (aTransformer, new SchematronTraceListener (aTelemetry));
 
     aTransformer.transform (aSource, new DOMResult (ret));
 
@@ -159,10 +203,48 @@ public final class SchematronXSLTValidator
                                           @Nullable final URIResolver aURIResolver,
                                           @Nullable final Map <String, ?> aParameters) throws TransformerException
   {
+    return applyValidation (aProvider, aXMLNode, sBaseURI, aErrorListener, aURIResolver, aParameters, null);
+  }
+
+  /**
+   * Node-based convenience overload that adds optional telemetry. See
+   * {@link #applyValidation(ISchematronXSLTBasedProvider, Source, ErrorListener, URIResolver, Map, ISchematronTemplateTelemetry)}.
+   *
+   * @param aProvider
+   *        The compiled provider. May be <code>null</code>; in that case a warning is logged and
+   *        <code>null</code> is returned.
+   * @param aXMLNode
+   *        The XML node to validate. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Optional base URI used as the source system ID.
+   * @param aErrorListener
+   *        Optional transformer error listener. When <code>null</code>, a logging default is
+   *        installed.
+   * @param aURIResolver
+   *        Optional URI resolver applied to the transformer.
+   * @param aParameters
+   *        Optional XSLT parameters applied to the transformer.
+   * @param aTelemetry
+   *        Optional per-template telemetry callback.
+   * @return The SVRL DOM document or <code>null</code> if the provider is unusable.
+   * @throws TransformerException
+   *         If the XSLT transformation fails.
+   * @since 10.0.0
+   */
+  @Nullable
+  public static Document applyValidation (@Nullable final ISchematronXSLTBasedProvider aProvider,
+                                          @NonNull final Node aXMLNode,
+                                          @Nullable final String sBaseURI,
+                                          @Nullable final ErrorListener aErrorListener,
+                                          @Nullable final URIResolver aURIResolver,
+                                          @Nullable final Map <String, ?> aParameters,
+                                          @Nullable final ISchematronTemplateTelemetry aTelemetry)
+                                                                                                    throws TransformerException
+  {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
     final DOMSource aSource = new DOMSource (aXMLNode);
     aSource.setSystemId (sBaseURI);
-    return applyValidation (aProvider, aSource, aErrorListener, aURIResolver, aParameters);
+    return applyValidation (aProvider, aSource, aErrorListener, aURIResolver, aParameters, aTelemetry);
   }
 
   /**
@@ -198,7 +280,55 @@ public final class SchematronXSLTValidator
                                                   @Nullable final Map <String, ?> aParameters,
                                                   final boolean bValidateSVRL) throws TransformerException
   {
-    final Document aDoc = applyValidation (aProvider, aXMLNode, sBaseURI, aErrorListener, aURIResolver, aParameters);
+    return applyToSVRL (aProvider, aXMLNode, sBaseURI, aErrorListener, aURIResolver, aParameters, bValidateSVRL, null);
+  }
+
+  /**
+   * Apply validation and return the parsed SVRL object, optionally dispatching per-template events
+   * to the supplied telemetry callback.
+   *
+   * @param aProvider
+   *        The compiled provider. May be <code>null</code>; in that case <code>null</code> is
+   *        returned.
+   * @param aXMLNode
+   *        The XML node to validate. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Optional base URI used as the source system ID.
+   * @param aErrorListener
+   *        Optional transformer error listener. When <code>null</code>, a logging default is
+   *        installed.
+   * @param aURIResolver
+   *        Optional URI resolver applied to the transformer.
+   * @param aParameters
+   *        Optional XSLT parameters applied to the transformer.
+   * @param bValidateSVRL
+   *        If <code>true</code>, the produced SVRL DOM is validated against the SVRL JAXB schema
+   *        while unmarshalling.
+   * @param aTelemetry
+   *        Optional per-template telemetry callback.
+   * @return The parsed SVRL object, or <code>null</code> if validation could not be applied.
+   * @throws TransformerException
+   *         If the XSLT transformation fails.
+   * @since 10.0.0
+   */
+  @Nullable
+  public static SchematronOutputType applyToSVRL (@Nullable final ISchematronXSLTBasedProvider aProvider,
+                                                  @NonNull final Node aXMLNode,
+                                                  @Nullable final String sBaseURI,
+                                                  @Nullable final ErrorListener aErrorListener,
+                                                  @Nullable final URIResolver aURIResolver,
+                                                  @Nullable final Map <String, ?> aParameters,
+                                                  final boolean bValidateSVRL,
+                                                  @Nullable final ISchematronTemplateTelemetry aTelemetry)
+                                                                                                           throws TransformerException
+  {
+    final Document aDoc = applyValidation (aProvider,
+                                           aXMLNode,
+                                           sBaseURI,
+                                           aErrorListener,
+                                           aURIResolver,
+                                           aParameters,
+                                           aTelemetry);
     if (aDoc == null)
       return null;
     if (aDoc.getDocumentElement () == null)

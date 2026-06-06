@@ -31,6 +31,7 @@ import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
@@ -49,6 +50,7 @@ public class TransformerCustomizerSchXslt_XSLT2
   private String m_sPhase;
   private String m_sLanguageCode;
   private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
+  private ISchematronTemplateTelemetry m_aTelemetry;
 
   public TransformerCustomizerSchXslt_XSLT2 ()
   {}
@@ -161,6 +163,42 @@ public class TransformerCustomizerSchXslt_XSLT2
   public boolean canCacheResult ()
   {
     return !hasParameters () || m_bForceCacheResult;
+  }
+
+  /**
+   * @return The per-template telemetry callback, or <code>null</code> if telemetry is disabled.
+   * @since 10.0.0
+   */
+  @Nullable
+  public ISchematronTemplateTelemetry getTelemetry ()
+  {
+    return m_aTelemetry;
+  }
+
+  /**
+   * Set the per-template telemetry callback. When non-<code>null</code>, the final validation
+   * stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature.
+   *
+   * @param a
+   *        The telemetry callback, or <code>null</code> to disable telemetry.
+   * @return this for chaining
+   * @since 10.0.0
+   */
+  @NonNull
+  public TransformerCustomizerSchXslt_XSLT2 setTelemetry (@Nullable final ISchematronTemplateTelemetry a)
+  {
+    m_aTelemetry = a;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if a telemetry callback is set, i.e. the final validation stylesheet
+   *         should be compiled with Saxon tracing enabled.
+   * @since 10.0.0
+   */
+  public boolean isTracingEnabled ()
+  {
+    return m_aTelemetry != null;
   }
 
   public void customize (@NonNull final TransformerFactory aTransformerFactory)

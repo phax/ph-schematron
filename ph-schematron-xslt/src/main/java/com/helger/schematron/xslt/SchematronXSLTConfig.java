@@ -48,6 +48,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
 import com.helger.xml.transform.DefaultTransformURIResolver;
@@ -69,6 +70,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   private final ErrorListener m_aErrorListener;
   private final URIResolver m_aURIResolver;
   private final ICommonsOrderedMap <String, Object> m_aParameters;
+  private final ISchematronTemplateTelemetry m_aTelemetry;
 
   private SchematronXSLTConfig (@NonNull final Builder b)
   {
@@ -76,6 +78,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     m_aErrorListener = b.m_aErrorListener;
     m_aURIResolver = b.m_aURIResolver;
     m_aParameters = new CommonsLinkedHashMap <> (b.m_aParameters);
+    m_aTelemetry = b.m_aTelemetry;
   }
 
   @Override
@@ -116,11 +119,35 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     return new CommonsLinkedHashMap <> (m_aParameters);
   }
 
+  /**
+   * @return The per-template telemetry callback configured for the XSLT transformation, or
+   *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the stylesheet
+   *         is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and the trace-enabled
+   *         provider is cached under a separate key (see {@link #getCacheKey()}).
+   * @since 10.0.0
+   */
+  @Nullable
+  public ISchematronTemplateTelemetry getTelemetry ()
+  {
+    return m_aTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the
+   *         stylesheet should be compiled with Saxon tracing enabled.
+   * @since 10.0.0
+   */
+  public boolean isTracingEnabled ()
+  {
+    return m_aTelemetry != null;
+  }
+
   @Override
   @NonNull
   public Object getCacheKey ()
   {
-    return m_aResource.getResourceID ();
+    final String sResourceID = m_aResource.getResourceID ();
+    return isTracingEnabled () ? sResourceID + "#trace" : sResourceID;
   }
 
   @Override
@@ -140,7 +167,8 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     }
     final SchematronProviderXSLTPrebuild aProvider = new SchematronProviderXSLTPrebuild (m_aResource,
                                                                                          m_aErrorListener,
-                                                                                         m_aURIResolver);
+                                                                                         m_aURIResolver,
+                                                                                         isTracingEnabled ());
     if (!aProvider.isValidSchematron ())
     {
       LOGGER.warn ("XSLT resource '" + m_aResource.getResourceID () + "' is invalid!");
@@ -158,7 +186,8 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   {
     return new Builder (m_aResource).errorListener (m_aErrorListener)
                                     .uriResolver (m_aURIResolver)
-                                    .parameters (m_aParameters);
+                                    .parameters (m_aParameters)
+                                    .telemetry (m_aTelemetry);
   }
 
   @Override
@@ -168,6 +197,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
                                        .appendIfNotNull ("ErrorListener", m_aErrorListener)
                                        .appendIfNotNull ("URIResolver", m_aURIResolver)
                                        .append ("Parameters", m_aParameters)
+                                       .appendIfNotNull ("Telemetry", m_aTelemetry)
                                        .getToString ();
   }
 
@@ -308,6 +338,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     private ErrorListener m_aErrorListener;
     private URIResolver m_aURIResolver;
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
+    private ISchematronTemplateTelemetry m_aTelemetry;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -375,6 +406,29 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
       m_aParameters.clear ();
       if (aParameters != null)
         m_aParameters.putAll (aParameters);
+      return this;
+    }
+
+    /**
+     * Set the per-template telemetry callback. When non-<code>null</code>, the stylesheet is
+     * compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache entry) and a
+     * {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is installed on each
+     * transform so that the callback receives one
+     * {@link ISchematronTemplateTelemetry#onTemplateEnter(com.helger.schematron.api.telemetry.SchematronTemplateInfo)}
+     * /
+     * {@link ISchematronTemplateTelemetry#onTemplateLeave(com.helger.schematron.api.telemetry.SchematronTemplateInfo, long)}
+     * pair per executed XSLT template.
+     *
+     * @param a
+     *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
+     *        <code>null</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
+    {
+      m_aTelemetry = a;
       return this;
     }
 

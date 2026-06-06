@@ -54,6 +54,28 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
                                          @Nullable final ErrorListener aCustomErrorListener,
                                          @Nullable final URIResolver aCustomURIResolver)
   {
+    this (aXSLTResource, aCustomErrorListener, aCustomURIResolver, false);
+  }
+
+  /**
+   * @param aXSLTResource
+   *        The XSLT resource. May be <code>null</code>.
+   * @param aCustomErrorListener
+   *        An optional XSLT error listener.
+   * @param aCustomURIResolver
+   *        An optional XSLT URI resolver.
+   * @param bEnableTracing
+   *        <code>true</code> to compile the stylesheet with Saxon's {@code COMPILE_WITH_TRACING}
+   *        feature so that per-instruction trace events fire at execution time. Required for
+   *        {@link com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry} to receive any
+   *        events.
+   * @since 10.0.0
+   */
+  public SchematronProviderXSLTPrebuild (@Nullable final IReadableResource aXSLTResource,
+                                         @Nullable final ErrorListener aCustomErrorListener,
+                                         @Nullable final URIResolver aCustomURIResolver,
+                                         final boolean bEnableTracing)
+  {
     try
     {
       // Read XSLT file as XML
@@ -61,7 +83,8 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
 
       // compile result of read file
       final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
-                                                                                             new DefaultTransformURIResolver (aCustomURIResolver));
+                                                                                             new DefaultTransformURIResolver (aCustomURIResolver),
+                                                                                             bEnableTracing);
       m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)

@@ -156,7 +156,8 @@ public final class SchematronSCH
                                                     aSource,
                                                     m_aConfig.getErrorListener (),
                                                     m_aConfig.getURIResolver (),
-                                                    m_aConfig.getParameters ());
+                                                    m_aConfig.getParameters (),
+                                                    m_aConfig.getTelemetry ());
   }
 
   /**
@@ -179,7 +180,8 @@ public final class SchematronSCH
                                                     sBaseURI,
                                                     m_aConfig.getErrorListener (),
                                                     m_aConfig.getURIResolver (),
-                                                    m_aConfig.getParameters ());
+                                                    m_aConfig.getParameters (),
+                                                    m_aConfig.getTelemetry ());
   }
 
   /**
@@ -203,7 +205,8 @@ public final class SchematronSCH
                                                 m_aConfig.getErrorListener (),
                                                 m_aConfig.getURIResolver (),
                                                 m_aConfig.getParameters (),
-                                                m_bValidateSVRL);
+                                                m_bValidateSVRL,
+                                                m_aConfig.getTelemetry ());
   }
 
   /**
