@@ -356,13 +356,16 @@ public class PSReader
               if (sAttrName.equals (CSchematronXML.ATTR_DIAGNOSTICS))
                 ret.setDiagnostics (sAttrValue);
               else
-                if (PSRichGroup.isRichAttribute (sAttrName))
-                  _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+                if (sAttrName.equals (CSchematronXML.ATTR_PROPERTIES))
+                  ret.setProperties (sAttrValue);
                 else
-                  if (PSLinkableGroup.isLinkableAttribute (sAttrName))
-                    _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                  if (PSRichGroup.isRichAttribute (sAttrName))
+                    _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
                   else
-                    ret.addForeignAttribute (sAttrName, sAttrValue);
+                    if (PSLinkableGroup.isLinkableAttribute (sAttrName))
+                      _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                    else
+                      ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
     ret.setLinkable (aLinkableGroup);
@@ -427,10 +430,13 @@ public class PSReader
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
       else
-        if (PSRichGroup.isRichAttribute (sAttrName))
-          _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+        if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
+          ret.setRole (sAttrValue);
         else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
+          if (PSRichGroup.isRichAttribute (sAttrName))
+            _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+          else
+            ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
 
@@ -537,7 +543,14 @@ public class PSReader
           final IMicroElement eElement = (IMicroElement) aDirChild;
           if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
-            _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+              ret.addValueOf (readValueOfFromXML (eElement));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
+                ret.addName (readNameFromXML (eElement));
+              else
+                _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
           }
           else
             ret.addForeignElement (eElement.getClone ());
@@ -580,10 +593,17 @@ public class PSReader
           final IMicroElement eElement = (IMicroElement) aEmphChild;
           if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
-            _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+              ret.addValueOf (readValueOfFromXML (eElement));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
+                ret.addName (readNameFromXML (eElement));
+              else
+                _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
           }
           else
-            _warn (ret, "Unsupported namespace URI '" + eElement.getNamespaceURI () + "'");
+            ret.addForeignElement (eElement.getClone ());
 
           break;
         case COMMENT:
@@ -613,7 +633,10 @@ public class PSReader
       if (sAttrName.equals (CSchematronXML.ATTR_RULE))
         ret.setRule (sAttrValue);
       else
-        ret.addForeignAttribute (sAttrName, sAttrValue);
+        if (sAttrName.equals (CSchematronXML.ATTR_HREF))
+          ret.setHref (sAttrValue);
+        else
+          ret.addForeignAttribute (sAttrName, sAttrValue);
     });
 
     eExtends.forAllChildElements (eChild -> {
@@ -923,13 +946,16 @@ public class PSReader
           if (sAttrName.equals (CSchematronXML.ATTR_IS_A))
             ret.setIsA (sAttrValue);
           else
-            if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
-              ret.setRole (sAttrValue);
+            if (sAttrName.equals (CSchematronXML.ATTR_DOCUMENTS))
+              ret.setDocuments (sAttrValue);
             else
-              if (PSRichGroup.isRichAttribute (sAttrName))
-                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+              if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
+                ret.setRole (sAttrValue);
               else
-                ret.addForeignAttribute (sAttrName, sAttrValue);
+                if (PSRichGroup.isRichAttribute (sAttrName))
+                  _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+                else
+                  ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
 
@@ -1272,7 +1298,10 @@ public class PSReader
                               if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_DIAGNOSTICS))
                                 ret.setDiagnostics (readDiagnosticsFromXML (eSchemaChild));
                               else
-                                _warn (ret, "Unsupported Schematron element '" + eSchemaChild.getLocalName () + "'");
+                                if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_PROPERTIES))
+                                  ret.setProperties (readPropertiesFromXML (eSchemaChild));
+                                else
+                                  _warn (ret, "Unsupported Schematron element '" + eSchemaChild.getLocalName () + "'");
       }
       else
         ret.addForeignElement (eSchemaChild.getClone ());
@@ -1280,6 +1309,171 @@ public class PSReader
     // Run the central version check so that any 2025-only feature used in a schema declaring an
     // older edition (or no edition at all) is reported once per element via the warning channel.
     PSVersionChecker.checkSchematronVersionCompliance (ret, m_aErrorHandler);
+    return ret;
+  }
+
+  /**
+   * Read a &lt;library&gt; root element introduced in ISO/IEC 19757-3:2025.
+   *
+   * @param eLibrary
+   *        The source micro element. Never <code>null</code>.
+   * @return The created domain object. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  public PSLibrary readLibraryFromXML (@NonNull final IMicroElement eLibrary)
+  {
+    final PSLibrary ret = new PSLibrary ();
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    eLibrary.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (PSRichGroup.isRichAttribute (sAttrName))
+          _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+        else
+          _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+    ret.setRich (aRichGroup);
+
+    eLibrary.forAllChildElements (eChild -> {
+      if (isValidSchematronNS (eChild.getNamespaceURI ()))
+      {
+        final String sLocalName = eChild.getLocalName ();
+        if (sLocalName.equals (CSchematronXML.ELEMENT_INCLUDE))
+          ret.addInclude (readIncludeFromXML (eChild));
+        else
+          if (sLocalName.equals (CSchematronXML.ELEMENT_EXTENDS))
+            ret.addExtends (readExtendsFromXML (eChild));
+          else
+            if (sLocalName.equals (CSchematronXML.ELEMENT_TITLE))
+              ret.setTitle (readTitleFromXML (eChild));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_P))
+              {
+                final PSP aP = readPFromXML (eChild);
+                if (ret.getAllPatterns ().isEmpty () && ret.getAllGroups ().isEmpty ())
+                  ret.addStartP (aP);
+                else
+                  ret.addEndP (aP);
+              }
+              else
+                if (sLocalName.equals (CSchematronXML.ELEMENT_PARAM))
+                  ret.addParam (readParamFromXML (eChild));
+                else
+                  if (sLocalName.equals (CSchematronXML.ELEMENT_LET))
+                    ret.addLet (readLetFromXML (eChild));
+                  else
+                    if (sLocalName.equals (CSchematronXML.ELEMENT_RULES))
+                      ret.addAbstractRulesContainer (readRulesFromXML (eChild));
+                    else
+                      if (sLocalName.equals (CSchematronXML.ELEMENT_PATTERN))
+                        ret.addPattern (readPatternFromXML (eChild));
+                      else
+                        if (sLocalName.equals (CSchematronXML.ELEMENT_GROUP))
+                          ret.addGroup (readGroupFromXML (eChild));
+                        else
+                          if (sLocalName.equals (CSchematronXML.ELEMENT_DIAGNOSTICS))
+                            ret.setDiagnostics (readDiagnosticsFromXML (eChild));
+                          else
+                            if (sLocalName.equals (CSchematronXML.ELEMENT_PROPERTIES))
+                              ret.setProperties (readPropertiesFromXML (eChild));
+                            else
+                              _warn (ret, "Unsupported Schematron element '" + sLocalName + "' in <library>");
+      }
+      else
+        _warn (ret, "Unsupported namespace URI '" + eChild.getNamespaceURI () + "' in <library>");
+    });
+    return ret;
+  }
+
+  /**
+   * Read a &lt;property&gt; element introduced in ISO/IEC 19757-3:2016.
+   *
+   * @param eProperty
+   *        The source micro element. Never <code>null</code>.
+   * @return The created domain object. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  @NonNull
+  public PSProperty readPropertyFromXML (@NonNull final IMicroElement eProperty)
+  {
+    final PSProperty ret = new PSProperty ();
+
+    eProperty.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
+          ret.setRole (sAttrValue);
+        else
+          if (sAttrName.equals (CSchematronXML.ATTR_SCHEME))
+            ret.setScheme (sAttrValue);
+          else
+            ret.addForeignAttribute (sAttrName, sAttrValue);
+    });
+
+    eProperty.forAllChildren (aChild -> {
+      switch (aChild.getType ())
+      {
+        case TEXT:
+          ret.addText (aChild.getNodeValue ());
+          break;
+        case ELEMENT:
+          final IMicroElement eElement = (IMicroElement) aChild;
+          if (isValidSchematronNS (eElement.getNamespaceURI ()))
+          {
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
+              ret.addName (readNameFromXML (eElement));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+                ret.addValueOf (readValueOfFromXML (eElement));
+              else
+                if (sLocalName.equals (CSchematronXML.ELEMENT_EMPH))
+                  ret.addEmph (readEmphFromXML (eElement));
+                else
+                  if (sLocalName.equals (CSchematronXML.ELEMENT_DIR))
+                    ret.addDir (readDirFromXML (eElement));
+                  else
+                    if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
+                      ret.addSpan (readSpanFromXML (eElement));
+                    else
+                      _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+          }
+          else
+            ret.addForeignElement (eElement.getClone ());
+          break;
+        case COMMENT:
+          break;
+        default:
+          _warn (ret, "Unsupported child node: " + aChild);
+      }
+    });
+    return ret;
+  }
+
+  /**
+   * Read a &lt;properties&gt; container introduced in ISO/IEC 19757-3:2016.
+   *
+   * @param eProperties
+   *        The source micro element. Never <code>null</code>.
+   * @return The created domain object. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  @NonNull
+  public PSProperties readPropertiesFromXML (@NonNull final IMicroElement eProperties)
+  {
+    final PSProperties ret = new PSProperties ();
+    eProperties.forAllChildElements (eChild -> {
+      if (isValidSchematronNS (eChild.getNamespaceURI ()) &&
+          eChild.getLocalName ().equals (CSchematronXML.ELEMENT_PROPERTY))
+        ret.addProperty (readPropertyFromXML (eChild));
+      else
+        _warn (ret, "Unsupported child of <properties>: '" + eChild.getLocalName () + "'");
+    });
     return ret;
   }
 
@@ -1313,7 +1507,14 @@ public class PSReader
           final IMicroElement eElement = (IMicroElement) aSpanChild;
           if (isValidSchematronNS (eElement.getNamespaceURI ()))
           {
-            _warn (ret, "Unsupported Schematron element '" + eElement.getLocalName () + "'");
+            final String sLocalName = eElement.getLocalName ();
+            if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+              ret.addValueOf (readValueOfFromXML (eElement));
+            else
+              if (sLocalName.equals (CSchematronXML.ELEMENT_NAME))
+                ret.addName (readNameFromXML (eElement));
+              else
+                _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
           }
           else
             ret.addForeignElement (eElement.getClone ());
@@ -1434,6 +1635,34 @@ public class PSReader
       LOGGER.info ("Resolved source Schematron:\n" + MicroWriter.getNodeAsString (aDoc));
 
     return readSchemaFromXML (aDoc.getDocumentElement ());
+  }
+
+  /**
+   * Read a Schematron <code>&lt;library&gt;</code> document (introduced in ISO/IEC 19757-3:2025)
+   * from the resource supplied in the constructor.
+   *
+   * @return The read {@link PSLibrary}.
+   * @throws SchematronReadException
+   *         If reading fails
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  public PSLibrary readLibrary () throws SchematronReadException
+  {
+    final SAXReaderSettings aSettings = new SAXReaderSettings ().setEntityResolver (m_aEntityResolver);
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (m_aResource,
+                                                                                    aSettings,
+                                                                                    m_aErrorHandler,
+                                                                                    m_aSchematronIncludeResolver,
+                                                                                    m_bLenient);
+    if (aDoc == null || aDoc.getDocumentElement () == null)
+      throw new SchematronReadException (m_aResource,
+                                         "Failed to resolve includes in Schematron library resource " + m_aResource);
+
+    if (SchematronDebug.isShowResolvedSourceSchematron ())
+      LOGGER.info ("Resolved source Schematron library:\n" + MicroWriter.getNodeAsString (aDoc));
+
+    return readLibraryFromXML (aDoc.getDocumentElement ());
   }
 
   @Override

@@ -138,6 +138,6 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIf ("content", m_aContent, CollectionHelper::isNotEmpty).getToString ();
+    return new ToStringGenerator (this).appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty).getToString ();
   }
 }

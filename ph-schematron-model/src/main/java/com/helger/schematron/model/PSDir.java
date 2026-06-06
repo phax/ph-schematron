@@ -183,7 +183,50 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
   @Nullable
   public String getAsText ()
   {
-    return StringImplode.getImploded (m_aContent);
+    final ICommonsList <String> aTexts = getAllTexts ();
+    return aTexts.isEmpty () ? null : StringImplode.getImploded (aTexts);
+  }
+
+  /**
+   * Append a {@link PSName} dynamic-content child. Permitted by the v4 RNC; pre-2025 schemas using
+   * this combination are flagged through {@link PSVersionChecker}.
+   *
+   * @param aName
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void addName (@NonNull final PSName aName)
+  {
+    ValueEnforcer.notNull (aName, "Name");
+    m_aContent.add (aName);
+  }
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSName> getAllNames ()
+  {
+    return m_aContent.getAllInstanceOf (PSName.class);
+  }
+
+  /**
+   * Append a {@link PSValueOf} dynamic-content child. Permitted by the v4 RNC; pre-2025 schemas
+   * using this combination are flagged through {@link PSVersionChecker}.
+   *
+   * @param aValueOf
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void addValueOf (@NonNull final PSValueOf aValueOf)
+  {
+    ValueEnforcer.notNull (aValueOf, "ValueOf");
+    m_aContent.add (aValueOf);
+  }
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSValueOf> getAllValueOfs ()
+  {
+    return m_aContent.getAllInstanceOf (PSValueOf.class);
   }
 
   @NonNull
@@ -193,10 +236,13 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     if (m_eValue != null)
       ret.setAttribute (CSchematronXML.ATTR_VALUE, m_eValue.getID ());
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement x)
+        ret.addChild (x.getClone ());
       else
-        ret.addText ((String) aContent);
+        if (aContent instanceof final String x)
+          ret.addText (x);
+        else
+          ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -209,10 +255,21 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     final PSDir ret = new PSDir ();
     ret.setValue (m_eValue);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addForeignElement (((IMicroElement) aContent).getClone ());
+    {
+      if (aContent instanceof final IMicroElement x)
+        ret.addForeignElement (x.getClone ());
       else
-        ret.addText ((String) aContent);
+        if (aContent instanceof final String x)
+          ret.addText (x);
+        else
+          if (aContent instanceof final PSName x)
+            ret.addName (x);
+          else
+            if (aContent instanceof final PSValueOf x)
+              ret.addValueOf (x);
+            else
+              throw new IllegalStateException ("Unexpected content element: " + aContent);
+    }
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);
     return ret;
@@ -221,9 +278,9 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("value", m_eValue)
-                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIfNotNull ("Value", m_eValue)
+                                       .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

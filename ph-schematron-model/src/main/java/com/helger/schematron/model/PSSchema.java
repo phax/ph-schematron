@@ -85,6 +85,7 @@ public class PSSchema implements
   private final ICommonsList <PSGroup> m_aGroups = new CommonsArrayList <> ();
   private final ICommonsList <PSP> m_aEndPs = new CommonsArrayList <> ();
   private PSDiagnostics m_aDiagnostics;
+  private PSProperties m_aProperties;
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
   private ICommonsList <IMicroElement> m_aForeignElements;
 
@@ -164,6 +165,8 @@ public class PSSchema implements
         return false;
     if (m_aDiagnostics != null && !m_aDiagnostics.isValid (aErrorHandler))
       return false;
+    if (m_aProperties != null && !m_aProperties.isValid (aErrorHandler))
+      return false;
     return true;
   }
 
@@ -197,6 +200,8 @@ public class PSSchema implements
       aP.validateCompletely (aErrorHandler);
     if (m_aDiagnostics != null)
       m_aDiagnostics.validateCompletely (aErrorHandler);
+    if (m_aProperties != null)
+      m_aProperties.validateCompletely (aErrorHandler);
   }
 
   /**
@@ -793,6 +798,38 @@ public class PSSchema implements
     return m_aDiagnostics;
   }
 
+  /**
+   * Set the optional <code>properties</code> container introduced in ISO/IEC 19757-3:2016.
+   *
+   * @param aProperties
+   *        The container. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  public void setProperties (@Nullable final PSProperties aProperties)
+  {
+    m_aProperties = aProperties;
+  }
+
+  /**
+   * @return <code>true</code> if a {@code <properties>} container is declared on this schema.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  public boolean hasProperties ()
+  {
+    return m_aProperties != null;
+  }
+
+  /**
+   * @return The <code>properties</code> container declared on this schema, or <code>null</code>
+   *         if none.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  @Nullable
+  public PSProperties getProperties ()
+  {
+    return m_aProperties;
+  }
+
   @NonNull
   public IMicroElement getAsMicroElement ()
   {
@@ -834,6 +871,8 @@ public class PSSchema implements
       ret.addChild (aP.getAsMicroElement ());
     if (m_aDiagnostics != null)
       ret.addChild (m_aDiagnostics.getAsMicroElement ());
+    if (m_aProperties != null)
+      ret.addChild (m_aProperties.getAsMicroElement ());
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -865,6 +904,7 @@ public class PSSchema implements
                                        .appendIf ("Groups", m_aGroups, CollectionHelper::isNotEmpty)
                                        .appendIf ("EndPs", m_aEndPs, CollectionHelper::isNotEmpty)
                                        .appendIfNotNull ("Diagnostics", m_aDiagnostics)
+                                       .appendIfNotNull ("Properties", m_aProperties)
                                        .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .appendIf ("ForeignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();

@@ -60,6 +60,7 @@ public class PSDiagnostic implements
                           IPSHasRichGroup
 {
   private String m_sID;
+  private String m_sRole;
   private PSRichGroup m_aRich;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
@@ -145,6 +146,30 @@ public class PSDiagnostic implements
   public String getID ()
   {
     return m_sID;
+  }
+
+  /**
+   * Set the optional <code>role</code> attribute, formalised by ISO/IEC 19757-3:2020 (the
+   * pre-2020 RNCs did not declare it, although v2 5.5.1 NOTE 2 hinted at values such as
+   * <code>warning</code>, <code>caution</code> or <code>note</code>).
+   *
+   * @param sRole
+   *        The role to set. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2020)
+   */
+  public void setRole (@Nullable final String sRole)
+  {
+    m_sRole = sRole;
+  }
+
+  /**
+   * @return The value of the <code>role</code> attribute, or <code>null</code> if not set.
+   * @since 10.0.0 (Schematron 2020)
+   */
+  @Nullable
+  public String getRole ()
+  {
+    return m_sRole;
   }
 
   public void setRich (@Nullable final PSRichGroup aRich)
@@ -244,6 +269,8 @@ public class PSDiagnostic implements
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_DIAGNOSTIC);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
+    if (StringHelper.isNotEmpty (m_sRole))
+      ret.setAttribute (CSchematronXML.ATTR_ROLE, m_sRole);
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
@@ -265,6 +292,7 @@ public class PSDiagnostic implements
   {
     final PSDiagnostic ret = new PSDiagnostic ();
     ret.setID (m_sID);
+    ret.setRole (m_sRole);
     ret.setRich (getRichClone ());
     for (final Object aContent : m_aContent)
     {
@@ -296,10 +324,11 @@ public class PSDiagnostic implements
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("id", m_sID)
-                                       .appendIfNotNull ("rich", m_aRich)
-                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIfNotNull ("ID", m_sID)
+                                       .appendIfNotNull ("Role", m_sRole)
+                                       .appendIfNotNull ("Rich", m_aRich)
+                                       .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

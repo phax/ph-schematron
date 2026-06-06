@@ -77,6 +77,7 @@ public class PSAssertReport implements
   private String m_sID;
   private String m_sSeverity;
   private ICommonsList <String> m_aDiagnostics;
+  private ICommonsList <String> m_aProperties;
   private PSRichGroup m_aRich;
   private PSLinkableGroup m_aLinkable;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
@@ -300,6 +301,44 @@ public class PSAssertReport implements
     m_aDiagnostics = aDiagnostics;
   }
 
+  /**
+   * @return List of references to {@link PSProperty} elements.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <String> getAllProperties ()
+  {
+    return new CommonsArrayList <> (m_aProperties);
+  }
+
+  /**
+   * Set the properties IDREFS attribute introduced in ISO/IEC 19757-3:2016. The value references
+   * one or more <code>property</code> elements declared in the schema's <code>properties</code>
+   * container; each property's content is interpolated into the SVRL output at validation time.
+   *
+   * @param sProperties
+   *        The raw IDREFS value (whitespace-separated). May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  public void setProperties (@Nullable final String sProperties)
+  {
+    if (StringHelper.isNotEmpty (sProperties))
+      setProperties (RegExHelper.getSplitToList (sProperties.trim (), "\\s+"));
+    else
+      m_aProperties = null;
+  }
+
+  /**
+   * @param aProperties
+   *        The list of {@link PSProperty} IDs to reference. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  public void setProperties (@Nullable final ICommonsList <String> aProperties)
+  {
+    m_aProperties = aProperties;
+  }
+
   @Nullable
   public PSRichGroup getRich ()
   {
@@ -432,6 +471,9 @@ public class PSAssertReport implements
     if (CollectionHelper.isNotEmpty (m_aDiagnostics))
       ret.setAttribute (CSchematronXML.ATTR_DIAGNOSTICS,
                         StringImplode.imploder ().source (m_aDiagnostics).separator (' ').build ());
+    if (CollectionHelper.isNotEmpty (m_aProperties))
+      ret.setAttribute (CSchematronXML.ATTR_PROPERTIES,
+                        StringImplode.imploder ().source (m_aProperties).separator (' ').build ());
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     if (m_aLinkable != null)
@@ -459,6 +501,7 @@ public class PSAssertReport implements
                                        .appendIfNotNull ("ID", m_sID)
                                        .appendIfNotNull ("Severity", m_sSeverity)
                                        .appendIfNotNull ("Diagnostics", m_aDiagnostics)
+                                       .appendIfNotNull ("Properties", m_aProperties)
                                        .appendIfNotNull ("Rich", m_aRich)
                                        .appendIfNotNull ("Linkable", m_aLinkable)
                                        .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)

@@ -172,9 +172,9 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("uri", m_sUri)
-                                       .appendIfNotNull ("prefix", m_sPrefix)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIfNotNull ("Uri", m_sUri)
+                                       .appendIfNotNull ("Prefix", m_sPrefix)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 

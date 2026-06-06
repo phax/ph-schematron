@@ -72,6 +72,7 @@ public abstract class AbstractPSPatternLike implements
   private String m_sID;
   private String m_sIsA;
   private String m_sRole;
+  private String m_sDocuments;
   private PSRichGroup m_aRich;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
@@ -275,6 +276,31 @@ public abstract class AbstractPSPatternLike implements
     return m_sRole;
   }
 
+  /**
+   * Set the optional <code>documents</code> attribute introduced in ISO/IEC 19757-3:2016.
+   * When present, the rule contexts of this pattern/group are evaluated against the subordinate
+   * documents whose IRIs are returned by the path expression (evaluated in the context of the
+   * original instance document root).
+   *
+   * @param sDocuments
+   *        The path expression returning one or more IRIs. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  public void setDocuments (@Nullable final String sDocuments)
+  {
+    m_sDocuments = sDocuments;
+  }
+
+  /**
+   * @return The value of the <code>documents</code> attribute, or <code>null</code> if not set.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  @Nullable
+  public String getDocuments ()
+  {
+    return m_sDocuments;
+  }
+
   @Nullable
   public PSRichGroup getRich ()
   {
@@ -465,6 +491,8 @@ public abstract class AbstractPSPatternLike implements
       ret.setAttribute (CSchematronXML.ATTR_ABSTRACT, "true");
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     ret.setAttribute (CSchematronXML.ATTR_IS_A, m_sIsA);
+    if (StringHelper.isNotEmpty (m_sDocuments))
+      ret.setAttribute (CSchematronXML.ATTR_DOCUMENTS, m_sDocuments);
     if (StringHelper.isNotEmpty (m_sRole))
       ret.setAttribute (CSchematronXML.ATTR_ROLE, m_sRole);
     if (m_aRich != null)
@@ -486,6 +514,7 @@ public abstract class AbstractPSPatternLike implements
     return new ToStringGenerator (this).append ("Abstract", m_bAbstract)
                                        .appendIfNotNull ("ID", m_sID)
                                        .appendIfNotNull ("Is-a", m_sIsA)
+                                       .appendIfNotNull ("Documents", m_sDocuments)
                                        .appendIfNotNull ("Role", m_sRole)
                                        .appendIfNotNull ("Rich", m_aRich)
                                        .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)

@@ -74,6 +74,7 @@ public class PSLibrary implements IPSElement, IPSHasID, IPSHasIncludes, IPSHasLe
   private final ICommonsList <PSGroup> m_aGroups = new CommonsArrayList <> ();
   private final ICommonsList <PSP> m_aEndPs = new CommonsArrayList <> ();
   private PSDiagnostics m_aDiagnostics;
+  private PSProperties m_aProperties;
 
   public PSLibrary ()
   {}
@@ -111,6 +112,8 @@ public class PSLibrary implements IPSElement, IPSHasID, IPSHasIncludes, IPSHasLe
         return false;
     if (m_aDiagnostics != null && !m_aDiagnostics.isValid (aErrorHandler))
       return false;
+    if (m_aProperties != null && !m_aProperties.isValid (aErrorHandler))
+      return false;
     return true;
   }
 
@@ -138,6 +141,8 @@ public class PSLibrary implements IPSElement, IPSHasID, IPSHasIncludes, IPSHasLe
       aP.validateCompletely (aErrorHandler);
     if (m_aDiagnostics != null)
       m_aDiagnostics.validateCompletely (aErrorHandler);
+    if (m_aProperties != null)
+      m_aProperties.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -336,6 +341,22 @@ public class PSLibrary implements IPSElement, IPSHasID, IPSHasIncludes, IPSHasLe
     return m_aDiagnostics != null;
   }
 
+  public void setProperties (@Nullable final PSProperties aProperties)
+  {
+    m_aProperties = aProperties;
+  }
+
+  @Nullable
+  public PSProperties getProperties ()
+  {
+    return m_aProperties;
+  }
+
+  public boolean hasProperties ()
+  {
+    return m_aProperties != null;
+  }
+
   @NonNull
   public IMicroElement getAsMicroElement ()
   {
@@ -365,6 +386,8 @@ public class PSLibrary implements IPSElement, IPSHasID, IPSHasIncludes, IPSHasLe
       ret.addChild (aP.getAsMicroElement ());
     if (m_aDiagnostics != null)
       ret.addChild (m_aDiagnostics.getAsMicroElement ());
+    if (m_aProperties != null)
+      ret.addChild (m_aProperties.getAsMicroElement ());
     return ret;
   }
 
@@ -386,6 +409,7 @@ public class PSLibrary implements IPSElement, IPSHasID, IPSHasIncludes, IPSHasLe
                                        .appendIf ("Groups", m_aGroups, CollectionHelper::isNotEmpty)
                                        .appendIf ("EndPs", m_aEndPs, CollectionHelper::isNotEmpty)
                                        .appendIfNotNull ("Diagnostics", m_aDiagnostics)
+                                       .appendIfNotNull ("Properties", m_aProperties)
                                        .getToString ();
   }
 }

@@ -89,9 +89,9 @@ public class SchematronTestFile
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("parentDirBaseName", m_sParentDirBaseName)
-                                       .append ("res", m_aRes)
-                                       .append ("fileBaseName", m_sFileBaseName)
+    return new ToStringGenerator (this).append ("ParentDirBaseName", m_sParentDirBaseName)
+                                       .append ("Res", m_aRes)
+                                       .append ("FileBaseName", m_sFileBaseName)
                                        .getToString ();
   }
 }

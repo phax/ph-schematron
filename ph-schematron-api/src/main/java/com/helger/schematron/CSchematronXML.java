@@ -34,6 +34,8 @@ public final class CSchematronXML
   public static final String ATTR_CONTEXT = "context";
   public static final String ATTR_DEFAULT_PHASE = "defaultPhase";
   public static final String ATTR_DIAGNOSTICS = "diagnostics";
+  /** @since 10.0.0 (Schematron 2016) */
+  public static final String ATTR_DOCUMENTS = "documents";
   public static final String ATTR_FLAG = "flag";
   public static final String ATTR_FPI = "fpi";
   /** @since 10.0.0 (Schematron 2025) */
@@ -46,7 +48,11 @@ public final class CSchematronXML
   public static final String ATTR_PATH = "path";
   public static final String ATTR_PATTERN = "pattern";
   public static final String ATTR_PREFIX = "prefix";
+  /** @since 10.0.0 (Schematron 2016) */
+  public static final String ATTR_PROPERTIES = "properties";
   public static final String ATTR_QUERY_BINDING = "queryBinding";
+  /** @since 10.0.0 (Schematron 2016) */
+  public static final String ATTR_SCHEME = "scheme";
   public static final String ATTR_ROLE = "role";
   public static final String ATTR_RULE = "rule";
   public static final String ATTR_SCHEMA_VERSION = "schemaVersion";
@@ -84,6 +90,10 @@ public final class CSchematronXML
   public static final String ELEMENT_PARAM = "param";
   public static final String ELEMENT_PATTERN = "pattern";
   public static final String ELEMENT_PHASE = "phase";
+  /** @since 10.0.0 (Schematron 2016) */
+  public static final String ELEMENT_PROPERTIES = "properties";
+  /** @since 10.0.0 (Schematron 2016) */
+  public static final String ELEMENT_PROPERTY = "property";
   public static final String ELEMENT_REPORT = "report";
   public static final String ELEMENT_RULE = "rule";
   /** @since 10.0.0 (Schematron 2025) */

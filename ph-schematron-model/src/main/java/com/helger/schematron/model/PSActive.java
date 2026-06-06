@@ -263,9 +263,9 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("pattern", m_sPattern)
-                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIfNotNull ("Pattern", m_sPattern)
+                                       .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

@@ -47,6 +47,7 @@ import com.helger.xml.microdom.MicroElement;
 public class PSExtends implements IPSElement, IPSHasForeignAttributes
 {
   private String m_sRule;
+  private String m_sHref;
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
 
   public PSExtends ()
@@ -54,9 +55,14 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
 
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.isEmpty (m_sRule))
+    if (StringHelper.isEmpty (m_sRule) && StringHelper.isEmpty (m_sHref))
     {
-      aErrorHandler.error (this, "<extends> has no 'rule'");
+      aErrorHandler.error (this, "<extends> has neither 'rule' nor 'href'");
+      return false;
+    }
+    if (StringHelper.isNotEmpty (m_sRule) && StringHelper.isNotEmpty (m_sHref))
+    {
+      aErrorHandler.error (this, "<extends> has both 'rule' and 'href' (the v2+ RNC permits only one of them)");
       return false;
     }
     return true;
@@ -64,8 +70,10 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
 
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
-    if (StringHelper.isEmpty (m_sRule))
-      aErrorHandler.error (this, "<extends> has no 'rule'");
+    if (StringHelper.isEmpty (m_sRule) && StringHelper.isEmpty (m_sHref))
+      aErrorHandler.error (this, "<extends> has neither 'rule' nor 'href'");
+    if (StringHelper.isNotEmpty (m_sRule) && StringHelper.isNotEmpty (m_sHref))
+      aErrorHandler.error (this, "<extends> has both 'rule' and 'href' (the v2+ RNC permits only one of them)");
   }
 
   public boolean isMinimal ()
@@ -108,11 +116,39 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
     return m_sRule;
   }
 
+  /**
+   * Set the optional <code>href</code> attribute introduced in ISO/IEC 19757-3:2016 as an
+   * alternative to <code>rule</code>: when present the referenced fragment is spliced in place
+   * of the <code>&lt;extends&gt;</code> element. The 2025 edition further relaxes the target so
+   * the referenced rule need not be abstract.
+   *
+   * @param sHref
+   *        The IRI reference. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  public void setHref (@Nullable final String sHref)
+  {
+    m_sHref = sHref;
+  }
+
+  /**
+   * @return The value of the <code>href</code> attribute, or <code>null</code> if not set.
+   * @since 10.0.0 (Schematron 2016)
+   */
+  @Nullable
+  public String getHref ()
+  {
+    return m_sHref;
+  }
+
   @NonNull
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_EXTENDS);
-    ret.setAttribute (CSchematronXML.ATTR_RULE, m_sRule);
+    if (StringHelper.isNotEmpty (m_sRule))
+      ret.setAttribute (CSchematronXML.ATTR_RULE, m_sRule);
+    if (StringHelper.isNotEmpty (m_sHref))
+      ret.setAttribute (CSchematronXML.ATTR_HREF, m_sHref);
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
@@ -122,8 +158,9 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("rule", m_sRule)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIfNotNull ("Rule", m_sRule)
+                                       .appendIfNotNull ("Href", m_sHref)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

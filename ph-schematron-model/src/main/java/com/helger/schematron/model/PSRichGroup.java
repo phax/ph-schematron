@@ -194,11 +194,11 @@ public class PSRichGroup implements ICloneable <PSRichGroup>, Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("icon", m_sIcon)
-                                       .appendIfNotNull ("see", m_sSee)
-                                       .appendIfNotNull ("fpi", m_sFPI)
-                                       .appendIfNotNull ("xml:lang", m_sXmlLang)
-                                       .appendIfNotNull ("xml:space", m_eXmlSpace)
+    return new ToStringGenerator (this).appendIfNotNull ("Icon", m_sIcon)
+                                       .appendIfNotNull ("See", m_sSee)
+                                       .appendIfNotNull ("FPI", m_sFPI)
+                                       .appendIfNotNull ("Xml:lang", m_sXmlLang)
+                                       .appendIfNotNull ("Xml:space", m_eXmlSpace)
                                        .getToString ();
   }
 }
