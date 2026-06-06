@@ -26,7 +26,9 @@ import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.cache.regex.RegExHelper;
 import com.helger.collection.CollectionHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsLinkedHashMap;
@@ -69,7 +71,7 @@ public class PSRule implements
 {
   public static final boolean DEFAULT_ABSTRACT = false;
 
-  private String m_sFlag;
+  private final ICommonsList <String> m_aFlags = new CommonsArrayList <> ();
   private PSRichGroup m_aRich;
   private PSLinkableGroup m_aLinkable;
   private boolean m_bAbstract = DEFAULT_ABSTRACT;
@@ -188,12 +190,43 @@ public class PSRule implements
   @Nullable
   public String getFlag ()
   {
-    return m_sFlag;
+    return m_aFlags.isEmpty () ? null : StringImplode.imploder ().source (m_aFlags).separator (' ').build ();
   }
 
+  /**
+   * Replace the entire flag list with the tokens parsed from the supplied string. Whitespace runs
+   * delimit tokens; a <code>null</code> or all-whitespace input clears the list. The 2025 RNC
+   * permits more than one token; pre-2025 schemas only use a single token.
+   *
+   * @param sFlag
+   *        The raw <code>@flag</code> attribute value. May be <code>null</code>.
+   */
   public void setFlag (@Nullable final String sFlag)
   {
-    m_sFlag = sFlag;
+    m_aFlags.clear ();
+    if (StringHelper.isNotEmpty (sFlag))
+    {
+      final String sTrimmed = sFlag.trim ();
+      if (sTrimmed.length () > 0)
+        for (final String sToken : RegExHelper.getSplitToArray (sTrimmed, "\\s+"))
+          if (sToken.length () > 0)
+            m_aFlags.add (sToken);
+    }
+  }
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <String> getAllFlags ()
+  {
+    return m_aFlags.getClone ();
+  }
+
+  public void addFlag (@NonNull final String sFlag)
+  {
+    ValueEnforcer.notEmpty (sFlag, "Flag");
+    if (RegExHelper.getMatcher (".*\\s.*", sFlag).matches ())
+      throw new IllegalArgumentException ("Flag token may not contain whitespace: '" + sFlag + "'");
+    m_aFlags.add (sFlag);
   }
 
   @Nullable
@@ -412,7 +445,9 @@ public class PSRule implements
   public IMicroElement getAsMicroElement ()
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_RULE);
-    ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
+    if (m_aFlags.isNotEmpty ())
+      ret.setAttribute (CSchematronXML.ATTR_FLAG,
+                        StringImplode.imploder ().source (m_aFlags).separator (' ').build ());
     if (m_bAbstract)
       ret.setAttribute (CSchematronXML.ATTR_ABSTRACT, "true");
     ret.setAttribute (CSchematronXML.ATTR_CONTEXT, m_sContext);
@@ -441,16 +476,16 @@ public class PSRule implements
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("flag", m_sFlag)
-                                       .appendIfNotNull ("rich", m_aRich)
-                                       .appendIfNotNull ("linkable", m_aLinkable)
-                                       .append ("abstract", m_bAbstract)
-                                       .appendIfNotNull ("context", m_sContext)
-                                       .appendIfNotNull ("id", m_sID)
+    return new ToStringGenerator (this).appendIf ("Flags", m_aFlags, CollectionHelper::isNotEmpty)
+                                       .appendIfNotNull ("Rich", m_aRich)
+                                       .appendIfNotNull ("Linkable", m_aLinkable)
+                                       .append ("Abstract", m_bAbstract)
+                                       .appendIfNotNull ("Context", m_sContext)
+                                       .appendIfNotNull ("ID", m_sID)
                                        .appendIfNotNull ("Visit-each", m_sVisitEach)
                                        .appendIfNotNull ("Severity", m_sSeverity)
-                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

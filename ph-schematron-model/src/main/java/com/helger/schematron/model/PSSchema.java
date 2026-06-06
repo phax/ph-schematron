@@ -386,8 +386,8 @@ public class PSSchema implements
   }
 
   /**
-   * Set the Schematron edition this schema declares via the
-   * <code>schematronEdition</code> attribute introduced in ISO/IEC 19757-3:2025.
+   * Set the Schematron edition this schema declares via the <code>schematronEdition</code>
+   * attribute introduced in ISO/IEC 19757-3:2025.
    *
    * @param eSchematronEdition
    *        The edition to declare, or <code>null</code> to omit the attribute.
@@ -398,9 +398,9 @@ public class PSSchema implements
   }
 
   /**
-   * @return The Schematron edition declared via the <code>schematronEdition</code>
-   *         attribute on this schema, or <code>null</code> if the attribute is
-   *         absent or held a value not understood by this implementation.
+   * @return The Schematron edition declared via the <code>schematronEdition</code> attribute on
+   *         this schema, or <code>null</code> if the attribute is absent or held a value not
+   *         understood by this implementation.
    */
   @Nullable
   public ESchematronVersion getSchematronEdition ()
@@ -454,8 +454,8 @@ public class PSSchema implements
   }
 
   /**
-   * Add a top-level <code>extends</code> introduced in ISO/IEC 19757-3:2025.
-   * Pre-2025 schemas only allow <code>extends</code> inside a <code>rule</code>.
+   * Add a top-level <code>extends</code> introduced in ISO/IEC 19757-3:2025. Pre-2025 schemas only
+   * allow <code>extends</code> inside a <code>rule</code>.
    *
    * @param aExtends
    *        The element to add. May not be <code>null</code>.
@@ -468,8 +468,7 @@ public class PSSchema implements
   }
 
   /**
-   * @return <code>true</code> if at least one top-level <code>extends</code> is
-   *         present.
+   * @return <code>true</code> if at least one top-level <code>extends</code> is present.
    * @since 10.0.0 (Schematron 2025)
    */
   public boolean hasAnyExtends ()
@@ -533,9 +532,9 @@ public class PSSchema implements
   }
 
   /**
-   * Add a top-level <code>param</code> introduced in ISO/IEC 19757-3:2025.
-   * Pre-2025 schemas only allow <code>param</code> inside a <code>pattern</code>
-   * that instantiates an abstract pattern via <code>is-a</code>.
+   * Add a top-level <code>param</code> introduced in ISO/IEC 19757-3:2025. Pre-2025 schemas only
+   * allow <code>param</code> inside a <code>pattern</code> that instantiates an abstract pattern
+   * via <code>is-a</code>.
    *
    * @param aParam
    *        The element to add. May not be <code>null</code>.
@@ -548,8 +547,7 @@ public class PSSchema implements
   }
 
   /**
-   * @return <code>true</code> if at least one top-level <code>param</code> is
-   *         present.
+   * @return <code>true</code> if at least one top-level <code>param</code> is present.
    * @since 10.0.0 (Schematron 2025)
    */
   public boolean hasAnyParam ()
@@ -630,9 +628,9 @@ public class PSSchema implements
   }
 
   /**
-   * Add an abstract-rules container introduced in ISO/IEC 19757-3:2025.
-   * The container wraps one or more <code>rule[@abstract='true']</code>
-   * declarations that may be extended from rules in any pattern in this schema.
+   * Add an abstract-rules container introduced in ISO/IEC 19757-3:2025. The container wraps one or
+   * more <code>rule[@abstract='true']</code> declarations that may be extended from rules in any
+   * pattern in this schema.
    *
    * @param aRules
    *        The element to add. May not be <code>null</code>.
@@ -704,10 +702,9 @@ public class PSSchema implements
   }
 
   /**
-   * Add a top-level <code>group</code> element introduced in ISO/IEC 19757-3:2025.
-   * A group shares the content model with <code>pattern</code> but uses
-   * &quot;try every rule&quot; semantics instead of the if-then-else order applied
-   * to patterns.
+   * Add a top-level <code>group</code> element introduced in ISO/IEC 19757-3:2025. A group shares
+   * the content model with <code>pattern</code> but uses &quot;try every rule&quot; semantics
+   * instead of the if-then-else order applied to patterns.
    *
    * @param aGroup
    *        The element to add. May not be <code>null</code>.
@@ -737,6 +734,34 @@ public class PSSchema implements
   public ICommonsList <PSGroup> getAllGroups ()
   {
     return m_aGroups.getClone ();
+  }
+
+  /**
+   * @return The count of all <code>group</code> elements declared on this schema.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nonnegative
+  public int getGroupCount ()
+  {
+    return m_aGroups.size ();
+  }
+
+  /**
+   * Search a <code>group</code> element with a specific ID.
+   *
+   * @param sID
+   *        The ID to search. May be <code>null</code>.
+   * @return The group with the provided ID or <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public PSGroup getGroupOfID (@Nullable final String sID)
+  {
+    if (StringHelper.isNotEmpty (sID))
+      for (final PSGroup aGroup : m_aGroups)
+        if (sID.equals (aGroup.getID ()))
+          return aGroup;
+    return null;
   }
 
   public void addEndP (@NonNull final PSP aP)

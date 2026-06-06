@@ -73,7 +73,7 @@ public class PSAssertReport implements
 
   private final boolean m_bIsAssert;
   private String m_sTest;
-  private String m_sFlag;
+  private final ICommonsList <String> m_aFlags = new CommonsArrayList <> ();
   private String m_sID;
   private String m_sSeverity;
   private ICommonsList <String> m_aDiagnostics;
@@ -186,12 +186,43 @@ public class PSAssertReport implements
   @Nullable
   public String getFlag ()
   {
-    return m_sFlag;
+    return m_aFlags.isEmpty () ? null : StringImplode.imploder ().source (m_aFlags).separator (' ').build ();
   }
 
+  /**
+   * Replace the entire flag list with the tokens parsed from the supplied string. Whitespace runs
+   * delimit tokens; a <code>null</code> or all-whitespace input clears the list. The 2025 RNC
+   * permits more than one token; pre-2025 schemas only use a single token.
+   *
+   * @param sFlag
+   *        The raw <code>@flag</code> attribute value. May be <code>null</code>.
+   */
   public void setFlag (@Nullable final String sFlag)
   {
-    m_sFlag = sFlag;
+    m_aFlags.clear ();
+    if (StringHelper.isNotEmpty (sFlag))
+    {
+      final String sTrimmed = sFlag.trim ();
+      if (sTrimmed.length () > 0)
+        for (final String sToken : RegExHelper.getSplitToArray (sTrimmed, "\\s+"))
+          if (sToken.length () > 0)
+            m_aFlags.add (sToken);
+    }
+  }
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <String> getAllFlags ()
+  {
+    return m_aFlags.getClone ();
+  }
+
+  public void addFlag (@NonNull final String sFlag)
+  {
+    ValueEnforcer.notEmpty (sFlag, "Flag");
+    if (RegExHelper.getMatcher (".*\\s.*", sFlag).matches ())
+      throw new IllegalArgumentException ("Flag token may not contain whitespace: '" + sFlag + "'");
+    m_aFlags.add (sFlag);
   }
 
   @Nullable
@@ -392,7 +423,9 @@ public class PSAssertReport implements
                                                 m_bIsAssert ? CSchematronXML.ELEMENT_ASSERT
                                                             : CSchematronXML.ELEMENT_REPORT);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
-    ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
+    if (m_aFlags.isNotEmpty ())
+      ret.setAttribute (CSchematronXML.ATTR_FLAG,
+                        StringImplode.imploder ().source (m_aFlags).separator (' ').build ());
     if (StringHelper.isNotEmpty (m_sSeverity))
       ret.setAttribute (CSchematronXML.ATTR_SEVERITY, m_sSeverity);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);
@@ -420,16 +453,16 @@ public class PSAssertReport implements
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("isAssert", m_bIsAssert)
-                                       .appendIfNotNull ("test", m_sTest)
-                                       .appendIfNotNull ("flag", m_sFlag)
-                                       .appendIfNotNull ("id", m_sID)
+    return new ToStringGenerator (this).append ("IsAssert", m_bIsAssert)
+                                       .appendIfNotNull ("Test", m_sTest)
+                                       .appendIf ("Flags", m_aFlags, CollectionHelper::isNotEmpty)
+                                       .appendIfNotNull ("ID", m_sID)
                                        .appendIfNotNull ("Severity", m_sSeverity)
-                                       .appendIfNotNull ("diagnostics", m_aDiagnostics)
-                                       .appendIfNotNull ("rich", m_aRich)
-                                       .appendIfNotNull ("linkable", m_aLinkable)
-                                       .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIfNotNull ("Diagnostics", m_aDiagnostics)
+                                       .appendIfNotNull ("Rich", m_aRich)
+                                       .appendIfNotNull ("Linkable", m_aLinkable)
+                                       .appendIf ("Content", m_aContent, CollectionHelper::isNotEmpty)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 

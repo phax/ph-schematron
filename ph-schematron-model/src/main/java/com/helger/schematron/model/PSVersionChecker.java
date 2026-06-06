@@ -173,15 +173,31 @@ public final class PSVersionChecker
                      ESchematronVersion.SCHEMATRON_2025,
                      eDeclared,
                      aErrorHandler);
+    // Multi-token flag is only allowed by the 2025 RNC (list { token+ }); earlier editions
+    // treated flag as a single token.
+    if (aRule.getAllFlags ().size () > 1)
+      _warnIfTooOld (aRule,
+                     "multi-token 'flag' attribute on <rule>",
+                     ESchematronVersion.SCHEMATRON_2025,
+                     eDeclared,
+                     aErrorHandler);
     for (final PSLet aLet : aRule.getAllLets ())
       _checkLet (aLet, eDeclared, aErrorHandler);
     for (final PSAssertReport aAR : aRule.getAllAssertReports ())
+    {
       if (StringHelper.isNotEmpty (aAR.getSeverity ()))
         _warnIfTooOld (aAR,
                        "'severity' attribute on <" + (aAR.isAssert () ? "assert" : "report") + ">",
                        ESchematronVersion.SCHEMATRON_2025,
                        eDeclared,
                        aErrorHandler);
+      if (aAR.getAllFlags ().size () > 1)
+        _warnIfTooOld (aAR,
+                       "multi-token 'flag' attribute on <" + (aAR.isAssert () ? "assert" : "report") + ">",
+                       ESchematronVersion.SCHEMATRON_2025,
+                       eDeclared,
+                       aErrorHandler);
+    }
   }
 
   /**
