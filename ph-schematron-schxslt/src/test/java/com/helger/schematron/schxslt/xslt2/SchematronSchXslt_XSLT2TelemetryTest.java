@@ -50,27 +50,25 @@ public final class SchematronSchXslt_XSLT2TelemetryTest
     private volatile SchematronTemplateInfo m_aLastInfo;
     private volatile long m_nLastDuration = -1;
 
-    @Override
     public void onTransformStart ()
     {
       m_aStart.incrementAndGet ();
     }
 
-    @Override
     public void onTemplateEnter (final SchematronTemplateInfo aInfo)
     {
+      System.out.println ("> " + aInfo.toString ());
       m_aEnter.incrementAndGet ();
       m_aLastInfo = aInfo;
     }
 
-    @Override
     public void onTemplateLeave (final SchematronTemplateInfo aInfo, final long nDurationNanos)
     {
+      System.out.println ("< " + aInfo.toString ());
       m_aLeave.incrementAndGet ();
       m_nLastDuration = nDurationNanos;
     }
 
-    @Override
     public void onTransformEnd ()
     {
       m_aEnd.incrementAndGet ();
@@ -95,12 +93,9 @@ public final class SchematronSchXslt_XSLT2TelemetryTest
     assertEquals (1, aTelemetry.m_aEnd.get ());
     assertTrue ("Expected at least one template enter event, got " + aTelemetry.m_aEnter.get (),
                 aTelemetry.m_aEnter.get () > 0);
-    assertEquals ("enter/leave count mismatch",
-                  aTelemetry.m_aEnter.get (),
-                  aTelemetry.m_aLeave.get ());
+    assertEquals ("enter/leave count mismatch", aTelemetry.m_aEnter.get (), aTelemetry.m_aLeave.get ());
     assertNotNull (aTelemetry.m_aLastInfo);
-    assertTrue ("Expected non-negative duration, got " + aTelemetry.m_nLastDuration,
-                aTelemetry.m_nLastDuration >= 0);
+    assertTrue ("Expected non-negative duration, got " + aTelemetry.m_nLastDuration, aTelemetry.m_nLastDuration >= 0);
   }
 
   @Test

@@ -60,8 +60,11 @@ public interface ISchematronTemplateTelemetry
    * @param aInfo
    *        Static information about the template. Never <code>null</code>.
    * @param nDurationNanos
-   *        The wall-clock duration of the template execution in nanoseconds, including any nested
-   *        template calls.
+   *        The wall-clock duration of the template execution in nanoseconds. This is an
+   *        <em>inclusive</em> measurement &mdash; it covers the time spent in nested template
+   *        calls as well. To derive per-frame self time (e.g. for a flamegraph), the consumer
+   *        must subtract the inclusive durations of all directly nested {@code onTemplateLeave}
+   *        events that occurred before this one for the same enter/leave pair.
    */
   default void onTemplateLeave (@NonNull final SchematronTemplateInfo aInfo, final long nDurationNanos)
   {}
