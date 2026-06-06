@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.exchange;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -31,12 +32,16 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.inmemory.ReadableResourceString;
+import java.nio.charset.StandardCharsets;
 import com.helger.schematron.ESchematronVersion;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.model.PSGroup;
 import com.helger.schematron.model.PSLibrary;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSVersionChecker;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.serialize.MicroReader;
 
 /**
  * Round-trip + version-checker matrix over the four mock schemas <code>max-2006.sch</code>,
@@ -192,6 +197,86 @@ public final class MaxFeaturesRoundTripTest
       assertNotNull ("Serialisation of " + sPath + " must succeed", sXml);
       assertTrue ("Output of " + sPath + " must contain <schema>", sXml.contains ("schema"));
     }
+  }
+
+  /**
+   * Parse an XML string (already free of <code>&lt;include&gt;</code>s, because it was just
+   * serialised by us) directly through {@link PSReader#readSchemaFromXML(IMicroElement)}, skipping
+   * include-resolution.
+   */
+  @NonNull
+  private static PSReader _readerFor (@NonNull final String sXml)
+  {
+    final ReadableResourceString aRes = new ReadableResourceString ("inline.sch", sXml, StandardCharsets.UTF_8);
+    final CollectingErrorHandler aNoise = new CollectingErrorHandler ();
+    return new PSReader (aRes, aNoise, null);
+  }
+
+  @NonNull
+  private static PSSchema _readSchemaFromString (@NonNull final String sXml) throws SchematronReadException
+  {
+    final IMicroDocument aDoc = MicroReader.readMicroXML (sXml);
+    assertNotNull ("Re-parse of serialised XML must succeed", aDoc);
+    return _readerFor (sXml).readSchemaFromXML (aDoc.getDocumentElement ());
+  }
+
+  @NonNull
+  private static PSLibrary _readLibraryFromString (@NonNull final String sXml)
+  {
+    final IMicroDocument aDoc = MicroReader.readMicroXML (sXml);
+    assertNotNull ("Re-parse of serialised library XML must succeed", aDoc);
+    return _readerFor (sXml).readLibraryFromXML (aDoc.getDocumentElement ());
+  }
+
+  /**
+   * Idempotent round-trip: for each mock, serialise the parsed schema, re-parse the serialised
+   * string, serialise again, and assert the two serialisations are byte-equal. If the writer drops
+   * an attribute or the reader fails to round-trip a field, the second serialisation will differ
+   * from the first.
+   * <p>
+   * (The first serialisation is necessarily &quot;canonicalised&quot; through the model - the
+   * source XML on disk uses indentation / attribute ordering / namespace prefixes that our writer
+   * normalises. Comparing s1 to s2 isolates the model-level fidelity from those XML-syntactic
+   * differences.)
+   */
+  @Test
+  public void testIdempotentSerialisationForEachMock () throws SchematronReadException
+  {
+    final PSWriter aWriter = new PSWriter ();
+    for (final String sPath : MOCKS)
+    {
+      // First read from the on-disk file
+      final PSSchema aSchema1 = _read (sPath);
+      final String s1 = aWriter.getXMLString (aSchema1);
+      assertNotNull ("First serialisation of " + sPath + " must succeed", s1);
+      // Re-read the serialised string
+      final PSSchema aSchema2 = _readSchemaFromString (s1);
+      final String s2 = aWriter.getXMLString (aSchema2);
+      assertNotNull ("Second serialisation of " + sPath + " must succeed", s2);
+      // Idempotent: round-tripping through the model must produce a byte-equal serialisation
+      assertEquals ("Round-trip serialisation must be idempotent for " + sPath, s1, s2);
+      // The declared edition (if present in the source) must also survive the round-trip
+      assertEquals ("Declared schematronEdition must round-trip for " + sPath,
+                    aSchema1.getSchematronEdition (),
+                    aSchema2.getSchematronEdition ());
+    }
+  }
+
+  /**
+   * Same idempotent round-trip for the v4 <code>&lt;library&gt;</code> mock.
+   */
+  @Test
+  public void testIdempotentSerialisationForLibrary () throws SchematronReadException
+  {
+    final String sPath = "external/test-sch/versions/library-2025.sch";
+    final ClassPathResource aResource = new ClassPathResource (sPath);
+    final CollectingErrorHandler aNoise = new CollectingErrorHandler ();
+    final PSLibrary aLib1 = new PSReader (aResource, aNoise, null).readLibrary ();
+    final PSWriter aWriter = new PSWriter ();
+    final String s1 = aWriter.getXMLString (aLib1);
+    final PSLibrary aLib2 = _readLibraryFromString (s1);
+    final String s2 = aWriter.getXMLString (aLib2);
+    assertEquals ("Round-trip serialisation of " + sPath + " must be idempotent", s1, s2);
   }
 
   // ------------------------------------------------------------------------------------------
