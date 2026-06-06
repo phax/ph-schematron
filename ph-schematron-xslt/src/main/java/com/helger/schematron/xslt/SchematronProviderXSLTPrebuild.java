@@ -60,9 +60,8 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
       m_aSchematronXSLTDoc = DOMReader.readXMLDOM (aXSLTResource);
 
       // compile result of read file
-      final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactorySaxonFirst (SchematronProviderXSLTPrebuild.class.getClassLoader (),
-                                                                                                      aCustomErrorListener,
-                                                                                                      new DefaultTransformURIResolver (aCustomURIResolver));
+      final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
+                                                                                             new DefaultTransformURIResolver (aCustomURIResolver));
       m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)

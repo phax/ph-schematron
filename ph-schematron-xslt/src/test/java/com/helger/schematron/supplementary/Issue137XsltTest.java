@@ -36,7 +36,6 @@ import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronProviderXSLTPrebuild;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.StringStreamSource;
@@ -269,9 +268,8 @@ public final class Issue137XsltTest
                          "    <apply-templates mode=\"M1\" select=\"*|comment()|processing-instruction()\" />\r\n" +
                          "  </template>\r\n" +
                          "</stylesheet>";
-    final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactorySaxonFirst (SchematronProviderXSLTPrebuild.class.getClassLoader (),
-                                                                                                    null,
-                                                                                                    new DefaultTransformURIResolver (null));
+    final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (null,
+                                                                                           new DefaultTransformURIResolver (null));
     final Transformer t = aTF.newTransformer (new StringStreamSource (sXslt));
     t.transform (TransformSourceFactory.create (new File ("src/test/resources/external/issues/github137/test.xml")),
                  new StreamResult (System.out));
@@ -309,9 +307,8 @@ public final class Issue137XsltTest
                          "    <apply-templates mode=\"M1\" select=\"*|comment()|processing-instruction()\"/>\r\n" +
                          "  </template>\r\n" +
                          "</stylesheet>";
-    final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactorySaxonFirst (SchematronProviderXSLTPrebuild.class.getClassLoader (),
-                                                                                                    null,
-                                                                                                    new DefaultTransformURIResolver (null));
+    final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (null,
+                                                                                           new DefaultTransformURIResolver (null));
     final Transformer t = aTF.newTransformer (new StringStreamSource (sXslt));
     t.transform (TransformSourceFactory.create (new File ("src/test/resources/external/issues/github137/test.xml")),
                  new StreamResult (System.out));

@@ -97,7 +97,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
    */
   public static void cacheXSLTTemplates ()
   {
-    final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+    final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
     final ClassLoader aCL = SchematronProviderXSLTFromSCH.class.getClassLoader ();
 
     // prepare all steps
@@ -306,7 +306,7 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       m_aSchematronXSLTDoc = createSchematronXSLT (m_aSchematronResource, m_aTransformerCustomizer);
 
       // compile result of step 3
-      final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+      final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
       m_aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));

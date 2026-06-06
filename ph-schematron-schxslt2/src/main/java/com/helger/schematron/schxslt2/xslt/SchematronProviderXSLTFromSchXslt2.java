@@ -72,7 +72,7 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
    */
   public static void cacheXSLTTemplate ()
   {
-    final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+    final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
     final ClassLoader aCL = SchematronProviderXSLTFromSchXslt2.class.getClassLoader ();
 
     // prepare all steps
@@ -161,7 +161,7 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
       m_aSchematronXSLTDoc = createSchematronXSLT (m_aSchematronResource, m_aTransformerCustomizer);
 
       // compile XSLT
-      final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+      final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
       m_aTransformerCustomizer.customize (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));
