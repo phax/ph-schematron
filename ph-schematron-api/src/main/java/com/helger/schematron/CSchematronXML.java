@@ -46,6 +46,7 @@ public final class CSchematronXML
   public static final String ATTR_ROLE = "role";
   public static final String ATTR_RULE = "rule";
   public static final String ATTR_SCHEMA_VERSION = "schemaVersion";
+  public static final String ATTR_SCHEMATRON_EDITION = "schematronEdition";
   public static final String ATTR_SEE = "see";
   public static final String ATTR_SELECT = "select";
   public static final String ATTR_SUBJECT = "subject";

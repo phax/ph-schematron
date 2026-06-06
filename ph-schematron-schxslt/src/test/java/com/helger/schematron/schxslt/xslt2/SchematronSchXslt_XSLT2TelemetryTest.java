@@ -29,6 +29,7 @@ import org.w3c.dom.Document;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SchematronTemplateInfo;
+import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
@@ -38,8 +39,10 @@ import com.helger.xml.serialize.read.DOMReader;
  */
 public final class SchematronSchXslt_XSLT2TelemetryTest
 {
-  private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid01.sch");
-  private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid01.xml");
+  private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid01.sch",
+                                                                                   SchematronTestHelper.getCL ());
+  private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid01.xml",
+                                                                                    SchematronTestHelper.getCL ());
 
   private static final class CountingTelemetry implements ISchematronTemplateTelemetry
   {
@@ -57,14 +60,12 @@ public final class SchematronSchXslt_XSLT2TelemetryTest
 
     public void onTemplateEnter (final SchematronTemplateInfo aInfo)
     {
-      System.out.println ("> " + aInfo.toString ());
       m_aEnter.incrementAndGet ();
       m_aLastInfo = aInfo;
     }
 
     public void onTemplateLeave (final SchematronTemplateInfo aInfo, final long nDurationNanos)
     {
-      System.out.println ("< " + aInfo.toString ());
       m_aLeave.incrementAndGet ();
       m_nLastDuration = nDurationNanos;
     }

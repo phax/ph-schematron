@@ -31,6 +31,7 @@ import com.helger.diagnostics.error.SingleError;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.ESchematronVersion;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronHelper;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
@@ -1106,16 +1107,25 @@ public class PSReader
         if (sAttrName.equals (CSchematronXML.ATTR_SCHEMA_VERSION))
           ret.setSchemaVersion (sAttrValue);
         else
-          if (sAttrName.equals (CSchematronXML.ATTR_DEFAULT_PHASE))
-            ret.setDefaultPhase (sAttrValue);
-          else
-            if (sAttrName.equals (CSchematronXML.ATTR_QUERY_BINDING))
-              ret.setQueryBinding (sAttrValue);
+          if (sAttrName.equals (CSchematronXML.ATTR_SCHEMATRON_EDITION))
+          {
+            final ESchematronVersion eEdition = ESchematronVersion.getFromEditionYearOrNull (sAttrValue);
+            if (eEdition == null)
+              _warn (ret, "Unsupported schematronEdition value '" + sAttrValue + "'");
             else
-              if (PSRichGroup.isRichAttribute (sAttrName))
-                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+              ret.setSchematronEdition (eEdition);
+          }
+          else
+            if (sAttrName.equals (CSchematronXML.ATTR_DEFAULT_PHASE))
+              ret.setDefaultPhase (sAttrValue);
+            else
+              if (sAttrName.equals (CSchematronXML.ATTR_QUERY_BINDING))
+                ret.setQueryBinding (sAttrValue);
               else
-                ret.addForeignAttribute (sAttrName, sAttrValue);
+                if (PSRichGroup.isRichAttribute (sAttrName))
+                  _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+                else
+                  ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
 

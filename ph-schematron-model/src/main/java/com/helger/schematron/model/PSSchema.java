@@ -35,6 +35,7 @@ import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronXML;
+import com.helger.schematron.ESchematronVersion;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroElement;
@@ -68,6 +69,7 @@ public class PSSchema implements
   private String m_sID;
   private PSRichGroup m_aRich;
   private String m_sSchemaVersion;
+  private ESchematronVersion m_eSchematronEdition;
   private String m_sDefaultPhase;
   private String m_sQueryBinding;
   private PSTitle m_aTitle;
@@ -327,6 +329,29 @@ public class PSSchema implements
     return m_sSchemaVersion;
   }
 
+  /**
+   * Set the Schematron edition this schema declares via the
+   * <code>schematronEdition</code> attribute introduced in ISO/IEC 19757-3:2025.
+   *
+   * @param eSchematronEdition
+   *        The edition to declare, or <code>null</code> to omit the attribute.
+   */
+  public void setSchematronEdition (@Nullable final ESchematronVersion eSchematronEdition)
+  {
+    m_eSchematronEdition = eSchematronEdition;
+  }
+
+  /**
+   * @return The Schematron edition declared via the <code>schematronEdition</code>
+   *         attribute on this schema, or <code>null</code> if the attribute is
+   *         absent or held a value not understood by this implementation.
+   */
+  @Nullable
+  public ESchematronVersion getSchematronEdition ()
+  {
+    return m_eSchematronEdition;
+  }
+
   public void setDefaultPhase (@Nullable final String sDefaultPhase)
   {
     m_sDefaultPhase = sDefaultPhase;
@@ -553,6 +578,8 @@ public class PSSchema implements
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     ret.setAttribute (CSchematronXML.ATTR_SCHEMA_VERSION, m_sSchemaVersion);
+    if (m_eSchematronEdition != null)
+      ret.setAttribute (CSchematronXML.ATTR_SCHEMATRON_EDITION, m_eSchematronEdition.getEditionYear ());
     ret.setAttribute (CSchematronXML.ATTR_DEFAULT_PHASE, m_sDefaultPhase);
     ret.setAttribute (CSchematronXML.ATTR_QUERY_BINDING, m_sQueryBinding);
     if (m_aForeignElements != null)
@@ -589,6 +616,7 @@ public class PSSchema implements
                                        .appendIfNotNull ("id", m_sID)
                                        .appendIfNotNull ("rich", m_aRich)
                                        .appendIfNotNull ("schemaVersion", m_sSchemaVersion)
+                                       .appendIfNotNull ("schematronEdition", m_eSchematronEdition)
                                        .appendIfNotNull ("defaultPhase", m_sDefaultPhase)
                                        .appendIfNotNull ("queryBinding", m_sQueryBinding)
                                        .appendIfNotNull ("title", m_aTitle)
