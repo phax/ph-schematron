@@ -79,6 +79,11 @@ public enum ESchematronVersion implements IHasID <String>
     return m_sEditionYear;
   }
 
+  public boolean isOlderThan (@NonNull final ESchematronVersion eOther)
+  {
+    return ordinal () < eOther.ordinal ();
+  }
+
   @Nullable
   public static ESchematronVersion getFromIDOrNull (@Nullable final String sID)
   {

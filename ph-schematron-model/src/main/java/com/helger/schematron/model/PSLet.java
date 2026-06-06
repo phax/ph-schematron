@@ -59,6 +59,7 @@ public class PSLet implements IPSClonableElement <PSLet>
 {
   private String m_sName;
   private String m_sValue;
+  private String m_sAs;
   private ICommonsList <IMicroElement> m_aBodyElements;
 
   public PSLet ()
@@ -129,6 +130,32 @@ public class PSLet implements IPSClonableElement <PSLet>
   }
 
   /**
+   * Set the optional <code>as</code> attribute introduced in
+   * ISO/IEC 19757-3:2025. The attribute declares the datatype of the variable
+   * and is interpreted by the active query language binding (e.g. an XSLT2
+   * sequence type for the <code>xslt2</code> binding).
+   *
+   * @param sAs
+   *        The new value. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void setAs (@Nullable final String sAs)
+  {
+    m_sAs = sAs;
+  }
+
+  /**
+   * @return The value of the <code>as</code> attribute, or <code>null</code> if
+   *         not set.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public String getAs ()
+  {
+    return m_sAs;
+  }
+
+  /**
    * Add a foreign body element to this {@code <let>}. Body elements model XSLT-style sequence
    * constructors carried in the element content (e.g. {@code <xsl:choose>...</xsl:choose>}). They
    * are only preserved when {@link com.helger.schematron.exchange.PSReader#setPreserveLetBodyElements(boolean)}
@@ -173,6 +200,8 @@ public class PSLet implements IPSClonableElement <PSLet>
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_LET);
     ret.setAttribute (CSchematronXML.ATTR_NAME, m_sName);
+    if (StringHelper.isNotEmpty (m_sAs))
+      ret.setAttribute (CSchematronXML.ATTR_AS, m_sAs);
     if (StringHelper.isNotEmpty (m_sValue))
       ret.setAttribute (CSchematronXML.ATTR_VALUE, m_sValue);
     if (m_aBodyElements != null)
@@ -187,6 +216,7 @@ public class PSLet implements IPSClonableElement <PSLet>
     final PSLet ret = new PSLet ();
     ret.setName (m_sName);
     ret.setValue (m_sValue);
+    ret.setAs (m_sAs);
     if (m_aBodyElements != null)
       for (final IMicroElement aBody : m_aBodyElements)
         ret.addBodyElement (aBody.getClone ());
@@ -196,7 +226,10 @@ public class PSLet implements IPSClonableElement <PSLet>
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("name", m_sName).appendIfNotNull ("value", m_sValue).getToString ();
+    return new ToStringGenerator (this).appendIfNotNull ("name", m_sName)
+                                       .appendIfNotNull ("As", m_sAs)
+                                       .appendIfNotNull ("value", m_sValue)
+                                       .getToString ();
   }
 
   @NonNull

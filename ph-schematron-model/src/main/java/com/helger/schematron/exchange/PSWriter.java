@@ -28,7 +28,11 @@ import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.schematron.errorhandler.IPSErrorHandler;
+import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.model.IPSElement;
+import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.model.PSVersionChecker;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.IMicroNode;
@@ -43,6 +47,7 @@ import com.helger.xml.microdom.serialize.MicroWriter;
 public class PSWriter
 {
   private final IPSWriterSettings m_aWriterSettings;
+  private IPSErrorHandler m_aErrorHandler;
 
   /**
    * Constructor using the default {@link PSWriterSettings} instance.
@@ -61,6 +66,7 @@ public class PSWriter
   public PSWriter (@NonNull final IPSWriterSettings aWriterSettings)
   {
     m_aWriterSettings = ValueEnforcer.notNull (aWriterSettings, "WriterSettings");
+    m_aErrorHandler = new LoggingPSErrorHandler ();
   }
 
   /**
@@ -70,6 +76,47 @@ public class PSWriter
   public IPSWriterSettings getWriterSettings ()
   {
     return m_aWriterSettings;
+  }
+
+  /**
+   * @return The error handler used to report version-compliance warnings when a
+   *         {@link PSSchema} is serialised. Never <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public IPSErrorHandler getErrorHandler ()
+  {
+    return m_aErrorHandler;
+  }
+
+  /**
+   * Override the error handler that receives version-compliance warnings when a {@link PSSchema}
+   * is about to be written.
+   *
+   * @param aErrorHandler
+   *        The new error handler. May not be <code>null</code>.
+   * @return this for chaining
+   * @since 10.0.0
+   */
+  @NonNull
+  public PSWriter setErrorHandler (@NonNull final IPSErrorHandler aErrorHandler)
+  {
+    m_aErrorHandler = ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
+    return this;
+  }
+
+  /**
+   * Run the central Schematron version check when serialising a {@link PSSchema}. The check is a
+   * no-op for any other element kind.
+   *
+   * @param aPSElement
+   *        The element about to be written. May not be <code>null</code>.
+   * @since 10.0.0
+   */
+  protected void runVersionCheck (@NonNull final IPSElement aPSElement)
+  {
+    if (aPSElement instanceof PSSchema)
+      PSVersionChecker.checkSchematronVersionCompliance ((PSSchema) aPSElement, m_aErrorHandler);
   }
 
   @NonNull
@@ -94,6 +141,7 @@ public class PSWriter
   public ESuccess writeToFile (@NonNull final IPSElement aPSElement, @NonNull final File aFile)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
+    runVersionCheck (aPSElement);
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
     return MicroWriter.writeToFile (getAsDocument (eXML), aFile, m_aWriterSettings.getXMLWriterSettings ());
   }
@@ -112,6 +160,7 @@ public class PSWriter
   public ESuccess writeToStream (@NonNull final IPSElement aPSElement, @NonNull @WillClose final OutputStream aOS)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
+    runVersionCheck (aPSElement);
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
     return MicroWriter.writeToStream (getAsDocument (eXML), aOS, m_aWriterSettings.getXMLWriterSettings ());
   }
@@ -130,6 +179,7 @@ public class PSWriter
   public ESuccess writeToWriter (@NonNull final IPSElement aPSElement, @NonNull @WillClose final Writer aWriter)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
+    runVersionCheck (aPSElement);
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
     return MicroWriter.writeToWriter (getAsDocument (eXML), aWriter, m_aWriterSettings.getXMLWriterSettings ());
   }
@@ -145,6 +195,7 @@ public class PSWriter
   public String getXMLString (@NonNull final IPSElement aPSElement)
   {
     ValueEnforcer.notNull (aPSElement, "PSElement");
+    runVersionCheck (aPSElement);
     final IMicroElement eXML = aPSElement.getAsMicroElement ();
     return MicroWriter.getNodeAsString (getAsDocument (eXML), m_aWriterSettings.getXMLWriterSettings ());
   }
@@ -170,6 +221,8 @@ public class PSWriter
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("writerSettings", m_aWriterSettings).getToString ();
+    return new ToStringGenerator (this).append ("WriterSettings", m_aWriterSettings)
+                                       .append ("ErrorHandler", m_aErrorHandler)
+                                       .getToString ();
   }
 }

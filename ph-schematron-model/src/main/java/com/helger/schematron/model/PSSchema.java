@@ -74,11 +74,15 @@ public class PSSchema implements
   private String m_sQueryBinding;
   private PSTitle m_aTitle;
   private final ICommonsList <PSInclude> m_aIncludes = new CommonsArrayList <> ();
+  private final ICommonsList <PSExtends> m_aExtends = new CommonsArrayList <> ();
   private final ICommonsList <PSNS> m_aNSs = new CommonsArrayList <> ();
   private final ICommonsList <PSP> m_aStartPs = new CommonsArrayList <> ();
+  private final ICommonsList <PSParam> m_aParams = new CommonsArrayList <> ();
   private final ICommonsList <PSLet> m_aLets = new CommonsArrayList <> ();
   private final ICommonsList <PSPhase> m_aPhases = new CommonsArrayList <> ();
+  private final ICommonsList <PSRules> m_aAbstractRulesContainers = new CommonsArrayList <> ();
   private final ICommonsList <PSPattern> m_aPatterns = new CommonsArrayList <> ();
+  private final ICommonsList <PSGroup> m_aGroups = new CommonsArrayList <> ();
   private final ICommonsList <PSP> m_aEndPs = new CommonsArrayList <> ();
   private PSDiagnostics m_aDiagnostics;
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
@@ -116,9 +120,11 @@ public class PSSchema implements
 
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
-    if (m_aPatterns.isEmpty ())
+    // 2025: a schema may carry either patterns, groups, or both (the v4 RNC says
+    // (rule-set|pattern)+) - require at least one combined.
+    if (m_aPatterns.isEmpty () && m_aGroups.isEmpty ())
     {
-      aErrorHandler.error (this, "<schema> has no <pattern>s");
+      aErrorHandler.error (this, "<schema> has no <pattern>s or <group>s");
       return false;
     }
     if (m_aTitle != null && !m_aTitle.isValid (aErrorHandler))
@@ -126,11 +132,17 @@ public class PSSchema implements
     for (final PSInclude aInclude : m_aIncludes)
       if (!aInclude.isValid (aErrorHandler))
         return false;
+    for (final PSExtends aExtends : m_aExtends)
+      if (!aExtends.isValid (aErrorHandler))
+        return false;
     for (final PSNS aNS : m_aNSs)
       if (!aNS.isValid (aErrorHandler))
         return false;
     for (final PSP aP : m_aStartPs)
       if (!aP.isValid (aErrorHandler))
+        return false;
+    for (final PSParam aParam : m_aParams)
+      if (!aParam.isValid (aErrorHandler))
         return false;
     for (final PSLet aLet : m_aLets)
       if (!aLet.isValid (aErrorHandler))
@@ -138,8 +150,14 @@ public class PSSchema implements
     for (final PSPhase aPhase : m_aPhases)
       if (!aPhase.isValid (aErrorHandler))
         return false;
+    for (final PSRules aRules : m_aAbstractRulesContainers)
+      if (!aRules.isValid (aErrorHandler))
+        return false;
     for (final PSPattern aPattern : m_aPatterns)
       if (!aPattern.isValid (aErrorHandler))
+        return false;
+    for (final PSGroup aGroup : m_aGroups)
+      if (!aGroup.isValid (aErrorHandler))
         return false;
     for (final PSP aP : m_aEndPs)
       if (!aP.isValid (aErrorHandler))
@@ -151,22 +169,30 @@ public class PSSchema implements
 
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
-    if (m_aPatterns.isEmpty ())
-      aErrorHandler.error (this, "<schema> has no <pattern>s");
+    if (m_aPatterns.isEmpty () && m_aGroups.isEmpty ())
+      aErrorHandler.error (this, "<schema> has no <pattern>s or <group>s");
     if (m_aTitle != null)
       m_aTitle.validateCompletely (aErrorHandler);
     for (final PSInclude aInclude : m_aIncludes)
       aInclude.validateCompletely (aErrorHandler);
+    for (final PSExtends aExtends : m_aExtends)
+      aExtends.validateCompletely (aErrorHandler);
     for (final PSNS aNS : m_aNSs)
       aNS.validateCompletely (aErrorHandler);
     for (final PSP aP : m_aStartPs)
       aP.validateCompletely (aErrorHandler);
+    for (final PSParam aParam : m_aParams)
+      aParam.validateCompletely (aErrorHandler);
     for (final PSLet aLet : m_aLets)
       aLet.validateCompletely (aErrorHandler);
     for (final PSPhase aPhase : m_aPhases)
       aPhase.validateCompletely (aErrorHandler);
+    for (final PSRules aRules : m_aAbstractRulesContainers)
+      aRules.validateCompletely (aErrorHandler);
     for (final PSPattern aPattern : m_aPatterns)
       aPattern.validateCompletely (aErrorHandler);
+    for (final PSGroup aGroup : m_aGroups)
+      aGroup.validateCompletely (aErrorHandler);
     for (final PSP aP : m_aEndPs)
       aP.validateCompletely (aErrorHandler);
     if (m_aDiagnostics != null)
@@ -188,6 +214,13 @@ public class PSSchema implements
     if (hasAnyInclude ())
       return false;
 
+    // 2025: top-level extends and top-level abstract-rules containers require
+    // resolution by the preprocessor and therefore mean "not preprocessed".
+    if (m_aExtends.isNotEmpty ())
+      return false;
+    if (m_aAbstractRulesContainers.isNotEmpty ())
+      return false;
+
     for (final PSPhase aPhase : m_aPhases)
       if (aPhase.hasAnyInclude ())
         return false;
@@ -197,6 +230,17 @@ public class PSSchema implements
       if (aPattern.isAbstract () || aPattern.hasAnyInclude () || aPattern.hasAnyParam ())
         return false;
       for (final PSRule aRule : aPattern.getAllRules ())
+      {
+        if (aRule.isAbstract () || aRule.hasAnyInclude () || aRule.hasAnyExtends ())
+          return false;
+      }
+    }
+
+    for (final PSGroup aGroup : m_aGroups)
+    {
+      if (aGroup.isAbstract () || aGroup.hasAnyInclude () || aGroup.hasAnyParam ())
+        return false;
+      for (final PSRule aRule : aGroup.getAllRules ())
       {
         if (aRule.isAbstract () || aRule.hasAnyInclude () || aRule.hasAnyExtends ())
           return false;
@@ -215,11 +259,17 @@ public class PSSchema implements
     for (final PSInclude aInclude : m_aIncludes)
       if (!aInclude.isMinimal ())
         return false;
+    for (final PSExtends aExtends : m_aExtends)
+      if (!aExtends.isMinimal ())
+        return false;
     for (final PSNS aNS : m_aNSs)
       if (!aNS.isMinimal ())
         return false;
     for (final PSP aP : m_aStartPs)
       if (!aP.isMinimal ())
+        return false;
+    for (final PSParam aParam : m_aParams)
+      if (!aParam.isMinimal ())
         return false;
     for (final PSLet aLet : m_aLets)
       if (!aLet.isMinimal ())
@@ -227,8 +277,14 @@ public class PSSchema implements
     for (final PSPhase aPhase : m_aPhases)
       if (!aPhase.isMinimal ())
         return false;
+    for (final PSRules aRules : m_aAbstractRulesContainers)
+      if (!aRules.isMinimal ())
+        return false;
     for (final PSPattern aPattern : m_aPatterns)
       if (!aPattern.isMinimal ())
+        return false;
+    for (final PSGroup aGroup : m_aGroups)
+      if (!aGroup.isMinimal ())
         return false;
     for (final PSP aP : m_aEndPs)
       if (!aP.isMinimal ())
@@ -397,6 +453,41 @@ public class PSSchema implements
     return m_aIncludes.getClone ();
   }
 
+  /**
+   * Add a top-level <code>extends</code> introduced in ISO/IEC 19757-3:2025.
+   * Pre-2025 schemas only allow <code>extends</code> inside a <code>rule</code>.
+   *
+   * @param aExtends
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void addExtends (@NonNull final PSExtends aExtends)
+  {
+    ValueEnforcer.notNull (aExtends, "Extends");
+    m_aExtends.add (aExtends);
+  }
+
+  /**
+   * @return <code>true</code> if at least one top-level <code>extends</code> is
+   *         present.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public boolean hasAnyExtends ()
+  {
+    return m_aExtends.isNotEmpty ();
+  }
+
+  /**
+   * @return All top-level <code>extends</code> declared on this schema.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSExtends> getAllExtends ()
+  {
+    return m_aExtends.getClone ();
+  }
+
   public void addNS (@NonNull final PSNS aNS)
   {
     ValueEnforcer.notNull (aNS, "NS");
@@ -439,6 +530,42 @@ public class PSSchema implements
   public ICommonsList <PSP> getAllStartPs ()
   {
     return m_aStartPs.getClone ();
+  }
+
+  /**
+   * Add a top-level <code>param</code> introduced in ISO/IEC 19757-3:2025.
+   * Pre-2025 schemas only allow <code>param</code> inside a <code>pattern</code>
+   * that instantiates an abstract pattern via <code>is-a</code>.
+   *
+   * @param aParam
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void addParam (@NonNull final PSParam aParam)
+  {
+    ValueEnforcer.notNull (aParam, "Param");
+    m_aParams.add (aParam);
+  }
+
+  /**
+   * @return <code>true</code> if at least one top-level <code>param</code> is
+   *         present.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public boolean hasAnyParam ()
+  {
+    return m_aParams.isNotEmpty ();
+  }
+
+  /**
+   * @return All top-level <code>param</code> declarations on this schema.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSParam> getAllParams ()
+  {
+    return m_aParams.getClone ();
   }
 
   public void addLet (@NonNull final PSLet aLet)
@@ -502,6 +629,41 @@ public class PSSchema implements
     return null;
   }
 
+  /**
+   * Add an abstract-rules container introduced in ISO/IEC 19757-3:2025.
+   * The container wraps one or more <code>rule[@abstract='true']</code>
+   * declarations that may be extended from rules in any pattern in this schema.
+   *
+   * @param aRules
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void addAbstractRulesContainer (@NonNull final PSRules aRules)
+  {
+    ValueEnforcer.notNull (aRules, "Rules");
+    m_aAbstractRulesContainers.add (aRules);
+  }
+
+  /**
+   * @return <code>true</code> if at least one abstract-rules container is present.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public boolean hasAnyAbstractRulesContainer ()
+  {
+    return m_aAbstractRulesContainers.isNotEmpty ();
+  }
+
+  /**
+   * @return All abstract-rules containers declared on this schema.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSRules> getAllAbstractRulesContainers ()
+  {
+    return m_aAbstractRulesContainers.getClone ();
+  }
+
   public void addPattern (@NonNull final PSPattern aPattern)
   {
     ValueEnforcer.notNull (aPattern, "Pattern");
@@ -539,6 +701,42 @@ public class PSSchema implements
         if (sID.equals (aPattern.getID ()))
           return aPattern;
     return null;
+  }
+
+  /**
+   * Add a top-level <code>group</code> element introduced in ISO/IEC 19757-3:2025.
+   * A group shares the content model with <code>pattern</code> but uses
+   * &quot;try every rule&quot; semantics instead of the if-then-else order applied
+   * to patterns.
+   *
+   * @param aGroup
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void addGroup (@NonNull final PSGroup aGroup)
+  {
+    ValueEnforcer.notNull (aGroup, "Group");
+    m_aGroups.add (aGroup);
+  }
+
+  /**
+   * @return <code>true</code> if at least one <code>group</code> is declared.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public boolean hasAnyGroup ()
+  {
+    return m_aGroups.isNotEmpty ();
+  }
+
+  /**
+   * @return All <code>group</code> elements declared on this schema.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSGroup> getAllGroups ()
+  {
+    return m_aGroups.getClone ();
   }
 
   public void addEndP (@NonNull final PSP aP)
@@ -587,18 +785,26 @@ public class PSSchema implements
         ret.addChild (aForeignElement.getClone ());
     for (final PSInclude aInclude : m_aIncludes)
       ret.addChild (aInclude.getAsMicroElement ());
+    for (final PSExtends aExtends : m_aExtends)
+      ret.addChild (aExtends.getAsMicroElement ());
     if (m_aTitle != null)
       ret.addChild (m_aTitle.getAsMicroElement ());
     for (final PSNS aNS : m_aNSs)
       ret.addChild (aNS.getAsMicroElement ());
     for (final PSP aP : m_aStartPs)
       ret.addChild (aP.getAsMicroElement ());
+    for (final PSParam aParam : m_aParams)
+      ret.addChild (aParam.getAsMicroElement ());
     for (final PSLet aLet : m_aLets)
       ret.addChild (aLet.getAsMicroElement ());
     for (final PSPhase aPhase : m_aPhases)
       ret.addChild (aPhase.getAsMicroElement ());
+    for (final PSRules aRules : m_aAbstractRulesContainers)
+      ret.addChild (aRules.getAsMicroElement ());
     for (final PSPattern aPattern : m_aPatterns)
       ret.addChild (aPattern.getAsMicroElement ());
+    for (final PSGroup aGroup : m_aGroups)
+      ret.addChild (aGroup.getAsMicroElement ());
     for (final PSP aP : m_aEndPs)
       ret.addChild (aP.getAsMicroElement ());
     if (m_aDiagnostics != null)
@@ -612,24 +818,30 @@ public class PSSchema implements
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("resource", m_aResource)
-                                       .appendIfNotNull ("id", m_sID)
-                                       .appendIfNotNull ("rich", m_aRich)
-                                       .appendIfNotNull ("schemaVersion", m_sSchemaVersion)
-                                       .appendIfNotNull ("schematronEdition", m_eSchematronEdition)
-                                       .appendIfNotNull ("defaultPhase", m_sDefaultPhase)
-                                       .appendIfNotNull ("queryBinding", m_sQueryBinding)
-                                       .appendIfNotNull ("title", m_aTitle)
-                                       .appendIf ("includes", m_aIncludes, CollectionHelper::isNotEmpty)
-                                       .appendIf ("nss", m_aNSs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("startps", m_aStartPs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("lets", m_aLets, CollectionHelper::isNotEmpty)
-                                       .appendIf ("phases", m_aPhases, CollectionHelper::isNotEmpty)
-                                       .appendIf ("patterns", m_aPatterns, CollectionHelper::isNotEmpty)
-                                       .appendIf ("endps", m_aEndPs, CollectionHelper::isNotEmpty)
-                                       .appendIfNotNull ("diagnostics", m_aDiagnostics)
-                                       .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
-                                       .appendIf ("foreignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
+    return new ToStringGenerator (this).appendIfNotNull ("Resource", m_aResource)
+                                       .appendIfNotNull ("ID", m_sID)
+                                       .appendIfNotNull ("Rich", m_aRich)
+                                       .appendIfNotNull ("SchemaVersion", m_sSchemaVersion)
+                                       .appendIfNotNull ("SchematronEdition", m_eSchematronEdition)
+                                       .appendIfNotNull ("DefaultPhase", m_sDefaultPhase)
+                                       .appendIfNotNull ("QueryBinding", m_sQueryBinding)
+                                       .appendIfNotNull ("Title", m_aTitle)
+                                       .appendIf ("Includes", m_aIncludes, CollectionHelper::isNotEmpty)
+                                       .appendIf ("Extends", m_aExtends, CollectionHelper::isNotEmpty)
+                                       .appendIf ("NSs", m_aNSs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("StartPs", m_aStartPs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("Params", m_aParams, CollectionHelper::isNotEmpty)
+                                       .appendIf ("Lets", m_aLets, CollectionHelper::isNotEmpty)
+                                       .appendIf ("Phases", m_aPhases, CollectionHelper::isNotEmpty)
+                                       .appendIf ("AbstractRulesContainers",
+                                                  m_aAbstractRulesContainers,
+                                                  CollectionHelper::isNotEmpty)
+                                       .appendIf ("Patterns", m_aPatterns, CollectionHelper::isNotEmpty)
+                                       .appendIf ("Groups", m_aGroups, CollectionHelper::isNotEmpty)
+                                       .appendIf ("EndPs", m_aEndPs, CollectionHelper::isNotEmpty)
+                                       .appendIfNotNull ("Diagnostics", m_aDiagnostics)
+                                       .appendIf ("ForeignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
+                                       .appendIf ("ForeignElements", m_aForeignElements, CollectionHelper::isNotEmpty)
                                        .getToString ();
   }
 }

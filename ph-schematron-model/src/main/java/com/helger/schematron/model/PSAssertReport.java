@@ -75,6 +75,7 @@ public class PSAssertReport implements
   private String m_sTest;
   private String m_sFlag;
   private String m_sID;
+  private String m_sSeverity;
   private ICommonsList <String> m_aDiagnostics;
   private PSRichGroup m_aRich;
   private PSLinkableGroup m_aLinkable;
@@ -204,6 +205,32 @@ public class PSAssertReport implements
     if (StringHelper.isNotEmpty (m_sID))
       LOGGER.info ("Replacing " + (m_bIsAssert ? "Assert" : "Report") + " ID '" + m_sID + "' with '" + sID + "'");
     m_sID = sID;
+  }
+
+  /**
+   * Set the optional <code>severity</code> attribute introduced in
+   * ISO/IEC 19757-3:2025. Reserved values are <code>fatal</code>,
+   * <code>error</code>, <code>warning</code> and <code>info</code>; if the
+   * value is a variable reference it is dynamically evaluated.
+   *
+   * @param sSeverity
+   *        The new value. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void setSeverity (@Nullable final String sSeverity)
+  {
+    m_sSeverity = sSeverity;
+  }
+
+  /**
+   * @return The value of the <code>severity</code> attribute, or
+   *         <code>null</code> if not set.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public String getSeverity ()
+  {
+    return m_sSeverity;
   }
 
   /**
@@ -366,6 +393,8 @@ public class PSAssertReport implements
                                                             : CSchematronXML.ELEMENT_REPORT);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     ret.setAttribute (CSchematronXML.ATTR_FLAG, m_sFlag);
+    if (StringHelper.isNotEmpty (m_sSeverity))
+      ret.setAttribute (CSchematronXML.ATTR_SEVERITY, m_sSeverity);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);
     if (CollectionHelper.isNotEmpty (m_aDiagnostics))
       ret.setAttribute (CSchematronXML.ATTR_DIAGNOSTICS,
@@ -395,6 +424,7 @@ public class PSAssertReport implements
                                        .appendIfNotNull ("test", m_sTest)
                                        .appendIfNotNull ("flag", m_sFlag)
                                        .appendIfNotNull ("id", m_sID)
+                                       .appendIfNotNull ("Severity", m_sSeverity)
                                        .appendIfNotNull ("diagnostics", m_aDiagnostics)
                                        .appendIfNotNull ("rich", m_aRich)
                                        .appendIfNotNull ("linkable", m_aLinkable)

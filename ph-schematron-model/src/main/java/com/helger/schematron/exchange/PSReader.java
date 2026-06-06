@@ -350,16 +350,19 @@ public class PSReader
           if (sAttrName.equals (CSchematronXML.ATTR_ID))
             ret.setID (sAttrValue);
           else
-            if (sAttrName.equals (CSchematronXML.ATTR_DIAGNOSTICS))
-              ret.setDiagnostics (sAttrValue);
+            if (sAttrName.equals (CSchematronXML.ATTR_SEVERITY))
+              ret.setSeverity (sAttrValue);
             else
-              if (PSRichGroup.isRichAttribute (sAttrName))
-                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+              if (sAttrName.equals (CSchematronXML.ATTR_DIAGNOSTICS))
+                ret.setDiagnostics (sAttrValue);
               else
-                if (PSLinkableGroup.isLinkableAttribute (sAttrName))
-                  _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                if (PSRichGroup.isRichAttribute (sAttrName))
+                  _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
                 else
-                  ret.addForeignAttribute (sAttrName, sAttrValue);
+                  if (PSLinkableGroup.isLinkableAttribute (sAttrName))
+                    _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                  else
+                    ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
     ret.setLinkable (aLinkableGroup);
@@ -675,7 +678,10 @@ public class PSReader
         if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
           ret.setValue (sAttrValue);
         else
-          _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+          if (sAttrName.equals (CSchematronXML.ATTR_AS))
+            ret.setAs (sAttrValue);
+          else
+            _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
     });
 
     // Per ISO 19757-3 §5.4.4 (and confirmed in
@@ -892,19 +898,21 @@ public class PSReader
   }
 
   /**
-   * Read a &lt;pattern&gt; element
+   * Shared body of {@link #readPatternFromXML(IMicroElement)} and
+   * {@link #readGroupFromXML(IMicroElement)} - the v4 RNC defines both element shapes
+   * via the single <code>rule-set-or-pattern</code> production, so reading them is identical.
    *
-   * @param ePattern
+   * @param eElement
    *        The source micro element. Never <code>null</code>.
-   * @return The created domain object. May not be <code>null</code>.
+   * @param ret
+   *        The target object to be filled (a {@link PSPattern} or a {@link PSGroup}).
+   * @since 10.0.0
    */
-  @NonNull
-  public PSPattern readPatternFromXML (@NonNull final IMicroElement ePattern)
+  private <T extends AbstractPSPatternLike> void _fillPatternOrGroupFromXML (@NonNull final IMicroElement eElement,
+                                                                             @NonNull final T ret)
   {
-    final PSPattern ret = new PSPattern ();
-
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    ePattern.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eElement.forAllAttributes ( (sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
         ret.setAbstract (StringParser.parseBool (sAttrValue));
@@ -915,42 +923,120 @@ public class PSReader
           if (sAttrName.equals (CSchematronXML.ATTR_IS_A))
             ret.setIsA (sAttrValue);
           else
-            if (PSRichGroup.isRichAttribute (sAttrName))
-              _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+            if (sAttrName.equals (CSchematronXML.ATTR_ROLE))
+              ret.setRole (sAttrValue);
             else
-              ret.addForeignAttribute (sAttrName, sAttrValue);
+              if (PSRichGroup.isRichAttribute (sAttrName))
+                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+              else
+                ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
 
-    ePattern.forAllChildElements (ePatternChild -> {
-      if (isValidSchematronNS (ePatternChild.getNamespaceURI ()))
+    eElement.forAllChildElements (eChild -> {
+      if (isValidSchematronNS (eChild.getNamespaceURI ()))
       {
-        if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
-          ret.addInclude (readIncludeFromXML (ePatternChild));
+        if (eChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
+          ret.addInclude (readIncludeFromXML (eChild));
         else
-          if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_TITLE))
-            ret.setTitle (readTitleFromXML (ePatternChild));
+          if (eChild.getLocalName ().equals (CSchematronXML.ELEMENT_TITLE))
+            ret.setTitle (readTitleFromXML (eChild));
           else
-            if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_P))
-              ret.addP (readPFromXML (ePatternChild));
+            if (eChild.getLocalName ().equals (CSchematronXML.ELEMENT_P))
+              ret.addP (readPFromXML (eChild));
             else
-              if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_LET))
-                ret.addLet (readLetFromXML (ePatternChild));
+              if (eChild.getLocalName ().equals (CSchematronXML.ELEMENT_LET))
+                ret.addLet (readLetFromXML (eChild));
               else
-                if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_RULE))
-                  ret.addRule (readRuleFromXML (ePatternChild));
+                if (eChild.getLocalName ().equals (CSchematronXML.ELEMENT_RULE))
+                  ret.addRule (readRuleFromXML (eChild));
                 else
-                  if (ePatternChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
-                    ret.addParam (readParamFromXML (ePatternChild));
+                  if (eChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
+                    ret.addParam (readParamFromXML (eChild));
                   else
                     _warn (ret,
-                           "Unsupported Schematron element '" +
-                                ePatternChild.getLocalName () +
-                                "' in " +
-                                ret.toString ());
+                           "Unsupported Schematron element '" + eChild.getLocalName () + "' in " + ret.toString ());
       }
       else
-        ret.addForeignElement (ePatternChild.getClone ());
+        ret.addForeignElement (eChild.getClone ());
+    });
+  }
+
+  /**
+   * Read a &lt;pattern&gt; element
+   *
+   * @param ePattern
+   *        The source micro element. Never <code>null</code>.
+   * @return The created domain object. May not be <code>null</code>.
+   */
+  @NonNull
+  public PSPattern readPatternFromXML (@NonNull final IMicroElement ePattern)
+  {
+    final PSPattern ret = new PSPattern ();
+    _fillPatternOrGroupFromXML (ePattern, ret);
+    return ret;
+  }
+
+  /**
+   * Read a &lt;group&gt; element introduced in ISO/IEC 19757-3:2025. Per the v4 RNC the content
+   * model is identical to that of <code>pattern</code>; the difference is in the rule semantics
+   * applied at validation time.
+   *
+   * @param eGroup
+   *        The source micro element. Never <code>null</code>.
+   * @return The created domain object. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  public PSGroup readGroupFromXML (@NonNull final IMicroElement eGroup)
+  {
+    final PSGroup ret = new PSGroup ();
+    _fillPatternOrGroupFromXML (eGroup, ret);
+    return ret;
+  }
+
+  /**
+   * Read a &lt;rules&gt; abstract-rules container introduced in ISO/IEC 19757-3:2025.
+   *
+   * @param eRules
+   *        The source micro element. Never <code>null</code>.
+   * @return The created domain object. May not be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @NonNull
+  public PSRules readRulesFromXML (@NonNull final IMicroElement eRules)
+  {
+    final PSRules ret = new PSRules ();
+    final PSRichGroup aRichGroup = new PSRichGroup ();
+    eRules.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+      final String sAttrValue = _getAttributeValue (sVal);
+      if (sAttrName.equals (CSchematronXML.ATTR_ID))
+        ret.setID (sAttrValue);
+      else
+        if (PSRichGroup.isRichAttribute (sAttrName))
+          _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+        else
+          _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
+    });
+    ret.setRich (aRichGroup);
+
+    eRules.forAllChildElements (eRulesChild -> {
+      if (isValidSchematronNS (eRulesChild.getNamespaceURI ()))
+      {
+        final String sLocalName = eRulesChild.getLocalName ();
+        if (sLocalName.equals (CSchematronXML.ELEMENT_TITLE))
+          ret.setTitle (readTitleFromXML (eRulesChild));
+        else
+          if (sLocalName.equals (CSchematronXML.ELEMENT_P))
+            ret.addP (readPFromXML (eRulesChild));
+          else
+            if (sLocalName.equals (CSchematronXML.ELEMENT_RULE))
+              ret.addAbstractRule (readRuleFromXML (eRulesChild));
+            else
+              _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+      }
+      else
+        _warn (ret, "Unsupported namespace URI '" + eRulesChild.getNamespaceURI () + "'");
     });
     return ret;
   }
@@ -973,10 +1059,16 @@ public class PSReader
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
       else
-        if (PSRichGroup.isRichAttribute (sAttrName))
-          _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+        if (sAttrName.equals (CSchematronXML.ATTR_FROM))
+          ret.setFrom (sAttrValue);
         else
-          ret.addForeignAttribute (sAttrName, sAttrValue);
+          if (sAttrName.equals (CSchematronXML.ATTR_WHEN))
+            ret.setWhen (sAttrValue);
+          else
+            if (PSRichGroup.isRichAttribute (sAttrName))
+              _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+            else
+              ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
 
@@ -1031,13 +1123,19 @@ public class PSReader
             if (sAttrName.equals (CSchematronXML.ATTR_ID))
               ret.setID (sAttrValue);
             else
-              if (PSRichGroup.isRichAttribute (sAttrName))
-                _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+              if (sAttrName.equals (CSchematronXML.ATTR_VISIT_EACH))
+                ret.setVisitEach (sAttrValue);
               else
-                if (PSLinkableGroup.isLinkableAttribute (sAttrName))
-                  _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                if (sAttrName.equals (CSchematronXML.ATTR_SEVERITY))
+                  ret.setSeverity (sAttrValue);
                 else
-                  ret.addForeignAttribute (sAttrName, sAttrValue);
+                  if (PSRichGroup.isRichAttribute (sAttrName))
+                    _handleRichGroup (sAttrName, sAttrValue, aRichGroup);
+                  else
+                    if (PSLinkableGroup.isLinkableAttribute (sAttrName))
+                      _handleLinkableGroup (sAttrName, sAttrValue, aLinkableGroup);
+                    else
+                      ret.addForeignAttribute (sAttrName, sAttrValue);
     });
     ret.setRich (aRichGroup);
     ret.setLinkable (aLinkableGroup);
@@ -1135,38 +1233,53 @@ public class PSReader
         if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_INCLUDE))
           ret.addInclude (readIncludeFromXML (eSchemaChild));
         else
-          if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_TITLE))
-            ret.setTitle (readTitleFromXML (eSchemaChild));
+          if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_EXTENDS))
+            ret.addExtends (readExtendsFromXML (eSchemaChild));
           else
-            if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_NS))
-              ret.addNS (readNSFromXML (eSchemaChild));
+            if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_TITLE))
+              ret.setTitle (readTitleFromXML (eSchemaChild));
             else
-              if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_P))
-              {
-                final PSP aP = readPFromXML (eSchemaChild);
-                if (ret.hasNoPatterns ())
-                  ret.addStartP (aP);
-                else
-                  ret.addEndP (aP);
-              }
+              if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_NS))
+                ret.addNS (readNSFromXML (eSchemaChild));
               else
-                if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_LET))
-                  ret.addLet (readLetFromXML (eSchemaChild));
-                else
-                  if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_PHASE))
-                    ret.addPhase (readPhaseFromXML (eSchemaChild));
+                if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_P))
+                {
+                  final PSP aP = readPFromXML (eSchemaChild);
+                  if (ret.hasNoPatterns () && !ret.hasAnyGroup ())
+                    ret.addStartP (aP);
                   else
-                    if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_PATTERN))
-                      ret.addPattern (readPatternFromXML (eSchemaChild));
+                    ret.addEndP (aP);
+                }
+                else
+                  if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_PARAM))
+                    ret.addParam (readParamFromXML (eSchemaChild));
+                  else
+                    if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_LET))
+                      ret.addLet (readLetFromXML (eSchemaChild));
                     else
-                      if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_DIAGNOSTICS))
-                        ret.setDiagnostics (readDiagnosticsFromXML (eSchemaChild));
+                      if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_PHASE))
+                        ret.addPhase (readPhaseFromXML (eSchemaChild));
                       else
-                        _warn (ret, "Unsupported Schematron element '" + eSchemaChild.getLocalName () + "'");
+                        if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_RULES))
+                          ret.addAbstractRulesContainer (readRulesFromXML (eSchemaChild));
+                        else
+                          if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_PATTERN))
+                            ret.addPattern (readPatternFromXML (eSchemaChild));
+                          else
+                            if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_GROUP))
+                              ret.addGroup (readGroupFromXML (eSchemaChild));
+                            else
+                              if (eSchemaChild.getLocalName ().equals (CSchematronXML.ELEMENT_DIAGNOSTICS))
+                                ret.setDiagnostics (readDiagnosticsFromXML (eSchemaChild));
+                              else
+                                _warn (ret, "Unsupported Schematron element '" + eSchemaChild.getLocalName () + "'");
       }
       else
         ret.addForeignElement (eSchemaChild.getClone ());
     });
+    // Run the central version check so that any 2025-only feature used in a schema declaring an
+    // older edition (or no edition at all) is reported once per element via the warning channel.
+    PSVersionChecker.checkSchematronVersionCompliance (ret, m_aErrorHandler);
     return ret;
   }
 

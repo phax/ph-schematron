@@ -58,6 +58,8 @@ import com.helger.xml.microdom.MicroElement;
 public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasIncludes, IPSHasLets, IPSHasID, IPSHasRichGroup
 {
   private String m_sID;
+  private String m_sFrom;
+  private String m_sWhen;
   private PSRichGroup m_aRich;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
@@ -160,6 +162,57 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     return m_aRich;
   }
 
+  /**
+   * Set the optional <code>from</code> attribute introduced in
+   * ISO/IEC 19757-3:2025. When present it restricts the evaluation of patterns
+   * in this phase to a subset of the document selected by the path expression.
+   *
+   * @param sFrom
+   *        The new value. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void setFrom (@Nullable final String sFrom)
+  {
+    m_sFrom = sFrom;
+  }
+
+  /**
+   * @return The value of the <code>from</code> attribute, or <code>null</code>
+   *         if not set.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public String getFrom ()
+  {
+    return m_sFrom;
+  }
+
+  /**
+   * Set the optional <code>when</code> attribute introduced in
+   * ISO/IEC 19757-3:2025. The expression is evaluated in the root context
+   * when the active phase is {@link CSchematron#PHASE_ANY}; the first phase
+   * whose expression returns <code>true</code> becomes active.
+   *
+   * @param sWhen
+   *        The new value. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void setWhen (@Nullable final String sWhen)
+  {
+    m_sWhen = sWhen;
+  }
+
+  /**
+   * @return The value of the <code>when</code> attribute, or <code>null</code>
+   *         if not set.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public String getWhen ()
+  {
+    return m_sWhen;
+  }
+
   public void addInclude (@NonNull final PSInclude aInclude)
   {
     ValueEnforcer.notNull (aInclude, "Include");
@@ -252,6 +305,10 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_PHASE);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
+    if (StringHelper.isNotEmpty (m_sFrom))
+      ret.setAttribute (CSchematronXML.ATTR_FROM, m_sFrom);
+    if (StringHelper.isNotEmpty (m_sWhen))
+      ret.setAttribute (CSchematronXML.ATTR_WHEN, m_sWhen);
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
@@ -269,6 +326,8 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public String toString ()
   {
     return new ToStringGenerator (this).appendIfNotNull ("id", m_sID)
+                                       .appendIfNotNull ("From", m_sFrom)
+                                       .appendIfNotNull ("When", m_sWhen)
                                        .appendIfNotNull ("rich", m_aRich)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)

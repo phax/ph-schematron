@@ -75,6 +75,8 @@ public class PSRule implements
   private boolean m_bAbstract = DEFAULT_ABSTRACT;
   private String m_sContext;
   private String m_sID;
+  private String m_sVisitEach;
+  private String m_sSeverity;
   private final ICommonsList <Object> m_aContent = new CommonsArrayList <> ();
   private ICommonsOrderedMap <String, String> m_aForeignAttrs;
 
@@ -256,6 +258,57 @@ public class PSRule implements
     m_sID = sID;
   }
 
+  /**
+   * Set the optional <code>visit-each</code> attribute introduced in
+   * ISO/IEC 19757-3:2025. When present it selects a sequence of items for
+   * assertion evaluation, replacing the rule context.
+   *
+   * @param sVisitEach
+   *        The new value. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void setVisitEach (@Nullable final String sVisitEach)
+  {
+    m_sVisitEach = sVisitEach;
+  }
+
+  /**
+   * @return The value of the <code>visit-each</code> attribute, or
+   *         <code>null</code> if not set.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public String getVisitEach ()
+  {
+    return m_sVisitEach;
+  }
+
+  /**
+   * Set the optional <code>severity</code> attribute introduced in
+   * ISO/IEC 19757-3:2025. Reserved values are <code>fatal</code>,
+   * <code>error</code>, <code>warning</code> and <code>info</code>; if the
+   * value is a variable reference it is dynamically evaluated.
+   *
+   * @param sSeverity
+   *        The new value. May be <code>null</code>.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public void setSeverity (@Nullable final String sSeverity)
+  {
+    m_sSeverity = sSeverity;
+  }
+
+  /**
+   * @return The value of the <code>severity</code> attribute, or
+   *         <code>null</code> if not set.
+   * @since 10.0.0 (Schematron 2025)
+   */
+  @Nullable
+  public String getSeverity ()
+  {
+    return m_sSeverity;
+  }
+
   public boolean hasAnyInclude ()
   {
     return m_aContent.containsAny (PSInclude.class::isInstance);
@@ -363,7 +416,11 @@ public class PSRule implements
     if (m_bAbstract)
       ret.setAttribute (CSchematronXML.ATTR_ABSTRACT, "true");
     ret.setAttribute (CSchematronXML.ATTR_CONTEXT, m_sContext);
+    if (StringHelper.isNotEmpty (m_sVisitEach))
+      ret.setAttribute (CSchematronXML.ATTR_VISIT_EACH, m_sVisitEach);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
+    if (StringHelper.isNotEmpty (m_sSeverity))
+      ret.setAttribute (CSchematronXML.ATTR_SEVERITY, m_sSeverity);
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     if (m_aLinkable != null)
@@ -390,6 +447,8 @@ public class PSRule implements
                                        .append ("abstract", m_bAbstract)
                                        .appendIfNotNull ("context", m_sContext)
                                        .appendIfNotNull ("id", m_sID)
+                                       .appendIfNotNull ("Visit-each", m_sVisitEach)
+                                       .appendIfNotNull ("Severity", m_sSeverity)
                                        .appendIf ("content", m_aContent, CollectionHelper::isNotEmpty)
                                        .appendIf ("foreignAttrs", m_aForeignAttrs, CollectionHelper::isNotEmpty)
                                        .getToString ();

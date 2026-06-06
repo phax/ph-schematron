@@ -28,12 +28,16 @@ import com.helger.annotation.style.PresentForCodeCoverage;
 public final class CSchematronXML
 {
   public static final String ATTR_ABSTRACT = "abstract";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ATTR_AS = "as";
   public static final String ATTR_CLASS = "class";
   public static final String ATTR_CONTEXT = "context";
   public static final String ATTR_DEFAULT_PHASE = "defaultPhase";
   public static final String ATTR_DIAGNOSTICS = "diagnostics";
   public static final String ATTR_FLAG = "flag";
   public static final String ATTR_FPI = "fpi";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ATTR_FROM = "from";
   public static final String ATTR_HREF = "href";
   public static final String ATTR_ICON = "icon";
   public static final String ATTR_ID = "id";
@@ -49,10 +53,16 @@ public final class CSchematronXML
   public static final String ATTR_SCHEMATRON_EDITION = "schematronEdition";
   public static final String ATTR_SEE = "see";
   public static final String ATTR_SELECT = "select";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ATTR_SEVERITY = "severity";
   public static final String ATTR_SUBJECT = "subject";
   public static final String ATTR_TEST = "test";
   public static final String ATTR_URI = "uri";
   public static final String ATTR_VALUE = "value";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ATTR_VISIT_EACH = "visit-each";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ATTR_WHEN = "when";
   public static final String ATTR_XML_LANG = "lang";
   public static final String ATTR_XML_SPACE = "space";
   public static final String ELEMENT_ACTIVE = "active";
@@ -62,8 +72,12 @@ public final class CSchematronXML
   public static final String ELEMENT_DIR = "dir";
   public static final String ELEMENT_EMPH = "emph";
   public static final String ELEMENT_EXTENDS = "extends";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ELEMENT_GROUP = "group";
   public static final String ELEMENT_INCLUDE = "include";
   public static final String ELEMENT_LET = "let";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ELEMENT_LIBRARY = "library";
   public static final String ELEMENT_NAME = "name";
   public static final String ELEMENT_NS = "ns";
   public static final String ELEMENT_P = "p";
@@ -72,6 +86,8 @@ public final class CSchematronXML
   public static final String ELEMENT_PHASE = "phase";
   public static final String ELEMENT_REPORT = "report";
   public static final String ELEMENT_RULE = "rule";
+  /** @since 10.0.0 (Schematron 2025) */
+  public static final String ELEMENT_RULES = "rules";
   public static final String ELEMENT_SCHEMA = "schema";
   public static final String ELEMENT_SPAN = "span";
   public static final String ELEMENT_TITLE = "title";
