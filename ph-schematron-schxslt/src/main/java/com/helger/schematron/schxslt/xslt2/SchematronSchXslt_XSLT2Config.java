@@ -49,6 +49,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
@@ -190,9 +191,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     return m_aTelemetry != null;
   }
 
-  @Override
   @NonNull
-  public Object getCacheKey ()
+  public CacheKey getCacheKey ()
   {
     return m_aCacheKey;
   }
@@ -225,7 +225,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
       return null;
     }
     final SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = new SchematronProviderXSLTFromSchXslt_XSLT2 (m_aResource,
-                                                                                                          toTransformerCustomizer ());
+                                                                                                           toTransformerCustomizer ());
     aProvider.convertSchematronToXSLT ();
     if (!aProvider.isValidSchematron ())
     {
@@ -402,7 +402,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   // === Cache key ===
 
   @Immutable
-  public static final class CacheKey
+  public static final class CacheKey implements ISchematronCompilationCacheKey
   {
     private final String m_sResourceID;
     private final String m_sPhase;
@@ -427,12 +427,12 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     {
       if (o == this)
         return true;
-      if (!(o instanceof final CacheKey other))
+      if (!(o instanceof final CacheKey aRhs))
         return false;
-      return m_sResourceID.equals (other.m_sResourceID) &&
-             Objects.equals (m_sPhase, other.m_sPhase) &&
-             Objects.equals (m_sLanguageCode, other.m_sLanguageCode) &&
-             m_bTracingEnabled == other.m_bTracingEnabled;
+      return m_sResourceID.equals (aRhs.m_sResourceID) &&
+             Objects.equals (m_sPhase, aRhs.m_sPhase) &&
+             Objects.equals (m_sLanguageCode, aRhs.m_sLanguageCode) &&
+             m_bTracingEnabled == aRhs.m_bTracingEnabled;
     }
 
     @Override
@@ -583,8 +583,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     /**
      * Set the per-template telemetry callback. When non-<code>null</code>, the final validation
      * stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache
-     * entry) and a {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is
-     * installed on each transform.
+     * entry) and a {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is installed
+     * on each transform.
      *
      * @param a
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is

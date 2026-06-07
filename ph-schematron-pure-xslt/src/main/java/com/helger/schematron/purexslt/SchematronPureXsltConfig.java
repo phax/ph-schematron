@@ -49,6 +49,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
@@ -71,8 +72,8 @@ import net.sf.saxon.s9api.XsltExecutable;
 /**
  * Immutable configuration for compiling a Schematron <code>.sch</code> file through the pure-Java
  * Saxon-native pipeline. Cache-key dimensions are
- * <code>(resourceID, phase, xsltVersion, processor identity)</code>. Custom URI resolver or
- * error listener bypass caching unless {@link Builder#forceCacheResult(boolean)} is true.
+ * <code>(resourceID, phase, xsltVersion, processor identity)</code>. Custom URI resolver or error
+ * listener bypass caching unless {@link Builder#forceCacheResult(boolean)} is true.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -199,7 +200,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
 
   @Override
   @NonNull
-  public Object getCacheKey ()
+  public CacheKey getCacheKey ()
   {
     return m_aCacheKey;
   }
@@ -414,7 +415,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   // === Cache key ===
 
   @Immutable
-  public static final class CacheKey
+  public static final class CacheKey implements ISchematronCompilationCacheKey
   {
     private final String m_sResourceID;
     private final String m_sPhase;
@@ -439,12 +440,12 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     {
       if (o == this)
         return true;
-      if (!(o instanceof final CacheKey other))
+      if (!(o instanceof final CacheKey aRhs))
         return false;
-      return m_nProcessorIdentity == other.m_nProcessorIdentity &&
-             m_sResourceID.equals (other.m_sResourceID) &&
-             Objects.equals (m_sPhase, other.m_sPhase) &&
-             m_sVersion.equals (other.m_sVersion);
+      return m_nProcessorIdentity == aRhs.m_nProcessorIdentity &&
+             m_sResourceID.equals (aRhs.m_sResourceID) &&
+             Objects.equals (m_sPhase, aRhs.m_sPhase) &&
+             m_sVersion.equals (aRhs.m_sVersion);
     }
 
     @Override
@@ -593,8 +594,8 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     }
 
     /**
-     * Toggle whether compilation results should be cached even when custom runtime hooks
-     * (URI resolver or error listener) are present.
+     * Toggle whether compilation results should be cached even when custom runtime hooks (URI
+     * resolver or error listener) are present.
      *
      * @param b
      *        <code>true</code> to force caching, <code>false</code> for the default behaviour

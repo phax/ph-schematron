@@ -48,7 +48,7 @@ public interface ISchematronCompilation <ARTIFACT>
    *         error listeners or per-call parameters must NOT participate. Never <code>null</code>.
    */
   @NonNull
-  Object getCacheKey ();
+  ISchematronCompilationCacheKey getCacheKey ();
 
   /**
    * @return <code>true</code> if the result of {@link #compile()} may be cached for this config.

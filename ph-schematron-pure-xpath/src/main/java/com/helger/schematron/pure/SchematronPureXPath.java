@@ -51,7 +51,8 @@ public final class SchematronPureXPath implements ISchematronValidator
   private final SchematronPureXPathConfig m_aConfig;
   private final IPSBoundSchema m_aBoundSchema;
 
-  private SchematronPureXPath (@NonNull final SchematronPureXPathConfig aConfig, @NonNull final IPSBoundSchema aBoundSchema)
+  private SchematronPureXPath (@NonNull final SchematronPureXPathConfig aConfig,
+                               @NonNull final IPSBoundSchema aBoundSchema)
   {
     m_aConfig = aConfig;
     m_aBoundSchema = aBoundSchema;
@@ -138,7 +139,9 @@ public final class SchematronPureXPath implements ISchematronValidator
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Config", m_aConfig).append ("BoundSchema", m_aBoundSchema).getToString ();
+    return new ToStringGenerator (this).append ("Config", m_aConfig)
+                                       .append ("BoundSchema", m_aBoundSchema)
+                                       .getToString ();
   }
 
   // === Compilation entry points ===
@@ -173,7 +176,7 @@ public final class SchematronPureXPath implements ISchematronValidator
    */
   @NonNull
   public static SchematronPureXPath compileCached (@NonNull final SchematronPureXPathConfig aConfig,
-                                               @NonNull final SchematronPureXPathCache aCache) throws SchematronException
+                                                   @NonNull final SchematronPureXPathCache aCache) throws SchematronException
   {
     ValueEnforcer.notNull (aConfig, "Config");
     ValueEnforcer.notNull (aCache, "Cache");
@@ -194,8 +197,7 @@ public final class SchematronPureXPath implements ISchematronValidator
    *         on compilation error.
    */
   @NonNull
-  public static SchematronPureXPath compileUncached (@NonNull final SchematronPureXPathConfig aConfig)
-                                                                                                throws SchematronException
+  public static SchematronPureXPath compileUncached (@NonNull final SchematronPureXPathConfig aConfig) throws SchematronException
   {
     ValueEnforcer.notNull (aConfig, "Config");
     final IPSBoundSchema aBound = aConfig.compile ();

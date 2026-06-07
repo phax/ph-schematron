@@ -49,6 +49,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
@@ -58,10 +59,10 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
  * Immutable configuration describing how to compile an ISO Schematron <code>.sch</code> resource
  * into an XSLT-based validator. Build instances via {@link #builder(IReadableResource)}.
  * <p>
- * The cache-key dimensions are <code>(resourceID, phase, languageCode, tracingEnabled)</code>; runtime hooks
- * ({@link ErrorListener}, {@link URIResolver}, custom XSLT parameters) do not participate in
- * caching but are applied during compilation and transformation. Custom parameters cause
- * {@link #canCacheResult()} to return <code>false</code> unless
+ * The cache-key dimensions are <code>(resourceID, phase, languageCode, tracingEnabled)</code>;
+ * runtime hooks ({@link ErrorListener}, {@link URIResolver}, custom XSLT parameters) do not
+ * participate in caching but are applied during compilation and transformation. Custom parameters
+ * cause {@link #canCacheResult()} to return <code>false</code> unless
  * {@link Builder#forceCacheResult(boolean)} was set.
  *
  * @author Philip Helger
@@ -196,7 +197,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
 
   @Override
   @NonNull
-  public Object getCacheKey ()
+  public CacheKey getCacheKey ()
   {
     return m_aCacheKey;
   }
@@ -413,7 +414,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
    * <code>(resourceID, phase, languageCode)</code>.
    */
   @Immutable
-  public static final class CacheKey
+  public static final class CacheKey implements ISchematronCompilationCacheKey
   {
     private final String m_sResourceID;
     private final String m_sPhase;
@@ -438,12 +439,12 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     {
       if (o == this)
         return true;
-      if (!(o instanceof final CacheKey other))
+      if (!(o instanceof final CacheKey aRhs))
         return false;
-      return m_sResourceID.equals (other.m_sResourceID) &&
-             Objects.equals (m_sPhase, other.m_sPhase) &&
-             Objects.equals (m_sLanguageCode, other.m_sLanguageCode) &&
-             m_bTracingEnabled == other.m_bTracingEnabled;
+      return m_sResourceID.equals (aRhs.m_sResourceID) &&
+             Objects.equals (m_sPhase, aRhs.m_sPhase) &&
+             Objects.equals (m_sLanguageCode, aRhs.m_sLanguageCode) &&
+             m_bTracingEnabled == aRhs.m_bTracingEnabled;
     }
 
     @Override
@@ -596,8 +597,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     /**
      * Set the per-template telemetry callback. When non-<code>null</code>, the final validation
      * stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache
-     * entry) and a {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is
-     * installed on each transform.
+     * entry) and a {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is installed
+     * on each transform.
      *
      * @param a
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is

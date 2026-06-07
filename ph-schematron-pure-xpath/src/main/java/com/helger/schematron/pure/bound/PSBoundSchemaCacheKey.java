@@ -33,27 +33,27 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.SchematronInterruptedException;
-import com.helger.schematron.pure.binding.IPSQueryBinding;
-import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
+import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.preprocess.SchematronPreprocessException;
+import com.helger.schematron.pure.binding.IPSQueryBinding;
+import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
- * This class represents keys for the {@link PSBoundSchemaCache}. It is a
- * combination of a resource, a phase and an XPath Configuration (see
- * <code>equals</code> method). It is the responsible class for reading and
- * binding a Schematron resource.
+ * This class represents keys for the {@link PSBoundSchemaCache}. It is a combination of a resource,
+ * a phase and an XPath Configuration (see <code>equals</code> method). It is the responsible class
+ * for reading and binding a Schematron resource.
  *
  * @author Philip Helger
  */
 @Immutable
-public class PSBoundSchemaCacheKey
+public class PSBoundSchemaCacheKey implements ISchematronCompilationCacheKey
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PSBoundSchemaCacheKey.class);
 
@@ -106,8 +106,7 @@ public class PSBoundSchemaCacheKey
   }
 
   /**
-   * @return The error handler passed in the constructor. May be
-   *         <code>null</code>.
+   * @return The error handler passed in the constructor. May be <code>null</code>.
    */
   @Nullable
   public final IPSErrorHandler getErrorHandler ()
@@ -192,8 +191,7 @@ public class PSBoundSchemaCacheKey
    * {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}.
    *
    * @param aQueryBinding
-   *        The query binding to be determined from the read schema. Never
-   *        <code>null</code>.
+   *        The query binding to be determined from the read schema. Never <code>null</code>.
    * @return The pre-processor to be used.
    */
   @NonNull
@@ -236,14 +234,13 @@ public class PSBoundSchemaCacheKey
   }
 
   /**
-   * The main routine to create a bound schema from the passed resource and
-   * phase. The usual routine is to
+   * The main routine to create a bound schema from the passed resource and phase. The usual routine
+   * is to
    * <ol>
    * <li>read the schema from the resource - see
    * {@link #readSchema(IReadableResource, IPSErrorHandler, EntityResolver)}</li>
    * <li>resolve the query binding - see {@link #getQueryBinding(PSSchema)}</li>
-   * <li>pre-process the schema -
-   * {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}</li>
+   * <li>pre-process the schema - {@link #createPreprocessedSchema(PSSchema, IPSQueryBinding)}</li>
    * <li>and finally bind it -
    * {@link IPSQueryBinding#bind(PSSchema, String, IPSErrorHandler, IPSValidationHandler, IXPathConfig)}
    * </li>

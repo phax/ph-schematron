@@ -48,6 +48,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
@@ -71,6 +72,9 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   private final URIResolver m_aURIResolver;
   private final ICommonsOrderedMap <String, Object> m_aParameters;
   private final ISchematronTemplateTelemetry m_aTelemetry;
+
+  public static record CacheKey (String key) implements ISchematronCompilationCacheKey
+  {}
 
   private SchematronXSLTConfig (@NonNull final Builder b)
   {
@@ -142,12 +146,11 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     return m_aTelemetry != null;
   }
 
-  @Override
   @NonNull
-  public Object getCacheKey ()
+  public CacheKey getCacheKey ()
   {
     final String sResourceID = m_aResource.getResourceID ();
-    return isTracingEnabled () ? sResourceID + "#trace" : sResourceID;
+    return new CacheKey (isTracingEnabled () ? sResourceID + "#trace" : sResourceID);
   }
 
   @Override

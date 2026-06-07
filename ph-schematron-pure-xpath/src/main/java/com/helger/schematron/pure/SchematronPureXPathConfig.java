@@ -41,6 +41,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
+import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
@@ -51,9 +52,8 @@ import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 /**
  * Immutable configuration for compiling a Schematron file with the pure-Java XPath engine. The
  * cache-key dimensions are <code>(resource, phase, xpathConfig)</code> — matching the legacy
- * {@link PSBoundSchemaCacheKey} equality semantics. Runtime hooks (error handler, custom
- * validation handler, entity resolver, telemetry flags) participate in compilation but not in
- * caching.
+ * {@link PSBoundSchemaCacheKey} equality semantics. Runtime hooks (error handler, custom validation
+ * handler, entity resolver, telemetry flags) participate in compilation but not in caching.
  * <p>
  * In-memory resources always bypass the cache.
  *
@@ -164,7 +164,7 @@ public final class SchematronPureXPathConfig implements ISchematronCompilation <
 
   @Override
   @NonNull
-  public Object getCacheKey ()
+  public ISchematronCompilationCacheKey getCacheKey ()
   {
     return m_aCacheKey;
   }
