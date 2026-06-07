@@ -37,12 +37,11 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
 /**
  * Legacy static facade for the pre-built XSLT compilation cache. Since v10.0.0 this is a thin
  * wrapper around {@link SchematronXSLTCache#shared()}; prefer the new API
- * ({@link SchematronXSLTConfig}, {@link SchematronXSLTCache}, {@link SchematronXSLT}) for new
- * code.
+ * ({@link SchematronXSLTConfig}, {@link SchematronXSLTCache}, {@link SchematronXSLT}) for new code.
  *
  * @author Philip Helger
- * @deprecated Use {@link SchematronXSLTCache#shared()} and the {@link SchematronXSLTConfig}
- *             builder instead.
+ * @deprecated Use {@link SchematronXSLTCache#shared()} and the {@link SchematronXSLTConfig} builder
+ *             instead.
  */
 @Deprecated (since = "10.0.0", forRemoval = false)
 @ThreadSafe
@@ -53,6 +52,7 @@ public final class SchematronResourceXSLTCache
   private SchematronResourceXSLTCache ()
   {}
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTPrebuild createSchematronXSLTProvider (@NonNull final IReadableResource aXSLTResource,
                                                                              @Nullable final ErrorListener aCustomErrorListener,
@@ -84,6 +84,7 @@ public final class SchematronResourceXSLTCache
    * Return an existing or create a new Schematron XSLT provider for the passed resource via the
    * {@link SchematronXSLTCache#shared() shared cache}.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTPrebuild getSchematronXSLTProvider (@NonNull final IReadableResource aXSLTResource,
                                                                           @Nullable final ErrorListener aCustomErrorListener,
@@ -114,6 +115,7 @@ public final class SchematronResourceXSLTCache
    *
    * @since 5.6.5
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public static void clearCache ()
   {
     SchematronXSLTCache.shared ().clear ();

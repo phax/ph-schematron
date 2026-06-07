@@ -30,8 +30,8 @@ import com.helger.xml.serialize.write.XMLWriter;
 /**
  * Legacy static facade for the SCH compilation cache. Since v10.0.0 this is a thin wrapper around
  * {@link SchematronSCHCache#shared()}; prefer the new API ({@link SchematronSCHConfig},
- * {@link SchematronSCHCache}, {@link SchematronSCH}) for new code — the new API supports
- * multiple cache instances, bounded eviction and a fluent builder.
+ * {@link SchematronSCHCache}, {@link SchematronSCH}) for new code — the new API supports multiple
+ * cache instances, bounded eviction and a fluent builder.
  *
  * @author Philip Helger
  * @deprecated Use {@link SchematronSCHCache#shared()} and the {@link SchematronSCHConfig} builder
@@ -56,6 +56,7 @@ public final class SchematronResourceSCHCache
    *        The XSLT transformer customizer to be used. May not be <code>null</code>.
    * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSCH createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                             @NonNull final TransformerCustomizerSCH aTransformerCustomizer)
@@ -86,8 +87,8 @@ public final class SchematronResourceSCHCache
   }
 
   /**
-   * Get the Schematron validator for the passed resource via the
-   * {@link SchematronSCHCache#shared() shared cache}.
+   * Get the Schematron validator for the passed resource via the {@link SchematronSCHCache#shared()
+   * shared cache}.
    *
    * @param aSchematronResource
    *        The resource of the Schematron rules. May not be <code>null</code>.
@@ -95,6 +96,7 @@ public final class SchematronResourceSCHCache
    *        The XSLT transformer customizer to be used. May not be <code>null</code>.
    * @return <code>null</code> if the passed Schematron resource does not exist or is invalid.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSCH getSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                          @NonNull final TransformerCustomizerSCH aTransformerCustomizer)
@@ -136,6 +138,7 @@ public final class SchematronResourceSCHCache
    *
    * @since 5.6.5
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public static void clearCache ()
   {
     SchematronSCHCache.shared ().clear ();

@@ -54,11 +54,13 @@ import com.helger.schematron.pure.xpath.IXPathConfig;
 @NotThreadSafe
 public class SchematronResourcePure extends SchematronResourcePureXPath
 {
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePure (@NonNull final IReadableResource aResource)
   {
     super (aResource);
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePure (@NonNull final IReadableResource aResource,
                                  @Nullable final String sPhase,
                                  @Nullable final IPSErrorHandler aErrorHandler)
@@ -66,9 +68,11 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     super (aResource, sPhase, aErrorHandler);
   }
 
-  // === Covariant setters so old `SchematronResourcePure x = new SchematronResourcePure(r).setPhase(...);`
+  // === Covariant setters so old `SchematronResourcePure x = new
+  // SchematronResourcePure(r).setPhase(...);`
   // chained code keeps compiling without explicit casts ===
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @NonNull
   public final SchematronResourcePure setPhase (@Nullable final String sPhase)
@@ -77,6 +81,7 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @NonNull
   public final SchematronResourcePure setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
@@ -85,6 +90,7 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @NonNull
   public final SchematronResourcePure setCustomValidationHandler (@Nullable final IPSValidationHandler aCustomValidationHandler)
@@ -93,6 +99,7 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @NonNull
   public final SchematronResourcePure setXPathConfig (@NonNull final IXPathConfig aXPathConfig)
@@ -101,6 +108,7 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @NonNull
   public final SchematronResourcePure setTelemetry (final boolean bTelemetry)
@@ -109,6 +117,7 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Override
   @NonNull
   public final SchematronResourcePure setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
@@ -117,15 +126,18 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
-  // === Covariant static factories so `SchematronResourcePure x = SchematronResourcePure.fromFile(f);`
+  // === Covariant static factories so `SchematronResourcePure x =
+  // SchematronResourcePure.fromFile(f);`
   // chained code keeps compiling. These hide (not override) the parent's static methods. ===
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePure (new ClassPathResource (sSCHPath));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromClassPath (@NonNull @Nonempty final String sSCHPath,
                                                       @Nullable final ClassLoader aClassLoader)
@@ -133,30 +145,35 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return new SchematronResourcePure (new ClassPathResource (sSCHPath, aClassLoader));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromFile (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePure (new FileSystemResource (sSCHPath));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromFile (@NonNull final File aSCHFile)
   {
     return new SchematronResourcePure (new FileSystemResource (aSCHFile));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
     return new SchematronResourcePure (new URLResource (sSCHURL));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromURL (@NonNull final URL aSCHURL)
   {
     return new SchematronResourcePure (new URLResource (aSCHURL));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromInputStream (@NonNull @Nonempty final String sResourceID,
                                                         @NonNull final InputStream aSchematronIS)
@@ -164,18 +181,21 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return new SchematronResourcePure (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromByteArray (@NonNull final byte [] aSchematron)
   {
     return new SchematronResourcePure (new ReadableResourceByteArray (aSchematron));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePure fromSchema (@NonNull final PSSchema aSchematron)
   {

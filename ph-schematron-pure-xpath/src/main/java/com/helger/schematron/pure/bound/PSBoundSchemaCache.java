@@ -18,9 +18,7 @@ package com.helger.schematron.pure.bound;
 
 import org.jspecify.annotations.NonNull;
 
-import com.helger.base.CGlobal;
-import com.helger.base.enforce.ValueEnforcer;
-import com.helger.cache.impl.Cache;
+import com.helger.cache.impl.ProviderCache;
 import com.helger.schematron.SchematronException;
 
 /**
@@ -29,7 +27,7 @@ import com.helger.schematron.SchematronException;
  *
  * @author Philip Helger
  */
-public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSchema>
+public class PSBoundSchemaCache extends ProviderCache <PSBoundSchemaCacheKey, IPSBoundSchema>
 {
   private static final class SingletonHolder
   {
@@ -46,9 +44,7 @@ public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSc
 
   public PSBoundSchemaCache (@NonNull final String sCacheName)
   {
-    super (aKey -> {
-      ValueEnforcer.notNull (aKey, "Key");
-
+    super (sCacheName, NO_MAX_SIZE, DEFAULT_ALLOW_NULL_VALUES, null, DEFAULT_CLOCK_SUPPLIER, aKey -> {
       try
       {
         return aKey.createBoundSchema ();
@@ -58,7 +54,7 @@ public class PSBoundSchemaCache extends Cache <PSBoundSchemaCacheKey, IPSBoundSc
         // Convert to an unchecked exception :(
         throw new IllegalArgumentException (ex);
       }
-    }, CGlobal.ILLEGAL_UINT, sCacheName);
+    });
   }
 
   @NonNull

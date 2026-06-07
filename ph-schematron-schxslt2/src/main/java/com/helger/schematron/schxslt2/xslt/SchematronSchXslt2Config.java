@@ -76,16 +76,16 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
   private final ISchematronTemplateTelemetry m_aTelemetry;
   private final CacheKey m_aCacheKey;
 
-  private SchematronSchXslt2Config (@NonNull final Builder b)
+  private SchematronSchXslt2Config (@NonNull final Builder aBuilder)
   {
-    m_aResource = b.m_aResource;
-    m_sPhase = b.m_sPhase;
-    m_sLanguageCode = b.m_sLanguageCode;
-    m_aErrorListener = b.m_aErrorListener;
-    m_aURIResolver = b.m_aURIResolver;
-    m_aParameters = new CommonsLinkedHashMap <> (b.m_aParameters);
-    m_bForceCacheResult = b.m_bForceCacheResult;
-    m_aTelemetry = b.m_aTelemetry;
+    m_aResource = aBuilder.m_aResource;
+    m_sPhase = aBuilder.m_sPhase;
+    m_sLanguageCode = aBuilder.m_sLanguageCode;
+    m_aErrorListener = aBuilder.m_aErrorListener;
+    m_aURIResolver = aBuilder.m_aURIResolver;
+    m_aParameters = new CommonsLinkedHashMap <> (aBuilder.m_aParameters);
+    m_bForceCacheResult = aBuilder.m_bForceCacheResult;
+    m_aTelemetry = aBuilder.m_aTelemetry;
     m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_sLanguageCode, m_aTelemetry != null);
   }
 

@@ -91,8 +91,8 @@ import net.sf.saxon.s9api.XdmNode;
  * using the {@code com.helger.schematron.sch.SchematronResourceSCH} or
  * {@code com.helger.schematron.purexslt.SchematronResourcePureXslt} classes instead.
  * <p>
- * The pre-v10 name {@link SchematronResourcePure} is preserved as a deprecated source-compatible
- * subclass for callers that already use it.
+ * The pre-v10 name <code>SchematronResourcePure</code> is preserved as a deprecated
+ * source-compatible subclass for callers that already use it.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -117,8 +117,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   public SchematronResourcePureXPath (@NonNull final IReadableResource aResource,
-                                 @Nullable final String sPhase,
-                                 @Nullable final IPSErrorHandler aErrorHandler)
+                                      @Nullable final String sPhase,
+                                      @Nullable final IPSErrorHandler aErrorHandler)
   {
     super (aResource);
     setPhase (sPhase);
@@ -635,7 +635,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from a Classpath Schematron rules
+   * Create a new {@link SchematronResourcePureXPath} from a Classpath Schematron rules
    *
    * @param sSCHPath
    *        The classpath relative path to the Schematron rules.
@@ -648,7 +648,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from a Classpath Schematron rules
+   * Create a new {@link SchematronResourcePureXPath} from a Classpath Schematron rules
    *
    * @param sSCHPath
    *        The classpath relative path to the Schematron rules.
@@ -660,13 +660,13 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    */
   @NonNull
   public static SchematronResourcePureXPath fromClassPath (@NonNull @Nonempty final String sSCHPath,
-                                                      @Nullable final ClassLoader aClassLoader)
+                                                           @Nullable final ClassLoader aClassLoader)
   {
     return new SchematronResourcePureXPath (new ClassPathResource (sSCHPath, aClassLoader));
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from file system Schematron rules
+   * Create a new {@link SchematronResourcePureXPath} from file system Schematron rules
    *
    * @param sSCHPath
    *        The file system path to the Schematron rules.
@@ -679,7 +679,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from file system Schematron rules
+   * Create a new {@link SchematronResourcePureXPath} from file system Schematron rules
    *
    * @param aSCHFile
    *        The file system path to the Schematron rules.
@@ -692,7 +692,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided at a URL
+   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided at a URL
    *
    * @param sSCHURL
    *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
@@ -707,7 +707,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided at a URL
+   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided at a URL
    *
    * @param aSCHURL
    *        The URL to the Schematron rules. May not be <code>null</code>.
@@ -720,7 +720,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary
+   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by an arbitrary
    * {@link InputStream}.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
@@ -733,14 +733,14 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    */
   @NonNull
   public static SchematronResourcePureXPath fromInputStream (@NonNull @Nonempty final String sResourceID,
-                                                        @NonNull final InputStream aSchematronIS)
+                                                             @NonNull final InputStream aSchematronIS)
   {
     return new SchematronResourcePureXPath (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary byte
-   * array.<br>
+   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by an arbitrary
+   * byte array.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
    * @param aSchematron
@@ -754,7 +754,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by an arbitrary
+   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by an arbitrary
    * String.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *
@@ -765,13 +765,14 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    * @return Never <code>null</code>.
    */
   @NonNull
-  public static SchematronResourcePureXPath fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
+  public static SchematronResourcePureXPath fromString (@NonNull final String sSchematron,
+                                                        @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
   /**
-   * Create a new {@link SchematronResourcePure} from Schematron rules provided by a domain
+   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by a domain
    * model.<br>
    * <b>Important:</b> in this case, no include resolution will be performed!!
    *

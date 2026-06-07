@@ -146,6 +146,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
                               .build ();
   }
 
+  @SuppressWarnings ("deprecation")
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()

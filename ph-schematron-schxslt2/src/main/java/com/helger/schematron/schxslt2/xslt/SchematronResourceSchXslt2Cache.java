@@ -28,8 +28,8 @@ import com.helger.schematron.SchematronException;
 import com.helger.xml.serialize.write.XMLWriter;
 
 /**
- * Legacy static facade for the SchXslt 2.x compilation cache. Since v10.0.0 this is a thin
- * wrapper around {@link SchematronSchXslt2Cache#shared()}; prefer the new API
+ * Legacy static facade for the SchXslt 2.x compilation cache. Since v10.0.0 this is a thin wrapper
+ * around {@link SchematronSchXslt2Cache#shared()}; prefer the new API
  * ({@link SchematronSchXslt2Config}, {@link SchematronSchXslt2Cache}, {@link SchematronSchXslt2}).
  *
  * @author Philip Helger
@@ -45,6 +45,7 @@ public final class SchematronResourceSchXslt2Cache
   private SchematronResourceSchXslt2Cache ()
   {}
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSchXslt2 createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                                  @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
@@ -53,7 +54,7 @@ public final class SchematronResourceSchXslt2Cache
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource);
 
     final SchematronProviderXSLTFromSchXslt2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt2 (aSchematronResource,
-                                                                                                        aTransformerCustomizer);
+                                                                                                         aTransformerCustomizer);
     aXSLTPreprocessor.convertSchematronToXSLT ();
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
@@ -73,6 +74,7 @@ public final class SchematronResourceSchXslt2Cache
     return aXSLTPreprocessor;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSchXslt2 getSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                               @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
@@ -107,6 +109,7 @@ public final class SchematronResourceSchXslt2Cache
     }
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public static void clearCache ()
   {
     SchematronSchXslt2Cache.shared ().clear ();

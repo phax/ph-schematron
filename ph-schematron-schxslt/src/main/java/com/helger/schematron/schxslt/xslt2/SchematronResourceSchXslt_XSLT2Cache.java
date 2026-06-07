@@ -28,8 +28,8 @@ import com.helger.schematron.SchematronException;
 import com.helger.xml.serialize.write.XMLWriter;
 
 /**
- * Legacy static facade for the SchXslt 1.x compilation cache. Since v10.0.0 this is a thin
- * wrapper around {@link SchematronSchXslt_XSLT2Cache#shared()}; prefer the new API
+ * Legacy static facade for the SchXslt 1.x compilation cache. Since v10.0.0 this is a thin wrapper
+ * around {@link SchematronSchXslt_XSLT2Cache#shared()}; prefer the new API
  * ({@link SchematronSchXslt_XSLT2Config}, {@link SchematronSchXslt_XSLT2Cache},
  * {@link SchematronSchXslt_XSLT2}).
  *
@@ -46,6 +46,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
   private SchematronResourceSchXslt_XSLT2Cache ()
   {}
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSchXslt_XSLT2 createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                                       @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
@@ -54,7 +55,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
       LOGGER.debug ("Compiling Schematron instance " + aSchematronResource);
 
     final SchematronProviderXSLTFromSchXslt_XSLT2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt_XSLT2 (aSchematronResource,
-                                                                                                                  aTransformerCustomizer);
+                                                                                                                   aTransformerCustomizer);
     aXSLTPreprocessor.convertSchematronToXSLT ();
     if (!aXSLTPreprocessor.isValidSchematron ())
     {
@@ -74,6 +75,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
     return aXSLTPreprocessor;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSchXslt_XSLT2 getSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                                    @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
@@ -91,13 +93,13 @@ public final class SchematronResourceSchXslt_XSLT2Cache
       return createSchematronXSLTProvider (aSchematronResource, aTransformerCustomizer);
 
     final SchematronSchXslt_XSLT2Config aConfig = SchematronSchXslt_XSLT2Config.builder (aSchematronResource)
-                                                                              .phase (aTransformerCustomizer.getPhase ())
-                                                                              .languageCode (aTransformerCustomizer.getLanguageCode ())
-                                                                              .errorListener (aTransformerCustomizer.getErrorListener ())
-                                                                              .uriResolver (aTransformerCustomizer.getURIResolver ())
-                                                                              .parameters (aTransformerCustomizer.getParameters ())
-                                                                              .forceCacheResult (aTransformerCustomizer.isForceCacheResult ())
-                                                                              .build ();
+                                                                               .phase (aTransformerCustomizer.getPhase ())
+                                                                               .languageCode (aTransformerCustomizer.getLanguageCode ())
+                                                                               .errorListener (aTransformerCustomizer.getErrorListener ())
+                                                                               .uriResolver (aTransformerCustomizer.getURIResolver ())
+                                                                               .parameters (aTransformerCustomizer.getParameters ())
+                                                                               .forceCacheResult (aTransformerCustomizer.isForceCacheResult ())
+                                                                               .build ();
     try
     {
       return (SchematronProviderXSLTFromSchXslt_XSLT2) SchematronSchXslt_XSLT2Cache.shared ().getOrCompile (aConfig);
@@ -108,6 +110,7 @@ public final class SchematronResourceSchXslt_XSLT2Cache
     }
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public static void clearCache ()
   {
     SchematronSchXslt_XSLT2Cache.shared ().clear ();
