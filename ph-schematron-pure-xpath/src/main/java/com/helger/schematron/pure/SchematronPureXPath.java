@@ -31,7 +31,7 @@ import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
-import com.helger.schematron.pure.SchematronXPathConfig.Builder;
+import com.helger.schematron.pure.SchematronPureXPathConfig.Builder;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -43,14 +43,14 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  * @since 10.0.0
  */
 @NotThreadSafe
-public final class SchematronXPath
+public final class SchematronPureXPath
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronXPath.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronPureXPath.class);
 
-  private final SchematronXPathConfig m_aConfig;
+  private final SchematronPureXPathConfig m_aConfig;
   private final IPSBoundSchema m_aBoundSchema;
 
-  private SchematronXPath (@NonNull final SchematronXPathConfig aConfig, @NonNull final IPSBoundSchema aBoundSchema)
+  private SchematronPureXPath (@NonNull final SchematronPureXPathConfig aConfig, @NonNull final IPSBoundSchema aBoundSchema)
   {
     m_aConfig = aConfig;
     m_aBoundSchema = aBoundSchema;
@@ -60,7 +60,7 @@ public final class SchematronXPath
    * @return The configuration this instance was created from. Never <code>null</code>.
    */
   @NonNull
-  public SchematronXPathConfig getConfig ()
+  public SchematronPureXPathConfig getConfig ()
   {
     return m_aConfig;
   }
@@ -143,19 +143,19 @@ public final class SchematronXPath
   // === Compilation entry points ===
 
   /**
-   * Compile the given config via the {@link SchematronXPathCache#shared() shared cache}.
+   * Compile the given config via the {@link SchematronPureXPathCache#shared() shared cache}.
    *
    * @param aConfig
    *        The configuration to compile. May not be <code>null</code>.
-   * @return A new {@link SchematronXPath} instance wrapping the bound schema. Never
+   * @return A new {@link SchematronPureXPath} instance wrapping the bound schema. Never
    *         <code>null</code>.
    * @throws SchematronException
    *         on compilation error.
    */
   @NonNull
-  public static SchematronXPath compileCached (@NonNull final SchematronXPathConfig aConfig) throws SchematronException
+  public static SchematronPureXPath compileCached (@NonNull final SchematronPureXPathConfig aConfig) throws SchematronException
   {
-    return compileCached (aConfig, SchematronXPathCache.shared ());
+    return compileCached (aConfig, SchematronPureXPathCache.shared ());
   }
 
   /**
@@ -165,21 +165,21 @@ public final class SchematronXPath
    *        The configuration to compile. May not be <code>null</code>.
    * @param aCache
    *        The cache instance to use. May not be <code>null</code>.
-   * @return A new {@link SchematronXPath} instance wrapping the bound schema. Never
+   * @return A new {@link SchematronPureXPath} instance wrapping the bound schema. Never
    *         <code>null</code>.
    * @throws SchematronException
    *         on compilation error.
    */
   @NonNull
-  public static SchematronXPath compileCached (@NonNull final SchematronXPathConfig aConfig,
-                                               @NonNull final SchematronXPathCache aCache) throws SchematronException
+  public static SchematronPureXPath compileCached (@NonNull final SchematronPureXPathConfig aConfig,
+                                               @NonNull final SchematronPureXPathCache aCache) throws SchematronException
   {
     ValueEnforcer.notNull (aConfig, "Config");
     ValueEnforcer.notNull (aCache, "Cache");
     final IPSBoundSchema aBound = aCache.getOrCompile (aConfig);
     if (aBound == null)
       throw new SchematronException ("Failed to bind Schematron " + aConfig.getResource ());
-    return new SchematronXPath (aConfig, aBound);
+    return new SchematronPureXPath (aConfig, aBound);
   }
 
   /**
@@ -187,24 +187,24 @@ public final class SchematronXPath
    *
    * @param aConfig
    *        The configuration to compile. May not be <code>null</code>.
-   * @return A new {@link SchematronXPath} instance wrapping the freshly bound schema. Never
+   * @return A new {@link SchematronPureXPath} instance wrapping the freshly bound schema. Never
    *         <code>null</code>.
    * @throws SchematronException
    *         on compilation error.
    */
   @NonNull
-  public static SchematronXPath compileUncached (@NonNull final SchematronXPathConfig aConfig)
+  public static SchematronPureXPath compileUncached (@NonNull final SchematronPureXPathConfig aConfig)
                                                                                                 throws SchematronException
   {
     ValueEnforcer.notNull (aConfig, "Config");
     final IPSBoundSchema aBound = aConfig.compile ();
     if (aBound == null)
       throw new SchematronException ("Failed to bind Schematron " + aConfig.getResource ());
-    return new SchematronXPath (aConfig, aBound);
+    return new SchematronPureXPath (aConfig, aBound);
   }
 
   /**
-   * Shortcut to {@link SchematronXPathConfig#builder(IReadableResource)}.
+   * Shortcut to {@link SchematronPureXPathConfig#builder(IReadableResource)}.
    *
    * @param aResource
    *        The Schematron resource to validate against. May not be <code>null</code>.
@@ -213,6 +213,6 @@ public final class SchematronXPath
   @NonNull
   public static Builder builder (@NonNull final IReadableResource aResource)
   {
-    return SchematronXPathConfig.builder (aResource);
+    return SchematronPureXPathConfig.builder (aResource);
   }
 }

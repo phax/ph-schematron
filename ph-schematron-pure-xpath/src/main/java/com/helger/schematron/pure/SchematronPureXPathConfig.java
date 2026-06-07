@@ -61,7 +61,7 @@ import com.helger.schematron.pure.xpath.XPathConfigBuilder;
  * @since 10.0.0
  */
 @Immutable
-public final class SchematronXPathConfig implements ISchematronCompilation <IPSBoundSchema>
+public final class SchematronPureXPathConfig implements ISchematronCompilation <IPSBoundSchema>
 {
   private final IReadableResource m_aResource;
   private final String m_sPhase;
@@ -72,7 +72,7 @@ public final class SchematronXPathConfig implements ISchematronCompilation <IPSB
   private final boolean m_bLenient;
   private final PSBoundSchemaCacheKey m_aCacheKey;
 
-  private SchematronXPathConfig (@NonNull final Builder b)
+  private SchematronPureXPathConfig (@NonNull final Builder b)
   {
     m_aResource = b.m_aResource;
     m_sPhase = b.m_sPhase;
@@ -348,7 +348,7 @@ public final class SchematronXPathConfig implements ISchematronCompilation <IPSB
   // === Builder ===
 
   @NotThreadSafe
-  public static final class Builder implements IBuilder <SchematronXPathConfig>
+  public static final class Builder implements IBuilder <SchematronPureXPathConfig>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;
@@ -450,26 +450,26 @@ public final class SchematronXPathConfig implements ISchematronCompilation <IPSB
     }
 
     /**
-     * @return The built {@link SchematronXPathConfig} value object. Never <code>null</code>.
+     * @return The built {@link SchematronPureXPathConfig} value object. Never <code>null</code>.
      */
     @Override
     @NonNull
-    public SchematronXPathConfig build ()
+    public SchematronPureXPathConfig build ()
     {
-      return new SchematronXPathConfig (this);
+      return new SchematronPureXPathConfig (this);
     }
 
     /**
-     * Build the config and compile via the {@link SchematronXPathCache#shared() shared cache}.
+     * Build the config and compile via the {@link SchematronPureXPathCache#shared() shared cache}.
      *
-     * @return The compiled {@link SchematronXPath} instance. Never <code>null</code>.
+     * @return The compiled {@link SchematronPureXPath} instance. Never <code>null</code>.
      * @throws SchematronException
      *         on compilation error.
      */
     @NonNull
-    public SchematronXPath buildCached () throws SchematronException
+    public SchematronPureXPath buildCached () throws SchematronException
     {
-      return SchematronXPath.compileCached (build ());
+      return SchematronPureXPath.compileCached (build ());
     }
 
     /**
@@ -477,27 +477,27 @@ public final class SchematronXPathConfig implements ISchematronCompilation <IPSB
      *
      * @param aCache
      *        The cache instance to use. May not be <code>null</code>.
-     * @return The compiled {@link SchematronXPath} instance. Never <code>null</code>.
+     * @return The compiled {@link SchematronPureXPath} instance. Never <code>null</code>.
      * @throws SchematronException
      *         on compilation error.
      */
     @NonNull
-    public SchematronXPath buildCached (@NonNull final SchematronXPathCache aCache) throws SchematronException
+    public SchematronPureXPath buildCached (@NonNull final SchematronPureXPathCache aCache) throws SchematronException
     {
-      return SchematronXPath.compileCached (build (), aCache);
+      return SchematronPureXPath.compileCached (build (), aCache);
     }
 
     /**
      * Build the config and compile without using any cache.
      *
-     * @return The compiled {@link SchematronXPath} instance. Never <code>null</code>.
+     * @return The compiled {@link SchematronPureXPath} instance. Never <code>null</code>.
      * @throws SchematronException
      *         on compilation error.
      */
     @NonNull
-    public SchematronXPath buildUncached () throws SchematronException
+    public SchematronPureXPath buildUncached () throws SchematronException
     {
-      return SchematronXPath.compileUncached (build ());
+      return SchematronPureXPath.compileUncached (build ());
     }
   }
 }

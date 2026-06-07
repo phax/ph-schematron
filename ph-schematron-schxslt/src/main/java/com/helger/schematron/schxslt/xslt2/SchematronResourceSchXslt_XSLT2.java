@@ -147,6 +147,7 @@ public class SchematronResourceSchXslt_XSLT2 extends
                                         .build ();
   }
 
+  @SuppressWarnings ("deprecation")
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()

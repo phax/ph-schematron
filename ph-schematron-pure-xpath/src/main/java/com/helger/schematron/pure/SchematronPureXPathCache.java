@@ -24,7 +24,7 @@ import com.helger.schematron.api.cache.AbstractSchematronCache;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 
 /**
- * Cache for compiled {@link IPSBoundSchema} instances produced from {@link SchematronXPathConfig}.
+ * Cache for compiled {@link IPSBoundSchema} instances produced from {@link SchematronPureXPathConfig}.
  * <p>
  * Note: the legacy {@link com.helger.schematron.pure.bound.PSBoundSchemaCache} singleton is kept
  * for backward compatibility but is independent from this cache. Both caches share the same key
@@ -35,20 +35,20 @@ import com.helger.schematron.pure.bound.IPSBoundSchema;
  * @since 10.0.0
  */
 @ThreadSafe
-public final class SchematronXPathCache extends AbstractSchematronCache <SchematronXPathConfig, IPSBoundSchema>
+public final class SchematronPureXPathCache extends AbstractSchematronCache <SchematronPureXPathConfig, IPSBoundSchema>
 {
   /** Default name of the shared cache. */
   public static final String DEFAULT_NAME = "schematron-xpath";
 
   private static final class SingletonHolder
   {
-    static final SchematronXPathCache INSTANCE = new SchematronXPathCache ();
+    static final SchematronPureXPathCache INSTANCE = new SchematronPureXPathCache ();
   }
 
   /**
    * Create a new, unbounded cache with the {@link #DEFAULT_NAME default name}.
    */
-  public SchematronXPathCache ()
+  public SchematronPureXPathCache ()
   {
     this (DEFAULT_NAME, NO_MAX_SIZE);
   }
@@ -59,7 +59,7 @@ public final class SchematronXPathCache extends AbstractSchematronCache <Schemat
    * @param sName
    *        The cache name. May neither be <code>null</code> nor empty.
    */
-  public SchematronXPathCache (@NonNull @Nonempty final String sName)
+  public SchematronPureXPathCache (@NonNull @Nonempty final String sName)
   {
     this (sName, NO_MAX_SIZE);
   }
@@ -72,7 +72,7 @@ public final class SchematronXPathCache extends AbstractSchematronCache <Schemat
    * @param nMaxSize
    *        The maximum number of entries. Values &le; 0 mean unbounded.
    */
-  public SchematronXPathCache (@NonNull @Nonempty final String sName, final int nMaxSize)
+  public SchematronPureXPathCache (@NonNull @Nonempty final String sName, final int nMaxSize)
   {
     super (sName, nMaxSize);
   }
@@ -81,7 +81,7 @@ public final class SchematronXPathCache extends AbstractSchematronCache <Schemat
    * @return The process-wide shared instance.
    */
   @NonNull
-  public static SchematronXPathCache shared ()
+  public static SchematronPureXPathCache shared ()
   {
     return SingletonHolder.INSTANCE;
   }
