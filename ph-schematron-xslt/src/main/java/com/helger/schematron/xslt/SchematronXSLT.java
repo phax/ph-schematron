@@ -31,6 +31,7 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedValidator;
 import com.helger.schematron.api.xslt.SchematronXSLTValidator;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
@@ -44,11 +45,8 @@ import com.helger.schematron.xslt.SchematronXSLTConfig.Builder;
  * @since 10.0.0
  */
 @NotThreadSafe
-public final class SchematronXSLT
+public final class SchematronXSLT implements ISchematronXSLTBasedValidator
 {
-  /** Default value for {@link #isValidateSVRL()}. */
-  public static final boolean DEFAULT_VALIDATE_SVRL = true;
-
   private final SchematronXSLTConfig m_aConfig;
   private final ISchematronXSLTBasedProvider m_aProvider;
   private ISchematronOutputValidityDeterminator m_aSOVDeterminator = new SchematronOutputValidityDeterminatorDefault ();

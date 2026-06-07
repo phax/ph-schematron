@@ -27,6 +27,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EValidity;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.ISchematronValidator;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
@@ -43,7 +44,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  * @since 10.0.0
  */
 @NotThreadSafe
-public final class SchematronPureXPath
+public final class SchematronPureXPath implements ISchematronValidator
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronPureXPath.class);
 

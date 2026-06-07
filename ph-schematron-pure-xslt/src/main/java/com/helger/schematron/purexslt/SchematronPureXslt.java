@@ -28,6 +28,7 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EValidity;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.ISchematronValidator;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.purexslt.SchematronPureXsltConfig.Builder;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -50,7 +51,7 @@ import net.sf.saxon.s9api.XsltExecutable;
  * @since 10.0.0
  */
 @NotThreadSafe
-public final class SchematronPureXslt
+public final class SchematronPureXslt implements ISchematronValidator
 {
   private final SchematronPureXsltConfig m_aConfig;
   private final XsltExecutable m_aExecutable;
@@ -78,6 +79,15 @@ public final class SchematronPureXslt
   public XsltExecutable getCompiledXslt ()
   {
     return m_aExecutable;
+  }
+
+  /**
+   * @return Always <code>true</code> for this engine, because a non-<code>null</code>
+   *         {@link XsltExecutable} is a precondition of construction.
+   */
+  public boolean isValidSchematron ()
+  {
+    return true;
   }
 
   /**
