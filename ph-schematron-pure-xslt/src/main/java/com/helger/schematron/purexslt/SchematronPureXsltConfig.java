@@ -37,7 +37,6 @@ import org.xml.sax.EntityResolver;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
-import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
@@ -47,6 +46,7 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.URLResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
+import com.helger.schematron.ISchematronValidatorBuilder;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
@@ -472,7 +472,8 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   // === Builder ===
 
   @NotThreadSafe
-  public static final class Builder implements IBuilder <SchematronPureXsltConfig>
+  public static final class Builder implements
+                                     ISchematronValidatorBuilder <SchematronPureXsltConfig, SchematronPureXsltCache, SchematronPureXslt>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;

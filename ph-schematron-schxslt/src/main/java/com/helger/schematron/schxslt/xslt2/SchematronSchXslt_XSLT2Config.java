@@ -36,7 +36,6 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
-import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsLinkedHashMap;
@@ -52,6 +51,7 @@ import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedValidatorBuilder;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 
@@ -455,7 +455,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   // === Builder ===
 
   @NotThreadSafe
-  public static final class Builder implements IBuilder <SchematronSchXslt_XSLT2Config>
+  public static final class Builder implements
+                                     ISchematronXSLTBasedValidatorBuilder <SchematronSchXslt_XSLT2Config, SchematronSchXslt_XSLT2Cache, SchematronSchXslt_XSLT2>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;

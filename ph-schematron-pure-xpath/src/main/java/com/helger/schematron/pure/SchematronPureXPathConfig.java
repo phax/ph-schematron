@@ -29,7 +29,7 @@ import org.xml.sax.EntityResolver;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
-import com.helger.base.builder.IBuilder;
+import com.helger.schematron.ISchematronValidatorBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.ClassPathResource;
@@ -72,15 +72,15 @@ public final class SchematronPureXPathConfig implements ISchematronCompilation <
   private final boolean m_bLenient;
   private final PSBoundSchemaCacheKey m_aCacheKey;
 
-  private SchematronPureXPathConfig (@NonNull final Builder b)
+  private SchematronPureXPathConfig (@NonNull final Builder aBuilder)
   {
-    m_aResource = b.m_aResource;
-    m_sPhase = b.m_sPhase;
-    m_aErrorHandler = b.m_aErrorHandler;
-    m_aCustomValidationHandler = b.m_aCustomValidationHandler;
-    m_aXPathConfig = b.m_aXPathConfig;
-    m_aEntityResolver = b.m_aEntityResolver;
-    m_bLenient = b.m_bLenient;
+    m_aResource = aBuilder.m_aResource;
+    m_sPhase = aBuilder.m_sPhase;
+    m_aErrorHandler = aBuilder.m_aErrorHandler;
+    m_aCustomValidationHandler = aBuilder.m_aCustomValidationHandler;
+    m_aXPathConfig = aBuilder.m_aXPathConfig;
+    m_aEntityResolver = aBuilder.m_aEntityResolver;
+    m_bLenient = aBuilder.m_bLenient;
     m_aCacheKey = new PSBoundSchemaCacheKey (m_aResource,
                                              m_sPhase,
                                              m_aErrorHandler,
@@ -348,7 +348,8 @@ public final class SchematronPureXPathConfig implements ISchematronCompilation <
   // === Builder ===
 
   @NotThreadSafe
-  public static final class Builder implements IBuilder <SchematronPureXPathConfig>
+  public static final class Builder implements
+                                     ISchematronValidatorBuilder <SchematronPureXPathConfig, SchematronPureXPathCache, SchematronPureXPath>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;
