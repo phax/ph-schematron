@@ -67,8 +67,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   private final int m_nMaxSize;
   protected final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
-  @CodingStyleguideUnaware
-  private ICommonsMap <Object, ARTIFACT> m_aMap;
+  private ICommonsMap <ISchematronCompilationCacheKey, ARTIFACT> m_aMap;
 
   /**
    * Constructor with no maximum size.
@@ -125,7 +124,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
 
   @NonNull
   @CodingStyleguideUnaware
-  private ICommonsMap <Object, ARTIFACT> _ensureMap ()
+  private ICommonsMap <ISchematronCompilationCacheKey, ARTIFACT> _ensureMap ()
   {
     if (m_aMap == null)
       m_aMap = hasMaxSize () ? new SoftLinkedHashMap <> (m_nMaxSize) : new SoftHashMap <> ();
@@ -133,8 +132,8 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   }
 
   /**
-   * Retrieve the compiled artifact for the given configuration, computing and caching it on
-   * demand. Configurations for which {@link ISchematronCompilation#canCacheResult()} returns
+   * Retrieve the compiled artifact for the given configuration, computing and caching it on demand.
+   * Configurations for which {@link ISchematronCompilation#canCacheResult()} returns
    * <code>false</code> bypass the cache entirely and recompile each time. Compilation failures
    * (returning <code>null</code>) are not cached.
    *
@@ -157,7 +156,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
       return aCfg.compile ();
     }
 
-    final Object aKey = aCfg.getCacheKey ();
+    final ISchematronCompilationCacheKey aKey = aCfg.getCacheKey ();
     ValueEnforcer.notNull (aKey, "CacheKey");
 
     // First attempt: read-locked lookup
@@ -203,7 +202,8 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
     ValueEnforcer.notNull (aCfg, "Cfg");
     if (!aCfg.canCacheResult ())
       return false;
-    final Object aKey = aCfg.getCacheKey ();
+
+    final ISchematronCompilationCacheKey aKey = aCfg.getCacheKey ();
     return m_aRWLock.readLockedBoolean ( () -> m_aMap != null && m_aMap.containsKey (aKey));
   }
 
@@ -232,8 +232,8 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   public final EChange invalidate (@NonNull final Object aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
-    return m_aRWLock.writeLockedGet ( () -> m_aMap != null &&
-                                            m_aMap.remove (aKey) != null ? EChange.CHANGED : EChange.UNCHANGED);
+    return m_aRWLock.writeLockedGet ( () -> m_aMap != null && m_aMap.remove (aKey) != null ? EChange.CHANGED
+                                                                                           : EChange.UNCHANGED);
   }
 
   /**
