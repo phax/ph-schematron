@@ -50,6 +50,7 @@ import com.helger.schematron.ISchematronValidatorBuilder;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
+import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
@@ -94,24 +95,27 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   private final EntityResolver m_aEntityResolver;
   private final URIResolver m_aURIResolver;
   private final ErrorListener m_aErrorListener;
+  private final ISchematronTemplateTelemetry m_aTelemetry;
   private final boolean m_bForceCacheResult;
   private final CacheKey m_aCacheKey;
 
-  private SchematronPureXsltConfig (@NonNull final Builder b)
+  private SchematronPureXsltConfig (@NonNull final Builder aBuilder)
   {
-    m_aResource = b.m_aResource;
-    m_sPhase = b.m_sPhase;
-    m_eXsltVersion = b.m_eXsltVersion;
-    m_aProcessor = b.m_aProcessor;
-    m_aErrorHandler = b.m_aErrorHandler;
-    m_aEntityResolver = b.m_aEntityResolver;
-    m_aURIResolver = b.m_aURIResolver;
-    m_aErrorListener = b.m_aErrorListener;
-    m_bForceCacheResult = b.m_bForceCacheResult;
+    m_aResource = aBuilder.m_aResource;
+    m_sPhase = aBuilder.m_sPhase;
+    m_eXsltVersion = aBuilder.m_eXsltVersion;
+    m_aProcessor = aBuilder.m_aProcessor;
+    m_aErrorHandler = aBuilder.m_aErrorHandler;
+    m_aEntityResolver = aBuilder.m_aEntityResolver;
+    m_aURIResolver = aBuilder.m_aURIResolver;
+    m_aErrorListener = aBuilder.m_aErrorListener;
+    m_aTelemetry = aBuilder.m_aTelemetry;
+    m_bForceCacheResult = aBuilder.m_bForceCacheResult;
     m_aCacheKey = new CacheKey (m_aResource.getResourceID (),
                                 m_sPhase,
                                 m_eXsltVersion.getID (),
-                                System.identityHashCode (m_aProcessor));
+                                System.identityHashCode (m_aProcessor),
+                                isTracingEnabled ());
   }
 
   @Override
@@ -190,6 +194,29 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   }
 
   /**
+   * @return The per-template telemetry callback configured for the XSLT transformation, or
+   *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the stylesheet
+   *         is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and the trace-enabled
+   *         provider is cached under a separate key (see {@link #getCacheKey()}).
+   * @since 10.0.0
+   */
+  @Nullable
+  public ISchematronTemplateTelemetry getTelemetry ()
+  {
+    return m_aTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the
+   *         stylesheet should be compiled with Saxon tracing enabled.
+   * @since 10.0.0
+   */
+  public boolean isTracingEnabled ()
+  {
+    return m_aTelemetry != null;
+  }
+
+  /**
    * @return <code>true</code> if the compilation result must be cached even when custom runtime
    *         hooks are present. See {@link #canCacheResult()}.
    */
@@ -238,6 +265,8 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
         aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
       if (m_aErrorListener != null)
         aCompiler.setErrorReporter (new ErrorReporterToListener (m_aErrorListener));
+      if (isTracingEnabled ())
+        aCompiler.setCompileWithTracing (true);
       return aCompiler.compile (new DOMSource (aXsltDoc));
     }
     catch (final SaxonApiException ex)
@@ -260,6 +289,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
                                     .entityResolver (m_aEntityResolver)
                                     .uriResolver (m_aURIResolver)
                                     .errorListener (m_aErrorListener)
+                                    .telemetry (m_aTelemetry)
                                     .forceCacheResult (m_bForceCacheResult);
   }
 
@@ -274,6 +304,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
                                        .appendIfNotNull ("EntityResolver", m_aEntityResolver)
                                        .appendIfNotNull ("URIResolver", m_aURIResolver)
                                        .appendIfNotNull ("ErrorListener", m_aErrorListener)
+                                       .appendIfNotNull ("Telemetry", m_aTelemetry)
                                        .append ("ForceCacheResult", m_bForceCacheResult)
                                        .getToString ();
   }
@@ -393,7 +424,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
    *         <code>null</code>.
    */
   @NonNull
-  public static Builder fromByteArray (@NonNull final byte [] aSchematron)
+  public static Builder fromByteArray (final byte @NonNull [] aSchematron)
   {
     return builder (new ReadableResourceByteArray (aSchematron));
   }
@@ -421,18 +452,25 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     private final String m_sPhase;
     private final String m_sVersion;
     private final int m_nProcessorIdentity;
+    private final boolean m_bTracingEnabled;
     private final int m_nHashCode;
 
     private CacheKey (@NonNull final String sResourceID,
                       @Nullable final String sPhase,
                       @NonNull final String sVersion,
-                      final int nProcessorIdentity)
+                      final int nProcessorIdentity,
+                      final boolean bTracingEnabled)
     {
       m_sResourceID = sResourceID;
       m_sPhase = sPhase;
       m_sVersion = sVersion;
       m_nProcessorIdentity = nProcessorIdentity;
-      m_nHashCode = Objects.hash (sResourceID, sPhase, sVersion, Integer.valueOf (nProcessorIdentity));
+      m_bTracingEnabled = bTracingEnabled;
+      m_nHashCode = Objects.hash (sResourceID,
+                                  sPhase,
+                                  sVersion,
+                                  Integer.valueOf (nProcessorIdentity),
+                                  Boolean.valueOf (bTracingEnabled));
     }
 
     @Override
@@ -443,6 +481,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
       if (!(o instanceof final CacheKey aRhs))
         return false;
       return m_nProcessorIdentity == aRhs.m_nProcessorIdentity &&
+             m_bTracingEnabled == aRhs.m_bTracingEnabled &&
              m_sResourceID.equals (aRhs.m_sResourceID) &&
              Objects.equals (m_sPhase, aRhs.m_sPhase) &&
              m_sVersion.equals (aRhs.m_sVersion);
@@ -465,6 +504,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
              m_sVersion +
              ":" +
              Integer.toHexString (m_nProcessorIdentity) +
+             (m_bTracingEnabled ? ":trace" : "") +
              "]";
     }
   }
@@ -473,7 +513,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
 
   @NotThreadSafe
   public static final class Builder implements
-                                     ISchematronValidatorBuilder <SchematronPureXsltConfig, SchematronPureXsltCache, SchematronPureXslt>
+                                    ISchematronValidatorBuilder <SchematronPureXsltConfig, SchematronPureXsltCache, SchematronPureXslt>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;
@@ -483,6 +523,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     private EntityResolver m_aEntityResolver;
     private URIResolver m_aURIResolver;
     private ErrorListener m_aErrorListener;
+    private ISchematronTemplateTelemetry m_aTelemetry;
     private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
 
     Builder (@NonNull final IReadableResource aResource)
@@ -591,6 +632,29 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     public Builder errorListener (@Nullable final ErrorListener a)
     {
       m_aErrorListener = a;
+      return this;
+    }
+
+    /**
+     * Set the per-template telemetry callback. When non-<code>null</code>, the stylesheet is
+     * compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache entry) and a
+     * {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is attached to each
+     * transform so that the callback receives one
+     * {@link ISchematronTemplateTelemetry#onTemplateEnter(com.helger.schematron.api.telemetry.SchematronTemplateInfo)}
+     * /
+     * {@link ISchematronTemplateTelemetry#onTemplateLeave(com.helger.schematron.api.telemetry.SchematronTemplateInfo, long)}
+     * pair per executed XSLT template.
+     *
+     * @param a
+     *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
+     *        <code>null</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
+    {
+      m_aTelemetry = a;
       return this;
     }
 

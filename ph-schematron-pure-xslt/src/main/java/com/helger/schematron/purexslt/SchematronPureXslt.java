@@ -30,6 +30,7 @@ import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ISchematronValidator;
 import com.helger.schematron.SchematronException;
+import com.helger.schematron.api.telemetry.SchematronTraceListener;
 import com.helger.schematron.purexslt.SchematronPureXsltConfig.Builder;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
@@ -114,6 +115,8 @@ public final class SchematronPureXslt implements ISchematronValidator
       aTransformer.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aConfig.getURIResolver ()));
     if (m_aConfig.getErrorListener () != null)
       aTransformer.setErrorListener (m_aConfig.getErrorListener ());
+    if (m_aConfig.getTelemetry () != null)
+      aTransformer.setTraceListener (new SchematronTraceListener (m_aConfig.getTelemetry ()));
     if (sBaseURI != null)
       aTransformer.setGlobalContextItem (m_aConfig.getProcessor ().newDocumentBuilder ().wrap (aXMLNode));
     aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
