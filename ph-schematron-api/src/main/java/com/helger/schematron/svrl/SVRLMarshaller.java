@@ -23,9 +23,9 @@ import com.helger.schematron.svrl.jaxb.ObjectFactory;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
- * This is the XML reader and write for Schematron SVRL documents. It reads XML
- * DOM documents and returns {@link SchematronOutputType} elements and vice
- * versa. The reading and writing itself is done with JAXB.<br>
+ * This is the XML reader and write for Schematron SVRL documents. It reads XML DOM documents and
+ * returns {@link SchematronOutputType} elements and vice versa. The reading and writing itself is
+ * done with JAXB.<br>
  *
  * @author Philip Helger
  */
@@ -39,10 +39,10 @@ public class SVRLMarshaller extends GenericJAXBMarshaller <SchematronOutputType>
 
   public SVRLMarshaller (final boolean bValidationEnabled)
   {
-    super (SchematronOutputType.class,
-           bValidationEnabled ? CSVRL.SVRL_XSDS : null,
-           new ObjectFactory ()::createSchematronOutput);
+    super (SchematronOutputType.class, CSVRL.SVRL_XSDS, new ObjectFactory ()::createSchematronOutput);
+
     setFormattedOutput (GlobalDebug.isDebugMode ());
+    setUseSchema (bValidationEnabled);
 
     // Use the default namespace context
     setNamespaceContext (SVRLNamespaceContext.getInstance ());
