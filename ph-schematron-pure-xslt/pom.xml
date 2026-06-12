@@ -30,6 +30,7 @@
   <description>Java-only Schematron implementation with Saxon-native XSLT execution</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-pure-xslt</url>
   <inceptionYear>2026</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,10 +38,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <organization>
     <name>Philip Helger</name>
     <url>https://www.helger.com</url>
   </organization>
+  
   <developers>
     <developer>
       <id>philip</id>
@@ -49,6 +52,7 @@
       <url>https://www.helger.com</url>
     </developer>
   </developers>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.schematron</groupId>
@@ -59,7 +63,7 @@
       <artifactId>ph-schematron-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.commons</groupId>
+      <groupId>com.helger.telemetry</groupId>
       <artifactId>ph-telemetry</artifactId>
     </dependency>
     <dependency>

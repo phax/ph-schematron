@@ -90,6 +90,13 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>com.helger.telemetry</groupId>
+        <artifactId>ph-telemetry-parent-pom</artifactId>
+        <version>1.0.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>com.helger.xsd</groupId>
         <artifactId>ph-xsds-parent-pom</artifactId>
         <version>4.1.0</version>
