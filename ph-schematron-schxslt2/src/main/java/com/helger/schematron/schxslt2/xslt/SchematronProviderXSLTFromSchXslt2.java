@@ -106,7 +106,8 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
                                                  @NonNull final Transformer aTransformer)
   {
     final ErrorListener aErrorListener = aConfig.getErrorListener ();
-    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (
+                                                                                                                Locale.US));
 
     final URIResolver aURIResolver = aConfig.getURIResolver ();
     if (aURIResolver != null)
@@ -146,15 +147,15 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
       _applyConfigToTransformer (aConfig, aTransformer);
       aSrc1 = TransformSourceFactory.create (aSchematronResource);
 
-      SchematronDebug.getDebugLogger ().info ( () -> "Now applying SchXslt2 XSLT on " + aSchematronResource);
+      SchematronDebug.getDebugLogger ().info (() -> "Now applying SchXslt2 XSLT on " + aSchematronResource);
       aTransformer.transform (aSrc1, aResult1);
       aSW.stop ();
       SchematronDebug.getDebugLogger ()
-                     .info ( () -> "Finished applying SchXslt2 XSLT on " +
-                                   aSchematronResource +
-                                   " after " +
-                                   aSW.getMillis () +
-                                   "ms");
+                     .info (() -> "Finished applying SchXslt2 XSLT on " +
+                                  aSchematronResource +
+                                  " after " +
+                                  aSW.getMillis () +
+                                  "ms");
 
       if (Thread.interrupted ())
         throw new SchematronInterruptedException ("After applying SchXslt2 XSLT on XML");
@@ -196,21 +197,23 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
       // compile XSLT
       // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
       // so that per-template events fire at execution time.
-      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (m_aConfig.getErrorListener (),
-                                                                                                                            m_aConfig.getURIResolver (),
-                                                                                                                            true)
+      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (true)
                                                                    : SchematronTransformerFactory.getDefault ();
+
       // Apply error listener + URI resolver to the final-compile factory
       final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
       aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+
       final URIResolver aURIResolver = m_aConfig.getURIResolver ();
       if (aURIResolver != null)
         aTF.setURIResolver (aURIResolver);
+
       // Hand the factory to the caller-supplied customizer last so it can register Saxon
       // extension functions (or any other tweak) just before the validation stylesheet compiles.
       final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
       if (aTFCustomizer != null)
         aTFCustomizer.accept (aTF);
+
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));
 

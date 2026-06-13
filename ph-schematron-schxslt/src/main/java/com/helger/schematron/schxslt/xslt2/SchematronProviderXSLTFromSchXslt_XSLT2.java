@@ -58,9 +58,8 @@ import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
 /**
- * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an
- * XSLT document. This implementation uses JAXP with Saxon to be used as the
- * respective parser/compiler.
+ * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an XSLT document. This
+ * implementation uses JAXP with Saxon to be used as the respective parser/compiler.
  *
  * @author Philip Helger
  */
@@ -98,9 +97,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   private Templates m_aSchematronXSLTTemplates;
 
   /**
-   * Ensure that all XSLT templates for converting Schematron to XSLT are
-   * cached. That may be called on application startup, otherwise it is done
-   * lazily on demand.
+   * Ensure that all XSLT templates for converting Schematron to XSLT are cached. That may be called
+   * on application startup, otherwise it is done lazily on demand.
    */
   public static void cacheXSLTTemplates ()
   {
@@ -149,8 +147,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   }
 
   /**
-   * Apply error-listener + URI-resolver from the config to a per-step XSLT {@link Transformer}, copy
-   * across all configured XSLT parameters, and (on the final SCH&rarr;XSLT step) inject the
+   * Apply error-listener + URI-resolver from the config to a per-step XSLT {@link Transformer},
+   * copy across all configured XSLT parameters, and (on the final SCH&rarr;XSLT step) inject the
    * Schematron <code>phase</code> and <code>langCode</code> parameters.
    */
   private static void _applyConfigToTransformer (@NonNull final SchematronSchXslt_XSLT2Config aConfig,
@@ -158,7 +156,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
                                                  @NonNull final Transformer aTransformer)
   {
     final ErrorListener aErrorListener = aConfig.getErrorListener ();
-    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (
+                                                                                                                Locale.US));
 
     final URIResolver aURIResolver = aConfig.getURIResolver ();
     if (aURIResolver != null)
@@ -203,15 +202,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       _applyConfigToTransformer (aConfig, false, aTransformer1);
       aSrc1 = TransformSourceFactory.create (aSchematronResource);
 
-      SchematronDebug.getDebugLogger ().info ( () -> "Now applying XSLT step 1 on " + aSchematronResource);
+      SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 1 on " + aSchematronResource);
       aTransformer1.transform (aSrc1, aResult1);
       aSW.stop ();
       SchematronDebug.getDebugLogger ()
-                     .info ( () -> "Finished applying SchXslt step 1 on " +
-                                   aSchematronResource +
-                                   " after " +
-                                   aSW.getMillis () +
-                                   "ms");
+                     .info (() -> "Finished applying SchXslt step 1 on " +
+                                  aSchematronResource +
+                                  " after " +
+                                  aSW.getMillis () +
+                                  "ms");
 
       if (Thread.interrupted ())
         throw new SchematronInterruptedException ("after XSLT step 1");
@@ -229,15 +228,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       if (aSrc2.getSystemId () == null)
         aSrc2.setSystemId (aSrc1.getSystemId ());
 
-      SchematronDebug.getDebugLogger ().info ( () -> "Now applying XSLT step 2 on " + aSchematronResource);
+      SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 2 on " + aSchematronResource);
       aTransformer2.transform (aSrc2, aResult2);
       aSW.stop ();
       SchematronDebug.getDebugLogger ()
-                     .info ( () -> "Finished applying SchXslt step 2 on " +
-                                   aSchematronResource +
-                                   " after " +
-                                   aSW.getMillis () +
-                                   "ms");
+                     .info (() -> "Finished applying SchXslt step 2 on " +
+                                  aSchematronResource +
+                                  " after " +
+                                  aSW.getMillis () +
+                                  "ms");
 
       if (SchematronDebug.isSaveIntermediateXSLTFiles ())
       {
@@ -247,9 +246,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
                                                                                                       ".min-xslt.sch");
 
         SchematronDebug.getDebugLogger ()
-                       .info ( () -> "Storing intermediate XSLT file to '" +
-                                     aIntermediateFile.getAbsolutePath () +
-                                     "'");
+                       .info (() -> "Storing intermediate XSLT file to '" + aIntermediateFile.getAbsolutePath () + "'");
 
         if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
           LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
@@ -273,15 +270,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       if (aSrc3.getSystemId () == null)
         aSrc3.setSystemId (aSrc1.getSystemId ());
 
-      SchematronDebug.getDebugLogger ().info ( () -> "Now applying XSLT step 3 on " + aSchematronResource);
+      SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 3 on " + aSchematronResource);
       aTransformer3.transform (aSrc3, aResult3);
       aSW.stop ();
       SchematronDebug.getDebugLogger ()
-                     .info ( () -> "Finished applying SchXslt step 3 on " +
-                                   aSchematronResource +
-                                   " after " +
-                                   aSW.getMillis () +
-                                   "ms");
+                     .info (() -> "Finished applying SchXslt step 3 on " +
+                                  aSchematronResource +
+                                  " after " +
+                                  aSW.getMillis () +
+                                  "ms");
 
       if (SchematronDebug.isSaveIntermediateXSLTFiles ())
       {
@@ -291,9 +288,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
                                                                                                     ".xslt");
 
         SchematronDebug.getDebugLogger ()
-                       .info ( () -> "Storing intermediate XSLT file to '" +
-                                     aIntermediateFile.getAbsolutePath () +
-                                     "'");
+                       .info (() -> "Storing intermediate XSLT file to '" + aIntermediateFile.getAbsolutePath () + "'");
 
         if (SimpleFileIO.writeFile (aIntermediateFile, sXML, XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isSuccess ())
           LOGGER.info ("Successfully wrote intermediate XSLT file '" + aIntermediateFile.getAbsolutePath () + "'");
@@ -323,8 +318,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   }
 
   /**
-   * This call does the main Schematron to XSLT conversion. This method may only
-   * be called once per instance.
+   * This call does the main Schematron to XSLT conversion. This method may only be called once per
+   * instance.
    */
   public void convertSchematronToXSLT ()
   {
@@ -341,21 +336,23 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       // compile result of step 3
       // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
       // so that per-template events fire at execution time.
-      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (m_aConfig.getErrorListener (),
-                                                                                                                            m_aConfig.getURIResolver (),
-                                                                                                                            true)
+      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (true)
                                                                    : SchematronTransformerFactory.getDefault ();
+
       // Apply error listener + URI resolver to the final-compile factory
       final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
       aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+
       final URIResolver aURIResolver = m_aConfig.getURIResolver ();
       if (aURIResolver != null)
         aTF.setURIResolver (aURIResolver);
+
       // Hand the factory to the caller-supplied customizer last so it can register Saxon
       // extension functions (or any other tweak) just before the validation stylesheet compiles.
       final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
       if (aTFCustomizer != null)
         aTFCustomizer.accept (aTF);
+
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));
 
