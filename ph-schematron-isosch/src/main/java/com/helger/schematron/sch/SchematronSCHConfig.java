@@ -23,8 +23,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
 import org.jspecify.annotations.NonNull;
@@ -71,6 +73,9 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
 @Immutable
 public final class SchematronSCHConfig implements ISchematronCompilation <ISchematronXSLTBasedProvider>
 {
+  /** Default for {@link Builder#forceCacheResult(boolean)}. */
+  public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronSCHConfig.class);
 
   private final IReadableResource m_aResource;
@@ -81,6 +86,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
   private final ICommonsOrderedMap <String, Object> m_aParameters;
   private final boolean m_bForceCacheResult;
   private final ISchematronTemplateTelemetry m_aTelemetry;
+  private final Consumer <TransformerFactory> m_aTFCustomizer;
   // Memoized cache key
   private final CacheKey m_aCacheKey;
 
@@ -94,6 +100,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     m_aParameters = new CommonsLinkedHashMap <> (aBuilder.m_aParameters);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
     m_aTelemetry = aBuilder.m_aTelemetry;
+    m_aTFCustomizer = aBuilder.m_aTFCustomizer;
     m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_sLanguageCode, m_aTelemetry != null);
   }
 
@@ -177,7 +184,6 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
    *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the final
    *         validation stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and
    *         the trace-enabled provider is cached under a separate key.
-   * @since 10.0.0
    */
   @Nullable
   public ISchematronTemplateTelemetry getTelemetry ()
@@ -188,11 +194,23 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
   /**
    * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the final
    *         validation stylesheet should be compiled with Saxon tracing enabled.
-   * @since 10.0.0
    */
   public boolean isTracingEnabled ()
   {
     return m_aTelemetry != null;
+  }
+
+  /**
+   * @return The custom {@link TransformerFactory} customizer applied to the final compile-step
+   *         transformer factory, or <code>null</code> if none. Used to register Saxon extension
+   *         functions or otherwise tweak the factory before the validation stylesheet is compiled.
+   *         When non-<code>null</code>, the cache is bypassed unless
+   *         {@link #isForceCacheResult()} is true.
+   */
+  @Nullable
+  public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
+  {
+    return m_aTFCustomizer;
   }
 
   @Override
@@ -205,23 +223,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
   @Override
   public boolean canCacheResult ()
   {
-    return !hasParameters () || m_bForceCacheResult;
-  }
-
-  /**
-   * Build the legacy {@link TransformerCustomizerSCH} object that drives the SCH-&gt;XSLT pipeline
-   * and per-transform customization.
-   */
-  @NonNull
-  TransformerCustomizerSCH toTransformerCustomizer ()
-  {
-    return new TransformerCustomizerSCH ().setErrorListener (m_aErrorListener)
-                                          .setURIResolver (m_aURIResolver)
-                                          .setParameters (m_aParameters)
-                                          .setPhase (m_sPhase)
-                                          .setLanguageCode (m_sLanguageCode)
-                                          .setForceCacheResult (m_bForceCacheResult)
-                                          .setTelemetry (m_aTelemetry);
+    return (!hasParameters () && m_aTFCustomizer == null) || m_bForceCacheResult;
   }
 
   @Override
@@ -233,8 +235,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
       LOGGER.warn ("Schematron resource " + m_aResource + " does not exist!");
       return null;
     }
-    final SchematronProviderXSLTFromSCH aProvider = new SchematronProviderXSLTFromSCH (m_aResource,
-                                                                                       toTransformerCustomizer ());
+    final SchematronProviderXSLTFromSCH aProvider = new SchematronProviderXSLTFromSCH (this);
     aProvider.convertSchematronToXSLT ();
     if (!aProvider.isValidSchematron ())
     {
@@ -256,7 +257,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
                                     .uriResolver (m_aURIResolver)
                                     .parameters (m_aParameters)
                                     .forceCacheResult (m_bForceCacheResult)
-                                    .telemetry (m_aTelemetry);
+                                    .telemetry (m_aTelemetry)
+                                    .transformerFactoryCustomizer (m_aTFCustomizer);
   }
 
   @Override
@@ -270,6 +272,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
                                        .append ("Parameters", m_aParameters)
                                        .append ("ForceCacheResult", m_bForceCacheResult)
                                        .appendIfNotNull ("Telemetry", m_aTelemetry)
+                                       .appendIfNotNull ("TransformerFactoryCustomizer", m_aTFCustomizer)
                                        .getToString ();
   }
 
@@ -471,7 +474,7 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
    */
   @NotThreadSafe
   public static final class Builder implements
-                                     ISchematronXSLTBasedValidatorBuilder <SchematronSCHConfig, SchematronSCHCache, SchematronSCH>
+                                    ISchematronXSLTBasedValidatorBuilder <SchematronSCHConfig, SchematronSCHCache, SchematronSCH>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;
@@ -479,8 +482,9 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
     private ErrorListener m_aErrorListener;
     private URIResolver m_aURIResolver;
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
-    private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
+    private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
     private ISchematronTemplateTelemetry m_aTelemetry;
+    private Consumer <TransformerFactory> m_aTFCustomizer;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -605,12 +609,31 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
      *        <code>null</code>.
      * @return this for chaining
-     * @since 10.0.0
      */
     @NonNull
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
     {
       m_aTelemetry = a;
+      return this;
+    }
+
+    /**
+     * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
+     * factory, just before the validation stylesheet is compiled. Use this to register Saxon
+     * extension functions (cast the {@link TransformerFactory} to
+     * {@code net.sf.saxon.TransformerFactoryImpl} and reach the underlying {@code Processor}).
+     * Setting this disables caching unless {@link #forceCacheResult(boolean)} is also true, since
+     * the cache key does not capture customizer identity.
+     *
+     * @param a
+     *        The customizer, or <code>null</code> to clear. Default is <code>null</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
+    {
+      m_aTFCustomizer = a;
       return this;
     }
 

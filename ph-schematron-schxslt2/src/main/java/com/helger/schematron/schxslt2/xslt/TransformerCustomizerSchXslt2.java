@@ -18,6 +18,7 @@ package com.helger.schematron.schxslt2.xslt;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
@@ -46,6 +47,7 @@ public class TransformerCustomizerSchXslt2
 
   private ErrorListener m_aCustomErrorListener;
   private URIResolver m_aCustomURIResolver;
+  private Consumer <TransformerFactory> m_aTFCustomizer;
   private ICommonsOrderedMap <String, Object> m_aCustomParameters;
   private String m_sPhase;
   private String m_sLanguageCode;
@@ -198,6 +200,34 @@ public class TransformerCustomizerSchXslt2
     return m_aTelemetry != null;
   }
 
+  /**
+   * @return The custom {@link TransformerFactory} customizer applied to the final compile-step
+   *         transformer factory, or <code>null</code> if none.
+   * @since 10.0.0
+   */
+  @Nullable
+  public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
+  {
+    return m_aTFCustomizer;
+  }
+
+  /**
+   * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
+   * factory, just before the validation stylesheet is compiled. Use this to register Saxon
+   * extension functions on the underlying {@code Processor}.
+   *
+   * @param a
+   *        The customizer, or <code>null</code> to clear.
+   * @return this for chaining
+   * @since 10.0.0
+   */
+  @NonNull
+  public TransformerCustomizerSchXslt2 setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
+  {
+    m_aTFCustomizer = a;
+    return this;
+  }
+
   public void customize (@NonNull final TransformerFactory aTransformerFactory)
   {
     // Ensure an error listener is present
@@ -209,6 +239,11 @@ public class TransformerCustomizerSchXslt2
     // Set the optional URI Resolver
     if (m_aCustomURIResolver != null)
       aTransformerFactory.setURIResolver (m_aCustomURIResolver);
+
+    // Hand the factory to the caller-supplied customizer last so it can register Saxon
+    // extension functions (or any other tweak) just before the validation stylesheet compiles.
+    if (m_aTFCustomizer != null)
+      m_aTFCustomizer.accept (aTransformerFactory);
   }
 
   public void customize (@NonNull final Transformer aTransformer)

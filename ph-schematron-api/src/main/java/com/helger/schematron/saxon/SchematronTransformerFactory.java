@@ -98,6 +98,59 @@ public final class SchematronTransformerFactory
   }
 
   /**
+   * @return The global {@link TransformerFactory} customizer.
+   * @since 10.0.0
+   */
+  public static @Nullable Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
+  {
+    return s_aFactoryCustomizer;
+  }
+
+  /**
+   * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
+   * applied: line numbering (#52) and XInclude (#86) are enabled. Optionally enables Saxon's
+   * {@code COMPILE_WITH_TRACING} feature so that stylesheets compiled by the returned factory emit
+   * per-instruction events to a {@link net.sf.saxon.lib.TraceListener} at execution time.
+   * <p>
+   * Tracing disables several Saxon optimisations and typically costs 1.5&times;&ndash;3&times;
+   * wall-clock per transform; callers should treat trace-enabled factories as distinct from the
+   * normal cached factory.
+   *
+   * @param bEnableTracing
+   *        <code>true</code> to enable Saxon's {@code COMPILE_WITH_TRACING} on the returned
+   *        factory.
+   * @return A new {@link TransformerFactory} and not <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static TransformerFactory createTransformerFactory (final boolean bEnableTracing)
+  {
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Calling createTransformerFactory (tracing=" + bEnableTracing + ")");
+
+    final TransformerFactory aFactory = new TransformerFactoryImpl ();
+
+    // Maintain position #52
+    aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
+
+    // Allow XInclude #86
+    aFactory.setAttribute (FeatureKeys.XINCLUDE, Boolean.TRUE);
+
+    // Tracing is conditional
+    if (bEnableTracing)
+      aFactory.setAttribute (FeatureKeys.COMPILE_WITH_TRACING, Boolean.TRUE);
+
+    // Call the customizer
+    if (s_aFactoryCustomizer != null)
+      s_aFactoryCustomizer.accept (aFactory);
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Created TransformerFactory is " + aFactory);
+
+    return aFactory;
+  }
+
+  /**
    * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
    * applied: line numbering (#52) and XInclude (#86) are enabled.
    *
@@ -140,29 +193,12 @@ public final class SchematronTransformerFactory
                                                              @Nullable final URIResolver aURIResolver,
                                                              final boolean bEnableTracing)
   {
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Calling createTransformerFactory (tracing=" + bEnableTracing + ")");
-
-    final TransformerFactory aFactory = new TransformerFactoryImpl ();
-
-    // Maintain position #52
-    aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
-    // Allow XInclude #86
-    aFactory.setAttribute (FeatureKeys.XINCLUDE, Boolean.TRUE);
-    if (bEnableTracing)
-      aFactory.setAttribute (FeatureKeys.COMPILE_WITH_TRACING, Boolean.TRUE);
+    final TransformerFactory aFactory = createTransformerFactory (bEnableTracing);
 
     if (aErrorListener != null)
       aFactory.setErrorListener (aErrorListener);
     if (aURIResolver != null)
       aFactory.setURIResolver (aURIResolver);
-
-    // Call the customizer
-    if (s_aFactoryCustomizer != null)
-      s_aFactoryCustomizer.accept (aFactory);
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Created TransformerFactory is " + aFactory);
 
     return aFactory;
   }

@@ -20,17 +20,13 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
-import javax.xml.transform.TransformerFactory;
-
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
-import com.helger.schematron.sch.TransformerCustomizerSCH;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -107,42 +103,19 @@ public final class Issue129Test
 
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new FileSystemResource (aSchematron))
-    {
-      @Override
-      @NonNull
-      @OverrideOnDemand
-      protected TransformerCustomizerSCH createTransformerCustomizer ()
+    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new FileSystemResource (aSchematron));
+    // Register Saxon extension functions on the underlying Processor just before the validation
+    // stylesheet is compiled, via the new transformerFactoryCustomizer hook.
+    aSCH.setTransformerFactoryCustomizer (aTransformerFactory -> {
+      if (aTransformerFactory instanceof TransformerFactoryImpl)
       {
-        final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ()
-        {
-          @Override
-          public void customize (@NonNull final TransformerFactory aTransformerFactory)
-          {
-            super.customize (aTransformerFactory);
-
-            if (aTransformerFactory instanceof TransformerFactoryImpl)
-            {
-              final net.sf.saxon.TransformerFactoryImpl aSaxonTF = (net.sf.saxon.TransformerFactoryImpl) aTransformerFactory;
-
-              // Get the currently used processor
-              final net.sf.saxon.Configuration saxonConfig = aSaxonTF.getConfiguration ();
-              final net.sf.saxon.s9api.Processor processor = (net.sf.saxon.s9api.Processor) saxonConfig.getProcessor ();
-
-              // Here extension happens
-              processor.registerExtensionFunction (new EF_Test ());
-              processor.registerExtensionFunction (new EF_Mul3 ());
-            }
-          }
-        };
-        return aCustomizer.setErrorListener (getErrorListener ())
-                          .setURIResolver (getURIResolver ())
-                          .setParameters (parameters ())
-                          .setPhase (getPhase ())
-                          .setLanguageCode (getLanguageCode ())
-                          .setForceCacheResult (isForceCacheResult ());
+        final net.sf.saxon.TransformerFactoryImpl aSaxonTF = (net.sf.saxon.TransformerFactoryImpl) aTransformerFactory;
+        final net.sf.saxon.Configuration saxonConfig = aSaxonTF.getConfiguration ();
+        final net.sf.saxon.s9api.Processor processor = (net.sf.saxon.s9api.Processor) saxonConfig.getProcessor ();
+        processor.registerExtensionFunction (new EF_Test ());
+        processor.registerExtensionFunction (new EF_Mul3 ());
       }
-    };
+    });
 
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));

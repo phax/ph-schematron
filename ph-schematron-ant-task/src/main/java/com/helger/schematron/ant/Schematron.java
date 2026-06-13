@@ -56,7 +56,7 @@ import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
-import com.helger.schematron.sch.TransformerCustomizerSCH;
+import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator;
@@ -199,7 +199,7 @@ public class Schematron extends AbstractSchematronTask
    * <code>true</code> if internal caching of the result should be forced, <code>false</code> if
    * not. This only applies when Schematron to XSLT conversion is performed.
    */
-  private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = SchematronSCHConfig.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * <code>true</code> if the XMLs are supposed to be valid, <code>false</code> otherwise. Defaults

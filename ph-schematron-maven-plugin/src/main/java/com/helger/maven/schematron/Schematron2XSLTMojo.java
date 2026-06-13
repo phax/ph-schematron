@@ -60,7 +60,7 @@ import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
-import com.helger.schematron.sch.TransformerCustomizerSCH;
+import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSLT2;
 import com.helger.schematron.schxslt.xslt2.TransformerCustomizerSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronProviderXSLTFromSchXslt2;
@@ -153,7 +153,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
    */
   @Parameter (name = "forceCacheResult", defaultValue = "false")
   @Since ("5.2.1")
-  private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = SchematronSCHConfig.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * A constant header string that should be added to all XSLT files, e.g. as a version number etc.
@@ -412,15 +412,18 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 case ISO_SCHEMATRON:
                 {
                   // Custom error listener
-                  // No custom URI resolver
+                  // No custom URI resolver (override the Config builder default)
                   // Specified phase - default = null
                   // Specified language code - default = null
-                  final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ().setErrorListener (aMojoErrorListener)
-                                                                                              .setPhase (m_sPhaseName)
-                                                                                              .setLanguageCode (m_sLanguageCode)
-                                                                                              .setParameters (m_aCustomParameters)
-                                                                                              .setForceCacheResult (m_bForceCacheResult);
-                  yield SchematronProviderXSLTFromSCH.createSchematronXSLT (aSchematronResource, aCustomizer);
+                  final SchematronSCHConfig aConfig = SchematronSCHConfig.builder (aSchematronResource)
+                                                                         .errorListener (aMojoErrorListener)
+                                                                         .uriResolver (null)
+                                                                         .phase (m_sPhaseName)
+                                                                         .languageCode (m_sLanguageCode)
+                                                                         .parameters (m_aCustomParameters)
+                                                                         .forceCacheResult (m_bForceCacheResult)
+                                                                         .build ();
+                  yield SchematronProviderXSLTFromSCH.createSchematronXSLT (aConfig);
                 }
                 case SCHXSLT1:
                 {

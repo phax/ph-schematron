@@ -53,8 +53,8 @@ import net.sf.saxon.s9api.XsltExecutable;
 /**
  * Module-level cache of compiled XSLT executables produced by the {@code pure-xslt} engine, keyed
  * by Schematron resource id, selected phase, target XSLT version and Saxon {@link Processor}
- * identity. Mirrors the role of {@code SchematronResourceSCHCache} for the ISO-XSLT engine and
- * {@code SchematronResourceSchXslt_XSLT2Cache} for SchXslt.
+ * identity. Mirrors the role of {@code SchematronSCHCache} for the ISO-XSLT engine and
+ * {@code SchematronSchXslt_XSLT2Cache} for SchXslt.
  * <p>
  * Cache lookup is bypassed when the caller has installed a custom {@link URIResolver} or
  * {@link ErrorListener} on the {@code SchematronResourcePureXslt} instance, since those hooks can

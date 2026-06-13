@@ -47,6 +47,7 @@ import com.helger.io.resource.URLResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.SchematronException;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
@@ -378,8 +379,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * @return <code>true</code> if {@link SchematronResourcePureXsltCache} is consulted even when a
-   *         custom {@link URIResolver} or {@link ErrorListener} is installed. Default is
+   * @return <code>true</code> if {@link SchematronPureXsltCache} is consulted even when a custom
+   *         {@link URIResolver} or {@link ErrorListener} is installed. Default is
    *         {@link #DEFAULT_FORCE_CACHE_RESULT}.
    */
   public final boolean isForceCacheResult ()
@@ -388,7 +389,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * By default the cache in {@link SchematronResourcePureXsltCache} is bypassed when a custom
+   * By default the cache in {@link SchematronPureXsltCache} is bypassed when a custom
    * {@link URIResolver} or {@link ErrorListener} is installed, because those hooks can affect what
    * Saxon emits in ways the cache key does not capture. Setting this to <code>true</code> tells the
    * engine that the hooks are deterministic for a given
@@ -485,14 +486,20 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       // intentionally do not fire here: on a cache hit no work happens; on a cache miss the spans
       // would only paint a misleading picture compared to the cached fast path. The
       // schematron.validate.duration histogram still reflects the wall-clock cost.
-      m_aCompiledXslt = SchematronResourcePureXsltCache.getCompiledXslt (getResource (),
-                                                                         m_sPhase,
-                                                                         m_eXsltVersion,
-                                                                         m_aProcessor,
-                                                                         m_aErrorHandler,
-                                                                         getEntityResolver (),
-                                                                         m_aURIResolver,
-                                                                         m_aErrorListener);
+      final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (getResource ())
+                                                                       .phase (m_sPhase)
+                                                                       .xsltVersion (m_eXsltVersion)
+                                                                       .processor (m_aProcessor)
+                                                                       .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
+                                                                                                              : new LoggingPSErrorHandler ())
+                                                                       .entityResolver (getEntityResolver ())
+                                                                       .uriResolver (m_aURIResolver)
+                                                                       .errorListener (m_aErrorListener)
+                                                                       .forceCacheResult (true)
+                                                                       .build ();
+      m_aCompiledXslt = SchematronPureXsltCache.shared ().getOrCompile (aConfig);
+      if (m_aCompiledXslt == null)
+        throw new SchematronException ("Failed to compile pure-XSLT for " + getResource ());
       return m_aCompiledXslt;
     }
 

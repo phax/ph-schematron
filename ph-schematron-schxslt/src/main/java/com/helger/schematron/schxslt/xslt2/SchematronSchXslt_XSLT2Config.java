@@ -23,8 +23,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
 import org.jspecify.annotations.NonNull;
@@ -78,6 +80,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   private final ICommonsOrderedMap <String, Object> m_aParameters;
   private final boolean m_bForceCacheResult;
   private final ISchematronTemplateTelemetry m_aTelemetry;
+  private final Consumer <TransformerFactory> m_aTFCustomizer;
   private final CacheKey m_aCacheKey;
 
   private SchematronSchXslt_XSLT2Config (@NonNull final Builder b)
@@ -90,6 +93,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     m_aParameters = new CommonsLinkedHashMap <> (b.m_aParameters);
     m_bForceCacheResult = b.m_bForceCacheResult;
     m_aTelemetry = b.m_aTelemetry;
+    m_aTFCustomizer = b.m_aTFCustomizer;
     m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_sLanguageCode, m_aTelemetry != null);
   }
 
@@ -197,10 +201,24 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     return m_aCacheKey;
   }
 
+  /**
+   * @return The custom {@link TransformerFactory} customizer applied to the final compile-step
+   *         transformer factory, or <code>null</code> if none. Used to register Saxon extension
+   *         functions or otherwise tweak the factory before the validation stylesheet is compiled.
+   *         When non-<code>null</code>, the cache is bypassed unless
+   *         {@link #isForceCacheResult()} is true.
+   * @since 10.0.0
+   */
+  @Nullable
+  public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
+  {
+    return m_aTFCustomizer;
+  }
+
   @Override
   public boolean canCacheResult ()
   {
-    return !hasParameters () || m_bForceCacheResult;
+    return (!hasParameters () && m_aTFCustomizer == null) || m_bForceCacheResult;
   }
 
   @NonNull
@@ -212,7 +230,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
                                                     .setPhase (m_sPhase)
                                                     .setLanguageCode (m_sLanguageCode)
                                                     .setForceCacheResult (m_bForceCacheResult)
-                                                    .setTelemetry (m_aTelemetry);
+                                                    .setTelemetry (m_aTelemetry)
+                                                    .setTransformerFactoryCustomizer (m_aTFCustomizer);
   }
 
   @Override
@@ -248,7 +267,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
                                     .uriResolver (m_aURIResolver)
                                     .parameters (m_aParameters)
                                     .forceCacheResult (m_bForceCacheResult)
-                                    .telemetry (m_aTelemetry);
+                                    .telemetry (m_aTelemetry)
+                                    .transformerFactoryCustomizer (m_aTFCustomizer);
   }
 
   @Override
@@ -262,6 +282,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
                                        .append ("Parameters", m_aParameters)
                                        .append ("ForceCacheResult", m_bForceCacheResult)
                                        .appendIfNotNull ("Telemetry", m_aTelemetry)
+                                       .appendIfNotNull ("TransformerFactoryCustomizer", m_aTFCustomizer)
                                        .getToString ();
   }
 
@@ -466,6 +487,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
     private boolean m_bForceCacheResult = TransformerCustomizerSchXslt_XSLT2.DEFAULT_FORCE_CACHE_RESULT;
     private ISchematronTemplateTelemetry m_aTelemetry;
+    private Consumer <TransformerFactory> m_aTFCustomizer;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -597,6 +619,26 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
     {
       m_aTelemetry = a;
+      return this;
+    }
+
+    /**
+     * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
+     * factory, just before the validation stylesheet is compiled. Use this to register Saxon
+     * extension functions (cast the {@link TransformerFactory} to
+     * {@code net.sf.saxon.TransformerFactoryImpl} and reach the underlying {@code Processor}).
+     * Setting this disables caching unless {@link #forceCacheResult(boolean)} is also true, since
+     * the cache key does not capture customizer identity.
+     *
+     * @param a
+     *        The customizer, or <code>null</code> to clear. Default is <code>null</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
+    {
+      m_aTFCustomizer = a;
       return this;
     }
 

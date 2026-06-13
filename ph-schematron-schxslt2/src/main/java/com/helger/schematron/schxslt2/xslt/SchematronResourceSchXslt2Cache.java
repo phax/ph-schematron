@@ -25,7 +25,6 @@ import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronException;
-import com.helger.xml.serialize.write.XMLWriter;
 
 /**
  * Legacy static facade for the SchXslt 2.x compilation cache. Since v10.0.0 this is a thin wrapper
@@ -45,33 +44,17 @@ public final class SchematronResourceSchXslt2Cache
   private SchematronResourceSchXslt2Cache ()
   {}
 
+  /**
+   * @deprecated Use
+   *             {@link SchematronSchXslt2Cache#compileUncached(IReadableResource, TransformerCustomizerSchXslt2)}
+   *             instead.
+   */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @Nullable
   public static SchematronProviderXSLTFromSchXslt2 createSchematronXSLTProvider (@NonNull final IReadableResource aSchematronResource,
                                                                                  @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
   {
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Compiling Schematron instance " + aSchematronResource);
-
-    final SchematronProviderXSLTFromSchXslt2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt2 (aSchematronResource,
-                                                                                                         aTransformerCustomizer);
-    aXSLTPreprocessor.convertSchematronToXSLT ();
-    if (!aXSLTPreprocessor.isValidSchematron ())
-    {
-      LOGGER.warn ("The Schematron resource '" + aSchematronResource.getResourceID () + "' is invalid!");
-      if (LOGGER.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
-        LOGGER.debug ("  Created XSLT document:\n" + XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
-      return null;
-    }
-
-    if (aXSLTPreprocessor.getXSLTDocument () == null)
-      throw new IllegalStateException ("No XSLT document retrieved from Schematron resource '" +
-                                       aSchematronResource.getResourceID () +
-                                       "'!");
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Finished compiling Schematron instance " + aSchematronResource);
-    return aXSLTPreprocessor;
+    return SchematronSchXslt2Cache.compileUncached (aSchematronResource, aTransformerCustomizer);
   }
 
   @Deprecated (since = "10.0.0", forRemoval = false)

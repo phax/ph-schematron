@@ -147,17 +147,16 @@ public class SchematronResourceSchXslt_XSLT2 extends
                                         .build ();
   }
 
-  @SuppressWarnings ("deprecation")
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
     final TransformerCustomizerSchXslt_XSLT2 aTC = createTransformerCustomizer ();
-    // Bypass the new shared cache when the customizer has been subclassed (legacy override
+    // Bypass the shared cache when the customizer has been subclassed (legacy override
     // hook) — the new Config does not capture custom customizers.
     final boolean bPlainCustomizer = aTC.getClass () == TransformerCustomizerSchXslt_XSLT2.class;
     if (!bPlainCustomizer || !isUseCache ())
-      return SchematronResourceSchXslt_XSLT2Cache.createSchematronXSLTProvider (getResource (), aTC);
+      return SchematronSchXslt_XSLT2Cache.compileUncached (getResource (), aTC);
 
     try
     {
