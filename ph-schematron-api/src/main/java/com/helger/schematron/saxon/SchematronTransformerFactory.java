@@ -38,7 +38,7 @@ import net.sf.saxon.lib.FeatureKeys;
 /**
  * Factory for the Saxon-based {@link TransformerFactory} used by all XSLT-based Schematron engines.
  * Saxon is a hard compile-time dependency of this module, so no SPI lookup or fallback is required
- * &mdash; the class instantiates {@link TransformerFactoryImpl} directly.
+ * - the class instantiates {@link TransformerFactoryImpl} directly.
  *
  * @author Philip Helger
  */
@@ -169,8 +169,7 @@ public final class SchematronTransformerFactory
 
   /**
    * Create a new Saxon-based {@link TransformerFactory}. The {@code aClassLoader} parameter is no
-   * longer required &mdash; Saxon is a hard compile-time dependency of this module &mdash; and is
-   * ignored.
+   * longer required - Saxon is a hard compile-time dependency of this module - and is ignored.
    *
    * @param aClassLoader
    *        Ignored.

@@ -62,9 +62,9 @@ public enum ESchematronEngine implements IHasID <String>
   /**
    * Apply a pre-built XSLT stylesheet directly to the XML instance (does not perform any
    * SCH-to-XSLT step). Used by {@code SchematronResourceXSLT}. {@link #isXSLTBased()} returns
-   * {@code false} because this engine consumes ready-made XSLT rather than generating it &mdash;
-   * the flag is consumed by {@code Schematron2XSLTMojo} which only accepts engines that can produce
-   * XSLT from SCH.
+   * {@code false} because this engine consumes ready-made XSLT rather than generating it - the flag
+   * is consumed by {@code Schematron2XSLTMojo} which only accepts engines that can produce XSLT
+   * from SCH.
    */
   XSLT_PREBUILT ("xslt", new CommonsHashSet <> (), false);
 
