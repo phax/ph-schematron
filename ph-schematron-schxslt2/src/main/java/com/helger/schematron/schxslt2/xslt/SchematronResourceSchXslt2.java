@@ -21,9 +21,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.function.Consumer;
-
-import javax.xml.transform.TransformerFactory;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -52,7 +49,6 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
   private String m_sPhase;
   private String m_sLanguageCode;
   private boolean m_bForceCacheResult = SchematronSchXslt2Config.DEFAULT_FORCE_CACHE_RESULT;
-  private Consumer <TransformerFactory> m_aTFCustomizer;
 
   /**
    * Constructor
@@ -110,33 +106,6 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
   }
 
   /**
-   * @return The {@link TransformerFactory} customizer applied to the final compile-step transformer
-   *         factory just before the validation stylesheet is compiled, or <code>null</code> if
-   *         none. See {@link #setTransformerFactoryCustomizer(Consumer)}.
-   * @since 10.0.0
-   */
-  @Nullable
-  public final Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
-  {
-    return m_aTFCustomizer;
-  }
-
-  /**
-   * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
-   * factory, just before the validation stylesheet is compiled. Use this to register Saxon
-   * extension functions on the underlying {@code Processor}. Setting this disables caching unless
-   * {@link #setForceCacheResult(boolean)} is also true.
-   *
-   * @param a
-   *        The customizer, or <code>null</code> to clear.
-   * @since 10.0.0
-   */
-  public final void setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
-  {
-    m_aTFCustomizer = a;
-  }
-
-  /**
    * @return The new builder-style config matching this resource's current state. Useful when
    *         migrating to the {@link SchematronSchXslt2} API.
    * @since 10.0.0
@@ -151,7 +120,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
                                    .uriResolver (getURIResolver ())
                                    .parameters (parameters ())
                                    .forceCacheResult (m_bForceCacheResult)
-                                   .transformerFactoryCustomizer (m_aTFCustomizer)
+                                   .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
                                    .build ();
   }
 

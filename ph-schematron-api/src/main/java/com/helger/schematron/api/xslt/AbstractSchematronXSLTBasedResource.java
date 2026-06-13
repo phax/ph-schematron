@@ -18,11 +18,13 @@ package com.helger.schematron.api.xslt;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -79,6 +81,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected ErrorListener m_aCustomErrorListener;
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
+  protected Consumer <TransformerFactory> m_aTFCustomizer;
   private ISchematronOutputValidityDeterminator m_aSOVDeterminator = new SchematronOutputValidityDeterminatorDefault ();
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
 
@@ -124,6 +127,36 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public final ICommonsOrderedMap <String, Object> parameters ()
   {
     return m_aCustomParameters;
+  }
+
+  /**
+   * @return The {@link TransformerFactory} customizer applied to the final compile-step transformer
+   *         factory just before the validation stylesheet is compiled, or <code>null</code> if
+   *         none. See {@link #setTransformerFactoryCustomizer(Consumer)}.
+   * @since 10.0.0
+   */
+  @Nullable
+  public final Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
+  {
+    return m_aTFCustomizer;
+  }
+
+  /**
+   * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
+   * factory, just before the validation stylesheet is compiled. Use this to register Saxon
+   * extension functions on the underlying {@code Processor}. Setting this disables caching unless
+   * the engine-specific <code>setForceCacheResult(boolean)</code> is also true.
+   *
+   * @param a
+   *        The customizer, or <code>null</code> to clear.
+   * @return this
+   * @since 10.0.0
+   */
+  @NonNull
+  public final IMPLTYPE setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
+  {
+    m_aTFCustomizer = a;
+    return thisAsT ();
   }
 
   /**

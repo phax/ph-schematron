@@ -22,8 +22,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
 import org.jspecify.annotations.NonNull;
@@ -72,6 +74,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   private final URIResolver m_aURIResolver;
   private final ICommonsOrderedMap <String, Object> m_aParameters;
   private final ISchematronTemplateTelemetry m_aTelemetry;
+  private final Consumer <TransformerFactory> m_aTFCustomizer;
 
   public static record CacheKey (String key) implements ISchematronCompilationCacheKey
   {}
@@ -83,6 +86,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     m_aURIResolver = b.m_aURIResolver;
     m_aParameters = new CommonsLinkedHashMap <> (b.m_aParameters);
     m_aTelemetry = b.m_aTelemetry;
+    m_aTFCustomizer = b.m_aTFCustomizer;
   }
 
   @Override
@@ -146,6 +150,20 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     return m_aTelemetry != null;
   }
 
+  /**
+   * @return The custom {@link TransformerFactory} customizer applied to the compile-step transformer
+   *         factory just before the validation stylesheet is compiled, or <code>null</code> if
+   *         none. Used to register Saxon extension functions or otherwise tweak the factory. When
+   *         non-<code>null</code>, the cache is bypassed since the cache key does not capture
+   *         customizer identity.
+   * @since 10.0.0
+   */
+  @Nullable
+  public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
+  {
+    return m_aTFCustomizer;
+  }
+
   @NonNull
   public CacheKey getCacheKey ()
   {
@@ -156,7 +174,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   @Override
   public boolean canCacheResult ()
   {
-    return true;
+    return m_aTFCustomizer == null;
   }
 
   @Override
@@ -171,7 +189,8 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     final SchematronProviderXSLTPrebuild aProvider = new SchematronProviderXSLTPrebuild (m_aResource,
                                                                                          m_aErrorListener,
                                                                                          m_aURIResolver,
-                                                                                         isTracingEnabled ());
+                                                                                         isTracingEnabled (),
+                                                                                         m_aTFCustomizer);
     if (!aProvider.isValidSchematron ())
     {
       LOGGER.warn ("XSLT resource '" + m_aResource.getResourceID () + "' is invalid!");
@@ -190,7 +209,8 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     return new Builder (m_aResource).errorListener (m_aErrorListener)
                                     .uriResolver (m_aURIResolver)
                                     .parameters (m_aParameters)
-                                    .telemetry (m_aTelemetry);
+                                    .telemetry (m_aTelemetry)
+                                    .transformerFactoryCustomizer (m_aTFCustomizer);
   }
 
   @Override
@@ -201,6 +221,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
                                        .appendIfNotNull ("URIResolver", m_aURIResolver)
                                        .append ("Parameters", m_aParameters)
                                        .appendIfNotNull ("Telemetry", m_aTelemetry)
+                                       .appendIfNotNull ("TransformerFactoryCustomizer", m_aTFCustomizer)
                                        .getToString ();
   }
 
@@ -343,6 +364,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     private URIResolver m_aURIResolver;
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
     private ISchematronTemplateTelemetry m_aTelemetry;
+    private Consumer <TransformerFactory> m_aTFCustomizer;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -433,6 +455,25 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
     {
       m_aTelemetry = a;
+      return this;
+    }
+
+    /**
+     * Set a {@link TransformerFactory} customizer applied to the compile-step transformer factory,
+     * just before the validation stylesheet is compiled. Use this to register Saxon extension
+     * functions (cast the {@link TransformerFactory} to
+     * {@code net.sf.saxon.TransformerFactoryImpl} and reach the underlying {@code Processor}).
+     * Setting this disables caching, since the cache key does not capture customizer identity.
+     *
+     * @param a
+     *        The customizer, or <code>null</code> to clear. Default is <code>null</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
+    {
+      m_aTFCustomizer = a;
       return this;
     }
 

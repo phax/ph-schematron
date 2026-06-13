@@ -16,6 +16,8 @@
  */
 package com.helger.schematron.xslt;
 
+import java.util.function.Consumer;
+
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -54,7 +56,7 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
                                          @Nullable final ErrorListener aCustomErrorListener,
                                          @Nullable final URIResolver aCustomURIResolver)
   {
-    this (aXSLTResource, aCustomErrorListener, aCustomURIResolver, false);
+    this (aXSLTResource, aCustomErrorListener, aCustomURIResolver, false, null);
   }
 
   /**
@@ -76,6 +78,31 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
                                          @Nullable final URIResolver aCustomURIResolver,
                                          final boolean bEnableTracing)
   {
+    this (aXSLTResource, aCustomErrorListener, aCustomURIResolver, bEnableTracing, null);
+  }
+
+  /**
+   * @param aXSLTResource
+   *        The XSLT resource. May be <code>null</code>.
+   * @param aCustomErrorListener
+   *        An optional XSLT error listener.
+   * @param aCustomURIResolver
+   *        An optional XSLT URI resolver.
+   * @param bEnableTracing
+   *        <code>true</code> to compile the stylesheet with Saxon's {@code COMPILE_WITH_TRACING}
+   *        feature so that per-instruction trace events fire at execution time.
+   * @param aTFCustomizer
+   *        Optional customizer applied to the {@link TransformerFactory} after the standard error
+   *        listener / URI resolver are set, just before the stylesheet is compiled. Use this to
+   *        register Saxon extension functions on the underlying {@code Processor}.
+   * @since 10.0.0
+   */
+  public SchematronProviderXSLTPrebuild (@Nullable final IReadableResource aXSLTResource,
+                                         @Nullable final ErrorListener aCustomErrorListener,
+                                         @Nullable final URIResolver aCustomURIResolver,
+                                         final boolean bEnableTracing,
+                                         @Nullable final Consumer <TransformerFactory> aTFCustomizer)
+  {
     try
     {
       // Read XSLT file as XML
@@ -85,6 +112,10 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
       final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
                                                                                              new DefaultTransformURIResolver (aCustomURIResolver),
                                                                                              bEnableTracing);
+      // Hand the factory to the caller-supplied customizer last so it can register Saxon
+      // extension functions (or any other tweak) just before the validation stylesheet compiles.
+      if (aTFCustomizer != null)
+        aTFCustomizer.accept (aTF);
       m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
     }
     catch (final Exception ex)

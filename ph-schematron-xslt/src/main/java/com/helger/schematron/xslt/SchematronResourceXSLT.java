@@ -66,6 +66,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
                                .errorListener (getErrorListener ())
                                .uriResolver (getURIResolver ())
                                .parameters (parameters ())
+                               .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
                                .build ();
   }
 
