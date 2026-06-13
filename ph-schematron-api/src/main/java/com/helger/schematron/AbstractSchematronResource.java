@@ -45,8 +45,8 @@ import com.helger.xml.serialize.read.DOMReaderSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 
 /**
- * Abstract implementation of the {@link ISchematronResource} interface handling
- * the underlying resource and wrapping one method.
+ * Abstract implementation of the {@link ISchematronResource} interface handling the underlying
+ * resource and wrapping one method.
  *
  * @author Philip Helger
  */
@@ -116,10 +116,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the Schematron or the
-   * XML to be validated. This can only be set before the Schematron is bound.
-   * If it is already bound an exception is thrown to indicate the unnecessity
-   * of the call.
+   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
+   * This can only be set before the Schematron is bound. If it is already bound an exception is
+   * thrown to indicate the unnecessity of the call.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -131,9 +130,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   /**
-   * @return The {@link DOMReaderSettings} to be used for reading the XML files
-   *         to be validated. This includes the {@link EntityResolver} to be
-   *         used.
+   * @return The {@link DOMReaderSettings} to be used for reading the XML files to be validated.
+   *         This includes the {@link EntityResolver} to be used.
    * @see #getEntityResolver()
    */
   @NonNull
@@ -151,17 +149,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    *
    * @author Philip Helger
    */
-  protected static final class NodeAndBaseURI
-  {
-    private final Document m_aDoc;
-    private final String m_sBaseURI;
-
-    public NodeAndBaseURI (@NonNull final Document aDoc, @Nullable final String sBaseURI)
-    {
-      m_aDoc = aDoc;
-      m_sBaseURI = sBaseURI;
-    }
-  }
+  public static record NodeAndBaseURI (@NonNull Document doc, @Nullable String baseURI)
+  {}
 
   @Nullable
   @OverrideOnDemand
@@ -213,7 +202,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return EValidity.INVALID;
 
-    return getSchematronValidity (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
+    return getSchematronValidity (aXMLNode.doc, aXMLNode.baseURI);
   }
 
   @NonNull
@@ -241,7 +230,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidation (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
+    return applySchematronValidation (aXMLNode.doc, aXMLNode.baseURI);
   }
 
   @Nullable
@@ -269,7 +258,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidationToSVRL (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
+    return applySchematronValidationToSVRL (aXMLNode.doc, aXMLNode.baseURI);
   }
 
   @Nullable

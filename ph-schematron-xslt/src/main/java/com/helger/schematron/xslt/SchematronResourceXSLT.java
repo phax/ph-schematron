@@ -44,6 +44,8 @@ import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 @NotThreadSafe
 public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource <SchematronResourceXSLT>
 {
+  private SchematronXSLTCache m_aCache;
+
   /**
    * Constructor
    *
@@ -53,6 +55,30 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   public SchematronResourceXSLT (@NonNull final IReadableResource aXSLTResource)
   {
     super (aXSLTResource);
+  }
+
+  /**
+   * @return The {@link SchematronXSLTCache} this resource compiles against, or <code>null</code> to
+   *         use {@link SchematronXSLTCache#shared()}. Default is <code>null</code>.
+   * @since 10.0.0
+   */
+  @Nullable
+  public final SchematronXSLTCache getCache ()
+  {
+    return m_aCache;
+  }
+
+  /**
+   * Use a specific {@link SchematronXSLTCache} instance instead of {@link SchematronXSLTCache#shared()
+   * the shared cache}. Useful for per-tenant isolation or bounded eviction.
+   *
+   * @param a
+   *        The cache, or <code>null</code> to fall back to the shared cache.
+   * @since 10.0.0
+   */
+  public final void setCache (@Nullable final SchematronXSLTCache a)
+  {
+    m_aCache = a;
   }
 
   /**
@@ -67,6 +93,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
                                .uriResolver (getURIResolver ())
                                .parameters (parameters ())
                                .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
+                               .telemetry (getTelemetry ())
                                .build ();
   }
 
@@ -74,12 +101,14 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
+    markCompiled ();
     final SchematronXSLTConfig aConfig = toConfig ();
     try
     {
-      if (isUseCache ())
-        return SchematronXSLTCache.shared ().getOrCompile (aConfig);
-      return aConfig.compile ();
+      if (!isUseCache ())
+        return aConfig.compile ();
+      final SchematronXSLTCache aCache = m_aCache != null ? m_aCache : SchematronXSLTCache.shared ();
+      return aCache.getOrCompile (aConfig);
     }
     catch (final com.helger.schematron.SchematronException ex)
     {

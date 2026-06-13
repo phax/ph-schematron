@@ -49,6 +49,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   private String m_sPhase;
   private String m_sLanguageCode;
   private boolean m_bForceCacheResult = SchematronSCHConfig.DEFAULT_FORCE_CACHE_RESULT;
+  private SchematronSCHCache m_aCache;
 
   /**
    * Constructor
@@ -69,6 +70,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 
   public final void setPhase (@Nullable final String sPhase)
   {
+    checkNotCompiledYet ();
     m_sPhase = sPhase;
   }
 
@@ -80,6 +82,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 
   public final void setLanguageCode (@Nullable final String sLanguageCode)
   {
+    checkNotCompiledYet ();
     m_sLanguageCode = sLanguageCode;
   }
 
@@ -104,7 +107,32 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    */
   public final void setForceCacheResult (final boolean bForceCacheResult)
   {
+    checkNotCompiledYet ();
     m_bForceCacheResult = bForceCacheResult;
+  }
+
+  /**
+   * @return The {@link SchematronSCHCache} this resource compiles against, or <code>null</code> to
+   *         use {@link SchematronSCHCache#shared()}. Default is <code>null</code>.
+   * @since 10.0.0
+   */
+  @Nullable
+  public final SchematronSCHCache getCache ()
+  {
+    return m_aCache;
+  }
+
+  /**
+   * Use a specific {@link SchematronSCHCache} instance instead of {@link SchematronSCHCache#shared()
+   * the shared cache}. Useful for per-tenant isolation or bounded eviction.
+   *
+   * @param a
+   *        The cache, or <code>null</code> to fall back to the shared cache.
+   * @since 10.0.0
+   */
+  public final void setCache (@Nullable final SchematronSCHCache a)
+  {
+    m_aCache = a;
   }
 
   /**
@@ -123,6 +151,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
                               .parameters (parameters ())
                               .forceCacheResult (m_bForceCacheResult)
                               .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
+                              .telemetry (getTelemetry ())
                               .build ();
   }
 
@@ -130,13 +159,15 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
+    markCompiled ();
     final SchematronSCHConfig aConfig = toConfig ();
     if (!isUseCache ())
       return aConfig.compile ();
 
     try
     {
-      return SchematronSCHCache.shared ().getOrCompile (aConfig);
+      final SchematronSCHCache aCache = m_aCache != null ? m_aCache : SchematronSCHCache.shared ();
+      return aCache.getOrCompile (aConfig);
     }
     catch (final SchematronException ex)
     {

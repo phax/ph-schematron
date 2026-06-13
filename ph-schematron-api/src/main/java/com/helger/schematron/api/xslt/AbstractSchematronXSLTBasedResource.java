@@ -16,17 +16,13 @@
  */
 package com.helger.schematron.api.xslt;
 
-import java.util.Locale;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
 import org.jspecify.annotations.NonNull;
@@ -42,24 +38,21 @@ import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.debug.GlobalDebug;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EValidity;
-import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.trait.IGenericImplTrait;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
-import com.helger.schematron.SchematronDebug;
+import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.DefaultTransformURIResolver;
-import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
  * Abstract implementation of a Schematron resource that is based on XSLT transformations.
@@ -82,8 +75,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
   protected Consumer <TransformerFactory> m_aTFCustomizer;
+  protected ISchematronTemplateTelemetry m_aTelemetry;
   private ISchematronOutputValidityDeterminator m_aSOVDeterminator = new SchematronOutputValidityDeterminatorDefault ();
   private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
+  /**
+   * Latched <code>true</code> the first time {@link #getXSLTProvider()} is called on this instance.
+   * Used by {@link #checkNotCompiledYet()} so that compile-time setters fail fast post-compile,
+   * instead of silently producing a stale provider on the next cache hit.
+   */
+  protected boolean m_bAlreadyCompiled;
 
   public AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
@@ -96,6 +96,32 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (sBaseURL));
   }
 
+  /**
+   * Throw {@link IllegalStateException} if this resource has already been compiled (i.e.
+   * {@link #getXSLTProvider()} has been called at least once and {@link #markCompiled()} was
+   * invoked). Subclasses should call this from any compile-affecting setter.
+   *
+   * @since 10.0.0
+   */
+  protected final void checkNotCompiledYet ()
+  {
+    if (m_bAlreadyCompiled)
+      throw new IllegalStateException ("This Schematron resource has already been compiled. " +
+                                       "Construct a new instance instead of mutating compile-time settings post-compile.");
+  }
+
+  /**
+   * Mark this resource as compiled. Called by subclass implementations of
+   * {@link #getXSLTProvider()} at the start of the first invocation. Once latched, compile-time
+   * setters that call {@link #checkNotCompiledYet()} will throw.
+   *
+   * @since 10.0.0
+   */
+  protected final void markCompiled ()
+  {
+    m_bAlreadyCompiled = true;
+  }
+
   @Nullable
   public final ErrorListener getErrorListener ()
   {
@@ -105,6 +131,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @NonNull
   public final IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
+    checkNotCompiledYet ();
     m_aCustomErrorListener = aCustomErrorListener;
     return thisAsT ();
   }
@@ -118,6 +145,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @NonNull
   public final IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
+    checkNotCompiledYet ();
     m_aCustomURIResolver = aCustomURIResolver;
     return thisAsT ();
   }
@@ -155,7 +183,39 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @NonNull
   public final IMPLTYPE setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
   {
+    checkNotCompiledYet ();
     m_aTFCustomizer = a;
+    return thisAsT ();
+  }
+
+  /**
+   * @return The per-template telemetry callback configured for the XSLT transformation, or
+   *         <code>null</code> if telemetry is disabled.
+   * @since 10.0.0
+   */
+  @Nullable
+  public final ISchematronTemplateTelemetry getTelemetry ()
+  {
+    return m_aTelemetry;
+  }
+
+  /**
+   * Set the per-template telemetry callback. When non-<code>null</code>, the validation stylesheet
+   * is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache entry) and a
+   * {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is installed on each apply
+   * call.
+   *
+   * @param a
+   *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
+   *        <code>null</code>.
+   * @return this
+   * @since 10.0.0
+   */
+  @NonNull
+  public final IMPLTYPE setTelemetry (@Nullable final ISchematronTemplateTelemetry a)
+  {
+    checkNotCompiledYet ();
+    m_aTelemetry = a;
     return thisAsT ();
   }
 
@@ -234,65 +294,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @Nullable
   public final Document applySchematronValidation (@NonNull final Source aSource) throws TransformerException
   {
-    ValueEnforcer.notNull (aSource, "Source");
-
-    final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
-    if (aXSLTProvider == null || !aXSLTProvider.isValidSchematron ())
-    {
-      // We cannot progress because of invalid Schematron
-      LOGGER.warn ("Cannot apply the Schematron validation, due to errors in the Schematron rules");
-      return null;
-    }
-
-    // Debug print the created XSLT document
-    if (SchematronDebug.isShowCreatedXSLT ())
-      LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aXSLTProvider.getXSLTDocument ()));
-
-    LOGGER.info ("Applying Schematron XSLT on XML instance" +
-                 (StringHelper.isNotEmpty (aSource.getSystemId ()) ? " with base URI '" + aSource.getSystemId () + "'"
-                                                                   : ""));
-
-    // Create result document
-    final Document ret = XMLFactory.newDocument ();
-
-    // Create the transformer object from the templates specified in the
-    // constructor
-    final Transformer aTransformer = aXSLTProvider.getXSLTTransformer ();
-
-    // Apply customizations
-    // Ensure an error listener is present
-    if (m_aCustomErrorListener != null)
-      aTransformer.setErrorListener (m_aCustomErrorListener);
-    else
-      aTransformer.setErrorListener (new LoggingTransformErrorListener (Locale.US));
-
-    // Set the optional URI Resolver
-    if (m_aCustomURIResolver != null)
-      aTransformer.setURIResolver (m_aCustomURIResolver);
-
-    // Set all custom parameters
-    if (m_aCustomParameters != null)
-      for (final Map.Entry <String, ?> aEntry : m_aCustomParameters.entrySet ())
-      {
-        if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Adding XSLT parameter '" + aEntry.getKey () + "' = '" + aEntry.getValue () + "'");
-        aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
-      }
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Applying Schematron XSLT on XML [start]");
-
-    // Do the main transformation
-    aTransformer.transform (aSource, new DOMResult (ret));
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Applying Schematron XSLT on XML [end]");
-
-    // Debug print the created SVRL document
-    if (SchematronDebug.isShowCreatedSVRL ())
-      LOGGER.info ("Created SVRL:\n" + XMLWriter.getNodeAsString (ret));
-
-    return ret;
+    return SchematronXSLTValidator.applyValidation (getXSLTProvider (),
+                                                    aSource,
+                                                    m_aCustomErrorListener,
+                                                    m_aCustomURIResolver,
+                                                    m_aCustomParameters,
+                                                    m_aTelemetry);
   }
 
   @Nullable
