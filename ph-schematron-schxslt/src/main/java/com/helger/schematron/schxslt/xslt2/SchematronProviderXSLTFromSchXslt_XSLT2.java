@@ -17,12 +17,17 @@
 package com.helger.schematron.schxslt.xslt2;
 
 import java.io.File;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Consumer;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -36,6 +41,7 @@ import org.w3c.dom.Document;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.timing.StopWatch;
+import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.file.FilenameHelper;
 import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.ClassPathResource;
@@ -47,6 +53,7 @@ import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.xml.transform.LoggingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
 import com.helger.xml.transform.XMLTransformerFactory;
 
@@ -86,8 +93,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   private static Templates s_aStep2;
   private static Templates s_aStep3;
 
-  private final IReadableResource m_aSchematronResource;
-  private final TransformerCustomizerSchXslt_XSLT2 m_aTransformerCustomizer;
+  private final SchematronSchXslt_XSLT2Config m_aConfig;
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 
@@ -142,14 +148,50 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     }
   }
 
-  @NonNull
-  public static Document createSchematronXSLT (@NonNull final IReadableResource aSchematronResource,
-                                               @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer) throws TransformerException
+  /**
+   * Apply error-listener + URI-resolver from the config to a per-step XSLT {@link Transformer}, copy
+   * across all configured XSLT parameters, and (on the final SCH&rarr;XSLT step) inject the
+   * Schematron <code>phase</code> and <code>langCode</code> parameters.
+   */
+  private static void _applyConfigToTransformer (@NonNull final SchematronSchXslt_XSLT2Config aConfig,
+                                                 final boolean bFinalStep,
+                                                 @NonNull final Transformer aTransformer)
   {
+    final ErrorListener aErrorListener = aConfig.getErrorListener ();
+    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+
+    final URIResolver aURIResolver = aConfig.getURIResolver ();
+    if (aURIResolver != null)
+      aTransformer.setURIResolver (aURIResolver);
+
+    final ICommonsOrderedMap <String, Object> aParameters = aConfig.getParameters ();
+    for (final Map.Entry <String, Object> aEntry : aParameters.entrySet ())
+      aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
+
+    if (bFinalStep)
+    {
+      // On the last step, set the Schematron parameters as the last action so they cannot be
+      // overwritten by a custom parameter.
+      final String sPhase = aConfig.getPhase ();
+      if (sPhase != null)
+        aTransformer.setParameter ("phase", sPhase);
+      final String sLanguageCode = aConfig.getLanguageCode ();
+      if (sLanguageCode != null)
+        aTransformer.setParameter ("langCode", sLanguageCode);
+    }
+  }
+
+  @NonNull
+  public static Document createSchematronXSLT (@NonNull final SchematronSchXslt_XSLT2Config aConfig) throws TransformerException
+  {
+    ValueEnforcer.notNull (aConfig, "Config");
+
     if (Thread.interrupted ())
       throw new SchematronInterruptedException ("before XSLT starts");
 
     cacheXSLTTemplates ();
+
+    final IReadableResource aSchematronResource = aConfig.getResource ();
 
     // perform step 1 (Schematron -> ResultStep1; "include")
     final StreamSource aSrc1;
@@ -158,7 +200,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult1 = new DOMResult (aResult1Doc);
       final Transformer aTransformer1 = s_aStep1.newTransformer ();
-      aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_1, aTransformer1);
+      _applyConfigToTransformer (aConfig, false, aTransformer1);
       aSrc1 = TransformSourceFactory.create (aSchematronResource);
 
       SchematronDebug.getDebugLogger ().info ( () -> "Now applying XSLT step 1 on " + aSchematronResource);
@@ -181,7 +223,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult2 = new DOMResult (aResult2Doc);
       final Transformer aTransformer2 = s_aStep2.newTransformer ();
-      aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_2, aTransformer2);
+      _applyConfigToTransformer (aConfig, false, aTransformer2);
       final DOMSource aSrc2 = TransformSourceFactory.create (aResult1Doc);
       // SystemId is required for "base-uri(.)" to work
       if (aSrc2.getSystemId () == null)
@@ -225,7 +267,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult3 = new DOMResult (aResult3Doc);
       final Transformer aTransformer3 = s_aStep3.newTransformer ();
-      aTransformerCustomizer.customize (EStepSchXslt_XSLT2.SCH2XSLT_3, aTransformer3);
+      _applyConfigToTransformer (aConfig, true, aTransformer3);
       final DOMSource aSrc3 = TransformSourceFactory.create (aResult2Doc);
       // SystemId is required for "base-uri(.)" to work
       if (aSrc3.getSystemId () == null)
@@ -267,24 +309,17 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   }
 
   /**
-   * Constructor. This call does the main Schematron to XSLT conversion.
+   * Constructor.
    *
-   * @param aSchematronResource
-   *        SCH resource
-   * @param aTransformerCustomizer
-   *        The customizer for XSLT {@link Transformer} objects. May not be
-   *        <code>null</code>.
+   * @param aConfig
+   *        The compilation config. May not be <code>null</code>.
    * @throws SchematronInterruptedException
    *         If Schematron compilation was interrupted
    */
-  public SchematronProviderXSLTFromSchXslt_XSLT2 (@NonNull final IReadableResource aSchematronResource,
-                                                  @NonNull final TransformerCustomizerSchXslt_XSLT2 aTransformerCustomizer)
+  public SchematronProviderXSLTFromSchXslt_XSLT2 (@NonNull final SchematronSchXslt_XSLT2Config aConfig)
   {
-    ValueEnforcer.notNull (aSchematronResource, "SchematronResource");
-    ValueEnforcer.notNull (aTransformerCustomizer, "TransformerCustomizer");
-
-    m_aSchematronResource = aSchematronResource;
-    m_aTransformerCustomizer = aTransformerCustomizer;
+    ValueEnforcer.notNull (aConfig, "Config");
+    m_aConfig = aConfig;
   }
 
   /**
@@ -296,25 +331,36 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     if (m_aSchematronXSLTDoc != null)
       throw new IllegalStateException ("The conversion from Schematron to XSLT already happened");
 
+    final IReadableResource aSchematronResource = m_aConfig.getResource ();
     try
     {
       // Save the underlying XSLT document....
       // Note: Saxon 6.5.5 does not allow to clone the document node!!!!
-      m_aSchematronXSLTDoc = createSchematronXSLT (m_aSchematronResource, m_aTransformerCustomizer);
+      m_aSchematronXSLTDoc = createSchematronXSLT (m_aConfig);
 
       // compile result of step 3
       // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
       // so that per-template events fire at execution time.
-      final TransformerFactory aTF = m_aTransformerCustomizer.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (m_aTransformerCustomizer.getErrorListener (),
-                                                                                                                                           m_aTransformerCustomizer.getURIResolver (),
-                                                                                                                                           true)
-                                                                                  : SchematronTransformerFactory.getDefault ();
-      m_aTransformerCustomizer.customize (aTF);
+      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (m_aConfig.getErrorListener (),
+                                                                                                                            m_aConfig.getURIResolver (),
+                                                                                                                            true)
+                                                                   : SchematronTransformerFactory.getDefault ();
+      // Apply error listener + URI resolver to the final-compile factory
+      final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
+      aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+      final URIResolver aURIResolver = m_aConfig.getURIResolver ();
+      if (aURIResolver != null)
+        aTF.setURIResolver (aURIResolver);
+      // Hand the factory to the caller-supplied customizer last so it can register Saxon
+      // extension functions (or any other tweak) just before the validation stylesheet compiles.
+      final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
+      if (aTFCustomizer != null)
+        aTFCustomizer.accept (aTF);
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                        TransformSourceFactory.create (m_aSchematronXSLTDoc));
 
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Finished creating XSLT Template on " + m_aSchematronResource);
+        LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
     }
     catch (final SchematronInterruptedException ex)
     {
@@ -332,7 +378,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   @NonNull
   public IReadableResource getSchematronResource ()
   {
-    return m_aSchematronResource;
+    return m_aConfig.getResource ();
   }
 
   public boolean isValidSchematron ()

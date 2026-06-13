@@ -17,16 +17,11 @@
 package com.helger.schematron.schxslt2.xslt;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.ThreadSafe;
-import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.api.cache.AbstractSchematronCache;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-import com.helger.xml.serialize.write.XMLWriter;
 
 /**
  * Cache for compiled {@link ISchematronXSLTBasedProvider} instances produced from
@@ -41,8 +36,6 @@ public final class SchematronSchXslt2Cache extends
 {
   /** Default name of the shared cache. */
   public static final String DEFAULT_NAME = "schematron-schxslt2";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger (SchematronSchXslt2Cache.class);
 
   private static final class SingletonHolder
   {
@@ -88,47 +81,5 @@ public final class SchematronSchXslt2Cache extends
   public static SchematronSchXslt2Cache shared ()
   {
     return SingletonHolder.INSTANCE;
-  }
-
-  /**
-   * Compile a Schematron resource into an {@link ISchematronXSLTBasedProvider} without consulting
-   * any cache. Use this when the caller has a subclassed {@link TransformerCustomizerSchXslt2} whose
-   * behaviour cannot be expressed via {@link SchematronSchXslt2Config}, or when caching is
-   * explicitly disabled. Returns <code>null</code> for an invalid Schematron resource; throws on
-   * internal inconsistency (no XSLT document despite a valid Schematron).
-   *
-   * @param aSchematronResource
-   *        The resource of the Schematron rules. May not be <code>null</code>.
-   * @param aTransformerCustomizer
-   *        The XSLT transformer customizer to be used. May not be <code>null</code>.
-   * @return The compiled provider, or <code>null</code> if the Schematron resource is invalid.
-   * @since 10.0.0
-   */
-  @Nullable
-  public static SchematronProviderXSLTFromSchXslt2 compileUncached (@NonNull final IReadableResource aSchematronResource,
-                                                                    @NonNull final TransformerCustomizerSchXslt2 aTransformerCustomizer)
-  {
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Compiling Schematron instance " + aSchematronResource);
-
-    final SchematronProviderXSLTFromSchXslt2 aXSLTPreprocessor = new SchematronProviderXSLTFromSchXslt2 (aSchematronResource,
-                                                                                                         aTransformerCustomizer);
-    aXSLTPreprocessor.convertSchematronToXSLT ();
-    if (!aXSLTPreprocessor.isValidSchematron ())
-    {
-      LOGGER.warn ("The Schematron resource '" + aSchematronResource.getResourceID () + "' is invalid!");
-      if (LOGGER.isDebugEnabled () && aXSLTPreprocessor.getXSLTDocument () != null)
-        LOGGER.debug ("  Created XSLT document:\n" + XMLWriter.getNodeAsString (aXSLTPreprocessor.getXSLTDocument ()));
-      return null;
-    }
-
-    if (aXSLTPreprocessor.getXSLTDocument () == null)
-      throw new IllegalStateException ("No XSLT document retrieved from Schematron resource '" +
-                                       aSchematronResource.getResourceID () +
-                                       "'!");
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Finished compiling Schematron instance " + aSchematronResource);
-    return aXSLTPreprocessor;
   }
 }

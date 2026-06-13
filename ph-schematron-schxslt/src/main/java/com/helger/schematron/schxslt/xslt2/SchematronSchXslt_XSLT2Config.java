@@ -70,6 +70,9 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   /** SchXslt compile-time parameter that disables SVRL metadata creation. */
   public static final String PARAM_COMPILE_METADATA = "schxslt.compile.metadata";
 
+  /** Default for {@link Builder#forceCacheResult(boolean)}. */
+  public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronSchXslt_XSLT2Config.class);
 
   private final IReadableResource m_aResource;
@@ -221,19 +224,6 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     return (!hasParameters () && m_aTFCustomizer == null) || m_bForceCacheResult;
   }
 
-  @NonNull
-  TransformerCustomizerSchXslt_XSLT2 toTransformerCustomizer ()
-  {
-    return new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (m_aErrorListener)
-                                                    .setURIResolver (m_aURIResolver)
-                                                    .setParameters (m_aParameters)
-                                                    .setPhase (m_sPhase)
-                                                    .setLanguageCode (m_sLanguageCode)
-                                                    .setForceCacheResult (m_bForceCacheResult)
-                                                    .setTelemetry (m_aTelemetry)
-                                                    .setTransformerFactoryCustomizer (m_aTFCustomizer);
-  }
-
   @Override
   @Nullable
   public ISchematronXSLTBasedProvider compile () throws SchematronException
@@ -243,8 +233,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
       LOGGER.warn ("Schematron resource " + m_aResource + " does not exist!");
       return null;
     }
-    final SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = new SchematronProviderXSLTFromSchXslt_XSLT2 (m_aResource,
-                                                                                                           toTransformerCustomizer ());
+    final SchematronProviderXSLTFromSchXslt_XSLT2 aProvider = new SchematronProviderXSLTFromSchXslt_XSLT2 (this);
     aProvider.convertSchematronToXSLT ();
     if (!aProvider.isValidSchematron ())
     {
@@ -485,7 +474,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     private ErrorListener m_aErrorListener;
     private URIResolver m_aURIResolver;
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
-    private boolean m_bForceCacheResult = TransformerCustomizerSchXslt_XSLT2.DEFAULT_FORCE_CACHE_RESULT;
+    private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
     private ISchematronTemplateTelemetry m_aTelemetry;
     private Consumer <TransformerFactory> m_aTFCustomizer;
 

@@ -62,9 +62,9 @@ import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSLT2;
-import com.helger.schematron.schxslt.xslt2.TransformerCustomizerSchXslt_XSLT2;
+import com.helger.schematron.schxslt.xslt2.SchematronSchXslt_XSLT2Config;
 import com.helger.schematron.schxslt2.xslt.SchematronProviderXSLTFromSchXslt2;
-import com.helger.schematron.schxslt2.xslt.TransformerCustomizerSchXslt2;
+import com.helger.schematron.schxslt2.xslt.SchematronSchXslt2Config;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.SchematronToXsltConverter;
 import com.helger.schematron.svrl.CSVRL;
@@ -429,22 +429,27 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 {
                   final Map <String, String> aEffectiveCustomParams = new CommonsHashMap <> (m_aCustomParameters);
                   aEffectiveCustomParams.put ("schxslt.compile.metadata", "false");
-                  final TransformerCustomizerSchXslt_XSLT2 aCustomizer2 = new TransformerCustomizerSchXslt_XSLT2 ().setErrorListener (aMojoErrorListener)
-                                                                                                                   .setPhase (m_sPhaseName)
-                                                                                                                   .setLanguageCode (m_sLanguageCode)
-                                                                                                                   .setParameters (aEffectiveCustomParams)
-                                                                                                                   .setForceCacheResult (m_bForceCacheResult);
-                  yield SchematronProviderXSLTFromSchXslt_XSLT2.createSchematronXSLT (aSchematronResource,
-                                                                                      aCustomizer2);
+                  final SchematronSchXslt_XSLT2Config aSchXsltConfig = SchematronSchXslt_XSLT2Config.builder (aSchematronResource)
+                                                                                                    .errorListener (aMojoErrorListener)
+                                                                                                    .uriResolver (null)
+                                                                                                    .phase (m_sPhaseName)
+                                                                                                    .languageCode (m_sLanguageCode)
+                                                                                                    .parameters (aEffectiveCustomParams)
+                                                                                                    .forceCacheResult (m_bForceCacheResult)
+                                                                                                    .build ();
+                  yield SchematronProviderXSLTFromSchXslt_XSLT2.createSchematronXSLT (aSchXsltConfig);
                 }
                 case SCHXSLT2:
                 {
-                  final TransformerCustomizerSchXslt2 aCustomizer2 = new TransformerCustomizerSchXslt2 ().setErrorListener (aMojoErrorListener)
-                                                                                                         .setPhase (m_sPhaseName)
-                                                                                                         .setLanguageCode (m_sLanguageCode)
-                                                                                                         .setParameters (m_aCustomParameters)
-                                                                                                         .setForceCacheResult (m_bForceCacheResult);
-                  yield SchematronProviderXSLTFromSchXslt2.createSchematronXSLT (aSchematronResource, aCustomizer2);
+                  final SchematronSchXslt2Config aSchXslt2Config = SchematronSchXslt2Config.builder (aSchematronResource)
+                                                                                            .errorListener (aMojoErrorListener)
+                                                                                            .uriResolver (null)
+                                                                                            .phase (m_sPhaseName)
+                                                                                            .languageCode (m_sLanguageCode)
+                                                                                            .parameters (m_aCustomParameters)
+                                                                                            .forceCacheResult (m_bForceCacheResult)
+                                                                                            .build ();
+                  yield SchematronProviderXSLTFromSchXslt2.createSchematronXSLT (aSchXslt2Config);
                 }
                 case PURE_XSLT:
                 {

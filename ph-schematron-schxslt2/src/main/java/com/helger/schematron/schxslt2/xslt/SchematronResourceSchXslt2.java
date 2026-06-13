@@ -21,20 +21,22 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.function.Consumer;
+
+import javax.xml.transform.TransformerFactory;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
-import com.helger.annotation.style.OverrideOnDemand;
-import com.helger.base.enforce.ValueEnforcer;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.URLResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
+import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
@@ -49,7 +51,8 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
 {
   private String m_sPhase;
   private String m_sLanguageCode;
-  private boolean m_bForceCacheResult = TransformerCustomizerSchXslt2.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = SchematronSchXslt2Config.DEFAULT_FORCE_CACHE_RESULT;
+  private Consumer <TransformerFactory> m_aTFCustomizer;
 
   /**
    * Constructor
@@ -106,24 +109,31 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     m_bForceCacheResult = bForceCacheResult;
   }
 
-  @NonNull
-  protected final TransformerCustomizerSchXslt2 applyDefaultValuesOnTransformerCustomizer (@NonNull final TransformerCustomizerSchXslt2 aTC)
+  /**
+   * @return The {@link TransformerFactory} customizer applied to the final compile-step transformer
+   *         factory just before the validation stylesheet is compiled, or <code>null</code> if
+   *         none. See {@link #setTransformerFactoryCustomizer(Consumer)}.
+   * @since 10.0.0
+   */
+  @Nullable
+  public final Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
   {
-    ValueEnforcer.notNull (aTC, "TransformerCustomizer");
-    aTC.setErrorListener (getErrorListener ())
-       .setURIResolver (getURIResolver ())
-       .setParameters (parameters ())
-       .setPhase (m_sPhase)
-       .setLanguageCode (m_sLanguageCode)
-       .setForceCacheResult (m_bForceCacheResult);
-    return aTC;
+    return m_aTFCustomizer;
   }
 
-  @NonNull
-  @OverrideOnDemand
-  protected TransformerCustomizerSchXslt2 createTransformerCustomizer ()
+  /**
+   * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
+   * factory, just before the validation stylesheet is compiled. Use this to register Saxon
+   * extension functions on the underlying {@code Processor}. Setting this disables caching unless
+   * {@link #setForceCacheResult(boolean)} is also true.
+   *
+   * @param a
+   *        The customizer, or <code>null</code> to clear.
+   * @since 10.0.0
+   */
+  public final void setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
   {
-    return applyDefaultValuesOnTransformerCustomizer (new TransformerCustomizerSchXslt2 ());
+    m_aTFCustomizer = a;
   }
 
   /**
@@ -141,6 +151,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
                                    .uriResolver (getURIResolver ())
                                    .parameters (parameters ())
                                    .forceCacheResult (m_bForceCacheResult)
+                                   .transformerFactoryCustomizer (m_aTFCustomizer)
                                    .build ();
   }
 
@@ -148,18 +159,12 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
   @Nullable
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
-    final TransformerCustomizerSchXslt2 aTC = createTransformerCustomizer ();
-    // Bypass the shared cache when the customizer has been subclassed (legacy override
-    // hook) — the new Config does not capture custom customizers.
-    final boolean bPlainCustomizer = aTC.getClass () == TransformerCustomizerSchXslt2.class;
-    if (!bPlainCustomizer || !isUseCache ())
-      return SchematronSchXslt2Cache.compileUncached (getResource (), aTC);
-
+    final SchematronSchXslt2Config aConfig = toConfig ();
     try
     {
-      return SchematronSchXslt2Cache.shared ().getOrCompile (toConfig ());
+      return isUseCache () ? SchematronSchXslt2Cache.shared ().getOrCompile (aConfig) : aConfig.compile ();
     }
-    catch (final com.helger.schematron.SchematronException ex)
+    catch (final SchematronException ex)
     {
       throw new IllegalStateException ("Failed to compile Schematron", ex);
     }
