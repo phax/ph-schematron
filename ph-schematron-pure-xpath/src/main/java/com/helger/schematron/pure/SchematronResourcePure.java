@@ -108,24 +108,6 @@ public class SchematronResourcePure extends SchematronResourcePureXPath
     return this;
   }
 
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Override
-  @NonNull
-  public final SchematronResourcePure setTelemetry (final boolean bTelemetry)
-  {
-    super.setTelemetry (bTelemetry);
-    return this;
-  }
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @Override
-  @NonNull
-  public final SchematronResourcePure setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
-  {
-    super.setPerAssertionTelemetry (bPerAssertionTelemetry);
-    return this;
-  }
-
   // === Covariant static factories so `SchematronResourcePure x =
   // SchematronResourcePure.fromFile(f);`
   // chained code keeps compiling. These hide (not override) the parent's static methods. ===

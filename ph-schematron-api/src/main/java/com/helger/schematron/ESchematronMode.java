@@ -40,19 +40,24 @@ import com.helger.base.lang.EnumHelper;
 public enum ESchematronMode implements IHasID <String>
 {
   /** Pure-Java XPath engine. Same as {@link #PURE}; preferred id since v10.0.0. */
-  PURE_XPATH ("pure-xpath", ESchematronEngine.PURE_XPATH),
+  @Deprecated (since = "10.0.0", forRemoval = true)
+  PURE_XPATH("pure-xpath", ESchematronEngine.PURE_XPATH),
 
   /** Pure-Java engine that generates an XSLT stylesheet in Java and runs it via Saxon s9api. */
-  PURE_XSLT ("pure-xslt", ESchematronEngine.PURE_XSLT),
+  @Deprecated (since = "10.0.0", forRemoval = true)
+  PURE_XSLT("pure-xslt", ESchematronEngine.PURE_XSLT),
 
   /** ISO Schematron, SCH version. */
-  SCHEMATRON ("schematron", ESchematronEngine.ISO_SCHEMATRON),
+  @Deprecated (since = "10.0.0", forRemoval = true)
+  SCHEMATRON("schematron", ESchematronEngine.ISO_SCHEMATRON),
 
   /** SchXslt Schematron, SCH version. */
-  SCHXSLT_XSLT2 ("schxslt-xslt2", ESchematronEngine.SCHXSLT1),
+  @Deprecated (since = "10.0.0", forRemoval = true)
+  SCHXSLT_XSLT2("schxslt-xslt2", ESchematronEngine.SCHXSLT1),
 
   /** Apply a pre-built XSLT stylesheet. */
-  XSLT ("xslt", ESchematronEngine.XSLT_PREBUILT);
+  @Deprecated (since = "10.0.0", forRemoval = true)
+  XSLT("xslt", ESchematronEngine.XSLT_PREBUILT);
 
   /** Pure-Java XPath engine (alias of {@link #PURE_XPATH}, kept for compatibility). */
   @Deprecated (forRemoval = true, since = "10.0.0")
@@ -67,6 +72,7 @@ public enum ESchematronMode implements IHasID <String>
     m_eEngine = eEngine;
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = true)
   @Override
   @NonNull
   @Nonempty
@@ -79,6 +85,7 @@ public enum ESchematronMode implements IHasID <String>
    * @return The {@link ESchematronEngine} value this mode corresponds to. Never <code>null</code>.
    * @since 10.0.0
    */
+  @Deprecated (since = "10.0.0", forRemoval = true)
   @NonNull
   public ESchematronEngine toEngine ()
   {
@@ -94,6 +101,7 @@ public enum ESchematronMode implements IHasID <String>
    *        The id to resolve. May be <code>null</code>.
    * @return The matching mode or <code>null</code> if none.
    */
+  @Deprecated (since = "10.0.0", forRemoval = true)
   @Nullable
   public static ESchematronMode getFromIDOrNull (@Nullable final String sID)
   {

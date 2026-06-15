@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -88,7 +89,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   @SuppressWarnings ("deprecation")
   protected SchematronResourceSCH (@NonNull final Builder aBuilder)
   {
-    super (aBuilder.m_aResource);
+    super (aBuilder.m_aResource, aBuilder.m_aTFCustomizer, aBuilder.m_aTelemetry);
     setUseCache (aBuilder.m_bUseCache);
     setLenient (aBuilder.m_bLenient);
     if (aBuilder.m_bEntityResolverSet)
@@ -101,8 +102,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     parameters ().clear ();
     parameters ().putAll (aBuilder.m_aParameters);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
-    setTransformerFactoryCustomizer (aBuilder.m_aTFCustomizer);
-    setTelemetry (aBuilder.m_aTelemetry);
     if (aBuilder.m_aSOVDeterminator != null)
       setOutputValidityDeterminator (aBuilder.m_aSOVDeterminator);
     setValidateSVRL (aBuilder.m_bValidateSVRL);
@@ -184,22 +183,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public final SchematronSCHCache getCache ()
   {
     return m_aCache;
-  }
-
-  /**
-   * Use a specific {@link SchematronSCHCache} instance instead of {@link SchematronSCHCache#shared()
-   * the shared cache}. Useful for per-tenant isolation or bounded eviction.
-   *
-   * @param a
-   *        The cache, or <code>null</code> to fall back to the shared cache.
-   * @since 10.0.0
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setCache (@Nullable final SchematronSCHCache a)
-  {
-    m_aCache = a;
   }
 
   /**
@@ -388,6 +371,19 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromString (@NonNull final String sSchematron)
+  {
+    return builderFromString (sSchematron, StandardCharsets.UTF_8);
+  }
+
+  /**
    * Create a new Schematron resource.
    *
    * @param sSCHPath
@@ -415,8 +411,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.0.4
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead.
-   *             Will remain for backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead. Will
+   *             remain for backward compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -448,8 +444,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    * @param aSCHFile
    *        The Schematron file. May not be <code>null</code>.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -484,8 +480,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        The URL to the Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -546,8 +542,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
    * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will
-   *             remain for backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
+   *             for backward compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -682,6 +678,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     }
 
     /**
+     * Add an XSLT parameter. Latter call wins.
+     *
      * @param sName
      *        The parameter name. May neither be <code>null</code> nor empty.
      * @param aValue

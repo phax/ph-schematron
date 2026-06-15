@@ -20,8 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,8 +71,9 @@ public final class SchematronResourcePureTelemetryTest
   @Test
   public void testAggregateTelemetryEmitsRootSpanAndCounters () throws Exception
   {
-    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.fromString (SCHEMATRON, StandardCharsets.UTF_8);
-    aSch.setTelemetry (true);
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (SCHEMATRON)
+                                                                        .telemetry (true)
+                                                                        .build ();
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
     assertNotNull (aSVRL);
 
@@ -90,14 +89,18 @@ public final class SchematronResourcePureTelemetryTest
 
     // Duration histogram: one entry on this validation, value >= 0
     assertEquals (1, m_aCapture.getHistogramValues (TelemetryValidationHandler.METRIC_VALIDATE_DURATION).size ());
-    assertTrue (m_aCapture.getHistogramValues (TelemetryValidationHandler.METRIC_VALIDATE_DURATION).get (0).doubleValue () >= 0.0);
+    assertTrue (m_aCapture.getHistogramValues (TelemetryValidationHandler.METRIC_VALIDATE_DURATION)
+                          .get (0)
+                          .doubleValue () >= 0.0);
   }
 
   @Test
   public void testPerAssertionTelemetryEmitsOneSpanPerAssertion () throws Exception
   {
-    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.fromString (SCHEMATRON, StandardCharsets.UTF_8);
-    aSch.setTelemetry (true).setPerAssertionTelemetry (true);
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (SCHEMATRON)
+                                                                        .telemetry (true)
+                                                                        .perAssertionTelemetry (true)
+                                                                        .build ();
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 
     // Two failed asserts -> two assertion spans
@@ -118,7 +121,7 @@ public final class SchematronResourcePureTelemetryTest
   public void testTelemetryOffEmitsNothing () throws Exception
   {
     // setTelemetry NOT called -> default off
-    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.fromString (SCHEMATRON, StandardCharsets.UTF_8);
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (SCHEMATRON).build ();
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 
     assertEquals (0, m_aCapture.getSpans ().size ());

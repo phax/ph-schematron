@@ -48,7 +48,7 @@ public final class DocumentationExamples
   public static boolean validateXMLViaPureSchematron (@NonNull final File aSchematronFile, @NonNull final File aXMLFile)
                                                                                                                          throws Exception
   {
-    final ISchematronResource aResPure = SchematronResourcePureXPath.fromFile (aSchematronFile);
+    final ISchematronResource aResPure = SchematronResourcePureXPath.builderFromFile (aSchematronFile).build ();
     if (!aResPure.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
     return aResPure.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();

@@ -32,6 +32,7 @@ import com.helger.schematron.model.PSRule;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * Regression test for the 9.2.0 security review: <code>&lt;let&gt;</code> variable thread-local
@@ -55,11 +56,10 @@ public final class LetVariableLeakTest
                                        "  </iso:pattern>\n" +
                                        "</iso:schema>";
 
-  private static byte [] _xml (final int nItems)
+  private static byte [] _createXmlItems (final int nItems)
   {
     final StringBuilder sb = new StringBuilder ("<root>");
-    for (int i = 0; i < nItems; i++)
-      sb.append ("<item/>");
+    sb.append ("<item/>".repeat (nItems));
     sb.append ("</root>");
     return sb.toString ().getBytes (StandardCharsets.UTF_8);
   }
@@ -73,8 +73,6 @@ public final class LetVariableLeakTest
   @Test
   public void testLetBindingDoesNotLeakAfterBreak () throws Exception
   {
-    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.fromString (SCHEMA, StandardCharsets.UTF_8);
-
     // Run #1: 5 items, handler returns BREAK on the first report.
     final IPSValidationHandler aBreakingHandler = new IPSValidationHandler ()
     {
@@ -91,8 +89,11 @@ public final class LetVariableLeakTest
         return EContinue.BREAK;
       }
     };
-    aSCH.setCustomValidationHandler (aBreakingHandler);
-    final SchematronOutputType aSvrl1 = aSCH.applySchematronValidationToSVRL (com.helger.xml.serialize.read.DOMReader.readXMLDOM (_xml (5)),
+    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromString (SCHEMA)
+                                                                        .customValidationHandler (aBreakingHandler)
+                                                                        .build ();
+
+    final SchematronOutputType aSvrl1 = aSCH.applySchematronValidationToSVRL (DOMReader.readXMLDOM (_createXmlItems (5)),
                                                                               null);
     assertNotNull (aSvrl1);
     assertEquals ("tripped: 5", SVRLHelper.getAllSuccessfulReports (aSvrl1).get (0).getText ());
@@ -100,8 +101,8 @@ public final class LetVariableLeakTest
     // Run #2: 2 items, no break. The cached bound schema is reused, so its XPathLetVariableResolver
     // is the SAME instance, with the SAME ThreadLocal. If run #1 leaked $totalItems=5 onto this
     // thread, the report text below would still read "tripped: 5".
-    final SchematronResourcePureXPath aSCH2 = SchematronResourcePureXPath.fromString (SCHEMA, StandardCharsets.UTF_8);
-    final SchematronOutputType aSvrl2 = aSCH2.applySchematronValidationToSVRL (com.helger.xml.serialize.read.DOMReader.readXMLDOM (_xml (2)),
+    final SchematronResourcePureXPath aSCH2 = SchematronResourcePureXPath.builderFromString (SCHEMA).build ();
+    final SchematronOutputType aSvrl2 = aSCH2.applySchematronValidationToSVRL (DOMReader.readXMLDOM (_createXmlItems (2)),
                                                                                null);
     assertNotNull (aSvrl2);
     assertEquals ("Stale <let> binding leaked from the previous BREAKing validation",

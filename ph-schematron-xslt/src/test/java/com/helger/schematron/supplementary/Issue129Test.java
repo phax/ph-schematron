@@ -31,10 +31,12 @@ import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.write.XMLWriter;
 
+import net.sf.saxon.Configuration;
 import net.sf.saxon.TransformerFactoryImpl;
 import net.sf.saxon.s9api.ExtensionFunction;
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.OccurrenceIndicator;
+import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.SequenceType;
@@ -103,19 +105,19 @@ public final class Issue129Test
 
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new FileSystemResource (aSchematron));
     // Register Saxon extension functions on the underlying Processor just before the validation
     // stylesheet is compiled, via the new transformerFactoryCustomizer hook.
-    aSCH.setTransformerFactoryCustomizer (aTransformerFactory -> {
-      if (aTransformerFactory instanceof TransformerFactoryImpl)
-      {
-        final net.sf.saxon.TransformerFactoryImpl aSaxonTF = (net.sf.saxon.TransformerFactoryImpl) aTransformerFactory;
-        final net.sf.saxon.Configuration saxonConfig = aSaxonTF.getConfiguration ();
-        final net.sf.saxon.s9api.Processor processor = (net.sf.saxon.s9api.Processor) saxonConfig.getProcessor ();
-        processor.registerExtensionFunction (new EF_Test ());
-        processor.registerExtensionFunction (new EF_Mul3 ());
-      }
-    });
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builder (new FileSystemResource (aSchematron))
+                                                            .transformerFactoryCustomizer (aTransformerFactory -> {
+                                                              if (aTransformerFactory instanceof final TransformerFactoryImpl aSaxonTF)
+                                                              {
+                                                                final Configuration saxonConfig = aSaxonTF.getConfiguration ();
+                                                                final Processor processor = (Processor) saxonConfig.getProcessor ();
+                                                                processor.registerExtensionFunction (new EF_Test ());
+                                                                processor.registerExtensionFunction (new EF_Mul3 ());
+                                                              }
+                                                            })
+                                                            .build ();
 
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));

@@ -85,7 +85,24 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    */
   protected boolean m_bAlreadyCompiled;
 
-  public AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
+  protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
+  {
+    this (aSCHResource, null, null);
+  }
+
+  /**
+   * Constructor
+   *
+   * @param aSCHResource
+   *        The resource to read the Schematron rules from.
+   * @param aTFCustomizer
+   *        The optional TransformerFactory customizer - may be <code>null</code>.
+   * @param aTelemetry
+   *        The telemetry callback, or <code>null</code> to disable telemetry.
+   */
+  protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource,
+                                                 @Nullable final Consumer <TransformerFactory> aTFCustomizer,
+                                                 @Nullable final ISchematronTemplateTelemetry aTelemetry)
   {
     super (aSCHResource);
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
@@ -94,6 +111,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Using '" + sBaseURL + "' as base URL for SCH resource " + aSCHResource);
     setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (sBaseURL));
+    m_aTFCustomizer = aTFCustomizer;
+    m_aTelemetry = aTelemetry;
   }
 
   /**
@@ -178,36 +197,13 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   /**
    * @return The {@link TransformerFactory} customizer applied to the final compile-step transformer
    *         factory just before the validation stylesheet is compiled, or <code>null</code> if
-   *         none. See {@link #setTransformerFactoryCustomizer(Consumer)}.
+   *         none.
    * @since 10.0.0
    */
   @Nullable
   public final Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
   {
     return m_aTFCustomizer;
-  }
-
-  /**
-   * Set a {@link TransformerFactory} customizer applied to the final compile-step transformer
-   * factory, just before the validation stylesheet is compiled. Use this to register Saxon
-   * extension functions on the underlying {@code Processor}. Setting this disables caching unless
-   * the engine-specific <code>setForceCacheResult(boolean)</code> is also true.
-   *
-   * @param a
-   *        The customizer, or <code>null</code> to clear.
-   * @return this
-   * @since 10.0.0
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).transformerFactoryCustomizer(...).build()</code>).
-   *             Will remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
-  {
-    checkNotCompiledYet ();
-    m_aTFCustomizer = a;
-    return thisAsT ();
   }
 
   /**
@@ -219,30 +215,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public final ISchematronTemplateTelemetry getTelemetry ()
   {
     return m_aTelemetry;
-  }
-
-  /**
-   * Set the per-template telemetry callback. When non-<code>null</code>, the validation stylesheet
-   * is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache entry) and a
-   * {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is installed on each apply
-   * call.
-   *
-   * @param a
-   *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
-   *        <code>null</code>.
-   * @return this
-   * @since 10.0.0
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).telemetry(...).build()</code>). Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setTelemetry (@Nullable final ISchematronTemplateTelemetry a)
-  {
-    checkNotCompiledYet ();
-    m_aTelemetry = a;
-    return thisAsT ();
   }
 
   /**
@@ -352,7 +324,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation (@NonNull Node aXMLNode, @Nullable String sBaseURI) throws Exception
+  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                            throws Exception
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 

@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.URIResolver;
@@ -546,7 +547,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
                                                                        .phase (m_sPhase)
                                                                        .xsltVersion (m_eXsltVersion)
                                                                        .processor (m_aProcessor)
-                                                                       .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
+                                                                       .errorHandler (m_aErrorHandler != null
+                                                                                                              ? m_aErrorHandler
                                                                                                               : new LoggingPSErrorHandler ())
                                                                        .entityResolver (getEntityResolver ())
                                                                        .uriResolver (m_aURIResolver)
@@ -824,6 +826,21 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>.
+   * @param aCharset
+   *        The charset used to encode the string to bytes. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromString (@NonNull final String sSchematron)
+  {
+    return builderFromString (sSchematron, StandardCharsets.UTF_8);
+  }
+
+  /**
    * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
    *             backward compatibility.
    */
@@ -846,8 +863,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -868,8 +885,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -902,8 +919,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will
-   *             remain for backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
+   *             for backward compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -1086,8 +1103,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
     /**
      * @param b
-     *        <code>true</code> to force cache use even when custom URI/Error hooks are set.
-     *        Default is {@link #DEFAULT_FORCE_CACHE_RESULT}.
+     *        <code>true</code> to force cache use even when custom URI/Error hooks are set. Default
+     *        is {@link #DEFAULT_FORCE_CACHE_RESULT}.
      * @return this for chaining
      */
     @NonNull

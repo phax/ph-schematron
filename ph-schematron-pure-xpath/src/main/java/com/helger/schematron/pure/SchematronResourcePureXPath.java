@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -280,36 +281,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Enable or disable aggregate-level runtime telemetry. When enabled, every call to
-   * {@code applySchematronValidationToSVRL} is wrapped in a
-   * {@link TelemetryValidationHandler#SPAN_VALIDATE} span, and a {@link TelemetryValidationHandler}
-   * is chained into the custom validation handler so it emits counters for failed asserts, fired
-   * reports, fired rules and active patterns as well as a {@code schematron.validate.duration}
-   * histogram entry on completion. Setup is zero-cost when no
-   * {@link com.helger.telemetry.ITelemetryTracerSPI} /
-   * {@link com.helger.telemetry.ITelemetryMeterSPI} is registered &mdash; ph-telemetry degrades to
-   * no-op silently.
-   * <p>
-   * Can only be set before the Schematron is bound.
-   *
-   * @param bTelemetry
-   *        <code>true</code> to enable, <code>false</code> to disable.
-   * @return this
-   * @since 10.0.0
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setTelemetry (final boolean bTelemetry)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_bTelemetry = bTelemetry;
-    return this;
-  }
-
-  /**
    * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
    *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
    *         <code>true</code>. Default is <code>false</code>.
@@ -318,33 +289,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   public final boolean isPerAssertionTelemetry ()
   {
     return m_bPerAssertionTelemetry;
-  }
-
-  /**
-   * Enable per-assertion telemetry spans. Each assert / report evaluation produces an extra
-   * {@link TelemetryValidationHandler#SPAN_ASSERTION} child span carrying attributes
-   * {@code schematron.assert.test}, {@code schematron.assert.kind},
-   * {@code schematron.assert.failed}, {@code schematron.rule.context} and others. Significant
-   * runtime overhead &mdash; only enable for diagnostic deep-dives. Has no effect when
-   * {@link #isTelemetry()} is <code>false</code>.
-   * <p>
-   * Can only be set before the Schematron is bound.
-   *
-   * @param bPerAssertionTelemetry
-   *        <code>true</code> to enable.
-   * @return this
-   * @since 10.0.0
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_bPerAssertionTelemetry = bPerAssertionTelemetry;
-    return this;
   }
 
   /**
@@ -827,6 +771,19 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromString (@NonNull final String sSchematron)
+  {
+    return builderFromString (sSchematron, StandardCharsets.UTF_8);
+  }
+
+  /**
    * @param aSchematron
    *        The Schematron model to be used. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the serialized domain model. Never
@@ -865,8 +822,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    *        <code>null</code>.
    * @return Never <code>null</code>.
    * @since 6.0.4
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead.
-   *             Will remain for backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead. Will
+   *             remain for backward compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -898,8 +855,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    * @param aSCHFile
    *        The file system path to the Schematron rules.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -932,8 +889,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    * @param aSCHURL
    *        The URL to the Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -992,8 +949,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    * @param aCharset
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will
-   *             remain for backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
+   *             for backward compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull

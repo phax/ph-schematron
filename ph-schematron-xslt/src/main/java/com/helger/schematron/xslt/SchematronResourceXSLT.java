@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -44,8 +45,8 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.URLResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
-import com.helger.schematron.CSchematron;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.CSchematron;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
@@ -83,7 +84,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   @SuppressWarnings ("deprecation")
   protected SchematronResourceXSLT (@NonNull final Builder aBuilder)
   {
-    super (aBuilder.m_aResource);
+    super (aBuilder.m_aResource, aBuilder.m_aTFCustomizer, aBuilder.m_aTelemetry);
     setUseCache (aBuilder.m_bUseCache);
     setLenient (aBuilder.m_bLenient);
     if (aBuilder.m_bEntityResolverSet)
@@ -93,8 +94,6 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
       setURIResolver (aBuilder.m_aURIResolver);
     parameters ().clear ();
     parameters ().putAll (aBuilder.m_aParameters);
-    setTransformerFactoryCustomizer (aBuilder.m_aTFCustomizer);
-    setTelemetry (aBuilder.m_aTelemetry);
     if (aBuilder.m_aSOVDeterminator != null)
       setOutputValidityDeterminator (aBuilder.m_aSOVDeterminator);
     setValidateSVRL (aBuilder.m_bValidateSVRL);
@@ -110,22 +109,6 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   public final SchematronXSLTCache getCache ()
   {
     return m_aCache;
-  }
-
-  /**
-   * Use a specific {@link SchematronXSLTCache} instance instead of {@link SchematronXSLTCache#shared()
-   * the shared cache}. Useful for per-tenant isolation or bounded eviction.
-   *
-   * @param a
-   *        The cache, or <code>null</code> to fall back to the shared cache.
-   * @since 10.0.0
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setCache (@Nullable final SchematronXSLTCache a)
-  {
-    m_aCache = a;
   }
 
   /**
@@ -308,11 +291,24 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   }
 
   /**
+   * @param sXSLT
+   *        The String representing the XSLT Schematron. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the XSLT from the encoded string bytes. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromString (@NonNull final String sXSLT)
+  {
+    return builderFromString (sXSLT, StandardCharsets.UTF_8);
+  }
+
+  /**
    * Create a new {@link SchematronResourceXSLT} resource.
    *
    * @param sXSLTPath
-   *        The classpath relative path to the Schematron XSLT file. May neither
-   *        be <code>null</code> nor empty.
+   *        The classpath relative path to the Schematron XSLT file. May neither be
+   *        <code>null</code> nor empty.
    * @return Never <code>null</code>.
    * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
    *             backward compatibility.
@@ -328,11 +324,11 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * Create a new {@link SchematronResourceXSLT} resource.
    *
    * @param sXSLTPath
-   *        The classpath relative path to the Schematron XSLT file. May neither
-   *        be <code>null</code> nor empty.
+   *        The classpath relative path to the Schematron XSLT file. May neither be
+   *        <code>null</code> nor empty.
    * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May
-   *        be <code>null</code>.
+   *        The class loader to be used to retrieve the classpath resource. May be
+   *        <code>null</code>.
    * @return Never <code>null</code>.
    * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead. Will
    *             remain for backward compatibility.
@@ -349,8 +345,8 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * Create a new {@link SchematronResourceXSLT} resource.
    *
    * @param sXSLTPath
-   *        The file system path to the Schematron XSLT file. May neither be
-   *        <code>null</code> nor empty.
+   *        The file system path to the Schematron XSLT file. May neither be <code>null</code> nor
+   *        empty.
    * @return Never <code>null</code>.
    * @deprecated since 10.0.0 — use {@link #builderFromFile(String)} instead. Will remain for
    *             backward compatibility.
@@ -366,11 +362,10 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
    * Create a new {@link SchematronResourceXSLT} resource.
    *
    * @param aXSLTFile
-   *        The {@link File} of the Schematron XSLT file. May not be
-   *        <code>null</code>.
+   *        The {@link File} of the Schematron XSLT file. May not be <code>null</code>.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -380,12 +375,10 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   }
 
   /**
-   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
-   * provided at a URL
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided at a URL
    *
    * @param sXSLTURL
-   *        The URL to the XSLT Schematron rules. May neither be
-   *        <code>null</code> nor empty.
+   *        The URL to the XSLT Schematron rules. May neither be <code>null</code> nor empty.
    * @return Never <code>null</code>.
    * @throws MalformedURLException
    *         In case an invalid URL is provided
@@ -400,14 +393,13 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   }
 
   /**
-   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
-   * provided at a URL
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided at a URL
    *
    * @param aXSLTURL
    *        The URL to the XSLT Schematron rules. May not be <code>null</code>.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for
-   *             backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
+   *             compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
@@ -417,15 +409,14 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   }
 
   /**
-   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
-   * provided by an arbitrary {@link InputStream}.<br>
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided by an arbitrary
+   * {@link InputStream}.<br>
    *
    * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be
-   *        <code>null</code> nor empty.
+   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
    * @param aXSLTIS
-   *        The {@link InputStream} to read the XSLT Schematron rules from. May
-   *        not be <code>null</code>.
+   *        The {@link InputStream} to read the XSLT Schematron rules from. May not be
+   *        <code>null</code>.
    * @return Never <code>null</code>.
    * @deprecated since 10.0.0 — use {@link #builderFromInputStream(String, InputStream)} instead.
    *             Will remain for backward compatibility.
@@ -439,12 +430,11 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   }
 
   /**
-   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
-   * provided by an arbitrary byte array.<br>
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided by an arbitrary
+   * byte array.<br>
    *
    * @param aXSLT
-   *        The byte array representing the XSLT Schematron. May not be
-   *        <code>null</code>.
+   *        The byte array representing the XSLT Schematron. May not be <code>null</code>.
    * @return Never <code>null</code>.
    * @deprecated since 10.0.0 — use {@link #builderFromByteArray(byte[])} instead. Will remain for
    *             backward compatibility.
@@ -457,17 +447,16 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   }
 
   /**
-   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules
-   * provided by an arbitrary String.<br>
+   * Create a new {@link SchematronResourceXSLT} from XSLT Schematron rules provided by an arbitrary
+   * String.<br>
    *
    * @param sXSLT
-   *        The String representing the XSLT Schematron. May not be
-   *        <code>null</code>.
+   *        The String representing the XSLT Schematron. May not be <code>null</code>.
    * @param aCharset
    *        The charset to be used to convert the String to a byte array.
    * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will
-   *             remain for backward compatibility.
+   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
+   *             for backward compatibility.
    */
   @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
