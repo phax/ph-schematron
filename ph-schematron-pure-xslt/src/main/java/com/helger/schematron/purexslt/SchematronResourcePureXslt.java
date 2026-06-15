@@ -32,10 +32,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.CGlobal;
+import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.functional.IThrowingSupplier;
 import com.helger.base.state.EValidity;
@@ -124,6 +126,33 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
+   * Builder-based constructor. Applies all configurable state from the supplied {@link Builder} to
+   * the newly-constructed resource. Invoked by {@link Builder#build()}.
+   *
+   * @param aBuilder
+   *        The configured builder. May not be <code>null</code>.
+   * @since 10.0.0
+   */
+  @SuppressWarnings ("deprecation")
+  protected SchematronResourcePureXslt (@NonNull final Builder aBuilder)
+  {
+    super (aBuilder.m_aResource);
+    setUseCache (aBuilder.m_bUseCache);
+    setLenient (aBuilder.m_bLenient);
+    if (aBuilder.m_bEntityResolverSet)
+      internalSetEntityResolver (aBuilder.m_aEntityResolver);
+    m_sPhase = aBuilder.m_sPhase;
+    m_aErrorHandler = aBuilder.m_aErrorHandler;
+    m_aProcessor = aBuilder.m_aProcessor;
+    m_aURIResolver = aBuilder.m_aURIResolver;
+    m_aErrorListener = aBuilder.m_aErrorListener;
+    m_eXsltVersion = aBuilder.m_eXsltVersion;
+    m_bTelemetry = aBuilder.m_bTelemetry;
+    m_bPerAssertionTelemetry = aBuilder.m_bPerAssertionTelemetry;
+    m_bForceCacheResult = aBuilder.m_bForceCacheResult;
+  }
+
+  /**
    * @return The phase to be used. May be <code>null</code>.
    */
   @Nullable
@@ -138,7 +167,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param sPhase
    *        The name of the phase to use. May be <code>null</code> which means all phases.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setPhase (@Nullable final String sPhase)
   {
@@ -163,7 +195,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param aErrorHandler
    *        The error handler. May not be <code>null</code>.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setErrorHandler (@NonNull final IPSErrorHandler aErrorHandler)
   {
@@ -213,7 +248,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param aProcessor
    *        The processor. May not be <code>null</code>.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setProcessor (@NonNull final Processor aProcessor)
   {
@@ -244,7 +282,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param aURIResolver
    *        The resolver. May be <code>null</code> to clear.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setURIResolver (@Nullable final URIResolver aURIResolver)
   {
@@ -274,7 +315,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param aErrorListener
    *        The listener. May be <code>null</code> to clear.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setErrorListener (@Nullable final ErrorListener aErrorListener)
   {
@@ -303,7 +347,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param eVersion
    *        The version. May not be <code>null</code>.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setXsltVersion (@NonNull final EPureXsltVersion eVersion)
   {
@@ -338,7 +385,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param bTelemetry
    *        <code>true</code> to enable.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setTelemetry (final boolean bTelemetry)
   {
@@ -368,7 +418,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param bPerAssertionTelemetry
    *        <code>true</code> to enable.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
   {
@@ -400,7 +453,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @param bForceCacheResult
    *        <code>true</code> to force cache use.
    * @return this
+   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final SchematronResourcePureXslt setForceCacheResult (final boolean bForceCacheResult)
   {
@@ -623,38 +679,210 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     }
   }
 
-  // --- factory methods ---
+  // --- Builder factories ---
 
+  /**
+   * @param aResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @return A new {@link Builder} that produces a configured {@link SchematronResourcePureXslt}.
+   *         Never <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builder (@NonNull final IReadableResource aResource)
+  {
+    return new Builder (aResource);
+  }
+
+  /**
+   * @param sSCHPath
+   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
+   *        empty.
+   * @return A new {@link Builder} reading the Schematron from the default classloader. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromClassPath (@NonNull @Nonempty final String sSCHPath)
+  {
+    return new Builder (new ClassPathResource (sSCHPath));
+  }
+
+  /**
+   * @param sSCHPath
+   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
+   *        empty.
+   * @param aClassLoader
+   *        The class loader to be used. May be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the given classloader. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromClassPath (@NonNull @Nonempty final String sSCHPath,
+                                              @Nullable final ClassLoader aClassLoader)
+  {
+    return new Builder (new ClassPathResource (sSCHPath, aClassLoader));
+  }
+
+  /**
+   * @param sSCHPath
+   *        The file system path to the Schematron file. May neither be <code>null</code> nor empty.
+   * @return A new {@link Builder} reading the Schematron from the file system. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromFile (@NonNull @Nonempty final String sSCHPath)
+  {
+    return new Builder (new FileSystemResource (sSCHPath));
+  }
+
+  /**
+   * @param aSCHFile
+   *        The Schematron file. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the given file. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromFile (@NonNull final File aSCHFile)
+  {
+    return new Builder (new FileSystemResource (aSCHFile));
+  }
+
+  /**
+   * @param sSCHURL
+   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
+   * @return A new {@link Builder} reading the Schematron from the given URL. Never
+   *         <code>null</code>.
+   * @throws MalformedURLException
+   *         In case an invalid URL is provided
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
+  {
+    return new Builder (new URLResource (sSCHURL));
+  }
+
+  /**
+   * @param aSCHURL
+   *        The URL to the Schematron rules. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the given URL. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromURL (@NonNull final URL aSCHURL)
+  {
+    return new Builder (new URLResource (aSCHURL));
+  }
+
+  /**
+   * @param sResourceID
+   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
+   * @param aSchematronIS
+   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the given input stream. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromInputStream (@NonNull @Nonempty final String sResourceID,
+                                                @NonNull final InputStream aSchematronIS)
+  {
+    return new Builder (new ReadableResourceInputStream (sResourceID, aSchematronIS));
+  }
+
+  /**
+   * @param aSchematron
+   *        The byte array representing the Schematron. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the given byte array. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromByteArray (@NonNull final byte [] aSchematron)
+  {
+    return new Builder (new ReadableResourceByteArray (aSchematron));
+  }
+
+  /**
+   * @param sSchematron
+   *        The String representing the Schematron. May not be <code>null</code>.
+   * @param aCharset
+   *        The charset used to encode the string to bytes. May not be <code>null</code>.
+   * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static Builder builderFromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
+  {
+    return builderFromByteArray (sSchematron.getBytes (aCharset));
+  }
+
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
+   *             backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromClassPath (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePureXslt (new ClassPathResource (sSCHPath));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromFile(String)} instead. Will remain for
+   *             backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromFile (@NonNull @Nonempty final String sSCHPath)
   {
     return new SchematronResourcePureXslt (new FileSystemResource (sSCHPath));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for
+   *             backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromFile (@NonNull final File aSCHFile)
   {
     return new SchematronResourcePureXslt (new FileSystemResource (aSCHFile));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromURL(String)} instead. Will remain for
+   *             backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
   {
     return new SchematronResourcePureXslt (new URLResource (sSCHURL));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for
+   *             backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromURL (@NonNull final URL aSCHURL)
   {
     return new SchematronResourcePureXslt (new URLResource (aSCHURL));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromInputStream(String, InputStream)} instead.
+   *             Will remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromInputStream (@NonNull @Nonempty final String sResourceID,
                                                             @NonNull final InputStream aSchematronIS)
@@ -662,16 +890,221 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     return new SchematronResourcePureXslt (new ReadableResourceInputStream (sResourceID, aSchematronIS));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromByteArray(byte[])} instead. Will remain for
+   *             backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromByteArray (@NonNull final byte [] aSchematron)
   {
     return new SchematronResourcePureXslt (new ReadableResourceByteArray (aSchematron));
   }
 
+  /**
+   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will
+   *             remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public static SchematronResourcePureXslt fromString (@NonNull final String sSchematron,
                                                        @NonNull final Charset aCharset)
   {
     return fromByteArray (sSchematron.getBytes (aCharset));
+  }
+
+  // === Builder ===
+
+  /**
+   * Fluent builder for {@link SchematronResourcePureXslt}. Not thread-safe.
+   *
+   * @since 10.0.0
+   */
+  @NotThreadSafe
+  public static final class Builder implements IBuilder <SchematronResourcePureXslt>
+  {
+    private final IReadableResource m_aResource;
+    private boolean m_bUseCache = AbstractSchematronResource.DEFAULT_USE_CACHE;
+    private boolean m_bLenient = com.helger.schematron.CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+    private EntityResolver m_aEntityResolver;
+    private boolean m_bEntityResolverSet;
+    private String m_sPhase;
+    private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
+    private Processor m_aProcessor = new Processor (false);
+    private URIResolver m_aURIResolver;
+    private ErrorListener m_aErrorListener;
+    private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
+    private boolean m_bTelemetry;
+    private boolean m_bPerAssertionTelemetry;
+    private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
+
+    Builder (@NonNull final IReadableResource aResource)
+    {
+      ValueEnforcer.notNull (aResource, "Resource");
+      m_aResource = aResource;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to participate in the compilation cache, <code>false</code> to
+     *        bypass it. Default is {@link AbstractSchematronResource#DEFAULT_USE_CACHE}.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder useCache (final boolean b)
+    {
+      m_bUseCache = b;
+      return this;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to allow deprecated Schematron namespaces, <code>false</code> for
+     *        strict mode.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder lenient (final boolean b)
+    {
+      m_bLenient = b;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The XML entity resolver, or <code>null</code> to disable entity resolution. Replaces
+     *        the resource-derived default.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder entityResolver (@Nullable final EntityResolver a)
+    {
+      m_aEntityResolver = a;
+      m_bEntityResolverSet = true;
+      return this;
+    }
+
+    /**
+     * @param s
+     *        The Schematron phase to use, or <code>null</code> for the default phase.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder phase (@Nullable final String s)
+    {
+      m_sPhase = s;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The Schematron error handler. May not be <code>null</code>.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder errorHandler (@NonNull final IPSErrorHandler a)
+    {
+      ValueEnforcer.notNull (a, "ErrorHandler");
+      m_aErrorHandler = a;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The Saxon {@link Processor}. May not be <code>null</code>.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder processor (@NonNull final Processor a)
+    {
+      ValueEnforcer.notNull (a, "Processor");
+      m_aProcessor = a;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The URI resolver, or <code>null</code> for the engine default.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder uriResolver (@Nullable final URIResolver a)
+    {
+      m_aURIResolver = a;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The JAXP error listener, or <code>null</code> for the engine default.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder errorListener (@Nullable final ErrorListener a)
+    {
+      m_aErrorListener = a;
+      return this;
+    }
+
+    /**
+     * @param e
+     *        The XSLT version for the generated stylesheet. May not be <code>null</code>.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder xsltVersion (@NonNull final EPureXsltVersion e)
+    {
+      ValueEnforcer.notNull (e, "XsltVersion");
+      m_eXsltVersion = e;
+      return this;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to enable aggregate-level telemetry.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder telemetry (final boolean b)
+    {
+      m_bTelemetry = b;
+      return this;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to enable per-assertion telemetry spans (only meaningful when
+     *        {@link #telemetry(boolean)} is also <code>true</code>).
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder perAssertionTelemetry (final boolean b)
+    {
+      m_bPerAssertionTelemetry = b;
+      return this;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to force cache use even when custom URI/Error hooks are set.
+     *        Default is {@link #DEFAULT_FORCE_CACHE_RESULT}.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder forceCacheResult (final boolean b)
+    {
+      m_bForceCacheResult = b;
+      return this;
+    }
+
+    /**
+     * @return A new {@link SchematronResourcePureXslt} configured with the values of this builder.
+     *         Never <code>null</code>.
+     */
+    @NonNull
+    public SchematronResourcePureXslt build ()
+    {
+      return new SchematronResourcePureXslt (this);
+    }
   }
 }

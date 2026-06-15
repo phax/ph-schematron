@@ -128,6 +128,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aCustomErrorListener;
   }
 
+  /**
+   * @param aCustomErrorListener
+   *        The error listener to use, or <code>null</code> for the engine default.
+   * @return this
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).errorListener(...).build()</code>). Will
+   *             remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
   {
@@ -142,6 +151,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aCustomURIResolver;
   }
 
+  /**
+   * @param aCustomURIResolver
+   *        The URI resolver to use, or <code>null</code> for the engine default.
+   * @return this
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).uriResolver(...).build()</code>). Will
+   *             remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
   {
@@ -179,7 +197,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *        The customizer, or <code>null</code> to clear.
    * @return this
    * @since 10.0.0
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).transformerFactoryCustomizer(...).build()</code>).
+   *             Will remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
   {
@@ -210,7 +232,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *        <code>null</code>.
    * @return this
    * @since 10.0.0
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).telemetry(...).build()</code>). Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setTelemetry (@Nullable final ISchematronTemplateTelemetry a)
   {
@@ -226,7 +252,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *        The entity resolver to set. May be <code>null</code>.
    * @return this
    * @since 4.2.3
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).entityResolver(...).build()</code>). Will
+   *             remain for backward compatibility.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setEntityResolver (@Nullable final EntityResolver aEntityResolver)
   {
@@ -249,6 +279,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aSOVDeterminator;
   }
 
+  /**
+   * @param aSOVDeterminator
+   *        The validity determinator to use. May not be <code>null</code>.
+   * @return this
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).outputValidityDeterminator(...).build()</code>).
+   *             Will remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setOutputValidityDeterminator (@NonNull final ISchematronOutputValidityDeterminator aSOVDeterminator)
   {
@@ -262,6 +301,16 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_bValidateSVRL;
   }
 
+  /**
+   * @param bValidateSVRL
+   *        <code>true</code> to validate the produced SVRL against its XSD, <code>false</code> to
+   *        skip validation.
+   * @return this
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).validateSVRL(false).build()</code>). Will
+   *             remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   @NonNull
   public final IMPLTYPE setValidateSVRL (final boolean bValidateSVRL)
   {

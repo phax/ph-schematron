@@ -94,6 +94,15 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return m_bUseCache;
   }
 
+  /**
+   * @param bUseCache
+   *        <code>true</code> to participate in the compilation cache, <code>false</code> to bypass
+   *        it.
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).useCache(false).build()</code>). Will
+   *             remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public final void setUseCache (final boolean bUseCache)
   {
     m_bUseCache = bUseCache;
@@ -104,6 +113,15 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return m_bLenient;
   }
 
+  /**
+   * @param bLenient
+   *        <code>true</code> to allow deprecated Schematron namespaces, <code>false</code> for
+   *        strict mode.
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).lenient(true).build()</code>). Will remain
+   *             for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public final void setLenient (final boolean bLenient)
   {
     m_bLenient = bLenient;
