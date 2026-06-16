@@ -41,7 +41,7 @@ public final class Issue169XsltTest
   public static void validateAndProduceSVRL (@NonNull final IReadableResource aSchematron,
                                              @NonNull final IReadableResource aXML) throws Exception
   {
-    final SchematronResourceXSLT aSCH = new SchematronResourceXSLT (aSchematron);
+    final SchematronResourceXSLT aSCH = SchematronResourceXSLT.builder (aSchematron).build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (aXML);

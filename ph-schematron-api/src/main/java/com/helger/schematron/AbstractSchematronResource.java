@@ -54,27 +54,47 @@ import com.helger.xml.transform.TransformSourceFactory;
 public abstract class AbstractSchematronResource implements ISchematronResource
 {
   public static final boolean DEFAULT_USE_CACHE = true;
+  public static final boolean DEFAULT_LENIENT = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronResource.class);
 
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
-  private boolean m_bUseCache = DEFAULT_USE_CACHE;
-  private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+  private boolean m_bUseCache;
+  private boolean m_bLenient;
   private EntityResolver m_aEntityResolver;
+
+  protected AbstractSchematronResource (@NonNull final IReadableResource aResource)
+  {
+    this (aResource, DEFAULT_USE_CACHE, DEFAULT_LENIENT, null);
+  }
 
   /**
    * Constructor
    *
    * @param aResource
    *        The Schematron resource. May not be <code>null</code>.
+   * @param bUseCache
+   *        <code>true</code> to participate in the compilation cache, <code>false</code> to bypass
+   *        it.
+   * @param bLenient
+   *        <code>true</code> to allow deprecated Schematron namespaces, <code>false</code> for
+   *        strict mode.
+   * @param aEntityResolver
+   *        A custom entity resolver. May be <code>null</code> in which case a custom resolver is
+   *        used.
    */
-  protected AbstractSchematronResource (@NonNull final IReadableResource aResource)
+  protected AbstractSchematronResource (@NonNull final IReadableResource aResource,
+                                        final boolean bUseCache,
+                                        final boolean bLenient,
+                                        @Nullable final EntityResolver aEntityResolver)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
+    m_bUseCache = bUseCache;
+    m_bLenient = bLenient;
     // Set a default entity resolver
-    m_aEntityResolver = DefaultEntityResolver.createOnDemand (aResource);
+    m_aEntityResolver = aEntityResolver != null ? aEntityResolver : DefaultEntityResolver.createOnDemand (aResource);
   }
 
   @NonNull
@@ -166,6 +186,10 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    * Helper class to handle DOM Document and base URI for reference
    *
    * @author Philip Helger
+   * @param doc
+   *        DOM Document. Never <code>null</code>.
+   * @param baseURI
+   *        The base URI of the document. May be <code>null</code>.
    */
   public static record NodeAndBaseURI (@NonNull Document doc, @Nullable String baseURI)
   {}
@@ -185,12 +209,14 @@ public abstract class AbstractSchematronResource implements ISchematronResource
       // Fall through
       // Happens e.g. for ResourceStreamSource with non-existing resources
     }
+
     if (aIS == null)
     {
       // Resource not found
       LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
       return null;
     }
+
     final Document aDoc = DOMReader.readXMLDOM (aIS, internalCreateDOMReaderSettings ());
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");

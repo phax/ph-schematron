@@ -91,9 +91,10 @@ public class BenchmarkIsValidSchematron
   {
     for (final IReadableResource aRes : m_aSchemas)
     {
-      final SchematronResourcePureXPath r = new SchematronResourcePureXPath (aRes,
-                                                                             CSchematron.PHASE_ALL,
-                                                                             new DoNothingPSErrorHandler ());
+      final SchematronResourcePureXPath r = SchematronResourcePureXPath.builder (aRes)
+                                                                       .phase (CSchematron.PHASE_ALL)
+                                                                       .errorHandler (new DoNothingPSErrorHandler ())
+                                                                       .build ();
       bh.consume (r.isValidSchematron ());
     }
   }

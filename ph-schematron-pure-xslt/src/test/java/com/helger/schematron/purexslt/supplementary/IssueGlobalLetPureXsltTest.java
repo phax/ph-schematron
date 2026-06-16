@@ -52,7 +52,7 @@ public final class IssueGlobalLetPureXsltTest
   {
     final IReadableResource aSchRes = new FileSystemResource (aSchematron.getAbsoluteFile ());
     final IReadableResource aXMLRes = new FileSystemResource (aXML.getAbsoluteFile ());
-    final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (aSchRes);
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builder (aSchRes).build ();
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (aXMLRes);
     assertNotNull (aSVRL);
     if (false)

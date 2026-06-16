@@ -45,7 +45,7 @@ public final class IssueGC5Test
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final SchematronResourcePureXPath pure = new SchematronResourcePureXPath (aSchematron);
+    final SchematronResourcePureXPath pure = SchematronResourcePureXPath.builder (aSchematron).build ();
     // final FileOutputStream fos = new FileOutputStream (result);
     // final Result res = new StreamResult (fos);
 

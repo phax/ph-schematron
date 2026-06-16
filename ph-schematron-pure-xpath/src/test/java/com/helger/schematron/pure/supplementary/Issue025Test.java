@@ -35,7 +35,9 @@ public final class Issue025Test
     final IReadableResource aSCH = new ClassPathResource ("external/test-sch/xfront/example05/check-classifications.sch");
     final IReadableResource aXML = new ClassPathResource ("external/test-sch/xfront/example05/valid-document.xml");
 
-    final SchematronOutputType aSOT = new SchematronResourcePureXPath (aSCH).applySchematronValidationToSVRL (aXML);
+    final SchematronOutputType aSOT = SchematronResourcePureXPath.builder (aSCH)
+                                                                 .build ()
+                                                                 .applySchematronValidationToSVRL (aXML);
     assertNotNull (aSOT);
     assertTrue (SVRLHelper.getAllFailedAssertions (aSOT).isEmpty ());
   }
@@ -46,7 +48,9 @@ public final class Issue025Test
     final IReadableResource aSCH = new ClassPathResource ("external/test-sch/xfront/example05/check-classifications.sch");
     final IReadableResource aXML = new ClassPathResource ("external/test-sch/xfront/example05/invalid-document.xml");
 
-    final SchematronOutputType aSOT = new SchematronResourcePureXPath (aSCH).applySchematronValidationToSVRL (aXML);
+    final SchematronOutputType aSOT = SchematronResourcePureXPath.builder (aSCH)
+                                                                 .build ()
+                                                                 .applySchematronValidationToSVRL (aXML);
     assertNotNull (aSOT);
     assertTrue (SVRLHelper.getAllFailedAssertions (aSOT).isNotEmpty ());
   }

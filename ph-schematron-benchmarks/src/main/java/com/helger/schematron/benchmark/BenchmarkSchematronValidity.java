@@ -76,14 +76,14 @@ public class BenchmarkSchematronValidity
   @Benchmark
   public void pureXPath (final Blackhole bh) throws Exception
   {
-    final SchematronResourcePureXPath r = new SchematronResourcePureXPath (VALID_SCHEMATRON);
+    final SchematronResourcePureXPath r = SchematronResourcePureXPath.builder (VALID_SCHEMATRON).build ();
     bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }
 
   @Benchmark
   public void pureSaxon (final Blackhole bh) throws Exception
   {
-    final SchematronResourcePureXslt r = new SchematronResourcePureXslt (VALID_SCHEMATRON);
+    final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (VALID_SCHEMATRON).build ();
     bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }
 }

@@ -73,6 +73,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourceSchXslt2 (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
@@ -86,29 +87,22 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
    *        The configured builder. May not be <code>null</code>.
    * @since 10.0.0
    */
-  @SuppressWarnings ("deprecation")
   protected SchematronResourceSchXslt2 (@NonNull final Builder aBuilder)
   {
     super (aBuilder.m_aResource,
+           aBuilder.m_bUseCache,
+           aBuilder.m_bLenient,
+           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null,
            aBuilder.m_aErrorListener,
            aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
            aBuilder.m_aTFCustomizer,
-           aBuilder.m_aTelemetry);
-    setUseCache (aBuilder.m_bUseCache);
-    setLenient (aBuilder.m_bLenient);
-    if (aBuilder.m_bEntityResolverSet)
-      setEntityResolver (aBuilder.m_aEntityResolver);
+           aBuilder.m_aTelemetry,
+           aBuilder.m_aSOVDeterminator,
+           aBuilder.m_bValidateSVRL);
     m_sPhase = aBuilder.m_sPhase;
     m_sLanguageCode = aBuilder.m_sLanguageCode;
-    setErrorListener (aBuilder.m_aErrorListener);
-    if (aBuilder.m_bURIResolverSet)
-      setURIResolver (aBuilder.m_aURIResolver);
-    parameters ().clear ();
-    parameters ().putAll (aBuilder.m_aParameters);
+    parameters ().setAll (aBuilder.m_aParameters);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
-    if (aBuilder.m_aSOVDeterminator != null)
-      setOutputValidityDeterminator (aBuilder.m_aSOVDeterminator);
-    setValidateSVRL (aBuilder.m_bValidateSVRL);
     m_aCache = aBuilder.m_aCache;
   }
 

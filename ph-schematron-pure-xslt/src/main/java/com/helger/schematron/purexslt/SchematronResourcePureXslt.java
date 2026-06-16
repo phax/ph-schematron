@@ -121,6 +121,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   private PSSchema m_aSchema;
   private XsltExecutable m_aCompiledXslt;
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePureXslt (@NonNull final IReadableResource aResource)
   {
     super (aResource);

@@ -74,6 +74,7 @@ public class SchematronResourceSchXslt_XSLT2 extends
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
    */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourceSchXslt_XSLT2 (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);
@@ -91,33 +92,27 @@ public class SchematronResourceSchXslt_XSLT2 extends
    *        The configured builder. May not be <code>null</code>.
    * @since 10.0.0
    */
-  @SuppressWarnings ("deprecation")
   protected SchematronResourceSchXslt_XSLT2 (@NonNull final Builder aBuilder)
   {
     super (aBuilder.m_aResource,
+           aBuilder.m_bUseCache,
+           aBuilder.m_bLenient,
+           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null,
            aBuilder.m_aErrorListener,
            aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
            aBuilder.m_aTFCustomizer,
-           aBuilder.m_aTelemetry);
+           aBuilder.m_aTelemetry,
+           aBuilder.m_aSOVDeterminator,
+           aBuilder.m_bValidateSVRL);
     // Preserve the constructor-set schxslt.compile.metadata=false unless the Builder caller
     // explicitly configured parameters.
     if (aBuilder.m_aParameters.isEmpty ())
       parameters ().put ("schxslt.compile.metadata", "false");
     else
       parameters ().putAll (aBuilder.m_aParameters);
-    setUseCache (aBuilder.m_bUseCache);
-    setLenient (aBuilder.m_bLenient);
-    if (aBuilder.m_bEntityResolverSet)
-      setEntityResolver (aBuilder.m_aEntityResolver);
     m_sPhase = aBuilder.m_sPhase;
     m_sLanguageCode = aBuilder.m_sLanguageCode;
-    setErrorListener (aBuilder.m_aErrorListener);
-    if (aBuilder.m_bURIResolverSet)
-      setURIResolver (aBuilder.m_aURIResolver);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
-    if (aBuilder.m_aSOVDeterminator != null)
-      setOutputValidityDeterminator (aBuilder.m_aSOVDeterminator);
-    setValidateSVRL (aBuilder.m_bValidateSVRL);
     m_aCache = aBuilder.m_aCache;
   }
 

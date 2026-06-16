@@ -69,6 +69,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                           IGenericImplTrait <IMPLTYPE>
 {
   public static final boolean DEFAULT_VALIDATE_SVRL = true;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronXSLTBasedResource.class);
 
   protected ErrorListener m_aCustomErrorListener;
@@ -76,8 +77,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
   protected Consumer <TransformerFactory> m_aTFCustomizer;
   protected ISchematronTemplateTelemetry m_aTelemetry;
-  private ISchematronOutputValidityDeterminator m_aSOVDeterminator = new SchematronOutputValidityDeterminatorDefault ();
-  private boolean m_bValidateSVRL = DEFAULT_VALIDATE_SVRL;
+  protected ISchematronOutputValidityDeterminator m_aSOVDeterminator;
+  protected boolean m_bValidateSVRL;
   /**
    * Latched <code>true</code> the first time {@link #getXSLTProvider()} is called on this instance.
    * Used by {@link #checkNotCompiledYet()} so that compile-time setters fail fast post-compile,
@@ -87,7 +88,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
-    this (aSCHResource, null, null, null, null);
+    this (aSCHResource, DEFAULT_USE_CACHE, DEFAULT_LENIENT, null, null, null, null, null, null, DEFAULT_VALIDATE_SVRL);
   }
 
   /**
@@ -95,6 +96,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *
    * @param aSCHResource
    *        The resource to read the Schematron rules from.
+   * @param bUseCache
+   *        <code>true</code> to participate in the compilation cache, <code>false</code> to bypass
+   *        it.
+   * @param bLenient
+   *        <code>true</code> to allow deprecated Schematron namespaces, <code>false</code> for
+   *        strict mode.
+   * @param aEntityResolver
+   *        A custom entity resolver. May be <code>null</code> in which case a custom resolver is
+   *        used.
    * @param aCustomErrorListener
    *        The error listener to use, or <code>null</code> for the engine default.
    * @param aCustomURIResolver
@@ -103,14 +113,25 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *        The optional TransformerFactory customizer - may be <code>null</code>.
    * @param aTelemetry
    *        The telemetry callback, or <code>null</code> to disable telemetry.
+   * @param aSOVDeterminator
+   *        The validity determinator to use. May not be <code>null</code>.
+   * @param bValidateSVRL
+   *        <code>true</code> to validate the produced SVRL against its XSD, <code>false</code> to
+   *        skip validation.
    */
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource,
+                                                 final boolean bUseCache,
+                                                 final boolean bLenient,
+                                                 @Nullable final EntityResolver aEntityResolver,
                                                  @Nullable final ErrorListener aCustomErrorListener,
                                                  @Nullable final URIResolver aCustomURIResolver,
                                                  @Nullable final Consumer <TransformerFactory> aTFCustomizer,
-                                                 @Nullable final ISchematronTemplateTelemetry aTelemetry)
+                                                 @Nullable final ISchematronTemplateTelemetry aTelemetry,
+                                                 @Nullable final ISchematronOutputValidityDeterminator aSOVDeterminator,
+                                                 final boolean bValidateSVRL)
   {
-    super (aSCHResource);
+    super (aSCHResource, bUseCache, bLenient, aEntityResolver);
+
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
     // the SCH
     final String sBaseURL = SchematronXSLTBaseURL.findBaseURL (aSCHResource);
@@ -121,6 +142,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                                                                                .setDefaultBase (sBaseURL);
     m_aTFCustomizer = aTFCustomizer;
     m_aTelemetry = aTelemetry;
+    m_aSOVDeterminator = aSOVDeterminator != null ? aSOVDeterminator
+                                                  : new SchematronOutputValidityDeterminatorDefault ();
+    m_bValidateSVRL = bValidateSVRL;
   }
 
   /**

@@ -42,7 +42,9 @@ public final class IssueXsltKeyPureXsltTest
   {
     final IReadableResource aSch = new FileSystemResource (new File ("src/test/resources/external/issues/xslt-key/schematron.sch").getAbsoluteFile ());
     final IReadableResource aXML = new FileSystemResource (new File ("src/test/resources/external/issues/xslt-key/test.xml").getAbsoluteFile ());
-    final SchematronOutputType aSVRL = new SchematronResourcePureXslt (aSch).applySchematronValidationToSVRL (aXML);
+    final SchematronOutputType aSVRL = SchematronResourcePureXslt.builder (aSch)
+                                                                 .build ()
+                                                                 .applySchematronValidationToSVRL (aXML);
     assertNotNull ("Expected SVRL output (xsl:key passed through and key() resolved)", aSVRL);
   }
 }

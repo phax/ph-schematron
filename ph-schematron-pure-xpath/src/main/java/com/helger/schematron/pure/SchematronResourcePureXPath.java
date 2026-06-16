@@ -113,11 +113,13 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePureXPath (@NonNull final IReadableResource aResource)
   {
     super (aResource);
   }
 
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePureXPath (@NonNull final IReadableResource aResource,
                                       @Nullable final String sPhase,
                                       @Nullable final IPSErrorHandler aErrorHandler)

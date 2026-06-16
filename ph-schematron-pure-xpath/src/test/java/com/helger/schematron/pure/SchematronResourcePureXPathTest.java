@@ -89,7 +89,7 @@ public final class SchematronResourcePureXPathTest
     {
       // The validity is tested in another test case!
       // Parse them
-      final SchematronResourcePureXPath aResPure = new SchematronResourcePureXPath (aRes);
+      final SchematronResourcePureXPath aResPure = SchematronResourcePureXPath.builder (aRes).build ();
       assertTrue (aRes.getPath (), aResPure.isValidSchematron ());
     }
   }
@@ -119,7 +119,8 @@ public final class SchematronResourcePureXPathTest
                                            .build ()
                                            .isValidSchematron ());
     assertTrue (SchematronResourcePureXPath.builderFromInputStream ("ba-from-string",
-                                                                    new StringInputStream (sTest, StandardCharsets.UTF_8))
+                                                                    new StringInputStream (sTest,
+                                                                                           StandardCharsets.UTF_8))
                                            .build ()
                                            .isValidSchematron ());
   }
@@ -265,9 +266,10 @@ public final class SchematronResourcePureXPathTest
     // Fallback path: an entity resolver forces the DOM parsing route. The matched node must NOT
     // be a Saxon facade then.
     aCapturedNodeClass[0] = null;
-    final SchematronResourcePureXPath aSCH2 = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8)
+    final SchematronResourcePureXPath aSCH2 = SchematronResourcePureXPath.builderFromString (sSchema,
+                                                                                             StandardCharsets.UTF_8)
                                                                          .customValidationHandler (aSpyHandler)
-                                                                         .entityResolver ( (publicId, systemId) -> null)
+                                                                         .entityResolver ((publicId, systemId) -> null)
                                                                          .build ();
     final SchematronOutputType aOT2 = aSCH2.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
     assertNotNull (aOT2);
@@ -304,7 +306,9 @@ public final class SchematronResourcePureXPathTest
                                "]>\n" +
                                "<root>&xxe;</root>";
 
-    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8).build ();
+    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromString (sSchema,
+                                                                                            StandardCharsets.UTF_8)
+                                                                        .build ();
     Throwable thrown = null;
     try
     {

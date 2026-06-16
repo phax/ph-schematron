@@ -52,9 +52,11 @@ public final class Issue029Test
     SchematronOutputType ob = null;
 
     // Must use the XSLT based version, because of "key" usage
-    final ISchematronResource aResSCH = new SchematronResourcePureXPath (new ClassPathResource ("external/issues/github29/pbs.sch"));
+    final ISchematronResource aResSCH = SchematronResourcePureXPath.builder (new ClassPathResource ("external/issues/github29/pbs.sch"))
+                                                                   .build ();
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
+
     try
     {
       final Document aDoc = aResSCH.applySchematronValidation (aRes);
