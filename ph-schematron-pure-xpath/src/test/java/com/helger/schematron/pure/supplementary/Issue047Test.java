@@ -36,8 +36,9 @@ public final class Issue047Test
   {
     // No-op customization - Saxon resolves all referenced functions on its own here.
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().build ();
-    final SchematronResourcePureXPath aSCH = new SchematronResourcePureXPath (new FileSystemResource (aSchematron));
-    aSCH.setXPathConfig (aXPathConfig);
+    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromFile (aSchematron)
+                                                                        .xpathConfig (aXPathConfig)
+                                                                        .build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

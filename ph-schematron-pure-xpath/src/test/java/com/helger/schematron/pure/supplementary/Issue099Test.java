@@ -49,9 +49,9 @@ public final class Issue099Test
     {
       final StopWatch aSW = StopWatch.createdStarted ();
       LOGGER.info ("Start");
-      final ISchematronResource aSCH = SchematronResourcePureXPath.fromFile (aSchematron);
-      if (aSCH instanceof SchematronResourcePureXPath)
-        ((SchematronResourcePureXPath) aSCH).setCustomValidationHandler (new LoggingPSValidationHandler ());
+      final ISchematronResource aSCH = SchematronResourcePureXPath.builderFromFile (aSchematron)
+                                                                  .customValidationHandler (new LoggingPSValidationHandler ())
+                                                                  .build ();
 
       // Perform validation
       final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

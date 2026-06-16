@@ -37,6 +37,7 @@ public class SVRLMarshaller extends GenericJAXBMarshaller <SchematronOutputType>
     this (true);
   }
 
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public SVRLMarshaller (final boolean bValidationEnabled)
   {
     super (SchematronOutputType.class, CSVRL.SVRL_XSDS, new ObjectFactory ()::createSchematronOutput);

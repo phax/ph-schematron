@@ -41,7 +41,7 @@ public final class SchematronResourceXSLTTest
   @Test
   public void testFromUrl () throws Exception
   {
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromURL (VALID_XSLT_SCHEMATRON.getAsURL ());
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.builderFromURL (VALID_XSLT_SCHEMATRON.getAsURL ()).build ();
     assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
@@ -51,8 +51,9 @@ public final class SchematronResourceXSLTTest
   @Test
   public void testFromStringUrl () throws Exception
   {
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromURL (VALID_XSLT_SCHEMATRON.getAsURL ()
-                                                                                            .toExternalForm ());
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.builderFromURL (VALID_XSLT_SCHEMATRON.getAsURL ()
+                                                                                                   .toExternalForm ())
+                                                             .build ();
     assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
@@ -63,8 +64,9 @@ public final class SchematronResourceXSLTTest
   public void testFromInputStream () throws Exception
   {
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromInputStream ("mock-res-id",
-                                                                               new NonBlockingByteArrayInputStream (aPayload));
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.builderFromInputStream ("mock-res-id",
+                                                                                      new NonBlockingByteArrayInputStream (aPayload))
+                                                             .build ();
     assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
@@ -75,7 +77,7 @@ public final class SchematronResourceXSLTTest
   public void testFromByteArray () throws Exception
   {
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromByteArray (aPayload);
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.builderFromByteArray (aPayload).build ();
     assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);
@@ -86,8 +88,9 @@ public final class SchematronResourceXSLTTest
   public void testFromString () throws Exception
   {
     final byte [] aPayload = StreamHelper.getAllBytes (VALID_XSLT_SCHEMATRON);
-    final SchematronResourceXSLT sch = SchematronResourceXSLT.fromString (new String (aPayload, StandardCharsets.UTF_8),
-                                                                          StandardCharsets.UTF_8);
+    final SchematronResourceXSLT sch = SchematronResourceXSLT.builderFromString (new String (aPayload, StandardCharsets.UTF_8),
+                                                                                 StandardCharsets.UTF_8)
+                                                             .build ();
     assertTrue ("invalid schematron", sch.isValidSchematron ());
 
     final Document aDoc = sch.applySchematronValidation (VALID_XMLINSTANCE);

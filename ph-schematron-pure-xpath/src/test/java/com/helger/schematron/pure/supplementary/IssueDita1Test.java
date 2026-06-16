@@ -41,7 +41,7 @@ public final class IssueDita1Test
 
   public static void validateAndProduceSVRL (final File aSchematronFile, final File aXmlFile) throws Exception
   {
-    final AbstractSchematronResource aSCH = SchematronResourcePureXPath.fromFile (aSchematronFile);
+    final AbstractSchematronResource aSCH = SchematronResourcePureXPath.builderFromFile (aSchematronFile).build ();
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXmlFile));
     assertNotNull (aSVRL);
     if (true)

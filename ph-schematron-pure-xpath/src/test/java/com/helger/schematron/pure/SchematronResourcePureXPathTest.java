@@ -115,10 +115,12 @@ public final class SchematronResourcePureXPathTest
                          "  </iso:pattern>\n" +
                          "\n" +
                          "</iso:schema>";
-    assertTrue (SchematronResourcePureXPath.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+    assertTrue (SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+                                           .build ()
                                            .isValidSchematron ());
-    assertTrue (SchematronResourcePureXPath.fromInputStream ("ba-from-string",
-                                                             new StringInputStream (sTest, StandardCharsets.UTF_8))
+    assertTrue (SchematronResourcePureXPath.builderFromInputStream ("ba-from-string",
+                                                                    new StringInputStream (sTest, StandardCharsets.UTF_8))
+                                           .build ()
                                            .isValidSchematron ());
   }
 
@@ -147,8 +149,9 @@ public final class SchematronResourcePureXPathTest
                          "  </iso:pattern>\n" +
                          "</iso:schema>";
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
-    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8));
-    aSch.setErrorHandler (aErrorHandler);
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+                                                                        .errorHandler (aErrorHandler)
+                                                                        .build ();
     // Perform quick validation
     assertFalse (aSch.isValidSchematron ());
     assertEquals ("Expected three errors: " + aErrorHandler.getErrorList ().toString (),
@@ -186,15 +189,17 @@ public final class SchematronResourcePureXPathTest
     final Document aDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><root/>");
 
     // XPath 3.1 (default) - head() is known, schema binds, assertion passes
-    final SchematronOutputType aOK = SchematronResourcePureXPath.fromString (sSchema, StandardCharsets.UTF_8)
+    final SchematronOutputType aOK = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8)
+                                                                .build ()
                                                                 .applySchematronValidationToSVRL (aDoc, null);
     assertNotNull (aOK);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOK).size ());
 
     // Same check, but explicitly picking XPath 3.1 - identical outcome
     final IXPathConfig aXPathConfig31 = new XPathConfigBuilder ().setXPathVersion (EXPathVersion.XPATH_3_1).build ();
-    final SchematronOutputType aOK31 = SchematronResourcePureXPath.fromString (sSchema, StandardCharsets.UTF_8)
-                                                                  .setXPathConfig (aXPathConfig31)
+    final SchematronOutputType aOK31 = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8)
+                                                                  .xpathConfig (aXPathConfig31)
+                                                                  .build ()
                                                                   .applySchematronValidationToSVRL (aDoc, null);
     assertNotNull (aOK31);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOK31).size ());
@@ -202,9 +207,10 @@ public final class SchematronResourcePureXPathTest
     // XPath 2.0 - head() does not exist, binding must fail
     final IXPathConfig aXPathConfig20 = new XPathConfigBuilder ().setXPathVersion (EXPathVersion.XPATH_2_0).build ();
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
-    final ISchematronResource aSch20 = SchematronResourcePureXPath.fromString (sSchema, StandardCharsets.UTF_8)
-                                                                  .setXPathConfig (aXPathConfig20)
-                                                                  .setErrorHandler (aErrorHandler);
+    final ISchematronResource aSch20 = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8)
+                                                                  .xpathConfig (aXPathConfig20)
+                                                                  .errorHandler (aErrorHandler)
+                                                                  .build ();
     assertFalse (aSch20.isValidSchematron ());
     assertTrue ("Expected an XPath compile error, got: " + aErrorHandler.getErrorList (),
                 aErrorHandler.getErrorList ().isNotEmpty ());
@@ -245,8 +251,9 @@ public final class SchematronResourcePureXPathTest
     };
 
     // Fast path: no entity resolver -> Saxon TinyTree
-    final ISchematronResource aSCH = SchematronResourcePureXPath.fromString (sSchema, StandardCharsets.UTF_8)
-                                                                .setCustomValidationHandler (aSpyHandler);
+    final ISchematronResource aSCH = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8)
+                                                                .customValidationHandler (aSpyHandler)
+                                                                .build ();
     final SchematronOutputType aOT = aSCH.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
@@ -258,9 +265,10 @@ public final class SchematronResourcePureXPathTest
     // Fallback path: an entity resolver forces the DOM parsing route. The matched node must NOT
     // be a Saxon facade then.
     aCapturedNodeClass[0] = null;
-    final SchematronResourcePureXPath aSCH2 = SchematronResourcePureXPath.fromString (sSchema, StandardCharsets.UTF_8);
-    aSCH2.setCustomValidationHandler (aSpyHandler);
-    aSCH2.setEntityResolver ( (publicId, systemId) -> null);
+    final SchematronResourcePureXPath aSCH2 = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8)
+                                                                         .customValidationHandler (aSpyHandler)
+                                                                         .entityResolver ( (publicId, systemId) -> null)
+                                                                         .build ();
     final SchematronOutputType aOT2 = aSCH2.applySchematronValidationToSVRL (new ReadableResourceByteArray (aXmlBytes));
     assertNotNull (aOT2);
     assertNotNull ("onRuleStart never fired", aCapturedNodeClass[0]);
@@ -296,7 +304,7 @@ public final class SchematronResourcePureXPathTest
                                "]>\n" +
                                "<root>&xxe;</root>";
 
-    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.fromString (sSchema, StandardCharsets.UTF_8);
+    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromString (sSchema, StandardCharsets.UTF_8).build ();
     Throwable thrown = null;
     try
     {
@@ -435,8 +443,9 @@ public final class SchematronResourcePureXPathTest
 
     // Test without variable and function resolver
     // -> an error is expected, but we don't need to log it
-    assertFalse (SchematronResourcePureXPath.fromString (sTest, StandardCharsets.UTF_8)
-                                            .setErrorHandler (new DoNothingPSErrorHandler ())
+    assertFalse (SchematronResourcePureXPath.builderFromString (sTest, StandardCharsets.UTF_8)
+                                            .errorHandler (new DoNothingPSErrorHandler ())
+                                            .build ()
                                             .isValidSchematron ());
 
     // Test with variable and function resolver
@@ -446,8 +455,9 @@ public final class SchematronResourcePureXPathTest
                                                                .build ();
 
     final Document aTestDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><chapter><title /><para>First para</para><para>Second para</para></chapter>");
-    final SchematronOutputType aOT = SchematronResourcePureXPath.fromString (sTest, StandardCharsets.UTF_8)
-                                                                .setXPathConfig (aXPathConfig)
+    final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromString (sTest, StandardCharsets.UTF_8)
+                                                                .xpathConfig (aXPathConfig)
+                                                                .build ()
                                                                 .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
@@ -536,8 +546,9 @@ public final class SchematronResourcePureXPathTest
                                                     "</chapter>");
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addExtensionFunction (new GetNodelistDetailsFunction ())
                                                                .build ();
-    final SchematronOutputType aOT = SchematronResourcePureXPath.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
-                                                                .setXPathConfig (aXPathConfig)
+    final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+                                                                .xpathConfig (aXPathConfig)
+                                                                .build ()
                                                                 .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
@@ -582,8 +593,9 @@ public final class SchematronResourcePureXPathTest
                                                     "<para>First para</para>" +
                                                     "<para>Second para</para>" +
                                                     "</chapter>");
-    final SchematronOutputType aOT = SchematronResourcePureXPath.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
-                                                                .setXPathConfig (aXPathConfig)
+    final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+                                                                .xpathConfig (aXPathConfig)
+                                                                .build ()
                                                                 .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     assertEquals (0, SVRLHelper.getAllFailedAssertions (aOT).size ());
@@ -626,9 +638,10 @@ public final class SchematronResourcePureXPathTest
                                                     "<para>200</para>" +
                                                     "</chapter>");
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler (new LoggingPSErrorHandler ());
-    final SchematronOutputType aOT = SchematronResourcePureXPath.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
-                                                                .setXPathConfig (aXPathConfig)
-                                                                .setErrorHandler (aErrorHandler)
+    final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+                                                                .xpathConfig (aXPathConfig)
+                                                                .errorHandler (aErrorHandler)
+                                                                .build ()
                                                                 .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     // XXX fails :(
@@ -714,8 +727,9 @@ public final class SchematronResourcePureXPathTest
                                                     "</chapter>",
                                                     new DOMReaderSettings ().setSchema (aSchema));
 
-    final SchematronOutputType aOT = SchematronResourcePureXPath.fromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
-                                                                .setXPathConfig (aXPathConfig)
+    final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
+                                                                .xpathConfig (aXPathConfig)
+                                                                .build ()
                                                                 .applySchematronValidationToSVRL (aTestDoc, null);
     assertNotNull (aOT);
     if (SVRLHelper.getAllFailedAssertions (aOT).isNotEmpty ())

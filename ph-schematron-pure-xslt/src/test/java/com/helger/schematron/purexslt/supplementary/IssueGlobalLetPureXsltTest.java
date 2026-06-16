@@ -56,6 +56,6 @@ public final class IssueGlobalLetPureXsltTest
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (aXMLRes);
     assertNotNull (aSVRL);
     if (false)
-      LOGGER.info (new SVRLMarshaller (false).setFormattedOutput (true).getAsString (aSVRL));
+      LOGGER.info (new SVRLMarshaller ().setUseSchema (false).setFormattedOutput (true).getAsString (aSVRL));
   }
 }

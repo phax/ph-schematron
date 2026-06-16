@@ -49,7 +49,6 @@ import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.diagnostics.error.level.IErrorLevel;
 import com.helger.diagnostics.error.list.IErrorList;
 import com.helger.io.file.FileOperations;
-import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
@@ -485,7 +484,8 @@ public class Schematron extends AbstractSchematronTask
             if (aSOT != null)
             {
               // Beautified SVRL :)
-              final SVRLMarshaller aMarshaller = new SVRLMarshaller (false);
+              final SVRLMarshaller aMarshaller = new SVRLMarshaller ();
+              aMarshaller.setUseSchema (false);
               aMarshaller.setFormattedOutput (true);
               aMarshaller.setNamespaceContext (SVRLNamespaceContext.getInstance ());
 
@@ -684,10 +684,11 @@ public class Schematron extends AbstractSchematronTask
         {
           // Pure-Java XPath engine
           final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-          final SchematronResourcePureXPath aRealSCH = new SchematronResourcePureXPath (new FileSystemResource (m_aSchematronFile));
-          aRealSCH.setPhase (m_sPhaseName);
-          aRealSCH.setErrorHandler (aErrorHdl);
-          aRealSCH.setEntityResolver (getEntityResolver ());
+          final SchematronResourcePureXPath aRealSCH = SchematronResourcePureXPath.builderFromFile (m_aSchematronFile)
+                                                                                  .phase (m_sPhaseName)
+                                                                                  .errorHandler (aErrorHdl)
+                                                                                  .entityResolver (getEntityResolver ())
+                                                                                  .build ();
           aRealSCH.validateCompletely ();
 
           aSch = aRealSCH;
@@ -698,9 +699,10 @@ public class Schematron extends AbstractSchematronTask
         {
           // Pure-Java engine generating XSLT 3.0 and running via Saxon s9api
           final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-          final SchematronResourcePureXslt aRealSCH = new SchematronResourcePureXslt (new FileSystemResource (m_aSchematronFile));
-          aRealSCH.setPhase (m_sPhaseName);
-          aRealSCH.setErrorHandler (aErrorHdl);
+          final SchematronResourcePureXslt aRealSCH = SchematronResourcePureXslt.builderFromFile (m_aSchematronFile)
+                                                                                .phase (m_sPhaseName)
+                                                                                .errorHandler (aErrorHdl)
+                                                                                .build ();
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
@@ -716,14 +718,15 @@ public class Schematron extends AbstractSchematronTask
             _info ("Using the following custom parameters: " + aParams);
 
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
-          aRealSCH.setPhase (m_sPhaseName);
-          aRealSCH.setLanguageCode (m_sLanguageCode);
-          aRealSCH.setForceCacheResult (m_bForceCacheResult);
-          aRealSCH.setErrorListener (aErrorHdl);
-          aRealSCH.setURIResolver (getURIResolver ());
-          aRealSCH.setEntityResolver (getEntityResolver ());
-          aRealSCH.parameters ().setAll (aParams);
+          final SchematronResourceSCH aRealSCH = SchematronResourceSCH.builderFromFile (m_aSchematronFile)
+                                                                      .phase (m_sPhaseName)
+                                                                      .languageCode (m_sLanguageCode)
+                                                                      .forceCacheResult (m_bForceCacheResult)
+                                                                      .errorListener (aErrorHdl)
+                                                                      .uriResolver (getURIResolver ())
+                                                                      .entityResolver (getEntityResolver ())
+                                                                      .parameters (aParams)
+                                                                      .build ();
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
@@ -739,14 +742,15 @@ public class Schematron extends AbstractSchematronTask
             _info ("Using the following custom parameters: " + aParams);
 
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          final SchematronResourceSchXslt_XSLT2 aRealSCH = new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (m_aSchematronFile));
-          aRealSCH.setPhase (m_sPhaseName);
-          aRealSCH.setLanguageCode (m_sLanguageCode);
-          aRealSCH.setForceCacheResult (m_bForceCacheResult);
-          aRealSCH.setErrorListener (aErrorHdl);
-          aRealSCH.setURIResolver (getURIResolver ());
-          aRealSCH.setEntityResolver (getEntityResolver ());
-          aRealSCH.parameters ().setAll (aParams);
+          final SchematronResourceSchXslt_XSLT2 aRealSCH = SchematronResourceSchXslt_XSLT2.builderFromFile (m_aSchematronFile)
+                                                                                          .phase (m_sPhaseName)
+                                                                                          .languageCode (m_sLanguageCode)
+                                                                                          .forceCacheResult (m_bForceCacheResult)
+                                                                                          .errorListener (aErrorHdl)
+                                                                                          .uriResolver (getURIResolver ())
+                                                                                          .entityResolver (getEntityResolver ())
+                                                                                          .parameters (aParams)
+                                                                                          .build ();
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
@@ -762,13 +766,14 @@ public class Schematron extends AbstractSchematronTask
             _info ("Using the following custom parameters: " + aParams);
 
           final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
           // phase and language are ignored because this was decided when the
           // XSLT was created
-          aRealSCH.setErrorListener (aErrorHdl);
-          aRealSCH.setURIResolver (getURIResolver ());
-          aRealSCH.setEntityResolver (getEntityResolver ());
-          aRealSCH.parameters ().setAll (aParams);
+          final SchematronResourceXSLT aRealSCH = SchematronResourceXSLT.builderFromFile (m_aSchematronFile)
+                                                                        .errorListener (aErrorHdl)
+                                                                        .uriResolver (getURIResolver ())
+                                                                        .entityResolver (getEntityResolver ())
+                                                                        .parameters (aParams)
+                                                                        .build ();
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;

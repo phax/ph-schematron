@@ -40,7 +40,7 @@ public final class SchematronHelperTest
   @Test
   public void testReadValidSchematronValidXMLFromFile () throws Exception
   {
-    final ISchematronResource aSchematron = SchematronResourcePureXPath.fromClassPath (VALID_SCHEMATRON);
+    final ISchematronResource aSchematron = SchematronResourcePureXPath.builderFromClassPath (VALID_SCHEMATRON).build ();
     final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
     final SchematronOutputType aSO = aSchematron.applySchematronValidationToSVRL (TransformSourceFactory.create (aXML));
     assertNotNull ("Failed to parse Schematron output", aSO);

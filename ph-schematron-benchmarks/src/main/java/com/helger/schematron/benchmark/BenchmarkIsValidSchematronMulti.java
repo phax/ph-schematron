@@ -64,8 +64,9 @@ public class BenchmarkIsValidSchematronMulti
   @Benchmark
   public void sch (final Blackhole bh) throws Exception
   {
-    final SchematronResourceSCH r = new SchematronResourceSCH (VALID_SCHEMATRON);
-    r.setErrorListener (new DoNothingTransformErrorListener ());
+    final SchematronResourceSCH r = SchematronResourceSCH.builder (VALID_SCHEMATRON)
+                                                         .errorListener (new DoNothingTransformErrorListener ())
+                                                         .build ();
     bh.consume (r.isValidSchematron ());
   }
 

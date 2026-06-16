@@ -53,7 +53,7 @@ public final class Issue144Test
                               "  </sch:pattern>\n" +
                               "</sch:schema>";
 
-    final ISchematronResource aResSCH = SchematronResourceSCH.fromString (schematron, StandardCharsets.UTF_8);
+    final ISchematronResource aResSCH = SchematronResourceSCH.builderFromString (schematron, StandardCharsets.UTF_8).build ();
     final boolean ans = aResSCH.isValidSchematron ();
     assertTrue (ans);
 
@@ -94,7 +94,8 @@ public final class Issue144Test
                               "  </sch:pattern>\n" +
                               "</sch:schema>";
 
-    final ISchematronResource aResSCHCheck1 = SchematronResourceSCH.fromString (schematron, StandardCharsets.UTF_8);
+    final ISchematronResource aResSCHCheck1 = SchematronResourceSCH.builderFromString (schematron, StandardCharsets.UTF_8)
+                                                                   .build ();
 
     final boolean ans1 = aResSCHCheck1.isValidSchematron ();
     assertTrue (ans1);

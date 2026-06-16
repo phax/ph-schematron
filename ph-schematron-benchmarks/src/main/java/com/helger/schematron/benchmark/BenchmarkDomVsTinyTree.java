@@ -98,7 +98,7 @@ public class BenchmarkDomVsTinyTree
     aSB.append ("</root>\n");
     m_aXmlBytes = aSB.toString ().getBytes (StandardCharsets.UTF_8);
 
-    m_aSchemaPure = SchematronResourcePureXPath.fromString (SCHEMATRON, StandardCharsets.UTF_8);
+    m_aSchemaPure = SchematronResourcePureXPath.builderFromString (SCHEMATRON).build ();
     m_aSchemaPure.getOrCreateBoundSchema ();
     m_aSaxonDomBuilder = XPathConfigBuilder.DEFAULT_PROCESSOR.newDocumentBuilder ();
 

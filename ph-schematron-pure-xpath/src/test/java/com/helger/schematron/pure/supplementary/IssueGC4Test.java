@@ -38,7 +38,7 @@ public final class IssueGC4Test
 
   public static boolean validateXMLViaPureSchematron (final File aSchematronFile, final File aXMLFile) throws Exception
   {
-    final ISchematronResource aResPure = SchematronResourcePureXPath.fromFile (aSchematronFile);
+    final ISchematronResource aResPure = SchematronResourcePureXPath.builderFromFile (aSchematronFile).build ();
 
     System.out.println ("Valid Şematron mu? " + aResPure.isValidSchematron ());
     // if (!aResPure.isValidSchematron())

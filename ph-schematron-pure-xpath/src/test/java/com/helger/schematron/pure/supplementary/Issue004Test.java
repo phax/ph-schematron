@@ -39,8 +39,9 @@ public final class Issue004Test
     final File aSchematronFile = new File ("\\\\PC61826\\share\\example-8-5.sch");
     if (aSchematronFile.exists ())
     {
-      final SchematronResourcePureXPath aResPure = SchematronResourcePureXPath.fromFile (aSchematronFile);
-      aResPure.setErrorHandler (new LoggingPSErrorHandler ());
+      final SchematronResourcePureXPath aResPure = SchematronResourcePureXPath.builderFromFile (aSchematronFile)
+                                                                              .errorHandler (new LoggingPSErrorHandler ())
+                                                                              .build ();
       aResPure.validateCompletely ();
       assertTrue (aResPure.isValidSchematron ());
     }

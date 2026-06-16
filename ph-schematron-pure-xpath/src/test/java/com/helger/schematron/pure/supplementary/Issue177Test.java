@@ -44,7 +44,7 @@ public final class Issue177Test
 
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.fromFile (aSchematron);
+    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromFile (aSchematron).build ();
     aSCH.validateCompletely (new LoggingPSErrorHandler ());
 
     // Perform validation

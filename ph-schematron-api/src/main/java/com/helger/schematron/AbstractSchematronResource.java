@@ -69,7 +69,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    * @param aResource
    *        The Schematron resource. May not be <code>null</code>.
    */
-  public AbstractSchematronResource (@NonNull final IReadableResource aResource)
+  protected AbstractSchematronResource (@NonNull final IReadableResource aResource)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();

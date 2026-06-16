@@ -121,7 +121,7 @@ public final class SchematronPureXslt implements ISchematronValidator
       aTransformer.setGlobalContextItem (m_aConfig.getProcessor ().newDocumentBuilder ().wrap (aXMLNode));
     aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
 
-    final SchematronOutputType aSVRL = new SVRLMarshaller (false).read (aResultDoc);
+    final SchematronOutputType aSVRL = new SVRLMarshaller ().setUseSchema (false).read (aResultDoc);
     if (aSVRL == null)
       throw new IllegalStateException ("Saxon transformation did not produce a parseable SVRL document:\n" +
                                        XMLWriter.getNodeAsString (aResultDoc,
@@ -154,7 +154,9 @@ public final class SchematronPureXslt implements ISchematronValidator
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Config", m_aConfig).append ("Executable", m_aExecutable).getToString ();
+    return new ToStringGenerator (this).append ("Config", m_aConfig)
+                                       .append ("Executable", m_aExecutable)
+                                       .getToString ();
   }
 
   // === Compilation entry points ===
@@ -170,8 +172,7 @@ public final class SchematronPureXslt implements ISchematronValidator
    *         on compilation error.
    */
   @NonNull
-  public static SchematronPureXslt compileCached (@NonNull final SchematronPureXsltConfig aConfig)
-                                                                                                   throws SchematronException
+  public static SchematronPureXslt compileCached (@NonNull final SchematronPureXsltConfig aConfig) throws SchematronException
   {
     return compileCached (aConfig, SchematronPureXsltCache.shared ());
   }
@@ -211,8 +212,7 @@ public final class SchematronPureXslt implements ISchematronValidator
    *         on compilation error.
    */
   @NonNull
-  public static SchematronPureXslt compileUncached (@NonNull final SchematronPureXsltConfig aConfig)
-                                                                                                     throws SchematronException
+  public static SchematronPureXslt compileUncached (@NonNull final SchematronPureXsltConfig aConfig) throws SchematronException
   {
     ValueEnforcer.notNull (aConfig, "Config");
     final XsltExecutable aExe = aConfig.compile ();

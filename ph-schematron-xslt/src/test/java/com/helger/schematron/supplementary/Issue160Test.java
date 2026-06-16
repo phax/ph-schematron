@@ -35,7 +35,7 @@ public final class Issue160Test
 {
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromFile (aSchematron).build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

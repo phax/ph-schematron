@@ -58,12 +58,12 @@ public final class Issue20150128Test
     assertNotNull (aExtFunctions);
     assertFalse (aExtFunctions.isEmpty ());
 
-    final SchematronResourcePureXPath aResource = SchematronResourcePureXPath.fromString (sTest2,
-                                                                                          StandardCharsets.ISO_8859_1);
-
-    aResource.setErrorHandler (aErrorHandler);
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addAllExtensionFunctions (aExtFunctions).build ();
-    aResource.setXPathConfig (aXPathConfig);
+    final SchematronResourcePureXPath aResource = SchematronResourcePureXPath.builderFromString (sTest2,
+                                                                                                 StandardCharsets.ISO_8859_1)
+                                                                             .errorHandler (aErrorHandler)
+                                                                             .xpathConfig (aXPathConfig)
+                                                                             .build ();
     assertTrue (aResource.isValidSchematron ());
     // Under XPath 2.0/3.0, the 'eq' operator in 'aaa eq 1' is a valid expression so it compiles
     // without errors. Previously under XPath 1.0 it triggered a syntax error.

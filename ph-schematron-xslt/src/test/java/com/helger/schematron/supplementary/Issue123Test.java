@@ -44,7 +44,7 @@ public final class Issue123Test
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
     try
     {
-      final ISchematronResource aSCH = SchematronResourceSCH.fromFile (aSchematron);
+      final ISchematronResource aSCH = SchematronResourceSCH.builderFromFile (aSchematron).build ();
 
       // Perform validation
       final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

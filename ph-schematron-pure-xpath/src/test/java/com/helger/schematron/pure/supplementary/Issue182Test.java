@@ -58,7 +58,7 @@ public final class Issue182Test
   public void loadSchematron ()
   {
     if (m_aSCH == null)
-      m_aSCH = SchematronResourcePureXPath.fromFile (SCH);
+      m_aSCH = SchematronResourcePureXPath.builderFromFile (SCH).build ();
   }
 
   private void _validateAndProduceSVRL (@NonNull final File aXML) throws Exception

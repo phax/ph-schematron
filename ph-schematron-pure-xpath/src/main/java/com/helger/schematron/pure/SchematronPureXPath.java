@@ -111,7 +111,7 @@ public final class SchematronPureXPath implements ISchematronValidator
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
     final SchematronOutputType aSOT = m_aBoundSchema.validateComplete (aXMLNode, sBaseURI);
     if (SchematronDebug.isShowCreatedSVRL ())
-      LOGGER.info ("Created SVRL:\n" + new SVRLMarshaller (false).getAsString (aSOT));
+      LOGGER.info ("Created SVRL:\n" + new SVRLMarshaller ().setUseSchema (false).getAsString (aSOT));
     return aSOT;
   }
 

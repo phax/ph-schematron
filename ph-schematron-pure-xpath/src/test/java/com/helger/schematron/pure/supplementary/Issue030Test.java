@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
@@ -41,11 +42,13 @@ public final class Issue030Test
   @Test
   public void testOfSchematronPH () throws Exception
   {
-    final SchematronResourcePureXPath aResPure = SchematronResourcePureXPath.fromFile ("src/test/resources/issues/github30/ph-test.sch");
-    aResPure.setEntityResolver (DefaultEntityResolver.createOnDemand (aResPure.getResource ()));
+    final FileSystemResource aRes = new FileSystemResource ("src/test/resources/issues/github30/ph-test.sch");
     final IPSErrorHandler aErrorHandler = aError -> LOGGER.info (LoggingPSErrorHandler.DEFAULT_PS.getErrorText (aError,
                                                                                                                 Locale.US));
-    aResPure.setErrorHandler (aErrorHandler);
+    final SchematronResourcePureXPath aResPure = SchematronResourcePureXPath.builder (aRes)
+                                                                            .entityResolver (DefaultEntityResolver.createOnDemand (aRes))
+                                                                            .errorHandler (aErrorHandler)
+                                                                            .build ();
 
     aResPure.validateCompletely ();
     assertFalse (aResPure.isValidSchematron ());

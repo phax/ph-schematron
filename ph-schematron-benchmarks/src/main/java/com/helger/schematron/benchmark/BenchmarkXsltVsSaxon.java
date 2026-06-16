@@ -44,8 +44,8 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
  * <li>{@link SchematronResourceSCH} - "regular XSLT": preprocesses the schema through the ISO
  * Schematron XSL stylesheet chain via JAXP {@code TransformerFactory}, then applies the resulting
  * XSLT via JAXP as well.</li>
- * <li>{@link SchematronResourcePureXslt} - "new pure XSLT": walks the parsed {@code PSSchema} in Java
- * and emits an XSLT&nbsp;3.0 stylesheet directly, then compiles and runs it via Saxon
+ * <li>{@link SchematronResourcePureXslt} - "new pure XSLT": walks the parsed {@code PSSchema} in
+ * Java and emits an XSLT&nbsp;3.0 stylesheet directly, then compiles and runs it via Saxon
  * {@code s9api}.</li>
  * </ul>
  * <p>
@@ -79,13 +79,15 @@ public class BenchmarkXsltVsSaxon
   @Setup (Level.Trial)
   public void setup () throws Exception
   {
-    m_aWarmSch = new SchematronResourceSCH (SCHEMATRON);
-    m_aWarmSch.setErrorListener (new DoNothingTransformErrorListener ());
+    m_aWarmSch = SchematronResourceSCH.builder (SCHEMATRON)
+                                      .errorListener (new DoNothingTransformErrorListener ())
+                                      .build ();
     // Force one validation to materialize the cached XSLT before the timed loop starts
     m_aWarmSch.getSchematronValidity (XMLINSTANCE);
 
-    m_aWarmSaxon = new SchematronResourcePureXslt (SCHEMATRON);
-    m_aWarmSaxon.setErrorHandler (new DoNothingPSErrorHandler ());
+    m_aWarmSaxon = SchematronResourcePureXslt.builder (SCHEMATRON)
+                                             .errorHandler (new DoNothingPSErrorHandler ())
+                                             .build ();
     m_aWarmSaxon.getSchematronValidity (XMLINSTANCE);
   }
 
@@ -94,16 +96,18 @@ public class BenchmarkXsltVsSaxon
   @Benchmark
   public void coldXslt (final Blackhole bh) throws Exception
   {
-    final SchematronResourceSCH r = new SchematronResourceSCH (SCHEMATRON);
-    r.setErrorListener (new DoNothingTransformErrorListener ());
+    final SchematronResourceSCH r = SchematronResourceSCH.builder (SCHEMATRON)
+                                                         .errorListener (new DoNothingTransformErrorListener ())
+                                                         .build ();
     bh.consume (r.getSchematronValidity (XMLINSTANCE));
   }
 
   @Benchmark
   public void coldSaxon (final Blackhole bh) throws Exception
   {
-    final SchematronResourcePureXslt r = new SchematronResourcePureXslt (SCHEMATRON);
-    r.setErrorHandler (new DoNothingPSErrorHandler ());
+    final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (SCHEMATRON)
+                                                                   .errorHandler (new DoNothingPSErrorHandler ())
+                                                                   .build ();
     bh.consume (r.getSchematronValidity (XMLINSTANCE));
   }
 

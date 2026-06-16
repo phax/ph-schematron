@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
@@ -34,6 +36,8 @@ import com.helger.xml.serialize.write.XMLWriter;
 
 public final class Issue006Test
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (Issue006Test.class);
+
   @Test
   public void testIssue () throws Exception
   {
@@ -45,15 +49,17 @@ public final class Issue006Test
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final AbstractSchematronResource aSCH = new SchematronResourceSCH (aSchematron);
-    if (aSCH instanceof final SchematronResourcePureXPath aSchXPath)
-      aSchXPath.setErrorHandler (new LoggingPSErrorHandler ());
-    else
-      System.out.println (XMLWriter.getNodeAsString (((SchematronResourceSCH) aSCH).getXSLTProvider ()
-                                                                                   .getXSLTDocument ()));
-    final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (anXMLSource);
+    final AbstractSchematronResource aRes = true ? SchematronResourceSCH.builder (aSchematron).build ()
+                                                 : SchematronResourcePureXPath.builder (aSchematron)
+                                                                              .errorHandler (new LoggingPSErrorHandler ())
+                                                                              .build ();
+
+    if (aRes instanceof final SchematronResourceSCH aSCH2)
+      LOGGER.info (XMLWriter.getNodeAsString (aSCH2.getXSLTProvider ().getXSLTDocument ()));
+
+    final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (anXMLSource);
     assertNotNull (aSVRL);
     if (false)
-      System.out.println (new SVRLMarshaller ().getAsString (aSVRL));
+      LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
   }
 }

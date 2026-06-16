@@ -79,8 +79,9 @@ public class BenchmarkIsValidSchematron
   {
     for (final IReadableResource aRes : m_aSchemas)
     {
-      final SchematronResourceSCH r = new SchematronResourceSCH (aRes);
-      r.setErrorListener (new DoNothingTransformErrorListener ());
+      final SchematronResourceSCH r = SchematronResourceSCH.builder (aRes)
+                                                           .errorListener (new DoNothingTransformErrorListener ())
+                                                           .build ();
       bh.consume (r.isValidSchematron ());
     }
   }
@@ -102,7 +103,9 @@ public class BenchmarkIsValidSchematron
   {
     for (final IReadableResource aRes : m_aSchemas)
     {
-      final SchematronResourcePureXslt r = new SchematronResourcePureXslt (aRes).setErrorHandler (new DoNothingPSErrorHandler ());
+      final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (aRes)
+                                                                     .errorHandler (new DoNothingPSErrorHandler ())
+                                                                     .build ();
       bh.consume (r.isValidSchematron ());
     }
   }

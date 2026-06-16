@@ -30,7 +30,7 @@ public final class IssueAgidT16Test
   public void testIncludedFilesNotDeleted () throws Exception
   {
     final String sPath = "external/issues/agid-t16/";
-    final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (sPath + "AGID-PEPPOL-T16.sch");
+    final ISchematronResource aSV = SchematronResourceSCH.builderFromClassPath (sPath + "AGID-PEPPOL-T16.sch").build ();
     assertNotNull (aSV);
     assertTrue (aSV.isValidSchematron ());
   }

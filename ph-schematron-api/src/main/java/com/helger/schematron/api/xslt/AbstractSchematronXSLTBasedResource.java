@@ -87,7 +87,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
-    this (aSCHResource, null, null);
+    this (aSCHResource, null, null, null, null);
   }
 
   /**
@@ -95,12 +95,18 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *
    * @param aSCHResource
    *        The resource to read the Schematron rules from.
+   * @param aCustomErrorListener
+   *        The error listener to use, or <code>null</code> for the engine default.
+   * @param aCustomURIResolver
+   *        The URI resolver to use, or <code>null</code> for the engine default.
    * @param aTFCustomizer
    *        The optional TransformerFactory customizer - may be <code>null</code>.
    * @param aTelemetry
    *        The telemetry callback, or <code>null</code> to disable telemetry.
    */
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource,
+                                                 @Nullable final ErrorListener aCustomErrorListener,
+                                                 @Nullable final URIResolver aCustomURIResolver,
                                                  @Nullable final Consumer <TransformerFactory> aTFCustomizer,
                                                  @Nullable final ISchematronTemplateTelemetry aTelemetry)
   {
@@ -110,7 +116,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     final String sBaseURL = SchematronXSLTBaseURL.findBaseURL (aSCHResource);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Using '" + sBaseURL + "' as base URL for SCH resource " + aSCHResource);
-    setURIResolver (new DefaultTransformURIResolver ().setDefaultBase (sBaseURL));
+    m_aCustomErrorListener = aCustomErrorListener;
+    m_aCustomURIResolver = aCustomURIResolver != null ? aCustomURIResolver : new DefaultTransformURIResolver ()
+                                                                                                               .setDefaultBase (sBaseURL);
     m_aTFCustomizer = aTFCustomizer;
     m_aTelemetry = aTelemetry;
   }
@@ -351,7 +359,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                               new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
 
     // Now try to read the resulting XML document as a SVRL document - may fail
-    final SVRLMarshaller aMarshaller = new SVRLMarshaller (m_bValidateSVRL);
+    final var aMarshaller = new SVRLMarshaller ().setUseSchema (m_bValidateSVRL);
     if (GlobalDebug.isDebugMode ())
     {
       // Set an exception callback that logs the source node as well

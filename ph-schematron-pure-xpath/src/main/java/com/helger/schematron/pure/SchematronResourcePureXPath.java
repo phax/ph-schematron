@@ -609,7 +609,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
 
     // Debug print the created SVRL document
     if (SchematronDebug.isShowCreatedSVRL ())
-      LOGGER.info ("Created SVRL:\n" + new SVRLMarshaller (false).getAsString (aSOT));
+      LOGGER.info ("Created SVRL:\n" + new SVRLMarshaller ().setUseSchema (false).getAsString (aSOT));
 
     return aSOT;
   }

@@ -45,7 +45,7 @@ public final class SchematronResourcePureXsltAcceptanceTest
   @Test
   public void testReadValidSchematronValidXML () throws Exception
   {
-    final ISchematronResource aSchematron = SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON);
+    final ISchematronResource aSchematron = SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON).build ();
     final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
     final SchematronOutputType aSO = aSchematron.applySchematronValidationToSVRL (aXML);
     assertNotNull ("Failed to parse Schematron output", aSO);
@@ -54,7 +54,8 @@ public final class SchematronResourcePureXsltAcceptanceTest
   @Test
   public void testReadValidSchematronInvalidXML () throws Exception
   {
-    final SchematronOutputType aSO = SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON)
+    final SchematronOutputType aSO = SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON)
+                                                               .build ()
                                                                .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
                                                                                                                         ".does.not.exist"));
     assertNull ("Invalid XML", aSO);
@@ -65,7 +66,8 @@ public final class SchematronResourcePureXsltAcceptanceTest
   {
     try
     {
-      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+      SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+                                .build ()
                                 .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE));
       fail ("Expected an exception or a null result when the Schematron source is missing");
     }
@@ -80,7 +82,8 @@ public final class SchematronResourcePureXsltAcceptanceTest
   {
     try
     {
-      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON)
+      SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON)
+                                .build ()
                                 .applySchematronValidationToSVRL ((IReadableResource) null);
       fail ();
     }
@@ -91,7 +94,9 @@ public final class SchematronResourcePureXsltAcceptanceTest
 
     try
     {
-      SchematronResourcePureXslt.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((Source) null);
+      SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON)
+                                .build ()
+                                .applySchematronValidationToSVRL ((Source) null);
       fail ();
     }
     catch (final Exception ex)
@@ -103,14 +108,16 @@ public final class SchematronResourcePureXsltAcceptanceTest
   @Test
   public void testReadISOSchematron2006SCH ()
   {
-    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.fromClassPath ("external/schematron/iso-schematron-2006.sch");
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builderFromClassPath ("external/schematron/iso-schematron-2006.sch")
+                                                                      .build ();
     assertTrue (aSch.isValidSchematron ());
   }
 
   @Test
   public void testReadISOSchematron2016SCH ()
   {
-    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.fromClassPath ("external/schematron/iso-schematron-2016.sch");
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builderFromClassPath ("external/schematron/iso-schematron-2016.sch")
+                                                                      .build ();
     assertTrue (aSch.isValidSchematron ());
   }
 }

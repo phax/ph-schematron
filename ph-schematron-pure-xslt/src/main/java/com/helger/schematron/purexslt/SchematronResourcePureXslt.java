@@ -613,7 +613,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
     }
 
-    final SchematronOutputType aSVRL = new SVRLMarshaller (false).read (aResultDoc);
+    final SchematronOutputType aSVRL = new SVRLMarshaller ().setUseSchema (false).read (aResultDoc);
     if (aSVRL == null)
       throw new IllegalStateException ("Saxon transformation did not produce a parseable SVRL document:\n" +
                                        XMLWriter.getNodeAsString (aResultDoc,
@@ -828,8 +828,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   /**
    * @param sSchematron
    *        The String representing the Schematron. May not be <code>null</code>.
-   * @param aCharset
-   *        The charset used to encode the string to bytes. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
    *         <code>null</code>.
    * @since 10.0.0
@@ -838,96 +836,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   public static Builder builderFromString (@NonNull final String sSchematron)
   {
     return builderFromString (sSchematron, StandardCharsets.UTF_8);
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromClassPath (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourcePureXslt (new ClassPathResource (sSCHPath));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromFile (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourcePureXslt (new FileSystemResource (sSCHPath));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromFile (@NonNull final File aSCHFile)
-  {
-    return new SchematronResourcePureXslt (new FileSystemResource (aSCHFile));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
-  {
-    return new SchematronResourcePureXslt (new URLResource (sSCHURL));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromURL (@NonNull final URL aSCHURL)
-  {
-    return new SchematronResourcePureXslt (new URLResource (aSCHURL));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromInputStream(String, InputStream)} instead.
-   *             Will remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromInputStream (@NonNull @Nonempty final String sResourceID,
-                                                            @NonNull final InputStream aSchematronIS)
-  {
-    return new SchematronResourcePureXslt (new ReadableResourceInputStream (sResourceID, aSchematronIS));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromByteArray(byte[])} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromByteArray (@NonNull final byte [] aSchematron)
-  {
-    return new SchematronResourcePureXslt (new ReadableResourceByteArray (aSchematron));
-  }
-
-  /**
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
-   *             for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXslt fromString (@NonNull final String sSchematron,
-                                                       @NonNull final Charset aCharset)
-  {
-    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
   // === Builder ===

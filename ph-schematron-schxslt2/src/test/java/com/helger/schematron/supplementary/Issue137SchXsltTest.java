@@ -41,7 +41,7 @@ public final class Issue137SchXsltTest
     if (false)
       SchematronDebug.setDebugMode (true);
 
-    final SchematronResourceSchXslt2 aSCH = SchematronResourceSchXslt2.fromFile (aSchematron);
+    final SchematronResourceSchXslt2 aSCH = SchematronResourceSchXslt2.builderFromFile (aSchematron).build ();
 
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));

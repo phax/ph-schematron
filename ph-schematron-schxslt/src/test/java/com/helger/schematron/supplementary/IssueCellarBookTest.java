@@ -38,22 +38,20 @@ public final class IssueCellarBookTest
 
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromFile (aSchematron);
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.builderFromFile (aSchematron)
+                                                                                .parameter ("schxslt.compile.metadata",
+                                                                                            "false")
+                                                                                .build ();
     assertTrue (aSCH.isValidSchematron ());
-    aSCH.parameters ().put ("schxslt.compile.metadata", "false");
 
     if (false)
       LOGGER.info (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));
-
-    // Disable!
-    if (false)
-      aSCH.setValidateSVRL (false);
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
     assertNotNull (aSVRL);
     if (true)
-      LOGGER.info (new SVRLMarshaller (false).getAsString (aSVRL));
+      LOGGER.info (new SVRLMarshaller ().setUseSchema (false).getAsString (aSVRL));
   }
 
   @Test

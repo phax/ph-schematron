@@ -21,13 +21,14 @@ import org.jspecify.annotations.NonNull;
 import com.helger.diagnostics.error.IError;
 
 /**
- * An implementation if {@link IPSErrorHandler} that does nothing and swallows
- * all output.
+ * An implementation if {@link IPSErrorHandler} that does nothing and swallows all output.
  *
  * @author Philip Helger
  */
 public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
 {
+  public static final DoNothingPSErrorHandler INSTANCE = new DoNothingPSErrorHandler ();
+
   @Override
   protected void handleInternally (@NonNull final IError aError)
   {

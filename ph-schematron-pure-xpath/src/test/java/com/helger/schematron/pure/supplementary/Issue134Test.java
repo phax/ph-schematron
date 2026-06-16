@@ -40,8 +40,9 @@ public final class Issue134Test
   private static void _validateAndProduceSVRL (@NonNull final File aSchematron, @NonNull final File aXML)
                                                                                                           throws Exception
   {
-    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.fromFile (aSchematron);
-    aSCH.setCustomValidationHandler (new LoggingPSValidationHandler ());
+    final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromFile (aSchematron)
+                                                                        .customValidationHandler (new LoggingPSValidationHandler ())
+                                                                        .build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

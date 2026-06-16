@@ -89,7 +89,11 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   @SuppressWarnings ("deprecation")
   protected SchematronResourceSCH (@NonNull final Builder aBuilder)
   {
-    super (aBuilder.m_aResource, aBuilder.m_aTFCustomizer, aBuilder.m_aTelemetry);
+    super (aBuilder.m_aResource,
+           aBuilder.m_aErrorListener,
+           aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
+           aBuilder.m_aTFCustomizer,
+           aBuilder.m_aTelemetry);
     setUseCache (aBuilder.m_bUseCache);
     setLenient (aBuilder.m_bLenient);
     if (aBuilder.m_bEntityResolverSet)

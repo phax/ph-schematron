@@ -48,7 +48,9 @@ public final class SchematronResourcePureXsltSweepTest
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
       nTotal++;
-      final SchematronResourcePureXslt aSch = new SchematronResourcePureXslt (aRes).setErrorHandler (new DoNothingPSErrorHandler ());
+      final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builder (aRes)
+                                                                        .errorHandler (new DoNothingPSErrorHandler ())
+                                                                        .build ();
       try
       {
         // Both lazy reading and XSLT generation/compilation are exercised by isValidSchematron

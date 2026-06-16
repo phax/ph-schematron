@@ -94,7 +94,11 @@ public class SchematronResourceSchXslt_XSLT2 extends
   @SuppressWarnings ("deprecation")
   protected SchematronResourceSchXslt_XSLT2 (@NonNull final Builder aBuilder)
   {
-    super (aBuilder.m_aResource, aBuilder.m_aTFCustomizer, aBuilder.m_aTelemetry);
+    super (aBuilder.m_aResource,
+           aBuilder.m_aErrorListener,
+           aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
+           aBuilder.m_aTFCustomizer,
+           aBuilder.m_aTelemetry);
     // Preserve the constructor-set schxslt.compile.metadata=false unless the Builder caller
     // explicitly configured parameters.
     if (aBuilder.m_aParameters.isEmpty ())
