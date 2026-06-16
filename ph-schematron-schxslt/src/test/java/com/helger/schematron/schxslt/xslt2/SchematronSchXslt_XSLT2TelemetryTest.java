@@ -80,14 +80,15 @@ public final class SchematronSchXslt_XSLT2TelemetryTest
   public void testTelemetryReceivesTemplateEvents () throws Exception
   {
     final CountingTelemetry aTelemetry = new CountingTelemetry ();
-    final SchematronSchXslt_XSLT2 aValidator = SchematronSchXslt_XSLT2.builder (VALID_SCHEMATRON)
-                                                                      .telemetry (aTelemetry)
-                                                                      .buildUncached ();
+    final SchematronResourceSchXslt_XSLT2 aValidator = SchematronResourceSchXslt_XSLT2.builder (VALID_SCHEMATRON)
+                                                                                      .telemetry (aTelemetry)
+                                                                                      .useCache (false)
+                                                                                      .build ();
     assertTrue ("invalid schematron", aValidator.isValidSchematron ());
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final Document aSVRL = aValidator.applyValidation (aXMLDoc, null);
+    final Document aSVRL = aValidator.applySchematronValidation (aXMLDoc, null);
     assertNotNull (aSVRL);
 
     assertEquals (1, aTelemetry.m_aStart.get ());
@@ -102,12 +103,14 @@ public final class SchematronSchXslt_XSLT2TelemetryTest
   @Test
   public void testNoTelemetryProducesNoEvents () throws Exception
   {
-    final SchematronSchXslt_XSLT2 aValidator = SchematronSchXslt_XSLT2.builder (VALID_SCHEMATRON).buildUncached ();
+    final SchematronResourceSchXslt_XSLT2 aValidator = SchematronResourceSchXslt_XSLT2.builder (VALID_SCHEMATRON)
+                                                                                      .useCache (false)
+                                                                                      .build ();
     assertTrue ("invalid schematron", aValidator.isValidSchematron ());
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final Document aSVRL = aValidator.applyValidation (aXMLDoc, null);
+    final Document aSVRL = aValidator.applySchematronValidation (aXMLDoc, null);
     assertNotNull (aSVRL);
   }
 

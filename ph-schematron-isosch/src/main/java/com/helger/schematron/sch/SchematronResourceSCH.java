@@ -183,8 +183,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   }
 
   /**
-   * @return The new builder-style config matching this resource's current state. Useful when
-   *         migrating to the {@link SchematronSCH} API.
+   * @return A {@link SchematronSCHConfig} snapshot of this resource's current state.
    * @since 10.0.0
    */
   @NonNull

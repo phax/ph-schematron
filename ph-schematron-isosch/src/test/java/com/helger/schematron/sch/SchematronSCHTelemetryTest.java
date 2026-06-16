@@ -82,7 +82,10 @@ public final class SchematronSCHTelemetryTest
   public void testTelemetryReceivesTemplateEvents () throws Exception
   {
     final CountingTelemetry aTelemetry = new CountingTelemetry ();
-    final SchematronSCH aValidator = SchematronSCH.builder (VALID_SCHEMATRON).telemetry (aTelemetry).buildUncached ();
+    final SchematronResourceSCH aValidator = SchematronResourceSCH.builder (VALID_SCHEMATRON)
+                                                                  .telemetry (aTelemetry)
+                                                                  .useCache (false)
+                                                                  .build ();
     assertTrue ("invalid schematron", aValidator.isValidSchematron ());
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
@@ -91,7 +94,7 @@ public final class SchematronSCHTelemetryTest
     assertEquals (0, aTelemetry.m_aStart.get ());
     assertEquals (0, aTelemetry.m_aEnd.get ());
 
-    final Document aSVRL = aValidator.applyValidation (aXMLDoc, null);
+    final Document aSVRL = aValidator.applySchematronValidation (aXMLDoc, null);
     assertNotNull (aSVRL);
 
     assertEquals (1, aTelemetry.m_aStart.get ());
@@ -106,12 +109,12 @@ public final class SchematronSCHTelemetryTest
   @Test
   public void testNoTelemetryProducesNoEvents () throws Exception
   {
-    final SchematronSCH aValidator = SchematronSCH.builder (VALID_SCHEMATRON).buildUncached ();
+    final SchematronResourceSCH aValidator = SchematronResourceSCH.builder (VALID_SCHEMATRON).useCache (false).build ();
     assertTrue ("invalid schematron", aValidator.isValidSchematron ());
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final Document aSVRL = aValidator.applyValidation (aXMLDoc, null);
+    final Document aSVRL = aValidator.applySchematronValidation (aXMLDoc, null);
     assertNotNull (aSVRL);
   }
 

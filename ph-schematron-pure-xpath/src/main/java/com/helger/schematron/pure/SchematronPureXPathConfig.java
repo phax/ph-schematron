@@ -29,7 +29,7 @@ import org.xml.sax.EntityResolver;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
-import com.helger.schematron.ISchematronValidatorBuilder;
+import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.ClassPathResource;
@@ -348,8 +348,7 @@ public final class SchematronPureXPathConfig implements ISchematronCompilation <
   // === Builder ===
 
   @NotThreadSafe
-  public static final class Builder implements
-                                     ISchematronValidatorBuilder <SchematronPureXPathConfig, SchematronPureXPathCache, SchematronPureXPath>
+  public static final class Builder implements IBuilder <SchematronPureXPathConfig>
   {
     private final IReadableResource m_aResource;
     private String m_sPhase;
@@ -458,47 +457,6 @@ public final class SchematronPureXPathConfig implements ISchematronCompilation <
     public SchematronPureXPathConfig build ()
     {
       return new SchematronPureXPathConfig (this);
-    }
-
-    /**
-     * Build the config and compile via the {@link SchematronPureXPathCache#shared() shared cache}.
-     *
-     * @return The compiled {@link SchematronPureXPath} instance. Never <code>null</code>.
-     * @throws SchematronException
-     *         on compilation error.
-     */
-    @NonNull
-    public SchematronPureXPath buildCached () throws SchematronException
-    {
-      return SchematronPureXPath.compileCached (build ());
-    }
-
-    /**
-     * Build the config and compile via the supplied cache.
-     *
-     * @param aCache
-     *        The cache instance to use. May not be <code>null</code>.
-     * @return The compiled {@link SchematronPureXPath} instance. Never <code>null</code>.
-     * @throws SchematronException
-     *         on compilation error.
-     */
-    @NonNull
-    public SchematronPureXPath buildCached (@NonNull final SchematronPureXPathCache aCache) throws SchematronException
-    {
-      return SchematronPureXPath.compileCached (build (), aCache);
-    }
-
-    /**
-     * Build the config and compile without using any cache.
-     *
-     * @return The compiled {@link SchematronPureXPath} instance. Never <code>null</code>.
-     * @throws SchematronException
-     *         on compilation error.
-     */
-    @NonNull
-    public SchematronPureXPath buildUncached () throws SchematronException
-    {
-      return SchematronPureXPath.compileUncached (build ());
     }
   }
 }

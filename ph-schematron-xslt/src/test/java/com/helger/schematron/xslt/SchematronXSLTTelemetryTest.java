@@ -81,14 +81,15 @@ public final class SchematronXSLTTelemetryTest
   public void testTelemetryReceivesTemplateEvents () throws Exception
   {
     final CountingTelemetry aTelemetry = new CountingTelemetry ();
-    final SchematronXSLT aValidator = SchematronXSLT.builder (VALID_XSLT_SCHEMATRON)
-                                                    .telemetry (aTelemetry)
-                                                    .buildUncached ();
+    final SchematronResourceXSLT aValidator = SchematronResourceXSLT.builder (VALID_XSLT_SCHEMATRON)
+                                                                    .telemetry (aTelemetry)
+                                                                    .useCache (false)
+                                                                    .build ();
     assertTrue ("invalid schematron", aValidator.isValidSchematron ());
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final Document aSVRL = aValidator.applyValidation (aXMLDoc, null);
+    final Document aSVRL = aValidator.applySchematronValidation (aXMLDoc, null);
     assertNotNull (aSVRL);
 
     assertEquals (1, aTelemetry.m_aStart.get ());
@@ -106,12 +107,14 @@ public final class SchematronXSLTTelemetryTest
   @Test
   public void testNoTelemetryProducesNoEvents () throws Exception
   {
-    final SchematronXSLT aValidator = SchematronXSLT.builder (VALID_XSLT_SCHEMATRON).buildUncached ();
+    final SchematronResourceXSLT aValidator = SchematronResourceXSLT.builder (VALID_XSLT_SCHEMATRON)
+                                                                    .useCache (false)
+                                                                    .build ();
     assertTrue ("invalid schematron", aValidator.isValidSchematron ());
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final Document aSVRL = aValidator.applyValidation (aXMLDoc, null);
+    final Document aSVRL = aValidator.applySchematronValidation (aXMLDoc, null);
     assertNotNull (aSVRL);
   }
 

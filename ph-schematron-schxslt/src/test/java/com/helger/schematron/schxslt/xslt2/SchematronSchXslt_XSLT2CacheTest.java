@@ -61,16 +61,16 @@ public final class SchematronSchXslt_XSLT2CacheTest
   public void testValidSynchronous () throws Exception
   {
     // Ensure that the Schematron is cached
-    SchematronSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON)).buildCached ();
+    SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON)).build ().isValidSchematron ();
     final Node aXML = DOMReader.readXMLDOM (new ClassPathResource (VALID_XMLINSTANCE));
     assertNotNull (aXML);
 
     final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
-      final SchematronSchXslt_XSLT2 aSV = SchematronSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))
-                                                                 .buildCached ();
-      final Document aDoc = aSV.applyValidation (aXML, null);
+      final SchematronResourceSchXslt_XSLT2 aSV = SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))
+                                                                                 .build ();
+      final Document aDoc = aSV.applySchematronValidation (aXML, null);
       assertNotNull (aDoc);
       if (false)
         LOGGER.info (XMLWriter.getNodeAsString (aDoc));
@@ -87,7 +87,7 @@ public final class SchematronSchXslt_XSLT2CacheTest
   public void testValidAsynchronous () throws Exception
   {
     // Ensure that the Schematron is cached
-    SchematronSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON)).buildCached ();
+    SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON)).build ().isValidSchematron ();
     final Node aXML = DOMReader.readXMLDOM (new ClassPathResource (VALID_XMLINSTANCE));
     assertNotNull (aXML);
 
@@ -101,9 +101,9 @@ public final class SchematronSchXslt_XSLT2CacheTest
       aSenderThreadPool.submit ( () -> {
         try
         {
-          final SchematronSchXslt_XSLT2 aSV = SchematronSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))
-                                                                     .buildCached ();
-          final Document aDoc = aSV.applyValidation (aXML, null);
+          final SchematronResourceSchXslt_XSLT2 aSV = SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))
+                                                                                     .build ();
+          final Document aDoc = aSV.applySchematronValidation (aXML, null);
           assertNotNull (aDoc);
         }
         catch (final Exception ex)
@@ -124,19 +124,23 @@ public final class SchematronSchXslt_XSLT2CacheTest
   @Test
   public void testInvalidSchematron () throws Exception
   {
-    assertFalse (SchematronSchXslt_XSLT2.builder (new ClassPathResource ("test-sch/invalid01.sch"))
-                                        .buildUncached ()
-                                        .isValidSchematron ());
-    assertFalse (SchematronSchXslt_XSLT2.builder (new ClassPathResource ("test-sch/this.file.does.not.exists"))
-                                        .buildUncached ()
-                                        .isValidSchematron ());
+    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource ("test-sch/invalid01.sch"))
+                                                .useCache (false)
+                                                .build ()
+                                                .isValidSchematron ());
+    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource ("test-sch/this.file.does.not.exists"))
+                                                .useCache (false)
+                                                .build ()
+                                                .isValidSchematron ());
 
-    assertFalse (SchematronSchXslt_XSLT2.builder (new FileSystemResource ("src/test/resources/test-sch/invalid01.sch"))
-                                        .buildUncached ()
-                                        .isValidSchematron ());
-    assertFalse (SchematronSchXslt_XSLT2.builder (new FileSystemResource ("src/test/resources/test-sch/this.file.does.not.exists"))
-                                        .buildUncached ()
-                                        .isValidSchematron ());
+    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new FileSystemResource ("src/test/resources/test-sch/invalid01.sch"))
+                                                .useCache (false)
+                                                .build ()
+                                                .isValidSchematron ());
+    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new FileSystemResource ("src/test/resources/test-sch/this.file.does.not.exists"))
+                                                .useCache (false)
+                                                .build ()
+                                                .isValidSchematron ());
   }
 
   @Test

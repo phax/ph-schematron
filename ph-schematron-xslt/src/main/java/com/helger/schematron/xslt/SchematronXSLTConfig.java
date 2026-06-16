@@ -37,6 +37,7 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsLinkedHashMap;
@@ -52,7 +53,6 @@ import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-import com.helger.schematron.api.xslt.ISchematronXSLTBasedValidatorBuilder;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 
@@ -356,8 +356,7 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   // === Builder ===
 
   @NotThreadSafe
-  public static final class Builder implements
-                                     ISchematronXSLTBasedValidatorBuilder <SchematronXSLTConfig, SchematronXSLTCache, SchematronXSLT>
+  public static final class Builder implements IBuilder <SchematronXSLTConfig>
   {
     private final IReadableResource m_aResource;
     private ErrorListener m_aErrorListener;
@@ -485,47 +484,6 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     public SchematronXSLTConfig build ()
     {
       return new SchematronXSLTConfig (this);
-    }
-
-    /**
-     * Build the config and compile via the {@link SchematronXSLTCache#shared() shared cache}.
-     *
-     * @return The compiled {@link SchematronXSLT} instance. Never <code>null</code>.
-     * @throws SchematronException
-     *         on compilation error.
-     */
-    @NonNull
-    public SchematronXSLT buildCached () throws SchematronException
-    {
-      return SchematronXSLT.compileCached (build ());
-    }
-
-    /**
-     * Build the config and compile via the supplied cache.
-     *
-     * @param aCache
-     *        The cache instance to use. May not be <code>null</code>.
-     * @return The compiled {@link SchematronXSLT} instance. Never <code>null</code>.
-     * @throws SchematronException
-     *         on compilation error.
-     */
-    @NonNull
-    public SchematronXSLT buildCached (@NonNull final SchematronXSLTCache aCache) throws SchematronException
-    {
-      return SchematronXSLT.compileCached (build (), aCache);
-    }
-
-    /**
-     * Build the config and compile without using any cache.
-     *
-     * @return The compiled {@link SchematronXSLT} instance. Never <code>null</code>.
-     * @throws SchematronException
-     *         on compilation error.
-     */
-    @NonNull
-    public SchematronXSLT buildUncached () throws SchematronException
-    {
-      return SchematronXSLT.compileUncached (build ());
     }
   }
 }

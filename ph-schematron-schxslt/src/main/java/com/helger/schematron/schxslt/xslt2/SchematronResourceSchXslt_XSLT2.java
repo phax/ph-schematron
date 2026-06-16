@@ -194,7 +194,7 @@ public class SchematronResourceSchXslt_XSLT2 extends
 
   /**
    * @return The new builder-style config matching this resource's current state. Useful when
-   *         migrating to the {@link SchematronSchXslt_XSLT2} API.
+   *         migrating to the {@link SchematronSchXslt_XSLT2Config} API.
    * @since 10.0.0
    */
   @NonNull

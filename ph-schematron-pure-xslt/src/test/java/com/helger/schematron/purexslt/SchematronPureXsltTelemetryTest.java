@@ -23,18 +23,27 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.transform.dom.DOMSource;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SchematronTemplateInfo;
+import com.helger.schematron.api.telemetry.SchematronTraceListener;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.read.DOMReader;
+
+import net.sf.saxon.s9api.DOMDestination;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XsltExecutable;
 
 /**
  * Test class for {@link ISchematronTemplateTelemetry} integration with the pure-Java Saxon-native
- * engine.
+ * engine, driven via {@link SchematronPureXsltConfig} directly.
  *
  * @author Philip Helger
  */
@@ -75,18 +84,31 @@ public final class SchematronPureXsltTelemetryTest
     }
   }
 
+  private static SchematronOutputType _runValidation (final SchematronPureXsltConfig aConfig,
+                                                      final Document aXMLDoc) throws Exception
+  {
+    final XsltExecutable aExecutable = aConfig.compile ();
+    final Document aResultDoc = XMLFactory.newDocument ();
+    final DOMDestination aDestination = new DOMDestination (aResultDoc);
+    final var aTransformer = aExecutable.load30 ();
+    if (aConfig.getTelemetry () != null)
+      aTransformer.setTraceListener (new SchematronTraceListener (aConfig.getTelemetry ()));
+    aTransformer.applyTemplates (new DOMSource (aXMLDoc), aDestination);
+    return new SVRLMarshaller ().setUseSchema (false).read (aResultDoc);
+  }
+
   @Test
   public void testTelemetryReceivesTemplateEvents () throws Exception
   {
     final CountingTelemetry aTelemetry = new CountingTelemetry ();
-    final SchematronPureXslt aValidator = SchematronPureXslt.builder (VALID_SCHEMATRON)
-                                                            .telemetry (aTelemetry)
-                                                            .buildUncached ();
-    assertTrue ("invalid schematron", aValidator.isValidSchematron ());
+    final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (VALID_SCHEMATRON)
+                                                                     .processor (new Processor (false))
+                                                                     .telemetry (aTelemetry)
+                                                                     .build ();
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final SchematronOutputType aSVRL = aValidator.applyToSVRL (aXMLDoc, null);
+    final SchematronOutputType aSVRL = _runValidation (aConfig, aXMLDoc);
     assertNotNull (aSVRL);
 
     assertEquals (1, aTelemetry.m_aStart.get ());
@@ -101,12 +123,13 @@ public final class SchematronPureXsltTelemetryTest
   @Test
   public void testNoTelemetryProducesNoEvents () throws Exception
   {
-    final SchematronPureXslt aValidator = SchematronPureXslt.builder (VALID_SCHEMATRON).buildUncached ();
-    assertTrue ("invalid schematron", aValidator.isValidSchematron ());
+    final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (VALID_SCHEMATRON)
+                                                                     .processor (new Processor (false))
+                                                                     .build ();
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);
-    final SchematronOutputType aSVRL = aValidator.applyToSVRL (aXMLDoc, null);
+    final SchematronOutputType aSVRL = _runValidation (aConfig, aXMLDoc);
     assertNotNull (aSVRL);
   }
 

@@ -184,7 +184,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
 
   /**
    * @return The new builder-style config matching this resource's current state. Useful when
-   *         migrating to the {@link SchematronSchXslt2} API.
+   *         migrating to the {@link SchematronSchXslt2Config} API.
    * @since 10.0.0
    */
   @NonNull
