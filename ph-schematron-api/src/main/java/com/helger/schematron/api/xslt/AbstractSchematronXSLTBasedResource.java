@@ -330,7 +330,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @NonNull
   public final EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                               throws Exception
+                                                                                                               throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -357,7 +357,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @Nullable
   public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                            throws Exception
+                                                                                                            throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -368,7 +368,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @Nullable
   public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLSource,
-                                                               @Nullable final String sBaseURI) throws Exception
+                                                               @Nullable final String sBaseURI) throws TransformerException
   {
     final Document aDoc = applySchematronValidation (aXMLSource, sBaseURI);
     if (aDoc == null)

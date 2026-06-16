@@ -48,10 +48,9 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
- * Stateless utility that applies a previously-compiled
- * {@link ISchematronXSLTBasedProvider XSLT-based Schematron provider} to an XML source. Used by
- * the builder-style validators introduced in v10.0.0 to avoid duplicating the transformation
- * plumbing across engines.
+ * Stateless utility that applies a previously-compiled {@link ISchematronXSLTBasedProvider
+ * XSLT-based Schematron provider} to an XML source. Used by the builder-style validators introduced
+ * in v10.0.0 to avoid duplicating the transformation plumbing across engines.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -124,8 +123,7 @@ public final class SchematronXSLTValidator
                                           @Nullable final ErrorListener aErrorListener,
                                           @Nullable final URIResolver aURIResolver,
                                           @Nullable final Map <String, ?> aParameters,
-                                          @Nullable final ISchematronTemplateTelemetry aTelemetry)
-                                                                                                    throws TransformerException
+                                          @Nullable final ISchematronTemplateTelemetry aTelemetry) throws TransformerException
   {
     ValueEnforcer.notNull (aSource, "Source");
 
@@ -238,8 +236,7 @@ public final class SchematronXSLTValidator
                                           @Nullable final ErrorListener aErrorListener,
                                           @Nullable final URIResolver aURIResolver,
                                           @Nullable final Map <String, ?> aParameters,
-                                          @Nullable final ISchematronTemplateTelemetry aTelemetry)
-                                                                                                    throws TransformerException
+                                          @Nullable final ISchematronTemplateTelemetry aTelemetry) throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
     final DOMSource aSource = new DOMSource (aXMLNode);
@@ -319,8 +316,7 @@ public final class SchematronXSLTValidator
                                                   @Nullable final URIResolver aURIResolver,
                                                   @Nullable final Map <String, ?> aParameters,
                                                   final boolean bValidateSVRL,
-                                                  @Nullable final ISchematronTemplateTelemetry aTelemetry)
-                                                                                                           throws TransformerException
+                                                  @Nullable final ISchematronTemplateTelemetry aTelemetry) throws TransformerException
   {
     final Document aDoc = applyValidation (aProvider,
                                            aXMLNode,
@@ -334,7 +330,7 @@ public final class SchematronXSLTValidator
     if (aDoc.getDocumentElement () == null)
       throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
 
-    final SVRLMarshaller aMarshaller = new SVRLMarshaller (bValidateSVRL);
+    final var aMarshaller = new SVRLMarshaller ().setUseSchema (bValidateSVRL);
     if (GlobalDebug.isDebugMode ())
     {
       aMarshaller.readExceptionCallbacks ()

@@ -108,7 +108,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   /** Default for {@link #setForceCacheResult(boolean)}. */
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
 
-  private String m_sPhase;
+  private final String m_sPhase;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
   private Processor m_aProcessor = new Processor (false);
   private URIResolver m_aURIResolver;
@@ -121,12 +121,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   private PSSchema m_aSchema;
   private XsltExecutable m_aCompiledXslt;
 
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public SchematronResourcePureXslt (@NonNull final IReadableResource aResource)
-  {
-    super (aResource);
-  }
-
   /**
    * Builder-based constructor. Applies all configurable state from the supplied {@link Builder} to
    * the newly-constructed resource. Invoked by {@link Builder#build()}.
@@ -135,14 +129,12 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The configured builder. May not be <code>null</code>.
    * @since 10.0.0
    */
-  @SuppressWarnings ("deprecation")
   protected SchematronResourcePureXslt (@NonNull final Builder aBuilder)
   {
-    super (aBuilder.m_aResource);
-    setUseCache (aBuilder.m_bUseCache);
-    setLenient (aBuilder.m_bLenient);
-    if (aBuilder.m_bEntityResolverSet)
-      internalSetEntityResolver (aBuilder.m_aEntityResolver);
+    super (aBuilder.m_aResource,
+           aBuilder.m_bUseCache,
+           aBuilder.m_bLenient,
+           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null);
     m_sPhase = aBuilder.m_sPhase;
     m_aErrorHandler = aBuilder.m_aErrorHandler;
     m_aProcessor = aBuilder.m_aProcessor;
@@ -164,51 +156,12 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * Set the Schematron phase to be evaluated. May only be called before the schema is bound.
-   *
-   * @param sPhase
-   *        The name of the phase to use. May be <code>null</code> which means all phases.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setPhase (@Nullable final String sPhase)
-  {
-    if (m_aSchema != null)
-      throw new IllegalStateException ("Schematron was already read and can therefore not be altered!");
-    m_sPhase = sPhase;
-    return this;
-  }
-
-  /**
    * @return The error handler used during reading. Never <code>null</code>.
    */
   @NonNull
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
-  }
-
-  /**
-   * Set the error handler to be used when reading the Schematron source.
-   *
-   * @param aErrorHandler
-   *        The error handler. May not be <code>null</code>.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setErrorHandler (@NonNull final IPSErrorHandler aErrorHandler)
-  {
-    ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
-    if (m_aSchema != null)
-      throw new IllegalStateException ("Schematron was already read and can therefore not be altered!");
-    m_aErrorHandler = aErrorHandler;
-    return this;
   }
 
   /**
