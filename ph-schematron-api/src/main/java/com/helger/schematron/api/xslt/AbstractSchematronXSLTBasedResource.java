@@ -328,6 +328,32 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return aXSLTProvider != null && aXSLTProvider.isValidSchematron ();
   }
 
+  @Nullable
+  private SchematronOutputType _readSVRL (@Nullable final Document aDoc)
+  {
+    if (aDoc == null)
+      return null;
+
+    // Avoid NPE later on
+    if (aDoc.getDocumentElement () == null)
+      throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
+
+    if (false)
+      LOGGER.info (XMLWriter.getNodeAsString (aDoc,
+                                              new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
+
+    // Now try to read the resulting XML document as a SVRL document - may fail
+    final var aMarshaller = new SVRLMarshaller ().setUseSchema (m_bValidateSVRL);
+    if (GlobalDebug.isDebugMode ())
+    {
+      // Set an exception callback that logs the source node as well
+      aMarshaller.readExceptionCallbacks ()
+                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc),
+                                           ex));
+    }
+    return aMarshaller.read (aDoc);
+  }
+
   @NonNull
   public final EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
                                                                                                                throws TransformerException
@@ -340,6 +366,19 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       return EValidity.INVALID;
 
     // And now filter all elements that make the passed source invalid
+    return m_aSOVDeterminator.getSchematronOutputValidity (aSO);
+  }
+
+  @Override
+  @NonNull
+  public final EValidity getSchematronValidity (@NonNull final Source aXMLSource) throws TransformerException
+  {
+    ValueEnforcer.notNull (aXMLSource, "XMLSource");
+
+    final SchematronOutputType aSO = applySchematronValidationToSVRL (aXMLSource);
+    if (aSO == null)
+      return EValidity.INVALID;
+
     return m_aSOVDeterminator.getSchematronOutputValidity (aSO);
   }
 
@@ -370,28 +409,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLSource,
                                                                @Nullable final String sBaseURI) throws TransformerException
   {
-    final Document aDoc = applySchematronValidation (aXMLSource, sBaseURI);
-    if (aDoc == null)
-      return null;
+    return _readSVRL (applySchematronValidation (aXMLSource, sBaseURI));
+  }
 
-    // Avoid NPE later on
-    if (aDoc.getDocumentElement () == null)
-      throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
-
-    if (false)
-      LOGGER.info (XMLWriter.getNodeAsString (aDoc,
-                                              new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
-
-    // Now try to read the resulting XML document as a SVRL document - may fail
-    final var aMarshaller = new SVRLMarshaller ().setUseSchema (m_bValidateSVRL);
-    if (GlobalDebug.isDebugMode ())
-    {
-      // Set an exception callback that logs the source node as well
-      aMarshaller.readExceptionCallbacks ()
-                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc),
-                                           ex));
-    }
-    return aMarshaller.read (aDoc);
+  @Override
+  @Nullable
+  public final SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource)
+                                                                                                       throws TransformerException
+  {
+    return _readSVRL (applySchematronValidation (aXMLSource));
   }
 
   @Override

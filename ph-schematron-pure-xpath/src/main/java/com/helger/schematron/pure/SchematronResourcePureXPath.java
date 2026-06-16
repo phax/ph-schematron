@@ -553,7 +553,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
 
   @NonNull
   public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                         throws Exception
+                                                                                                         throws SchematronException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -618,7 +618,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
 
   @Nullable
   public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                            throws Exception
+                                                                                                            throws SchematronException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 

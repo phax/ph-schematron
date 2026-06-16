@@ -34,6 +34,7 @@ import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.pure.SchematronPureXPathConfig.Builder;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
+import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
@@ -124,11 +125,12 @@ public final class SchematronPureXPath implements ISchematronValidator
    *        Optional base URI used as the source system ID.
    * @return The validity verdict. Never <code>null</code>. {@link EValidity#INVALID} is returned if
    *         the underlying Schematron itself is invalid.
-   * @throws Exception
+   * @throws SchematronValidationException
    *         If the partial validation pass fails.
    */
   @NonNull
-  public EValidity getValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
+  public EValidity getValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+                                                                                                throws SchematronValidationException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
     if (!isValidSchematron ())
