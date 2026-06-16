@@ -49,7 +49,6 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.URLResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
-import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
@@ -204,8 +203,8 @@ public final class SchematronSCHConfig implements ISchematronCompilation <ISchem
    * @return The custom {@link TransformerFactory} customizer applied to the final compile-step
    *         transformer factory, or <code>null</code> if none. Used to register Saxon extension
    *         functions or otherwise tweak the factory before the validation stylesheet is compiled.
-   *         When non-<code>null</code>, the cache is bypassed unless
-   *         {@link #isForceCacheResult()} is true.
+   *         When non-<code>null</code>, the cache is bypassed unless {@link #isForceCacheResult()}
+   *         is true.
    */
   @Nullable
   public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()

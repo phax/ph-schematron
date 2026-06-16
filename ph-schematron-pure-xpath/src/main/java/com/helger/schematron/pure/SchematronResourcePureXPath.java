@@ -504,6 +504,24 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     return m_aBoundSchema;
   }
 
+  /**
+   * @return A {@link SchematronPureXPathConfig} snapshot of this resource's compile-time state.
+   *         Runtime-only fields (telemetry toggles) are intentionally not propagated.
+   * @since 10.0.0
+   */
+  @NonNull
+  public final SchematronPureXPathConfig toConfig ()
+  {
+    return SchematronPureXPathConfig.builder (getResource ())
+                                    .phase (m_sPhase)
+                                    .errorHandler (m_aErrorHandler)
+                                    .customValidationHandler (m_aCustomValidationHandler)
+                                    .xpathConfig (m_aXPathConfig)
+                                    .entityResolver (getEntityResolver ())
+                                    .lenient (isLenient ())
+                                    .build ();
+  }
+
   public boolean isValidSchematron ()
   {
     // Use the provided error handler (if any)
@@ -783,6 +801,59 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   public static Builder builderFromString (@NonNull final String sSchematron)
   {
     return builderFromString (sSchematron, StandardCharsets.UTF_8);
+  }
+
+  // === Eager-compile shortcuts ===
+
+  /**
+   * Convenience: equivalent to {@code builder(aResource).buildCached()}.
+   *
+   * @param aResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @return The fully compiled resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourcePureXPath compileCached (@NonNull final IReadableResource aResource) throws SchematronException
+  {
+    return builder (aResource).buildCached ();
+  }
+
+  /**
+   * Convenience: equivalent to {@code builder(aResource).buildCached(aCache)}.
+   *
+   * @param aResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @param aCache
+   *        The cache instance to use. May not be <code>null</code>.
+   * @return The fully compiled resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourcePureXPath compileCached (@NonNull final IReadableResource aResource,
+                                                           @NonNull final SchematronPureXPathCache aCache) throws SchematronException
+  {
+    return builder (aResource).buildCached (aCache);
+  }
+
+  /**
+   * Convenience: equivalent to {@code builder(aResource).buildUncached()}.
+   *
+   * @param aResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @return The configured resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourcePureXPath compileUncached (@NonNull final IReadableResource aResource) throws SchematronException
+  {
+    return builder (aResource).buildUncached ();
   }
 
   /**
@@ -1131,6 +1202,65 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     public SchematronResourcePureXPath build ()
     {
       return new SchematronResourcePureXPath (this);
+    }
+
+    /**
+     * Build the resource and eagerly compile via the {@link SchematronPureXPathCache#shared()
+     * shared cache}. Pre-warms the cache for any subsequent caller with the same config and
+     * surfaces compilation failures as {@link SchematronException} rather than letting them appear
+     * lazily on first validation.
+     *
+     * @return The fully compiled resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourcePureXPath buildCached () throws SchematronException
+    {
+      useCache (true);
+      final SchematronResourcePureXPath ret = build ();
+      SchematronPureXPathCache.shared ().getOrCompile (ret.toConfig ());
+      return ret;
+    }
+
+    /**
+     * Build the resource and eagerly compile via the supplied cache.
+     *
+     * @param aCache
+     *        The cache instance to use. May not be <code>null</code>.
+     * @return The fully compiled resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourcePureXPath buildCached (@NonNull final SchematronPureXPathCache aCache) throws SchematronException
+    {
+      ValueEnforcer.notNull (aCache, "Cache");
+      useCache (true);
+      final SchematronResourcePureXPath ret = build ();
+      aCache.getOrCompile (ret.toConfig ());
+      return ret;
+    }
+
+    /**
+     * Build the resource and eagerly compile without using any cache. The validation result is
+     * discarded; subsequent validation calls will recompile per the resource's lazy-compile
+     * semantics. Useful as a fail-fast verification at construction time.
+     *
+     * @return The configured resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourcePureXPath buildUncached () throws SchematronException
+    {
+      useCache (false);
+      final SchematronResourcePureXPath ret = build ();
+      ret.toConfig ().compile ();
+      return ret;
     }
   }
 }

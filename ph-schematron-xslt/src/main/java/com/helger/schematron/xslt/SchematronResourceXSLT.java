@@ -47,6 +47,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.CSchematron;
+import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
@@ -299,6 +300,59 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
   public static Builder builderFromString (@NonNull final String sXSLT)
   {
     return builderFromString (sXSLT, StandardCharsets.UTF_8);
+  }
+
+  // === Eager-compile shortcuts ===
+
+  /**
+   * Convenience: equivalent to {@code builder(aXSLTResource).buildCached()}.
+   *
+   * @param aXSLTResource
+   *        The XSLT resource. May not be <code>null</code>.
+   * @return The fully compiled resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourceXSLT compileCached (@NonNull final IReadableResource aXSLTResource) throws SchematronException
+  {
+    return builder (aXSLTResource).buildCached ();
+  }
+
+  /**
+   * Convenience: equivalent to {@code builder(aXSLTResource).buildCached(aCache)}.
+   *
+   * @param aXSLTResource
+   *        The XSLT resource. May not be <code>null</code>.
+   * @param aCache
+   *        The cache instance to use. May not be <code>null</code>.
+   * @return The fully compiled resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourceXSLT compileCached (@NonNull final IReadableResource aXSLTResource,
+                                                      @NonNull final SchematronXSLTCache aCache) throws SchematronException
+  {
+    return builder (aXSLTResource).buildCached (aCache);
+  }
+
+  /**
+   * Convenience: equivalent to {@code builder(aXSLTResource).buildUncached()}.
+   *
+   * @param aXSLTResource
+   *        The XSLT resource. May not be <code>null</code>.
+   * @return The configured resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourceXSLT compileUncached (@NonNull final IReadableResource aXSLTResource) throws SchematronException
+  {
+    return builder (aXSLTResource).buildUncached ();
   }
 
   /**
@@ -660,6 +714,66 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
     public SchematronResourceXSLT build ()
     {
       return new SchematronResourceXSLT (this);
+    }
+
+    /**
+     * Build the resource and eagerly compile via the {@link SchematronXSLTCache#shared() shared
+     * cache} (or the cache configured on this builder). Surfaces compilation failures as
+     * {@link SchematronException} instead of letting them appear lazily on the first validation
+     * call.
+     *
+     * @return The fully compiled resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourceXSLT buildCached () throws SchematronException
+    {
+      useCache (true);
+      final SchematronResourceXSLT ret = build ();
+      final SchematronXSLTCache aCache = m_aCache != null ? m_aCache : SchematronXSLTCache.shared ();
+      aCache.getOrCompile (ret.toConfig ());
+      return ret;
+    }
+
+    /**
+     * Build the resource and eagerly compile via the supplied cache.
+     *
+     * @param aCache
+     *        The cache instance to use. May not be <code>null</code>.
+     * @return The fully compiled resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourceXSLT buildCached (@NonNull final SchematronXSLTCache aCache) throws SchematronException
+    {
+      ValueEnforcer.notNull (aCache, "Cache");
+      useCache (true).cache (aCache);
+      final SchematronResourceXSLT ret = build ();
+      aCache.getOrCompile (ret.toConfig ());
+      return ret;
+    }
+
+    /**
+     * Build the resource and eagerly compile without using any cache. The validation result is
+     * discarded; subsequent validation calls will recompile per the resource's lazy-compile
+     * semantics. Useful as a fail-fast verification at construction time.
+     *
+     * @return The configured resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourceXSLT buildUncached () throws SchematronException
+    {
+      useCache (false);
+      final SchematronResourceXSLT ret = build ();
+      ret.toConfig ().compile ();
+      return ret;
     }
   }
 }

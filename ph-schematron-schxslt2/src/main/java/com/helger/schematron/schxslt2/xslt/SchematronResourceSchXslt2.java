@@ -379,6 +379,61 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     return builderFromString (sSchematron, StandardCharsets.UTF_8);
   }
 
+  // === Eager-compile shortcuts ===
+
+  /**
+   * Convenience: equivalent to {@code builder(aSCHResource).buildCached()}.
+   *
+   * @param aSCHResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @return The fully compiled resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourceSchXslt2 compileCached (@NonNull final IReadableResource aSCHResource)
+                                                                                                         throws SchematronException
+  {
+    return builder (aSCHResource).buildCached ();
+  }
+
+  /**
+   * Convenience: equivalent to {@code builder(aSCHResource).buildCached(aCache)}.
+   *
+   * @param aSCHResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @param aCache
+   *        The cache instance to use. May not be <code>null</code>.
+   * @return The fully compiled resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourceSchXslt2 compileCached (@NonNull final IReadableResource aSCHResource,
+                                                          @NonNull final SchematronSchXslt2Cache aCache) throws SchematronException
+  {
+    return builder (aSCHResource).buildCached (aCache);
+  }
+
+  /**
+   * Convenience: equivalent to {@code builder(aSCHResource).buildUncached()}.
+   *
+   * @param aSCHResource
+   *        The Schematron resource. May not be <code>null</code>.
+   * @return The configured resource. Never <code>null</code>.
+   * @throws SchematronException
+   *         on compilation error.
+   * @since 10.0.0
+   */
+  @NonNull
+  public static SchematronResourceSchXslt2 compileUncached (@NonNull final IReadableResource aSCHResource)
+                                                                                                           throws SchematronException
+  {
+    return builder (aSCHResource).buildUncached ();
+  }
+
   /**
    * Create a new {@link SchematronResourceSchXslt2} resource.
    *
@@ -785,6 +840,66 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     public SchematronResourceSchXslt2 build ()
     {
       return new SchematronResourceSchXslt2 (this);
+    }
+
+    /**
+     * Build the resource and eagerly compile via the {@link SchematronSchXslt2Cache#shared() shared
+     * cache} (or the cache configured on this builder). Surfaces compilation failures as
+     * {@link SchematronException} instead of letting them appear lazily on the first validation
+     * call.
+     *
+     * @return The fully compiled resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourceSchXslt2 buildCached () throws SchematronException
+    {
+      useCache (true);
+      final SchematronResourceSchXslt2 ret = build ();
+      final SchematronSchXslt2Cache aCache = m_aCache != null ? m_aCache : SchematronSchXslt2Cache.shared ();
+      aCache.getOrCompile (ret.toConfig ());
+      return ret;
+    }
+
+    /**
+     * Build the resource and eagerly compile via the supplied cache.
+     *
+     * @param aCache
+     *        The cache instance to use. May not be <code>null</code>.
+     * @return The fully compiled resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourceSchXslt2 buildCached (@NonNull final SchematronSchXslt2Cache aCache) throws SchematronException
+    {
+      ValueEnforcer.notNull (aCache, "Cache");
+      useCache (true).cache (aCache);
+      final SchematronResourceSchXslt2 ret = build ();
+      aCache.getOrCompile (ret.toConfig ());
+      return ret;
+    }
+
+    /**
+     * Build the resource and eagerly compile without using any cache. The validation result is
+     * discarded; subsequent validation calls will recompile per the resource's lazy-compile
+     * semantics. Useful as a fail-fast verification at construction time.
+     *
+     * @return The configured resource. Never <code>null</code>.
+     * @throws SchematronException
+     *         on compilation error.
+     * @since 10.0.0
+     */
+    @NonNull
+    public SchematronResourceSchXslt2 buildUncached () throws SchematronException
+    {
+      useCache (false);
+      final SchematronResourceSchXslt2 ret = build ();
+      ret.toConfig ().compile ();
+      return ret;
     }
   }
 }
