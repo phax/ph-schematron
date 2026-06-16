@@ -60,7 +60,6 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    * inspect the recorded data through the accessor methods.
    *
    * @author Philip Helger
-   * @since 10.0.0
    */
   public static final class CapturedSpan implements ITelemetrySpan
   {
@@ -247,7 +246,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
   public ITelemetrySpan startSpan (@NonNull final String sName, @NonNull final ETelemetrySpanKind eKind)
   {
     final CapturedSpan aSpan = new CapturedSpan (sName, eKind);
-    m_aRWLock.writeLocked ( () -> m_aSpans.add (aSpan));
+    m_aRWLock.writeLocked (() -> m_aSpans.add (aSpan));
     return aSpan;
   }
 
@@ -259,8 +258,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                           @Nullable final String sDescription,
                                           @Nullable final String sUnit)
   {
-    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName,
-                                                                                          x -> new AtomicLong ()));
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet (() -> m_aCounters.computeIfAbsent (sName,
+                                                                                         x -> new AtomicLong ()));
     // AtomicLong is itself thread-safe so the per-add path is lock-free
     return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
   }
@@ -271,8 +270,8 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                                       @Nullable final String sDescription,
                                                       @Nullable final String sUnit)
   {
-    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName,
-                                                                                          x -> new AtomicLong ()));
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet (() -> m_aCounters.computeIfAbsent (sName,
+                                                                                         x -> new AtomicLong ()));
     return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
   }
 
@@ -282,9 +281,9 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
                                               @Nullable final String sDescription,
                                               @Nullable final String sUnit)
   {
-    final ICommonsList <Double> aValues = m_aRWLock.writeLockedGet ( () -> m_aHistograms.computeIfAbsent (sName,
-                                                                                                          x -> new CommonsArrayList <> ()));
-    return (dValue, aAttrs) -> m_aRWLock.writeLocked ( () -> aValues.add (Double.valueOf (dValue)));
+    final ICommonsList <Double> aValues = m_aRWLock.writeLockedGet (() -> m_aHistograms.computeIfAbsent (sName,
+                                                                                                         x -> new CommonsArrayList <> ()));
+    return (dValue, aAttrs) -> m_aRWLock.writeLocked (() -> aValues.add (Double.valueOf (dValue)));
   }
 
   @Override
@@ -319,7 +318,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    */
   public long countSpansNamed (@NonNull final String sName)
   {
-    return m_aRWLock.readLockedLong ( () -> m_aSpans.stream ().filter (x -> sName.equals (x.getName ())).count ());
+    return m_aRWLock.readLockedLong (() -> m_aSpans.stream ().filter (x -> sName.equals (x.getName ())).count ());
   }
 
   /**
@@ -330,7 +329,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    */
   public long getCounterValue (@NonNull final String sName)
   {
-    final AtomicLong aAgg = m_aRWLock.readLockedGet ( () -> m_aCounters.get (sName));
+    final AtomicLong aAgg = m_aRWLock.readLockedGet (() -> m_aCounters.get (sName));
     return aAgg == null ? 0L : aAgg.get ();
   }
 
@@ -344,7 +343,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
   @ReturnsMutableCopy
   public ICommonsList <Double> getHistogramValues (@NonNull final String sName)
   {
-    return m_aRWLock.readLockedGet ( () -> {
+    return m_aRWLock.readLockedGet (() -> {
       final ICommonsList <Double> aValues = m_aHistograms.get (sName);
       return aValues == null ? new CommonsArrayList <> () : aValues.getClone ();
     });
@@ -356,7 +355,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
    */
   public void reset ()
   {
-    m_aRWLock.writeLocked ( () -> {
+    m_aRWLock.writeLocked (() -> {
       m_aSpans.clear ();
       m_aCounters.clear ();
       m_aHistograms.clear ();

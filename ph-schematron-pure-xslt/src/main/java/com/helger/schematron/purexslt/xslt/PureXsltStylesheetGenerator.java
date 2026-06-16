@@ -250,7 +250,7 @@ public final class PureXsltStylesheetGenerator
     }
     aDomParent.appendChild (aDomElem);
 
-    aSrc.forAllAttributes ( (sAttrNS, sAttrName, sAttrValue) -> {
+    aSrc.forAllAttributes ((sAttrNS, sAttrName, sAttrValue) -> {
       if (StringHelper.isEmpty (sAttrNS))
         aDomElem.setAttribute (sAttrName, sAttrValue);
       else
@@ -648,7 +648,6 @@ public final class PureXsltStylesheetGenerator
    *        The XSLT language version to declare on the generated stylesheet's {@code version}
    *        attribute. May not be <code>null</code>.
    * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Document generate (@NonNull final PSSchema aSchema,

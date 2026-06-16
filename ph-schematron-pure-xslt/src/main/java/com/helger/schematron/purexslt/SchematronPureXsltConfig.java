@@ -198,7 +198,6 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
    *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the stylesheet
    *         is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and the trace-enabled
    *         provider is cached under a separate key (see {@link #getCacheKey()}).
-   * @since 10.0.0
    */
   @Nullable
   public ISchematronTemplateTelemetry getTelemetry ()
@@ -209,7 +208,6 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   /**
    * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the
    *         stylesheet should be compiled with Saxon tracing enabled.
-   * @since 10.0.0
    */
   public boolean isTracingEnabled ()
   {
@@ -648,7 +646,6 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
      *        <code>null</code>.
      * @return this for chaining
-     * @since 10.0.0
      */
     @NonNull
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)

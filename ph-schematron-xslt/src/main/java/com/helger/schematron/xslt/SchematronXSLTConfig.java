@@ -132,7 +132,6 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
    *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the stylesheet
    *         is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and the trace-enabled
    *         provider is cached under a separate key (see {@link #getCacheKey()}).
-   * @since 10.0.0
    */
   @Nullable
   public ISchematronTemplateTelemetry getTelemetry ()
@@ -143,7 +142,6 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   /**
    * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the
    *         stylesheet should be compiled with Saxon tracing enabled.
-   * @since 10.0.0
    */
   public boolean isTracingEnabled ()
   {
@@ -151,12 +149,11 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
   }
 
   /**
-   * @return The custom {@link TransformerFactory} customizer applied to the compile-step transformer
-   *         factory just before the validation stylesheet is compiled, or <code>null</code> if
-   *         none. Used to register Saxon extension functions or otherwise tweak the factory. When
-   *         non-<code>null</code>, the cache is bypassed since the cache key does not capture
-   *         customizer identity.
-   * @since 10.0.0
+   * @return The custom {@link TransformerFactory} customizer applied to the compile-step
+   *         transformer factory just before the validation stylesheet is compiled, or
+   *         <code>null</code> if none. Used to register Saxon extension functions or otherwise
+   *         tweak the factory. When non-<code>null</code>, the cache is bypassed since the cache
+   *         key does not capture customizer identity.
    */
   @Nullable
   public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
@@ -448,7 +445,6 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
      *        <code>null</code>.
      * @return this for chaining
-     * @since 10.0.0
      */
     @NonNull
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
@@ -460,14 +456,13 @@ public final class SchematronXSLTConfig implements ISchematronCompilation <ISche
     /**
      * Set a {@link TransformerFactory} customizer applied to the compile-step transformer factory,
      * just before the validation stylesheet is compiled. Use this to register Saxon extension
-     * functions (cast the {@link TransformerFactory} to
-     * {@code net.sf.saxon.TransformerFactoryImpl} and reach the underlying {@code Processor}).
-     * Setting this disables caching, since the cache key does not capture customizer identity.
+     * functions (cast the {@link TransformerFactory} to {@code net.sf.saxon.TransformerFactoryImpl}
+     * and reach the underlying {@code Processor}). Setting this disables caching, since the cache
+     * key does not capture customizer identity.
      *
      * @param a
      *        The customizer, or <code>null</code> to clear. Default is <code>null</code>.
      * @return this for chaining
-     * @since 10.0.0
      */
     @NonNull
     public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)

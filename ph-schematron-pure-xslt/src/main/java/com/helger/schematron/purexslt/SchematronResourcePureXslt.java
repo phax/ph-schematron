@@ -127,7 +127,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *
    * @param aBuilder
    *        The configured builder. May not be <code>null</code>.
-   * @since 10.0.0
    */
   protected SchematronResourcePureXslt (@NonNull final Builder aBuilder)
   {
@@ -438,7 +437,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   /**
    * @return A {@link SchematronPureXsltConfig} snapshot of this resource's compile-time state.
    *         Runtime-only fields (telemetry toggles) are intentionally not propagated.
-   * @since 10.0.0
    */
   @NonNull
   public final SchematronPureXsltConfig toConfig ()
@@ -447,7 +445,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
                                    .phase (m_sPhase)
                                    .xsltVersion (m_eXsltVersion)
                                    .processor (m_aProcessor)
-                                   .errorHandler (m_aErrorHandler != null ? m_aErrorHandler : new LoggingPSErrorHandler ())
+                                   .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
+                                                                          : new LoggingPSErrorHandler ())
                                    .entityResolver (getEntityResolver ())
                                    .uriResolver (m_aURIResolver)
                                    .errorListener (m_aErrorListener)
@@ -662,7 +661,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The Schematron resource. May not be <code>null</code>.
    * @return A new {@link Builder} that produces a configured {@link SchematronResourcePureXslt}.
    *         Never <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builder (@NonNull final IReadableResource aResource)
@@ -676,7 +674,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        empty.
    * @return A new {@link Builder} reading the Schematron from the default classloader. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromClassPath (@NonNull @Nonempty final String sSCHPath)
@@ -692,7 +689,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The class loader to be used. May be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the given classloader. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromClassPath (@NonNull @Nonempty final String sSCHPath,
@@ -706,7 +702,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The file system path to the Schematron file. May neither be <code>null</code> nor empty.
    * @return A new {@link Builder} reading the Schematron from the file system. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromFile (@NonNull @Nonempty final String sSCHPath)
@@ -719,7 +714,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The Schematron file. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the given file. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromFile (@NonNull final File aSCHFile)
@@ -734,7 +728,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *         <code>null</code>.
    * @throws MalformedURLException
    *         In case an invalid URL is provided
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
@@ -747,7 +740,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The URL to the Schematron rules. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the given URL. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromURL (@NonNull final URL aSCHURL)
@@ -762,7 +754,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the given input stream. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromInputStream (@NonNull @Nonempty final String sResourceID,
@@ -776,7 +767,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The byte array representing the Schematron. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the given byte array. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromByteArray (@NonNull final byte [] aSchematron)
@@ -791,7 +781,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The charset used to encode the string to bytes. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
@@ -804,7 +793,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    *        The String representing the Schematron. May not be <code>null</code>.
    * @return A new {@link Builder} reading the Schematron from the encoded string bytes. Never
    *         <code>null</code>.
-   * @since 10.0.0
    */
   @NonNull
   public static Builder builderFromString (@NonNull final String sSchematron)
@@ -822,7 +810,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @return The fully compiled resource. Never <code>null</code>.
    * @throws SchematronException
    *         on compilation error.
-   * @since 10.0.0
    */
   @NonNull
   public static SchematronResourcePureXslt compileCached (@NonNull final IReadableResource aResource) throws SchematronException
@@ -840,7 +827,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @return The fully compiled resource. Never <code>null</code>.
    * @throws SchematronException
    *         on compilation error.
-   * @since 10.0.0
    */
   @NonNull
   public static SchematronResourcePureXslt compileCached (@NonNull final IReadableResource aResource,
@@ -857,7 +843,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * @return The configured resource. Never <code>null</code>.
    * @throws SchematronException
    *         on compilation error.
-   * @since 10.0.0
    */
   @NonNull
   public static SchematronResourcePureXslt compileUncached (@NonNull final IReadableResource aResource) throws SchematronException
@@ -869,8 +854,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * Fluent builder for {@link SchematronResourcePureXslt}. Not thread-safe.
-   *
-   * @since 10.0.0
    */
   @NotThreadSafe
   public static final class Builder implements IBuilder <SchematronResourcePureXslt>
@@ -1068,7 +1051,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
      * @return The fully compiled resource. Never <code>null</code>.
      * @throws SchematronException
      *         on compilation error.
-     * @since 10.0.0
      */
     @NonNull
     public SchematronResourcePureXslt buildCached () throws SchematronException
@@ -1087,7 +1069,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
      * @return The fully compiled resource. Never <code>null</code>.
      * @throws SchematronException
      *         on compilation error.
-     * @since 10.0.0
      */
     @NonNull
     public SchematronResourcePureXslt buildCached (@NonNull final SchematronPureXsltCache aCache) throws SchematronException
@@ -1107,7 +1088,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
      * @return The configured resource. Never <code>null</code>.
      * @throws SchematronException
      *         on compilation error.
-     * @since 10.0.0
      */
     @NonNull
     public SchematronResourcePureXslt buildUncached () throws SchematronException

@@ -180,7 +180,6 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
    *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the final
    *         validation stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and
    *         the trace-enabled provider is cached under a separate key.
-   * @since 10.0.0
    */
   @Nullable
   public ISchematronTemplateTelemetry getTelemetry ()
@@ -191,7 +190,6 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   /**
    * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the final
    *         validation stylesheet should be compiled with Saxon tracing enabled.
-   * @since 10.0.0
    */
   public boolean isTracingEnabled ()
   {
@@ -208,9 +206,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
    * @return The custom {@link TransformerFactory} customizer applied to the final compile-step
    *         transformer factory, or <code>null</code> if none. Used to register Saxon extension
    *         functions or otherwise tweak the factory before the validation stylesheet is compiled.
-   *         When non-<code>null</code>, the cache is bypassed unless
-   *         {@link #isForceCacheResult()} is true.
-   * @since 10.0.0
+   *         When non-<code>null</code>, the cache is bypassed unless {@link #isForceCacheResult()}
+   *         is true.
    */
   @Nullable
   public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
@@ -601,7 +598,6 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
      *        <code>null</code>.
      * @return this for chaining
-     * @since 10.0.0
      */
     @NonNull
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
@@ -621,7 +617,6 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
      * @param a
      *        The customizer, or <code>null</code> to clear. Default is <code>null</code>.
      * @return this for chaining
-     * @since 10.0.0
      */
     @NonNull
     public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
