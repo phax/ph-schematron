@@ -37,13 +37,20 @@ import com.helger.schematron.model.PSActive;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSDiagnostic;
 import com.helger.schematron.model.PSDiagnostics;
+import com.helger.schematron.model.PSDir;
+import com.helger.schematron.model.PSEmph;
 import com.helger.schematron.model.PSLet;
+import com.helger.schematron.model.PSLinkableGroup;
 import com.helger.schematron.model.PSNS;
 import com.helger.schematron.model.PSName;
 import com.helger.schematron.model.PSPattern;
 import com.helger.schematron.model.PSPhase;
+import com.helger.schematron.model.PSProperties;
+import com.helger.schematron.model.PSProperty;
+import com.helger.schematron.model.PSRichGroup;
 import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.model.PSSpan;
 import com.helger.schematron.model.PSValueOf;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLFactory;
@@ -60,14 +67,16 @@ import com.helger.xml.microdom.IMicroText;
  * <p>
  * <b>Supported scope:</b> {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule context>},
  * {@code <sch:assert test>}, {@code <sch:report test>}, {@code <sch:value-of select>} and
- * {@code <sch:name path>} interpolation in message text, {@code <sch:phase>} / {@code <sch:active>}
- * phase selection (including {@code #ALL} and {@code #DEFAULT}), {@code <sch:let>} variable
- * bindings at schema/phase/pattern/rule scope, {@code <sch:diagnostic>} references on asserts and
- * reports, and pass-through of XSLT declarations ({@code <xsl:function>}, {@code <xsl:include>},
- * {@code <xsl:import>}, {@code <xsl:key>}, {@code <xsl:variable>}, ...) declared as foreign
- * children of the schema element. Properties and rich text spans are silently skipped (with a WARN
- * log). Abstract patterns / {@code <sch:extends>} / {@code <sch:include>} are expected to be
- * expanded by a preprocessor before this generator runs.
+ * {@code <sch:name path>} interpolation in message text, rich-text spans ({@code <sch:emph>},
+ * {@code <sch:dir>}, {@code <sch:span>}) emitted as their SVRL counterparts, {@code <sch:phase>} /
+ * {@code <sch:active>} phase selection (including {@code #ALL} and {@code #DEFAULT}),
+ * {@code <sch:let>} variable bindings at schema/phase/pattern/rule scope, {@code <sch:diagnostic>}
+ * references on asserts and reports, {@code <sch:property>} references emitted as
+ * {@code <svrl:property-reference>}, the {@code role} / {@code see} / {@code icon} / {@code fpi}
+ * attributes on rules / asserts / reports / diagnostic-references, and pass-through of all foreign
+ * elements (XSLT and non-XSLT) declared at schema level. Abstract patterns /
+ * {@code <sch:extends>} / {@code <sch:include>} are expected to be expanded by a preprocessor
+ * before this generator runs.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -275,28 +284,16 @@ public final class PureXsltStylesheetGenerator
   }
 
   /**
-   * Copy each foreign element whose namespace is the XSLT namespace into the generated stylesheet
-   * root. Non-XSLT foreign elements (e.g. random vendor-specific extensions) are skipped with a
-   * WARN log - those can be added in a later phase.
+   * Copy every schema-level foreign element into the generated stylesheet root. XSLT-namespace
+   * elements (e.g. {@code <xsl:function>}, {@code <xsl:variable>}, {@code <xsl:key>}) are
+   * interpreted by Saxon as top-level XSLT declarations; non-XSLT vendor extensions are preserved
+   * verbatim — Saxon ignores anything it does not recognize at stylesheet level.
    */
-  private static void _appendXsltForeignElements (@NonNull final Element aStylesheet,
-                                                  @NonNull final ICommonsList <IMicroElement> aForeignElements)
+  private static void _appendForeignElements (@NonNull final Element aStylesheet,
+                                              @NonNull final ICommonsList <IMicroElement> aForeignElements)
   {
     for (final IMicroElement aForeign : aForeignElements)
-    {
-      if (XSLT_NS.equals (aForeign.getNamespaceURI ()))
-      {
-        _appendMicroAsDom (aStylesheet, aForeign);
-      }
-      else
-      {
-        LOGGER.warn ("Skipping foreign element {" +
-                     aForeign.getNamespaceURI () +
-                     "}" +
-                     aForeign.getLocalName () +
-                     " - only XSLT-namespace pass-through is supported");
-      }
-    }
+      _appendMicroAsDom (aStylesheet, aForeign);
   }
 
   /**
@@ -399,40 +396,107 @@ public final class PureXsltStylesheetGenerator
   }
 
   /**
-   * Walk the mixed content of a {@link PSDiagnostic} in source order, emitting plain text and
-   * {@code <xsl:value-of>} for {@link PSValueOf} / {@link PSName} pieces. Mirrors
-   * {@link #_appendMessageContent} but for diagnostics (which have the same content model).
+   * Append an {@code <xsl:value-of select="...">} for a {@link PSValueOf}. {@code null} or empty
+   * select is silently skipped (the source already produces a Schematron read warning).
+   */
+  private static void _appendValueOf (@NonNull final Element aParent, @NonNull final PSValueOf aValueOf)
+  {
+    final String sSelect = aValueOf.getSelect ();
+    if (StringHelper.isEmpty (sSelect))
+      return;
+    final Element aVO = _addXsltChild (aParent, "value-of");
+    aVO.setAttribute ("select", sSelect);
+  }
+
+  /**
+   * Append an {@code <xsl:value-of select="name(...)" />} for a {@link PSName}. With no
+   * {@code path} the select is just {@code name()}.
+   */
+  private static void _appendName (@NonNull final Element aParent, @NonNull final PSName aName)
+  {
+    final Element aVO = _addXsltChild (aParent, "value-of");
+    final String sPath = aName.getPath ();
+    aVO.setAttribute ("select", StringHelper.isEmpty (sPath) ? "name()" : "name(" + sPath + ")");
+  }
+
+  /**
+   * Translate a {@link PSEmph} / {@link PSDir} / {@link PSSpan} rich-text span into its SVRL
+   * counterpart ({@code <svrl:emph>} / {@code <svrl:dir>} / {@code <svrl:span>}) preserving
+   * attributes and recursively translating mixed content. SchXslt2 emits the same shape.
+   */
+  private static void _appendRichTextSpan (@NonNull final Element aParent, @NonNull final Object aSpan)
+  {
+    if (aSpan instanceof final PSEmph aEmph)
+    {
+      final Element aOut = _addSvrlChild (aParent, "emph");
+      for (final Object aPiece : aEmph.getAllContentElements ())
+        _appendRichTextPiece (aOut, aPiece);
+    }
+    else
+      if (aSpan instanceof final PSDir aDir)
+      {
+        final Element aOut = _addSvrlChild (aParent, "dir");
+        if (aDir.getValue () != null)
+          aOut.setAttribute ("dir", aDir.getValue ().getID ());
+        for (final Object aPiece : aDir.getAllContentElements ())
+          _appendRichTextPiece (aOut, aPiece);
+      }
+      else
+        if (aSpan instanceof final PSSpan aSp)
+        {
+          final Element aOut = _addSvrlChild (aParent, "span");
+          if (StringHelper.isNotEmpty (aSp.getClazz ()))
+            aOut.setAttribute ("class", _escapeAvt (aSp.getClazz ()));
+          for (final Object aPiece : aSp.getAllContentElements ())
+            _appendRichTextPiece (aOut, aPiece);
+        }
+  }
+
+  /**
+   * Append a single mixed-content piece (text, {@code <sch:value-of>}, {@code <sch:name>},
+   * {@code <sch:emph>}, {@code <sch:dir>}, {@code <sch:span>}, or a foreign micro-element) onto
+   * the supplied parent. Shared by assert/report message content, diagnostic content and the
+   * recursive content of rich-text spans.
+   */
+  private static void _appendRichTextPiece (@NonNull final Element aParent, @NonNull final Object aPiece)
+  {
+    if (aPiece instanceof final String sText)
+      aParent.appendChild (aParent.getOwnerDocument ().createTextNode (sText));
+    else
+      if (aPiece instanceof final PSValueOf aValueOf)
+        _appendValueOf (aParent, aValueOf);
+      else
+        if (aPiece instanceof final PSName aName)
+          _appendName (aParent, aName);
+        else
+          if (aPiece instanceof PSEmph || aPiece instanceof PSDir || aPiece instanceof PSSpan)
+            _appendRichTextSpan (aParent, aPiece);
+          else
+            if (aPiece instanceof final IMicroElement aForeign)
+              _appendMicroAsDom (aParent, aForeign);
+            else
+              LOGGER.warn ("Skipping unsupported rich-text content of type " + aPiece.getClass ().getSimpleName ());
+  }
+
+  /**
+   * Walk the mixed content of a {@link PSDiagnostic} in source order, emitting plain text,
+   * {@code <xsl:value-of>} for {@link PSValueOf} / {@link PSName} pieces, and SVRL rich-text
+   * spans for {@link PSEmph} / {@link PSDir} / {@link PSSpan}.
    */
   private static void _appendDiagnosticContent (@NonNull final Element aSvrlRef, @NonNull final PSDiagnostic aDiag)
   {
-    final Document aDoc = aSvrlRef.getOwnerDocument ();
     for (final Object aPiece : aDiag.getAllContentElements ())
-    {
-      if (aPiece instanceof final String sText)
-      {
-        aSvrlRef.appendChild (aDoc.createTextNode (sText));
-      }
-      else
-        if (aPiece instanceof final PSValueOf aValueOf)
-        {
-          final String sSelect = aValueOf.getSelect ();
-          if (StringHelper.isEmpty (sSelect))
-            continue;
-          final Element aVO = _addXsltChild (aSvrlRef, "value-of");
-          aVO.setAttribute ("select", sSelect);
-        }
-        else
-          if (aPiece instanceof final PSName aName)
-          {
-            final Element aVO = _addXsltChild (aSvrlRef, "value-of");
-            final String sPath = aName.getPath ();
-            aVO.setAttribute ("select", StringHelper.isEmpty (sPath) ? "name()" : "name(" + sPath + ")");
-          }
-          else
-          {
-            LOGGER.warn ("Skipping unsupported diagnostic content of type " + aPiece.getClass ().getSimpleName ());
-          }
-    }
+      _appendRichTextPiece (aSvrlRef, aPiece);
+  }
+
+  /**
+   * Walk the mixed content of a {@link PSProperty} in source order. The content model matches
+   * {@link PSDiagnostic}; reuses {@link #_appendRichTextPiece}.
+   */
+  private static void _appendPropertyContent (@NonNull final Element aSvrlText, @NonNull final PSProperty aProp)
+  {
+    for (final Object aPiece : aProp.getAllContentElements ())
+      _appendRichTextPiece (aSvrlText, aPiece);
   }
 
   /**
@@ -466,7 +530,14 @@ public final class PureXsltStylesheetGenerator
       }
       final Element aRef = _addSvrlChild (aSvrlParent, "diagnostic-reference");
       aRef.setAttribute ("diagnostic", sID);
-      _appendDiagnosticContent (aRef, aDiag);
+      // SVRL XSD allows attlist.rich on diagnostic-reference (no role/flag, just see/icon/fpi).
+      _appendLinkableAndRichAttrs (aRef, null, aDiag.getRich ());
+      // Wrap the diagnostic content in <svrl:text>. The SVRL XSD permits both mixed content
+      // directly and a single optional <svrl:text> child, but only the latter is round-trippable
+      // through the SVRL JAXB binding (rich-text spans are typed children of <svrl:text> only).
+      // SchXslt2 takes the same approach.
+      final Element aText = _addSvrlChild (aRef, "text");
+      _appendDiagnosticContent (aText, aDiag);
     }
   }
 
@@ -486,51 +557,84 @@ public final class PureXsltStylesheetGenerator
   }
 
   /**
-   * Walk the mixed message content of an assert/report in order, emitting plain text for
-   * {@link String} pieces and {@code <xsl:value-of>} for {@link PSValueOf} and {@link PSName}
-   * pieces. Other foreign / rich-text children (PSEmph, PSDir, PSSpan, foreign elements) are
-   * skipped for now and will be added in a later phase.
+   * Walk the mixed message content of an assert/report in source order. Text becomes literal
+   * text, {@link PSValueOf} / {@link PSName} expand to {@code <xsl:value-of>}, and
+   * {@link PSEmph} / {@link PSDir} / {@link PSSpan} are emitted as their SVRL counterparts.
+   * Delegates to the shared piece walker so diagnostic / property content use the same logic.
    */
   private static void _appendMessageContent (@NonNull final Element aTextElement, @NonNull final PSAssertReport aAR)
   {
-    final Document aDoc = aTextElement.getOwnerDocument ();
     for (final Object aPiece : aAR.getAllContentElements ())
+      _appendRichTextPiece (aTextElement, aPiece);
+  }
+
+  /**
+   * Emit {@code role}, {@code see}, {@code icon} and {@code fpi} attributes (from the
+   * Schematron source's {@link PSLinkableGroup} / {@link PSRichGroup}) on the supplied SVRL
+   * element. All attributes are optional; missing or empty values are skipped.
+   */
+  private static void _appendLinkableAndRichAttrs (@NonNull final Element aSvrlOut,
+                                                   @Nullable final PSLinkableGroup aLinkable,
+                                                   @Nullable final PSRichGroup aRich)
+  {
+    if (aLinkable != null && StringHelper.isNotEmpty (aLinkable.getRole ()))
+      aSvrlOut.setAttribute ("role", _escapeAvt (aLinkable.getRole ()));
+    if (aRich != null)
     {
-      if (aPiece instanceof final String sText)
+      if (StringHelper.isNotEmpty (aRich.getSee ()))
+        aSvrlOut.setAttribute ("see", _escapeAvt (aRich.getSee ()));
+      if (StringHelper.isNotEmpty (aRich.getIcon ()))
+        aSvrlOut.setAttribute ("icon", _escapeAvt (aRich.getIcon ()));
+      if (StringHelper.isNotEmpty (aRich.getFPI ()))
+        aSvrlOut.setAttribute ("fpi", _escapeAvt (aRich.getFPI ()));
+    }
+  }
+
+  /**
+   * Emit one {@code <svrl:property-reference property="id">} per id in the assert/report's
+   * {@code properties} attribute. The reference's text content is the resolved property's mixed
+   * content - interpolated the same way as assert/report messages.
+   */
+  private static void _appendPropertyReferences (@NonNull final Element aSvrlParent,
+                                                 @NonNull final PSAssertReport aAR,
+                                                 @Nullable final PSProperties aProperties)
+  {
+    final ICommonsList <String> aIDs = aAR.getAllProperties ();
+    if (aIDs == null || aIDs.isEmpty ())
+      return;
+
+    if (aProperties == null)
+    {
+      LOGGER.warn ("Assert/report references properties " +
+                   aIDs +
+                   " but the schema has no <sch:properties> container");
+      return;
+    }
+
+    for (final String sID : aIDs)
+    {
+      final PSProperty aProp = aProperties.getPropertyOfID (sID);
+      if (aProp == null)
       {
-        aTextElement.appendChild (aDoc.createTextNode (sText));
+        LOGGER.warn ("Property id '" + sID + "' referenced by an assert/report is not defined");
+        continue;
       }
-      else
-        if (aPiece instanceof final PSValueOf aValueOf)
-        {
-          final String sSelect = aValueOf.getSelect ();
-          if (StringHelper.isEmpty (sSelect))
-          {
-            LOGGER.warn ("Skipping <sch:value-of> with empty select expression");
-            continue;
-          }
-          final Element aVO = _addXsltChild (aTextElement, "value-of");
-          aVO.setAttribute ("select", sSelect);
-        }
-        else
-          if (aPiece instanceof final PSName aName)
-          {
-            final Element aVO = _addXsltChild (aTextElement, "value-of");
-            // <sch:name/> -> name() i.e. name of the current context node
-            // <sch:name path="X"/> -> name(X)
-            final String sPath = aName.getPath ();
-            aVO.setAttribute ("select", StringHelper.isEmpty (sPath) ? "name()" : "name(" + sPath + ")");
-          }
-          else
-          {
-            LOGGER.warn ("Skipping unsupported assert/report content of type " + aPiece.getClass ().getSimpleName ());
-          }
+      final Element aRef = _addSvrlChild (aSvrlParent, "property-reference");
+      aRef.setAttribute ("property", sID);
+      if (StringHelper.isNotEmpty (aProp.getRole ()))
+        aRef.setAttribute ("role", _escapeAvt (aProp.getRole ()));
+      if (StringHelper.isNotEmpty (aProp.getScheme ()))
+        aRef.setAttribute ("scheme", _escapeAvt (aProp.getScheme ()));
+      // SVRL property-reference wraps its text content in an <svrl:text> child
+      final Element aText = _addSvrlChild (aRef, "text");
+      _appendPropertyContent (aText, aProp);
     }
   }
 
   private static void _appendAssertReport (@NonNull final Element aRuleTemplate,
                                            @NonNull final PSAssertReport aAR,
-                                           @Nullable final PSDiagnostics aDiagnostics)
+                                           @Nullable final PSDiagnostics aDiagnostics,
+                                           @Nullable final PSProperties aProperties)
   {
     final String sTest = aAR.getTest ();
     if (StringHelper.isEmpty (sTest))
@@ -555,9 +659,12 @@ public final class PureXsltStylesheetGenerator
       aOut.setAttribute ("id", _escapeAvt (aAR.getID ()));
     if (StringHelper.isNotEmpty (aAR.getFlag ()))
       aOut.setAttribute ("flag", _escapeAvt (aAR.getFlag ()));
+    _appendLinkableAndRichAttrs (aOut, aAR.getLinkable (), aAR.getRich ());
 
     // Diagnostic-references must come before the text child per the SVRL XSD ordering
     _appendDiagnosticReferences (aOut, aAR, aDiagnostics);
+    // Property-references go alongside diagnostic-references (SVRL XSD choice group)
+    _appendPropertyReferences (aOut, aAR, aProperties);
 
     final Element aText = _addSvrlChild (aOut, "text");
     _appendMessageContent (aText, aAR);
@@ -568,7 +675,8 @@ public final class PureXsltStylesheetGenerator
                                            @NonNull final PSRule aRule,
                                            @NonNull final String sMode,
                                            final int nPriority,
-                                           @Nullable final PSDiagnostics aDiagnostics)
+                                           @Nullable final PSDiagnostics aDiagnostics,
+                                           @Nullable final PSProperties aProperties)
   {
     final Element aTemplate = _addXsltChild (aStylesheet, "template");
     aTemplate.setAttribute ("match", aRule.getContext ());
@@ -588,10 +696,11 @@ public final class PureXsltStylesheetGenerator
       aFired.setAttribute ("id", _escapeAvt (aRule.getID ()));
     if (StringHelper.isNotEmpty (aRule.getFlag ()))
       aFired.setAttribute ("flag", _escapeAvt (aRule.getFlag ()));
+    _appendLinkableAndRichAttrs (aFired, aRule.getLinkable (), aRule.getRich ());
 
     // Per assert/report
     for (final PSAssertReport aAR : aRule.getAllAssertReports ())
-      _appendAssertReport (aTemplate, aAR, aDiagnostics);
+      _appendAssertReport (aTemplate, aAR, aDiagnostics, aProperties);
 
     // Descend
     final Element aApply = _addXsltChild (aTemplate, "apply-templates");
@@ -601,7 +710,8 @@ public final class PureXsltStylesheetGenerator
   private static void _appendPatternTemplates (@NonNull final Element aStylesheet,
                                                @NonNull final PSPattern aPattern,
                                                final int nPatternIdx,
-                                               @Nullable final PSDiagnostics aDiagnostics)
+                                               @Nullable final PSDiagnostics aDiagnostics,
+                                               @Nullable final PSProperties aProperties)
   {
     final String sMode = _getModeName (nPatternIdx);
     final ICommonsList <PSRule> aRules = aPattern.getAllRules ();
@@ -620,7 +730,7 @@ public final class PureXsltStylesheetGenerator
         LOGGER.warn ("Skipping rule with empty context in pattern '" + aPattern.getID () + "'");
         continue;
       }
-      _appendRuleTemplate (aStylesheet, aPattern, aRule, sMode, aRules.size () - nRuleIdx, aDiagnostics);
+      _appendRuleTemplate (aStylesheet, aPattern, aRule, sMode, aRules.size () - nRuleIdx, aDiagnostics, aProperties);
       nRuleIdx++;
     }
 
@@ -657,6 +767,7 @@ public final class PureXsltStylesheetGenerator
     final String sResolvedPhase = _resolvePhase (aSchema, sPhase);
     final ICommonsList <PSPattern> aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
     final PSDiagnostics aDiagnostics = aSchema.getDiagnostics ();
+    final PSProperties aProperties = aSchema.getProperties ();
 
     final Document aDoc = XMLFactory.newDocument ();
     aDoc.appendChild (aDoc.createComment (" Created by ph-schematron-pure-xslt " +
@@ -677,11 +788,14 @@ public final class PureXsltStylesheetGenerator
     aOutput.setAttribute ("method", "xml");
     aOutput.setAttribute ("indent", "no");
 
-    // Pass through schema-level <xsl:*> foreign elements (xsl:function, xsl:include, xsl:key,
-    // xsl:import, xsl:variable, ...). These give Saxon-native schemas the ability to declare
-    // helper functions and modules that are then callable from <sch:assert> / <sch:report>
-    // expressions - the differentiating feature of this engine vs ph-schematron-pure.
-    _appendXsltForeignElements (aStylesheet, aSchema.getAllForeignElements ());
+    // Pass through ALL schema-level foreign elements. The XSLT-namespace ones (xsl:function,
+    // xsl:include, xsl:key, xsl:import, xsl:variable, ...) give Saxon-native schemas the ability
+    // to declare helper functions and modules that are then callable from <sch:assert> /
+    // <sch:report> expressions - the differentiating feature of this engine vs
+    // ph-schematron-pure. Non-XSLT vendor extensions are passed through verbatim: Saxon ignores
+    // anything it does not recognize at stylesheet level, so they are harmless if unused and
+    // available to whichever extension is installed.
+    _appendForeignElements (aStylesheet, aSchema.getAllForeignElements ());
 
     // Schema-level <sch:let> become global <xsl:variable>s. Visible in all rule templates.
     _appendLetsAsXsltVariables (aStylesheet, aSchema.getAllLets ());
@@ -701,7 +815,7 @@ public final class PureXsltStylesheetGenerator
     int nPatternIdx = 0;
     for (final PSPattern aPattern : aActivePatterns)
     {
-      _appendPatternTemplates (aStylesheet, aPattern, nPatternIdx, aDiagnostics);
+      _appendPatternTemplates (aStylesheet, aPattern, nPatternIdx, aDiagnostics, aProperties);
       nPatternIdx++;
     }
     return aDoc;

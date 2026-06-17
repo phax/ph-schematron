@@ -148,6 +148,18 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
     return m_aContent.containsAny (String.class::isInstance);
   }
 
+  /**
+   * @return The mixed content of this span element in source order. Elements are either
+   *         {@link String} or {@link com.helger.xml.microdom.IMicroElement} (foreign).
+   * @since 10.0.0
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <Object> getAllContentElements ()
+  {
+    return m_aContent.getClone ();
+  }
+
   @NonNull
   @ReturnsMutableCopy
   public ICommonsList <String> getAllTexts ()

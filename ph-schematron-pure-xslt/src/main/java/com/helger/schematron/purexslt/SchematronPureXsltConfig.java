@@ -249,9 +249,11 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
       if (aRaw == null)
         throw new SchematronReadException (m_aResource, "Failed to read Schematron from " + m_aResource);
 
+      // Preprocess schema (resolve includes etc.)
       final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
       final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
 
+      // Generate
       final Document aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" +
