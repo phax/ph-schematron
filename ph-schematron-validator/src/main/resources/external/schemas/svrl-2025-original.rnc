@@ -1,0 +1,168 @@
+# Copyright (c) ISO/IEC 2024
+#
+# The following permission notice and disclaimer shall be included in all
+# copies of this XML schema ("The Schema"), and derivations of the Schema:
+# Permission is hereby granted, free of charge in perpetuity, to any
+# person obtaining a copy of the Schema, to use, copy, modify, merge and
+# distribute free of charge, copies of the Schema for the purposes of
+# developing, implementing, installing and using software based on the
+# Schema, and to permit persons to whom the Schema is furnished to do so,
+# subject to the following conditions:
+#
+# THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE USE OR
+# OTHER DEALINGS IN THE SCHEMA.
+#
+# In addition, any modified copy of the Schema shall include the following
+# notice:
+#
+# THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
+# AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
+
+namespace local = ""
+default namespace svrl = "http://purl.oclc.org/dsdl/svrl"
+
+schematron-output =
+    element schematron-output {
+        attribute title { text }?,
+        attribute phase { xsd:NMTOKEN }?,
+        attribute schemaVersion { text }?,
+        attribute schemaFrontEdition { text }?,
+        (
+          (error*, human-text*)
+          |
+          (error*,
+          human-text*,
+          ns-prefix-in-attribute-values*,
+          (active-pattern+,rule-set,
+            (fired-rule, (failed-assert | successful-report)*)*)*
+          )
+        }
+# only namespaces from schins need to be reported
+ns-prefix-in-attribute-values =
+    element ns-prefix-in-attribute-values {
+        attribute prefix { xsd:NMTOKEN },
+        attribute uri { text },
+        empty
+    }
+# only active patterns and groups are reported
+active-pattern =
+    element active-pattern {
+        active
+    }
+active-rule-set =
+    element active-group {
+        active
+    }
+# only rules that are fired are reported,
+fired-rule =
+    element fired-rule {
+        attribute id { xsd:NCName }?,
+        attribute name { text }?,
+        attribute context { text },
+        attribute visit-each { text }?,
+        attribute role { string }?,
+        attribute flag { list{ token+ } }?,
+        attribute document { xsd:anyURI }?,
+        empty
+    }
+# only references are reported, not the diagnostic
+diagnostic-reference =
+    element diagnostic-reference {
+        attribute diagnostic { xsd:NMTOKEN },
+        attribute role { text }?,
+        human-text
+    }
+# only failed assertions are reported
+failed-assert =
+    element failed-assert {
+        assertion-message
+    }
+# only successful asserts are reported
+successful-report =
+    element successful-report {
+        assertion-message
+    }
+# property-reference
+property-reference =
+    element property-reference {
+        attribute property { xsd:NMTOKEN },
+        attribute role { text }?,
+        attribute scheme { text }?,
+        human-text
+    }
+# errors raised by the implementation
+error =
+    element error {
+        attribute document { xsd:anyURI }?,
+        attribute location { text },
+        attribute code { text }?,
+        rich-text
+    }
+# human text
+human-text =
+    element text {
+        attribute xml:space { text }?,
+        attribute xml:lang { text }?,
+        attribute see { text }?,
+        attribute icon { text }?,
+        attribute fpi { text }?,
+        rich-text
+    }
+# rich text
+rich-text = (foreign | dir | span | emph | text)*
+# directionality
+dir =
+    element dir {
+        attribute class { text }?,
+        attribute dir { text }?,
+        text
+    }
+# emphasis
+emph =
+    element emph {
+        attribute class { text }?,
+        text
+    }
+# arbitrary markup
+span =
+    element span {
+        attribute class { text },
+        text
+    }
+# foreign
+foreign = foreign-attributes | foreign-element
+foreign-attributes = attribute * - (xml:* | local:*) { text }*
+foreign-element =
+    element * - svrl:* {
+        (attribute * { text }
+         | foreign-element
+         | text)*
+    }
+attlist.assert-and-report =
+    attribute id { xsd:NCName }?,
+    attribute location { text },
+    attribute test { text },
+    attribute role { string }?,
+    attribute flag { list{ token+ } }?,
+    attribute severity { string }?
+
+# active patterns and rule-sets
+active-pattern-rule-set =
+    active-pattern | active-rule-set
+active =
+    attribute id { xsd:NCName }?,
+    attribute documents { xsd:anyURI }?,
+    attribute name { text }?,
+    attribute role { string }?,
+    error*
+
+# assert and report message
+assertion-message =
+    attlist.assert-and-report, diagnostic-reference*, property-reference*, human-text
+
+start = schematron-output
