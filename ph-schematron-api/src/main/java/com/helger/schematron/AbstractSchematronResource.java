@@ -297,7 +297,6 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
     // twice!
-
     final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return null;

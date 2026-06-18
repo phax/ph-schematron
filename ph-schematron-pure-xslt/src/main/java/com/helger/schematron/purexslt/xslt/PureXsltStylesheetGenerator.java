@@ -74,9 +74,8 @@ import com.helger.xml.microdom.IMicroText;
  * references on asserts and reports, {@code <sch:property>} references emitted as
  * {@code <svrl:property-reference>}, the {@code role} / {@code see} / {@code icon} / {@code fpi}
  * attributes on rules / asserts / reports / diagnostic-references, and pass-through of all foreign
- * elements (XSLT and non-XSLT) declared at schema level. Abstract patterns /
- * {@code <sch:extends>} / {@code <sch:include>} are expected to be expanded by a preprocessor
- * before this generator runs.
+ * elements (XSLT and non-XSLT) declared at schema level. Abstract patterns / {@code <sch:extends>}
+ * / {@code <sch:include>} are expected to be expanded by a preprocessor before this generator runs.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -141,13 +140,13 @@ public final class PureXsltStylesheetGenerator
   @Nullable
   private static String _resolvePhase (@NonNull final PSSchema aSchema, @Nullable final String sPhase)
   {
-    if (StringHelper.isEmpty (sPhase) || CSchematron.PHASE_ALL.equals (sPhase))
-      return null;
+    if (StringHelper.isEmpty (sPhase))
+      return CSchematron.PHASE_ALL;
 
     if (CSchematron.PHASE_DEFAULT.equals (sPhase))
     {
       final String sDefault = aSchema.getDefaultPhase ();
-      if (StringHelper.isEmpty (sDefault) || CSchematron.PHASE_ALL.equals (sDefault))
+      if (StringHelper.isEmpty (sDefault))
         return null;
 
       return sDefault;
@@ -166,7 +165,7 @@ public final class PureXsltStylesheetGenerator
   {
     final ICommonsList <PSPattern> ret = new CommonsArrayList <> ();
     final ICommonsSet <String> aAllowedIDs;
-    if (sResolvedPhase == null)
+    if (StringHelper.isEmpty (sResolvedPhase) || CSchematron.PHASE_ALL.equals (sResolvedPhase))
     {
       aAllowedIDs = null;
     }
@@ -454,9 +453,9 @@ public final class PureXsltStylesheetGenerator
 
   /**
    * Append a single mixed-content piece (text, {@code <sch:value-of>}, {@code <sch:name>},
-   * {@code <sch:emph>}, {@code <sch:dir>}, {@code <sch:span>}, or a foreign micro-element) onto
-   * the supplied parent. Shared by assert/report message content, diagnostic content and the
-   * recursive content of rich-text spans.
+   * {@code <sch:emph>}, {@code <sch:dir>}, {@code <sch:span>}, or a foreign micro-element) onto the
+   * supplied parent. Shared by assert/report message content, diagnostic content and the recursive
+   * content of rich-text spans.
    */
   private static void _appendRichTextPiece (@NonNull final Element aParent, @NonNull final Object aPiece)
   {
@@ -480,8 +479,8 @@ public final class PureXsltStylesheetGenerator
 
   /**
    * Walk the mixed content of a {@link PSDiagnostic} in source order, emitting plain text,
-   * {@code <xsl:value-of>} for {@link PSValueOf} / {@link PSName} pieces, and SVRL rich-text
-   * spans for {@link PSEmph} / {@link PSDir} / {@link PSSpan}.
+   * {@code <xsl:value-of>} for {@link PSValueOf} / {@link PSName} pieces, and SVRL rich-text spans
+   * for {@link PSEmph} / {@link PSDir} / {@link PSSpan}.
    */
   private static void _appendDiagnosticContent (@NonNull final Element aSvrlRef, @NonNull final PSDiagnostic aDiag)
   {
@@ -530,13 +529,14 @@ public final class PureXsltStylesheetGenerator
       }
       final Element aRef = _addSvrlChild (aSvrlParent, "diagnostic-reference");
       aRef.setAttribute ("diagnostic", sID);
-      // SVRL XSD allows attlist.rich on diagnostic-reference (no role/flag, just see/icon/fpi).
-      _appendLinkableAndRichAttrs (aRef, null, aDiag.getRich ());
       // Wrap the diagnostic content in <svrl:text>. The SVRL XSD permits both mixed content
       // directly and a single optional <svrl:text> child, but only the latter is round-trippable
       // through the SVRL JAXB binding (rich-text spans are typed children of <svrl:text> only).
       // SchXslt2 takes the same approach.
       final Element aText = _addSvrlChild (aRef, "text");
+      // Per ISO/IEC 19757-3 Annex D, see/icon/fpi live on the <text> child (human-text), not on
+      // <diagnostic-reference>.
+      _appendRichAttrs (aText, aDiag.getRich ());
       _appendDiagnosticContent (aText, aDiag);
     }
   }
@@ -557,10 +557,10 @@ public final class PureXsltStylesheetGenerator
   }
 
   /**
-   * Walk the mixed message content of an assert/report in source order. Text becomes literal
-   * text, {@link PSValueOf} / {@link PSName} expand to {@code <xsl:value-of>}, and
-   * {@link PSEmph} / {@link PSDir} / {@link PSSpan} are emitted as their SVRL counterparts.
-   * Delegates to the shared piece walker so diagnostic / property content use the same logic.
+   * Walk the mixed message content of an assert/report in source order. Text becomes literal text,
+   * {@link PSValueOf} / {@link PSName} expand to {@code <xsl:value-of>}, and {@link PSEmph} /
+   * {@link PSDir} / {@link PSSpan} are emitted as their SVRL counterparts. Delegates to the shared
+   * piece walker so diagnostic / property content use the same logic.
    */
   private static void _appendMessageContent (@NonNull final Element aTextElement, @NonNull final PSAssertReport aAR)
   {
@@ -569,25 +569,37 @@ public final class PureXsltStylesheetGenerator
   }
 
   /**
-   * Emit {@code role}, {@code see}, {@code icon} and {@code fpi} attributes (from the
-   * Schematron source's {@link PSLinkableGroup} / {@link PSRichGroup}) on the supplied SVRL
-   * element. All attributes are optional; missing or empty values are skipped.
+   * Emit the {@code role} attribute (from the source's {@link PSLinkableGroup}) on the supplied
+   * SVRL element. Per ISO/IEC 19757-3 Annex D, {@code role} is allowed on
+   * {@code <svrl:fired-rule>}, {@code <svrl:failed-assert>} and {@code <svrl:successful-report>}.
    */
-  private static void _appendLinkableAndRichAttrs (@NonNull final Element aSvrlOut,
-                                                   @Nullable final PSLinkableGroup aLinkable,
-                                                   @Nullable final PSRichGroup aRich)
+  private static void _appendRoleAttr (@NonNull final Element aSvrlOut, @Nullable final PSLinkableGroup aLinkable)
   {
     if (aLinkable != null && StringHelper.isNotEmpty (aLinkable.getRole ()))
       aSvrlOut.setAttribute ("role", _escapeAvt (aLinkable.getRole ()));
-    if (aRich != null)
-    {
-      if (StringHelper.isNotEmpty (aRich.getSee ()))
-        aSvrlOut.setAttribute ("see", _escapeAvt (aRich.getSee ()));
-      if (StringHelper.isNotEmpty (aRich.getIcon ()))
-        aSvrlOut.setAttribute ("icon", _escapeAvt (aRich.getIcon ()));
-      if (StringHelper.isNotEmpty (aRich.getFPI ()))
-        aSvrlOut.setAttribute ("fpi", _escapeAvt (aRich.getFPI ()));
-    }
+  }
+
+  /**
+   * Emit {@code see}, {@code icon}, {@code fpi}, {@code xml:lang} and {@code xml:space} attributes
+   * (from the source's {@link PSRichGroup}) on the supplied SVRL element. Per ISO/IEC 19757-3
+   * Annex D these attributes belong on {@code <svrl:text>} (the {@code human-text} production) and
+   * on {@code <svrl:diagnostic-reference>}, not on the surrounding failed-assert /
+   * successful-report / fired-rule.
+   */
+  private static void _appendRichAttrs (@NonNull final Element aSvrlOut, @Nullable final PSRichGroup aRich)
+  {
+    if (aRich == null)
+      return;
+    if (StringHelper.isNotEmpty (aRich.getSee ()))
+      aSvrlOut.setAttribute ("see", _escapeAvt (aRich.getSee ()));
+    if (StringHelper.isNotEmpty (aRich.getIcon ()))
+      aSvrlOut.setAttribute ("icon", _escapeAvt (aRich.getIcon ()));
+    if (StringHelper.isNotEmpty (aRich.getFPI ()))
+      aSvrlOut.setAttribute ("fpi", _escapeAvt (aRich.getFPI ()));
+    if (StringHelper.isNotEmpty (aRich.getXmlLang ()))
+      aSvrlOut.setAttributeNS (XMLConstants.XML_NS_URI, "xml:lang", aRich.getXmlLang ());
+    if (aRich.getXmlSpace () != null)
+      aSvrlOut.setAttributeNS (XMLConstants.XML_NS_URI, "xml:space", aRich.getXmlSpace ().getID ());
   }
 
   /**
@@ -605,9 +617,7 @@ public final class PureXsltStylesheetGenerator
 
     if (aProperties == null)
     {
-      LOGGER.warn ("Assert/report references properties " +
-                   aIDs +
-                   " but the schema has no <sch:properties> container");
+      LOGGER.warn ("Assert/report references properties " + aIDs + " but the schema has no <sch:properties> container");
       return;
     }
 
@@ -659,7 +669,9 @@ public final class PureXsltStylesheetGenerator
       aOut.setAttribute ("id", _escapeAvt (aAR.getID ()));
     if (StringHelper.isNotEmpty (aAR.getFlag ()))
       aOut.setAttribute ("flag", _escapeAvt (aAR.getFlag ()));
-    _appendLinkableAndRichAttrs (aOut, aAR.getLinkable (), aAR.getRich ());
+    // Per ISO/IEC 19757-3 Annex D, only role belongs on failed-assert / successful-report;
+    // see/icon/fpi belong on the inner <svrl:text> (human-text production).
+    _appendRoleAttr (aOut, aAR.getLinkable ());
 
     // Diagnostic-references must come before the text child per the SVRL XSD ordering
     _appendDiagnosticReferences (aOut, aAR, aDiagnostics);
@@ -667,6 +679,7 @@ public final class PureXsltStylesheetGenerator
     _appendPropertyReferences (aOut, aAR, aProperties);
 
     final Element aText = _addSvrlChild (aOut, "text");
+    _appendRichAttrs (aText, aAR.getRich ());
     _appendMessageContent (aText, aAR);
   }
 
@@ -696,7 +709,9 @@ public final class PureXsltStylesheetGenerator
       aFired.setAttribute ("id", _escapeAvt (aRule.getID ()));
     if (StringHelper.isNotEmpty (aRule.getFlag ()))
       aFired.setAttribute ("flag", _escapeAvt (aRule.getFlag ()));
-    _appendLinkableAndRichAttrs (aFired, aRule.getLinkable (), aRule.getRich ());
+    // Per ISO/IEC 19757-3 Annex D, <svrl:fired-rule> takes only role from the source rule (see /
+    // icon / fpi are not allowed on fired-rule).
+    _appendRoleAttr (aFired, aRule.getLinkable ());
 
     // Per assert/report
     for (final PSAssertReport aAR : aRule.getAllAssertReports ())
@@ -739,6 +754,7 @@ public final class PureXsltStylesheetGenerator
     aCatchAll.setAttribute ("match", "@*|node()");
     aCatchAll.setAttribute ("priority", "-1");
     aCatchAll.setAttribute ("mode", sMode);
+
     final Element aApply = _addXsltChild (aCatchAll, "apply-templates");
     aApply.setAttribute ("select", "@*|node()");
     aApply.setAttribute ("mode", sMode);
