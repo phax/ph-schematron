@@ -92,7 +92,7 @@
       <dependency>
         <groupId>com.helger.telemetry</groupId>
         <artifactId>ph-telemetry-parent-pom</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -173,10 +173,6 @@
     </dependencies>
   </dependencyManagement>
   
-  <dependencies>
-    <!-- none -->
-  </dependencies>
-  
   <modules>
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron-api</module>
@@ -192,9 +188,4 @@
     <module>ph-schematron-ant-task</module>
     <module>ph-schematron-benchmarks</module>
   </modules>
-  
-  <build>
-    <plugins>
-     </plugins>
-  </build>
 </project>
