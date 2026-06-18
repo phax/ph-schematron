@@ -47,6 +47,7 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.CSchematron;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
@@ -104,6 +105,15 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     parameters ().setAll (aBuilder.m_aParameters);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
     m_aCache = aBuilder.m_aCache;
+    m_bTelemetry = aBuilder.m_bTelemetry;
+    m_bPerAssertionTelemetry = aBuilder.m_bPerAssertionTelemetry;
+  }
+
+  @Override
+  @NonNull
+  protected String getTelemetryEngineID ()
+  {
+    return ESchematronEngine.SCHXSLT2.getID ();
   }
 
   @Nullable
@@ -627,6 +637,8 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     private ISchematronTemplateTelemetry m_aTelemetry;
     private ISchematronOutputValidityDeterminator m_aSOVDeterminator;
     private boolean m_bValidateSVRL = AbstractSchematronXSLTBasedResource.DEFAULT_VALIDATE_SVRL;
+    private boolean m_bTelemetry;
+    private boolean m_bPerAssertionTelemetry;
     private SchematronSchXslt2Cache m_aCache;
 
     Builder (@NonNull final IReadableResource aResource)
@@ -790,6 +802,42 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     public Builder telemetry (@Nullable final ISchematronTemplateTelemetry a)
     {
       m_aTelemetry = a;
+      return this;
+    }
+
+    /**
+     * Enable or disable runtime ph-telemetry. When enabled, every validation emits a
+     * {@code schematron.validate} span, the aggregate counters (failed asserts, fired reports,
+     * fired rules, active patterns) and a {@code schematron.validate.duration} histogram entry via
+     * ph-telemetry. Mirrors the pure engine's switch and is zero-cost when no ph-telemetry SPI is
+     * installed.
+     *
+     * @param b
+     *        <code>true</code> to enable aggregate-level telemetry.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder telemetry (final boolean b)
+    {
+      m_bTelemetry = b;
+      return this;
+    }
+
+    /**
+     * Enable per-assertion telemetry spans. When on, one {@code schematron.assertion} span is
+     * emitted per failed-assert / successful-report present in the SVRL. Only meaningful when
+     * {@link #telemetry(boolean)} is also <code>true</code>.
+     *
+     * @param b
+     *        <code>true</code> to enable per-assertion spans.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder perAssertionTelemetry (final boolean b)
+    {
+      m_bPerAssertionTelemetry = b;
       return this;
     }
 

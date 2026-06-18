@@ -1,0 +1,301 @@
+/*
+ * Copyright (C) 2014-2026 Philip Helger (www.helger.com)
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.helger.schematron.it;
+
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.LongSupplier;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.CommonsLinkedHashMap;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.telemetry.ETelemetrySpanKind;
+import com.helger.telemetry.ITelemetryCounter;
+import com.helger.telemetry.ITelemetryGauge;
+import com.helger.telemetry.ITelemetryHistogram;
+import com.helger.telemetry.ITelemetryMeterSPI;
+import com.helger.telemetry.ITelemetrySpan;
+import com.helger.telemetry.ITelemetryTracerSPI;
+import com.helger.telemetry.ITelemetryUpDownCounter;
+import com.helger.telemetry.TelemetryAttributes;
+
+/**
+ * In-memory capturing tracer + meter for ph-telemetry, used by the cross-engine telemetry tests.
+ * Install via {@code Telemetry.install (capt)} and {@code TelemetryMetrics.install (capt)}, run the
+ * unit under test, and inspect via {@link #getSpans()}, {@link #countSpansNamed(String)} etc.
+ * <p>
+ * <b>Note on instruments:</b> ph-telemetry resolves the meter SPI eagerly when an instrument is
+ * created, so the static counters / histograms in the engines bind to the <em>first</em> installed
+ * meter for the JVM's lifetime. Spans, however, re-resolve the tracer on every
+ * {@code Telemetry.startSpan} call, so span-based assertions are reliable even when a fresh
+ * capturing instance is installed per engine. The cross-engine tests therefore assert on spans.
+ *
+ * @author Philip Helger
+ */
+@ThreadSafe
+public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetryMeterSPI
+{
+  /**
+   * Snapshot of one captured span.
+   *
+   * @author Philip Helger
+   */
+  public static final class CapturedSpan implements ITelemetrySpan
+  {
+    private final String m_sName;
+    private final ETelemetrySpanKind m_eKind;
+    private final ICommonsOrderedMap <String, Object> m_aAttributes = new CommonsLinkedHashMap <> ();
+    private boolean m_bClosed;
+    private boolean m_bStatusOk;
+    private boolean m_bStatusError;
+    private String m_sStatusMessage;
+    private Throwable m_aRecordedException;
+
+    public CapturedSpan (@NonNull final String sName, @NonNull final ETelemetrySpanKind eKind)
+    {
+      m_sName = sName;
+      m_eKind = eKind;
+    }
+
+    @NonNull
+    public String getName ()
+    {
+      return m_sName;
+    }
+
+    @NonNull
+    public ETelemetrySpanKind getKind ()
+    {
+      return m_eKind;
+    }
+
+    @NonNull
+    public ICommonsOrderedMap <String, Object> getAttributes ()
+    {
+      return m_aAttributes;
+    }
+
+    public boolean isClosed ()
+    {
+      return m_bClosed;
+    }
+
+    public boolean isStatusOk ()
+    {
+      return m_bStatusOk;
+    }
+
+    public boolean isStatusError ()
+    {
+      return m_bStatusError;
+    }
+
+    @Nullable
+    public String getStatusMessage ()
+    {
+      return m_sStatusMessage;
+    }
+
+    @Nullable
+    public Throwable getRecordedException ()
+    {
+      return m_aRecordedException;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan setAttribute (@NonNull final String sKey, @Nullable final String sValue)
+    {
+      m_aAttributes.put (sKey, sValue);
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan setAttribute (@NonNull final String sKey, final boolean bValue)
+    {
+      m_aAttributes.put (sKey, Boolean.valueOf (bValue));
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan setAttribute (@NonNull final String sKey, final long nValue)
+    {
+      m_aAttributes.put (sKey, Long.valueOf (nValue));
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan setAttribute (@NonNull final String sKey, final double dValue)
+    {
+      m_aAttributes.put (sKey, Double.valueOf (dValue));
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan recordException (@NonNull final Throwable aException)
+    {
+      m_aRecordedException = aException;
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan addEvent (@NonNull final String sName, @NonNull final TelemetryAttributes aAttributes)
+    {
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan setStatusOk ()
+    {
+      m_bStatusOk = true;
+      return this;
+    }
+
+    @Override
+    @NonNull
+    public ITelemetrySpan setStatusError (@Nullable final String sMessage)
+    {
+      m_bStatusError = true;
+      m_sStatusMessage = sMessage;
+      return this;
+    }
+
+    @Override
+    public void close ()
+    {
+      m_bClosed = true;
+    }
+  }
+
+  private final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
+  private final ICommonsList <CapturedSpan> m_aSpans = new CommonsArrayList <> ();
+  private final ICommonsMap <String, AtomicLong> m_aCounters = new CommonsHashMap <> ();
+  private final ICommonsMap <String, ICommonsList <Double>> m_aHistograms = new CommonsHashMap <> ();
+
+  // === ITelemetryTracerSPI ===
+
+  @Override
+  @NonNull
+  public ITelemetrySpan startSpan (@NonNull final String sName, @NonNull final ETelemetrySpanKind eKind)
+  {
+    final CapturedSpan aSpan = new CapturedSpan (sName, eKind);
+    m_aRWLock.writeLocked ( () -> m_aSpans.add (aSpan));
+    return aSpan;
+  }
+
+  // === ITelemetryMeterSPI ===
+
+  @Override
+  @NonNull
+  public ITelemetryCounter createCounter (@NonNull final String sName,
+                                          @Nullable final String sDescription,
+                                          @Nullable final String sUnit)
+  {
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ()));
+    return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
+  }
+
+  @Override
+  @NonNull
+  public ITelemetryUpDownCounter createUpDownCounter (@NonNull final String sName,
+                                                      @Nullable final String sDescription,
+                                                      @Nullable final String sUnit)
+  {
+    final AtomicLong aAgg = m_aRWLock.writeLockedGet ( () -> m_aCounters.computeIfAbsent (sName, x -> new AtomicLong ()));
+    return (nValue, aAttrs) -> aAgg.addAndGet (nValue);
+  }
+
+  @Override
+  @NonNull
+  public ITelemetryHistogram createHistogram (@NonNull final String sName,
+                                              @Nullable final String sDescription,
+                                              @Nullable final String sUnit)
+  {
+    final ICommonsList <Double> aValues = m_aRWLock.writeLockedGet ( () -> m_aHistograms.computeIfAbsent (sName,
+                                                                                                         x -> new CommonsArrayList <> ()));
+    return (dValue, aAttrs) -> m_aRWLock.writeLocked ( () -> aValues.add (Double.valueOf (dValue)));
+  }
+
+  @Override
+  @NonNull
+  public ITelemetryGauge createGauge (@NonNull final String sName,
+                                      @Nullable final String sDescription,
+                                      @Nullable final String sUnit,
+                                      @NonNull final LongSupplier aSupplier)
+  {
+    return () -> { /* nothing to record - the gauge is poll-based and no backend polls in tests */ };
+  }
+
+  // === Inspection helpers ===
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <CapturedSpan> getSpans ()
+  {
+    return m_aRWLock.readLockedGet (m_aSpans::getClone);
+  }
+
+  public long countSpansNamed (@NonNull final String sName)
+  {
+    return m_aRWLock.readLockedLong ( () -> m_aSpans.stream ().filter (x -> sName.equals (x.getName ())).count ());
+  }
+
+  @Nullable
+  public CapturedSpan getFirstSpanNamed (@NonNull final String sName)
+  {
+    return m_aRWLock.readLockedGet ( () -> m_aSpans.findFirst (x -> sName.equals (x.getName ())));
+  }
+
+  public long getCounterValue (@NonNull final String sName)
+  {
+    final AtomicLong aAgg = m_aRWLock.readLockedGet ( () -> m_aCounters.get (sName));
+    return aAgg == null ? 0L : aAgg.get ();
+  }
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <Double> getHistogramValues (@NonNull final String sName)
+  {
+    return m_aRWLock.readLockedGet ( () -> {
+      final ICommonsList <Double> aValues = m_aHistograms.get (sName);
+      return aValues == null ? new CommonsArrayList <> () : aValues.getClone ();
+    });
+  }
+
+  public void reset ()
+  {
+    m_aRWLock.writeLocked ( () -> {
+      m_aSpans.clear ();
+      m_aCounters.clear ();
+      m_aHistograms.clear ();
+    });
+  }
+}

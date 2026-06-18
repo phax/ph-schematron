@@ -35,20 +35,27 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableObject;
+import com.helger.base.CGlobal;
 import com.helger.base.debug.GlobalDebug;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EValidity;
+import com.helger.base.timing.StopWatch;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.base.trait.IGenericImplTrait;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
+import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.telemetry.ETelemetrySpanKind;
+import com.helger.telemetry.ITelemetrySpan;
+import com.helger.telemetry.Telemetry;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -79,6 +86,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected ISchematronTemplateTelemetry m_aTelemetry;
   protected ISchematronOutputValidityDeterminator m_aSOVDeterminator;
   protected boolean m_bValidateSVRL;
+  // Runtime-only ph-telemetry toggles. Set by the engine builders; default off. Not part of the
+  // compile-time config (they don't affect the produced stylesheet).
+  protected boolean m_bTelemetry;
+  protected boolean m_bPerAssertionTelemetry;
   /**
    * Latched <code>true</code> the first time {@link #getXSLTProvider()} is called on this instance.
    * Used by {@link #checkNotCompiledYet()} so that compile-time setters fail fast post-compile,
@@ -250,6 +261,37 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
+   * @return <code>true</code> if runtime ph-telemetry (a {@code schematron.validate} span, the
+   *         aggregate counters and the duration histogram) is emitted during validation. Default is
+   *         <code>false</code>.
+   * @since 10.0.0
+   */
+  public final boolean isTelemetry ()
+  {
+    return m_bTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
+   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
+   *         <code>true</code>. Default is <code>false</code>.
+   * @since 10.0.0
+   */
+  public final boolean isPerAssertionTelemetry ()
+  {
+    return m_bPerAssertionTelemetry;
+  }
+
+  /**
+   * @return The engine ID this resource tags telemetry events with (the value of
+   *         {@link CSchematronTelemetry#ATTR_ENGINE}, e.g. {@code iso-schematron}). Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  protected abstract String getTelemetryEngineID ();
+
+  /**
    * Set the XML entity resolver to be used when reading the XML to be validated.
    *
    * @param aEntityResolver
@@ -406,10 +448,15 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLSource,
+  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLNode,
                                                                @Nullable final String sBaseURI) throws TransformerException
   {
-    return _readSVRL (applySchematronValidation (aXMLSource, sBaseURI));
+    ValueEnforcer.notNull (aXMLNode, "XMLNode");
+
+    // Route through the Source overload so the single telemetry choke point covers both entry points
+    final DOMSource aSource = new DOMSource (aXMLNode);
+    aSource.setSystemId (sBaseURI);
+    return applySchematronValidationToSVRL (aSource);
   }
 
   @Override
@@ -417,7 +464,39 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public final SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource)
                                                                                                        throws TransformerException
   {
-    return _readSVRL (applySchematronValidation (aXMLSource));
+    if (!m_bTelemetry)
+      return _readSVRL (applySchematronValidation (aXMLSource));
+
+    // Wrap the whole transform in a schematron.validate span; the aggregate counters and the
+    // duration histogram are derived from the resulting SVRL by SvrlTelemetryEmitter.
+    final String sEngineID = getTelemetryEngineID ();
+    final StopWatch aSW = StopWatch.createdStarted ();
+    SchematronOutputType aSVRL = null;
+    try (final ITelemetrySpan aSpan = Telemetry.startSpan (CSchematronTelemetry.SPAN_VALIDATE,
+                                                           ETelemetrySpanKind.INTERNAL))
+    {
+      aSpan.setAttribute (CSchematronTelemetry.ATTR_ENGINE, sEngineID);
+      try
+      {
+        aSVRL = _readSVRL (applySchematronValidation (aXMLSource));
+        aSpan.setStatusOk ();
+        return aSVRL;
+      }
+      catch (final TransformerException | RuntimeException ex)
+      {
+        aSpan.recordException (ex).setStatusError (ex.getMessage ());
+        throw ex;
+      }
+    }
+    finally
+    {
+      aSW.stop ();
+      if (aSVRL != null)
+        SvrlTelemetryEmitter.emitPostHoc (aSVRL,
+                                          sEngineID,
+                                          m_bPerAssertionTelemetry,
+                                          aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND);
+    }
   }
 
   @Override

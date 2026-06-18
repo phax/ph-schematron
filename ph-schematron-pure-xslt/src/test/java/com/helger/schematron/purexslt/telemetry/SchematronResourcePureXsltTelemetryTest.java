@@ -31,10 +31,10 @@ import com.helger.telemetry.TelemetryMetrics;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
- * Verifies that {@link SchematronResourcePureXslt#setTelemetry(boolean)} emits the expected phase
- * spans (parse, preprocess, generate, compile, execute) plus post-hoc counters derived from the
- * SVRL output, and that {@link SchematronResourcePureXslt#setPerAssertionTelemetry(boolean)}
- * produces one {@link PureXsltTelemetry#SPAN_ASSERTION} span per assertion fired during the run.
+ * Verifies that <code>telemetry(boolean)</code> emits the expected phase spans (parse, preprocess,
+ * generate, compile, execute) plus post-hoc counters derived from the SVRL output, and that
+ * <code>perAssertionTelemetry(boolean)</code> produces one
+ * {@link PureXsltTelemetry#SPAN_SVRL_ASSERTION} span per assertion fired during the run.
  *
  * @author Philip Helger
  */
@@ -89,7 +89,7 @@ public final class SchematronResourcePureXsltTelemetryTest
     assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_COMPILE));
     assertEquals (1, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_EXECUTE));
     // No per-assertion spans without the second flag
-    assertEquals (0, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_ASSERTION));
+    assertEquals (0, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_SVRL_ASSERTION));
 
     // Post-hoc counters: 2 failed asserts, 1 fired rule, 1 active pattern
     assertEquals (2, m_aCapture.getCounterValue (PureXsltTelemetry.METRIC_ASSERTIONS_FAILED));
@@ -110,11 +110,11 @@ public final class SchematronResourcePureXsltTelemetryTest
                                                                       .perAssertionTelemetry (true)
                                                                       .build ();
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
-    assertEquals (2, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_ASSERTION));
+    assertEquals (2, m_aCapture.countSpansNamed (PureXsltTelemetry.SPAN_SVRL_ASSERTION));
 
     m_aCapture.getSpans ()
               .stream ()
-              .filter (x -> PureXsltTelemetry.SPAN_ASSERTION.equals (x.getName ()))
+              .filter (x -> PureXsltTelemetry.SPAN_SVRL_ASSERTION.equals (x.getName ()))
               .forEach (x -> {
                 assertEquals ("assert", x.getAttributes ().get (PureXsltTelemetry.ATTR_ASSERT_KIND));
                 assertEquals (Boolean.TRUE, x.getAttributes ().get (PureXsltTelemetry.ATTR_ASSERT_FAILED));

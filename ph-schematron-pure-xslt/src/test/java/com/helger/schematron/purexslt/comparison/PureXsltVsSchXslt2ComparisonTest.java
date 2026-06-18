@@ -253,7 +253,7 @@ public final class PureXsltVsSchXslt2ComparisonTest
 
   // ===== Schematron 2020 / common-feature tests =====
 
-  /**
+  /*
    * Abstract pattern with parameter substitution via {@code <sch:param>} (ISO/IEC 19757-3 5.4.6 /
    * 5.4.10). The preprocessor expands the {@code is-a} reference and substitutes the parameter
    * names. Both engines should produce structurally identical SVRL.
@@ -283,10 +283,10 @@ public final class PureXsltVsSchXslt2ComparisonTest
     _runAndDump ("Abstract pattern + is-a + param substitution", sSchematron, sXML);
   }
 
-  /**
+  /*
    * Abstract rule referenced via {@code <sch:extends rule="..."/>} (ISO/IEC 19757-3 5.4.4 /
-   * 5.4.13). Each concrete rule pulls in the abstract rule's assertions as if inlined. Both
-   * engines must materialize that expansion identically.
+   * 5.4.13). Each concrete rule pulls in the abstract rule's assertions as if inlined. Both engines
+   * must materialize that expansion identically.
    */
   @Test
   public void testAbstractRuleWithExtends () throws Exception
@@ -313,12 +313,11 @@ public final class PureXsltVsSchXslt2ComparisonTest
     _runAndDump ("Abstract rule + <sch:extends>", sSchematron, sXML);
   }
 
-  /**
+  /*
    * {@code <sch:include>} pulling in an external abstract pattern, combined with {@code is-a} +
    * {@code <sch:param>}. Uses the canonical Schematron specification example
-   * <code>pattern-example-with-includes.sch</code> bundled in
-   * {@code ph-schematron-testfiles}. Verifies that both engines resolve the include + expand the
-   * abstract pattern identically.
+   * <code>pattern-example-with-includes.sch</code> bundled in {@code ph-schematron-testfiles}.
+   * Verifies that both engines resolve the include + expand the abstract pattern identically.
    */
   @Test
   public void testIncludeWithAbstractPattern () throws Exception
@@ -338,7 +337,7 @@ public final class PureXsltVsSchXslt2ComparisonTest
     _runAndDumpCountsOnly ("Include + abstract pattern (spec example)", aSchRes, ReadableResourceString.utf8 (sXML));
   }
 
-  /**
+  /*
    * Default-phase resolution: schema declares {@code defaultPhase="strict"}, the validator is
    * called with no phase override; both engines should restrict pattern activation to the strict
    * phase (covered count-wise — exact layout differs because SchXslt2 batches all active-patterns
@@ -372,12 +371,12 @@ public final class PureXsltVsSchXslt2ComparisonTest
     _runAndDumpCountsOnly ("Default-phase = strict (both patterns active)", sSchematron, sXML);
   }
 
-  /**
+  /*
    * Multiple rules in one pattern with priority and a catch-all (last matching rule wins per the
    * XSLT model). Pure-xslt emits a per-pattern mode and one template per rule with descending
-   * priority; SchXslt2's transpile produces the same dispatch but additionally emits its
-   * {@code <svrl:suppressed-rule>} extension for rules that did not fire at a given context.
-   * Behavioral assertion is on the failed-assert / successful-report counts.
+   * priority; SchXslt2's transpile produces the same dispatch but additionally emits its {@code
+   * <svrl:suppressed-rule>} extension for rules that did not fire at a given context. Behavioral
+   * assertion is on the failed-assert / successful-report counts.
    */
   @Test
   public void testMultipleRuleContexts () throws Exception
@@ -399,12 +398,12 @@ public final class PureXsltVsSchXslt2ComparisonTest
     _runAndDumpCountsOnly ("Multiple rule contexts with priority dispatch", sSchematron, sXML);
   }
 
-  /**
-   * {@code xml:lang} and {@code xml:space} attributes on assert / report mixed-content text.
-   * Per ISO/IEC 19757-3 Annex D ({@code human-text}), these attributes belong on
-   * {@code <svrl:text>} (where both engines emit them). SchXslt2 additionally duplicates
-   * {@code xml:lang} onto the {@code <svrl:failed-assert>} parent (a non-spec extension allowed by
-   * ph-schematron's local svrl.xsd), so we only compare counts.
+  /*
+   * {@code xml:lang} and {@code xml:space} attributes on assert / report mixed-content text. Per
+   * ISO/IEC 19757-3 Annex D ({@code human-text}), these attributes belong on {@code <svrl:text>}
+   * (where both engines emit them). SchXslt2 additionally duplicates {@code xml:lang} onto the
+   * {@code <svrl:failed-assert>} parent (a non-spec extension allowed by ph-schematron's local
+   * svrl.xsd), so we only compare counts.
    */
   @Test
   public void testXmlLangOnAssertText () throws Exception

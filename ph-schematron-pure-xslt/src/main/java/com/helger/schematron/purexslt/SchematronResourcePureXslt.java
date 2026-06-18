@@ -263,8 +263,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * Install a custom JAXP {@link ErrorListener} for Saxon stylesheet compilation. The listener
    * receives every compile-time warning, error and fatal error from Saxon (including any surfacing
    * from {@code <xsl:*>} foreign content passed through from the schema). It does <em>not</em>
-   * receive Schematron-source parse problems &mdash; those go through {@link IPSErrorHandler} set
-   * via {@link #setErrorHandler(IPSErrorHandler)}.
+   * receive Schematron-source parse problems &mdash; those go through {@link IPSErrorHandler}.
    *
    * @param aErrorListener
    *        The listener. May be <code>null</code> to clear.
@@ -364,10 +363,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   /**
    * Enable per-assertion telemetry. When on, the post-hoc walk over the SVRL emits one
-   * {@link PureXsltTelemetry#SPAN_ASSERTION} span per failed-assert / successful-report carrying
-   * its test expression, location and (when present) id. The Saxon transform is one opaque step, so
-   * the spans carry no individual timing &mdash; only metadata for trace inspection. Has no effect
-   * when {@link #isTelemetry()} is <code>false</code>.
+   * {@link PureXsltTelemetry#SPAN_SVRL_ASSERTION} span per failed-assert / successful-report
+   * carrying its test expression, location and (when present) id. The Saxon transform is one opaque
+   * step, so the spans carry no individual timing &mdash; only metadata for trace inspection. Has
+   * no effect when {@link #isTelemetry()} is <code>false</code>.
    *
    * @param bPerAssertionTelemetry
    *        <code>true</code> to enable.

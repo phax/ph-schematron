@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import org.jspecify.annotations.NonNull;
@@ -33,7 +34,6 @@ import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
-import java.nio.charset.StandardCharsets;
 import com.helger.schematron.ESchematronVersion;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.model.PSGroup;
@@ -199,7 +199,7 @@ public final class MaxFeaturesRoundTripTest
     }
   }
 
-  /**
+  /*
    * Parse an XML string (already free of <code>&lt;include&gt;</code>s, because it was just
    * serialised by us) directly through {@link PSReader#readSchemaFromXML(IMicroElement)}, skipping
    * include-resolution.
@@ -228,16 +228,14 @@ public final class MaxFeaturesRoundTripTest
     return _readerFor (sXml).readLibraryFromXML (aDoc.getDocumentElement ());
   }
 
-  /**
+  /*
    * Idempotent round-trip: for each mock, serialise the parsed schema, re-parse the serialised
    * string, serialise again, and assert the two serialisations are byte-equal. If the writer drops
    * an attribute or the reader fails to round-trip a field, the second serialisation will differ
-   * from the first.
-   * <p>
-   * (The first serialisation is necessarily &quot;canonicalised&quot; through the model - the
-   * source XML on disk uses indentation / attribute ordering / namespace prefixes that our writer
-   * normalises. Comparing s1 to s2 isolates the model-level fidelity from those XML-syntactic
-   * differences.)
+   * from the first. <p> (The first serialisation is necessarily &quot;canonicalised&quot; through
+   * the model - the source XML on disk uses indentation / attribute ordering / namespace prefixes
+   * that our writer normalises. Comparing s1 to s2 isolates the model-level fidelity from those
+   * XML-syntactic differences.)
    */
   @Test
   public void testIdempotentSerialisationForEachMock () throws SchematronReadException
@@ -262,7 +260,7 @@ public final class MaxFeaturesRoundTripTest
     }
   }
 
-  /**
+  /*
    * Same idempotent round-trip for the v4 <code>&lt;library&gt;</code> mock.
    */
   @Test
@@ -283,10 +281,11 @@ public final class MaxFeaturesRoundTripTest
   // <library> mock - 2025-only root element
   // ------------------------------------------------------------------------------------------
 
-  /**
-   * The 2025 mock declares <code>&lt;sch:extends href=&quot;library-2025.xml#libContent&quot;/&gt;</code>
-   * at the schema top level; this test exercises the library document itself through
-   * {@link PSReader#readLibrary()} and {@link PSWriter}.
+  /*
+   * The 2025 mock declares <code>&lt;sch:extends
+   * href=&quot;library-2025.xml#libContent&quot;/&gt;</code> at the schema top level; this test
+   * exercises the library document itself through {@link PSReader#readLibrary()} and {@link
+   * PSWriter}.
    */
   @Test
   public void testLibraryReadAndWrite () throws SchematronReadException
@@ -316,7 +315,7 @@ public final class MaxFeaturesRoundTripTest
   // Cross-version matrix - the version checker must flag mis-used features.
   // ------------------------------------------------------------------------------------------
 
-  /**
+  /*
    * For each mock, set every possible declared edition and check that the version checker either
    * stays silent (declared &ge; mock edition) or emits warnings (declared &lt; mock edition).
    */

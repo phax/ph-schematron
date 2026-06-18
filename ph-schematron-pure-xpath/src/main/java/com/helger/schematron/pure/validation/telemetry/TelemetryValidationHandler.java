@@ -23,9 +23,11 @@ import org.w3c.dom.Node;
 import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.CGlobal;
+import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EContinue;
 import com.helger.base.timing.StopWatch;
 import com.helger.schematron.ESchematronEngine;
+import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSPattern;
 import com.helger.schematron.model.PSPhase;
@@ -45,16 +47,18 @@ import com.helger.telemetry.TelemetryMetrics;
  * Implementation of {@link IPSValidationHandler} that emits runtime telemetry &mdash; counters,
  * spans and a duration histogram &mdash; via ph-telemetry. Install on a
  * {@code SchematronResourcePure} by calling {@code setTelemetry(true)} (which composes this with
- * any caller-supplied custom handler).
+ * any caller-supplied custom handler). All span / metric / attribute names come from the shared
+ * {@link CSchematronTelemetry} vocabulary so every engine stays in lock-step.
  * <p>
  * Two granularity modes:
  * <ul>
- * <li><b>Aggregate (default)</b> &mdash; one {@code schematron.validate} span around the whole
- * validation, child counters for fired-rules / failed-asserts / successful-reports /
- * active-patterns, and a {@code schematron.validate.duration} histogram entry on completion.</li>
- * <li><b>Per-assertion</b> &mdash; in addition, an extra {@code schematron.assertion} child span is
- * created and immediately closed for every assert and report evaluation. Useful for diagnostic
- * deep-dives; significant overhead.</li>
+ * <li><b>Aggregate (default)</b> &mdash; one {@link CSchematronTelemetry#SPAN_VALIDATE} span around
+ * the whole validation, child counters for fired-rules / failed-asserts / successful-reports /
+ * active-patterns, and a {@link CSchematronTelemetry#METRIC_VALIDATE_DURATION} histogram entry on
+ * completion.</li>
+ * <li><b>Per-assertion</b> &mdash; in addition, an extra
+ * {@link CSchematronTelemetry#SPAN_SVRL_ASSERTION} child span is created and immediately closed for
+ * every assert and report evaluation. Useful for diagnostic deep-dives; significant overhead.</li>
  * </ul>
  *
  * @author Philip Helger
@@ -63,47 +67,22 @@ import com.helger.telemetry.TelemetryMetrics;
 @NotThreadSafe
 public final class TelemetryValidationHandler implements IPSValidationHandler
 {
-  // === metric instrument names (OpenTelemetry conventions) ===
-  public static final String SPAN_VALIDATE = "schematron.validate";
-  public static final String SPAN_ASSERTION = "schematron.assertion";
-  public static final String METRIC_ASSERTIONS_FAILED = "schematron.assertions.failed";
-  public static final String METRIC_REPORTS_FIRED = "schematron.reports.fired";
-  public static final String METRIC_RULES_FIRED = "schematron.rules.fired";
-  public static final String METRIC_PATTERNS_ACTIVE = "schematron.patterns.active";
-  public static final String METRIC_VALIDATE_DURATION = "schematron.validate.duration";
-
-  // === attribute keys ===
-  public static final String ATTR_ENGINE = "schematron.engine";
-  public static final String ATTR_PHASE = "schematron.phase";
-  public static final String ATTR_OUTCOME = "schematron.outcome";
-  public static final String ATTR_PATTERN_ID = "schematron.pattern.id";
-  public static final String ATTR_RULE_CONTEXT = "schematron.rule.context";
-  public static final String ATTR_RULE_ID = "schematron.rule.id";
-  public static final String ATTR_ASSERT_ID = "schematron.assert.id";
-  public static final String ATTR_ASSERT_TEST = "schematron.assert.test";
-  public static final String ATTR_ASSERT_KIND = "schematron.assert.kind";
-  public static final String ATTR_ASSERT_FAILED = "schematron.assert.failed";
-
-  // Outcome attribute values
-  public static final String OUTCOME_VALID = "valid";
-  public static final String OUTCOME_INVALID = "invalid";
-
   // Pre-resolved instruments. Created once on class load; emit-time cost is just a SPI call.
-  private static final ITelemetryCounter COUNTER_FAILED_ASSERTS = TelemetryMetrics.counter (METRIC_ASSERTIONS_FAILED,
+  private static final ITelemetryCounter COUNTER_FAILED_ASSERTS = TelemetryMetrics.counter (CSchematronTelemetry.METRIC_ASSERTIONS_FAILED,
                                                                                             "Number of failed Schematron assertions",
-                                                                                            "{count}");
-  private static final ITelemetryCounter COUNTER_SUCCESSFUL_REPORTS = TelemetryMetrics.counter (METRIC_REPORTS_FIRED,
+                                                                                            CSchematronTelemetry.UNIT_COUNT);
+  private static final ITelemetryCounter COUNTER_SUCCESSFUL_REPORTS = TelemetryMetrics.counter (CSchematronTelemetry.METRIC_REPORTS_FIRED,
                                                                                                 "Number of fired Schematron reports",
-                                                                                                "{count}");
-  private static final ITelemetryCounter COUNTER_RULES = TelemetryMetrics.counter (METRIC_RULES_FIRED,
+                                                                                                CSchematronTelemetry.UNIT_COUNT);
+  private static final ITelemetryCounter COUNTER_RULES = TelemetryMetrics.counter (CSchematronTelemetry.METRIC_RULES_FIRED,
                                                                                    "Number of fired Schematron rules",
-                                                                                   "{count}");
-  private static final ITelemetryCounter COUNTER_PATTERNS = TelemetryMetrics.counter (METRIC_PATTERNS_ACTIVE,
+                                                                                   CSchematronTelemetry.UNIT_COUNT);
+  private static final ITelemetryCounter COUNTER_PATTERNS = TelemetryMetrics.counter (CSchematronTelemetry.METRIC_PATTERNS_ACTIVE,
                                                                                       "Number of active Schematron patterns visited",
-                                                                                      "{count}");
-  private static final ITelemetryHistogram HIST_DURATION = TelemetryMetrics.histogram (METRIC_VALIDATE_DURATION,
+                                                                                      CSchematronTelemetry.UNIT_COUNT);
+  private static final ITelemetryHistogram HIST_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_VALIDATE_DURATION,
                                                                                        "Schematron validation duration",
-                                                                                       "ms");
+                                                                                       CSchematronTelemetry.UNIT_MILLIS);
 
   private final String m_sEngine;
   private final boolean m_bPerAssertionSpans;
@@ -118,14 +97,15 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
 
   /**
    * @param eEngine
-   *        Schematron engine emitting events (e.g. {@code "pure"} or {@code "pure-saxon"}). Becomes
-   *        the value of the {@link #ATTR_ENGINE} attribute on every span and metric.
+   *        Schematron engine emitting events (e.g. {@code "pure-xpath"}). Becomes the value of the
+   *        {@link CSchematronTelemetry#ATTR_ENGINE} attribute on every span and metric.
    * @param bPerAssertionSpans
-   *        <code>true</code> to additionally emit one {@link #SPAN_ASSERTION} span per assert /
-   *        report evaluation.
+   *        <code>true</code> to additionally emit one
+   *        {@link CSchematronTelemetry#SPAN_SVRL_ASSERTION} span per assert / report evaluation.
    */
   public TelemetryValidationHandler (@NonNull final ESchematronEngine eEngine, final boolean bPerAssertionSpans)
   {
+    ValueEnforcer.notNull (eEngine, "Engine");
     m_sEngine = eEngine.getID ();
     m_bPerAssertionSpans = bPerAssertionSpans;
   }
@@ -139,7 +119,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
     m_nFailedAsserts = 0;
     m_nFiredReports = 0;
     m_sCurrentPhase = aActivePhase == null ? null : aActivePhase.getID ();
-    m_aEngineAttributes = TelemetryAttributes.builder ().put (ATTR_ENGINE, m_sEngine).build ();
+    m_aEngineAttributes = TelemetryAttributes.builder ().put (CSchematronTelemetry.ATTR_ENGINE, m_sEngine).build ();
   }
 
   @Override
@@ -162,20 +142,23 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
                                    @NonNull final String sTestExpression,
                                    final boolean bFailed)
   {
-    try (final ITelemetrySpan aSpan = Telemetry.startSpan (SPAN_ASSERTION, ETelemetrySpanKind.INTERNAL))
+    try (final ITelemetrySpan aSpan = Telemetry.startSpan (CSchematronTelemetry.SPAN_SVRL_ASSERTION,
+                                                           ETelemetrySpanKind.INTERNAL))
     {
-      aSpan.setAttribute (ATTR_ENGINE, m_sEngine);
+      aSpan.setAttribute (CSchematronTelemetry.ATTR_ENGINE, m_sEngine);
       if (aAR.getID () != null)
-        aSpan.setAttribute (ATTR_ASSERT_ID, aAR.getID ());
-      aSpan.setAttribute (ATTR_ASSERT_TEST, sTestExpression);
-      aSpan.setAttribute (ATTR_ASSERT_KIND, aAR.isAssert () ? "assert" : "report");
-      aSpan.setAttribute (ATTR_ASSERT_FAILED, bFailed);
+        aSpan.setAttribute (CSchematronTelemetry.ATTR_ASSERT_ID, aAR.getID ());
+      aSpan.setAttribute (CSchematronTelemetry.ATTR_ASSERT_TEST, sTestExpression);
+      aSpan.setAttribute (CSchematronTelemetry.ATTR_ASSERT_KIND,
+                          aAR.isAssert () ? CSchematronTelemetry.ASSERT_KIND_ASSERT
+                                          : CSchematronTelemetry.ASSERT_KIND_REPORT);
+      aSpan.setAttribute (CSchematronTelemetry.ATTR_ASSERT_FAILED, bFailed);
       if (aRule.getContext () != null)
-        aSpan.setAttribute (ATTR_RULE_CONTEXT, aRule.getContext ());
+        aSpan.setAttribute (CSchematronTelemetry.ATTR_RULE_CONTEXT, aRule.getContext ());
       if (aRule.getID () != null)
-        aSpan.setAttribute (ATTR_RULE_ID, aRule.getID ());
+        aSpan.setAttribute (CSchematronTelemetry.ATTR_RULE_ID, aRule.getID ());
       if (m_sCurrentPhase != null)
-        aSpan.setAttribute (ATTR_PHASE, m_sCurrentPhase);
+        aSpan.setAttribute (CSchematronTelemetry.ATTR_PHASE, m_sCurrentPhase);
     }
   }
 
@@ -219,10 +202,11 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   {
     m_aSW.stop ();
     final double dDurationMs = m_aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
-    final String sOutcome = (m_nFailedAsserts == 0 && m_nFiredReports == 0) ? OUTCOME_VALID : OUTCOME_INVALID;
+    final String sOutcome = (m_nFailedAsserts == 0 && m_nFiredReports == 0) ? CSchematronTelemetry.OUTCOME_VALID
+                                                                            : CSchematronTelemetry.OUTCOME_INVALID;
     final TelemetryAttributes aDurAttrs = TelemetryAttributes.builder ()
-                                                             .put (ATTR_ENGINE, m_sEngine)
-                                                             .put (ATTR_OUTCOME, sOutcome)
+                                                             .put (CSchematronTelemetry.ATTR_ENGINE, m_sEngine)
+                                                             .put (CSchematronTelemetry.ATTR_OUTCOME, sOutcome)
                                                              .build ();
     HIST_DURATION.record (dDurationMs, aDurAttrs);
   }

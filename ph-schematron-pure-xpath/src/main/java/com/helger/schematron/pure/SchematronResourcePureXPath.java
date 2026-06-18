@@ -58,6 +58,7 @@ import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
+import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.exchange.PSWriter;
@@ -135,16 +136,13 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    *
    * @param aBuilder
    *        The configured builder. May not be <code>null</code>.
-   * @since 10.0.0
    */
-  @SuppressWarnings ("deprecation")
   protected SchematronResourcePureXPath (@NonNull final Builder aBuilder)
   {
-    super (aBuilder.m_aResource);
-    setUseCache (aBuilder.m_bUseCache);
-    setLenient (aBuilder.m_bLenient);
-    if (aBuilder.m_bEntityResolverSet)
-      internalSetEntityResolver (aBuilder.m_aEntityResolver);
+    super (aBuilder.m_aResource,
+           aBuilder.m_bUseCache,
+           aBuilder.m_bLenient,
+           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null);
     m_sPhase = aBuilder.m_sPhase;
     m_aErrorHandler = aBuilder.m_aErrorHandler;
     m_aCustomValidationHandler = aBuilder.m_aCustomValidationHandler;
@@ -441,8 +439,10 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   {
     if (!m_bTelemetry)
       return m_aCustomValidationHandler;
+
     final TelemetryValidationHandler aTelemetry = new TelemetryValidationHandler (ESchematronEngine.PURE_XPATH,
                                                                                   m_bPerAssertionTelemetry);
+    // Null-safe combine: m_aCustomValidationHandler may be null when telemetry is enabled on its own
     return IPSValidationHandler.and (m_aCustomValidationHandler, aTelemetry);
   }
 
@@ -493,11 +493,13 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
       catch (final RuntimeException ex)
       {
         if (m_aErrorHandler != null)
+        {
           m_aErrorHandler.handleError (SingleError.builderError ()
                                                   .errorLocation (new SimpleLocation (getResource ().getPath ()))
                                                   .errorText ("Error creating bound schema")
                                                   .linkedException (ex)
                                                   .build ());
+        }
         throw ex;
       }
 
@@ -604,12 +606,13 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
       // Tracing span wraps the whole validation; the chained TelemetryValidationHandler emits the
       // counters and (optionally) per-assert child spans.
       final var aBound = getOrCreateBoundSchema ();
-      try (final ITelemetrySpan aSpan = Telemetry.startSpan (TelemetryValidationHandler.SPAN_VALIDATE,
+      try (final ITelemetrySpan aSpan = Telemetry.startSpan (CSchematronTelemetry.SPAN_VALIDATE,
                                                              ETelemetrySpanKind.INTERNAL))
       {
-        aSpan.setAttribute (TelemetryValidationHandler.ATTR_ENGINE, "pure");
+        aSpan.setAttribute (CSchematronTelemetry.ATTR_ENGINE, ESchematronEngine.PURE_XPATH.getID ());
         if (m_sPhase != null)
-          aSpan.setAttribute (TelemetryValidationHandler.ATTR_PHASE, m_sPhase);
+          aSpan.setAttribute (CSchematronTelemetry.ATTR_PHASE, m_sPhase);
+
         try
         {
           aSOT = aBound.validateComplete (aXMLNode, sBaseURI);

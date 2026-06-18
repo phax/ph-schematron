@@ -187,5 +187,6 @@
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>
     <module>ph-schematron-benchmarks</module>
+    <module>ph-schematron-it</module>
   </modules>
 </project>

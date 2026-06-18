@@ -79,7 +79,11 @@
       <groupId>net.sf.saxon</groupId>
       <artifactId>Saxon-HE</artifactId>
     </dependency>
-    
+    <dependency>
+      <groupId>com.helger.telemetry</groupId>
+      <artifactId>ph-telemetry</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
