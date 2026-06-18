@@ -51,6 +51,8 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronException;
+import com.helger.schematron.api.telemetry.CSchematronTelemetry;
+import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
@@ -534,15 +536,15 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     }
 
     // Inline path - bypasses the cache, exposes each pipeline phase to telemetry.
-    final PSSchema aRaw = _phase (PureXsltTelemetry.SPAN_PARSE, this::getOrReadSchema);
+    final PSSchema aRaw = _phase (CSchematronTelemetry.SPAN_PARSE, this::getOrReadSchema);
 
     final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
-    final PSSchema aSchema = _phase (PureXsltTelemetry.SPAN_PREPROCESS,
+    final PSSchema aSchema = _phase (CSchematronTelemetry.SPAN_PREPROCESS,
                                      () -> aPreprocessor.getAsPreprocessedSchema (aRaw));
 
     final Document aXsltDoc;
     {
-      try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_GENERATE))
+      try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_GENERATE))
       {
         aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
       }
@@ -553,7 +555,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
                     XMLWriter.getNodeAsString (aXsltDoc,
                                                new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
 
-    try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_COMPILE))
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_COMPILE))
     {
       final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
       if (m_aURIResolver != null)
@@ -573,7 +575,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     final Document aResultDoc = XMLFactory.newDocument ();
     final DOMDestination aDestination = new DOMDestination (aResultDoc);
 
-    try (final ITelemetrySpan aSpan = _maybeStartSpan (PureXsltTelemetry.SPAN_EXECUTE))
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_EXECUTE))
     {
       final var aTransformer = aExecutable.load30 ();
       if (m_aURIResolver != null)
@@ -629,19 +631,20 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       return _doValidate (aXMLNode, sBaseURI);
 
     final StopWatch aSW = StopWatch.createdStarted ();
-    try (final ITelemetrySpan aRootSpan = Telemetry.startSpan (PureXsltTelemetry.SPAN_VALIDATE,
+    try (final ITelemetrySpan aRootSpan = Telemetry.startSpan (CSchematronTelemetry.SPAN_VALIDATE,
                                                                ETelemetrySpanKind.INTERNAL))
     {
-      aRootSpan.setAttribute (PureXsltTelemetry.ATTR_ENGINE, PureXsltTelemetry.ENGINE_VALUE);
+      aRootSpan.setAttribute (CSchematronTelemetry.ATTR_ENGINE, PureXsltTelemetry.ENGINE_VALUE);
       if (m_sPhase != null)
-        aRootSpan.setAttribute (PureXsltTelemetry.ATTR_PHASE, m_sPhase);
+        aRootSpan.setAttribute (CSchematronTelemetry.ATTR_PHASE, m_sPhase);
       try
       {
         final SchematronOutputType aSVRL = _doValidate (aXMLNode, sBaseURI);
 
         aSW.stop ();
         final double dDurationMs = aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
-        PureXsltTelemetry.emitPostHoc (aSVRL, m_bPerAssertionTelemetry, dDurationMs);
+        final boolean bPerAssertionSpans = m_bPerAssertionTelemetry;
+        SvrlTelemetryEmitter.emitPostHoc (aSVRL, PureXsltTelemetry.ENGINE_VALUE, bPerAssertionSpans, dDurationMs);
         aRootSpan.setStatusOk ();
         return aSVRL;
       }

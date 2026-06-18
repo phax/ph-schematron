@@ -38,10 +38,6 @@ import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.schematron.SchematronDebug;
-import com.helger.schematron.pure.binding.IPSQueryBinding;
-import com.helger.schematron.pure.binding.SchematronBindException;
-import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
-import com.helger.schematron.pure.bound.AbstractPSBoundSchema;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.model.IPSElement;
 import com.helger.schematron.model.IPSHasMixedContent;
@@ -53,6 +49,10 @@ import com.helger.schematron.model.PSPhase;
 import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSValueOf;
+import com.helger.schematron.pure.binding.IPSQueryBinding;
+import com.helger.schematron.pure.binding.SchematronBindException;
+import com.helger.schematron.pure.binding.xpath.PSXPathVariables;
+import com.helger.schematron.pure.bound.AbstractPSBoundSchema;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.xpath.IXPathConfig;
@@ -684,6 +684,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             final boolean bIsAssert = aAssertReport.isAssert ();
             final XPathExecutable aTestExecutable = aBoundAssertReport.getBoundTestExpression ();
 
+            // TODO add Telemetry span per assert
             try
             {
               final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExecutable,
@@ -786,14 +787,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     if (m_nVarForNodeLists > 0 || m_nVarForString > 0 || m_nVarForNode > 0 || m_nVarForBoolean > 0)
     {
       SchematronDebug.getDebugLogger ()
-                     .info ( () -> "Variables result types: NodeList=" +
-                                   m_nVarForNodeLists +
-                                   "; String=" +
-                                   m_nVarForString +
-                                   "; Node=" +
-                                   m_nVarForNode +
-                                   "; Boolean/Empty=" +
-                                   m_nVarForBoolean);
+                     .info (() -> "Variables result types: NodeList=" +
+                                  m_nVarForNodeLists +
+                                  "; String=" +
+                                  m_nVarForString +
+                                  "; Node=" +
+                                  m_nVarForNode +
+                                  "; Boolean/Empty=" +
+                                  m_nVarForBoolean);
     }
   }
 
@@ -845,10 +846,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     {
       // ALWAYS drop the per-thread state, regardless of how _validateSerial exited:
       // - normal completion: the scoped _removeAllVariables calls inside _validateSerial already
-      //   removed every <let> binding, so this is a no-op;
+      // removed every <let> binding, so this is a no-op;
       // - IPSValidationHandler returns BREAK mid-loop: the in-flight pattern/rule/schema let
-      //   variables are still bound on this thread - clear them so the next request on this
-      //   thread-pool worker does not see stale bindings;
+      // variables are still bound on this thread - clear them so the next request on this
+      // thread-pool worker does not see stale bindings;
       // - RuntimeException out of a handler callback: same as above.
       m_aLetVars.clearAllForCurrentThread ();
       XPathEvaluationContext.clear ();

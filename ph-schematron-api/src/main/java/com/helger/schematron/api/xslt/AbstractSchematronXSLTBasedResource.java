@@ -453,7 +453,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    // Route through the Source overload so the single telemetry choke point covers both entry points
+    // Route through the Source overload so the single telemetry choke point covers both entry
+    // points
     final DOMSource aSource = new DOMSource (aXMLNode);
     aSource.setSystemId (sBaseURI);
     return applySchematronValidationToSVRL (aSource);
@@ -461,8 +462,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   @Override
   @Nullable
-  public final SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource)
-                                                                                                       throws TransformerException
+  public final SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource) throws TransformerException
   {
     if (!m_bTelemetry)
       return _readSVRL (applySchematronValidation (aXMLSource));
@@ -478,6 +478,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       aSpan.setAttribute (CSchematronTelemetry.ATTR_ENGINE, sEngineID);
       try
       {
+        // Validate and evaluate
         aSVRL = _readSVRL (applySchematronValidation (aXMLSource));
         aSpan.setStatusOk ();
         return aSVRL;
@@ -492,10 +493,12 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     {
       aSW.stop ();
       if (aSVRL != null)
+      {
         SvrlTelemetryEmitter.emitPostHoc (aSVRL,
                                           sEngineID,
                                           m_bPerAssertionTelemetry,
                                           aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND);
+      }
     }
   }
 
