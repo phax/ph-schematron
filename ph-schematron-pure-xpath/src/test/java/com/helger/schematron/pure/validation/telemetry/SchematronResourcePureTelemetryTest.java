@@ -92,6 +92,13 @@ public final class SchematronResourcePureTelemetryTest
     assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
     assertTrue (m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
                 0.0);
+
+    // Per-rule timing rides along with telemetry: one rule -> one rule.duration + one
+    // context.duration entry
+    assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_RULE_DURATION).size ());
+    assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_CONTEXT_DURATION).size ());
+    // Per-assert timing is OFF (per-assertion telemetry not enabled) -> no assert.duration entries
+    assertEquals (0, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_ASSERT_DURATION).size ());
   }
 
   @Test

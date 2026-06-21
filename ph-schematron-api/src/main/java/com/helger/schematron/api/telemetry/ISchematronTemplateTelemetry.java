@@ -17,6 +17,7 @@
 package com.helger.schematron.api.telemetry;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Callback interface for per-template telemetry of XSLT-based Schematron validation. When set on an
@@ -75,4 +76,71 @@ public interface ISchematronTemplateTelemetry
    */
   default void onTransformEnd ()
   {}
+
+  /**
+   * Compose this telemetry with another - all callbacks fire on this one first, then the passed one.
+   *
+   * @param rhs
+   *        The telemetry to invoke after this one. May be <code>null</code>.
+   * @return A composed telemetry, or this when {@code rhs} is <code>null</code>. Never
+   *         <code>null</code>.
+   * @since 10.0.0
+   */
+  @NonNull
+  default ISchematronTemplateTelemetry and (@Nullable final ISchematronTemplateTelemetry rhs)
+  {
+    return and (this, rhs);
+  }
+
+  /**
+   * Compose two telemetry callbacks. All methods of {@code lhs} fire before {@code rhs}.
+   *
+   * @param lhs
+   *        The first telemetry. May be <code>null</code>.
+   * @param rhs
+   *        The second telemetry. May be <code>null</code>.
+   * @return The composed telemetry, or whichever of the two is non-<code>null</code>, or
+   *         <code>null</code> when both are <code>null</code>.
+   * @since 10.0.0
+   */
+  @Nullable
+  static ISchematronTemplateTelemetry and (@Nullable final ISchematronTemplateTelemetry lhs,
+                                           @Nullable final ISchematronTemplateTelemetry rhs)
+  {
+    if (lhs == null)
+      return rhs;
+    if (rhs == null)
+      return lhs;
+
+    return new ISchematronTemplateTelemetry ()
+    {
+      @Override
+      public void onTransformStart ()
+      {
+        lhs.onTransformStart ();
+        rhs.onTransformStart ();
+      }
+
+      @Override
+      public void onTemplateEnter (@NonNull final SchematronTemplateInfo aInfo)
+      {
+        lhs.onTemplateEnter (aInfo);
+        rhs.onTemplateEnter (aInfo);
+      }
+
+      @Override
+      public void onTemplateLeave (@NonNull final SchematronTemplateInfo aInfo, final long nDurationNanos)
+      {
+        lhs.onTemplateLeave (aInfo, nDurationNanos);
+        rhs.onTemplateLeave (aInfo, nDurationNanos);
+      }
+
+      @Override
+      public void onTransformEnd ()
+      {
+        lhs.onTransformEnd ();
+        rhs.onTransformEnd ();
+      }
+    };
+  }
 }

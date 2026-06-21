@@ -207,7 +207,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
                               .parameters (parameters ())
                               .forceCacheResult (m_bForceCacheResult)
                               .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
-                              .telemetry (getTelemetry ())
+                              .telemetry (getEffectiveTemplateTelemetry ())
                               .build ();
   }
 

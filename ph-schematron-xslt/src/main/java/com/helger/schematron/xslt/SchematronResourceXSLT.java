@@ -132,7 +132,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
                                .uriResolver (getURIResolver ())
                                .parameters (parameters ())
                                .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
-                               .telemetry (getTelemetry ())
+                               .telemetry (getEffectiveTemplateTelemetry ())
                                .build ();
   }
 

@@ -204,6 +204,93 @@ public interface IPSValidationHandler
   {}
 
   /**
+   * @return <code>true</code> if this handler wants per-rule and per-context evaluation timing. When
+   *         <code>false</code> (the default), the engine skips the timing instrumentation entirely,
+   *         so there is zero overhead. Drives {@link #onRuleEvaluated(PSRule, long)} and
+   *         {@link #onContextEvaluated(PSRule, long, int)}.
+   * @since 10.0.0
+   */
+  default boolean isMeasureTiming ()
+  {
+    return false;
+  }
+
+  /**
+   * @return <code>true</code> if this handler wants per-assert evaluation timing (one measurement
+   *         per assert / report evaluation per matching node). Significantly more overhead than
+   *         {@link #isMeasureTiming()}. Drives
+   *         {@link #onTestEvaluated(PSRule, PSAssertReport, String, long, boolean)}. Default is
+   *         <code>false</code>.
+   * @since 10.0.0
+   */
+  default boolean isMeasureAssertionTiming ()
+  {
+    return false;
+  }
+
+  /**
+   * Called once per rule with the time taken to evaluate its {@code context} expression (the node
+   * selection). Only invoked when {@link #isMeasureTiming()} is <code>true</code>.
+   *
+   * @param aRule
+   *        The rule whose context was evaluated. Never <code>null</code>.
+   * @param nDurationNanos
+   *        The wall-clock duration of the context evaluation in nanoseconds.
+   * @param nMatchCount
+   *        The number of nodes the context expression selected.
+   * @throws SchematronValidationException
+   *         In case of validation errors
+   * @since 10.0.0
+   */
+  default void onContextEvaluated (@NonNull final PSRule aRule,
+                                   @Nonnegative final long nDurationNanos,
+                                   @Nonnegative final int nMatchCount) throws SchematronValidationException
+  {}
+
+  /**
+   * Called once per assert / report evaluation per matching node - for passing and failing
+   * evaluations alike - with the time taken to evaluate the {@code test} expression. Only invoked
+   * when {@link #isMeasureAssertionTiming()} is <code>true</code>.
+   *
+   * @param aRule
+   *        The rule that owns the assert / report. Never <code>null</code>.
+   * @param aAssertReport
+   *        The assert / report whose test was evaluated. Never <code>null</code>.
+   * @param sTestExpression
+   *        The actual (let-resolved) test expression that was evaluated. Never <code>null</code>.
+   * @param nDurationNanos
+   *        The wall-clock duration of the test evaluation in nanoseconds.
+   * @param bTestResult
+   *        The boolean result of the test evaluation.
+   * @throws SchematronValidationException
+   *         In case of validation errors
+   * @since 10.0.0
+   */
+  default void onTestEvaluated (@NonNull final PSRule aRule,
+                                @NonNull final PSAssertReport aAssertReport,
+                                @NonNull final String sTestExpression,
+                                @Nonnegative final long nDurationNanos,
+                                final boolean bTestResult) throws SchematronValidationException
+  {}
+
+  /**
+   * Called once per rule with the total time taken for the rule - its context selection plus every
+   * assert / report evaluation across all matching nodes. This is the per-rule cost used to rank the
+   * most expensive rules. Only invoked when {@link #isMeasureTiming()} is <code>true</code>.
+   *
+   * @param aRule
+   *        The rule that was evaluated. Never <code>null</code>.
+   * @param nDurationNanos
+   *        The total wall-clock duration of the rule in nanoseconds.
+   * @throws SchematronValidationException
+   *         In case of validation errors
+   * @since 10.0.0
+   */
+  default void onRuleEvaluated (@NonNull final PSRule aRule, @Nonnegative final long nDurationNanos)
+                                                                                                     throws SchematronValidationException
+  {}
+
+  /**
    * Create a new validation handler that first invokes all methods from this
    * handler, and than later on from the passed validation handler.
    *
@@ -340,6 +427,46 @@ public interface IPSValidationHandler
       {
         lhs.onEnd (aSchema, aActivePhase);
         rhs.onEnd (aSchema, aActivePhase);
+      }
+
+      @Override
+      public boolean isMeasureTiming ()
+      {
+        return lhs.isMeasureTiming () || rhs.isMeasureTiming ();
+      }
+
+      @Override
+      public boolean isMeasureAssertionTiming ()
+      {
+        return lhs.isMeasureAssertionTiming () || rhs.isMeasureAssertionTiming ();
+      }
+
+      @Override
+      public void onContextEvaluated (@NonNull final PSRule aRule,
+                                      @Nonnegative final long nDurationNanos,
+                                      @Nonnegative final int nMatchCount) throws SchematronValidationException
+      {
+        lhs.onContextEvaluated (aRule, nDurationNanos, nMatchCount);
+        rhs.onContextEvaluated (aRule, nDurationNanos, nMatchCount);
+      }
+
+      @Override
+      public void onTestEvaluated (@NonNull final PSRule aRule,
+                                   @NonNull final PSAssertReport aAssertReport,
+                                   @NonNull final String sTestExpression,
+                                   @Nonnegative final long nDurationNanos,
+                                   final boolean bTestResult) throws SchematronValidationException
+      {
+        lhs.onTestEvaluated (aRule, aAssertReport, sTestExpression, nDurationNanos, bTestResult);
+        rhs.onTestEvaluated (aRule, aAssertReport, sTestExpression, nDurationNanos, bTestResult);
+      }
+
+      @Override
+      public void onRuleEvaluated (@NonNull final PSRule aRule, @Nonnegative final long nDurationNanos)
+                                                                                                        throws SchematronValidationException
+      {
+        lhs.onRuleEvaluated (aRule, nDurationNanos);
+        rhs.onRuleEvaluated (aRule, nDurationNanos);
       }
     };
   }

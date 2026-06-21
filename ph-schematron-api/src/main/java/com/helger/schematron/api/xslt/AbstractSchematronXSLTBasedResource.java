@@ -48,6 +48,7 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
+import com.helger.schematron.api.telemetry.RuleDurationTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
@@ -261,6 +262,24 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
+   * @return The effective per-template telemetry actually used for compilation and execution. Equal
+   *         to {@link #getTelemetry()} unless per-assertion (deep) profiling is enabled together
+   *         with telemetry, in which case the built-in {@link RuleDurationTemplateTelemetry} is
+   *         composed in to emit {@link CSchematronTelemetry#METRIC_RULE_DURATION}. A non-null result
+   *         forces Saxon's {@code COMPILE_WITH_TRACING} (1.5&times;&ndash;3&times; slower), so the
+   *         per-rule timing is opt-in via {@code perAssertionTelemetry(true)}.
+   * @since 10.0.0
+   */
+  @Nullable
+  protected final ISchematronTemplateTelemetry getEffectiveTemplateTelemetry ()
+  {
+    if (m_bTelemetry && m_bPerAssertionTelemetry)
+      return ISchematronTemplateTelemetry.and (m_aTelemetry,
+                                               new RuleDurationTemplateTelemetry (getTelemetryEngineID ()));
+    return m_aTelemetry;
+  }
+
+  /**
    * @return <code>true</code> if runtime ph-telemetry (a {@code schematron.validate} span, the
    *         aggregate counters and the duration histogram) is emitted during validation. Default is
    *         <code>false</code>.
@@ -433,7 +452,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                     m_aCustomErrorListener,
                                                     m_aCustomURIResolver,
                                                     m_aCustomParameters,
-                                                    m_aTelemetry);
+                                                    getEffectiveTemplateTelemetry ());
   }
 
   @Nullable

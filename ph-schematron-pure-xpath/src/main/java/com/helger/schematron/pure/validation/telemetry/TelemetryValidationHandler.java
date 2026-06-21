@@ -83,6 +83,20 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   private static final ITelemetryHistogram HIST_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_VALIDATE_DURATION,
                                                                                        "Schematron validation duration",
                                                                                        CSchematronTelemetry.UNIT_MILLIS);
+  private static final ITelemetryHistogram HIST_RULE_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_RULE_DURATION,
+                                                                                            "Per-rule evaluation duration (context + all asserts)",
+                                                                                            CSchematronTelemetry.UNIT_MILLIS);
+  private static final ITelemetryHistogram HIST_CONTEXT_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_CONTEXT_DURATION,
+                                                                                               "Per-rule context selection duration",
+                                                                                               CSchematronTelemetry.UNIT_MILLIS);
+  private static final ITelemetryHistogram HIST_ASSERT_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_ASSERT_DURATION,
+                                                                                              "Per-assert test evaluation duration",
+                                                                                              CSchematronTelemetry.UNIT_MILLIS);
+
+  private static double _toMillis (final long nNanos)
+  {
+    return nNanos / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
+  }
 
   private final String m_sEngine;
   private final boolean m_bPerAssertionSpans;
@@ -201,13 +215,72 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
                                                                                             throws SchematronValidationException
   {
     m_aSW.stop ();
-    final double dDurationMs = m_aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
     final String sOutcome = (m_nFailedAsserts == 0 && m_nFiredReports == 0) ? CSchematronTelemetry.OUTCOME_VALID
                                                                             : CSchematronTelemetry.OUTCOME_INVALID;
     final TelemetryAttributes aDurAttrs = TelemetryAttributes.builder ()
                                                              .put (CSchematronTelemetry.ATTR_ENGINE, m_sEngine)
                                                              .put (CSchematronTelemetry.ATTR_OUTCOME, sOutcome)
                                                              .build ();
-    HIST_DURATION.record (dDurationMs, aDurAttrs);
+    HIST_DURATION.record (_toMillis (m_aSW.getNanos ()), aDurAttrs);
+  }
+
+  @Override
+  public boolean isMeasureTiming ()
+  {
+    // Per-rule and per-context timing is cheap, so it rides along whenever telemetry is enabled
+    return true;
+  }
+
+  @Override
+  public boolean isMeasureAssertionTiming ()
+  {
+    // Per-assert timing fires once per assert per matching node - only in the deep-dive mode
+    return m_bPerAssertionSpans;
+  }
+
+  @Override
+  public void onContextEvaluated (@NonNull final PSRule aRule,
+                                  @Nonnegative final long nDurationNanos,
+                                  @Nonnegative final int nMatchCount)
+  {
+    final var aAttrs = TelemetryAttributes.builder ().put (CSchematronTelemetry.ATTR_ENGINE, m_sEngine);
+    if (aRule.getContext () != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_RULE_CONTEXT, aRule.getContext ());
+    if (aRule.getID () != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_RULE_ID, aRule.getID ());
+    HIST_CONTEXT_DURATION.record (_toMillis (nDurationNanos), aAttrs.build ());
+  }
+
+  @Override
+  public void onRuleEvaluated (@NonNull final PSRule aRule, @Nonnegative final long nDurationNanos)
+  {
+    final var aAttrs = TelemetryAttributes.builder ().put (CSchematronTelemetry.ATTR_ENGINE, m_sEngine);
+    if (aRule.getContext () != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_RULE_CONTEXT, aRule.getContext ());
+    if (aRule.getID () != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_RULE_ID, aRule.getID ());
+    if (m_sCurrentPhase != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_PHASE, m_sCurrentPhase);
+    HIST_RULE_DURATION.record (_toMillis (nDurationNanos), aAttrs.build ());
+  }
+
+  @Override
+  public void onTestEvaluated (@NonNull final PSRule aRule,
+                               @NonNull final PSAssertReport aAssertReport,
+                               @NonNull final String sTestExpression,
+                               @Nonnegative final long nDurationNanos,
+                               final boolean bTestResult)
+  {
+    final var aAttrs = TelemetryAttributes.builder ()
+                                          .put (CSchematronTelemetry.ATTR_ENGINE, m_sEngine)
+                                          .put (CSchematronTelemetry.ATTR_ASSERT_TEST, sTestExpression)
+                                          .put (CSchematronTelemetry.ATTR_ASSERT_KIND,
+                                                aAssertReport.isAssert () ? CSchematronTelemetry.ASSERT_KIND_ASSERT
+                                                                          : CSchematronTelemetry.ASSERT_KIND_REPORT);
+    if (aRule.getContext () != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_RULE_CONTEXT, aRule.getContext ());
+    if (aAssertReport.getID () != null)
+      aAttrs.put (CSchematronTelemetry.ATTR_ASSERT_ID, aAssertReport.getID ());
+    HIST_ASSERT_DURATION.record (_toMillis (nDurationNanos), aAttrs.build ());
   }
 }

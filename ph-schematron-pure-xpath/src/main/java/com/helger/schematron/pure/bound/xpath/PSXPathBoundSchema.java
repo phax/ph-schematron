@@ -32,6 +32,7 @@ import com.helger.annotation.Nonnegative;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
+import com.helger.base.timing.StopWatch;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
@@ -618,6 +619,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     // Call the "start" callback method
     aValidationHandler.onStart (aSchema, aPhase, sBaseURI);
 
+    // Read the timing gates once - skip all StopWatch work when nobody is interested
+    final boolean bMeasureTiming = aValidationHandler.isMeasureTiming ();
+    final boolean bMeasureAssertionTiming = aValidationHandler.isMeasureAssertionTiming ();
+
     // Evaluate schema-global variables
     _evaluateVariables (m_aSchemaVariables, aDocXdm, aSchema);
 
@@ -635,8 +640,12 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       {
         final PSRule aRule = aBoundRule.getRule ();
 
+        // Times the whole rule (context selection + all assert/report evaluations)
+        final StopWatch aRuleSW = bMeasureTiming ? StopWatch.createdStarted () : null;
+
         // Find all nodes matching the rules
         final ICommonsList <XdmNode> aRuleContextXdmNodes;
+        final StopWatch aContextSW = bMeasureTiming ? StopWatch.createdStarted () : null;
         try
         {
           aRuleContextXdmNodes = XPathEvaluationHelper.evaluateAsXdmNodes (aBoundRule.getBoundRuleContext (),
@@ -650,6 +659,11 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                  "Failed to evaluate XPath expression to a nodeset: '" + aBoundRule.getRuleContext () + "'",
                  ex.getCause () != null ? ex.getCause () : ex);
           continue;
+        }
+        if (aContextSW != null)
+        {
+          aContextSW.stop ();
+          aValidationHandler.onContextEvaluated (aRule, aContextSW.getNanos (), aRuleContextXdmNodes.size ());
         }
 
         final ICommonsList <Node> aRuleContextDomNodes = new CommonsArrayList <> (aRuleContextXdmNodes.size ());
@@ -684,12 +698,21 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             final boolean bIsAssert = aAssertReport.isAssert ();
             final XPathExecutable aTestExecutable = aBoundAssertReport.getBoundTestExpression ();
 
-            // TODO add Telemetry span per assert
             try
             {
+              final StopWatch aTestSW = bMeasureAssertionTiming ? StopWatch.createdStarted () : null;
               final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExecutable,
                                                                                    aMatchedXdm,
                                                                                    m_aLetVars.getCurrentVariables ());
+              if (aTestSW != null)
+              {
+                aTestSW.stop ();
+                aValidationHandler.onTestEvaluated (aRule,
+                                                    aAssertReport,
+                                                    aBoundAssertReport.getTestExpression (),
+                                                    aTestSW.getNanos (),
+                                                    bTestResult);
+              }
               if (bIsAssert)
               {
                 // It's an assert
@@ -772,6 +795,12 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
         // Variables declared in the rule are going out of scope
         _removeAllVariables (aBoundRule.getVariables ());
+
+        if (aRuleSW != null)
+        {
+          aRuleSW.stop ();
+          aValidationHandler.onRuleEvaluated (aRule, aRuleSW.getNanos ());
+        }
       }
 
       // Variables declared in the pattern are going out of scope

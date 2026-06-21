@@ -64,6 +64,22 @@ public final class CSchematronTelemetry
   public static final String METRIC_PATTERNS_ACTIVE = "schematron.patterns.active";
   /** Histogram: total validation duration in milliseconds. */
   public static final String METRIC_VALIDATE_DURATION = "schematron.validate.duration";
+  /**
+   * Histogram (ms): time spent on a single rule - context selection plus all of its assert / report
+   * evaluations. Keyed by {@link #ATTR_RULE_CONTEXT}, this is the headline metric for finding the
+   * most expensive rules. Emitted by every engine.
+   */
+  public static final String METRIC_RULE_DURATION = "schematron.rule.duration";
+  /**
+   * Histogram (ms): time to evaluate a single rule's {@code context} expression (node selection).
+   * Pure-XPath only; the XSLT engines cannot isolate this from rule execution.
+   */
+  public static final String METRIC_CONTEXT_DURATION = "schematron.context.duration";
+  /**
+   * Histogram (ms): time to evaluate one assert / report {@code test} against one matching node
+   * (recorded for passing and failing evaluations alike). Pure-XPath only.
+   */
+  public static final String METRIC_ASSERT_DURATION = "schematron.assert.duration";
 
   // === attribute keys ===
   /** The engine emitting the event, e.g. {@code pure-xpath} or {@code iso-schematron}. */
