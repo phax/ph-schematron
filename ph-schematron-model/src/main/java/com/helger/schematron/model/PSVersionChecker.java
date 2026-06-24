@@ -36,9 +36,8 @@ import com.helger.schematron.errorhandler.IPSErrorHandler;
  * Central helper that emits warnings when the model uses a Schematron feature whose minimum
  * required edition is higher than the {@code schematronEdition} declared on the carrying
  * {@link PSSchema}. The warning text and severity are produced in a single place
- * ({@link #_warnFeatureUnavailable(IPSElement, String, ESchematronVersion, ESchematronVersion, IPSErrorHandler)})
- * so the policy can be changed in one place &mdash; for example, to demote warnings to info
- * messages, or to make them errors, without touching every call site.
+ * (_warnFeatureUnavailable) so the policy can be changed in one place - for example, to change
+ * warnings to info messages, or to make them errors, without touching every call site.
  * <p>
  * Call {@link #checkSchematronVersionCompliance(PSSchema, IPSErrorHandler)} to walk a schema and
  * report every feature used outside the edition that introduced it.
@@ -175,23 +174,38 @@ public final class PSVersionChecker
    * Reserved <code>queryBinding</code> names added in each ISO/IEC 19757-3 edition. The pre-2016
    * editions reserved only {@code xslt} and {@code xpath}; later editions added more.
    */
-  private static final Map <String, ESchematronVersion> QUERY_BINDING_MIN = Map.ofEntries (
-    Map.entry ("xslt", ESchematronVersion.SCHEMATRON_2006),
-    Map.entry ("xpath", ESchematronVersion.SCHEMATRON_2006),
-    Map.entry ("xslt1", ESchematronVersion.SCHEMATRON_2016),
-    Map.entry ("xslt2", ESchematronVersion.SCHEMATRON_2016),
-    Map.entry ("xpath2", ESchematronVersion.SCHEMATRON_2016),
-    Map.entry ("exslt", ESchematronVersion.SCHEMATRON_2016),
-    Map.entry ("stx", ESchematronVersion.SCHEMATRON_2016),
-    Map.entry ("xquery", ESchematronVersion.SCHEMATRON_2016),
-    Map.entry ("xslt3", ESchematronVersion.SCHEMATRON_2020),
-    Map.entry ("xpath3", ESchematronVersion.SCHEMATRON_2020),
-    Map.entry ("xpath31", ESchematronVersion.SCHEMATRON_2020),
-    Map.entry ("xquery3", ESchematronVersion.SCHEMATRON_2020),
-    Map.entry ("xquery31", ESchematronVersion.SCHEMATRON_2020),
-    Map.entry ("xslt4", ESchematronVersion.SCHEMATRON_2025),
-    Map.entry ("xpath4", ESchematronVersion.SCHEMATRON_2025),
-    Map.entry ("xquery4", ESchematronVersion.SCHEMATRON_2025));
+  private static final Map <String, ESchematronVersion> QUERY_BINDING_MIN = Map.ofEntries (Map.entry ("xslt",
+                                                                                                      ESchematronVersion.SCHEMATRON_2006),
+                                                                                           Map.entry ("xpath",
+                                                                                                      ESchematronVersion.SCHEMATRON_2006),
+                                                                                           Map.entry ("xslt1",
+                                                                                                      ESchematronVersion.SCHEMATRON_2016),
+                                                                                           Map.entry ("xslt2",
+                                                                                                      ESchematronVersion.SCHEMATRON_2016),
+                                                                                           Map.entry ("xpath2",
+                                                                                                      ESchematronVersion.SCHEMATRON_2016),
+                                                                                           Map.entry ("exslt",
+                                                                                                      ESchematronVersion.SCHEMATRON_2016),
+                                                                                           Map.entry ("stx",
+                                                                                                      ESchematronVersion.SCHEMATRON_2016),
+                                                                                           Map.entry ("xquery",
+                                                                                                      ESchematronVersion.SCHEMATRON_2016),
+                                                                                           Map.entry ("xslt3",
+                                                                                                      ESchematronVersion.SCHEMATRON_2020),
+                                                                                           Map.entry ("xpath3",
+                                                                                                      ESchematronVersion.SCHEMATRON_2020),
+                                                                                           Map.entry ("xpath31",
+                                                                                                      ESchematronVersion.SCHEMATRON_2020),
+                                                                                           Map.entry ("xquery3",
+                                                                                                      ESchematronVersion.SCHEMATRON_2020),
+                                                                                           Map.entry ("xquery31",
+                                                                                                      ESchematronVersion.SCHEMATRON_2020),
+                                                                                           Map.entry ("xslt4",
+                                                                                                      ESchematronVersion.SCHEMATRON_2025),
+                                                                                           Map.entry ("xpath4",
+                                                                                                      ESchematronVersion.SCHEMATRON_2025),
+                                                                                           Map.entry ("xquery4",
+                                                                                                      ESchematronVersion.SCHEMATRON_2025));
 
   private static void _checkExtends (@NonNull final PSExtends aExtends,
                                      @Nullable final ESchematronVersion eDeclared,
@@ -379,7 +393,8 @@ public final class PSVersionChecker
 
     // queryBinding reserved names map to edition: warn ONLY when the schema declares an edition
     // older than the one that introduced the binding name. Pre-2025 schemas typically never
-    // declared a schematronEdition, so eDeclared == null is treated as &quot;unknown, no warning&quot;
+    // declared a schematronEdition, so eDeclared == null is treated as &quot;unknown, no
+    // warning&quot;
     // here (unlike most other checks where missing edition triggers the warning).
     if (eDeclared != null && StringHelper.isNotEmpty (aSchema.getQueryBinding ()))
     {
@@ -394,11 +409,7 @@ public final class PSVersionChecker
 
     // 2016 properties feature (schema-level container)
     if (aSchema.hasProperties ())
-      _warnIfTooOld (aSchema,
-                     "<properties> container",
-                     ESchematronVersion.SCHEMATRON_2016,
-                     eDeclared,
-                     aErrorHandler);
+      _warnIfTooOld (aSchema, "<properties> container", ESchematronVersion.SCHEMATRON_2016, eDeclared, aErrorHandler);
 
     // Schema-level lets (2025 'as' attribute)
     for (final PSLet aLet : aSchema.getAllLets ())

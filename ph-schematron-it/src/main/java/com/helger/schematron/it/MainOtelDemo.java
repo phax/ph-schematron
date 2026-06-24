@@ -161,32 +161,38 @@ public final class MainOtelDemo
   @NonNull
   private static ICommonsOrderedMap <String, ISchematronResource> _buildEngines (@NonNull final byte [] aSch)
   {
-    final boolean bPerAssertionTelemetry = false;
+    // Demo: emit everything - per-finding spans AND per-rule execution timing. The XSLT-based
+    // engines force Saxon tracing for the rule timing (slower, fine for a demo). The pure-XSLT
+    // engine has no per-rule execution timing, so it only gets the per-finding spans.
     final ICommonsMap <ESchematronEngine, IEngineBuilder> aBuilders = new CommonsLinkedHashMap <> ();
     aBuilders.put (ESchematronEngine.PURE_XPATH,
                    r -> SchematronResourcePureXPath.builder (r)
                                                    .telemetry (true)
-                                                   .perAssertionTelemetry (bPerAssertionTelemetry)
+                                                   .perAssertionResultTelemetry (true)
+                                                   .perRuleExecutionTelemetry (true)
                                                    .build ());
     aBuilders.put (ESchematronEngine.PURE_XSLT,
                    r -> SchematronResourcePureXslt.builder (r)
                                                   .telemetry (true)
-                                                  .perAssertionTelemetry (bPerAssertionTelemetry)
+                                                  .perAssertionResultTelemetry (true)
                                                   .build ());
     aBuilders.put (ESchematronEngine.ISO_SCHEMATRON,
                    r -> SchematronResourceSCH.builder (r)
                                              .telemetry (true)
-                                             .perAssertionTelemetry (bPerAssertionTelemetry)
+                                             .perAssertionResultTelemetry (true)
+                                             .perRuleExecutionTelemetry (true)
                                              .build ());
     aBuilders.put (ESchematronEngine.SCHXSLT1,
                    r -> SchematronResourceSchXslt_XSLT2.builder (r)
                                                        .telemetry (true)
-                                                       .perAssertionTelemetry (bPerAssertionTelemetry)
+                                                       .perAssertionResultTelemetry (true)
+                                                       .perRuleExecutionTelemetry (true)
                                                        .build ());
     aBuilders.put (ESchematronEngine.SCHXSLT2,
                    r -> SchematronResourceSchXslt2.builder (r)
                                                   .telemetry (true)
-                                                  .perAssertionTelemetry (bPerAssertionTelemetry)
+                                                  .perAssertionResultTelemetry (true)
+                                                  .perRuleExecutionTelemetry (true)
                                                   .build ());
 
     // Convert

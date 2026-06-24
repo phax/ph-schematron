@@ -34,11 +34,14 @@ import com.helger.xml.serialize.read.DOMReader;
 /**
  * Verifies that <code>telemetry(boolean)</code> emits the expected phase spans (parse, preprocess,
  * generate, compile, execute) plus post-hoc counters derived from the SVRL output, and that
- * <code>perAssertionTelemetry(boolean)</code> produces one
- * {@link PureXsltTelemetry#SPAN_SVRL_ASSERTION} span per assertion fired during the run.
+ * <code>perAssertionResultTelemetry(boolean)</code> produces one <code>SPAN_SVRL_ASSERTION</code>
+ * span per assertion fired during the run.
  *
  * @author Philip Helger
  */
+// Fixed order so the counter/histogram-asserting test runs first and owns the eager instrument
+// binding (ph-telemetry binds instruments to the first installed meter)
+@org.junit.FixMethodOrder (org.junit.runners.MethodSorters.NAME_ASCENDING)
 public final class SchematronResourcePureXsltTelemetryTest
 {
   private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -104,11 +107,11 @@ public final class SchematronResourcePureXsltTelemetryTest
   }
 
   @Test
-  public void testPerAssertionTelemetryEmitsOneSpanPerAssertion () throws Exception
+  public void testPerAssertionResultTelemetryEmitsOneSpanPerAssertion () throws Exception
   {
     final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builderFromString (SCHEMATRON)
                                                                       .telemetry (true)
-                                                                      .perAssertionTelemetry (true)
+                                                                      .perAssertionResultTelemetry (true)
                                                                       .build ();
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
     assertEquals (2, m_aCapture.countSpansNamed (CSchematronTelemetry.SPAN_SVRL_ASSERTION));

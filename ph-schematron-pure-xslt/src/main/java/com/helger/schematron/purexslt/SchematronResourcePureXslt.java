@@ -85,8 +85,8 @@ import net.sf.saxon.s9api.XsltExecutable;
  * A Schematron resource that runs a pure-Java pipeline on top of Saxon s9api. Unlike
  * {@code SchematronResourcePure}, this class is intended to support Schematron schemas that contain
  * XSLT extensions (such as {@code <xsl:function>} or {@code <xsl:include>}) by compiling and
- * executing the schema through Saxon's XSLT engine natively &mdash; without going through the
- * external ISO Schematron XSLT preprocessing chain that {@code SchematronResourceSCH} uses.
+ * executing the schema through Saxon's XSLT engine natively - without going through the external
+ * ISO Schematron XSLT preprocessing chain that {@code SchematronResourceSCH} uses.
  * <p>
  * <b>Supported scope:</b> {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule>},
  * {@code <sch:assert>}, {@code <sch:report>}, {@code <sch:value-of>}, {@code <sch:name>},
@@ -107,17 +107,14 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXslt.class);
 
-  /** Default for {@link #setForceCacheResult(boolean)}. */
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
 
   private final String m_sPhase;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
   private Processor m_aProcessor = new Processor (false);
-  private URIResolver m_aURIResolver;
-  private ErrorListener m_aErrorListener;
+  private final URIResolver m_aURIResolver;
+  private final ErrorListener m_aErrorListener;
   private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
-  private boolean m_bTelemetry = false;
-  private boolean m_bPerAssertionTelemetry = false;
   private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
   // Status vars
   private PSSchema m_aSchema;
@@ -135,15 +132,15 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     super (aBuilder.m_aResource,
            aBuilder.m_bUseCache,
            aBuilder.m_bLenient,
-           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null);
+           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null,
+           aBuilder.m_bUseTelemetry,
+           aBuilder.m_bPerAssertionResultTelemetry);
     m_sPhase = aBuilder.m_sPhase;
     m_aErrorHandler = aBuilder.m_aErrorHandler;
     m_aProcessor = aBuilder.m_aProcessor;
     m_aURIResolver = aBuilder.m_aURIResolver;
     m_aErrorListener = aBuilder.m_aErrorListener;
     m_eXsltVersion = aBuilder.m_eXsltVersion;
-    m_bTelemetry = aBuilder.m_bTelemetry;
-    m_bPerAssertionTelemetry = aBuilder.m_bPerAssertionTelemetry;
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
   }
 
@@ -198,27 +195,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * Set a custom Saxon {@link Processor}. Useful e.g. to register extension functions or to share a
-   * Processor across multiple Schematron resources.
-   *
-   * @param aProcessor
-   *        The processor. May not be <code>null</code>.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setProcessor (@NonNull final Processor aProcessor)
-  {
-    ValueEnforcer.notNull (aProcessor, "Processor");
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_aProcessor = aProcessor;
-    return this;
-  }
-
-  /**
    * @return The {@link URIResolver} used by Saxon for {@code xsl:include} / {@code xsl:import}
    *         resolution at compile time and {@code document()} / {@code doc()} resolution at run
    *         time. May be <code>null</code>, in which case Saxon's default resolver is used.
@@ -227,28 +203,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   public final URIResolver getURIResolver ()
   {
     return m_aURIResolver;
-  }
-
-  /**
-   * Install a custom {@link URIResolver}. Applied to both the {@link XsltCompiler} (so it can
-   * resolve href references in any {@code <xsl:include>} / {@code <xsl:import>} passed through from
-   * the schema's foreign elements) and the runtime {@code Xslt30Transformer} (so XPath
-   * {@code document()} calls in asserts and reports route through it too).
-   *
-   * @param aURIResolver
-   *        The resolver. May be <code>null</code> to clear.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setURIResolver (@Nullable final URIResolver aURIResolver)
-  {
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_aURIResolver = aURIResolver;
-    return this;
   }
 
   /**
@@ -262,28 +216,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * Install a custom JAXP {@link ErrorListener} for Saxon stylesheet compilation. The listener
-   * receives every compile-time warning, error and fatal error from Saxon (including any surfacing
-   * from {@code <xsl:*>} foreign content passed through from the schema). It does <em>not</em>
-   * receive Schematron-source parse problems &mdash; those go through {@link IPSErrorHandler}.
-   *
-   * @param aErrorListener
-   *        The listener. May be <code>null</code> to clear.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setErrorListener (@Nullable final ErrorListener aErrorListener)
-  {
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_aErrorListener = aErrorListener;
-    return this;
-  }
-
-  /**
    * @return The XSLT language version written to the generated stylesheet's {@code version}
    *         attribute. Never <code>null</code>; defaults to {@link EPureXsltVersion#DEFAULT}.
    */
@@ -294,99 +226,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * Set the XSLT language version for the generated stylesheet. The default is XSLT&nbsp;3.0, which
-   * gives access to {@code fn:path()} for the SVRL {@code location} attribute and 3.0 extension
-   * functions. Choose {@link EPureXsltVersion#XSLT_2_0} only if you need strict XSLT&nbsp;2.0
-   * compatibility - some 3.0-only features (notably {@code fn:path()}) will then fail compilation.
-   *
-   * @param eVersion
-   *        The version. May not be <code>null</code>.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setXsltVersion (@NonNull final EPureXsltVersion eVersion)
-  {
-    ValueEnforcer.notNull (eVersion, "XsltVersion");
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_eXsltVersion = eVersion;
-    return this;
-  }
-
-  /**
-   * @return <code>true</code> if runtime telemetry (phase spans + post-hoc counters + duration
-   *         histogram) is emitted via ph-telemetry during validation. Default is
-   *         <code>false</code>.
-   */
-  public final boolean isTelemetry ()
-  {
-    return m_bTelemetry;
-  }
-
-  /**
-   * Enable or disable aggregate-level runtime telemetry. When enabled, every call to
-   * {@code applySchematronValidationToSVRL} is wrapped in a {@link PureXsltTelemetry#SPAN_VALIDATE}
-   * span with child spans for each pipeline phase (parse, preprocess, generate, compile, execute).
-   * After the transform completes the SVRL output is walked to emit counters for failed asserts,
-   * fired reports, fired rules and active patterns, as well as a
-   * {@code schematron.validate.duration} histogram entry. Zero-cost when no ph-telemetry SPI is
-   * registered.
-   * <p>
-   * Can only be set before the Schematron is compiled.
-   *
-   * @param bTelemetry
-   *        <code>true</code> to enable.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setTelemetry (final boolean bTelemetry)
-  {
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_bTelemetry = bTelemetry;
-    return this;
-  }
-
-  /**
-   * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
-   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
-   *         <code>true</code>. Default is <code>false</code>.
-   */
-  public final boolean isPerAssertionTelemetry ()
-  {
-    return m_bPerAssertionTelemetry;
-  }
-
-  /**
-   * Enable per-assertion telemetry. When on, the post-hoc walk over the SVRL emits one
-   * {@link PureXsltTelemetry#SPAN_SVRL_ASSERTION} span per failed-assert / successful-report
-   * carrying its test expression, location and (when present) id. The Saxon transform is one opaque
-   * step, so the spans carry no individual timing &mdash; only metadata for trace inspection. Has
-   * no effect when {@link #isTelemetry()} is <code>false</code>.
-   *
-   * @param bPerAssertionTelemetry
-   *        <code>true</code> to enable.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setPerAssertionTelemetry (final boolean bPerAssertionTelemetry)
-  {
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_bPerAssertionTelemetry = bPerAssertionTelemetry;
-    return this;
-  }
-
-  /**
    * @return <code>true</code> if {@link SchematronPureXsltCache} is consulted even when a custom
    *         {@link URIResolver} or {@link ErrorListener} is installed. Default is
    *         {@link #DEFAULT_FORCE_CACHE_RESULT}.
@@ -394,31 +233,6 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   public final boolean isForceCacheResult ()
   {
     return m_bForceCacheResult;
-  }
-
-  /**
-   * By default the cache in {@link SchematronPureXsltCache} is bypassed when a custom
-   * {@link URIResolver} or {@link ErrorListener} is installed, because those hooks can affect what
-   * Saxon emits in ways the cache key does not capture. Setting this to <code>true</code> tells the
-   * engine that the hooks are deterministic for a given
-   * {@code (resource, phase, version, processor)} tuple and allows the cache to participate.
-   * <p>
-   * Can only be set before the Schematron is compiled.
-   *
-   * @param bForceCacheResult
-   *        <code>true</code> to force cache use.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final SchematronResourcePureXslt setForceCacheResult (final boolean bForceCacheResult)
-  {
-    if (m_aCompiledXslt != null)
-      throw new IllegalStateException ("Schematron was already compiled and can therefore not be altered!");
-    m_bForceCacheResult = bForceCacheResult;
-    return this;
   }
 
   @Override
@@ -463,7 +277,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   private <T> T _phase (@NonNull final String sSpanName, @NonNull final IThrowingSupplier <T, Exception> aBody)
                                                                                                                 throws Exception
   {
-    if (!m_bTelemetry)
+    if (!isTelemetry ())
       return aBody.get ();
 
     try (final ITelemetrySpan aSpan = Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL))
@@ -485,8 +299,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   @NonNull
   private ITelemetrySpan _maybeStartSpan (@NonNull final String sSpanName)
   {
-    return m_bTelemetry ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL)
-                        : Telemetry.NoOpTelemetrySpan.INSTANCE;
+    return isTelemetry () ? Telemetry.startSpan (sSpanName, ETelemetrySpanKind.INTERNAL)
+                          : Telemetry.NoOpTelemetrySpan.INSTANCE;
   }
 
   /**
@@ -627,7 +441,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   public SchematronOutputType applySchematronValidationToSVRL (@NonNull final Node aXMLNode,
                                                                @Nullable final String sBaseURI) throws Exception
   {
-    if (!m_bTelemetry)
+    if (!isTelemetry ())
       return _doValidate (aXMLNode, sBaseURI);
 
     final StopWatch aSW = StopWatch.createdStarted ();
@@ -643,8 +457,10 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
         aSW.stop ();
         final double dDurationMs = aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND;
-        final boolean bPerAssertionSpans = m_bPerAssertionTelemetry;
-        SvrlTelemetryEmitter.emitPostHoc (aSVRL, PureXsltTelemetry.ENGINE_VALUE, bPerAssertionSpans, dDurationMs);
+        SvrlTelemetryEmitter.emitPostHoc (aSVRL,
+                                          PureXsltTelemetry.ENGINE_VALUE,
+                                          isPerAssertionResultTelemetry (),
+                                          dDurationMs);
         aRootSpan.setStatusOk ();
         return aSVRL;
       }
@@ -871,8 +687,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     private URIResolver m_aURIResolver;
     private ErrorListener m_aErrorListener;
     private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
-    private boolean m_bTelemetry;
-    private boolean m_bPerAssertionTelemetry;
+    private boolean m_bUseTelemetry;
+    private boolean m_bPerAssertionResultTelemetry;
     private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
 
     Builder (@NonNull final IReadableResource aResource)
@@ -1004,7 +820,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     @NonNull
     public Builder telemetry (final boolean b)
     {
-      m_bTelemetry = b;
+      m_bUseTelemetry = b;
       return this;
     }
 
@@ -1015,9 +831,9 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
      * @return this for chaining
      */
     @NonNull
-    public Builder perAssertionTelemetry (final boolean b)
+    public Builder perAssertionResultTelemetry (final boolean b)
     {
-      m_bPerAssertionTelemetry = b;
+      m_bPerAssertionResultTelemetry = b;
       return this;
     }
 

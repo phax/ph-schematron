@@ -55,6 +55,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
 {
   public static final boolean DEFAULT_USE_CACHE = true;
   public static final boolean DEFAULT_LENIENT = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+  public static final boolean DEFAULT_TELEMETRY = false;
+  public static final boolean DEFAULT_PER_ASSERTION_RESULT_TELEMETRY = false;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronResource.class);
 
@@ -63,10 +65,20 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   private boolean m_bUseCache;
   private boolean m_bLenient;
   private EntityResolver m_aEntityResolver;
+  // Runtime-only ph-telemetry toggles. Set by the engine builders; default off. Not part of the
+  // compile-time config (they don't affect the produced stylesheet).
+  private final boolean m_bUseTelemetry;
+  // Per-failed-assertion / successful-report spans, derived post-hoc from the SVRL
+  private final boolean m_bPerAssertionResultTelemetry;
 
   protected AbstractSchematronResource (@NonNull final IReadableResource aResource)
   {
-    this (aResource, DEFAULT_USE_CACHE, DEFAULT_LENIENT, null);
+    this (aResource,
+          DEFAULT_USE_CACHE,
+          DEFAULT_LENIENT,
+          null,
+          DEFAULT_TELEMETRY,
+          DEFAULT_PER_ASSERTION_RESULT_TELEMETRY);
   }
 
   /**
@@ -83,11 +95,17 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    * @param aEntityResolver
    *        A custom entity resolver. May be <code>null</code> in which case a custom resolver is
    *        used.
+   * @param bUseTelemetry
+   *        Use telemetry data?
+   * @param bPerAssertionResultTelemetry
+   *        Add assertion results to the telemetry data
    */
   protected AbstractSchematronResource (@NonNull final IReadableResource aResource,
                                         final boolean bUseCache,
                                         final boolean bLenient,
-                                        @Nullable final EntityResolver aEntityResolver)
+                                        @Nullable final EntityResolver aEntityResolver,
+                                        final boolean bUseTelemetry,
+                                        final boolean bPerAssertionResultTelemetry)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
@@ -95,6 +113,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     m_bLenient = bLenient;
     // Set a default entity resolver
     m_aEntityResolver = aEntityResolver != null ? aEntityResolver : DefaultEntityResolver.createOnDemand (aResource);
+    m_bUseTelemetry = bUseTelemetry;
+    m_bPerAssertionResultTelemetry = bPerAssertionResultTelemetry;
   }
 
   @NonNull
@@ -165,6 +185,29 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   protected final void internalSetEntityResolver (@Nullable final EntityResolver aEntityResolver)
   {
     m_aEntityResolver = aEntityResolver;
+  }
+
+  /**
+   * @return <code>true</code> if runtime ph-telemetry (a {@code schematron.validate} span, the
+   *         aggregate counters and the duration histogram) is emitted during validation. Default is
+   *         <code>false</code>.
+   * @since 10.0.0
+   */
+  public final boolean isTelemetry ()
+  {
+    return m_bUseTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if per-assertion-result spans ({@code schematron.svrl.assertion}) are
+   *         emitted for failed-asserts / successful-reports in addition to the aggregate metrics.
+   *         Only meaningful when {@link #isTelemetry()} is also <code>true</code>. Default is
+   *         <code>false</code>.
+   * @since 10.0.0
+   */
+  public final boolean isPerAssertionResultTelemetry ()
+  {
+    return m_bPerAssertionResultTelemetry;
   }
 
   /**
@@ -326,6 +369,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
                                        .append ("UseCache", m_bUseCache)
                                        .append ("Lenient", m_bLenient)
                                        .appendIfNotNull ("EntityResolver", m_aEntityResolver)
+                                       .append ("Telemetry", m_bUseTelemetry)
+                                       .append ("PerAssertionResultTelemetry", m_bPerAssertionResultTelemetry)
                                        .getToString ();
   }
 }

@@ -28,6 +28,7 @@ import com.helger.base.state.EContinue;
 import com.helger.base.timing.StopWatch;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
+import com.helger.schematron.api.telemetry.RuleDurationTemplateTelemetry;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSPattern;
 import com.helger.schematron.model.PSPhase;
@@ -44,21 +45,25 @@ import com.helger.telemetry.TelemetryAttributes;
 import com.helger.telemetry.TelemetryMetrics;
 
 /**
- * Implementation of {@link IPSValidationHandler} that emits runtime telemetry &mdash; counters,
- * spans and a duration histogram &mdash; via ph-telemetry. Install on a
- * {@code SchematronResourcePure} by calling {@code setTelemetry(true)} (which composes this with
- * any caller-supplied custom handler). All span / metric / attribute names come from the shared
- * {@link CSchematronTelemetry} vocabulary so every engine stays in lock-step.
+ * Implementation of {@link IPSValidationHandler} that emits runtime telemetry - counters, spans and
+ * a duration histogram - via ph-telemetry. Install on a {@code SchematronResourcePure} by calling
+ * {@code setTelemetry(true)} (which composes this with any caller-supplied custom handler). All
+ * span / metric / attribute names come from the shared {@link CSchematronTelemetry} vocabulary so
+ * every engine stays in lock-step.
  * <p>
- * Two granularity modes:
+ * Independently controllable modes:
  * <ul>
- * <li><b>Aggregate (default)</b> &mdash; one {@link CSchematronTelemetry#SPAN_VALIDATE} span around
- * the whole validation, child counters for fired-rules / failed-asserts / successful-reports /
+ * <li><b>Aggregate</b> - one {@link CSchematronTelemetry#SPAN_VALIDATE} span around the whole
+ * validation, child counters for fired-rules / failed-asserts / successful-reports /
  * active-patterns, and a {@link CSchematronTelemetry#METRIC_VALIDATE_DURATION} histogram entry on
  * completion.</li>
- * <li><b>Per-assertion</b> &mdash; in addition, an extra
- * {@link CSchematronTelemetry#SPAN_SVRL_ASSERTION} child span is created and immediately closed for
- * every assert and report evaluation. Useful for diagnostic deep-dives; significant overhead.</li>
+ * <li><b>Per-assertion result spans</b> - an extra <code>SPAN_ASSERTION</code> child span per
+ * failed-assert / successful-report (post-evaluation findings).</li>
+ * <li><b>Per-rule execution timing</b> - {@link CSchematronTelemetry#METRIC_RULE_DURATION},
+ * {@link CSchematronTelemetry#METRIC_CONTEXT_DURATION} and
+ * {@link CSchematronTelemetry#METRIC_ASSERT_DURATION} histograms for finding the most expensive
+ * rules. The per-assert histogram fires once per assert per matching node; significant
+ * overhead.</li>
  * </ul>
  *
  * @author Philip Helger
@@ -83,9 +88,6 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   private static final ITelemetryHistogram HIST_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_VALIDATE_DURATION,
                                                                                        "Schematron validation duration",
                                                                                        CSchematronTelemetry.UNIT_MILLIS);
-  private static final ITelemetryHistogram HIST_RULE_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_RULE_DURATION,
-                                                                                            "Per-rule evaluation duration (context + all asserts)",
-                                                                                            CSchematronTelemetry.UNIT_MILLIS);
   private static final ITelemetryHistogram HIST_CONTEXT_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_CONTEXT_DURATION,
                                                                                                "Per-rule context selection duration",
                                                                                                CSchematronTelemetry.UNIT_MILLIS);
@@ -99,7 +101,10 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   }
 
   private final String m_sEngine;
-  private final boolean m_bPerAssertionSpans;
+  // Per-failed-assertion / successful-report spans (post-evaluation findings)
+  private final boolean m_bPerAssertionResultSpans;
+  // Per-rule / per-context / per-assert execution timing
+  private final boolean m_bMeasureExecutionTiming;
 
   // Per-validation state. Reset on every onStart - this handler is not safe to share concurrently
   // (the @NotThreadSafe annotation makes that explicit).
@@ -113,15 +118,21 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
    * @param eEngine
    *        Schematron engine emitting events (e.g. {@code "pure-xpath"}). Becomes the value of the
    *        {@link CSchematronTelemetry#ATTR_ENGINE} attribute on every span and metric.
-   * @param bPerAssertionSpans
-   *        <code>true</code> to additionally emit one
-   *        {@link CSchematronTelemetry#SPAN_SVRL_ASSERTION} span per assert / report evaluation.
+   * @param bPerAssertionResultSpans
+   *        <code>true</code> to emit one <code>SPAN_ASSERTION</code> span per failed-assert /
+   *        successful-report (post-evaluation findings).
+   * @param bMeasureExecutionTiming
+   *        <code>true</code> to record per-rule / per-context / per-assert execution-duration
+   *        histograms.
    */
-  public TelemetryValidationHandler (@NonNull final ESchematronEngine eEngine, final boolean bPerAssertionSpans)
+  public TelemetryValidationHandler (@NonNull final ESchematronEngine eEngine,
+                                     final boolean bPerAssertionResultSpans,
+                                     final boolean bMeasureExecutionTiming)
   {
     ValueEnforcer.notNull (eEngine, "Engine");
     m_sEngine = eEngine.getID ();
-    m_bPerAssertionSpans = bPerAssertionSpans;
+    m_bPerAssertionResultSpans = bPerAssertionResultSpans;
+    m_bMeasureExecutionTiming = bMeasureExecutionTiming;
   }
 
   @Override
@@ -188,7 +199,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   {
     m_nFailedAsserts++;
     COUNTER_FAILED_ASSERTS.add (1, m_aEngineAttributes);
-    if (m_bPerAssertionSpans)
+    if (m_bPerAssertionResultSpans)
       _emitAssertionSpan (aOwningRule, aAssertReport, sTestExpression, true);
     return EContinue.CONTINUE;
   }
@@ -205,7 +216,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   {
     m_nFiredReports++;
     COUNTER_SUCCESSFUL_REPORTS.add (1, m_aEngineAttributes);
-    if (m_bPerAssertionSpans)
+    if (m_bPerAssertionResultSpans)
       _emitAssertionSpan (aOwningRule, aAssertReport, sTestExpression, false);
     return EContinue.CONTINUE;
   }
@@ -227,15 +238,15 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   @Override
   public boolean isMeasureTiming ()
   {
-    // Per-rule and per-context timing is cheap, so it rides along whenever telemetry is enabled
-    return true;
+    // Per-rule and per-context timing - gated by per-rule-execution telemetry
+    return m_bMeasureExecutionTiming;
   }
 
   @Override
   public boolean isMeasureAssertionTiming ()
   {
-    // Per-assert timing fires once per assert per matching node - only in the deep-dive mode
-    return m_bPerAssertionSpans;
+    // Per-assert timing (once per assert per matching node) - same execution-telemetry gate
+    return m_bMeasureExecutionTiming;
   }
 
   @Override
@@ -261,7 +272,7 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
       aAttrs.put (CSchematronTelemetry.ATTR_RULE_ID, aRule.getID ());
     if (m_sCurrentPhase != null)
       aAttrs.put (CSchematronTelemetry.ATTR_PHASE, m_sCurrentPhase);
-    HIST_RULE_DURATION.record (_toMillis (nDurationNanos), aAttrs.build ());
+    RuleDurationTemplateTelemetry.HIST_RULE_DURATION.record (_toMillis (nDurationNanos), aAttrs.build ());
   }
 
   @Override

@@ -35,12 +35,12 @@ import com.helger.telemetry.TelemetryAttributes;
 import com.helger.telemetry.TelemetryMetrics;
 
 /**
- * Derives the aggregate ph-telemetry metrics of a validation run from its SVRL output. Because every
- * XSLT-based Schematron engine produces an SVRL {@link SchematronOutputType}, walking that output is
- * an engine-agnostic way to obtain the same counters (failed asserts, fired reports, fired rules,
- * active patterns) and the same {@link CSchematronTelemetry#METRIC_VALIDATE_DURATION} histogram that
- * the pure-Java engine emits through its validation handler. All events are tagged with
- * {@link CSchematronTelemetry#ATTR_ENGINE} so a single dashboard can aggregate across engines.
+ * Derives the aggregate ph-telemetry metrics of a validation run from its SVRL output. Because
+ * every XSLT-based Schematron engine produces an SVRL {@link SchematronOutputType}, walking that
+ * output is an engine-agnostic way to obtain the same counters (failed asserts, fired reports,
+ * fired rules, active patterns) and the same {@link CSchematronTelemetry#METRIC_VALIDATE_DURATION}
+ * histogram that the pure-Java engine emits through its validation handler. All events are tagged
+ * with {@link CSchematronTelemetry#ATTR_ENGINE} so a single dashboard can aggregate across engines.
  * <p>
  * The instruments are pre-resolved once on class load; emit-time cost is a single SPI call per
  * counter add / histogram record. When no ph-telemetry SPI is installed the underlying no-op
@@ -107,9 +107,8 @@ public final class SvrlTelemetryEmitter
    *        {@link CSchematronTelemetry#ATTR_ENGINE}). May not be <code>null</code>.
    * @param bPerAssertionSpans
    *        Whether to emit one {@link CSchematronTelemetry#SPAN_SVRL_ASSERTION} span per assert /
-   *        report.
-   *        The spans carry no timing of their own (the transform is one opaque step) but encode the
-   *        assert metadata for trace-tree inspection.
+   *        report. The spans carry no timing of their own (the transform is one opaque step) but
+   *        encode the assert metadata for trace-tree inspection.
    * @param dDurationMs
    *        Wall-clock duration of the entire validation in milliseconds.
    */

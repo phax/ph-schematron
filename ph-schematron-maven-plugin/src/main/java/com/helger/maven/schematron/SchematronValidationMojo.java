@@ -95,21 +95,21 @@ public final class SchematronValidationMojo extends AbstractMojo
   /**
    * The processing engine to use. Recognised values (case-insensitive) and their pre-v10 aliases:
    * <ul>
-   * <li><code>pure-xpath</code> (alias: <code>pure</code>) &mdash; pure-Java XPath-only engine
+   * <li><code>pure-xpath</code> (alias: <code>pure</code>) - pure-Java XPath-only engine
    * ({@code SchematronResourcePureXPath}). Reads the SCH directly; honours {@code phaseName}.</li>
-   * <li><code>pure-xslt</code> (alias: <code>pure-saxon</code>) &mdash; pure-Java engine that
+   * <li><code>pure-xslt</code> (alias: <code>pure-saxon</code>) - pure-Java engine that
    * generates an XSLT 3.0 stylesheet in Java and runs it through Saxon s9api
    * ({@code SchematronResourcePureXslt}). Honours {@code phaseName}. {@code languageCode} and
    * {@code parameters} are ignored.</li>
    * <li><code>iso-schematron</code> (aliases: <code>schematron</code>, <code>sch</code>,
-   * <code>iso</code>, <code>isoschematron</code>) &mdash; SCH file preprocessed to XSLT through the
+   * <code>iso</code>, <code>isoschematron</code>) - SCH file preprocessed to XSLT through the
    * canonical ISO Schematron stylesheet chain ({@code SchematronResourceSCH}). Honours
    * {@code phaseName}, {@code languageCode}, {@code parameters}.</li>
-   * <li><code>schxslt</code> (aliases: <code>schxslt1</code>, <code>schxslt-xslt2</code>) &mdash;
+   * <li><code>schxslt</code> (aliases: <code>schxslt1</code>, <code>schxslt-xslt2</code>) -
    * SchXslt v1 (XSLT 2). Honours {@code phaseName}, {@code languageCode}, {@code parameters}.</li>
-   * <li><code>schxslt2</code> &mdash; SchXslt v2 (XSLT 3). Honours {@code phaseName},
+   * <li><code>schxslt2</code> - SchXslt v2 (XSLT 3). Honours {@code phaseName},
    * {@code languageCode}, {@code parameters}.</li>
-   * <li><code>xslt</code> &mdash; apply a pre-built XSLT file directly
+   * <li><code>xslt</code> - apply a pre-built XSLT file directly
    * ({@code SchematronResourceXSLT}). {@code phaseName} and {@code languageCode} are ignored.
    * Default is {@code iso-schematron}.</li>
    * </ul>

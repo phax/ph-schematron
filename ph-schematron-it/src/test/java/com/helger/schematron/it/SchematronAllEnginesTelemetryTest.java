@@ -95,27 +95,27 @@ public final class SchematronAllEnginesTelemetryTest
     ret.add (new Engine ("pure-xpath",
                          r -> SchematronResourcePureXPath.builder (r)
                                                          .telemetry (true)
-                                                         .perAssertionTelemetry (true)
+                                                         .perAssertionResultTelemetry (true)
                                                          .build ()));
     ret.add (new Engine ("pure-xslt",
                          r -> SchematronResourcePureXslt.builder (r)
                                                         .telemetry (true)
-                                                        .perAssertionTelemetry (true)
+                                                        .perAssertionResultTelemetry (true)
                                                         .build ()));
     ret.add (new Engine ("iso-schematron",
                          r -> SchematronResourceSCH.builder (r)
                                                    .telemetry (true)
-                                                   .perAssertionTelemetry (true)
+                                                   .perAssertionResultTelemetry (true)
                                                    .build ()));
     ret.add (new Engine ("schxslt",
                          r -> SchematronResourceSchXslt_XSLT2.builder (r)
                                                              .telemetry (true)
-                                                             .perAssertionTelemetry (true)
+                                                             .perAssertionResultTelemetry (true)
                                                              .build ()));
     ret.add (new Engine ("schxslt2",
                          r -> SchematronResourceSchXslt2.builder (r)
                                                         .telemetry (true)
-                                                        .perAssertionTelemetry (true)
+                                                        .perAssertionResultTelemetry (true)
                                                         .build ()));
     return ret;
   }

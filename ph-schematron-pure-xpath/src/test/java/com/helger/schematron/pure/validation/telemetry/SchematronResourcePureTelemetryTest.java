@@ -38,6 +38,9 @@ import com.helger.xml.serialize.read.DOMReader;
  *
  * @author Philip Helger
  */
+// Fixed order so the counter/histogram-asserting test runs first and owns the eager instrument
+// binding (ph-telemetry binds instruments to the first installed meter)
+@org.junit.FixMethodOrder (org.junit.runners.MethodSorters.NAME_ASCENDING)
 public final class SchematronResourcePureTelemetryTest
 {
   private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -70,17 +73,19 @@ public final class SchematronResourcePureTelemetryTest
   }
 
   @Test
-  public void testAggregateTelemetryEmitsRootSpanAndCounters () throws Exception
+  public void testAggregateAndExecutionTelemetry () throws Exception
   {
+    // telemetry + per-rule execution timing, but NOT per-assertion-result spans
     final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (SCHEMATRON)
                                                                         .telemetry (true)
+                                                                        .perRuleExecutionTelemetry (true)
                                                                         .build ();
     final SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
     assertNotNull (aSVRL);
 
     // Exactly one schematron.validate root span
     assertEquals (1, m_aCapture.countSpansNamed (CSchematronTelemetry.SPAN_VALIDATE));
-    // No per-assertion spans since per-assertion telemetry is OFF
+    // No per-assertion-result spans since that flag is OFF
     assertEquals (0, m_aCapture.countSpansNamed (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
 
     // Counters: 2 failed asserts (both fail on empty root), 1 fired rule, 1 active pattern
@@ -93,20 +98,19 @@ public final class SchematronResourcePureTelemetryTest
     assertTrue (m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
                 0.0);
 
-    // Per-rule timing rides along with telemetry: one rule -> one rule.duration + one
-    // context.duration entry
+    // Per-rule execution timing: one rule -> 1 rule.duration + 1 context.duration; 2 asserts -> 2
+    // assert.duration entries
     assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_RULE_DURATION).size ());
     assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_CONTEXT_DURATION).size ());
-    // Per-assert timing is OFF (per-assertion telemetry not enabled) -> no assert.duration entries
-    assertEquals (0, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_ASSERT_DURATION).size ());
+    assertEquals (2, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_ASSERT_DURATION).size ());
   }
 
   @Test
-  public void testPerAssertionTelemetryEmitsOneSpanPerAssertion () throws Exception
+  public void testPerAssertionResultTelemetryEmitsOneSpanPerAssertion () throws Exception
   {
     final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (SCHEMATRON)
                                                                         .telemetry (true)
-                                                                        .perAssertionTelemetry (true)
+                                                                        .perAssertionResultTelemetry (true)
                                                                         .build ();
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 

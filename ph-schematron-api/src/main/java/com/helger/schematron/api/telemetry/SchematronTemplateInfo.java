@@ -26,8 +26,8 @@ import com.helger.base.tostring.ToStringGenerator;
 /**
  * Immutable identifier of a single XSLT template execution reported via
  * {@link ISchematronTemplateTelemetry}. Carries the static information about the template (name,
- * match pattern, source location) &mdash; the dynamic part (duration, hit counter) is handled by
- * the consumer.
+ * match pattern, source location) - the dynamic part (duration, hit counter) is handled by the
+ * consumer.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -50,7 +50,7 @@ public final class SchematronTemplateInfo
    * @param sMode
    *        The XSLT mode name in Clark notation, or <code>null</code> for the default/unnamed mode
    *        and for named templates. SchXslt uses modes (typically <code>M1</code>, <code>M2</code>,
-   *        &hellip;) to separate the validation phases, so the same match pattern may legitimately
+   *        ...) to separate the validation phases, so the same match pattern may legitimately
    *        appear in multiple modes.
    * @param sSystemID
    *        The system ID (URI) of the XSLT source. May be <code>null</code> if unknown.

@@ -41,9 +41,9 @@ import com.helger.telemetry.TelemetryMetrics;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
- * End-to-end test that enabling per-assertion telemetry on the ISO-Schematron (XSLT) engine wires
- * the Saxon trace listener and records {@link CSchematronTelemetry#METRIC_RULE_DURATION} entries via
- * the built-in {@code RuleDurationTemplateTelemetry}.
+ * End-to-end test that enabling per-rule execution telemetry on the ISO-Schematron (XSLT) engine
+ * wires the Saxon trace listener and records {@link CSchematronTelemetry#METRIC_RULE_DURATION}
+ * entries via the built-in {@code RuleDurationTemplateTelemetry}.
  *
  * @author Philip Helger
  */
@@ -104,14 +104,14 @@ public final class SchematronSCHRuleTimingTest
   }
 
   @Test
-  public void testPerAssertionEmitsRuleDuration () throws Exception
+  public void testPerRuleExecutionEmitsRuleDuration () throws Exception
   {
     final CapturingMeter aMeter = new CapturingMeter ();
     TelemetryMetrics.install (aMeter);
 
     final SchematronResourceSCH aValidator = SchematronResourceSCH.builder (VALID_SCHEMATRON)
                                                                   .telemetry (true)
-                                                                  .perAssertionTelemetry (true)
+                                                                  .perRuleExecutionTelemetry (true)
                                                                   .build ();
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
     assertNotNull (aXMLDoc);

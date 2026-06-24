@@ -60,7 +60,7 @@ import com.helger.schematron.CSchematronXML;
  * <p>
  * As of {@code 10.0.0} the shared content model with the new ISO/IEC 19757-3:2025 <code>group</code>
  * element is captured by {@link AbstractPSPatternLike}; {@code PSPattern} now contributes only the
- * <code>pattern</code> element name. {@link PSGroup} is a sibling subclass &mdash; it is
+ * <code>pattern</code> element name. {@link PSGroup} is a sibling subclass - it is
  * intentionally NOT a {@code PSPattern}, so existing {@code instanceof PSPattern} checks continue
  * to address only true patterns and ignore groups.
  *

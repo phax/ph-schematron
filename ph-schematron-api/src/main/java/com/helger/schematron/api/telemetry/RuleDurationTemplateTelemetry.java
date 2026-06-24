@@ -21,6 +21,7 @@ import org.jspecify.annotations.NonNull;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.base.CGlobal;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
 import com.helger.telemetry.ITelemetryHistogram;
 import com.helger.telemetry.TelemetryAttributes;
 import com.helger.telemetry.TelemetryMetrics;
@@ -44,9 +45,9 @@ import com.helger.telemetry.TelemetryMetrics;
 @ThreadSafe
 public final class RuleDurationTemplateTelemetry implements ISchematronTemplateTelemetry
 {
-  private static final ITelemetryHistogram HIST_RULE_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_RULE_DURATION,
-                                                                                            "Per-rule evaluation duration",
-                                                                                            CSchematronTelemetry.UNIT_MILLIS);
+  public static final ITelemetryHistogram HIST_RULE_DURATION = TelemetryMetrics.histogram (CSchematronTelemetry.METRIC_RULE_DURATION,
+                                                                                           "Per-rule evaluation duration",
+                                                                                           CSchematronTelemetry.UNIT_MILLIS);
 
   private final String m_sEngineID;
 
@@ -66,13 +67,13 @@ public final class RuleDurationTemplateTelemetry implements ISchematronTemplateT
   {
     // Only match templates (= Schematron rules) carry a match pattern; skip named templates
     final String sMatchPattern = aInfo.getMatchPattern ();
-    if (sMatchPattern == null)
-      return;
-
-    final TelemetryAttributes aAttrs = TelemetryAttributes.builder ()
-                                                          .put (CSchematronTelemetry.ATTR_ENGINE, m_sEngineID)
-                                                          .put (CSchematronTelemetry.ATTR_RULE_CONTEXT, sMatchPattern)
-                                                          .build ();
-    HIST_RULE_DURATION.record (nDurationNanos / (double) CGlobal.NANOSECONDS_PER_MILLISECOND, aAttrs);
+    if (StringHelper.isNotEmpty (sMatchPattern))
+    {
+      final TelemetryAttributes aAttrs = TelemetryAttributes.builder ()
+                                                            .put (CSchematronTelemetry.ATTR_ENGINE, m_sEngineID)
+                                                            .put (CSchematronTelemetry.ATTR_RULE_CONTEXT, sMatchPattern)
+                                                            .build ();
+      HIST_RULE_DURATION.record (nDurationNanos / (double) CGlobal.NANOSECONDS_PER_MILLISECOND, aAttrs);
+    }
   }
 }

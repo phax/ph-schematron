@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
 import com.helger.base.timing.StopWatch;
 import com.helger.collection.stack.NonBlockingStack;
 
@@ -40,8 +41,8 @@ import net.sf.saxon.trace.Traceable;
 /**
  * Internal Saxon {@link TraceListener} that bridges per-template trace events to the abstract
  * {@link ISchematronTemplateTelemetry} callback. Filters Saxon's traceable constructs down to XSLT
- * templates (match templates and named templates) &mdash; other traceables (functions,
- * instructions, &hellip;) are ignored.
+ * templates (match templates and named templates) - other traceables (functions, instructions, ...)
+ * are ignored.
  * <p>
  * One instance is dedicated to a single transform: it carries a stack of {@link StopWatch} timers
  * to measure nested template execution. Do not share across concurrent transforms.
@@ -96,6 +97,7 @@ public final class SchematronTraceListener implements TraceListener
       final var aPattern = aRule.getMatchPattern ();
       if (aPattern != null)
         aSB.append (" match='").append (aPattern.toShortString ()).append ("'");
+
       final var aMode = aRule.getMode ();
       if (aMode != null && aMode.getModeName () != null)
         aSB.append (" mode='").append (aMode.getModeName ().getClarkName ()).append ("'");
@@ -112,7 +114,7 @@ public final class SchematronTraceListener implements TraceListener
     if (aLocation != null)
     {
       final String sSystemID = aLocation.getSystemId ();
-      if (sSystemID != null)
+      if (StringHelper.isNotEmpty (sSystemID))
         aSB.append (" systemID=").append (sSystemID);
       aSB.append (" line=").append (aLocation.getLineNumber ());
     }
@@ -132,6 +134,7 @@ public final class SchematronTraceListener implements TraceListener
       final var aPattern = aRule.getMatchPattern ();
       if (aPattern != null)
         sMatchPattern = aPattern.toShortString ();
+
       final var aMode = aRule.getMode ();
       if (aMode != null && aMode.getModeName () != null)
         sMode = aMode.getModeName ().getClarkName ();

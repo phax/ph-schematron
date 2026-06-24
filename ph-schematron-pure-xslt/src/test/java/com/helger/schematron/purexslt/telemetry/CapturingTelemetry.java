@@ -106,7 +106,7 @@ public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetry
 
     /**
      * @return The attributes recorded on the span via the {@code setAttribute(...)} overloads, in
-     *         insertion order. The returned map is live &mdash; callers must not mutate it.
+     *         insertion order. The returned map is live - callers must not mutate it.
      */
     @NonNull
     public ICommonsOrderedMap <String, Object> getAttributes ()

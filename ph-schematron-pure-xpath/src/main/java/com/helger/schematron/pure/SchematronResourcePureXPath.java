@@ -55,6 +55,7 @@ import com.helger.io.resource.inmemory.AbstractMemoryReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.CSchematron;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronException;
@@ -89,7 +90,7 @@ import net.sf.saxon.s9api.XdmNode;
  * Canonical name for the pure-Java XPath-driven Schematron engine, introduced in v10.0.0. This
  * class itself is not thread safe, but the underlying cache is thread safe. So once you have
  * configured this object fully (via the setters), it can be considered thread safe.<br>
- * <b>Important:</b> This class can <u>only</u> handle XPath expressions but no XSLT functions in
+ * <b>Important:</b> This class can only handle XPath expressions but no XSLT functions in
  * Schematron asserts and reports! If your Schematrons use XSLT functionality you're better off
  * using the {@code com.helger.schematron.sch.SchematronResourceSCH} or
  * {@code com.helger.schematron.purexslt.SchematronResourcePureXslt} classes instead.
@@ -109,8 +110,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   private IPSErrorHandler m_aErrorHandler;
   private IPSValidationHandler m_aCustomValidationHandler;
   private IXPathConfig m_aXPathConfig = XPathConfigBuilder.DEFAULT;
-  private boolean m_bTelemetry = false;
-  private boolean m_bPerAssertionTelemetry = false;
+  private boolean m_bPerRuleExecutionTelemetry = false;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
 
@@ -142,13 +142,14 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     super (aBuilder.m_aResource,
            aBuilder.m_bUseCache,
            aBuilder.m_bLenient,
-           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null);
+           aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null,
+           aBuilder.m_bUseTelemetry,
+           aBuilder.m_bPerAssertionResultTelemetry);
     m_sPhase = aBuilder.m_sPhase;
     m_aErrorHandler = aBuilder.m_aErrorHandler;
     m_aCustomValidationHandler = aBuilder.m_aCustomValidationHandler;
     m_aXPathConfig = aBuilder.m_aXPathConfig;
-    m_bTelemetry = aBuilder.m_bTelemetry;
-    m_bPerAssertionTelemetry = aBuilder.m_bPerAssertionTelemetry;
+    m_bPerRuleExecutionTelemetry = aBuilder.m_bPerRuleExecutionTelemetry;
   }
 
   /**
@@ -271,24 +272,16 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * @return <code>true</code> if runtime telemetry (spans + counters + duration histogram) is
-   *         emitted via ph-telemetry during validation. Default is <code>false</code>.
+   * @return <code>true</code> if per-rule execution timing histograms
+   *         ({@code schematron.rule.duration}, {@code schematron.context.duration},
+   *         {@code schematron.assert.duration}) are recorded to find the most expensive rules. Only
+   *         meaningful when {@link #isTelemetry()} is also <code>true</code>. Default is
+   *         <code>false</code>.
    * @since 10.0.0
    */
-  public final boolean isTelemetry ()
+  public final boolean isPerRuleExecutionTelemetry ()
   {
-    return m_bTelemetry;
-  }
-
-  /**
-   * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
-   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
-   *         <code>true</code>. Default is <code>false</code>.
-   * @since 10.0.0
-   */
-  public final boolean isPerAssertionTelemetry ()
-  {
-    return m_bPerAssertionTelemetry;
+    return m_bPerRuleExecutionTelemetry;
   }
 
   /**
@@ -437,12 +430,14 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   @Nullable
   private IPSValidationHandler _resolveEffectiveValidationHandler ()
   {
-    if (!m_bTelemetry)
+    if (!isTelemetry ())
       return m_aCustomValidationHandler;
 
     final TelemetryValidationHandler aTelemetry = new TelemetryValidationHandler (ESchematronEngine.PURE_XPATH,
-                                                                                  m_bPerAssertionTelemetry);
-    // Null-safe combine: m_aCustomValidationHandler may be null when telemetry is enabled on its own
+                                                                                  isPerAssertionResultTelemetry (),
+                                                                                  m_bPerRuleExecutionTelemetry);
+    // Null-safe combine: m_aCustomValidationHandler may be null when telemetry is enabled on its
+    // own
     return IPSValidationHandler.and (m_aCustomValidationHandler, aTelemetry);
   }
 
@@ -601,7 +596,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
     final SchematronOutputType aSOT;
-    if (m_bTelemetry)
+    if (isTelemetry ())
     {
       // Tracing span wraps the whole validation; the chained TelemetryValidationHandler emits the
       // counters and (optionally) per-assert child spans.
@@ -610,7 +605,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
                                                              ETelemetrySpanKind.INTERNAL))
       {
         aSpan.setAttribute (CSchematronTelemetry.ATTR_ENGINE, ESchematronEngine.PURE_XPATH.getID ());
-        if (m_sPhase != null)
+        if (StringHelper.isNotEmpty (m_sPhase))
           aSpan.setAttribute (CSchematronTelemetry.ATTR_PHASE, m_sPhase);
 
         try
@@ -1066,15 +1061,16 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   {
     private final IReadableResource m_aResource;
     private boolean m_bUseCache = AbstractSchematronResource.DEFAULT_USE_CACHE;
-    private boolean m_bLenient = com.helger.schematron.CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+    private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
     private EntityResolver m_aEntityResolver;
     private boolean m_bEntityResolverSet;
     private String m_sPhase;
     private IPSErrorHandler m_aErrorHandler;
     private IPSValidationHandler m_aCustomValidationHandler;
     private IXPathConfig m_aXPathConfig = XPathConfigBuilder.DEFAULT;
-    private boolean m_bTelemetry;
-    private boolean m_bPerAssertionTelemetry;
+    private boolean m_bUseTelemetry;
+    private boolean m_bPerAssertionResultTelemetry;
+    private boolean m_bPerRuleExecutionTelemetry;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -1180,20 +1176,36 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     @NonNull
     public Builder telemetry (final boolean b)
     {
-      m_bTelemetry = b;
+      m_bUseTelemetry = b;
       return this;
     }
 
     /**
      * @param b
-     *        <code>true</code> to enable per-assertion telemetry spans (only meaningful when
-     *        {@link #telemetry(boolean)} is also <code>true</code>).
+     *        <code>true</code> to emit a {@code schematron.assertion} span per failed-assert /
+     *        successful-report (post-evaluation findings). Only meaningful when
+     *        {@link #telemetry(boolean)} is also <code>true</code>.
      * @return this for chaining
      */
     @NonNull
-    public Builder perAssertionTelemetry (final boolean b)
+    public Builder perAssertionResultTelemetry (final boolean b)
     {
-      m_bPerAssertionTelemetry = b;
+      m_bPerAssertionResultTelemetry = b;
+      return this;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to record per-rule execution timing histograms
+     *        ({@code schematron.rule.duration}, {@code schematron.context.duration},
+     *        {@code schematron.assert.duration}) for ranking the most expensive rules. Only
+     *        meaningful when {@link #telemetry(boolean)} is also <code>true</code>.
+     * @return this for chaining
+     */
+    @NonNull
+    public Builder perRuleExecutionTelemetry (final boolean b)
+    {
+      m_bPerRuleExecutionTelemetry = b;
       return this;
     }
 

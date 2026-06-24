@@ -93,6 +93,8 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
            aBuilder.m_bUseCache,
            aBuilder.m_bLenient,
            aBuilder.m_bEntityResolverSet ? aBuilder.m_aEntityResolver : null,
+           aBuilder.m_bUseTelemetry,
+           aBuilder.m_bPerAssertionResultTelemetry,
            aBuilder.m_aErrorListener,
            aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
            aBuilder.m_aTFCustomizer,
@@ -104,8 +106,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     parameters ().setAll (aBuilder.m_aParameters);
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
     m_aCache = aBuilder.m_aCache;
-    m_bTelemetry = aBuilder.m_bTelemetry;
-    m_bPerAssertionTelemetry = aBuilder.m_bPerAssertionTelemetry;
+    m_bPerRuleExecutionTelemetry = aBuilder.m_bPerRuleExecutionTelemetry;
   }
 
   @Override
@@ -637,8 +638,9 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     private ISchematronTemplateTelemetry m_aTelemetry;
     private ISchematronOutputValidityDeterminator m_aSOVDeterminator;
     private boolean m_bValidateSVRL = AbstractSchematronXSLTBasedResource.DEFAULT_VALIDATE_SVRL;
-    private boolean m_bTelemetry;
-    private boolean m_bPerAssertionTelemetry;
+    private boolean m_bUseTelemetry;
+    private boolean m_bPerAssertionResultTelemetry;
+    private boolean m_bPerRuleExecutionTelemetry;
     private SchematronSCHCache m_aCache;
 
     Builder (@NonNull final IReadableResource aResource)
@@ -822,24 +824,38 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     @NonNull
     public Builder telemetry (final boolean b)
     {
-      m_bTelemetry = b;
+      m_bUseTelemetry = b;
       return this;
     }
 
     /**
-     * Enable per-assertion telemetry spans. When on, one {@code schematron.assertion} span is
-     * emitted per failed-assert / successful-report present in the SVRL. Only meaningful when
-     * {@link #telemetry(boolean)} is also <code>true</code>.
-     *
      * @param b
-     *        <code>true</code> to enable per-assertion spans.
+     *        <code>true</code> to emit a {@code schematron.svrl.assertion} span per failed-assert /
+     *        successful-report (post-evaluation findings from the SVRL). Only meaningful when
+     *        {@link #telemetry(boolean)} is also <code>true</code>.
      * @return this for chaining
      * @since 10.0.0
      */
     @NonNull
-    public Builder perAssertionTelemetry (final boolean b)
+    public Builder perAssertionResultTelemetry (final boolean b)
     {
-      m_bPerAssertionTelemetry = b;
+      m_bPerAssertionResultTelemetry = b;
+      return this;
+    }
+
+    /**
+     * @param b
+     *        <code>true</code> to record per-rule execution timing
+     *        ({@code schematron.rule.duration}) via the Saxon trace listener for ranking the most
+     *        expensive rules. Forces {@code COMPILE_WITH_TRACING} (1.5x-3x slower). Only meaningful
+     *        when {@link #telemetry(boolean)} is also <code>true</code>.
+     * @return this for chaining
+     * @since 10.0.0
+     */
+    @NonNull
+    public Builder perRuleExecutionTelemetry (final boolean b)
+    {
+      m_bPerRuleExecutionTelemetry = b;
       return this;
     }
 

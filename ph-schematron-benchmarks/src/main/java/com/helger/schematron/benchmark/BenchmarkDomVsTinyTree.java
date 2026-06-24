@@ -37,7 +37,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
-import com.helger.schematron.pure.SchematronResourcePure;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.xml.serialize.read.DOMReader;
@@ -47,10 +46,11 @@ import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.XdmNode;
 
 /**
- * Compares the two XML-to-Saxon bridges used by {@link SchematronResourcePure} for an XPath-only
- * Schematron: the standard {@code org.w3c.dom} tree built by {@link DOMReader} versus the Saxon
- * TinyTree exposed as a DOM facade via {@link NodeOverNodeInfo}. The TinyTree path is what
- * {@code getAsNode(IHasInputStream)} uses internally when no custom entity resolver is configured.
+ * Compares the two XML-to-Saxon bridges used by {@link SchematronResourcePureXPath} for an
+ * XPath-only Schematron: the standard {@code org.w3c.dom} tree built by {@link DOMReader} versus
+ * the Saxon TinyTree exposed as a DOM facade via {@link NodeOverNodeInfo}. The TinyTree path is
+ * what {@code getAsNode(IHasInputStream)} uses internally when no custom entity resolver is
+ * configured.
  *
  * @author Philip Helger
  */

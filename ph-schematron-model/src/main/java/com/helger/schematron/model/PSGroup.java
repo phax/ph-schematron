@@ -31,7 +31,7 @@ import com.helger.schematron.CSchematronXML;
  * rule fires per context node), whereas inside a <code>group</code> every contained rule is
  * matched independently of the others.
  * <p>
- * This class is a sibling of {@link PSPattern} &mdash; both extend {@link AbstractPSPatternLike},
+ * This class is a sibling of {@link PSPattern} - both extend {@link AbstractPSPatternLike},
  * which captures the shared content model. {@code PSGroup} is deliberately NOT a {@code PSPattern}
  * subtype: code that performs {@code instanceof PSPattern} will continue to match only true
  * patterns and ignore groups.

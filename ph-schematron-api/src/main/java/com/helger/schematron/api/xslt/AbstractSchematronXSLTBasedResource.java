@@ -87,10 +87,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected ISchematronTemplateTelemetry m_aTelemetry;
   protected ISchematronOutputValidityDeterminator m_aSOVDeterminator;
   protected boolean m_bValidateSVRL;
-  // Runtime-only ph-telemetry toggles. Set by the engine builders; default off. Not part of the
-  // compile-time config (they don't affect the produced stylesheet).
-  protected boolean m_bTelemetry;
-  protected boolean m_bPerAssertionTelemetry;
+  // Per-rule execution timing (rule.duration) via the Saxon trace listener
+  protected boolean m_bPerRuleExecutionTelemetry;
   /**
    * Latched <code>true</code> the first time {@link #getXSLTProvider()} is called on this instance.
    * Used by {@link #checkNotCompiledYet()} so that compile-time setters fail fast post-compile,
@@ -100,7 +98,18 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
-    this (aSCHResource, DEFAULT_USE_CACHE, DEFAULT_LENIENT, null, null, null, null, null, null, DEFAULT_VALIDATE_SVRL);
+    this (aSCHResource,
+          DEFAULT_USE_CACHE,
+          DEFAULT_LENIENT,
+          null,
+          DEFAULT_TELEMETRY,
+          DEFAULT_PER_ASSERTION_RESULT_TELEMETRY,
+          null,
+          null,
+          null,
+          null,
+          null,
+          DEFAULT_VALIDATE_SVRL);
   }
 
   /**
@@ -117,6 +126,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * @param aEntityResolver
    *        A custom entity resolver. May be <code>null</code> in which case a custom resolver is
    *        used.
+   * @param bUseTelemetry
+   *        Use telemetry data?
+   * @param bPerAssertionResultTelemetry
+   *        Add assertion results to the telemetry data
    * @param aCustomErrorListener
    *        The error listener to use, or <code>null</code> for the engine default.
    * @param aCustomURIResolver
@@ -135,6 +148,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                  final boolean bUseCache,
                                                  final boolean bLenient,
                                                  @Nullable final EntityResolver aEntityResolver,
+                                                 final boolean bUseTelemetry,
+                                                 final boolean bPerAssertionResultTelemetry,
                                                  @Nullable final ErrorListener aCustomErrorListener,
                                                  @Nullable final URIResolver aCustomURIResolver,
                                                  @Nullable final Consumer <TransformerFactory> aTFCustomizer,
@@ -142,7 +157,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                  @Nullable final ISchematronOutputValidityDeterminator aSOVDeterminator,
                                                  final boolean bValidateSVRL)
   {
-    super (aSCHResource, bUseCache, bLenient, aEntityResolver);
+    super (aSCHResource, bUseCache, bLenient, aEntityResolver, bUseTelemetry, bPerAssertionResultTelemetry);
 
     // The URI resolver is necessary for the XSLT to resolve URLs relative to
     // the SCH
@@ -263,42 +278,32 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   /**
    * @return The effective per-template telemetry actually used for compilation and execution. Equal
-   *         to {@link #getTelemetry()} unless per-assertion (deep) profiling is enabled together
-   *         with telemetry, in which case the built-in {@link RuleDurationTemplateTelemetry} is
-   *         composed in to emit {@link CSchematronTelemetry#METRIC_RULE_DURATION}. A non-null result
-   *         forces Saxon's {@code COMPILE_WITH_TRACING} (1.5&times;&ndash;3&times; slower), so the
-   *         per-rule timing is opt-in via {@code perAssertionTelemetry(true)}.
+   *         to {@link #getTelemetry()} unless per-rule execution profiling is enabled together with
+   *         telemetry, in which case the built-in {@link RuleDurationTemplateTelemetry} is composed
+   *         in to emit {@link CSchematronTelemetry#METRIC_RULE_DURATION}. A non-null result forces
+   *         Saxon's {@code COMPILE_WITH_TRACING} (1.5&times;&ndash;3&times; slower), so the
+   *         per-rule timing is opt-in via {@code perRuleExecutionTelemetry(true)}.
    * @since 10.0.0
    */
   @Nullable
   protected final ISchematronTemplateTelemetry getEffectiveTemplateTelemetry ()
   {
-    if (m_bTelemetry && m_bPerAssertionTelemetry)
+    if (isTelemetry () && m_bPerRuleExecutionTelemetry)
       return ISchematronTemplateTelemetry.and (m_aTelemetry,
                                                new RuleDurationTemplateTelemetry (getTelemetryEngineID ()));
     return m_aTelemetry;
   }
 
   /**
-   * @return <code>true</code> if runtime ph-telemetry (a {@code schematron.validate} span, the
-   *         aggregate counters and the duration histogram) is emitted during validation. Default is
-   *         <code>false</code>.
-   * @since 10.0.0
-   */
-  public final boolean isTelemetry ()
-  {
-    return m_bTelemetry;
-  }
-
-  /**
-   * @return <code>true</code> if per-assertion telemetry spans are emitted in addition to the
-   *         aggregate metrics. Only meaningful when {@link #isTelemetry()} is also
+   * @return <code>true</code> if per-rule execution timing ({@code schematron.rule.duration}) is
+   *         recorded via the Saxon trace listener. This forces {@code COMPILE_WITH_TRACING}
+   *         (1.5&times;&ndash;3&times; slower). Only meaningful when {@link #isTelemetry()} is also
    *         <code>true</code>. Default is <code>false</code>.
    * @since 10.0.0
    */
-  public final boolean isPerAssertionTelemetry ()
+  public final boolean isPerRuleExecutionTelemetry ()
   {
-    return m_bPerAssertionTelemetry;
+    return m_bPerRuleExecutionTelemetry;
   }
 
   /**
@@ -483,7 +488,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   @Nullable
   public final SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource) throws TransformerException
   {
-    if (!m_bTelemetry)
+    if (!isTelemetry ())
       return _readSVRL (applySchematronValidation (aXMLSource));
 
     // Wrap the whole transform in a schematron.validate span; the aggregate counters and the
@@ -515,7 +520,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       {
         SvrlTelemetryEmitter.emitPostHoc (aSVRL,
                                           sEngineID,
-                                          m_bPerAssertionTelemetry,
+                                          isPerAssertionResultTelemetry (),
                                           aSW.getNanos () / (double) CGlobal.NANOSECONDS_PER_MILLISECOND);
       }
     }
@@ -528,8 +533,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                             .append ("CustomErrorListener", m_aCustomErrorListener)
                             .append ("CustomURIResolver", m_aCustomURIResolver)
                             .append ("CustomParameters", m_aCustomParameters)
+                            .append ("TFCustomizer", m_aTFCustomizer)
+                            .append ("Telemetry", m_aTelemetry)
                             .append ("XSLTValidator", m_aSOVDeterminator)
                             .append ("ValidateSVRL", m_bValidateSVRL)
+                            .append ("PerRuleExecutionTelemetry", m_bPerRuleExecutionTelemetry)
                             .getToString ();
   }
 }

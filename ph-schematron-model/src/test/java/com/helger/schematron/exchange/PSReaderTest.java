@@ -69,9 +69,12 @@ public final class PSReaderTest
   }
 
   /**
-   * Per ISO 19757-3 §5.4.4, if a {@code <let>} has no {@code value} attribute its expression
-   * comes from the element content. This is the positive case for that path (see GitHub
-   * issue #189) — a plain XPath expression inside the body.
+   * Per ISO 19757-3 §5.4.4, if a {@code <let>} has no {@code value} attribute its expression comes
+   * from the element content. This is the positive case for that path (see GitHub issue #189) — a
+   * plain XPath expression inside the body.
+   *
+   * @throws Exception
+   *         in case of error
    */
   @Test
   public void testReadLetWithBodyValue () throws Exception

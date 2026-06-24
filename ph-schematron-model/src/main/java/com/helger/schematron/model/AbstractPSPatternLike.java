@@ -51,7 +51,7 @@ import com.helger.xml.microdom.MicroElement;
  * rule-set = element group   { rule-set-or-pattern }
  * </pre>
  *
- * &mdash; differing only in their element name and in the rule semantics applied at validation
+ * - differing only in their element name and in the rule semantics applied at validation
  * time (if-then-else for <code>pattern</code> vs. try-every-rule for <code>group</code>).
  * This class holds the common state and serialisation logic; the subclass contributes only the
  * element name via {@link #getElementName()}.
