@@ -237,14 +237,16 @@ THE SOFTWARE.
 	<xsl:param name="lang" />
 	<xsl:param name="see" />
 	<xsl:param name="space" />
-	
-	<svrl:schematron-output title="{$title}" schemaVersion="{$schemaVersion}" >
+
+  <!-- [ph] removed attribute: title="{$title}" --> 
+  <!-- [ph] removed attribute: schemaVersion="{$schemaVersion}" --> 
+	<svrl:schematron-output >
 		<xsl:if test=" string-length( normalize-space( $phase )) &gt; 0 and 
-		not( normalize-space( $phase ) = '#ALL') ">
+	                 	not( normalize-space( $phase ) = '#ALL') ">
 			<axsl:attribute name="phase">
 				<xsl:value-of select=" $phase " />
 			</axsl:attribute>
-		</xsl:if> 
+		</xsl:if>
 		
 		 <axsl:comment><axsl:value-of select="$archiveDirParameter"/>  &#xA0;
 		 <axsl:value-of select="$archiveNameParameter"/> &#xA0;
@@ -285,6 +287,8 @@ THE SOFTWARE.
 			</axsl:attribute>
 		</xsl:if>
 		<!-- Process rich attributes.  -->
+    <!-- [ph] moved richParams to text -->
+    <!--
 		<xsl:call-template name="richParms">
 			<xsl:with-param name="fpi" select="$fpi"/>
 			<xsl:with-param name="icon" select="$icon"/>
@@ -292,35 +296,46 @@ THE SOFTWARE.
 			<xsl:with-param name="see" select="$see" />
 			<xsl:with-param name="space" select="$space" />
 		</xsl:call-template>
+		-->
 		<xsl:call-template name='linkableParms'>
 			<xsl:with-param name="role" select="$role" />
 			<xsl:with-param name="subject" select="$subject"/>
 		</xsl:call-template>
+		
 		<xsl:if test=" $generate-paths = 'true' or $generate-paths= 'yes' ">
 			<!-- true/false is the new way -->
 			<axsl:attribute name="location">
 				<axsl:apply-templates select="." mode="schematron-select-full-path"/>
 			</axsl:attribute>
 		</xsl:if>
-		  
-		<svrl:text>
-			<xsl:apply-templates mode="text" />
-	
-		</svrl:text>
-		    <xsl:if test="$diagnose = 'yes' or $diagnose= 'true' ">
-			<!-- true/false is the new way -->
-				<xsl:call-template name="diagnosticsSplit">
-					<xsl:with-param name="str" select="$diagnostics"/>
-				</xsl:call-template>
-			</xsl:if>
-			
-			
-		    <xsl:if test="$property= 'yes' or $property= 'true' ">
-			<!-- true/false is the new way -->
-				<xsl:call-template name="propertiesSplit">
-					<xsl:with-param name="str" select="$properties"/>
-				</xsl:call-template>
-			</xsl:if>
+
+	  <xsl:if test="$diagnose = 'yes' or $diagnose= 'true' ">
+		<!-- true/false is the new way -->
+			<xsl:call-template name="diagnosticsSplit">
+				<xsl:with-param name="str" select="$diagnostics"/>
+			</xsl:call-template>
+		</xsl:if>
+		
+		
+	    <xsl:if test="$property= 'yes' or $property= 'true' ">
+		<!-- true/false is the new way -->
+			<xsl:call-template name="propertiesSplit">
+				<xsl:with-param name="str" select="$properties"/>
+			</xsl:call-template>
+		</xsl:if>
+      
+    <!-- [ph] moved text to the end -->
+    <svrl:text>
+      <!-- [ph] moved richParams to text -->
+      <xsl:call-template name="richParms">
+        <xsl:with-param name="fpi" select="$fpi"/>
+        <xsl:with-param name="icon" select="$icon"/>
+        <xsl:with-param name="lang" select="$lang"/>
+        <xsl:with-param name="see" select="$see" />
+        <xsl:with-param name="space" select="$space" />
+      </xsl:call-template>
+      <xsl:apply-templates mode="text" />
+    </svrl:text>
 			
 	</svrl:failed-assert>
 	
@@ -361,6 +376,8 @@ THE SOFTWARE.
 		</xsl:if>
 		
 		<!-- Process rich attributes.  -->
+    <!-- [ph] moved richParams to text -->
+    <!--
 		<xsl:call-template name="richParms">
 			<xsl:with-param name="fpi" select="$fpi"/>
 			<xsl:with-param name="icon" select="$icon"/>
@@ -368,6 +385,7 @@ THE SOFTWARE.
 			<xsl:with-param name="see" select="$see" />
 			<xsl:with-param name="space" select="$space" />
 		</xsl:call-template>
+		-->
 		<xsl:call-template name='linkableParms'>
 			<xsl:with-param name="role" select="$role" />
 			<xsl:with-param name="subject" select="$subject"/>
@@ -378,26 +396,34 @@ THE SOFTWARE.
 				<axsl:apply-templates select="." mode="schematron-select-full-path"/>
 			</axsl:attribute>
 		</xsl:if>
-	 
-		<svrl:text>
-			<xsl:apply-templates mode="text" />
 
-		</svrl:text>
-			<xsl:if test="$diagnose = 'yes' or $diagnose='true' ">
-			<!-- true/false is the new way -->
-				<xsl:call-template name="diagnosticsSplit">
-					<xsl:with-param name="str" select="$diagnostics"/>
-				</xsl:call-template>
-			</xsl:if>
-			
-			
-			<xsl:if test="$property = 'yes' or $property='true' ">
-			<!-- true/false is the new way -->
-				<xsl:call-template name="propertiesSplit">
-					<xsl:with-param name="str" select="$properties"/>
-				</xsl:call-template>
-			</xsl:if>
+		<xsl:if test="$diagnose = 'yes' or $diagnose='true' ">
+		<!-- true/false is the new way -->
+			<xsl:call-template name="diagnosticsSplit">
+				<xsl:with-param name="str" select="$diagnostics"/>
+			</xsl:call-template>
+		</xsl:if>
+		
+		
+		<xsl:if test="$property = 'yes' or $property='true' ">
+		<!-- true/false is the new way -->
+			<xsl:call-template name="propertiesSplit">
+				<xsl:with-param name="str" select="$properties"/>
+			</xsl:call-template>
+		</xsl:if>
 			 
+    <!-- [ph] moved text to the end -->
+    <svrl:text>
+      <!-- [ph] moved richParams to text -->
+      <xsl:call-template name="richParms">
+        <xsl:with-param name="fpi" select="$fpi"/>
+        <xsl:with-param name="icon" select="$icon"/>
+        <xsl:with-param name="lang" select="$lang"/>
+        <xsl:with-param name="see" select="$see" />
+        <xsl:with-param name="space" select="$space" />
+      </xsl:call-template>
+      <xsl:apply-templates mode="text" />
+    </svrl:text>
 			
 	</svrl:successful-report>
 	
@@ -424,18 +450,31 @@ THE SOFTWARE.
 				<xsl:value-of select="$id"/>
 			</xsl:attribute>
 		</xsl:if-->
+    <!-- [ph] moved to text element -->
+    <!--
 		<xsl:call-template name="richParms">
 			<xsl:with-param name="fpi" select="$fpi"/>
 			<xsl:with-param name="icon" select="$icon"/>
-			<xsl:with-param name="lang" select="$lang"/>
+			<xsl:with-param name="lang" select="$lang" />
 			<xsl:with-param name="see" select="$see" />
 			<xsl:with-param name="space" select="$space" />
-		</xsl:call-template> 
+		</xsl:call-template>
+		--> 
 <xsl:text>
 </xsl:text>
  
-		<xsl:apply-templates mode="text"/>
-		 
+    <!-- [PH] wrapping in text -->
+    <svrl:text>
+      <!-- [ph] moved to text element -->
+      <xsl:call-template name="richParms">
+        <xsl:with-param name="fpi" select="$fpi"/>
+        <xsl:with-param name="icon" select="$icon"/>
+        <xsl:with-param name="lang" select="$lang" />
+        <xsl:with-param name="see" select="$see" />
+        <xsl:with-param name="space" select="$space" />
+      </xsl:call-template>
+  		<xsl:apply-templates mode="text"/>
+	  </svrl:text>	 
 	</svrl:diagnostic-reference>
 </xsl:template>
 
@@ -489,36 +528,37 @@ THE SOFTWARE.
 	<xsl:param name="see" />
 	<xsl:param name="space" />
 	<xsl:if test=" $generate-fired-rule = 'true'">
-	<svrl:fired-rule context="{$context}" >
-		<xsl:if test=" string( $id )">
-			<xsl:attribute name="id">
-				<xsl:value-of select=" $id " />
-			</xsl:attribute>
-		</xsl:if>
-		<xsl:if test=" string-length( $role ) &gt; 0">
-			<xsl:attribute name="role">
-				<xsl:value-of select=" $role " />
-			</xsl:attribute>
-		</xsl:if>
-		<!-- Process rich attributes.  -->
-		<xsl:call-template name="richParms">
-			<xsl:with-param name="fpi" select="$fpi"/>
-			<xsl:with-param name="icon" select="$icon"/>
-			<xsl:with-param name="lang" select="$lang"/>
-			<xsl:with-param name="see" select="$see" />
-			<xsl:with-param name="space" select="$space" />
-		</xsl:call-template>
-		
-		
-		    <xsl:if test="$property= 'yes' or $property= 'true' ">
-			<!-- true/false is the new way -->
+  	<svrl:fired-rule context="{$context}" >
+  		<xsl:if test=" string( $id )">
+  			<xsl:attribute name="id">
+  				<xsl:value-of select=" $id " />
+  			</xsl:attribute>
+  		</xsl:if>
+  		<xsl:if test=" string-length( $role ) &gt; 0">
+  			<xsl:attribute name="role">
+  				<xsl:value-of select=" $role " />
+  			</xsl:attribute>
+  		</xsl:if>
+  		<!-- Process rich attributes.  -->
+  		<!-- [ph] fired-rule has no richParams -->
+  		<!-- 
+  		<xsl:call-template name="richParms">
+  			<xsl:with-param name="fpi" select="$fpi"/>
+  			<xsl:with-param name="icon" select="$icon"/>
+  			<xsl:with-param name="lang" select="$lang"/>
+  			<xsl:with-param name="see" select="$see" />
+  			<xsl:with-param name="space" select="$space" />
+  		</xsl:call-template>
+  		-->
+  		
+  		<xsl:if test="$property= 'yes' or $property= 'true' ">
+  			<!-- true/false is the new way -->
 				<xsl:call-template name="propertiesSplit">
 					<xsl:with-param name="str" select="$properties"/>
 				</xsl:call-template>
 			</xsl:if>
-		
-	</svrl:fired-rule>
-</xsl:if>
+  	</svrl:fired-rule>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template name="process-ns">
@@ -549,14 +589,17 @@ THE SOFTWARE.
 	<xsl:param name="lang" />
 	<xsl:param name="see" />
 	<xsl:param name="space" />
-	<svrl:active-pattern >
+	<svrl:active-pattern>
+    <!-- [ph] disabled again for v10 -->
+    <!--
     <axsl:attribute name="document">
     	<axsl:value-of select="document-uri(/)" />
-    </axsl:attribute><!-- If XSLT1 remove this -->
+    </axsl:attribute>
+    -->
     <!--  [PH] added 2024-11-18; see #149 -->
     <axsl:attribute name="documents">
       <axsl:value-of select="document-uri(/)" />
-    </axsl:attribute><!-- If XSLT1 remove this -->
+    </axsl:attribute>
 		<xsl:if test=" string( $id )">
 			<axsl:attribute name="id">
 				<xsl:value-of select=" $id " />
