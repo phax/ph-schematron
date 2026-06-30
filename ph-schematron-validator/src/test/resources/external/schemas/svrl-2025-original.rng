@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) ISO/IEC 2024
+  
+  The following permission notice and disclaimer shall be included in all
+  copies of this XML schema ("The Schema"), and derivations of the Schema:
+  Permission is hereby granted, free of charge in perpetuity, to any
+  person obtaining a copy of the Schema, to use, copy, modify, merge and
+  distribute free of charge, copies of the Schema for the purposes of
+  developing, implementing, installing and using software based on the
+  Schema, and to permit persons to whom the Schema is furnished to do so,
+  subject to the following conditions:
+  
+  THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE USE OR
+  OTHER DEALINGS IN THE SCHEMA.
+  
+  In addition, any modified copy of the Schema shall include the following
+  notice:
+  
+  THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN ISO/IEC 19757-3,
+  AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD."
+-->
+<grammar ns="http://purl.oclc.org/dsdl/svrl" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="schematron-output">
+    <element name="schematron-output">
+      <optional>
+        <attribute name="title"/>
+      </optional>
+      <optional>
+        <attribute name="phase">
+          <data type="NMTOKEN"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="schemaVersion"/>
+      </optional>
+      <optional>
+        <attribute name="schemaFrontEdition"/>
+      </optional>
+      <choice>
+        <group>
+          <zeroOrMore>
+            <ref name="error"/>
+          </zeroOrMore>
+          <zeroOrMore>
+            <ref name="human-text"/>
+          </zeroOrMore>
+        </group>
+        <group>
+          <zeroOrMore>
+            <ref name="error"/>
+          </zeroOrMore>
+          <zeroOrMore>
+            <ref name="human-text"/>
+          </zeroOrMore>
+          <zeroOrMore>
+            <ref name="ns-prefix-in-attribute-values"/>
+          </zeroOrMore>
+          <zeroOrMore>
+            <ref name="active-pattern-rule-set"/>
+            <zeroOrMore>
+              <ref name="fired-rule"/>
+              <zeroOrMore>
+                <choice>
+                  <ref name="failed-assert"/>
+                  <ref name="successful-report"/>
+                </choice>
+              </zeroOrMore>
+            </zeroOrMore>
+          </zeroOrMore>
+        </group>
+      </choice>
+      <!-- [PH] added          -->
+    </element>
+  </define>
+  <!-- only namespaces from schins need to be reported -->
+  <define name="ns-prefix-in-attribute-values">
+    <element name="ns-prefix-in-attribute-values">
+      <attribute name="prefix">
+        <data type="NMTOKEN"/>
+      </attribute>
+      <attribute name="uri"/>
+      <empty/>
+    </element>
+  </define>
+  <!-- only active patterns and groups are reported -->
+  <define name="active-pattern">
+    <element name="active-pattern">
+      <ref name="active"/>
+    </element>
+  </define>
+  <define name="active-rule-set">
+    <element name="active-group">
+      <ref name="active"/>
+    </element>
+  </define>
+  <!-- only rules that are fired are reported, -->
+  <define name="fired-rule">
+    <element name="fired-rule">
+      <optional>
+        <attribute name="id">
+          <data type="NCName"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="name"/>
+      </optional>
+      <attribute name="context"/>
+      <optional>
+        <attribute name="visit-each"/>
+      </optional>
+      <optional>
+        <attribute name="role">
+          <data type="string" datatypeLibrary=""/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="flag">
+          <list>
+            <oneOrMore>
+              <data type="token" datatypeLibrary=""/>
+            </oneOrMore>
+          </list>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="document">
+          <data type="anyURI"/>
+        </attribute>
+      </optional>
+      <empty/>
+    </element>
+  </define>
+  <!-- only references are reported, not the diagnostic -->
+  <define name="diagnostic-reference">
+    <element name="diagnostic-reference">
+      <attribute name="diagnostic">
+        <data type="NMTOKEN"/>
+      </attribute>
+      <optional>
+        <attribute name="role"/>
+      </optional>
+      <ref name="human-text"/>
+    </element>
+  </define>
+  <!-- only failed assertions are reported -->
+  <define name="failed-assert">
+    <element name="failed-assert">
+      <ref name="assertion-message"/>
+    </element>
+  </define>
+  <!-- only successful asserts are reported -->
+  <define name="successful-report">
+    <element name="successful-report">
+      <ref name="assertion-message"/>
+    </element>
+  </define>
+  <!-- property-reference -->
+  <define name="property-reference">
+    <element name="property-reference">
+      <attribute name="property">
+        <data type="NMTOKEN"/>
+      </attribute>
+      <optional>
+        <attribute name="role"/>
+      </optional>
+      <optional>
+        <attribute name="scheme"/>
+      </optional>
+      <ref name="human-text"/>
+    </element>
+  </define>
+  <!-- errors raised by the implementation -->
+  <define name="error">
+    <element name="error">
+      <optional>
+        <attribute name="document">
+          <data type="anyURI"/>
+        </attribute>
+      </optional>
+      <attribute name="location"/>
+      <optional>
+        <attribute name="code"/>
+      </optional>
+      <ref name="rich-text"/>
+    </element>
+  </define>
+  <!-- human text -->
+  <define name="human-text">
+    <element name="text">
+      <optional>
+        <attribute name="xml:space"/>
+      </optional>
+      <optional>
+        <attribute name="xml:lang"/>
+      </optional>
+      <optional>
+        <attribute name="see"/>
+      </optional>
+      <optional>
+        <attribute name="icon"/>
+      </optional>
+      <optional>
+        <attribute name="fpi"/>
+      </optional>
+      <ref name="rich-text"/>
+    </element>
+  </define>
+  <!-- rich text -->
+  <define name="rich-text">
+    <zeroOrMore>
+      <choice>
+        <ref name="foreign"/>
+        <ref name="dir"/>
+        <ref name="span"/>
+        <ref name="emph"/>
+        <text/>
+      </choice>
+    </zeroOrMore>
+  </define>
+  <!-- directionality -->
+  <define name="dir">
+    <element name="dir">
+      <optional>
+        <attribute name="class"/>
+      </optional>
+      <optional>
+        <attribute name="dir"/>
+      </optional>
+      <text/>
+    </element>
+  </define>
+  <!-- emphasis -->
+  <define name="emph">
+    <element name="emph">
+      <optional>
+        <attribute name="class"/>
+      </optional>
+      <text/>
+    </element>
+  </define>
+  <!-- arbitrary markup -->
+  <define name="span">
+    <element name="span">
+      <attribute name="class"/>
+      <text/>
+    </element>
+  </define>
+  <!-- foreign -->
+  <define name="foreign">
+    <choice>
+      <ref name="foreign-attributes"/>
+      <ref name="foreign-element"/>
+    </choice>
+  </define>
+  <define name="foreign-attributes">
+    <zeroOrMore>
+      <attribute>
+        <anyName>
+          <except>
+            <nsName ns="http://www.w3.org/XML/1998/namespace"/>
+            <nsName ns=""/>
+          </except>
+        </anyName>
+      </attribute>
+    </zeroOrMore>
+  </define>
+  <define name="foreign-element">
+    <element>
+      <anyName>
+        <except>
+          <nsName/>
+        </except>
+      </anyName>
+      <zeroOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+          </attribute>
+          <ref name="foreign-element"/>
+          <text/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="attlist.assert-and-report">
+    <optional>
+      <attribute name="id">
+        <data type="NCName"/>
+      </attribute>
+    </optional>
+    <attribute name="location"/>
+    <attribute name="test"/>
+    <optional>
+      <attribute name="role">
+        <data type="string" datatypeLibrary=""/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="flag">
+        <list>
+          <oneOrMore>
+            <data type="token" datatypeLibrary=""/>
+          </oneOrMore>
+        </list>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="severity">
+        <data type="string" datatypeLibrary=""/>
+      </attribute>
+    </optional>
+  </define>
+  <!-- active patterns and rule-sets -->
+  <define name="active-pattern-rule-set">
+    <choice>
+      <ref name="active-pattern"/>
+      <ref name="active-rule-set"/>
+    </choice>
+  </define>
+  <define name="active">
+    <optional>
+      <attribute name="id">
+        <data type="NCName"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="documents">
+        <data type="anyURI"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="name"/>
+    </optional>
+    <optional>
+      <attribute name="role">
+        <data type="string" datatypeLibrary=""/>
+      </attribute>
+    </optional>
+    <zeroOrMore>
+      <ref name="error"/>
+    </zeroOrMore>
+  </define>
+  <!-- assert and report message -->
+  <define name="assertion-message">
+    <ref name="attlist.assert-and-report"/>
+    <zeroOrMore>
+      <ref name="diagnostic-reference"/>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="property-reference"/>
+    </zeroOrMore>
+    <ref name="human-text"/>
+  </define>
+  <start>
+    <ref name="schematron-output"/>
+  </start>
+</grammar>
