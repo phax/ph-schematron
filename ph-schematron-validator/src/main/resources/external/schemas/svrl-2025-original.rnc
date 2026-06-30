@@ -33,18 +33,16 @@ schematron-output =
         attribute schemaVersion { text }?,
         attribute schemaFrontEdition { text }?,
         (
-          (error*, human-text*)
+          (error+, human-text*)
           |
           (error*,
           human-text*,
           ns-prefix-in-attribute-values*,
           (active-pattern-rule-set,
-            (fired-rule, (failed-assert | successful-report)*)*)*
+            (fired-rule, (failed-assert | successful-report)*)*)+)
           )
-# [PH] added          
-        )
         }
-# only namespaces from schins need to be reported
+# only namespaces from sch:ns need to be reported
 ns-prefix-in-attribute-values =
     element ns-prefix-in-attribute-values {
         attribute prefix { xsd:NMTOKEN },
