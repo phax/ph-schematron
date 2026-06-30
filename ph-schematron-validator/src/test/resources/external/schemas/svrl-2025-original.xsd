@@ -31,14 +31,14 @@
     <xs:complexType>
       <xs:choice>
         <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:error"/>
+          <xs:element maxOccurs="unbounded" ref="svrl:error"/>
           <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
         </xs:sequence>
         <xs:sequence>
           <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:error"/>
           <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
           <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:ns-prefix-in-attribute-values"/>
-          <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:sequence maxOccurs="unbounded">
             <xs:element ref="svrl:active-pattern-rule-set"/>
             <xs:sequence minOccurs="0" maxOccurs="unbounded">
               <xs:element ref="svrl:fired-rule"/>
@@ -56,7 +56,7 @@
       <xs:attribute name="schemaFrontEdition"/>
     </xs:complexType>
   </xs:element>
-  <!-- only namespaces from schins need to be reported -->
+  <!-- only namespaces from sch:ns need to be reported -->
   <xs:element name="ns-prefix-in-attribute-values">
     <xs:complexType>
       <xs:attribute name="prefix" use="required" type="xs:NMTOKEN"/>

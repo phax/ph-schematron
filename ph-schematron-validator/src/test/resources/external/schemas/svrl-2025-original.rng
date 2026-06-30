@@ -44,9 +44,9 @@
       </optional>
       <choice>
         <group>
-          <zeroOrMore>
+          <oneOrMore>
             <ref name="error"/>
-          </zeroOrMore>
+          </oneOrMore>
           <zeroOrMore>
             <ref name="human-text"/>
           </zeroOrMore>
@@ -61,7 +61,7 @@
           <zeroOrMore>
             <ref name="ns-prefix-in-attribute-values"/>
           </zeroOrMore>
-          <zeroOrMore>
+          <oneOrMore>
             <ref name="active-pattern-rule-set"/>
             <zeroOrMore>
               <ref name="fired-rule"/>
@@ -72,13 +72,12 @@
                 </choice>
               </zeroOrMore>
             </zeroOrMore>
-          </zeroOrMore>
+          </oneOrMore>
         </group>
       </choice>
-      <!-- [PH] added          -->
     </element>
   </define>
-  <!-- only namespaces from schins need to be reported -->
+  <!-- only namespaces from sch:ns need to be reported -->
   <define name="ns-prefix-in-attribute-values">
     <element name="ns-prefix-in-attribute-values">
       <attribute name="prefix">
