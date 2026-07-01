@@ -29,7 +29,13 @@
   validate with schemas from either namespace.
   
 
-  History: 
+  History:
+    2026-06-30
+      * Made SVRL output conformant to the official SVRL (PH)
+        - Moved svrl:text to the end of failed-assert and successful-report, after diagnostics and properties
+        - Moved richParms inside the svrl:text element for failed-assert, successful-report and diagnostic-reference
+        - fired-rule no longer emits richParms
+        - Disabled active-pattern/@document again for v10; only @documents is emitted
     2024-11-18
       * Emitting active-pattern/@documents attribute as well
    	2010-07-10
@@ -238,9 +244,7 @@ THE SOFTWARE.
 	<xsl:param name="see" />
 	<xsl:param name="space" />
 
-  <!-- [ph] removed attribute: title="{$title}" --> 
-  <!-- [ph] removed attribute: schemaVersion="{$schemaVersion}" --> 
-	<svrl:schematron-output >
+	<svrl:schematron-output title="{$title}" schemaVersion="{$schemaVersion}">
 		<xsl:if test=" string-length( normalize-space( $phase )) &gt; 0 and 
 	                 	not( normalize-space( $phase ) = '#ALL') ">
 			<axsl:attribute name="phase">
