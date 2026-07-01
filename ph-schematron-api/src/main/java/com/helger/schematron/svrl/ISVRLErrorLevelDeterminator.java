@@ -56,12 +56,17 @@ public interface ISVRLErrorLevelDeterminator
   {
     ValueEnforcer.notNull (aFailedAssert, "FailedAssert");
 
-    // First try "flag" (for backwards compatibility)
-    String sValue = aFailedAssert.getFlag ();
+    // Start with "severity"
+    String sValue = aFailedAssert.getSeverity ();
     if (StringHelper.isEmpty (sValue))
     {
-      // Fall back to "role"
-      sValue = aFailedAssert.getRole ();
+      // Next try "flag" (for backwards compatibility)
+      sValue = aFailedAssert.hasFlagEntries () ? aFailedAssert.getFlagAtIndex (0) : null;
+      if (StringHelper.isEmpty (sValue))
+      {
+        // Fall back to "role"
+        sValue = aFailedAssert.getRole ();
+      }
     }
     return getErrorLevelFromString (sValue);
   }
@@ -78,12 +83,17 @@ public interface ISVRLErrorLevelDeterminator
   {
     ValueEnforcer.notNull (aSuccessfulReport, "SuccessfulReport");
 
-    // First try "flag" (for backwards compatibility)
-    String sValue = aSuccessfulReport.getFlag ();
+    // Start with "severity"
+    String sValue = aSuccessfulReport.getSeverity ();
     if (StringHelper.isEmpty (sValue))
     {
-      // Fall back to "role"
-      sValue = aSuccessfulReport.getRole ();
+      // Next try "flag" (for backwards compatibility)
+      sValue = aSuccessfulReport.hasFlagEntries () ? aSuccessfulReport.getFlagAtIndex (0) : null;
+      if (StringHelper.isEmpty (sValue))
+      {
+        // Fall back to "role"
+        sValue = aSuccessfulReport.getRole ();
+      }
     }
     return getErrorLevelFromString (sValue);
   }

@@ -27,39 +27,54 @@
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified"
-           attributeFormDefault="qualified"
+           attributeFormDefault="unqualified"
            targetNamespace="http://purl.oclc.org/dsdl/svrl"
            xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
   <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
-  <xs:element name="schematron-output">
-    <xs:complexType>
-      <xs:choice>
-        <xs:sequence>
-          <xs:element maxOccurs="unbounded" ref="svrl:error"/>
-          <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
+  <xs:complexType name="SchematronOutputType">
+    <!-- [ph] The original RNC uses a choice of two branches that share the
+         leading (error, text) prefix:
+           (error+, text*)
+           | (error*, text*, ns-prefix*, (active-pattern-rule-set ...)+)
+         That shared prefix violates Unique Particle Attribution and forces
+         JAXB to emit a single untyped catch-all property. We therefore merge
+         the branches into one sequence. The only constraint that cannot be
+         kept in XSD 1.0 is "at least one error OR at least one pattern block"
+         (a cross-branch disjunction). The ordering and the coupling of
+         ns-prefix to the pattern block (it only occurs in branch 2) are
+         preserved via the optional wrapper sequence below. -->
+    <xs:sequence>
+      <!-- This is e.g. used for the SchXslt metadata element -->
+      <xs:any minOccurs="0" namespace="#other" processContents="lax" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:error"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:ns-prefix-in-attribute-values"/>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+        <!-- [ph] Modelled as an explicit choice (matching the RNC
+             "active-pattern | active-group") instead of an abstract
+             substitution group, so JAXB generates concrete ActivePattern /
+             ActiveGroup classes instead of JAXBElement wrappers. -->
+        <xs:choice>
+          <xs:element ref="svrl:active-pattern"/>
+          <xs:element ref="svrl:active-group"/>
+        </xs:choice>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="svrl:fired-rule"/>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="svrl:failed-assert"/>
+            <xs:element ref="svrl:successful-report"/>
+          </xs:choice>
         </xs:sequence>
-        <xs:sequence>
-          <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:error"/>
-          <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:text"/>
-          <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:ns-prefix-in-attribute-values"/>
-          <xs:sequence maxOccurs="unbounded">
-            <xs:element ref="svrl:active-pattern-rule-set"/>
-            <xs:sequence minOccurs="0" maxOccurs="unbounded">
-              <xs:element ref="svrl:fired-rule"/>
-              <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element ref="svrl:failed-assert"/>
-                <xs:element ref="svrl:successful-report"/>
-              </xs:choice>
-            </xs:sequence>
-          </xs:sequence>
-        </xs:sequence>
-      </xs:choice>
-      <xs:attribute name="title"/>
-      <xs:attribute name="phase" type="xs:NMTOKEN"/>
-      <xs:attribute name="schemaVersion"/>
-      <xs:attribute name="schemaFrontEdition"/>
-    </xs:complexType>
-  </xs:element>
+      </xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="title"/>
+    <!-- [ph] changed from xs:NMTOKEN to xs:string -->
+    <xs:attribute name="phase" type="xs:string"/>
+    <xs:attribute name="schemaVersion"/>
+    <xs:attribute name="schemaFrontEdition"/>
+  </xs:complexType>
+  <xs:element name="schematron-output" type="svrl:SchematronOutputType" />
+  
   <!-- only namespaces from sch:ns need to be reported -->
   <xs:element name="ns-prefix-in-attribute-values">
     <xs:complexType>
@@ -68,8 +83,20 @@
     </xs:complexType>
   </xs:element>
   <!-- only active patterns and groups are reported -->
-  <xs:element name="active-pattern" substitutionGroup="svrl:active-pattern-rule-set"/>
-  <xs:element name="active-group" substitutionGroup="svrl:active-pattern-rule-set"/>
+  <xs:element name="active-pattern">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svrl:active"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="active-group">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svrl:active"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
   <!-- only rules that are fired are reported, -->
   <xs:element name="fired-rule">
     <xs:complexType>
@@ -102,9 +129,23 @@
     </xs:complexType>
   </xs:element>
   <!-- only failed assertions are reported -->
-  <xs:element name="failed-assert" type="svrl:assertion-message"/>
+  <!-- [ph] Own (empty) derived type so JAXB generates a distinct FailedAssert
+       class instead of reusing AssertionMessage via a JAXBElement wrapper. -->
+  <xs:element name="failed-assert">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svrl:assertion-message"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
   <!-- only successful asserts are reported -->
-  <xs:element name="successful-report" type="svrl:assertion-message"/>
+  <xs:element name="successful-report">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="svrl:assertion-message"/>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
   <!-- property-reference -->
   <xs:element name="property-reference">
     <xs:complexType>
@@ -208,7 +249,6 @@
     <xs:attribute name="severity" type="xs:string"/>
   </xs:attributeGroup>
   <!-- active patterns and rule-sets -->
-  <xs:element name="active-pattern-rule-set" abstract="true" type="svrl:active"/>
   <xs:complexType name="active">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" ref="svrl:error"/>

@@ -23,9 +23,9 @@ import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
- * A special implementation of {@link ISchematronOutputValidityDeterminator}
- * that only handles failed asserts as failures, but not successful reports.
- * 
+ * A special implementation of {@link ISchematronOutputValidityDeterminator} that only handles
+ * failed asserts as failures, but not successful reports.
+ *
  * @author Philip Helger
  */
 public class SchematronOutputValidityDeterminatorFailedAssertOnly implements ISchematronOutputValidityDeterminator
@@ -33,7 +33,7 @@ public class SchematronOutputValidityDeterminatorFailedAssertOnly implements ISc
   @NonNull
   public EValidity getSchematronOutputValidity (@NonNull final SchematronOutputType aSO)
   {
-    for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSO.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof FailedAssert)
         return EValidity.INVALID;
     return EValidity.VALID;

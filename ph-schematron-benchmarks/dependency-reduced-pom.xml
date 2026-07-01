@@ -10,7 +10,7 @@
   <name>ph-schematron-benchmarks</name>
   <description>Cross-engine benchmark drivers comparing the ph-schematron implementations</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-benchmarks</url>
-  <inceptionYear>2014</inceptionYear>
+  <inceptionYear>2026</inceptionYear>
   <developers>
     <developer>
       <id>philip</id>

@@ -16,7 +16,6 @@
  */
 package com.helger.schematron.model;
 
-import java.util.Map;
 import java.util.function.Predicate;
 
 import org.jspecify.annotations.NonNull;
@@ -51,10 +50,10 @@ import com.helger.xml.microdom.MicroElement;
  * rule-set = element group   { rule-set-or-pattern }
  * </pre>
  *
- * - differing only in their element name and in the rule semantics applied at validation
- * time (if-then-else for <code>pattern</code> vs. try-every-rule for <code>group</code>).
- * This class holds the common state and serialisation logic; the subclass contributes only the
- * element name via {@link #getElementName()}.
+ * - differing only in their element name and in the rule semantics applied at validation time
+ * (if-then-else for <code>pattern</code> vs. try-every-rule for <code>group</code>). This class
+ * holds the common state and serialisation logic; the subclass contributes only the element name
+ * via {@link #getElementName()}.
  *
  * @author Philip Helger
  * @since 10.0.0 (Schematron 2025)
@@ -128,8 +127,8 @@ public abstract class AbstractPSPatternLike implements
     }
 
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -161,19 +160,21 @@ public abstract class AbstractPSPatternLike implements
     }
 
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
   {
     if (m_bAbstract)
       return false;
+
     if (StringHelper.isNotEmpty (m_sIsA))
       return false;
+
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isMinimal ())
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isMinimal ())
           return false;
     return true;
   }
@@ -254,8 +255,8 @@ public abstract class AbstractPSPatternLike implements
   /**
    * Set the optional <code>role</code> attribute. In the ISO/IEC 19757-3:2025 RNC this attribute
    * appears directly on <code>pattern</code> and <code>group</code> (previously it was reachable
-   * via the <code>linkable</code> group). When the value is a variable reference, it is
-   * dynamically evaluated per v4 &sect;5.5.14.
+   * via the <code>linkable</code> group). When the value is a variable reference, it is dynamically
+   * evaluated per v4 &sect;5.5.14.
    *
    * @param sRole
    *        The new value. May be <code>null</code>.
@@ -277,8 +278,8 @@ public abstract class AbstractPSPatternLike implements
   }
 
   /**
-   * Set the optional <code>documents</code> attribute introduced in ISO/IEC 19757-3:2016.
-   * When present, the rule contexts of this pattern/group are evaluated against the subordinate
+   * Set the optional <code>documents</code> attribute introduced in ISO/IEC 19757-3:2016. When
+   * present, the rule contexts of this pattern/group are evaluated against the subordinate
    * documents whose IRIs are returned by the path expression (evaluated in the context of the
    * original instance document root).
    *
@@ -368,9 +369,8 @@ public abstract class AbstractPSPatternLike implements
   {
     if (StringHelper.isNotEmpty (sID))
       for (final Object aContent : m_aContent)
-        if (aContent instanceof PSRule)
+        if (aContent instanceof final PSRule aRule)
         {
-          final PSRule aRule = (PSRule) aContent;
           if (sID.equals (aRule.getID ()))
             return aRule;
         }
@@ -404,7 +404,7 @@ public abstract class AbstractPSPatternLike implements
   public void removeRule (@NonNull final Predicate <? super PSRule> aRuleFilter)
   {
     ValueEnforcer.notNull (aRuleFilter, "RuleFilter");
-    m_aContent.removeIf (x -> x instanceof PSRule && aRuleFilter.test ((PSRule) x));
+    m_aContent.removeIf (x -> x instanceof final PSRule aRule && aRuleFilter.test (aRule));
   }
 
   @NonNull
@@ -462,11 +462,8 @@ public abstract class AbstractPSPatternLike implements
   {
     final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
     for (final Object aContent : m_aContent)
-      if (aContent instanceof PSLet)
-      {
-        final PSLet aLet = (PSLet) aContent;
+      if (aContent instanceof final PSLet aLet)
         ret.put (aLet.getName (), aLet.getValue ());
-      }
     return ret;
   }
 
@@ -503,7 +500,7 @@ public abstract class AbstractPSPatternLike implements
       else
         ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
-      for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
+      for (final var aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());
     return ret;
   }

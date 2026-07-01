@@ -17,7 +17,6 @@
 package com.helger.schematron.pure.validation.xpath;
 
 import java.util.List;
-import java.util.Map;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -33,9 +32,6 @@ import com.helger.base.string.StringHelper;
 import com.helger.collection.CollectionHelper;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.diagnostics.error.SingleError;
-import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
-import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
-import com.helger.schematron.pure.bound.xpath.PSXPathBoundElement;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.model.IPSElement;
 import com.helger.schematron.model.PSAssertReport;
@@ -45,12 +41,14 @@ import com.helger.schematron.model.PSEmph;
 import com.helger.schematron.model.PSName;
 import com.helger.schematron.model.PSPattern;
 import com.helger.schematron.model.PSPhase;
-import com.helger.schematron.model.PSRichGroup;
 import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSSpan;
 import com.helger.schematron.model.PSTitle;
 import com.helger.schematron.model.PSValueOf;
+import com.helger.schematron.pure.bound.xpath.PSXPathBoundAssertReport;
+import com.helger.schematron.pure.bound.xpath.PSXPathBoundDiagnostic;
+import com.helger.schematron.pure.bound.xpath.PSXPathBoundElement;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.SchematronValidationException;
 import com.helger.schematron.pure.xpath.XPathEvaluationContext;
@@ -142,11 +140,11 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     final StringBuilder aSB = new StringBuilder ();
     for (final Object aContent : aTitle.getAllContentElements ())
     {
-      if (aContent instanceof String)
-        aSB.append ((String) aContent);
+      if (aContent instanceof final String s)
+        aSB.append (s);
       else
-        if (aContent instanceof PSDir)
-          aSB.append (((PSDir) aContent).getAsText ());
+        if (aContent instanceof final PSDir aDir)
+          aSB.append (aDir.getAsText ());
         else
           throw new SchematronValidationException ("Unsupported title content element: " + aContent);
     }
@@ -169,12 +167,12 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     m_aSchema = aSchema;
     m_aNSContext = aSchema.getAsNamespaceContext ();
 
-    for (final Map.Entry <String, String> aEntry : m_aNSContext.getPrefixToNamespaceURIMap ().entrySet ())
+    for (final var aEntry : m_aNSContext.getPrefixToNamespaceURIMap ().entrySet ())
     {
       final NsPrefixInAttributeValues aNsPrefix = new NsPrefixInAttributeValues ();
       aNsPrefix.setPrefix (aEntry.getKey ());
       aNsPrefix.setUri (aEntry.getValue ());
-      aSchematronOutput.getNsPrefixInAttributeValues ().add (aNsPrefix);
+      aSchematronOutput.addNsPrefixInAttributeValues (aNsPrefix);
     }
   }
 
@@ -187,7 +185,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     if (aPattern.hasTitle ())
       aRetPattern.setName (_getTitleAsString (aPattern.getTitle ()));
     // TODO role
-    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aRetPattern);
+    m_aSchematronOutput.addActivePatternOrActiveGroupAndFiredRule (aRetPattern);
   }
 
   @Override
@@ -198,21 +196,13 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   {
     final FiredRule aRetRule = new FiredRule ();
     aRetRule.setContext (sContext);
-    aRetRule.setFlag (aRule.getFlag ());
+    // Flag may not be empty
+    if (StringHelper.isNotEmpty (aRule.getFlag ()))
+      aRetRule.addFlag (aRule.getFlag ());
     aRetRule.setId (aRule.getID ());
     if (aRule.hasLinkable ())
       aRetRule.setRole (aRule.getLinkable ().getRole ());
-    final PSRichGroup aRich = aRule.getRich ();
-    if (aRich != null)
-    {
-      aRetRule.setLang (aRich.getXmlLang ());
-      if (aRich.hasXmlSpace ())
-        aRetRule.setSpace (aRich.getXmlSpace ().getID ());
-      aRetRule.setIcon (aRich.getIcon ());
-      aRetRule.setSee (aRich.getSee ());
-      aRetRule.setFpi (aRich.getFPI ());
-    }
-    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aRetRule);
+    m_aSchematronOutput.addActivePatternOrActiveGroupAndFiredRule (aRetRule);
   }
 
   @Nullable
@@ -222,6 +212,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     final XPathEvaluationContext aCtx = XPathEvaluationContext.current ();
     if (aCtx == null)
       return null;
+
     final XdmNode aCtxXdm = aCtx.wrap (aSourceNode);
     final ICommonsMap <QName, XdmValue> aVars = aCtx.getCurrentVariables ();
     return XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aCtxXdm, aVars, " ");
@@ -235,8 +226,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    * @param aSourceNode
    *        The XML node of the document currently validated.
    * @param aEvaluationException
-   *        An optional exception that may occur while evaluating the test
-   *        expression. May be <code>null</code>.
+   *        An optional exception that may occur while evaluating the test expression. May be
+   *        <code>null</code>.
    * @param sTestExpression
    *        The test expression that was evaluated. May be <code>null</code>.
    * @return A non-<code>null</code> String
@@ -263,8 +254,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       for (final PSXPathBoundElement aBoundElement : aBoundContentElements)
       {
         final Object aContent = aBoundElement.getElement ();
-        if (aContent instanceof String)
-          aSB.append ((String) aContent);
+        if (aContent instanceof final String s)
+          aSB.append (s);
         else
           if (aContent instanceof final PSName aName)
           {
@@ -311,14 +302,14 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
               }
             }
             else
-              if (aContent instanceof PSEmph)
-                aSB.append (((PSEmph) aContent).getAsText ());
+              if (aContent instanceof final PSEmph aEmph)
+                aSB.append (aEmph.getAsText ());
               else
-                if (aContent instanceof PSDir)
-                  aSB.append (((PSDir) aContent).getAsText ());
+                if (aContent instanceof final PSDir aDir)
+                  aSB.append (aDir.getAsText ());
                 else
-                  if (aContent instanceof PSSpan)
-                    aSB.append (((PSSpan) aContent).getAsText ());
+                  if (aContent instanceof final PSSpan aSpan)
+                    aSB.append (aSpan.getAsText ());
                   else
                     throw new SchematronValidationException ("Unsupported assert/report content element: " + aContent);
       }
@@ -333,17 +324,15 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    * Handle the diagnostic references of a single assert/report element
    *
    * @param aSrcDiagnostics
-   *        The list of diagnostic reference IDs in the source assert/report
-   *        element. May be <code>null</code> if no diagnostic references are
-   *        present
+   *        The list of diagnostic reference IDs in the source assert/report element. May be
+   *        <code>null</code> if no diagnostic references are present
    * @param aDstList
-   *        The diagnostic reference list of the SchematronOutput to be filled.
-   *        May not be <code>null</code>.
+   *        The diagnostic reference list of the SchematronOutput to be filled. May not be
+   *        <code>null</code>.
    * @param aBoundAssertReport
    *        The bound assert report element. Never <code>null</code>.
    * @param aRuleMatchingNode
-   *        The XML node of the XML document currently validated. Never
-   *        <code>null</code>.
+   *        The XML node of the XML document currently validated. Never <code>null</code>.
    * @throws SchematronValidationException
    */
   private void _handleDiagnosticReferences (@Nullable final List <String> aSrcDiagnostics,
@@ -366,18 +355,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
             // Create the SVRL diagnostic-reference element
             final DiagnosticReference aDR = new DiagnosticReference ();
             aDR.setDiagnostic (sDiagnosticID);
-            final PSRichGroup aRich = aDiagnostic.getDiagnostic ().getRich ();
-            if (aRich != null)
-            {
-              aDR.setLang (aRich.getXmlLang ());
-              if (aRich.hasXmlSpace ())
-                aDR.setSpace (aRich.getXmlSpace ().getID ());
-              aDR.setIcon (aRich.getIcon ());
-              aDR.setSee (aRich.getSee ());
-              aDR.setFpi (aRich.getFPI ());
-            }
-            aDR.getContent ()
-               .add (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode, null, null));
+            aDR.setText (_getErrorText (aDiagnostic.getAllBoundContentElements (), aRuleMatchingNode, null, null));
             aDstList.add (aDR);
           }
         }
@@ -436,22 +414,25 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     if (!(aContext instanceof final PSXPathBoundAssertReport aBoundAssertReport))
       throw new SchematronValidationException ("The passed context must be a PSXPathBoundAssertReport object but is a " +
                                                aContext);
+
     final FailedAssert aFailedAssert = new FailedAssert ();
-    aFailedAssert.setFlag (aAssertReport.getFlag ());
+    // Flag may not be empty
+    if (StringHelper.isNotEmpty (aAssertReport.getFlag ()))
+      aFailedAssert.addFlag (aAssertReport.getFlag ());
     aFailedAssert.setId (aAssertReport.getID ());
     aFailedAssert.setLocation (_getLocation (aOwningRule, aAssertReport, aRuleMatchingNode));
     if (aAssertReport.hasLinkable ())
       aFailedAssert.setRole (aAssertReport.getLinkable ().getRole ());
     aFailedAssert.setTest (sTestExpression);
-    aFailedAssert.addDiagnosticReferenceOrPropertyReferenceOrText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (),
-                                                                                  aRuleMatchingNode,
-                                                                                  aEvaluationException,
-                                                                                  sTestExpression));
+    aFailedAssert.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (),
+                                          aRuleMatchingNode,
+                                          aEvaluationException,
+                                          sTestExpression));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
-                                 aFailedAssert.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                 aFailedAssert.getDiagnosticReference (),
                                  aBoundAssertReport,
                                  aRuleMatchingNode);
-    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aFailedAssert);
+    m_aSchematronOutput.addActivePatternOrActiveGroupAndFiredRule (aFailedAssert);
     return EContinue.CONTINUE;
   }
 
@@ -468,22 +449,25 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     if (!(aContext instanceof final PSXPathBoundAssertReport aBoundAssertReport))
       throw new SchematronValidationException ("The passed context must be a PSXPathBoundAssertReport object but is a " +
                                                aContext);
+
     final SuccessfulReport aSuccessfulReport = new SuccessfulReport ();
-    aSuccessfulReport.setFlag (aAssertReport.getFlag ());
+    // Flag may not be empty
+    if (StringHelper.isNotEmpty (aAssertReport.getFlag ()))
+      aSuccessfulReport.addFlag (aAssertReport.getFlag ());
     aSuccessfulReport.setId (aAssertReport.getID ());
     aSuccessfulReport.setLocation (_getLocation (aOwningRule, aAssertReport, aRuleMatchingNode));
     if (aAssertReport.hasLinkable ())
       aSuccessfulReport.setRole (aAssertReport.getLinkable ().getRole ());
     aSuccessfulReport.setTest (sTestExpression);
-    aSuccessfulReport.addDiagnosticReferenceOrPropertyReferenceOrText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (),
-                                                                                      aRuleMatchingNode,
-                                                                                      aEvaluationException,
-                                                                                      sTestExpression));
+    aSuccessfulReport.setText (_getErrorText (aBoundAssertReport.getAllBoundContentElements (),
+                                              aRuleMatchingNode,
+                                              aEvaluationException,
+                                              sTestExpression));
     _handleDiagnosticReferences (aAssertReport.getAllDiagnostics (),
-                                 aSuccessfulReport.getDiagnosticReferenceOrPropertyReferenceOrText (),
+                                 aSuccessfulReport.getDiagnosticReference (),
                                  aBoundAssertReport,
                                  aRuleMatchingNode);
-    m_aSchematronOutput.addActivePatternAndFiredRuleAndFailedAssert (aSuccessfulReport);
+    m_aSchematronOutput.addActivePatternOrActiveGroupAndFiredRule (aSuccessfulReport);
     return EContinue.CONTINUE;
   }
 

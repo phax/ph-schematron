@@ -126,7 +126,7 @@ public final class SvrlTelemetryEmitter
 
     int nFailed = 0;
     String sCurrentPatternID = null;
-    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
     {
       if (aObj instanceof final ActivePattern aAP)
       {

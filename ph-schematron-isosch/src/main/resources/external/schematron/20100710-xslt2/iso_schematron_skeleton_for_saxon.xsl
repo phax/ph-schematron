@@ -1389,13 +1389,13 @@ which require a preprocess.
 
     <!-- This template is just to provide the API hook -->
 	<xsl:template match="iso:ns"  mode="do-all-patterns" >
-               <xsl:if test="not(@uri)">
-                    <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">26</xsl:with-param></xsl:call-template></xsl:message>
-                </xsl:if>
-               <xsl:if test="not(@prefix)">
-                    <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">27</xsl:with-param></xsl:call-template></xsl:message>
-                </xsl:if>
-	        <xsl:call-template name="IamEmpty" />
+    <xsl:if test="not(@uri)">
+      <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">26</xsl:with-param></xsl:call-template></xsl:message>
+    </xsl:if>
+    <xsl:if test="not(@prefix)">
+      <xsl:message><xsl:call-template name="outputLocalizedMessage" ><xsl:with-param name="number">27</xsl:with-param></xsl:call-template></xsl:message>
+    </xsl:if>
+    <xsl:call-template name="IamEmpty" />
 		<xsl:call-template name="process-ns" >
 			<xsl:with-param name="prefix" select="@prefix"/>
 			<xsl:with-param name="uri" select="@uri"/>
@@ -1403,7 +1403,7 @@ which require a preprocess.
 	</xsl:template>
 
 	<!-- ISO P -->
-	<xsl:template match="iso:schema/iso:p " mode="do-schema-p" >
+	<xsl:template match="iso:schema/iso:p " mode="do-schema-p">
 		<xsl:call-template name="process-p">
 			<xsl:with-param name="class" select="@class"/>
 			<xsl:with-param name="icon" select="@icon"/>
@@ -1411,7 +1411,8 @@ which require a preprocess.
 			<xsl:with-param name="lang" select="@xml:lang"/>
 		</xsl:call-template>
 	</xsl:template>
-	<xsl:template match="iso:pattern/iso:p " mode="do-pattern-p" >
+	
+	<xsl:template match="iso:pattern/iso:p " mode="do-pattern-p">
 		<xsl:call-template name="process-p">
 			<xsl:with-param name="class" select="@class"/>
 			<xsl:with-param name="icon" select="@icon"/>
@@ -1426,41 +1427,40 @@ which require a preprocess.
  
 	<!-- ISO PATTERN -->
 	<xsl:template match="iso:pattern" mode="do-all-patterns">
-	<xsl:if test="($phase = '#ALL') 
-	or (../iso:phase[@id= $phase]/iso:active[@pattern= current()/@id])">
+    <xsl:if test="($phase = '#ALL') 
+                  or (../iso:phase[@id=$phase]/iso:active[@pattern=current()/@id])">
 
- 		<!-- Extension to allow validation in multiple documents -->  
- 		<xsl:choose>
-		      	<xsl:when test="string-length(normalize-space(@documents))=0" >
-				    <xsl:call-template name="handle-pattern" />
-	 	       	</xsl:when>
- 		    	<xsl:otherwise>  
- 		    	<axsl:variable name="thePath"
- 		    		select="{@documents}" 
- 		    		as="xs:string*"  /> 
- 		    	
-				<axsl:for-each  select="$thePath">  
-					<axsl:choose>
-						<axsl:when test="starts-with( ., 'http:') or starts-with(., 'file:' )
-						   or starts-with(., '/')"><!-- try as absolute path -->
-		  					<axsl:for-each select="document(.)"> 
-		    					<xsl:call-template name="handle-pattern"  />
-							</axsl:for-each>
-						</axsl:when>
-						<axsl:otherwise><!-- is relative path -->
-		  					<axsl:for-each select="document(concat( $document-uri , '/../', .))"> 
-		    					<xsl:call-template name="handle-pattern"  />
-							</axsl:for-each>
-						</axsl:otherwise>
-				  </axsl:choose>		
-				</axsl:for-each>
-			</xsl:otherwise>
-		</xsl:choose>	
-     </xsl:if>
-
-   </xsl:template>
+   		<!-- Extension to allow validation in multiple documents -->  
+   	  <xsl:choose>
+  		  <xsl:when test="string-length(normalize-space(@documents))=0" >
+  			  <xsl:call-template name="handle-pattern" />
+  	 	  </xsl:when>
+   		  <xsl:otherwise>  
+     		  <axsl:variable name="thePath"
+                         select="{@documents}" 
+                         as="xs:string*" /> 
+  				<axsl:for-each  select="$thePath">  
+  					<axsl:choose>
+  						<axsl:when test="starts-with( ., 'http:')
+  						              or starts-with(., 'file:' )
+                            or starts-with(., '/')"><!-- try as absolute path -->
+  		  			  <axsl:for-each select="document(.)"> 
+  		    			  <xsl:call-template name="handle-pattern"  />
+  							</axsl:for-each>
+  						</axsl:when>
+  						<axsl:otherwise><!-- is relative path -->
+  		  				<axsl:for-each select="document(concat( $document-uri , '/../', .))"> 
+  		    				<xsl:call-template name="handle-pattern"  />
+  							</axsl:for-each>
+  						</axsl:otherwise>
+  				  </axsl:choose>		
+  				</axsl:for-each>
+  			</xsl:otherwise>
+  	 	</xsl:choose>	
+    </xsl:if>
+  </xsl:template>
    
-   <xsl:template name="handle-pattern">
+  <xsl:template name="handle-pattern">
 		<xsl:call-template name="process-pattern">
 			<!-- the following select statement assumes that
 			@id | iso:title returns node-set in document order:
@@ -1468,14 +1468,15 @@ which require a preprocess.
 			<xsl:with-param name="name" select="(@id | iso:title )[last()]"/>
 			<xsl:with-param name="is-a" select="''"/>
 			
-					<!-- "Rich" properties -->
-					<xsl:with-param name="fpi" select="@fpi"/>
-					<xsl:with-param name="icon" select="@icon"/>
-					<xsl:with-param name="id" select="@id"/>
-					<xsl:with-param name="lang" select="@xml:lang"/>
-					<xsl:with-param name="see" select="@see" />
-					<xsl:with-param name="space" select="@xml:space" />
+			<!-- "Rich" properties -->
+			<xsl:with-param name="fpi" select="@fpi"/>
+			<xsl:with-param name="icon" select="@icon"/>
+			<xsl:with-param name="id" select="@id"/>
+			<xsl:with-param name="lang" select="@xml:lang"/>
+			<xsl:with-param name="see" select="@see" />
+			<xsl:with-param name="space" select="@xml:space" />
 		</xsl:call-template>
+		
 		<xsl:choose>
 		  <!--  Use the key method -->
 		  <xsl:when test="$select-contexts='key'">
@@ -1488,36 +1489,35 @@ which require a preprocess.
 			  	<xsl:when test="@document">
 			    	<!-- External document -->
 		    		<axsl:for-each select="{@document}">
-					<!-- same code as next block, but run from different context -->		    		
-		    		<axsl:apply-templates mode="M{count(preceding-sibling::*)}" >
-		      			<xsl:attribute name="select"> 
-							<xsl:text>//(</xsl:text>
-							<xsl:for-each select="iso:rule/@context">
-			  					<xsl:text>(</xsl:text>
-			  					<xsl:value-of select="."/>
-			  					<xsl:text>)</xsl:text>
-			  					<xsl:if test="position()!=last()">|</xsl:if>
-							</xsl:for-each>
-							<xsl:text>)</xsl:text>
-							<xsl:if test="$visit-text='false'">[not(self::text())]</xsl:if>
-		      			</xsl:attribute>
-		    		</axsl:apply-templates>
+  					<!-- same code as next block, but run from different context -->		    		
+  		    		<axsl:apply-templates mode="M{count(preceding-sibling::*)}" >
+  		      		<xsl:attribute name="select"> 
+    							<xsl:text>//(</xsl:text>
+    							<xsl:for-each select="iso:rule/@context">
+  			  					<xsl:text>(</xsl:text>
+  			  					<xsl:value-of select="."/>
+  			  					<xsl:text>)</xsl:text>
+  			  					<xsl:if test="position()!=last()">|</xsl:if>
+    							</xsl:for-each>
+    							<xsl:text>)</xsl:text>
+    							<xsl:if test="$visit-text='false'">[not(self::text())]</xsl:if>
+  		      		</xsl:attribute>
+  		    		</axsl:apply-templates>
 		    		</axsl:for-each>
 		  		</xsl:when>
-
 		  		<xsl:otherwise>
 		    		<axsl:apply-templates mode="M{count(preceding-sibling::*)}" >
-		      			<xsl:attribute name="select"> 
-							<xsl:text>//(</xsl:text>
-							<xsl:for-each select="iso:rule/@context">
+		      		<xsl:attribute name="select"> 
+  							<xsl:text>//(</xsl:text>
+  							<xsl:for-each select="iso:rule/@context">
 			  					<xsl:text>(</xsl:text>
 			  					<xsl:value-of select="."/>
 			  					<xsl:text>)</xsl:text>
 			  					<xsl:if test="position()!=last()">|</xsl:if>
-							</xsl:for-each>
-							<xsl:text>)</xsl:text>
-							<xsl:if test="$visit-text='false'">[not(self::text())]</xsl:if>
-		      			</xsl:attribute>
+  							</xsl:for-each>
+  							<xsl:text>)</xsl:text>
+  							<xsl:if test="$visit-text='false'">[not(self::text())]</xsl:if>
+	      			</xsl:attribute>
 		    		</axsl:apply-templates>
 		    	</xsl:otherwise>
 		    </xsl:choose>
@@ -1726,10 +1726,10 @@ which require a preprocess.
 	<xsl:template match="text()" priority="-1" mode="do-all-patterns">
 		<!-- strip characters -->
 	</xsl:template>
-        <xsl:template match="text()" priority="-1" mode="do-schema-p">
+  <xsl:template match="text()" priority="-1" mode="do-schema-p">
 		<!-- strip characters -->
 	</xsl:template>
-        <xsl:template match="text()" priority="-1" mode="do-pattern-p">
+  <xsl:template match="text()" priority="-1" mode="do-pattern-p">
 		<!-- strip characters -->
 	</xsl:template>
 	
@@ -2066,22 +2066,21 @@ which require a preprocess.
 		<axsl:text> </axsl:text>
 		<axsl:value-of select="{$name}"/>
 		<axsl:text> </axsl:text>
-		
-    </xsl:template>
+  </xsl:template>
 
 	<xsl:template name="process-ns" >
 	<!-- Note that process-ns is for reporting. The iso:ns elements are 
 	     independently used in the iso:schema template to provide namespace bindings -->
 		<xsl:param name="prefix"/>
 		<xsl:param name="uri" />
-      </xsl:template>
+  </xsl:template>
 
 	<xsl:template name="process-p">
 		<xsl:param name="id" />
 		<xsl:param name="class" />
 		<xsl:param name="icon" />
 		<xsl:param name="lang" />
-      </xsl:template>
+  </xsl:template>
 
 	<xsl:template name="process-pattern">
 		<xsl:param name="id" />
@@ -2094,7 +2093,7 @@ which require a preprocess.
 		<xsl:param name="lang" />
 		<xsl:param name="see" />
 		<xsl:param name="space" />
-      </xsl:template>
+  </xsl:template>
       
 
 	<xsl:template name="process-rule">
@@ -2114,7 +2113,7 @@ which require a preprocess.
 		<xsl:param name="lang" />
 		<xsl:param name="see" />
 		<xsl:param name="space" />
-      </xsl:template>
+  </xsl:template>
 
 	<xsl:template name="process-span" >
 		<xsl:param name="class" />

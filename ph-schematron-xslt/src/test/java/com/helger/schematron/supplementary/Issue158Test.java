@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.FileSystemResource;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
@@ -36,6 +37,9 @@ public final class Issue158Test
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
     final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromFile (aSchematron).build ();
+
+    if (false)
+      SchematronDebug.setShowCreatedSVRL (true);
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

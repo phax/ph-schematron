@@ -28,7 +28,6 @@ import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringReplace;
 import com.helger.cache.regex.RegExHelper;
-import com.helger.collection.CollectionFind;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.level.IErrorLevel;
@@ -82,9 +81,9 @@ public final class SVRLHelper
   {
     final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
-      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-        if (aObj instanceof FailedAssert)
-          ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
+      for (final Object aObj : aSchematronOutput.getActivePatternOrActiveGroupAndFiredRule ())
+        if (aObj instanceof final FailedAssert aFAObj)
+          ret.add (new SVRLFailedAssert (aFAObj));
     return ret;
   }
 
@@ -105,10 +104,10 @@ public final class SVRLHelper
   {
     final ICommonsList <SVRLFailedAssert> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
-      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-        if (aObj instanceof FailedAssert)
+      for (final Object aObj : aSchematronOutput.getActivePatternOrActiveGroupAndFiredRule ())
+        if (aObj instanceof final FailedAssert aFAObj)
         {
-          final SVRLFailedAssert aFA = new SVRLFailedAssert ((FailedAssert) aObj);
+          final SVRLFailedAssert aFA = new SVRLFailedAssert (aFAObj);
           if (aFA.getFlag ().isGE (aErrorLevel))
             ret.add (aFA);
         }
@@ -128,9 +127,9 @@ public final class SVRLHelper
   {
     final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
-      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-        if (aObj instanceof SuccessfulReport)
-          ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
+      for (final Object aObj : aSchematronOutput.getActivePatternOrActiveGroupAndFiredRule ())
+        if (aObj instanceof final SuccessfulReport aSRObj)
+          ret.add (new SVRLSuccessfulReport (aSRObj));
     return ret;
   }
 
@@ -151,10 +150,10 @@ public final class SVRLHelper
   {
     final ICommonsList <SVRLSuccessfulReport> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
-      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-        if (aObj instanceof SuccessfulReport)
+      for (final Object aObj : aSchematronOutput.getActivePatternOrActiveGroupAndFiredRule ())
+        if (aObj instanceof final SuccessfulReport aSRObj)
         {
-          final SVRLSuccessfulReport aSR = new SVRLSuccessfulReport ((SuccessfulReport) aObj);
+          final SVRLSuccessfulReport aSR = new SVRLSuccessfulReport (aSRObj);
           if (aSR.getFlag ().isGE (aErrorLevel))
             ret.add (aSR);
         }
@@ -175,12 +174,12 @@ public final class SVRLHelper
   {
     final ICommonsList <AbstractSVRLMessage> ret = new CommonsArrayList <> ();
     if (aSchematronOutput != null)
-      for (final Object aObj : aSchematronOutput.getActivePatternAndFiredRuleAndFailedAssert ())
-        if (aObj instanceof FailedAssert)
-          ret.add (new SVRLFailedAssert ((FailedAssert) aObj));
+      for (final Object aObj : aSchematronOutput.getActivePatternOrActiveGroupAndFiredRule ())
+        if (aObj instanceof final FailedAssert aFAObj)
+          ret.add (new SVRLFailedAssert (aFAObj));
         else
-          if (aObj instanceof SuccessfulReport)
-            ret.add (new SVRLSuccessfulReport ((SuccessfulReport) aObj));
+          if (aObj instanceof final SuccessfulReport aSRObj)
+            ret.add (new SVRLSuccessfulReport (aSRObj));
     return ret;
   }
 
@@ -216,7 +215,7 @@ public final class SVRLHelper
   @NonNull
   public static ISVRLErrorLevelDeterminator getErrorLevelDeterminator ()
   {
-    return RW_LOCK.readLockedGet ( () -> s_aELD);
+    return RW_LOCK.readLockedGet (() -> s_aELD);
   }
 
   /**
@@ -229,7 +228,7 @@ public final class SVRLHelper
   {
     ValueEnforcer.notNull (aELD, "ErrorLevelDeterminator");
 
-    RW_LOCK.writeLocked ( () -> s_aELD = aELD);
+    RW_LOCK.writeLocked (() -> s_aELD = aELD);
   }
 
   /**
@@ -290,50 +289,44 @@ public final class SVRLHelper
   }
 
   @NonNull
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@NonNull final FailedAssert aFA)
   {
-    return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            DiagnosticReference.class::isInstance,
-                                            DiagnosticReference.class::cast);
+    return new CommonsArrayList <> (aFA.getDiagnosticReference ());
   }
 
   @NonNull
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public static ICommonsList <PropertyReference> getAllPropertyReferences (@NonNull final FailedAssert aFA)
   {
-    return CommonsArrayList.createFiltered (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            PropertyReference.class::isInstance,
-                                            PropertyReference.class::cast);
+    return new CommonsArrayList <> (aFA.getPropertyReference ());
   }
 
   @NonNull
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public static Text getText (@NonNull final FailedAssert aFA)
   {
-    return CollectionFind.findFirstMapped (aFA.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                           Text.class::isInstance,
-                                           Text.class::cast);
+    return aFA.getText ();
   }
 
   @NonNull
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@NonNull final SuccessfulReport aSR)
   {
-    return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            DiagnosticReference.class::isInstance,
-                                            DiagnosticReference.class::cast);
+    return new CommonsArrayList <> (aSR.getDiagnosticReference ());
   }
 
   @NonNull
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public static ICommonsList <PropertyReference> getAllPropertyReferences (@NonNull final SuccessfulReport aSR)
   {
-    return CommonsArrayList.createFiltered (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                            PropertyReference.class::isInstance,
-                                            PropertyReference.class::cast);
+    return new CommonsArrayList <> (aSR.getPropertyReference ());
   }
 
   @NonNull
+  @Deprecated (forRemoval = true, since = "10.0.0")
   public static Text getText (@NonNull final SuccessfulReport aSR)
   {
-    return CollectionFind.findFirstMapped (aSR.getDiagnosticReferenceOrPropertyReferenceOrText (),
-                                           Text.class::isInstance,
-                                           Text.class::cast);
+    return aSR.getText ();
   }
 }

@@ -624,9 +624,15 @@ THE SOFTWARE.
 		</xsl:call-template>
 		
 		<!-- ?? report that this screws up iso:title processing  -->
+		<!-- [ph] Don't call this, as active-pattern cannot have children -->
+		<!--
 		<xsl:apply-templates mode="do-pattern-p"/>
+		-->
+		
 		<!-- ?? Seems that this apply-templates is never triggered DP -->
+		<!-- [ph] never called
 		<axsl:apply-templates />
+		-->
 	</svrl:active-pattern>
 </xsl:template>
 
@@ -664,21 +670,21 @@ THE SOFTWARE.
 	<xsl:param name="space" />
 	<!-- Process rich attributes.  -->
 	<xsl:if  test=" $allow-foreign = 'true'">
-	<xsl:if test="string($fpi)"> 
-		<axsl:attribute name="fpi">
-			<xsl:value-of select="$fpi "/>
-		</axsl:attribute>
-	</xsl:if>
-	<xsl:if test="string($icon)"> 
-		<axsl:attribute name="icon">
-			<xsl:value-of select="$icon"/>
-		</axsl:attribute>
-	</xsl:if>
-	<xsl:if test="string($see)"> 
-		<axsl:attribute name="see">
-			<xsl:value-of select="$see" />
-		</axsl:attribute>
-	</xsl:if>
+  	<xsl:if test="string($fpi)"> 
+  		<axsl:attribute name="fpi">
+  			<xsl:value-of select="$fpi "/>
+  		</axsl:attribute>
+  	</xsl:if>
+  	<xsl:if test="string($icon)"> 
+  		<axsl:attribute name="icon">
+  			<xsl:value-of select="$icon"/>
+  		</axsl:attribute>
+  	</xsl:if>
+  	<xsl:if test="string($see)"> 
+  		<axsl:attribute name="see">
+  			<xsl:value-of select="$see" />
+  		</axsl:attribute>
+  	</xsl:if>
 	</xsl:if>
 	<xsl:if test="string($space)">
 		<axsl:attribute name="xml:space">

@@ -660,6 +660,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                  ex.getCause () != null ? ex.getCause () : ex);
           continue;
         }
+
         if (aContextSW != null)
         {
           aContextSW.stop ();

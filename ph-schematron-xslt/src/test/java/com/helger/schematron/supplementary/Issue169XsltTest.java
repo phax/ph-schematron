@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -41,6 +42,8 @@ public final class Issue169XsltTest
   public static void validateAndProduceSVRL (@NonNull final IReadableResource aSchematron,
                                              @NonNull final IReadableResource aXML) throws Exception
   {
+    SchematronDebug.setShowCreatedSVRL (true);
+
     final SchematronResourceXSLT aSCH = SchematronResourceXSLT.builder (aSchematron).build ();
 
     // Perform validation
@@ -50,10 +53,10 @@ public final class Issue169XsltTest
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
     int nFiredRules = 0;
-    for (final Object o : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (o instanceof FiredRule)
+    for (final Object o : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+      if (o instanceof final FiredRule aFR)
       {
-        LOGGER.info (((FiredRule) o).getContext ());
+        LOGGER.info (aFR.getContext ());
         nFiredRules++;
       }
     LOGGER.info (nFiredRules + " fired rules");

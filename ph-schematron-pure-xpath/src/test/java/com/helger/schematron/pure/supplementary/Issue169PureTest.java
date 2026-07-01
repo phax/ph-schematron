@@ -50,12 +50,12 @@ public final class Issue169PureTest
       LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
     int nFiredRules = 0;
-    for (final Object o : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
-      if (o instanceof FiredRule)
+    for (final Object o : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+      if (o instanceof final FiredRule aFRObj)
       {
         // Enable if needed
         if (false)
-          LOGGER.info (((FiredRule) o).getContext ());
+          LOGGER.info (aFRObj.getContext ());
         nFiredRules++;
       }
     LOGGER.info (nFiredRules + " fired rules");

@@ -26,8 +26,8 @@
   </parent>
   <artifactId>ph-schematron-pure</artifactId>
   <packaging>jar</packaging>
-  <name>ph-schematron-pure</name>
-  <description>This package contains the 'Pure' Schematron implementation</description>
+  <name>ph-schematron-pure-xpath</name>
+  <description>This package contains the 'Pure XPath' Schematron implementation</description>
   <url>https://github.com/phax/ph-schematron/ph-schematron-pure</url>
   <inceptionYear>2014</inceptionYear>
   

@@ -33,6 +33,7 @@ import com.helger.io.file.FileHelper;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.model.PSSchema;
@@ -120,6 +121,8 @@ public final class Issue016Test
   @Test
   public void testIssue16 () throws Exception
   {
+    SchematronDebug.setShowCreatedSVRL (true);
+
     final File schematronFile = new ClassPathResource ("external/issues/github16/sample_schematron.sch").getAsFile ();
     final File xmlFile = new ClassPathResource ("external/issues/github16/test.xml").getAsFile ();
     final SchematronOutputType outputType = SchematronUtil.validateXMLViaXSLTSchematronFull (schematronFile, xmlFile);
@@ -143,7 +146,7 @@ public final class Issue016Test
       for (final DiagnosticReference diagnisticRef : diagnisticReferences)
       {
         LOGGER.info ("Diag ref: " + diagnisticRef.getDiagnostic ());
-        LOGGER.info ("Diag text: " + diagnisticRef.getContentAtIndex (0));
+        LOGGER.info ("Diag text: " + diagnisticRef.getText ());
       }
     }
 

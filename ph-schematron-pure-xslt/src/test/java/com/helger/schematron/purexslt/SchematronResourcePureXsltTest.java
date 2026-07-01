@@ -34,7 +34,6 @@ import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
-import com.helger.schematron.svrl.jaxb.Text;
 
 /**
  * Phase 1 smoke tests for {@link SchematronResourcePureXslt}.
@@ -48,7 +47,7 @@ public final class SchematronResourcePureXsltTest
   private static int _countFailedAsserts (final SchematronOutputType aSVRL)
   {
     int n = 0;
-    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof FailedAssert)
         n++;
     return n;
@@ -57,7 +56,7 @@ public final class SchematronResourcePureXsltTest
   private static int _countSuccessfulReports (final SchematronOutputType aSVRL)
   {
     int n = 0;
-    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof SuccessfulReport)
         n++;
     return n;
@@ -66,14 +65,13 @@ public final class SchematronResourcePureXsltTest
   @NonNull
   private static String _firstFailedAssertText (final SchematronOutputType aSVRL)
   {
-    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof final FailedAssert aFA)
       {
         final StringBuilder aSB = new StringBuilder ();
-        for (final Object aChild : aFA.getDiagnosticReferenceOrPropertyReferenceOrText ())
-          if (aChild instanceof final Text aText)
-            for (final Object aPart : aText.getContent ())
-              aSB.append (aPart == null ? "" : aPart.toString ());
+        if (aFA.getText () != null)
+          for (final Object aPart : aFA.getText ().getContent ())
+            aSB.append (aPart == null ? "" : aPart.toString ());
         return aSB.toString ();
       }
     throw new AssertionError ("No FailedAssert in SVRL");
@@ -238,18 +236,17 @@ public final class SchematronResourcePureXsltTest
 
     boolean bFoundRef = false;
     String sRefText = "";
-    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof final FailedAssert aFA)
-        for (final Object aChild : aFA.getDiagnosticReferenceOrPropertyReferenceOrText ())
-          if (aChild instanceof final DiagnosticReference aRef)
-          {
-            bFoundRef = true;
-            assertEquals ("d-isbn", aRef.getDiagnostic ());
-            final StringBuilder aSB = new StringBuilder ();
-            for (final Object aPart : aRef.getContent ())
-              aSB.append (aPart == null ? "" : aPart.toString ());
-            sRefText = aSB.toString ();
-          }
+        for (final DiagnosticReference aRef : aFA.getDiagnosticReference ())
+        {
+          bFoundRef = true;
+          assertEquals ("d-isbn", aRef.getDiagnostic ());
+          final StringBuilder aSB = new StringBuilder ();
+          for (final Object aPart : aRef.getText ().getContent ())
+            aSB.append (aPart == null ? "" : aPart.toString ());
+          sRefText = aSB.toString ();
+        }
     assertTrue ("expected svrl:diagnostic-reference with diagnostic='d-isbn'", bFoundRef);
     assertTrue ("expected diagnostic text to mention ISBN, got: " + sRefText, sRefText.contains ("ISBN"));
     assertTrue ("expected diagnostic value-of to resolve title 'Old Book', got: " + sRefText,

@@ -418,7 +418,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     if (aSVRL == null)
       return EValidity.INVALID;
 
-    for (final Object aObj : aSVRL.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof FailedAssert)
         return EValidity.INVALID;
 
