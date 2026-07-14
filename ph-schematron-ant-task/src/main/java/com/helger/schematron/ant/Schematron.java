@@ -57,6 +57,7 @@ import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
+import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator;
 import com.helger.schematron.svrl.SVRLHelper;
@@ -751,6 +752,30 @@ public class Schematron extends AbstractSchematronTask
                                                                                           .entityResolver (getEntityResolver ())
                                                                                           .parameters (aParams)
                                                                                           .build ();
+          aRealSCH.isValidSchematron ();
+
+          aSch = aRealSCH;
+          aSCHErrors = aErrorHdl.getErrorList ();
+          break;
+        }
+        case SCHXSLT2:
+        {
+          // SchXslt v2 (XSLT 3)
+          final IStringMap aParams = new StringMap ();
+          m_aParameters.forEach (x -> x.addToMap (aParams));
+          if (aParams.isNotEmpty ())
+            _info ("Using the following custom parameters: " + aParams);
+
+          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+          final SchematronResourceSchXslt2 aRealSCH = SchematronResourceSchXslt2.builderFromFile (m_aSchematronFile)
+                                                                                .phase (m_sPhaseName)
+                                                                                .languageCode (m_sLanguageCode)
+                                                                                .forceCacheResult (m_bForceCacheResult)
+                                                                                .errorListener (aErrorHdl)
+                                                                                .uriResolver (getURIResolver ())
+                                                                                .entityResolver (getEntityResolver ())
+                                                                                .parameters (aParams)
+                                                                                .build ();
           aRealSCH.isValidSchematron ();
 
           aSch = aRealSCH;
