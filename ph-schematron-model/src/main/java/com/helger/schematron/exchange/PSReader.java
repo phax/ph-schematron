@@ -150,9 +150,9 @@ public class PSReader
   }
 
   /**
-   * @return <code>true</code> if child elements of {@code <sch:let>} are preserved on the
-   *         resulting {@link PSLet}. Default is <code>false</code>: child elements are not stored
-   *         and a warning is emitted (matching the pre-10.0 behaviour).
+   * @return <code>true</code> if child elements of {@code <sch:let>} are preserved on the resulting
+   *         {@link PSLet}. Default is <code>false</code>: child elements are not stored and a
+   *         warning is emitted (matching the pre-10.0 behaviour).
    * @since 10.0.0
    */
   public final boolean isPreserveLetBodyElements ()
@@ -161,9 +161,9 @@ public class PSReader
   }
 
   /**
-   * Control whether the reader preserves child elements of {@code <sch:let>}. Engines that hand
-   * the schema to an XSLT processor (such as {@code SchematronResourcePureXslt}) want this enabled
-   * so XSLT-shaped {@code <let>} bodies (sequence constructors like
+   * Control whether the reader preserves child elements of {@code <sch:let>}. Engines that hand the
+   * schema to an XSLT processor (such as {@code SchematronResourcePureXslt}) want this enabled so
+   * XSLT-shaped {@code <let>} bodies (sequence constructors like
    * {@code <xsl:choose>...</xsl:choose>}) flow through to the generated stylesheet. The default
    * pure XPath engine does not understand sequence constructors, so the default is off.
    *
@@ -249,7 +249,7 @@ public class PSReader
   public PSActive readActiveFromXML (@NonNull final IMicroElement eActive)
   {
     final PSActive ret = new PSActive ();
-    eActive.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eActive.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_PATTERN))
         ret.setPattern (sAttrValue);
@@ -339,7 +339,7 @@ public class PSReader
 
     final PSRichGroup aRichGroup = new PSRichGroup ();
     final PSLinkableGroup aLinkableGroup = new PSLinkableGroup ();
-    eAssertReport.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eAssertReport.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_TEST))
         ret.setTest (sAttrValue);
@@ -425,7 +425,7 @@ public class PSReader
     final PSDiagnostic ret = new PSDiagnostic ();
 
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    eDiagnostic.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eDiagnostic.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -491,7 +491,7 @@ public class PSReader
   {
     final PSDiagnostics ret = new PSDiagnostics ();
 
-    eDiagnostics.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eDiagnostics.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       ret.addForeignAttribute (sAttrName, sAttrValue);
     });
@@ -525,7 +525,7 @@ public class PSReader
   {
     final PSDir ret = new PSDir ();
 
-    eDir.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eDir.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_VALUE))
         ret.setValue (EDirValue.getFromIDOrNull (sAttrValue));
@@ -578,7 +578,7 @@ public class PSReader
   {
     final PSEmph ret = new PSEmph ();
 
-    eEmph.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eEmph.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
     });
@@ -628,7 +628,7 @@ public class PSReader
   {
     final PSExtends ret = new PSExtends ();
 
-    eExtends.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eExtends.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_RULE))
         ret.setRule (sAttrValue);
@@ -662,7 +662,7 @@ public class PSReader
   {
     final PSInclude ret = new PSInclude ();
 
-    eInclude.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eInclude.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_HREF))
         ret.setHref (sAttrValue);
@@ -693,7 +693,7 @@ public class PSReader
   {
     final PSLet ret = new PSLet ();
 
-    eLet.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eLet.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_NAME))
         ret.setName (sAttrValue);
@@ -737,14 +737,14 @@ public class PSReader
           // pure engine - log once per body so the user knows why the resulting XPath may not
           // compile.
           _warn (ret,
-               "Element <let> body contains '" +
-                    eLetChild.getLocalName () +
-                    "' from namespace '" +
-                    eLetChild.getNamespaceURI () +
-                    "'; the pure engine evaluates the <let> body as a plain XPath expression and " +
-                    "cannot execute XSLT instructions. Either rewrite as a 'value' attribute, an " +
-                    "XPath 3.x expression in the body, or switch to the SCH/XSLT engine.");
-      }
+                 "Element <let> body contains '" +
+                      eLetChild.getLocalName () +
+                      "' from namespace '" +
+                      eLetChild.getNamespaceURI () +
+                      "'; the pure engine evaluates the <let> body as a plain XPath expression and " +
+                      "cannot execute XSLT instructions. Either rewrite as a 'value' attribute, an " +
+                      "XPath 3.x expression in the body, or switch to the SCH/XSLT engine.");
+        }
     });
 
     // Text-content fallback for the bare XPath form `<let name="x">expr</let>`. Skipped if body
@@ -772,7 +772,7 @@ public class PSReader
   {
     final PSName ret = new PSName ();
 
-    eName.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eName.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_PATH))
         ret.setPath (sAttrValue);
@@ -803,7 +803,7 @@ public class PSReader
   {
     final PSNS ret = new PSNS ();
 
-    eNS.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eNS.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_URI))
         ret.setUri (sAttrValue);
@@ -836,7 +836,7 @@ public class PSReader
   public PSP readPFromXML (@NonNull final IMicroElement eP)
   {
     final PSP ret = new PSP ();
-    eP.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eP.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -898,7 +898,7 @@ public class PSReader
   {
     final PSParam ret = new PSParam ();
 
-    eParam.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eParam.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_NAME))
         ret.setName (sAttrValue);
@@ -922,8 +922,8 @@ public class PSReader
 
   /**
    * Shared body of {@link #readPatternFromXML(IMicroElement)} and
-   * {@link #readGroupFromXML(IMicroElement)} - the v4 RNC defines both element shapes
-   * via the single <code>rule-set-or-pattern</code> production, so reading them is identical.
+   * {@link #readGroupFromXML(IMicroElement)} - the v4 RNC defines both element shapes via the
+   * single <code>rule-set-or-pattern</code> production, so reading them is identical.
    *
    * @param eElement
    *        The source micro element. Never <code>null</code>.
@@ -935,7 +935,7 @@ public class PSReader
                                                                              @NonNull final T ret)
   {
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    eElement.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eElement.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ABSTRACT))
         ret.setAbstract (StringParser.parseBool (sAttrValue));
@@ -1034,7 +1034,7 @@ public class PSReader
   {
     final PSRules ret = new PSRules ();
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    eRules.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eRules.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -1080,7 +1080,7 @@ public class PSReader
     final PSPhase ret = new PSPhase ();
 
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    ePhase.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    ePhase.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -1135,7 +1135,7 @@ public class PSReader
 
     final PSRichGroup aRichGroup = new PSRichGroup ();
     final PSLinkableGroup aLinkableGroup = new PSLinkableGroup ();
-    eRule.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eRule.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_FLAG))
         ret.setFlag (sAttrValue);
@@ -1219,11 +1219,14 @@ public class PSReader
                    "' instead");
 
     if (!isValidSchematronNS (eSchema.getNamespaceURI ()))
-      throw new SchematronReadException (m_aResource, "The passed element is not an ISO Schematron element!");
+      throw new SchematronReadException (m_aResource,
+                                         "The passed element is not an ISO Schematron element (using namespace URI '" +
+                                                      eSchema.getNamespaceURI () +
+                                                      "')!");
 
     final PSSchema ret = new PSSchema (m_aResource);
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    eSchema.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eSchema.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -1325,7 +1328,7 @@ public class PSReader
   {
     final PSLibrary ret = new PSLibrary ();
     final PSRichGroup aRichGroup = new PSRichGroup ();
-    eLibrary.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eLibrary.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -1401,7 +1404,7 @@ public class PSReader
   {
     final PSProperty ret = new PSProperty ();
 
-    eProperty.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eProperty.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_ID))
         ret.setID (sAttrValue);
@@ -1489,7 +1492,7 @@ public class PSReader
   {
     final PSSpan ret = new PSSpan ();
 
-    eSpan.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eSpan.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_CLASS))
         ret.setClazz (sAttrValue);
@@ -1542,7 +1545,7 @@ public class PSReader
   {
     final PSTitle ret = new PSTitle ();
 
-    eTitle.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eTitle.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       _warn (ret, "Unsupported attribute '" + sAttrName + "'='" + sAttrValue + "'");
     });
@@ -1589,7 +1592,7 @@ public class PSReader
   {
     final PSValueOf ret = new PSValueOf ();
 
-    eValueOf.forAllAttributes ( (sNS, sAttrName, sVal) -> {
+    eValueOf.forAllAttributes ((sNS, sAttrName, sVal) -> {
       final String sAttrValue = _getAttributeValue (sVal);
       if (sAttrName.equals (CSchematronXML.ATTR_SELECT))
         ret.setSelect (sAttrValue);
