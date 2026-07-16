@@ -815,6 +815,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
     public SchematronResourceXSLT buildCached (@NonNull final SchematronXSLTCache aCache) throws SchematronException
     {
       ValueEnforcer.notNull (aCache, "Cache");
+
       useCache (true).cache (aCache);
       final SchematronResourceXSLT ret = build ();
       aCache.getOrCompile (ret.toConfig ());
