@@ -7,7 +7,8 @@
 > If this project saved you some time or made your day a little easier, a star would mean a lot — it helps others find it too.
 <!-- ph-badge-end -->
 
-ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com), [SchXslt](https://github.com/schxslt/schxslt) or a Java "pure" implementation.
+ph-schematron is a Java library that validates XML documents via [ISO Schematron](http://www.schematron.com),
+[SchXslt](https://codeberg.org/SchXslt/schxslt), [SchXslt2](https://codeberg.org/SchXslt/schxslt2) or a Java "Pure XPath" implementation.
 
 Schematron is an XML based validation language to validate XML documents.
 
