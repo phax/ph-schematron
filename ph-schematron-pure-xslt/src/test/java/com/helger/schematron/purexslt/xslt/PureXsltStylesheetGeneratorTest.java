@@ -118,4 +118,49 @@ public final class PureXsltStylesheetGeneratorTest
     // and the location attribute must call it
     assertEquals ("{" + PureXsltStylesheetGenerator.PATH_FUNC_PREFIX + ":path(.)}", _firstLocationAvt (aDoc));
   }
+
+  @Test
+  public void testGenerateXslt10EmitsPathModeTemplates () throws Exception
+  {
+    final Document aDoc = PureXsltStylesheetGenerator.generate (_readGithub137 (), null, EPureXsltVersion.XSLT_1_0);
+    assertNotNull (aDoc);
+    LOGGER.info ("Generated XSLT 1.0 for github137:\n" +
+                 XMLWriter.getNodeAsString (aDoc, new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
+
+    final Element aStylesheet = aDoc.getDocumentElement ();
+    assertEquals ("1.0", aStylesheet.getAttribute ("version"));
+
+    // XSLT 1.0 has no xsl:function
+    assertEquals (0, aDoc.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "function").getLength ());
+
+    // Two recursive phsch-path mode templates (element + attribute) must be emitted
+    int nPathModeTemplates = 0;
+    final NodeList aTemplates = aDoc.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "template");
+    for (int i = 0; i < aTemplates.getLength (); ++i)
+      if (PureXsltStylesheetGenerator.PATH_MODE.equals (((Element) aTemplates.item (i)).getAttribute ("mode")))
+        nPathModeTemplates++;
+    assertEquals (2, nPathModeTemplates);
+
+    // The failed-assert must NOT carry a literal @location AVT; it is computed via <xsl:attribute>
+    final NodeList aFA = aDoc.getElementsByTagNameNS (CSVRL.SVRL_NAMESPACE_URI, "failed-assert");
+    assertTrue (aFA.getLength () > 0);
+    final Element aFailedAssert = (Element) aFA.item (0);
+    assertEquals ("", aFailedAssert.getAttribute ("location"));
+
+    // ... namely an <xsl:attribute name="location"> child that applies the phsch-path mode
+    boolean bFoundLocationAttr = false;
+    final NodeList aAttrs = aFailedAssert.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "attribute");
+    for (int i = 0; i < aAttrs.getLength (); ++i)
+    {
+      final Element aAttr = (Element) aAttrs.item (i);
+      if ("location".equals (aAttr.getAttribute ("name")))
+      {
+        bFoundLocationAttr = true;
+        final NodeList aApply = aAttr.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "apply-templates");
+        assertEquals (1, aApply.getLength ());
+        assertEquals (PureXsltStylesheetGenerator.PATH_MODE, ((Element) aApply.item (0)).getAttribute ("mode"));
+      }
+    }
+    assertTrue ("expected an <xsl:attribute name='location'> in the failed-assert", bFoundLocationAttr);
+  }
 }

@@ -31,8 +31,12 @@ public final class EPureXsltVersionTest
   @Test
   public void testIsLT ()
   {
+    assertTrue (EPureXsltVersion.XSLT_1_0.isLT (EPureXsltVersion.XSLT_2_0));
+    assertTrue (EPureXsltVersion.XSLT_1_0.isLT (EPureXsltVersion.XSLT_3_0));
+    assertFalse (EPureXsltVersion.XSLT_1_0.isLT (EPureXsltVersion.XSLT_1_0));
     assertTrue (EPureXsltVersion.XSLT_2_0.isLT (EPureXsltVersion.XSLT_3_0));
     assertFalse (EPureXsltVersion.XSLT_2_0.isLT (EPureXsltVersion.XSLT_2_0));
+    assertFalse (EPureXsltVersion.XSLT_2_0.isLT (EPureXsltVersion.XSLT_1_0));
     assertFalse (EPureXsltVersion.XSLT_3_0.isLT (EPureXsltVersion.XSLT_2_0));
     assertFalse (EPureXsltVersion.XSLT_3_0.isLT (EPureXsltVersion.XSLT_3_0));
   }
@@ -40,8 +44,11 @@ public final class EPureXsltVersionTest
   @Test
   public void testIsLE ()
   {
+    assertTrue (EPureXsltVersion.XSLT_1_0.isLE (EPureXsltVersion.XSLT_1_0));
+    assertTrue (EPureXsltVersion.XSLT_1_0.isLE (EPureXsltVersion.XSLT_2_0));
     assertTrue (EPureXsltVersion.XSLT_2_0.isLE (EPureXsltVersion.XSLT_3_0));
     assertTrue (EPureXsltVersion.XSLT_2_0.isLE (EPureXsltVersion.XSLT_2_0));
+    assertFalse (EPureXsltVersion.XSLT_2_0.isLE (EPureXsltVersion.XSLT_1_0));
     assertFalse (EPureXsltVersion.XSLT_3_0.isLE (EPureXsltVersion.XSLT_2_0));
     assertTrue (EPureXsltVersion.XSLT_3_0.isLE (EPureXsltVersion.XSLT_3_0));
   }

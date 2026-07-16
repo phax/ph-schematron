@@ -379,4 +379,31 @@ public final class SchematronResourcePureXsltTest
                   "/tag1[1]",
                   sLocation);
   }
+
+  @Test
+  public void testXslt10IsCompatible () throws Exception
+  {
+    // Same schema + invalid input, forcing XSLT 1.0 output. Proves the generated stylesheet (with
+    // the recursive phsch-path mode templates and an <xsl:attribute> location, standing in for the
+    // XSLT 3.0 fn:path()) compiles and runs and populates @location. NOTE: the underlying Saxon-HE
+    // 12 is a 3.0 engine running version="1.0" in backwards-compatibility mode.
+    final File aSch = new File ("src/test/resources/external/issues/github137/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/issues/github137/test.xml");
+    final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromFile (aSch)
+                                                                      .xsltVersion (EPureXsltVersion.XSLT_1_0)
+                                                                      .build ();
+    assertEquals (EPureXsltVersion.XSLT_1_0, aRes.getXsltVersion ());
+    assertTrue ("Schematron should be readable", aRes.isValidSchematron ());
+
+    final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertNotNull (aSVRL);
+    LOGGER.info ("SVRL (XSLT 1.0):\n" + new SVRLMarshaller ().getAsString (aSVRL));
+    assertEquals ("expected exactly one failed-assert for the invalid input", 1, _countFailedAsserts (aSVRL));
+
+    // The phsch-path mode templates must have produced the canonical location of the context node
+    final String sLocation = _firstFailedAssert (aSVRL).getLocation ();
+    assertEquals ("phsch-path mode should produce the canonical location of the context node",
+                  "/tag1[1]",
+                  sLocation);
+  }
 }

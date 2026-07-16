@@ -25,15 +25,25 @@ import com.helger.base.lang.EnumHelper;
 
 /**
  * The XSLT language version that {@link PureXsltStylesheetGenerator} sets on the
- * {@code xsl:stylesheet/@version} attribute of the generated stylesheet. Saxon-HE 12 supports both
- * XSLT&nbsp;2.0 and 3.0; the default is XSLT&nbsp;3.0, which gives access to {@code fn:path()}
- * (used to populate the SVRL {@code location} attribute) and other 3.0-only constructs.
+ * {@code xsl:stylesheet/@version} attribute of the generated stylesheet. The default is
+ * XSLT&nbsp;3.0, which gives access to {@code fn:path()} (used to populate the SVRL
+ * {@code location} attribute) and other 3.0-only constructs.
+ * <p>
+ * {@link #XSLT_2_0} and {@link #XSLT_1_0} emit conformant fallbacks for the {@code location}
+ * computation (a {@code phsch:path} {@code xsl:function} resp. recursive {@code phsch-path} mode
+ * templates), so the generated scaffolding stays within the respective language version. Note that
+ * the underlying processor here is Saxon-HE&nbsp;12, an XSLT&nbsp;3.0 engine: setting
+ * {@code version="1.0"} / {@code "2.0"} only selects XSLT backwards-compatibility mode, not a true
+ * 1.0/2.0 engine. Whether a schema actually runs under a lower version additionally depends on the
+ * XPath used in its own {@code test} / {@code context} expressions, which are passed through
+ * verbatim.
  *
  * @author Philip Helger
  * @since 10.0.0
  */
 public enum EPureXsltVersion implements IHasID <String>
 {
+  XSLT_1_0 ("1.0"),
   XSLT_2_0 ("2.0"),
   XSLT_3_0 ("3.0");
 
