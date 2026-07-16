@@ -38,6 +38,8 @@ import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
+import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;
 
@@ -82,6 +84,30 @@ public class BenchmarkIsValidSchematron
       final SchematronResourceSCH r = SchematronResourceSCH.builder (aRes)
                                                            .errorListener (new DoNothingTransformErrorListener ())
                                                            .build ();
+      bh.consume (r.isValidSchematron ());
+    }
+  }
+
+  @Benchmark
+  public void schXslt (final Blackhole bh)
+  {
+    for (final IReadableResource aRes : m_aSchemas)
+    {
+      final SchematronResourceSchXslt_XSLT2 r = SchematronResourceSchXslt_XSLT2.builder (aRes)
+                                                                               .errorListener (new DoNothingTransformErrorListener ())
+                                                                               .build ();
+      bh.consume (r.isValidSchematron ());
+    }
+  }
+
+  @Benchmark
+  public void schXslt2 (final Blackhole bh)
+  {
+    for (final IReadableResource aRes : m_aSchemas)
+    {
+      final SchematronResourceSchXslt2 r = SchematronResourceSchXslt2.builder (aRes)
+                                                                     .errorListener (new DoNothingTransformErrorListener ())
+                                                                     .build ();
       bh.consume (r.isValidSchematron ());
     }
   }

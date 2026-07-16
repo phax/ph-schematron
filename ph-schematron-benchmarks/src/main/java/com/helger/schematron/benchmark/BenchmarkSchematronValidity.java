@@ -34,12 +34,23 @@ import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
+import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;
 
 /**
- * End-to-end SVRL-producing validation, one fixed Schematron and one fixed XML, repeated across
- * engines. Each iteration creates a fresh resource instance to include the bind/compile cost.
+ * End-to-end SVRL-producing validation, one fixed Schematron and one fixed XML, repeated across all
+ * SCH&nbsp;&rarr;&nbsp;SVRL engines. Each iteration creates a fresh resource instance to include the
+ * bind/compile cost.
+ * <ul>
+ * <li>{@code sch} - ISO Schematron XSLT pipeline ({@link SchematronResourceSCH}).</li>
+ * <li>{@code schXslt} - SchXslt&nbsp;1.x XSLT&nbsp;2 pipeline
+ * ({@link SchematronResourceSchXslt_XSLT2}).</li>
+ * <li>{@code schXslt2} - SchXslt&nbsp;2.x pipeline ({@link SchematronResourceSchXslt2}).</li>
+ * <li>{@code pureXPath} - pure-Java XPath engine ({@link SchematronResourcePureXPath}).</li>
+ * <li>{@code pureSaxon} - pure-Java to XSLT&nbsp;3.0 engine ({@link SchematronResourcePureXslt}).</li>
+ * </ul>
  *
  * @author Philip Helger
  */
@@ -70,6 +81,24 @@ public class BenchmarkSchematronValidity
     final SchematronResourceSCH r = SchematronResourceSCH.builder (VALID_SCHEMATRON)
                                                          .errorListener (new DoNothingTransformErrorListener ())
                                                          .build ();
+    bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
+  }
+
+  @Benchmark
+  public void schXslt (final Blackhole bh) throws Exception
+  {
+    final SchematronResourceSchXslt_XSLT2 r = SchematronResourceSchXslt_XSLT2.builder (VALID_SCHEMATRON)
+                                                                             .errorListener (new DoNothingTransformErrorListener ())
+                                                                             .build ();
+    bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
+  }
+
+  @Benchmark
+  public void schXslt2 (final Blackhole bh) throws Exception
+  {
+    final SchematronResourceSchXslt2 r = SchematronResourceSchXslt2.builder (VALID_SCHEMATRON)
+                                                                   .errorListener (new DoNothingTransformErrorListener ())
+                                                                   .build ();
     bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }
 
