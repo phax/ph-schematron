@@ -71,6 +71,32 @@ public enum EPureXsltVersion implements IHasID <String>
   }
 
   /**
+   * Check if this version is strictly lower (older) than the passed version. The ordering follows
+   * the enum declaration order ({@link #XSLT_2_0} &lt; {@link #XSLT_3_0}).
+   *
+   * @param eOther
+   *        The version to compare to. May not be <code>null</code>.
+   * @return <code>true</code> if this version is strictly older than the passed one.
+   */
+  public boolean isLT (@NonNull final EPureXsltVersion eOther)
+  {
+    return ordinal () < eOther.ordinal ();
+  }
+
+  /**
+   * Check if this version is lower than or equal to (not newer than) the passed version. The
+   * ordering follows the enum declaration order ({@link #XSLT_2_0} &lt; {@link #XSLT_3_0}).
+   *
+   * @param eOther
+   *        The version to compare to. May not be <code>null</code>.
+   * @return <code>true</code> if this version is older than or equal to the passed one.
+   */
+  public boolean isLE (@NonNull final EPureXsltVersion eOther)
+  {
+    return ordinal () <= eOther.ordinal ();
+  }
+
+  /**
    * Resolve an {@link EPureXsltVersion} from its version string (e.g. <code>"3.0"</code>).
    *
    * @param sVersion

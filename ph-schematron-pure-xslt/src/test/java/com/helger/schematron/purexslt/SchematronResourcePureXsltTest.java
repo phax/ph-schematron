@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.FileSystemResource;
+import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
@@ -342,5 +343,40 @@ public final class SchematronResourcePureXsltTest
                   SchematronResourcePureXslt.builderFromFile (aSchGood)
                                             .build ()
                                             .getSchematronValidity (new FileSystemResource (aXMLGood)));
+  }
+
+  @NonNull
+  private static FailedAssert _firstFailedAssert (final SchematronOutputType aSVRL)
+  {
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+      if (aObj instanceof final FailedAssert aFA)
+        return aFA;
+    throw new AssertionError ("No FailedAssert in SVRL");
+  }
+
+  @Test
+  public void testXslt20IsCompatible () throws Exception
+  {
+    // Same schema + invalid input as testInvalidXmlProducesFailedAssert, but forcing XSLT 2.0
+    // output. This proves the generated stylesheet (with the phsch:path helper standing in for the
+    // XSLT 3.0 fn:path()) actually compiles and runs under Saxon and populates @location.
+    final File aSch = new File ("src/test/resources/external/issues/github137/schematron.sch");
+    final File aXML = new File ("src/test/resources/external/issues/github137/test.xml");
+    final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromFile (aSch)
+                                                                      .xsltVersion (EPureXsltVersion.XSLT_2_0)
+                                                                      .build ();
+    assertEquals (EPureXsltVersion.XSLT_2_0, aRes.getXsltVersion ());
+    assertTrue ("Schematron should be readable", aRes.isValidSchematron ());
+
+    final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (new FileSystemResource (aXML));
+    assertNotNull (aSVRL);
+    LOGGER.info ("SVRL (XSLT 2.0):\n" + new SVRLMarshaller ().getAsString (aSVRL));
+    assertEquals ("expected exactly one failed-assert for the invalid input", 1, _countFailedAsserts (aSVRL));
+
+    // The phsch:path helper must have produced a canonical XPath locator for the offending <tag1>
+    final String sLocation = _firstFailedAssert (aSVRL).getLocation ();
+    assertEquals ("phsch:path() should produce the canonical location of the context node",
+                  "/tag1[1]",
+                  sLocation);
   }
 }

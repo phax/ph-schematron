@@ -88,6 +88,14 @@ public final class PureXsltStylesheetGenerator
   public static final String SVRL_PREFIX = "svrl";
 
   /**
+   * Namespace and prefix of the helper function that is generated for XSLT&nbsp;2.0 output to
+   * populate the SVRL {@code location} attribute (a stand-in for the XPath&nbsp;3.0
+   * {@code fn:path()}). Not emitted for XSLT&nbsp;3.0.
+   */
+  public static final String PATH_FUNC_NS = "urn:com:helger:schematron:pure-xslt-functions:v1.0";
+  public static final String PATH_FUNC_PREFIX = "phsch";
+
+  /**
    * @deprecated Use {@link EPureXsltVersion#DEFAULT} ({@code EXsltVersion.XSLT_3_0}) instead. Kept
    *             as a constant string for API stability of any callers that read it.
    */
@@ -484,7 +492,7 @@ public final class PureXsltStylesheetGenerator
    */
   private static void _appendDiagnosticContent (@NonNull final Element aSvrlRef, @NonNull final PSDiagnostic aDiag)
   {
-    for (final Object aPiece : aDiag.getAllContentElements ())
+    for (final var aPiece : aDiag.getAllContentElements ())
       _appendRichTextPiece (aSvrlRef, aPiece);
   }
 
@@ -494,7 +502,7 @@ public final class PureXsltStylesheetGenerator
    */
   private static void _appendPropertyContent (@NonNull final Element aSvrlText, @NonNull final PSProperty aProp)
   {
-    for (final Object aPiece : aProp.getAllContentElements ())
+    for (final var aPiece : aProp.getAllContentElements ())
       _appendRichTextPiece (aSvrlText, aPiece);
   }
 
@@ -564,7 +572,7 @@ public final class PureXsltStylesheetGenerator
    */
   private static void _appendMessageContent (@NonNull final Element aTextElement, @NonNull final PSAssertReport aAR)
   {
-    for (final Object aPiece : aAR.getAllContentElements ())
+    for (final var aPiece : aAR.getAllContentElements ())
       _appendRichTextPiece (aTextElement, aPiece);
   }
 
@@ -581,10 +589,10 @@ public final class PureXsltStylesheetGenerator
 
   /**
    * Emit {@code see}, {@code icon}, {@code fpi}, {@code xml:lang} and {@code xml:space} attributes
-   * (from the source's {@link PSRichGroup}) on the supplied SVRL element. Per ISO/IEC 19757-3
-   * Annex D these attributes belong on {@code <svrl:text>} (the {@code human-text} production) and
-   * on {@code <svrl:diagnostic-reference>}, not on the surrounding failed-assert /
-   * successful-report / fired-rule.
+   * (from the source's {@link PSRichGroup}) on the supplied SVRL element. Per ISO/IEC 19757-3 Annex
+   * D these attributes belong on {@code <svrl:text>} (the {@code human-text} production) and on
+   * {@code <svrl:diagnostic-reference>}, not on the surrounding failed-assert / successful-report /
+   * fired-rule.
    */
   private static void _appendRichAttrs (@NonNull final Element aSvrlOut, @Nullable final PSRichGroup aRich)
   {
@@ -644,7 +652,8 @@ public final class PureXsltStylesheetGenerator
   private static void _appendAssertReport (@NonNull final Element aRuleTemplate,
                                            @NonNull final PSAssertReport aAR,
                                            @Nullable final PSDiagnostics aDiagnostics,
-                                           @Nullable final PSProperties aProperties)
+                                           @Nullable final PSProperties aProperties,
+                                           @NonNull final String sLocationAvt)
   {
     final String sTest = aAR.getTest ();
     if (StringHelper.isEmpty (sTest))
@@ -662,9 +671,10 @@ public final class PureXsltStylesheetGenerator
     final String sSvrlElementName = bIsAssert ? "failed-assert" : "successful-report";
     final Element aOut = _addSvrlChild (aIf, sSvrlElementName);
     aOut.setAttribute ("test", _escapeAvt (sTest));
-    // XSLT attribute value template: Saxon evaluates fn:path(.) at runtime and substitutes
-    // the canonical XPath of the offending context node. Required by the SVRL XSD.
-    aOut.setAttribute ("location", "{path(.)}");
+    // XSLT attribute value template: Saxon evaluates path(.) (XSLT 3.0) or the generated
+    // phsch:path(.) helper (XSLT 2.0) at runtime and substitutes the canonical XPath of the
+    // offending context node. Required by the SVRL XSD.
+    aOut.setAttribute ("location", sLocationAvt);
     if (StringHelper.isNotEmpty (aAR.getID ()))
       aOut.setAttribute ("id", _escapeAvt (aAR.getID ()));
     if (StringHelper.isNotEmpty (aAR.getFlag ()))
@@ -689,7 +699,8 @@ public final class PureXsltStylesheetGenerator
                                            @NonNull final String sMode,
                                            final int nPriority,
                                            @Nullable final PSDiagnostics aDiagnostics,
-                                           @Nullable final PSProperties aProperties)
+                                           @Nullable final PSProperties aProperties,
+                                           @NonNull final String sLocationAvt)
   {
     final Element aTemplate = _addXsltChild (aStylesheet, "template");
     aTemplate.setAttribute ("match", aRule.getContext ());
@@ -715,7 +726,7 @@ public final class PureXsltStylesheetGenerator
 
     // Per assert/report
     for (final PSAssertReport aAR : aRule.getAllAssertReports ())
-      _appendAssertReport (aTemplate, aAR, aDiagnostics, aProperties);
+      _appendAssertReport (aTemplate, aAR, aDiagnostics, aProperties, sLocationAvt);
 
     // Descend
     final Element aApply = _addXsltChild (aTemplate, "apply-templates");
@@ -726,7 +737,8 @@ public final class PureXsltStylesheetGenerator
                                                @NonNull final PSPattern aPattern,
                                                final int nPatternIdx,
                                                @Nullable final PSDiagnostics aDiagnostics,
-                                               @Nullable final PSProperties aProperties)
+                                               @Nullable final PSProperties aProperties,
+                                               @NonNull final String sLocationAvt)
   {
     final String sMode = _getModeName (nPatternIdx);
     final ICommonsList <PSRule> aRules = aPattern.getAllRules ();
@@ -745,7 +757,14 @@ public final class PureXsltStylesheetGenerator
         LOGGER.warn ("Skipping rule with empty context in pattern '" + aPattern.getID () + "'");
         continue;
       }
-      _appendRuleTemplate (aStylesheet, aPattern, aRule, sMode, aRules.size () - nRuleIdx, aDiagnostics, aProperties);
+      _appendRuleTemplate (aStylesheet,
+                           aPattern,
+                           aRule,
+                           sMode,
+                           aRules.size () - nRuleIdx,
+                           aDiagnostics,
+                           aProperties,
+                           sLocationAvt);
       nRuleIdx++;
     }
 
@@ -758,6 +777,68 @@ public final class PureXsltStylesheetGenerator
     final Element aApply = _addXsltChild (aCatchAll, "apply-templates");
     aApply.setAttribute ("select", "@*|node()");
     aApply.setAttribute ("mode", sMode);
+  }
+
+  /**
+   * The body of the XSLT&nbsp;2.0 {@code phsch:path} helper function. Written as a pure
+   * XPath&nbsp;2.0 expression (no XSLT&nbsp;3.0 constructs, no {@code xs:} sequence types) that
+   * builds a canonical XPath locator for the passed node {@code $n} - one element step per
+   * {@code ancestor-or-self::*} plus a trailing attribute step if {@code $n} is an attribute.
+   * Namespaced elements/attributes use the namespace-uri predicate form so the result is resolvable
+   * without in-scope prefixes. This is the XSLT&nbsp;2.0 stand-in for the XPath&nbsp;3.0
+   * {@code fn:path()}.
+   */
+  private static final String PATH_FUNC_SELECT = "concat(" +
+                                                 "string-join(" +
+                                                 "for $e in $n/ancestor-or-self::* return " +
+                                                 "if (namespace-uri($e) = '') " +
+                                                 "then concat('/', name($e), '[', 1 + count($e/preceding-sibling::*[name() = name($e)]), ']') " +
+                                                 "else concat('/*:', local-name($e), '[namespace-uri()=\"', namespace-uri($e), '\"][', 1 + count($e/preceding-sibling::*[local-name() = local-name($e) and namespace-uri() = namespace-uri($e)]), ']')" +
+                                                 ", '')" +
+                                                 ", " +
+                                                 "if ($n instance of attribute()) " +
+                                                 "then concat('/@', if (namespace-uri($n) = '') then name($n) else concat('*:', local-name($n), '[namespace-uri()=\"', namespace-uri($n), '\"]')) " +
+                                                 "else ''" +
+                                                 ")";
+
+  /**
+   * @param eVersion
+   *        The target XSLT version. May not be <code>null</code>.
+   * @return <code>true</code> if the generated stylesheet needs the {@code phsch:path} helper
+   *         function (i.e. {@code fn:path()} is not available), <code>false</code> otherwise.
+   */
+  private static boolean _needsPathFunction (@NonNull final EPureXsltVersion eVersion)
+  {
+    // fn:path() is an XPath 3.0 function; everything below XSLT 3.0 needs the generated helper.
+    return eVersion.isLT (EPureXsltVersion.XSLT_3_0);
+  }
+
+  /**
+   * @param eVersion
+   *        The target XSLT version. May not be <code>null</code>.
+   * @return The attribute value template written to the SVRL {@code location} attribute. Uses
+   *         {@code fn:path()} for XSLT&nbsp;3.0 and the generated {@code phsch:path} helper
+   *         otherwise. Never <code>null</code>.
+   */
+  @NonNull
+  private static String _getLocationAvt (@NonNull final EPureXsltVersion eVersion)
+  {
+    return _needsPathFunction (eVersion) ? "{" + PATH_FUNC_PREFIX + ":path(.)}" : "{path(.)}";
+  }
+
+  /**
+   * Emit the {@code phsch:path} helper function ({@link #PATH_FUNC_SELECT}) as a top-level
+   * declaration on the stylesheet root. Only used for XSLT&nbsp;2.0 output, where {@code fn:path()}
+   * is not available.
+   */
+  private static void _appendPathFunction (@NonNull final Element aStylesheet)
+  {
+    final Element aFunc = _addXsltChild (aStylesheet, "function");
+    aFunc.setAttribute ("name", PATH_FUNC_PREFIX + ":path");
+    final Element aParam = _addXsltChild (aFunc, "param");
+    aParam.setAttribute ("name", "n");
+    final Element aSeq = _addXsltChild (aFunc, "sequence");
+    aSeq.setAttribute ("select", PATH_FUNC_SELECT);
   }
 
   /**
@@ -804,6 +885,17 @@ public final class PureXsltStylesheetGenerator
     aOutput.setAttribute ("method", "xml");
     aOutput.setAttribute ("indent", "no");
 
+    // For XSLT versions that lack fn:path(), declare the helper namespace and emit the phsch:path
+    // function used to populate the SVRL location attribute.
+    final String sLocationAvt = _getLocationAvt (eVersion);
+    if (_needsPathFunction (eVersion))
+    {
+      aStylesheet.setAttributeNS (XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+                                  XMLConstants.XMLNS_ATTRIBUTE + ":" + PATH_FUNC_PREFIX,
+                                  PATH_FUNC_NS);
+      _appendPathFunction (aStylesheet);
+    }
+
     // Pass through ALL schema-level foreign elements. The XSLT-namespace ones (xsl:function,
     // xsl:include, xsl:key, xsl:import, xsl:variable, ...) give Saxon-native schemas the ability
     // to declare helper functions and modules that are then callable from <sch:assert> /
@@ -831,7 +923,7 @@ public final class PureXsltStylesheetGenerator
     int nPatternIdx = 0;
     for (final PSPattern aPattern : aActivePatterns)
     {
-      _appendPatternTemplates (aStylesheet, aPattern, nPatternIdx, aDiagnostics, aProperties);
+      _appendPatternTemplates (aStylesheet, aPattern, nPatternIdx, aDiagnostics, aProperties, sLocationAvt);
       nPatternIdx++;
     }
     return aDoc;
