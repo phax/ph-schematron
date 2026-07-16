@@ -53,6 +53,16 @@ public final class CSchematron
    */
   public static final String PHASE_DEFAULT = "#DEFAULT";
 
+  /**
+   * Special phase name introduced in ISO/IEC 19757-3:2025 for dynamic phase
+   * selection: each phase's <code>when</code> attribute is evaluated in
+   * document order and the first matching phase becomes active. If none matches,
+   * the implementation behaves as if {@link #PHASE_ALL} was selected.
+   *
+   * @since 10.0.0 (Schematron 2025)
+   */
+  public static final String PHASE_ANY = "#ANY";
+
   @PresentForCodeCoverage
   private static final CSchematron INSTANCE = new CSchematron ();
 

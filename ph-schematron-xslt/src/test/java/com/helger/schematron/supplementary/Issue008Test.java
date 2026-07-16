@@ -40,11 +40,11 @@ public final class Issue008Test
 
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
-
     // Assign custom parameters
-    aSCH.parameters ().put ("xyz", "mobile");
-    aSCH.parameters ().put ("expected", "");
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromFile (aSchematron)
+                                                            .parameter ("xyz", "mobile")
+                                                            .parameter ("expected", "")
+                                                            .build ();
 
     if (false)
       System.out.println (XMLWriter.getNodeAsString (aSCH.getXSLTProvider ().getXSLTDocument ()));

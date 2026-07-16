@@ -47,15 +47,16 @@ import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.diagnostics.error.list.IErrorList;
 import com.helger.io.file.FileIOError;
 import com.helger.io.file.FileOperationManager;
-import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.CSchematron;
-import com.helger.schematron.ESchematronMode;
+import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.pure.SchematronResourcePure;
-import com.helger.schematron.pure.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
+import com.helger.schematron.pure.SchematronResourcePureXPath;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
-import com.helger.schematron.sch.TransformerCustomizerSCH;
+import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
+import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -92,15 +93,29 @@ public final class SchematronValidationMojo extends AbstractMojo
   private File m_aSchematronFile;
 
   /**
-   * The processing engine to use. Can be one of the following:
+   * The processing engine to use. Recognised values (case-insensitive) and their pre-v10 aliases:
    * <ul>
-   * <li>pure - for SCH files</li>
-   * <li>schematron - for SCH files that will be converted to XSLT and applied from there.</li>
-   * <li>xslt - apply pre-build XSLT files</li>
+   * <li><code>pure-xpath</code> (alias: <code>pure</code>) - pure-Java XPath-only engine
+   * ({@code SchematronResourcePureXPath}). Reads the SCH directly; honours {@code phaseName}.</li>
+   * <li><code>pure-xslt</code> (alias: <code>pure-saxon</code>) - pure-Java engine that
+   * generates an XSLT 3.0 stylesheet in Java and runs it through Saxon s9api
+   * ({@code SchematronResourcePureXslt}). Honours {@code phaseName}. {@code languageCode} and
+   * {@code parameters} are ignored.</li>
+   * <li><code>iso-schematron</code> (aliases: <code>schematron</code>, <code>sch</code>,
+   * <code>iso</code>, <code>isoschematron</code>) - SCH file preprocessed to XSLT through the
+   * canonical ISO Schematron stylesheet chain ({@code SchematronResourceSCH}). Honours
+   * {@code phaseName}, {@code languageCode}, {@code parameters}.</li>
+   * <li><code>schxslt</code> (aliases: <code>schxslt1</code>, <code>schxslt-xslt2</code>) -
+   * SchXslt v1 (XSLT 2). Honours {@code phaseName}, {@code languageCode}, {@code parameters}.</li>
+   * <li><code>schxslt2</code> - SchXslt v2 (XSLT 3). Honours {@code phaseName},
+   * {@code languageCode}, {@code parameters}.</li>
+   * <li><code>xslt</code> - apply a pre-built XSLT file directly
+   * ({@code SchematronResourceXSLT}). {@code phaseName} and {@code languageCode} are ignored.
+   * Default is {@code iso-schematron}.</li>
    * </ul>
    */
   @Parameter (name = "schematronProcessingEngine", required = true)
-  private String m_sSchematronProcessingEngine = ESchematronMode.SCHEMATRON.getID ();
+  private String m_sSchematronProcessingEngine = ESchematronEngine.ISO_SCHEMATRON.getID ();
 
   /**
    * The directory where the XML files reside that are expected to match the Schematron rules.
@@ -163,23 +178,26 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   /**
    * Define the phase to be used for Schematron validation. By default the <code>defaultPhase</code>
-   * attribute of the Schematron file is used. This phase name is only used if the processing engine
-   * <code>pure</code> or <code>schematron</code> are used.
+   * attribute of the Schematron file is used. Honoured by the {@code pure-xpath},
+   * {@code pure-xslt}, {@code iso-schematron}, {@code schxslt} and {@code schxslt2} engines;
+   * ignored by {@code xslt} (the phase is baked into the pre-built stylesheet at build time).
    */
   @Parameter (name = "phaseName")
   private String m_sPhaseName;
 
   /**
-   * Define the language code to be used for Schematron validation. Default is English. Supported
-   * language codes are: cs, de, en, fr, nl. This parameter takes only effect when using
-   * schematronProcessingEngine "schematron".
+   * Define the language code to be used for Schematron diagnostic messages. Default is English.
+   * Supported codes: cs, de, en, fr, nl. Honoured by the {@code iso-schematron}, {@code schxslt}
+   * and {@code schxslt2} engines (where it is forwarded to the ISO / SchXslt stylesheet chain).
+   * Ignored by {@code pure-xpath}, {@code pure-xslt} and {@code xslt}.
    */
   @Parameter (name = "languageCode")
   private String m_sLanguageCode;
 
   /**
-   * Custom attributes to be used for the SCH to XSLT conversion. This parameter takes only effect
-   * when using schematronProcessingEngine "schematron" or "xslt".
+   * Custom parameters forwarded to the SCH-to-XSLT preprocessing stage (used as {@code <xsl:param>}
+   * bindings on the generated stylesheet). Honoured by {@code iso-schematron}, {@code schxslt},
+   * {@code schxslt2} and {@code xslt}. Ignored by {@code pure-xpath} and {@code pure-xslt}.
    */
   @Parameter (name = "parameters")
   @Since ("5.0.2")
@@ -199,7 +217,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    */
   @Parameter (name = "forceCacheResult", defaultValue = "false")
   @Since ("5.2.1")
-  private boolean m_bForceCacheResult = TransformerCustomizerSCH.DEFAULT_FORCE_CACHE_RESULT;
+  private boolean m_bForceCacheResult = SchematronSCHConfig.DEFAULT_FORCE_CACHE_RESULT;
 
   /**
    * Define if old namespace URIs should be supported or not. By default this is disabled. This
@@ -227,10 +245,10 @@ public final class SchematronValidationMojo extends AbstractMojo
 
   public void setSchematronProcessingEngine (@Nullable final String sEngine)
   {
-    final ESchematronMode eMode = ESchematronMode.getFromIDOrNull (sEngine);
-    m_sSchematronProcessingEngine = eMode == null ? null : eMode.getID ();
+    final ESchematronEngine eEngine = ESchematronEngine.getFromIDOrNull (sEngine);
+    m_sSchematronProcessingEngine = eEngine == null ? null : eEngine.getID ();
     if (getLog ().isDebugEnabled ())
-      getLog ().debug ("Schematron processing mode set to '" + eMode + "'");
+      getLog ().debug ("Schematron processing engine set to '" + eEngine + "'");
   }
 
   public void setXmlDirectory (@NonNull final File aDir)
@@ -521,7 +539,7 @@ public final class SchematronValidationMojo extends AbstractMojo
     if (m_sSchematronProcessingEngine == null)
       throw new MojoExecutionException ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
                                         StringImplode.imploder ()
-                                                     .source (ESchematronMode.values (), x -> "'" + x.getID () + "'")
+                                                     .source (ESchematronEngine.values (), x -> "'" + x.getID () + "'")
                                                      .separator (", ")
                                                      .build ());
     if (m_aXmlDirectory == null && m_aXmlErrorDirectory == null)
@@ -560,65 +578,102 @@ public final class SchematronValidationMojo extends AbstractMojo
     // 1. Parse Schematron file
     ISchematronResource aSch;
     IErrorList aSCHErrors;
-    switch (ESchematronMode.getFromIDOrNull (m_sSchematronProcessingEngine))
+    switch (ESchematronEngine.getFromIDOrNull (m_sSchematronProcessingEngine))
     {
-      case PURE:
+      case PURE_XPATH:
       {
-        // pure
+        // Pure-Java XPath engine
         final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-        final SchematronResourcePure aRealSCH = new SchematronResourcePure (new FileSystemResource (m_aSchematronFile));
-        aRealSCH.setPhase (m_sPhaseName);
-        aRealSCH.setLenient (m_bLenient);
         // language code is ignored
         // custom parameters are ignored
-        aRealSCH.setErrorHandler (aErrorHdl);
+        final SchematronResourcePureXPath aRealSCH = SchematronResourcePureXPath.builderFromFile (m_aSchematronFile)
+                                                                                .phase (m_sPhaseName)
+                                                                                .lenient (m_bLenient)
+                                                                                .errorHandler (aErrorHdl)
+                                                                                .build ();
         aRealSCH.validateCompletely ();
 
         aSch = aRealSCH;
         aSCHErrors = aErrorHdl.getAllErrors ();
         break;
       }
-      case SCHEMATRON:
+      case PURE_XSLT:
       {
-        // SCH
+        // Pure-Java engine generating XSLT 3.0 and running via Saxon s9api
+        final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
+        // language code is ignored
+        // custom parameters are ignored
+        final SchematronResourcePureXslt aRealSCH = SchematronResourcePureXslt.builderFromFile (m_aSchematronFile)
+                                                                              .phase (m_sPhaseName)
+                                                                              .errorHandler (aErrorHdl)
+                                                                              .build ();
+        aRealSCH.isValidSchematron ();
+
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getAllErrors ();
+        break;
+      }
+      case ISO_SCHEMATRON:
+      {
+        // ISO Schematron - SCH file converted to XSLT through the ISO stylesheet chain
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceSCH aRealSCH = new SchematronResourceSCH (new FileSystemResource (m_aSchematronFile));
-        aRealSCH.setPhase (m_sPhaseName);
-        aRealSCH.setLanguageCode (m_sLanguageCode);
-        aRealSCH.setForceCacheResult (m_bForceCacheResult);
-        aRealSCH.parameters ().setAll (m_aCustomParameters);
-        aRealSCH.setErrorListener (aErrorHdl);
+        final SchematronResourceSCH aRealSCH = SchematronResourceSCH.builderFromFile (m_aSchematronFile)
+                                                                    .phase (m_sPhaseName)
+                                                                    .languageCode (m_sLanguageCode)
+                                                                    .forceCacheResult (m_bForceCacheResult)
+                                                                    .parameters (m_aCustomParameters)
+                                                                    .errorListener (aErrorHdl)
+                                                                    .build ();
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;
         aSCHErrors = aErrorHdl.getErrorList ();
         break;
       }
-      case SCHXSLT_XSLT2:
+      case SCHXSLT1:
       {
-        // SchXslt
+        // SchXslt v1 (XSLT 2)
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceSchXslt_XSLT2 aRealSCH = new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (m_aSchematronFile));
-        aRealSCH.setPhase (m_sPhaseName);
-        aRealSCH.setLanguageCode (m_sLanguageCode);
-        aRealSCH.setForceCacheResult (m_bForceCacheResult);
-        aRealSCH.parameters ().setAll (m_aCustomParameters);
-        aRealSCH.setErrorListener (aErrorHdl);
+        final SchematronResourceSchXslt_XSLT2 aRealSCH = SchematronResourceSchXslt_XSLT2.builderFromFile (m_aSchematronFile)
+                                                                                        .phase (m_sPhaseName)
+                                                                                        .languageCode (m_sLanguageCode)
+                                                                                        .forceCacheResult (m_bForceCacheResult)
+                                                                                        .parameters (m_aCustomParameters)
+                                                                                        .errorListener (aErrorHdl)
+                                                                                        .build ();
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;
         aSCHErrors = aErrorHdl.getErrorList ();
         break;
       }
-      case XSLT:
+      case SCHXSLT2:
+      {
+        // SchXslt v2 (XSLT 3)
+        final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
+        final SchematronResourceSchXslt2 aRealSCH = SchematronResourceSchXslt2.builderFromFile (m_aSchematronFile)
+                                                                              .phase (m_sPhaseName)
+                                                                              .languageCode (m_sLanguageCode)
+                                                                              .forceCacheResult (m_bForceCacheResult)
+                                                                              .parameters (m_aCustomParameters)
+                                                                              .errorListener (aErrorHdl)
+                                                                              .build ();
+        aRealSCH.isValidSchematron ();
+
+        aSch = aRealSCH;
+        aSCHErrors = aErrorHdl.getErrorList ();
+        break;
+      }
+      case XSLT_PREBUILT:
       {
         // SCH
         final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-        final SchematronResourceXSLT aRealSCH = new SchematronResourceXSLT (new FileSystemResource (m_aSchematronFile));
         // phase is ignored
         // language code is ignored
-        aRealSCH.parameters ().setAll (m_aCustomParameters);
-        aRealSCH.setErrorListener (aErrorHdl);
+        final SchematronResourceXSLT aRealSCH = SchematronResourceXSLT.builderFromFile (m_aSchematronFile)
+                                                                      .parameters (m_aCustomParameters)
+                                                                      .errorListener (aErrorHdl)
+                                                                      .build ();
         aRealSCH.isValidSchematron ();
 
         aSch = aRealSCH;

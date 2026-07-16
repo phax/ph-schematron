@@ -32,14 +32,14 @@ public final class SchematronResourceSchXslt_XSLT2Test
   @Test
   public void testReadISOSchematron2006SCH ()
   {
-    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromClassPath ("external/schematron/iso-schematron-2006.sch");
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.builderFromClassPath ("external/schematron/iso-schematron-2006.sch").build ();
     assertTrue (aSCH.isValidSchematron ());
   }
 
   @Test
   public void testReadISOSchematron2016SCH ()
   {
-    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromClassPath ("external/schematron/iso-schematron-2016.sch");
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.builderFromClassPath ("external/schematron/iso-schematron-2016.sch").build ();
     assertTrue (aSCH.isValidSchematron ());
   }
 }

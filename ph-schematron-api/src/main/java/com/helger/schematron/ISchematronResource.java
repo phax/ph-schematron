@@ -31,17 +31,15 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
- * Base interface for a Schematron resource. The implementation can e.g. be a
- * SCH file that needs preprocessing to XSLT or an already precompiled XSLT
- * file.
+ * Base interface for a Schematron resource. The implementation can e.g. be a SCH file that needs
+ * preprocessing to XSLT or an already precompiled XSLT file.
  *
  * @author Philip Helger
  */
 public interface ISchematronResource extends IHasID <String>
 {
   /**
-   * @return The non-<code>null</code> resource from which to read the
-   *         Schematron rules.
+   * @return The non-<code>null</code> resource from which to read the Schematron rules.
    */
   @NonNull
   IReadableResource getResource ();
@@ -56,35 +54,32 @@ public interface ISchematronResource extends IHasID <String>
    * Enable or disable caching.
    *
    * @param bUseCache
-   *        <code>true</code> to use the cache, <code>false</code> to not use
-   *        it.
+   *        <code>true</code> to use the cache, <code>false</code> to not use it.
    * @since 5.0.2 in this interface
    */
   void setUseCache (boolean bUseCache);
 
   /**
    * This is currently only supported for the "pure Schematron".
-   * 
-   * @return <code>true</code> if 'old' schematron NS is tolerated,
-   *         <code>false</code> if not. Default is <code>false</code>.
+   *
+   * @return <code>true</code> if 'old' schematron NS is tolerated, <code>false</code> if not.
+   *         Default is <code>false</code>.
    * @since 5.4.1
    */
   boolean isLenient ();
 
   /**
-   * This is currently only supported for the "pure Schematron". Allow use of
-   * 'old' schematron NS.
+   * This is currently only supported for the "pure Schematron". Allow use of 'old' schematron NS.
    *
    * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated,
-   *        <code>false</code> if not.
+   *        <code>true</code> if 'old' schematron NS is tolerated, <code>false</code> if not.
    * @since 5.4.1
    */
   void setLenient (boolean bLenient);
 
   /**
-   * @return The XML entity resolver to be used to read the Schematron or XML to
-   *         be validated. May be <code>null</code>.
+   * @return The XML entity resolver to be used to read the Schematron or XML to be validated. May
+   *         be <code>null</code>.
    * @since 4.1.1 in implementation
    * @since 5.0.2 in this interface
    */
@@ -92,23 +87,21 @@ public interface ISchematronResource extends IHasID <String>
   EntityResolver getEntityResolver ();
 
   /**
-   * @return <code>true</code> if this Schematron can be used to validate XML
-   *         instances. If not, the Schematron is invalid and the log files must
-   *         be investigated.
+   * @return <code>true</code> if this Schematron can be used to validate XML instances. If not, the
+   *         Schematron is invalid and the log files must be investigated.
    */
   boolean isValidSchematron ();
 
   /**
-   * A method to check if the passed XML DOM node matches the Schematron rules
-   * or not. This is the quick check method, as it breaks upon the first failed
-   * assertion or the first successful report, if the implementation supports it
-   * (as e.g. the native pure Schematron version).
+   * A method to check if the passed XML DOM node matches the Schematron rules or not. This is the
+   * quick check method, as it breaks upon the first failed assertion or the first successful
+   * report, if the implementation supports it (as e.g. the native pure Schematron version).
    *
    * @param aXMLResource
-   *        The source XML to read and validate against the Schematron. May not
-   *        be <code>null</code>.
-   * @return {@link EValidity#VALID} if the document is valid,
-   *         {@link EValidity#INVALID} if it is invalid.
+   *        The source XML to read and validate against the Schematron. May not be
+   *        <code>null</code>.
+   * @return {@link EValidity#VALID} if the document is valid, {@link EValidity#INVALID} if it is
+   *         invalid.
    * @throws Exception
    *         in case of a sever error validating the schema
    */
@@ -116,19 +109,16 @@ public interface ISchematronResource extends IHasID <String>
   EValidity getSchematronValidity (@NonNull IHasInputStream aXMLResource) throws Exception;
 
   /**
-   * A method to check if the passed DOM node matches the Schematron rules or
-   * not. This is the quick check method, as it breaks upon the first failed
-   * assertion or the first successful report, if the implementation supports it
-   * (as e.g. the native pure Schematron version).
+   * A method to check if the passed DOM node matches the Schematron rules or not. This is the quick
+   * check method, as it breaks upon the first failed assertion or the first successful report, if
+   * the implementation supports it (as e.g. the native pure Schematron version).
    *
    * @param aXMLNode
-   *        The source DOM node to validate against the Schematron. May not be
-   *        <code>null</code>.
+   *        The source DOM node to validate against the Schematron. May not be <code>null</code>.
    * @param sBaseURI
-   *        The Base URI of the XML document to be validated. May be
-   *        <code>null</code>.
-   * @return {@link EValidity#VALID} if the document is valid,
-   *         {@link EValidity#INVALID} if it is invalid.
+   *        The Base URI of the XML document to be validated. May be <code>null</code>.
+   * @return {@link EValidity#VALID} if the document is valid, {@link EValidity#INVALID} if it is
+   *         invalid.
    * @throws Exception
    *         in case of a sever error validating the schema
    */
@@ -136,16 +126,14 @@ public interface ISchematronResource extends IHasID <String>
   EValidity getSchematronValidity (@NonNull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
 
   /**
-   * A method to check if the passed XML DOM node matches the Schematron rules
-   * or not. This is the quick check method, as it breaks upon the first failed
-   * assertion or the first successful report, if the implementation supports it
-   * (as e.g. the native pure Schematron version).
+   * A method to check if the passed XML DOM node matches the Schematron rules or not. This is the
+   * quick check method, as it breaks upon the first failed assertion or the first successful
+   * report, if the implementation supports it (as e.g. the native pure Schematron version).
    *
    * @param aXMLSource
-   *        The source XML to be validated against the Schematron. May not be
-   *        <code>null</code>.
-   * @return {@link EValidity#VALID} if the document is valid,
-   *         {@link EValidity#INVALID} if it is invalid.
+   *        The source XML to be validated against the Schematron. May not be <code>null</code>.
+   * @return {@link EValidity#VALID} if the document is valid, {@link EValidity#INVALID} if it is
+   *         invalid.
    * @throws Exception
    *         in case of a sever error validating the schema
    */
@@ -153,55 +141,48 @@ public interface ISchematronResource extends IHasID <String>
   EValidity getSchematronValidity (@NonNull Source aXMLSource) throws Exception;
 
   /**
-   * Apply the Schematron validation on the passed XML resource and return an
-   * SVRL XML DOM Document.
+   * Apply the Schematron validation on the passed XML resource and return an SVRL XML DOM Document.
    *
    * @param aXMLResource
-   *        The XML resource to be validated via Schematron. May not be
-   *        <code>null</code>.
-   * @return <code>null</code> if the passed resource does not exist or the non-
-   *         <code>null</code> SVRL document otherwise.
+   *        The XML resource to be validated via Schematron. May not be <code>null</code>.
+   * @return <code>null</code> if the passed resource does not exist or the non- <code>null</code>
+   *         SVRL document otherwise.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
-   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the
-   *      document into a domain object
+   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the document into a domain
+   *      object
    */
   @Nullable
   Document applySchematronValidation (@NonNull IHasInputStream aXMLResource) throws Exception;
 
   /**
-   * Apply the Schematron validation on the passed DOM node and return an SVRL
-   * XML DOM Document.
+   * Apply the Schematron validation on the passed DOM node and return an SVRL XML DOM Document.
    *
    * @param aXMLNode
-   *        The DOM node to be validated via Schematron. May not be
-   *        <code>null</code>.
+   *        The DOM node to be validated via Schematron. May not be <code>null</code>.
    * @param sBaseURI
-   *        The Base URI of the XML document to be validated. May be
-   *        <code>null</code>.
-   * @return <code>null</code> if the passed resource does not exist or the non-
-   *         <code>null</code> SVRL document otherwise.
+   *        The Base URI of the XML document to be validated. May be <code>null</code>.
+   * @return <code>null</code> if the passed resource does not exist or the non- <code>null</code>
+   *         SVRL document otherwise.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
-   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the
-   *      document into a domain object
+   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the document into a domain
+   *      object
    */
   @Nullable
   Document applySchematronValidation (@NonNull Node aXMLNode, @Nullable String sBaseURI) throws Exception;
 
   /**
-   * Apply the Schematron validation on the passed XML source and return an SVRL
-   * XML DOM Document.
+   * Apply the Schematron validation on the passed XML source and return an SVRL XML DOM Document.
    *
    * @param aXMLSource
-   *        The XML source to be validated via Schematron. May not be
-   *        <code>null</code>.
-   * @return The SVRL XML document containing the result. May be
-   *         <code>null</code> when interpreting the Schematron failed.
+   *        The XML source to be validated via Schematron. May not be <code>null</code>.
+   * @return The SVRL XML document containing the result. May be <code>null</code> when interpreting
+   *         the Schematron failed.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
-   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the
-   *      document into a domain object
+   * @see com.helger.schematron.svrl.SVRLMarshaller on how to convert the document into a domain
+   *      object
    */
   @Nullable
   Document applySchematronValidation (@NonNull Source aXMLSource) throws Exception;
@@ -211,10 +192,9 @@ public interface ISchematronResource extends IHasID <String>
    * {@link SchematronOutputType} object.
    *
    * @param aXMLResource
-   *        The XML resource to be validated via Schematron. May not be
-   *        <code>null</code>.
-   * @return The SVRL object containing the result. May be <code>null</code>
-   *         when interpreting the Schematron failed.
+   *        The XML resource to be validated via Schematron. May not be <code>null</code>.
+   * @return The SVRL object containing the result. May be <code>null</code> when interpreting the
+   *         Schematron failed.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
    */
@@ -226,13 +206,11 @@ public interface ISchematronResource extends IHasID <String>
    * {@link SchematronOutputType} object.
    *
    * @param aXMLNode
-   *        The DOM node to be validated via Schematron. May not be
-   *        <code>null</code>.
+   *        The DOM node to be validated via Schematron. May not be <code>null</code>.
    * @param sBaseURI
-   *        The Base URI of the XML document to be validated. May be
-   *        <code>null</code>.
-   * @return The SVRL object containing the result. May be <code>null</code>
-   *         when interpreting the Schematron failed.
+   *        The Base URI of the XML document to be validated. May be <code>null</code>.
+   * @return The SVRL object containing the result. May be <code>null</code> when interpreting the
+   *         Schematron failed.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
    */
@@ -245,10 +223,9 @@ public interface ISchematronResource extends IHasID <String>
    * {@link SchematronOutputType} object.
    *
    * @param aXMLSource
-   *        The XML source to be validated via Schematron. May not be
-   *        <code>null</code>.
-   * @return The SVRL object containing the result. May be <code>null</code>
-   *         when interpreting the Schematron failed.
+   *        The XML source to be validated via Schematron. May not be <code>null</code>.
+   * @return The SVRL object containing the result. May be <code>null</code> when interpreting the
+   *         Schematron failed.
    * @throws Exception
    *         In case the transformation somehow goes wrong.
    */

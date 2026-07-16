@@ -35,7 +35,7 @@ public class MainTestXsDecimalInXslt
   public static void main (final String [] args) throws Exception
   {
     // compile result of read file
-    final TransformerFactory aTF = SchematronTransformerFactory.getDefaultSaxonFirst ();
+    final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
     final Templates aTemplates = aTF.newTemplates (TransformSourceFactory.create (new File ("src/test/resources/xslt/test.xslt")));
     final StringStreamResult ret = new StringStreamResult ();
     aTemplates.newTransformer ()

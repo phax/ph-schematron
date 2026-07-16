@@ -31,7 +31,7 @@ import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedResource;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.SchematronResourceSCH;
-import com.helger.schematron.sch.TransformerCustomizerSCH;
+import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.svrl.AbstractSVRLMessage;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -45,7 +45,7 @@ public final class Issue174XsltTest
 
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromFile (aSchematron).build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));
@@ -58,7 +58,7 @@ public final class Issue174XsltTest
   @Test
   public void testIssueSCH () throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (SCH);
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromFile (SCH).build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (XML));
@@ -72,12 +72,12 @@ public final class Issue174XsltTest
   public void testIssueXSLT () throws Exception
   {
     // Convert SCH to XSLT
-    final TransformerCustomizerSCH aCustomizer = new TransformerCustomizerSCH ();
-    final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (new FileSystemResource (SCH),
-                                                                                  aCustomizer);
+    final SchematronSCHConfig aConfig = SchematronSCHConfig.builder (new FileSystemResource (SCH)).build ();
+    final Document aXsltDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (aConfig);
 
     // Load XSLT
-    final ISchematronXSLTBasedResource xslt = SchematronResourceXSLT.fromByteArray (XMLWriter.getNodeAsBytes (aXsltDoc));
+    final ISchematronXSLTBasedResource xslt = SchematronResourceXSLT.builderFromByteArray (XMLWriter.getNodeAsBytes (aXsltDoc))
+                                                                    .build ();
     assertTrue (xslt.isValidSchematron ());
 
     // Perform validation

@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>9.2.1-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
   </parent>
   <groupId>com.helger.maven</groupId>
   <artifactId>ph-schematron-maven-plugin</artifactId>
@@ -87,6 +87,10 @@
     
     <dependency>
       <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-isosch</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
     <dependency>
@@ -100,6 +104,10 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-pure</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-pure-xslt</artifactId>
     </dependency>
     <dependency>
       <groupId>org.sonatype.plexus</groupId>

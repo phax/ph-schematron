@@ -38,7 +38,7 @@ public final class Issue174SchXsltTest
   @Test
   public void testIssueSCH () throws Exception
   {
-    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromFile (SCH);
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.builderFromFile (SCH).build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (XML));

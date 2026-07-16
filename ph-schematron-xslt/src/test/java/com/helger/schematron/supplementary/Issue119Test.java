@@ -42,7 +42,8 @@ public final class Issue119Test
     LOGGER.info ("Spawn task");
     final Future <?> future = executor.submit ( () -> {
       LOGGER.info ("Loading Schematron");
-      final ISchematronResource aSV = SchematronResourceSCH.fromClassPath ("/issues/github119/EN16931-UBL-validation-preprocessed.sch");
+      final ISchematronResource aSV = SchematronResourceSCH.builderFromClassPath ("/issues/github119/EN16931-UBL-validation-preprocessed.sch")
+                                                           .build ();
       try
       {
         LOGGER.info ("Applying Schematron");

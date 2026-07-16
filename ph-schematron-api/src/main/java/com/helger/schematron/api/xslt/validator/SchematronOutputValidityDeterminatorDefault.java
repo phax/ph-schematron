@@ -24,8 +24,8 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 
 /**
- * The default implementation of {@link ISchematronOutputValidityDeterminator}
- * that interprets both failed asserts and successful reports as errors.
+ * The default implementation of {@link ISchematronOutputValidityDeterminator} that interprets both
+ * failed asserts and successful reports as errors.
  *
  * @author Philip Helger
  */
@@ -34,7 +34,7 @@ public class SchematronOutputValidityDeterminatorDefault implements ISchematronO
   @NonNull
   public EValidity getSchematronOutputValidity (@NonNull final SchematronOutputType aSO)
   {
-    for (final Object aObj : aSO.getActivePatternAndFiredRuleAndFailedAssert ())
+    for (final Object aObj : aSO.getActivePatternOrActiveGroupAndFiredRule ())
       if (aObj instanceof FailedAssert || aObj instanceof SuccessfulReport)
         return EValidity.INVALID;
     return EValidity.VALID;

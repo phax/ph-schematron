@@ -73,18 +73,16 @@ public final class SchematronResourceHelper
     ValueEnforcer.notNull (aSource, "Source");
     ValueEnforcer.notNull (aDRS, "DOMReaderSettings");
 
-    if (aSource instanceof DOMSource)
+    if (aSource instanceof final DOMSource aDomSrc)
     {
       // Node is already in DOMSource
-      return ((DOMSource) aSource).getNode ();
+      return aDomSrc.getNode ();
     }
 
-    if (aSource instanceof StreamSource)
+    if (aSource instanceof final StreamSource aStreamSource)
     {
       // In StreamSource it can either be a byte stream or a character stream or
       // a system ID
-      final StreamSource aStreamSource = (StreamSource) aSource;
-
       final InputStream aIS = aStreamSource.getInputStream ();
       if (aIS != null)
       {

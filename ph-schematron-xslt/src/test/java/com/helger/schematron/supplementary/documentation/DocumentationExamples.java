@@ -35,7 +35,7 @@ public final class DocumentationExamples
 {
   public static boolean validateXMLViaXSLTSchematron (@NonNull final File aSchematronFile, @NonNull final File aXMLFile) throws Exception
   {
-    final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
+    final ISchematronResource aResSCH = SchematronResourceSCH.builderFromFile (aSchematronFile).build ();
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
     return aResSCH.getSchematronValidity (new StreamSource (aXMLFile)).isValid ();
@@ -44,7 +44,7 @@ public final class DocumentationExamples
   public static SchematronOutputType validateXMLViaXSLTSchematronFull (@NonNull final File aSchematronFile,
                                                                        @NonNull final File aXMLFile) throws Exception
   {
-    final ISchematronResource aResSCH = SchematronResourceSCH.fromFile (aSchematronFile);
+    final ISchematronResource aResSCH = SchematronResourceSCH.builderFromFile (aSchematronFile).build ();
     if (!aResSCH.isValidSchematron ())
       throw new IllegalArgumentException ("Invalid Schematron!");
     return aResSCH.applySchematronValidationToSVRL (new StreamSource (aXMLFile));

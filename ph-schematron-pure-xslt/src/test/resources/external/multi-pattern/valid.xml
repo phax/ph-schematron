@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+  <book isbn="978-3-16-148410-0">
+    <author><name>Jane Doe</name></author>
+    <title>Some Book</title>
+  </book>
+</library>

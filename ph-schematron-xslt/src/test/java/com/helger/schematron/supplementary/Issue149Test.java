@@ -43,7 +43,7 @@ public final class Issue149Test
                        "  </pattern>\n" +
                        "</schema>\n";
 
-    final SchematronResourceSCH schResource = SchematronResourceSCH.fromString (sch, StandardCharsets.UTF_8);
+    final SchematronResourceSCH schResource = SchematronResourceSCH.builderFromString (sch, StandardCharsets.UTF_8).build ();
     final SchematronOutputType schematronOutputType = schResource.applySchematronValidationToSVRL (new StringStreamSource (xml));
 
     final SVRLMarshaller svrlMarshaller = new SVRLMarshaller ();

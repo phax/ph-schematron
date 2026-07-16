@@ -43,7 +43,7 @@ public final class SchematronResourceSCHTest
   @Test
   public void testReadValidSchematronValidXML () throws Exception
   {
-    final ISchematronResource aSchematron = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
+    final ISchematronResource aSchematron = SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON).build ();
     final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
     final SchematronOutputType aSO = aSchematron.applySchematronValidationToSVRL (aXML);
     assertNotNull ("Failed to parse Schematron output", aSO);
@@ -52,7 +52,8 @@ public final class SchematronResourceSCHTest
   @Test
   public void testReadValidSchematronInvalidXML () throws Exception
   {
-    final SchematronOutputType aSO = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON)
+    final SchematronOutputType aSO = SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON)
+                                                          .build ()
                                                           .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
                                                                                                                    ".does.not.exist"));
     assertNull ("Invalid XML", aSO);
@@ -61,7 +62,8 @@ public final class SchematronResourceSCHTest
   @Test
   public void testReadInvalidSchematronValidXML () throws Exception
   {
-    final SchematronOutputType aSO = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+    final SchematronOutputType aSO = SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+                                                          .build ()
                                                           .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE));
     assertNull ("Invalid Schematron", aSO);
   }
@@ -69,7 +71,8 @@ public final class SchematronResourceSCHTest
   @Test
   public void testReadInvalidSchematronInvalidXML () throws Exception
   {
-    final SchematronOutputType aSO = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+    final SchematronOutputType aSO = SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+                                                          .build ()
                                                           .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
                                                                                                                    ".does.not.exist"));
     assertNull ("Invalid Schematron and XML", aSO);
@@ -81,7 +84,9 @@ public final class SchematronResourceSCHTest
     try
     {
       // null-XML not allowed
-      SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((IReadableResource) null);
+      SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON)
+                           .build ()
+                           .applySchematronValidationToSVRL ((IReadableResource) null);
       fail ();
     }
     catch (final NullPointerException ex)
@@ -92,7 +97,7 @@ public final class SchematronResourceSCHTest
     try
     {
       // null-XML not allowed
-      SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON).applySchematronValidationToSVRL ((Source) null);
+      SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON).build ().applySchematronValidationToSVRL ((Source) null);
       fail ();
     }
     catch (final NullPointerException ex)
@@ -104,14 +109,16 @@ public final class SchematronResourceSCHTest
   @Test
   public void testReadISOSchematron2006SCH ()
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromClassPath ("external/schematron/iso-schematron-2006.sch");
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromClassPath ("external/schematron/iso-schematron-2006.sch")
+                                                            .build ();
     assertTrue (aSCH.isValidSchematron ());
   }
 
   @Test
   public void testReadISOSchematron2016SCH ()
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromClassPath ("external/schematron/iso-schematron-2016.sch");
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromClassPath ("external/schematron/iso-schematron-2016.sch")
+                                                            .build ();
     assertTrue (aSCH.isValidSchematron ());
   }
 }

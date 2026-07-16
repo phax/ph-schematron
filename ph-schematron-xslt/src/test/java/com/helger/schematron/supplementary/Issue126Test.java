@@ -39,8 +39,9 @@ public final class Issue126Test
   private static void _validateAndProduceSVRL (@NonNull final File aSchematron,
                                                @NonNull final File aXML) throws Exception
   {
-    final SchematronResourceSCH aSCH = SchematronResourceSCH.fromFile (aSchematron);
-    aSCH.setAllowForeignElements (true);
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromFile (aSchematron)
+                                                            .parameter ("allow-foreign", "true")
+                                                            .build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

@@ -40,7 +40,7 @@ public final class Issue083Test
   private static void _validateAndProduceSVRL (@NonNull final File aSchematron,
                                                @NonNull final File aXML) throws Exception
   {
-    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.fromFile (aSchematron);
+    final SchematronResourceSchXslt_XSLT2 aSCH = SchematronResourceSchXslt_XSLT2.builderFromFile (aSchematron).build ();
     aSCH.parameters ().put ("schxslt.compile.metadata", "false");
 
     SchematronDebug.setSaveIntermediateXSLTFiles (true);

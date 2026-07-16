@@ -43,9 +43,17 @@ import com.helger.xml.microdom.serialize.MicroReader;
 public final class SchematronTestHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTestHelper.class);
-  private static final ICommonsList <SchematronTestFile> SCH = _readDirIndex (new ClassPathResource ("external/test-sch/dirindex.xml"));
-  private static final ICommonsList <SchematronTestFile> SVRL = _readDirIndex (new ClassPathResource ("external/test-svrl/dirindex.xml"));
-  private static final ICommonsList <SchematronTestFile> XML = _readDirIndex (new ClassPathResource ("external/test-xml/dirindex.xml"));
+  private static final ICommonsList <SchematronTestFile> SCH = _readDirIndex (new ClassPathResource ("external/test-sch/dirindex.xml",
+                                                                                                     getCL ()));
+  private static final ICommonsList <SchematronTestFile> SVRL = _readDirIndex (new ClassPathResource ("external/test-svrl/dirindex.xml",
+                                                                                                      getCL ()));
+  private static final ICommonsList <SchematronTestFile> XML = _readDirIndex (new ClassPathResource ("external/test-xml/dirindex.xml",
+                                                                                                     getCL ()));
+
+  public static @NonNull ClassLoader getCL ()
+  {
+    return SchematronTestHelper.class.getClassLoader ();
+  }
 
   @NonNull
   private static ICommonsList <SchematronTestFile> _readDirIndex (@NonNull final IReadableResource aRes)

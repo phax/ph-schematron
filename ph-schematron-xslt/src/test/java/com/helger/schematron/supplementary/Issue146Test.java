@@ -67,7 +67,7 @@ public final class Issue146Test
     if (false)
       SchematronDebug.setDebugMode (true);
 
-    final SchematronResourceSCH aResSCH = SchematronResourceSCH.fromString (schematron, StandardCharsets.UTF_8);
+    final SchematronResourceSCH aResSCH = SchematronResourceSCH.builderFromString (schematron, StandardCharsets.UTF_8).build ();
     final boolean ans = aResSCH.isValidSchematron ();
     assertTrue (ans);
 
@@ -109,7 +109,7 @@ public final class Issue146Test
     if (false)
       SchematronDebug.setDebugMode (true);
 
-    final SchematronResourceSCH aResSCH = SchematronResourceSCH.fromString (schematron, StandardCharsets.UTF_8);
+    final SchematronResourceSCH aResSCH = SchematronResourceSCH.builderFromString (schematron, StandardCharsets.UTF_8).build ();
     final boolean ans = aResSCH.isValidSchematron ();
     assertTrue (ans);
 

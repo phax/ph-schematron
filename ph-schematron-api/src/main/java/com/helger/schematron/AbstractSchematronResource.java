@@ -45,8 +45,8 @@ import com.helger.xml.serialize.read.DOMReaderSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 
 /**
- * Abstract implementation of the {@link ISchematronResource} interface handling
- * the underlying resource and wrapping one method.
+ * Abstract implementation of the {@link ISchematronResource} interface handling the underlying
+ * resource and wrapping one method.
  *
  * @author Philip Helger
  */
@@ -54,27 +54,67 @@ import com.helger.xml.transform.TransformSourceFactory;
 public abstract class AbstractSchematronResource implements ISchematronResource
 {
   public static final boolean DEFAULT_USE_CACHE = true;
+  public static final boolean DEFAULT_LENIENT = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+  public static final boolean DEFAULT_TELEMETRY = false;
+  public static final boolean DEFAULT_PER_ASSERTION_RESULT_TELEMETRY = false;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSchematronResource.class);
 
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
-  private boolean m_bUseCache = DEFAULT_USE_CACHE;
-  private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+  private boolean m_bUseCache;
+  private boolean m_bLenient;
   private EntityResolver m_aEntityResolver;
+  // Runtime-only ph-telemetry toggles. Set by the engine builders; default off. Not part of the
+  // compile-time config (they don't affect the produced stylesheet).
+  private final boolean m_bUseTelemetry;
+  // Per-failed-assertion / successful-report spans, derived post-hoc from the SVRL
+  private final boolean m_bPerAssertionResultTelemetry;
+
+  protected AbstractSchematronResource (@NonNull final IReadableResource aResource)
+  {
+    this (aResource,
+          DEFAULT_USE_CACHE,
+          DEFAULT_LENIENT,
+          null,
+          DEFAULT_TELEMETRY,
+          DEFAULT_PER_ASSERTION_RESULT_TELEMETRY);
+  }
 
   /**
    * Constructor
    *
    * @param aResource
    *        The Schematron resource. May not be <code>null</code>.
+   * @param bUseCache
+   *        <code>true</code> to participate in the compilation cache, <code>false</code> to bypass
+   *        it.
+   * @param bLenient
+   *        <code>true</code> to allow deprecated Schematron namespaces, <code>false</code> for
+   *        strict mode.
+   * @param aEntityResolver
+   *        A custom entity resolver. May be <code>null</code> in which case a custom resolver is
+   *        used.
+   * @param bUseTelemetry
+   *        Use telemetry data?
+   * @param bPerAssertionResultTelemetry
+   *        Add assertion results to the telemetry data
    */
-  public AbstractSchematronResource (@NonNull final IReadableResource aResource)
+  protected AbstractSchematronResource (@NonNull final IReadableResource aResource,
+                                        final boolean bUseCache,
+                                        final boolean bLenient,
+                                        @Nullable final EntityResolver aEntityResolver,
+                                        final boolean bUseTelemetry,
+                                        final boolean bPerAssertionResultTelemetry)
   {
     m_aResource = ValueEnforcer.notNull (aResource, "Resource");
     m_sResourceID = aResource.getResourceID ();
+    m_bUseCache = bUseCache;
+    m_bLenient = bLenient;
     // Set a default entity resolver
-    m_aEntityResolver = DefaultEntityResolver.createOnDemand (aResource);
+    m_aEntityResolver = aEntityResolver != null ? aEntityResolver : DefaultEntityResolver.createOnDemand (aResource);
+    m_bUseTelemetry = bUseTelemetry;
+    m_bPerAssertionResultTelemetry = bPerAssertionResultTelemetry;
   }
 
   @NonNull
@@ -94,6 +134,15 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return m_bUseCache;
   }
 
+  /**
+   * @param bUseCache
+   *        <code>true</code> to participate in the compilation cache, <code>false</code> to bypass
+   *        it.
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).useCache(false).build()</code>). Will
+   *             remain for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public final void setUseCache (final boolean bUseCache)
   {
     m_bUseCache = bUseCache;
@@ -104,6 +153,15 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     return m_bLenient;
   }
 
+  /**
+   * @param bLenient
+   *        <code>true</code> to allow deprecated Schematron namespaces, <code>false</code> for
+   *        strict mode.
+   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
+   *             <code>SchematronResourceSCH.builder(res).lenient(true).build()</code>). Will remain
+   *             for backward compatibility.
+   */
+  @Deprecated (since = "10.0.0", forRemoval = false)
   public final void setLenient (final boolean bLenient)
   {
     m_bLenient = bLenient;
@@ -116,10 +174,9 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the Schematron or the
-   * XML to be validated. This can only be set before the Schematron is bound.
-   * If it is already bound an exception is thrown to indicate the unnecessity
-   * of the call.
+   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
+   * This can only be set before the Schematron is bound. If it is already bound an exception is
+   * thrown to indicate the unnecessity of the call.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -131,9 +188,31 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   }
 
   /**
-   * @return The {@link DOMReaderSettings} to be used for reading the XML files
-   *         to be validated. This includes the {@link EntityResolver} to be
-   *         used.
+   * @return <code>true</code> if runtime ph-telemetry (a {@code schematron.validate} span, the
+   *         aggregate counters and the duration histogram) is emitted during validation. Default is
+   *         <code>false</code>.
+   * @since 10.0.0
+   */
+  public final boolean isTelemetry ()
+  {
+    return m_bUseTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if per-assertion-result spans ({@code schematron.svrl.assertion}) are
+   *         emitted for failed-asserts / successful-reports in addition to the aggregate metrics.
+   *         Only meaningful when {@link #isTelemetry()} is also <code>true</code>. Default is
+   *         <code>false</code>.
+   * @since 10.0.0
+   */
+  public final boolean isPerAssertionResultTelemetry ()
+  {
+    return m_bPerAssertionResultTelemetry;
+  }
+
+  /**
+   * @return The {@link DOMReaderSettings} to be used for reading the XML files to be validated.
+   *         This includes the {@link EntityResolver} to be used.
    * @see #getEntityResolver()
    */
   @NonNull
@@ -150,18 +229,13 @@ public abstract class AbstractSchematronResource implements ISchematronResource
    * Helper class to handle DOM Document and base URI for reference
    *
    * @author Philip Helger
+   * @param doc
+   *        DOM Document. Never <code>null</code>.
+   * @param baseURI
+   *        The base URI of the document. May be <code>null</code>.
    */
-  protected static final class NodeAndBaseURI
-  {
-    private final Document m_aDoc;
-    private final String m_sBaseURI;
-
-    public NodeAndBaseURI (@NonNull final Document aDoc, @Nullable final String sBaseURI)
-    {
-      m_aDoc = aDoc;
-      m_sBaseURI = sBaseURI;
-    }
-  }
+  public static record NodeAndBaseURI (@NonNull Document doc, @Nullable String baseURI)
+  {}
 
   @Nullable
   @OverrideOnDemand
@@ -178,12 +252,14 @@ public abstract class AbstractSchematronResource implements ISchematronResource
       // Fall through
       // Happens e.g. for ResourceStreamSource with non-existing resources
     }
+
     if (aIS == null)
     {
       // Resource not found
       LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
       return null;
     }
+
     final Document aDoc = DOMReader.readXMLDOM (aIS, internalCreateDOMReaderSettings ());
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
@@ -213,7 +289,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return EValidity.INVALID;
 
-    return getSchematronValidity (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
+    return getSchematronValidity (aXMLNode.doc, aXMLNode.baseURI);
   }
 
   @NonNull
@@ -241,7 +317,7 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidation (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
+    return applySchematronValidation (aXMLNode.doc, aXMLNode.baseURI);
   }
 
   @Nullable
@@ -264,12 +340,11 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     // Don't check for valid Schematron upfront, because in case of a XSLT based
     // implementation and disabled caching, a Schematron might be evaluated
     // twice!
-
     final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
     if (aXMLNode == null)
       return null;
 
-    return applySchematronValidationToSVRL (aXMLNode.m_aDoc, aXMLNode.m_sBaseURI);
+    return applySchematronValidationToSVRL (aXMLNode.doc, aXMLNode.baseURI);
   }
 
   @Nullable
@@ -294,6 +369,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
                                        .append ("UseCache", m_bUseCache)
                                        .append ("Lenient", m_bLenient)
                                        .appendIfNotNull ("EntityResolver", m_aEntityResolver)
+                                       .append ("Telemetry", m_bUseTelemetry)
+                                       .append ("PerAssertionResultTelemetry", m_bPerAssertionResultTelemetry)
                                        .getToString ();
   }
 }

@@ -1,0 +1,123 @@
+/*
+ * Copyright (C) 2026 Philip Helger (www.helger.com)
+ * philip[at]helger[dot]com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.helger.schematron.purexslt;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import javax.xml.transform.Source;
+
+import org.junit.Test;
+
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
+import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+
+/**
+ * Acceptance test for {@link SchematronResourcePureXslt} ported from
+ * {@code com.helger.schematron.SchematronResourceSCHTest} in {@code ph-schematron-xslt}. Same
+ * happy-path / null-edge-case coverage adapted to the Saxon-native engine.
+ *
+ * @author Philip Helger
+ */
+public final class SchematronResourcePureXsltAcceptanceTest
+{
+  private static final String VALID_SCHEMATRON = "external/test-sch/valid01.sch";
+  private static final String VALID_XMLINSTANCE = "external/test-xml/valid01.xml";
+
+  @Test
+  public void testReadValidSchematronValidXML () throws Exception
+  {
+    final ISchematronResource aSchematron = SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON).build ();
+    final IReadableResource aXML = new ClassPathResource (VALID_XMLINSTANCE);
+    final SchematronOutputType aSO = aSchematron.applySchematronValidationToSVRL (aXML);
+    assertNotNull ("Failed to parse Schematron output", aSO);
+  }
+
+  @Test
+  public void testReadValidSchematronInvalidXML () throws Exception
+  {
+    final SchematronOutputType aSO = SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON)
+                                                               .build ()
+                                                               .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE +
+                                                                                                                        ".does.not.exist"));
+    assertNull ("Invalid XML", aSO);
+  }
+
+  @Test
+  public void testReadInvalidSchematronValidXML () throws Exception
+  {
+    try
+    {
+      SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON + ".does.not.exist")
+                                .build ()
+                                .applySchematronValidationToSVRL (new ClassPathResource (VALID_XMLINSTANCE));
+      fail ("Expected an exception or a null result when the Schematron source is missing");
+    }
+    catch (final Exception ex)
+    {
+      /* expected: PSReader cannot read a non-existent SCH and surfaces it */
+    }
+  }
+
+  @Test
+  public void testReadNull ()
+  {
+    try
+    {
+      SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON)
+                                .build ()
+                                .applySchematronValidationToSVRL ((IReadableResource) null);
+      fail ();
+    }
+    catch (final Exception ex)
+    {
+      /* expected */
+    }
+
+    try
+    {
+      SchematronResourcePureXslt.builderFromClassPath (VALID_SCHEMATRON)
+                                .build ()
+                                .applySchematronValidationToSVRL ((Source) null);
+      fail ();
+    }
+    catch (final Exception ex)
+    {
+      /* expected */
+    }
+  }
+
+  @Test
+  public void testReadISOSchematron2006SCH ()
+  {
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builderFromClassPath ("external/schematron/iso-schematron-2006.sch")
+                                                                      .build ();
+    assertTrue (aSch.isValidSchematron ());
+  }
+
+  @Test
+  public void testReadISOSchematron2016SCH ()
+  {
+    final SchematronResourcePureXslt aSch = SchematronResourcePureXslt.builderFromClassPath ("external/schematron/iso-schematron-2016.sch")
+                                                                      .build ();
+    assertTrue (aSch.isValidSchematron ());
+  }
+}

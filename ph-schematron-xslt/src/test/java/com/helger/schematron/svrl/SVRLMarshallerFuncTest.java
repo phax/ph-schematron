@@ -51,7 +51,7 @@ public final class SVRLMarshallerFuncTest
   @Test
   public void testCreate () throws Exception
   {
-    final ISchematronResource aSV = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON);
+    final ISchematronResource aSV = SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON).build ();
     assertNotNull ("Failed to parse Schematron", aSV);
     final Document aDoc = aSV.applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
     assertNotNull ("Failed to parse demo XML", aDoc);
@@ -101,7 +101,8 @@ public final class SVRLMarshallerFuncTest
   @Test
   public void testWriteValid () throws Exception
   {
-    final Document aDoc = SchematronResourceSCH.fromClassPath (VALID_SCHEMATRON)
+    final Document aDoc = SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON)
+                                               .build ()
                                                .applySchematronValidation (new ClassPathResource (VALID_XMLINSTANCE));
     assertNotNull (aDoc);
     final SchematronOutputType aSO = new SVRLMarshaller ().read (aDoc);
