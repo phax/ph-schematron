@@ -9,6 +9,8 @@ generated/
 .project
 .classpath
 .factorypath
-zz
+
+dependency-reduced-pom.xml
 IEC FDIS 19757-3.pdf
 IEC FDIS 19757-7.pdf
+zz
