@@ -165,11 +165,7 @@
         <artifactId>ph-schematron-validator</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>com.helger.schematron</groupId>
-        <artifactId>ph-schematron-benchmarks</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+      <!-- benchmarks and it don't need to be listed -->
     </dependencies>
   </dependencyManagement>
   

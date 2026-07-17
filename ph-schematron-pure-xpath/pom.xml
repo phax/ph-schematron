@@ -24,11 +24,12 @@
     <artifactId>ph-schematron-parent-pom</artifactId>
     <version>10.0.1-SNAPSHOT</version>
   </parent>
+  <!-- Legacy artifact ID -->
   <artifactId>ph-schematron-pure</artifactId>
   <packaging>jar</packaging>
   <name>ph-schematron-pure-xpath</name>
   <description>This package contains the 'Pure XPath' Schematron implementation</description>
-  <url>https://github.com/phax/ph-schematron/ph-schematron-pure</url>
+  <url>https://github.com/phax/ph-schematron/ph-schematron-pure-xpath</url>
   <inceptionYear>2014</inceptionYear>
   
   <licenses>
