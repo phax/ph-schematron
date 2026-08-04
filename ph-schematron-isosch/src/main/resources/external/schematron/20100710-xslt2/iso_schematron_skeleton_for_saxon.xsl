@@ -637,10 +637,14 @@ which require a preprocess.
 
 <xsl:template match="*" mode="stylesheetbody">
 	<!--xsl:template name="stylesheetbody"-->
-  <xsl:comment>Implementers: please note that overriding process-prolog or process-root is 
-    the preferred method for meta-stylesheets to use where possible. </xsl:comment><xsl:text>&#10;</xsl:text>
+	
+	<!-- [ph] added -->
+  <xsl:comment> Created with ph-schematron version of ISO Schematron XSLTs. </xsl:comment><xsl:text>&#10;</xsl:text>
+
+  <xsl:comment> Implementers: please note that overriding process-prolog or process-root is 
+    the preferred method for meta-stylesheets to use where possible. </xsl:comment><xsl:text>&#10;</xsl:text> 
  
-    <!-- These parameters may contain strings with the name and directory of the file being
+  <!-- These parameters may contain strings with the name and directory of the file being
    validated. For convenience, if the caller only has the information in a single string,
    that string could be put in fileDirParameter. The archives parameters are available
    for ZIP archives.
@@ -701,28 +705,26 @@ which require a preprocess.
   <xsl:text>&#10;&#10;</xsl:text>
 	<xsl:comment>MODE: SCHEMATRON-SELECT-FULL-PATH</xsl:comment><xsl:text>&#10;</xsl:text>
 	<xsl:comment>This mode can be used to generate an ugly though full XPath for locators</xsl:comment><xsl:text>&#10;</xsl:text>
-   		<axsl:template match="*" mode="schematron-select-full-path">
-   			<xsl:choose>
-   				<xsl:when test=" $full-path-notation = '1' ">
-   					<!-- Use for computers, but rather unreadable for humans -->
-					<axsl:apply-templates select="." mode="schematron-get-full-path"/>
+    <axsl:template match="*" mode="schematron-select-full-path">
+   	  <xsl:choose>
+   		  <xsl:when test=" $full-path-notation = '1' ">
+   		  	<!-- Use for computers, but rather unreadable for humans -->
+				  <axsl:apply-templates select="." mode="schematron-get-full-path"/>
 				</xsl:when>
-   				<xsl:when test=" $full-path-notation = '2' ">
-   					<!-- Use for humans, but no good for paths unless namespaces are known out-of-band -->
+   			<xsl:when test=" $full-path-notation = '2' ">
+   				<!-- Use for humans, but no good for paths unless namespaces are known out-of-band -->
 					<axsl:apply-templates select="." mode="schematron-get-full-path-2"/>
 				</xsl:when>
-   				<xsl:when test=" $full-path-notation = '3' "> 
-   					<!-- Obsolescent. Use for humans, but no good for paths unless namespaces are known out-of-band -->
+   			<xsl:when test=" $full-path-notation = '3' "> 
+   				<!-- Obsolescent. Use for humans, but no good for paths unless namespaces are known out-of-band -->
 					<axsl:apply-templates select="." mode="schematron-get-full-path-3"/>
 				</xsl:when>
-
-                   <xsl:otherwise >
-                       <!-- Use for computers, but rather unreadable for humans -->
-                    <axsl:apply-templates select="." mode="schematron-get-full-path"/>
-                </xsl:otherwise>
+        <xsl:otherwise >
+          <!-- Use for computers, but rather unreadable for humans -->
+          <axsl:apply-templates select="." mode="schematron-get-full-path"/>
+        </xsl:otherwise>
 			</xsl:choose>
 		</axsl:template>
-	
 
 		<xsl:text>&#10;&#10;</xsl:text>
 		<xsl:comment>MODE: SCHEMATRON-FULL-PATH</xsl:comment><xsl:text>&#10;</xsl:text>
@@ -732,8 +734,8 @@ which require a preprocess.
 			<xsl:choose>
 				<xsl:when test="//iso:schema[@queryBinding='xslt2']">
 					<!-- XSLT2 syntax -->
-			<axsl:text>/</axsl:text>		
-			<axsl:choose>
+			    <axsl:text>/</axsl:text>		
+			    <axsl:choose>
       			<axsl:when test="namespace-uri()=''"><axsl:value-of select="name()"/></axsl:when>
       			<axsl:otherwise>
       				<axsl:text>*:</axsl:text>
@@ -742,44 +744,39 @@ which require a preprocess.
       				<axsl:value-of select="namespace-uri()"/>
       				<axsl:text>']</axsl:text>
       			</axsl:otherwise>
-    		</axsl:choose>
-    		<axsl:variable name="preceding" select=
-    		"count(preceding-sibling::*[local-name()=local-name(current())
-	  		                             and namespace-uri() = namespace-uri(current())])" />
-			<axsl:text>[</axsl:text>
-	  		<axsl:value-of select="1+ $preceding"/>
-	  		<axsl:text>]</axsl:text>
-		</xsl:when>
+    		  </axsl:choose>
+    		  <axsl:variable name="preceding" select=
+    		     "count(preceding-sibling::*[local-name()=local-name(current())
+	  		                                 and namespace-uri() = namespace-uri(current())])" />
+		     	<axsl:text>[</axsl:text>
+	  		  <axsl:value-of select="1 + $preceding"/>
+	  		  <axsl:text>]</axsl:text>
+		    </xsl:when>
 
-		<xsl:otherwise>
-			<!-- XSLT1 syntax -->
-
-			<axsl:text>/</axsl:text>
-			<axsl:choose>
-			<axsl:when test="namespace-uri()=''">
-			<axsl:value-of select="name()"/>
-			<axsl:variable name="p_1" select="1+
-			count(preceding-sibling::*[name()=name(current())])" />
-		<axsl:if test="$p_1&gt;1 or following-sibling::*[name()=name(current())]">
-		  <xsl:text/>[<axsl:value-of select="$p_1"/>]<xsl:text/>
-		</axsl:if>
-		</axsl:when>
-		<axsl:otherwise>
-		<axsl:text>*[local-name()='</axsl:text>
-		<axsl:value-of select="local-name()"/>
-		<axsl:text>']</axsl:text>
-		<axsl:variable name="p_2" select="1+
-		count(preceding-sibling::*[local-name()=local-name(current())])" />
-		<axsl:if test="$p_2&gt;1 or following-sibling::*[local-name()=local-name(current())]">
-		  <xsl:text/>[<axsl:value-of select="$p_2"/>]<xsl:text/>
-		</axsl:if>
-		</axsl:otherwise>
-		</axsl:choose> 
-		</xsl:otherwise>
-
-	</xsl:choose>
-       	 	</axsl:template>
-       	 	
+    		<xsl:otherwise>
+    			<!-- XSLT1 syntax -->
+    			<axsl:text>/</axsl:text>
+    			<axsl:choose>
+      			<axsl:when test="namespace-uri()=''">
+        			<axsl:value-of select="name()"/>
+    	    		<axsl:variable name="p_1" select="1 + count(preceding-sibling::*[name()=name(current())])" />
+    		      <axsl:if test="$p_1 &gt; 1 or following-sibling::*[name()=name(current())]">
+    		        <xsl:text/>[<axsl:value-of select="$p_1"/>]<xsl:text/>
+    		      </axsl:if>
+        		</axsl:when>
+    	  	  <axsl:otherwise>
+		          <axsl:text>*[local-name()='</axsl:text>
+          		<axsl:value-of select="local-name()"/>
+          		<axsl:text>']</axsl:text>
+          		<axsl:variable name="p_2" select="1 + count(preceding-sibling::*[local-name()=local-name(current())])" />
+          		<axsl:if test="$p_2 &gt; 1 or following-sibling::*[local-name()=local-name(current())]">
+          		  <xsl:text/>[<axsl:value-of select="$p_2"/>]<xsl:text/>
+          		</axsl:if>
+           	</axsl:otherwise>
+		      </axsl:choose> 
+		    </xsl:otherwise>
+    	</xsl:choose>
+    </axsl:template>
        	 	
 		<axsl:template match="@*" mode="schematron-get-full-path">
 			<xsl:choose>
