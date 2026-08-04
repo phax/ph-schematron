@@ -454,7 +454,7 @@ public final class PureXsltStylesheetGenerator
         {
           final Element aOut = _addSvrlChild (aParent, "span");
           if (StringHelper.isNotEmpty (aSp.getClazz ()))
-            aOut.setAttribute ("class", _escapeAvt (aSp.getClazz ()));
+            aOut.setAttribute ("class", _escapeAttrValue (aSp.getClazz ()));
           for (final Object aPiece : aSp.getAllContentElements ())
             _appendRichTextPiece (aOut, aPiece);
         }
@@ -558,7 +558,7 @@ public final class PureXsltStylesheetGenerator
    * quantifiers like {@code {4}}; without this escaping Saxon would evaluate them at runtime.
    */
   @NonNull
-  private static String _escapeAvt (@NonNull final String sValue)
+  private static String _escapeAttrValue (@NonNull final String sValue)
   {
     if (sValue.indexOf ('{') < 0 && sValue.indexOf ('}') < 0)
       return sValue;
@@ -585,7 +585,7 @@ public final class PureXsltStylesheetGenerator
   private static void _appendRoleAttr (@NonNull final Element aSvrlOut, @Nullable final PSLinkableGroup aLinkable)
   {
     if (aLinkable != null && StringHelper.isNotEmpty (aLinkable.getRole ()))
-      aSvrlOut.setAttribute ("role", _escapeAvt (aLinkable.getRole ()));
+      aSvrlOut.setAttribute ("role", _escapeAttrValue (aLinkable.getRole ()));
   }
 
   /**
@@ -600,11 +600,11 @@ public final class PureXsltStylesheetGenerator
     if (aRich == null)
       return;
     if (StringHelper.isNotEmpty (aRich.getSee ()))
-      aSvrlOut.setAttribute ("see", _escapeAvt (aRich.getSee ()));
+      aSvrlOut.setAttribute ("see", _escapeAttrValue (aRich.getSee ()));
     if (StringHelper.isNotEmpty (aRich.getIcon ()))
-      aSvrlOut.setAttribute ("icon", _escapeAvt (aRich.getIcon ()));
+      aSvrlOut.setAttribute ("icon", _escapeAttrValue (aRich.getIcon ()));
     if (StringHelper.isNotEmpty (aRich.getFPI ()))
-      aSvrlOut.setAttribute ("fpi", _escapeAvt (aRich.getFPI ()));
+      aSvrlOut.setAttribute ("fpi", _escapeAttrValue (aRich.getFPI ()));
     if (StringHelper.isNotEmpty (aRich.getXmlLang ()))
       aSvrlOut.setAttributeNS (XMLConstants.XML_NS_URI, "xml:lang", aRich.getXmlLang ());
     if (aRich.getXmlSpace () != null)
@@ -641,9 +641,9 @@ public final class PureXsltStylesheetGenerator
       final Element aRef = _addSvrlChild (aSvrlParent, "property-reference");
       aRef.setAttribute ("property", sID);
       if (StringHelper.isNotEmpty (aProp.getRole ()))
-        aRef.setAttribute ("role", _escapeAvt (aProp.getRole ()));
+        aRef.setAttribute ("role", _escapeAttrValue (aProp.getRole ()));
       if (StringHelper.isNotEmpty (aProp.getScheme ()))
-        aRef.setAttribute ("scheme", _escapeAvt (aProp.getScheme ()));
+        aRef.setAttribute ("scheme", _escapeAttrValue (aProp.getScheme ()));
       // SVRL property-reference wraps its text content in an <svrl:text> child
       final Element aText = _addSvrlChild (aRef, "text");
       _appendPropertyContent (aText, aProp);
@@ -671,7 +671,7 @@ public final class PureXsltStylesheetGenerator
 
     final String sSvrlElementName = bIsAssert ? "failed-assert" : "successful-report";
     final Element aOut = _addSvrlChild (aIf, sSvrlElementName);
-    aOut.setAttribute ("test", _escapeAvt (sTest));
+    aOut.setAttribute ("test", _escapeAttrValue (sTest));
     // Populate the SVRL location attribute (required by the SVRL XSD) with the canonical XPath of
     // the offending context node, evaluated at runtime. XSLT 3.0 / 2.x can express this as an
     // attribute value template (fn:path(.) resp. phsch:path(.)). XSLT 1.0 has neither, so the
@@ -688,9 +688,9 @@ public final class PureXsltStylesheetGenerator
       aApply.setAttribute ("mode", PATH_MODE);
     }
     if (StringHelper.isNotEmpty (aAR.getID ()))
-      aOut.setAttribute ("id", _escapeAvt (aAR.getID ()));
+      aOut.setAttribute ("id", _escapeAttrValue (aAR.getID ()));
     if (StringHelper.isNotEmpty (aAR.getFlag ()))
-      aOut.setAttribute ("flag", _escapeAvt (aAR.getFlag ()));
+      aOut.setAttribute ("flag", _escapeAttrValue (aAR.getFlag ()));
     // Per ISO/IEC 19757-3 Annex D, only role belongs on failed-assert / successful-report;
     // see/icon/fpi belong on the inner <svrl:text> (human-text production).
     _appendRoleAttr (aOut, aAR.getLinkable ());
@@ -727,11 +727,11 @@ public final class PureXsltStylesheetGenerator
 
     // <svrl:fired-rule context="..."/>
     final Element aFired = _addSvrlChild (aTemplate, "fired-rule");
-    aFired.setAttribute ("context", _escapeAvt (aRule.getContext ()));
+    aFired.setAttribute ("context", _escapeAttrValue (aRule.getContext ()));
     if (StringHelper.isNotEmpty (aRule.getID ()))
-      aFired.setAttribute ("id", _escapeAvt (aRule.getID ()));
+      aFired.setAttribute ("id", _escapeAttrValue (aRule.getID ()));
     if (StringHelper.isNotEmpty (aRule.getFlag ()))
-      aFired.setAttribute ("flag", _escapeAvt (aRule.getFlag ()));
+      aFired.setAttribute ("flag", _escapeAttrValue (aRule.getFlag ()));
     // Per ISO/IEC 19757-3 Annex D, <svrl:fired-rule> takes only role from the source rule (see /
     // icon / fpi are not allowed on fired-rule).
     _appendRoleAttr (aFired, aRule.getLinkable ());
