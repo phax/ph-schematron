@@ -44,6 +44,7 @@ import com.helger.schematron.model.IPSElement;
 import com.helger.schematron.model.IPSHasMixedContent;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSDiagnostic;
+import com.helger.schematron.model.PSForeignElementVisitor;
 import com.helger.schematron.model.PSName;
 import com.helger.schematron.model.PSPattern;
 import com.helger.schematron.model.PSPhase;
@@ -62,6 +63,7 @@ import com.helger.schematron.pure.xpath.XPathEvaluationContext;
 import com.helger.schematron.pure.xpath.XPathEvaluationHelper;
 import com.helger.schematron.pure.xpath.XPathLetVariableResolver;
 import com.helger.xml.XMLHelper;
+import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 import net.sf.saxon.dom.DOMNodeWrapper;
@@ -437,6 +439,22 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     return aCompiler;
   }
 
+  /**
+   * @param aForeignElement
+   *        The foreign element to be described. May not be <code>null</code>.
+   * @return A description of the foreign element, containing the element name and the namespace URI
+   *         (if any). Never <code>null</code>.
+   */
+  @NonNull
+  private static String _getForeignElementDescription (@NonNull final IMicroElement aForeignElement)
+  {
+    final String sNamespaceURI = aForeignElement.getNamespaceURI ();
+    return "<" +
+           aForeignElement.getTagName () +
+           ">" +
+           (StringHelper.isEmpty (sNamespaceURI) ? " without a namespace" : " from namespace '" + sNamespaceURI + "'");
+  }
+
   @NonNull
   public PSXPathBoundSchema bind () throws SchematronBindException
   {
@@ -448,6 +466,14 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
+
+    // The pure engine can only evaluate Schematron elements and XPath expressions - all foreign
+    // elements (usually XSLT ones) are silently ignored. Tell the user about it
+    // (see https://github.com/phax/ph-schematron/issues/186)
+    PSForeignElementVisitor.forEachForeignElement (aSchema,
+                                                   (aOwner, aForeignElement) -> warn (aOwner,
+                                                                                      "The pure Schematron engine ignores the foreign element " +
+                                                                                              _getForeignElementDescription (aForeignElement)));
 
     final XPathCompiler aCompiler = _createXPathCompiler ();
 
