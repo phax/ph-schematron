@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.concurrent.Immutable;
+import com.helger.xml.XMLFactory;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 
@@ -179,6 +180,7 @@ public final class SchematronTransformerFactory
                     ")");
 
     final TransformerFactory aFactory = new TransformerFactoryImpl ();
+    XMLFactory.defaultCustomizeTransformerFactory (aFactory);
 
     // Maintain position #52
     aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
