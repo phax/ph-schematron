@@ -17,6 +17,7 @@
 package com.helger.schematron.saxon;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
@@ -50,6 +51,16 @@ public final class SchematronTransformerFactory
    * reference it; new code should not need it.
    */
   public static final String SAXON_TRANSFORMER_FACTORY_CLASS = "net.sf.saxon.TransformerFactoryImpl";
+
+  /**
+   * The default value, whether XInclude processing is enabled or not. Since v10.0.1 XInclude is
+   * disabled by default, because it allows for the inclusion of arbitrary local and remote
+   * resources.
+   *
+   * @since 10.0.1
+   */
+  public static final boolean DEFAULT_ALLOW_XINCLUDE = false;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTransformerFactory.class);
 
   private static final class SingletonHolder
@@ -58,6 +69,7 @@ public final class SchematronTransformerFactory
                                                                          new DefaultTransformURIResolver ());
   }
 
+  private static final AtomicBoolean ALLOW_XINCLUDE = new AtomicBoolean (DEFAULT_ALLOW_XINCLUDE);
   private static Consumer <TransformerFactory> s_aFactoryCustomizer;
 
   private SchematronTransformerFactory ()
@@ -107,10 +119,42 @@ public final class SchematronTransformerFactory
   }
 
   /**
+   * @return <code>true</code> if XInclude processing is enabled in all newly created
+   *         {@link TransformerFactory} objects, <code>false</code> if not. The default is
+   *         {@link #DEFAULT_ALLOW_XINCLUDE}.
+   * @see #setAllowXInclude(boolean)
+   * @since 10.0.1
+   */
+  public static boolean isAllowXInclude ()
+  {
+    return ALLOW_XINCLUDE.get ();
+  }
+
+  /**
+   * Enable or disable XInclude processing (#86) for all {@link TransformerFactory} objects created
+   * afterwards. XInclude is disabled by default, because it allows a Schematron file to pull in
+   * arbitrary local and remote resources.
+   * <p>
+   * Note: {@link TransformerFactory} objects as well as the compiled XSLT templates derived from
+   * them are cached internally. Therefore this method must be called <b>before</b> the first
+   * Schematron file is processed - a later change has no effect on the already created artefacts.
+   *
+   * @param bAllowXInclude
+   *        <code>true</code> to allow XInclude processing, <code>false</code> to disallow it.
+   * @see #isAllowXInclude()
+   * @since 10.0.1
+   */
+  public static void setAllowXInclude (final boolean bAllowXInclude)
+  {
+    ALLOW_XINCLUDE.set (bAllowXInclude);
+  }
+
+  /**
    * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
-   * applied: line numbering (#52) and XInclude (#86) are enabled. Optionally enables Saxon's
-   * {@code COMPILE_WITH_TRACING} feature so that stylesheets compiled by the returned factory emit
-   * per-instruction events to a {@link net.sf.saxon.lib.TraceListener} at execution time.
+   * applied: line numbering (#52) is enabled and XInclude (#86) is enabled or disabled according to
+   * {@link #isAllowXInclude()}. Optionally enables Saxon's {@code COMPILE_WITH_TRACING} feature so
+   * that stylesheets compiled by the returned factory emit per-instruction events to a
+   * {@link net.sf.saxon.lib.TraceListener} at execution time.
    * <p>
    * Tracing disables several Saxon optimisations and typically costs 1.5&times;&ndash;3&times;
    * wall-clock per transform; callers should treat trace-enabled factories as distinct from the
@@ -125,16 +169,22 @@ public final class SchematronTransformerFactory
   @NonNull
   public static TransformerFactory createTransformerFactory (final boolean bEnableTracing)
   {
+    final boolean bAllowXInclude = isAllowXInclude ();
+
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Calling createTransformerFactory (tracing=" + bEnableTracing + ")");
+      LOGGER.debug ("Calling createTransformerFactory (tracing=" +
+                    bEnableTracing +
+                    "; XInclude=" +
+                    bAllowXInclude +
+                    ")");
 
     final TransformerFactory aFactory = new TransformerFactoryImpl ();
 
     // Maintain position #52
     aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
 
-    // Allow XInclude #86
-    aFactory.setAttribute (FeatureKeys.XINCLUDE, Boolean.TRUE);
+    // Allow XInclude #86 - disabled by default for security reasons
+    aFactory.setAttribute (FeatureKeys.XINCLUDE, Boolean.valueOf (bAllowXInclude));
 
     // Tracing is conditional
     if (bEnableTracing)
@@ -152,7 +202,8 @@ public final class SchematronTransformerFactory
 
   /**
    * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
-   * applied: line numbering (#52) and XInclude (#86) are enabled.
+   * applied: line numbering (#52) is enabled and XInclude (#86) is enabled or disabled according to
+   * {@link #isAllowXInclude()}.
    *
    * @param aErrorListener
    *        An optional XSLT error listener to be used. May be <code>null</code>.
@@ -170,9 +221,10 @@ public final class SchematronTransformerFactory
 
   /**
    * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
-   * applied: line numbering (#52) and XInclude (#86) are enabled. Optionally enables Saxon's
-   * {@code COMPILE_WITH_TRACING} feature so that stylesheets compiled by the returned factory emit
-   * per-instruction events to a {@link net.sf.saxon.lib.TraceListener} at execution time.
+   * applied: line numbering (#52) is enabled and XInclude (#86) is enabled or disabled according to
+   * {@link #isAllowXInclude()}. Optionally enables Saxon's {@code COMPILE_WITH_TRACING} feature so
+   * that stylesheets compiled by the returned factory emit per-instruction events to a
+   * {@link net.sf.saxon.lib.TraceListener} at execution time.
    * <p>
    * Tracing disables several Saxon optimisations and typically costs 1.5&times;&ndash;3&times;
    * wall-clock per transform; callers should treat trace-enabled factories as distinct from the
