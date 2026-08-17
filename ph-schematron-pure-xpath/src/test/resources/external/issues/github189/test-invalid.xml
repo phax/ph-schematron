@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3">
+  <code code="RAP" codeSystem="2.16.840.1.113883.6.1"/>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <entry>
+            <observation classCode="OBS" moodCode="EVN">
+              <code code="1234-5"/>
+              <value value="42"/>
+            </observation>
+          </entry>
+          <entry>
+            <!-- The missing hl7:value must trigger the assertion -->
+            <observation classCode="OBS" moodCode="EVN">
+              <code code="6789-0"/>
+            </observation>
+          </entry>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
