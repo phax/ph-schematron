@@ -14,7 +14,16 @@ Schematron is an XML based validation language to validate XML documents.
 
 Schematron is part of the ISO 19757 standard "Information technology — Document Schema Definition Languages (DSDL)", Part 3 "Rule-based validation — Schematron".
 
-See **[the Wiki](https://github.com/phax/ph-schematron/wiki)** for more details.
+## Documentation
+
+The full documentation is in the **[Wiki](https://github.com/phax/ph-schematron/wiki)**:
+
+* [Schematron Best Practices](https://github.com/phax/ph-schematron/wiki/Schematron-Best-Practices)
+* [News and noteworthy](https://github.com/phax/ph-schematron/wiki/News-and-noteworthy)
+* [Maven plugin](https://github.com/phax/ph-schematron/wiki/Maven-plugin)
+* [ANT tasks](https://github.com/phax/ph-schematron/wiki/ANT-tasks)
+* [Migrations](https://github.com/phax/ph-schematron/wiki/Migrations)
+* [License](https://github.com/phax/ph-schematron/wiki/License)
 
 The project is licensed under Apache 2.0 license.
 
