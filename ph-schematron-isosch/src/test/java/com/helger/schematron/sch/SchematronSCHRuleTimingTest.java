@@ -52,6 +52,7 @@ public final class SchematronSCHRuleTimingTest
   private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid01.sch");
   private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid01.xml");
 
+  // TODO ph-telemetry 1.0.2: replace the local test doubles below with com.helger.telemetry.mock.CapturingTelemetry
   /** Minimal in-memory meter that only captures the rule-duration histogram. */
   private static final class CapturingMeter implements ITelemetryMeterSPI
   {

@@ -57,6 +57,8 @@ import com.helger.telemetry.TelemetryAttributes;
 @ThreadSafe
 public final class CapturingTelemetry implements ITelemetryTracerSPI, ITelemetryMeterSPI
 {
+  // TODO ph-telemetry 1.0.2: replace this class with com.helger.telemetry.mock.CapturingTelemetry
+
   /**
    * Snapshot of one captured span.
    *

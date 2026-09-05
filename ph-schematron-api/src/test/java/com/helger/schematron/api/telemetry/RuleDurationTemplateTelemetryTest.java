@@ -44,6 +44,7 @@ import com.helger.telemetry.TelemetryMetrics;
  */
 public final class RuleDurationTemplateTelemetryTest
 {
+  // TODO ph-telemetry 1.0.2: replace the local test doubles below with com.helger.telemetry.mock.CapturingTelemetry
   /** Minimal in-memory meter that only captures histogram recordings. */
   private static final class CapturingMeter implements ITelemetryMeterSPI
   {
