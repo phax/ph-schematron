@@ -41,11 +41,14 @@ import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SaxonTraceListenerInstaller;
 import com.helger.schematron.api.telemetry.SchematronTraceListener;
+import com.helger.schematron.saxon.SaxonDOMSource;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.LoggingTransformErrorListener;
+
+import net.sf.saxon.jaxp.TransformerImpl;
 
 /**
  * Stateless utility that applies a previously-compiled {@link ISchematronXSLTBasedProvider
@@ -162,7 +165,19 @@ public final class SchematronXSLTValidator
     if (aTelemetry != null)
       SaxonTraceListenerInstaller.install (aTransformer, new SchematronTraceListener (aTelemetry));
 
-    aTransformer.transform (aSource, new DOMResult (ret));
+    Source aEffectiveSource = aSource;
+    if (aSource instanceof final SaxonDOMSource aDOMSource &&
+        aDOMSource.getNode () instanceof Document &&
+        aTransformer instanceof final TransformerImpl aSaxonTransformer)
+    {
+      // Repeated XPath navigation over a wrapped DOM is expensive, especially for
+      // large sibling lists. Build the configured Saxon tree once per validation.
+      aEffectiveSource = aSaxonTransformer.getUnderlyingController ()
+                                         .getConfiguration ()
+                                         .buildDocumentTree (aSource)
+                                         .getRootNode ();
+    }
+    aTransformer.transform (aEffectiveSource, new DOMResult (ret));
 
     if (SchematronDebug.isShowCreatedSVRL ())
       LOGGER.info ("Created SVRL:\n" + XMLWriter.getNodeAsString (ret));
