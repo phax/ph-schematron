@@ -19,25 +19,15 @@ package com.helger.schematron.sch;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.LongSupplier;
-
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.telemetry.ITelemetryCounter;
-import com.helger.telemetry.ITelemetryGauge;
-import com.helger.telemetry.ITelemetryHistogram;
-import com.helger.telemetry.ITelemetryMeterSPI;
-import com.helger.telemetry.ITelemetryUpDownCounter;
-import com.helger.telemetry.TelemetryMetrics;
+import com.helger.telemetry.mock.CapturingTelemetry;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
@@ -52,63 +42,17 @@ public final class SchematronSCHRuleTimingTest
   private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid01.sch");
   private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid01.xml");
 
-  // TODO ph-telemetry 1.0.2: replace the local test doubles below with com.helger.telemetry.mock.CapturingTelemetry
-  /** Minimal in-memory meter that only captures the rule-duration histogram. */
-  private static final class CapturingMeter implements ITelemetryMeterSPI
-  {
-    private final List <Double> m_aRuleDurations = new CopyOnWriteArrayList <> ();
-
-    @Override
-    @NonNull
-    public ITelemetryHistogram createHistogram (@NonNull final String sName,
-                                                @Nullable final String sDescription,
-                                                @Nullable final String sUnit)
-    {
-      if (CSchematronTelemetry.METRIC_RULE_DURATION.equals (sName))
-        return (dValue, aAttrs) -> m_aRuleDurations.add (Double.valueOf (dValue));
-      return (dValue, aAttrs) -> {};
-    }
-
-    @Override
-    @NonNull
-    public ITelemetryCounter createCounter (@NonNull final String sName,
-                                            @Nullable final String sDescription,
-                                            @Nullable final String sUnit)
-    {
-      return (nValue, aAttrs) -> {};
-    }
-
-    @Override
-    @NonNull
-    public ITelemetryUpDownCounter createUpDownCounter (@NonNull final String sName,
-                                                        @Nullable final String sDescription,
-                                                        @Nullable final String sUnit)
-    {
-      return (nValue, aAttrs) -> {};
-    }
-
-    @Override
-    @NonNull
-    public ITelemetryGauge createGauge (@NonNull final String sName,
-                                        @Nullable final String sDescription,
-                                        @Nullable final String sUnit,
-                                        @NonNull final LongSupplier aSupplier)
-    {
-      return () -> {};
-    }
-  }
-
   @After
   public void uninstall ()
   {
-    TelemetryMetrics.install (null);
+    CapturingTelemetry.uninstall ();
   }
 
   @Test
   public void testPerRuleExecutionEmitsRuleDuration () throws Exception
   {
-    final CapturingMeter aMeter = new CapturingMeter ();
-    TelemetryMetrics.install (aMeter);
+    final CapturingTelemetry aCapture = new CapturingTelemetry ();
+    aCapture.install ();
 
     final SchematronResourceSCH aValidator = SchematronResourceSCH.builder (VALID_SCHEMATRON)
                                                                   .telemetry (true)
@@ -121,8 +65,9 @@ public final class SchematronSCHRuleTimingTest
     assertNotNull (aSVRL);
 
     // Tracing was forced and at least one match template (rule) duration was recorded
-    assertTrue ("Expected at least one rule.duration entry, got " + aMeter.m_aRuleDurations.size (),
-                aMeter.m_aRuleDurations.size () >= 1);
-    aMeter.m_aRuleDurations.forEach (x -> assertTrue (x.doubleValue () >= 0.0));
+    final ICommonsList <Double> aRuleDurations = aCapture.getHistogramValues (CSchematronTelemetry.METRIC_RULE_DURATION);
+    assertTrue ("Expected at least one rule.duration entry, got " + aRuleDurations.size (),
+                aRuleDurations.size () >= 1);
+    aRuleDurations.forEach (x -> assertTrue (x.doubleValue () >= 0.0));
   }
 }

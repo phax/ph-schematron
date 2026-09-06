@@ -17,23 +17,12 @@
 package com.helger.schematron.api.telemetry;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.LongSupplier;
-
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.junit.After;
 import org.junit.Test;
 
-import com.helger.telemetry.ITelemetryCounter;
-import com.helger.telemetry.ITelemetryGauge;
-import com.helger.telemetry.ITelemetryHistogram;
-import com.helger.telemetry.ITelemetryMeterSPI;
-import com.helger.telemetry.ITelemetryUpDownCounter;
-import com.helger.telemetry.TelemetryMetrics;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.telemetry.mock.CapturingTelemetry;
 
 /**
  * Test for {@link RuleDurationTemplateTelemetry} - it records a
@@ -44,63 +33,17 @@ import com.helger.telemetry.TelemetryMetrics;
  */
 public final class RuleDurationTemplateTelemetryTest
 {
-  // TODO ph-telemetry 1.0.2: replace the local test doubles below with com.helger.telemetry.mock.CapturingTelemetry
-  /** Minimal in-memory meter that only captures histogram recordings. */
-  private static final class CapturingMeter implements ITelemetryMeterSPI
-  {
-    private final List <Double> m_aRuleDurations = new CopyOnWriteArrayList <> ();
-
-    @Override
-    @NonNull
-    public ITelemetryHistogram createHistogram (@NonNull final String sName,
-                                                @Nullable final String sDescription,
-                                                @Nullable final String sUnit)
-    {
-      if (CSchematronTelemetry.METRIC_RULE_DURATION.equals (sName))
-        return (dValue, aAttrs) -> m_aRuleDurations.add (Double.valueOf (dValue));
-      return (dValue, aAttrs) -> {};
-    }
-
-    @Override
-    @NonNull
-    public ITelemetryCounter createCounter (@NonNull final String sName,
-                                            @Nullable final String sDescription,
-                                            @Nullable final String sUnit)
-    {
-      return (nValue, aAttrs) -> {};
-    }
-
-    @Override
-    @NonNull
-    public ITelemetryUpDownCounter createUpDownCounter (@NonNull final String sName,
-                                                        @Nullable final String sDescription,
-                                                        @Nullable final String sUnit)
-    {
-      return (nValue, aAttrs) -> {};
-    }
-
-    @Override
-    @NonNull
-    public ITelemetryGauge createGauge (@NonNull final String sName,
-                                        @Nullable final String sDescription,
-                                        @Nullable final String sUnit,
-                                        @NonNull final LongSupplier aSupplier)
-    {
-      return () -> {};
-    }
-  }
-
   @After
   public void uninstall ()
   {
-    TelemetryMetrics.install (null);
+    CapturingTelemetry.uninstall ();
   }
 
   @Test
   public void testRecordsMatchTemplatesOnly ()
   {
-    final CapturingMeter aMeter = new CapturingMeter ();
-    TelemetryMetrics.install (aMeter);
+    final CapturingTelemetry aCapture = new CapturingTelemetry ();
+    aCapture.install ();
 
     final RuleDurationTemplateTelemetry aTelemetry = new RuleDurationTemplateTelemetry ("iso-schematron");
 
@@ -109,9 +52,9 @@ public final class RuleDurationTemplateTelemetryTest
     // A named template / function (no match pattern) -> skipped
     aTelemetry.onTemplateLeave (new SchematronTemplateInfo ("{ns}helper", null, null, null, -1), 5_000_000L);
 
-    assertNotNull (aMeter.m_aRuleDurations);
-    assertEquals (1, aMeter.m_aRuleDurations.size ());
+    final ICommonsList <Double> aRuleDurations = aCapture.getHistogramValues (CSchematronTelemetry.METRIC_RULE_DURATION);
+    assertEquals (1, aRuleDurations.size ());
     // 2_000_000 ns == 2.0 ms
-    assertEquals (2.0, aMeter.m_aRuleDurations.get (0).doubleValue (), 0.0001);
+    assertEquals (2.0, aRuleDurations.get (0).doubleValue (), 0.0001);
   }
 }

@@ -35,8 +35,7 @@ import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
-import com.helger.telemetry.Telemetry;
-import com.helger.telemetry.TelemetryMetrics;
+import com.helger.telemetry.mock.CapturingTelemetry;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
@@ -123,8 +122,7 @@ public final class SchematronAllEnginesTelemetryTest
   @After
   public void uninstall ()
   {
-    Telemetry.install (null);
-    TelemetryMetrics.install (null);
+    CapturingTelemetry.uninstall ();
   }
 
   @Test
@@ -137,8 +135,7 @@ public final class SchematronAllEnginesTelemetryTest
     {
       // Fresh capture per engine - spans re-resolve the tracer per call so this is clean
       final CapturingTelemetry aCapture = new CapturingTelemetry ();
-      Telemetry.install (aCapture);
-      TelemetryMetrics.install (aCapture);
+      aCapture.install ();
 
       final ISchematronResource aRes = aEngine.m_aBuilder.build (ReadableResourceString.utf8 (SCH));
       assertNotNull ("Engine " + aEngine.m_sEngineID + " produced no resource", aRes);
@@ -148,10 +145,10 @@ public final class SchematronAllEnginesTelemetryTest
       // Exactly one root validate span ...
       assertEquals ("Engine " + aEngine.m_sEngineID + " must emit exactly one validate span",
                     1,
-                    aCapture.countSpansNamed (CSchematronTelemetry.SPAN_VALIDATE));
+                    aCapture.getSpanCount (CSchematronTelemetry.SPAN_VALIDATE));
 
       // ... tagged with this engine's ID
-      final CapturingTelemetry.CapturedSpan aValidate = aCapture.getFirstSpanNamed (CSchematronTelemetry.SPAN_VALIDATE);
+      final CapturingTelemetry.CapturedSpan aValidate = aCapture.getFirstSpan (CSchematronTelemetry.SPAN_VALIDATE);
       assertNotNull (aValidate);
       assertEquals (aEngine.m_sEngineID, aValidate.getAttributes ().get (CSchematronTelemetry.ATTR_ENGINE));
 
@@ -160,7 +157,7 @@ public final class SchematronAllEnginesTelemetryTest
       // both.
       assertEquals ("Engine " + aEngine.m_sEngineID + " must emit one assertion span per failed assert",
                     2,
-                    aCapture.countSpansNamed (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
+                    aCapture.getSpanCount (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
     }
   }
 }

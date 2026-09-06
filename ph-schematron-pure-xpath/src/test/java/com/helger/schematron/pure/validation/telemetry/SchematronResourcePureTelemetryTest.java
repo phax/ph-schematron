@@ -20,15 +20,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.telemetry.Telemetry;
-import com.helger.telemetry.TelemetryMetrics;
+import com.helger.telemetry.mock.CapturingTelemetry;
 import com.helger.xml.serialize.read.DOMReader;
 
 /**
@@ -38,11 +38,12 @@ import com.helger.xml.serialize.read.DOMReader;
  *
  * @author Philip Helger
  */
-// Fixed order so the counter/histogram-asserting test runs first and owns the eager instrument
-// binding (ph-telemetry binds instruments to the first installed meter)
-@org.junit.FixMethodOrder (org.junit.runners.MethodSorters.NAME_ASCENDING)
 public final class SchematronResourcePureTelemetryTest
 {
+  // ph-telemetry binds metric instruments eagerly to the meter installed at class initialization
+  // time, so a single instance must be installed before the first test method runs
+  private static final CapturingTelemetry TELEMETRY = new CapturingTelemetry ();
+
   private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
                                            "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
                                            "  <iso:pattern>\n" +
@@ -55,21 +56,22 @@ public final class SchematronResourcePureTelemetryTest
 
   private static final String XML = "<?xml version='1.0' encoding='UTF-8'?><root/>";
 
-  private CapturingTelemetry m_aCapture;
-
-  @Before
-  public void install ()
+  @BeforeClass
+  public static void beforeClass ()
   {
-    m_aCapture = new CapturingTelemetry ();
-    Telemetry.install (m_aCapture);
-    TelemetryMetrics.install (m_aCapture);
+    TELEMETRY.install ();
   }
 
-  @After
-  public void uninstall ()
+  @AfterClass
+  public static void afterClass ()
   {
-    Telemetry.install (null);
-    TelemetryMetrics.install (null);
+    CapturingTelemetry.uninstall ();
+  }
+
+  @Before
+  public void before ()
+  {
+    TELEMETRY.reset ();
   }
 
   @Test
@@ -84,25 +86,25 @@ public final class SchematronResourcePureTelemetryTest
     assertNotNull (aSVRL);
 
     // Exactly one schematron.validate root span
-    assertEquals (1, m_aCapture.countSpansNamed (CSchematronTelemetry.SPAN_VALIDATE));
+    assertEquals (1, TELEMETRY.getSpanCount (CSchematronTelemetry.SPAN_VALIDATE));
     // No per-assertion-result spans since that flag is OFF
-    assertEquals (0, m_aCapture.countSpansNamed (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
+    assertEquals (0, TELEMETRY.getSpanCount (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
 
     // Counters: 2 failed asserts (both fail on empty root), 1 fired rule, 1 active pattern
-    assertEquals (2, m_aCapture.getCounterValue (CSchematronTelemetry.METRIC_ASSERTIONS_FAILED));
-    assertEquals (1, m_aCapture.getCounterValue (CSchematronTelemetry.METRIC_RULES_FIRED));
-    assertEquals (1, m_aCapture.getCounterValue (CSchematronTelemetry.METRIC_PATTERNS_ACTIVE));
+    assertEquals (2, TELEMETRY.getCounterValue (CSchematronTelemetry.METRIC_ASSERTIONS_FAILED));
+    assertEquals (1, TELEMETRY.getCounterValue (CSchematronTelemetry.METRIC_RULES_FIRED));
+    assertEquals (1, TELEMETRY.getCounterValue (CSchematronTelemetry.METRIC_PATTERNS_ACTIVE));
 
     // Duration histogram: one entry on this validation, value >= 0
-    assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
-    assertTrue (m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
+    assertEquals (1, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
+    assertTrue (TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
                 0.0);
 
     // Per-rule execution timing: one rule -> 1 rule.duration + 1 context.duration; 2 asserts -> 2
     // assert.duration entries
-    assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_RULE_DURATION).size ());
-    assertEquals (1, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_CONTEXT_DURATION).size ());
-    assertEquals (2, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_ASSERT_DURATION).size ());
+    assertEquals (1, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_RULE_DURATION).size ());
+    assertEquals (1, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_CONTEXT_DURATION).size ());
+    assertEquals (2, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_ASSERT_DURATION).size ());
   }
 
   @Test
@@ -115,17 +117,17 @@ public final class SchematronResourcePureTelemetryTest
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 
     // Two failed asserts -> two assertion spans
-    assertEquals (2, m_aCapture.countSpansNamed (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
+    assertEquals (2, TELEMETRY.getSpanCount (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
 
     // Each assertion span must carry kind=assert and failed=true
-    m_aCapture.getSpans ()
-              .stream ()
-              .filter (x -> CSchematronTelemetry.SPAN_SVRL_ASSERTION.equals (x.getName ()))
-              .forEach (x -> {
-                assertEquals ("assert", x.getAttributes ().get (CSchematronTelemetry.ATTR_ASSERT_KIND));
-                assertEquals (Boolean.TRUE, x.getAttributes ().get (CSchematronTelemetry.ATTR_ASSERT_FAILED));
-                assertNotNull (x.getAttributes ().get (CSchematronTelemetry.ATTR_ASSERT_TEST));
-              });
+    TELEMETRY.getSpans ()
+             .stream ()
+             .filter (x -> CSchematronTelemetry.SPAN_SVRL_ASSERTION.equals (x.getName ()))
+             .forEach (x -> {
+               assertEquals ("assert", x.getAttributes ().get (CSchematronTelemetry.ATTR_ASSERT_KIND));
+               assertEquals (Boolean.TRUE, x.getAttributes ().get (CSchematronTelemetry.ATTR_ASSERT_FAILED));
+               assertNotNull (x.getAttributes ().get (CSchematronTelemetry.ATTR_ASSERT_TEST));
+             });
   }
 
   @Test
@@ -135,8 +137,8 @@ public final class SchematronResourcePureTelemetryTest
     final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (SCHEMATRON).build ();
     aSch.applySchematronValidationToSVRL (DOMReader.readXMLDOM (XML), null);
 
-    assertEquals (0, m_aCapture.getSpans ().size ());
-    assertEquals (0, m_aCapture.getCounterValue (CSchematronTelemetry.METRIC_ASSERTIONS_FAILED));
-    assertEquals (0, m_aCapture.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
+    assertEquals (0, TELEMETRY.getSpans ().size ());
+    assertEquals (0, TELEMETRY.getCounterValue (CSchematronTelemetry.METRIC_ASSERTIONS_FAILED));
+    assertEquals (0, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
   }
 }
