@@ -31,7 +31,8 @@ import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
  * @since 10.0.0
  */
 @ThreadSafe
-public final class SchematronXSLTCache extends AbstractSchematronCache <SchematronXSLTConfig, ISchematronXSLTBasedProvider>
+public final class SchematronXSLTCache extends
+                                       AbstractSchematronCache <SchematronXSLTConfig, ISchematronXSLTBasedProvider>
 {
   /** Default name of the shared cache. */
   public static final String DEFAULT_NAME = "schematron-xslt-prebuilt";

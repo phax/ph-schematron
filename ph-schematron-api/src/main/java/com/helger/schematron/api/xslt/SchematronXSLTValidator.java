@@ -173,9 +173,9 @@ public final class SchematronXSLTValidator
       // Repeated XPath navigation over a wrapped DOM is expensive, especially for
       // large sibling lists. Build the configured Saxon tree once per validation.
       aEffectiveSource = aSaxonTransformer.getUnderlyingController ()
-                                         .getConfiguration ()
-                                         .buildDocumentTree (aSource)
-                                         .getRootNode ();
+                                          .getConfiguration ()
+                                          .buildDocumentTree (aSource)
+                                          .getRootNode ();
     }
     aTransformer.transform (aEffectiveSource, new DOMResult (ret));
 

@@ -30,9 +30,8 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron param-element.<br>
- * A name-value pair providing parameters for an abstract pattern. The required
- * name attribute is an XML name with no colon. The required value attribute is
- * a fragment of a query.
+ * A name-value pair providing parameters for an abstract pattern. The required name attribute is an
+ * XML name with no colon. The required value attribute is a fragment of a query.
  *
  * @author Philip Helger
  */
@@ -109,6 +108,8 @@ public class PSParam implements IPSElement
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("Name", m_sName).appendIfNotNull ("Value", m_sValue).getToString ();
+    return new ToStringGenerator (this).appendIfNotNull ("Name", m_sName)
+                                       .appendIfNotNull ("Value", m_sValue)
+                                       .getToString ();
   }
 }

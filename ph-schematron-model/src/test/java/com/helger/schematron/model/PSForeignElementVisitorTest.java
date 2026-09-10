@@ -78,7 +78,8 @@ public final class PSForeignElementVisitorTest
 
     final ICommonsList <String> ret = new CommonsArrayList <> ();
     PSForeignElementVisitor.forEachForeignElement (aRealSchema,
-                                                   (aOwner, aForeignElement) -> ret.add (ClassHelper.getClassLocalName (aOwner) +
+                                                   (aOwner, aForeignElement) -> ret.add (ClassHelper.getClassLocalName (
+                                                                                                                        aOwner) +
                                                                                          ":" +
                                                                                          aForeignElement.getTagName ()));
     return ret;
@@ -100,8 +101,7 @@ public final class PSForeignElementVisitorTest
                                            "PSAssertReport:ext",
                                            "PSEmph:ext",
                                            "PSDiagnostics:ext",
-                                           "PSDiagnostic:ext"),
-                  aAll);
+                                           "PSDiagnostic:ext"), aAll);
   }
 
   @Test

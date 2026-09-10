@@ -19,9 +19,8 @@ package com.helger.schematron.model;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Base interface for all elements that may have an ID.
- * <code>IHasID&lt;String&gt;</code> is not used here, because it requires an ID
- * to be present!
+ * Base interface for all elements that may have an ID. <code>IHasID&lt;String&gt;</code> is not
+ * used here, because it requires an ID to be present!
  *
  * @author Philip Helger
  */
@@ -34,8 +33,7 @@ public interface IPSHasID
   String getID ();
 
   /**
-   * @return <code>true</code> if an ID is present, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if an ID is present, <code>false</code> otherwise.
    */
   default boolean hasID ()
   {

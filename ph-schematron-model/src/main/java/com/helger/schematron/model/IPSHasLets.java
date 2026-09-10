@@ -30,23 +30,20 @@ import com.helger.collection.commons.ICommonsOrderedMap;
 public interface IPSHasLets
 {
   /**
-   * @return <code>true</code> if this object has at least on contained
-   *         {@link PSLet} object.
+   * @return <code>true</code> if this object has at least on contained {@link PSLet} object.
    */
   boolean hasAnyLet ();
 
   /**
-   * @return A list of all contained {@link PSLet} elements. Never
-   *         <code>null</code>.
+   * @return A list of all contained {@link PSLet} elements. Never <code>null</code>.
    */
   @NonNull
   @ReturnsMutableCopy
   ICommonsList <PSLet> getAllLets ();
 
   /**
-   * @return The content of all {@link PSLet} elements as an ordered Map from
-   *         name to value. The order must match the declaration order! Never
-   *         <code>null</code>.
+   * @return The content of all {@link PSLet} elements as an ordered Map from name to value. The
+   *         order must match the declaration order! Never <code>null</code>.
    */
   @NonNull
   @ReturnsMutableCopy

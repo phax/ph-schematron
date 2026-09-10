@@ -48,8 +48,8 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**
- * Base implementation of {@link IPSBoundSchema} with all common elements. It is
- * independent of the used query binding.
+ * Base implementation of {@link IPSBoundSchema} with all common elements. It is independent of the
+ * used query binding.
  *
  * @author Philip Helger
  */
@@ -231,8 +231,8 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   /**
    * Override this implementation in a derived class to modify the behavior.
    *
-   * @return An implementation of {@link IPSPartialValidationHandler} to use for
-   *         partial validation. May not be <code>null</code>.
+   * @return An implementation of {@link IPSPartialValidationHandler} to use for partial validation.
+   *         May not be <code>null</code>.
    */
   @NonNull
   @OverrideOnDemand

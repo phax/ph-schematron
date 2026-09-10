@@ -40,8 +40,8 @@ import com.helger.xml.microdom.MicroElement;
  * A single Schematron <code>emph</code> element.<br>
  * A portion of text that should be rendered with some emphasis.<br>
  * ISO/IEC 19757-3:2025 widened the content model to <code>(foreign &amp; (text | dynamic)*)</code>
- * - i.e. {@link PSValueOf} and {@link PSName} (the &quot;dynamic group&quot;) plus foreign
- * markup are now also permitted. The pre-2025 RNCs allowed only text.
+ * - i.e. {@link PSValueOf} and {@link PSName} (the &quot;dynamic group&quot;) plus foreign markup
+ * are now also permitted. The pre-2025 RNCs allowed only text.
  *
  * @author Philip Helger
  */

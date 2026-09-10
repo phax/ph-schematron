@@ -34,8 +34,7 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
 /**
- * Base interface for a bound schema. A bound schema is a {@link PSSchema} with
- * a specific
+ * Base interface for a bound schema. A bound schema is a {@link PSSchema} with a specific
  *
  * @author Philip Helger
  */
@@ -54,46 +53,44 @@ public interface IPSBoundSchema
   PSSchema getOriginalSchema ();
 
   /**
-   * @return The namespace context as defined by the namespaces in the original
-   *         schema. Never <code>null</code>.
+   * @return The namespace context as defined by the namespaces in the original schema. Never
+   *         <code>null</code>.
    */
   @NonNull
   MapBasedNamespaceContext getNamespaceContext ();
 
   /**
-   * @return Get the phase ID used. If none was specified, the schema
-   *         defaultPhase is used. If this is not present, than all patterns are
-   *         used and ID of the phase is {@link CSchematron#PHASE_ALL}.
+   * @return Get the phase ID used. If none was specified, the schema defaultPhase is used. If this
+   *         is not present, than all patterns are used and ID of the phase is
+   *         {@link CSchematron#PHASE_ALL}.
    */
   @NonNull
   String getPhaseID ();
 
   /**
-   * @return The phase object to be evaluated. May be <code>null</code> if no
-   *         specific phase is to be validated!
+   * @return The phase object to be evaluated. May be <code>null</code> if no specific phase is to
+   *         be validated!
    */
   @Nullable
   PSPhase getPhase ();
 
   /**
-   * @return <code>true</code> if a special phase was specified,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if a special phase was specified, <code>false</code> if not.
    */
   boolean isPhaseSpecified ();
 
   /**
-   * @return A list of all patterns to be validated. If a phase was selected,
-   *         only the patterns matching the selected phase are contained. Never
-   *         <code>null</code>.
+   * @return A list of all patterns to be validated. If a phase was selected, only the patterns
+   *         matching the selected phase are contained. Never <code>null</code>.
    */
   @NonNull
   @ReturnsMutableCopy
   ICommonsList <PSPattern> getAllRelevantPatterns ();
 
   /**
-   * Get the validation context to be used. As rules can be stated as "element"
-   * they are not necessarily present on root level. For XPath this may e.g. be
-   * resolved by prepending "//" so that all elements are resolved correctly.
+   * Get the validation context to be used. As rules can be stated as "element" they are not
+   * necessarily present on root level. For XPath this may e.g. be resolved by prepending "//" so
+   * that all elements are resolved correctly.
    *
    * @param sRuleContext
    *        The original rule context. May not be <code>null</code>.
@@ -103,16 +100,15 @@ public interface IPSBoundSchema
   String getValidationContext (@NonNull String sRuleContext);
 
   /**
-   * The generic validation method. It validates the passed XML node to this
-   * bound schema.
+   * The generic validation method. It validates the passed XML node to this bound schema.
    *
    * @param aNode
    *        The node to be validated. May not be <code>null</code>.
    * @param sBaseURI
    *        Base URI of the XML to be validated. May be <code>null</code>.
    * @param aHandler
-   *        The validation handler that receives the callback informations. May
-   *        not be <code>null</code>.
+   *        The validation handler that receives the callback informations. May not be
+   *        <code>null</code>.
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
@@ -121,15 +117,15 @@ public interface IPSBoundSchema
                  @NonNull IPSValidationHandler aHandler) throws SchematronValidationException;
 
   /**
-   * Special validation that breaks on the first error. This is a specialized
-   * call of {@link #validate(Node, String, IPSValidationHandler)}.
+   * Special validation that breaks on the first error. This is a specialized call of
+   * {@link #validate(Node, String, IPSValidationHandler)}.
    *
    * @param aNode
    *        The XML node to be validated. May not be <code>null</code>.
    * @param sBaseURI
    *        Base URI of the XML to be validated. May be <code>null</code>.
-   * @return {@link EValidity#VALID} if the document is valid,
-   *         {@link EValidity#INVALID} if it is invalid.
+   * @return {@link EValidity#VALID} if the document is valid, {@link EValidity#INVALID} if it is
+   *         invalid.
    * @throws SchematronValidationException
    *         In case a validation exception occurs
    */
@@ -137,8 +133,8 @@ public interface IPSBoundSchema
   EValidity validatePartially (@NonNull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
 
   /**
-   * Special validation that creates an SVRL document. This is a specialized
-   * call of {@link #validate(Node, String, IPSValidationHandler)}.
+   * Special validation that creates an SVRL document. This is a specialized call of
+   * {@link #validate(Node, String, IPSValidationHandler)}.
    *
    * @param aNode
    *        The XML node to be validated. May not be <code>null</code>.
@@ -149,5 +145,6 @@ public interface IPSBoundSchema
    *         In case a validation exception occurs
    */
   @NonNull
-  SchematronOutputType validateComplete (@NonNull Node aNode, @Nullable String sBaseURI) throws SchematronValidationException;
+  SchematronOutputType validateComplete (@NonNull Node aNode,
+                                         @Nullable String sBaseURI) throws SchematronValidationException;
 }

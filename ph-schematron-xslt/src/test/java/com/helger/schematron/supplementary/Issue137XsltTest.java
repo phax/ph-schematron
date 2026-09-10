@@ -269,7 +269,7 @@ public final class Issue137XsltTest
                          "  </template>\r\n" +
                          "</stylesheet>";
     final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (null,
-                                                                                           new DefaultTransformURIResolver (null));
+                                                                                          new DefaultTransformURIResolver (null));
     final Transformer t = aTF.newTransformer (new StringStreamSource (sXslt));
     t.transform (TransformSourceFactory.create (new File ("src/test/resources/external/issues/github137/test.xml")),
                  new StreamResult (System.out));
@@ -308,7 +308,7 @@ public final class Issue137XsltTest
                          "  </template>\r\n" +
                          "</stylesheet>";
     final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (null,
-                                                                                           new DefaultTransformURIResolver (null));
+                                                                                          new DefaultTransformURIResolver (null));
     final Transformer t = aTF.newTransformer (new StringStreamSource (sXslt));
     t.transform (TransformSourceFactory.create (new File ("src/test/resources/external/issues/github137/test.xml")),
                  new StreamResult (System.out));

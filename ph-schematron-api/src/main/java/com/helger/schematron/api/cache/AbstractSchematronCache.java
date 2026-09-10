@@ -160,7 +160,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
     ValueEnforcer.notNull (aKey, "CacheKey");
 
     // First attempt: read-locked lookup
-    ARTIFACT aValue = m_aRWLock.readLockedGet ( () -> m_aMap == null ? null : m_aMap.get (aKey));
+    ARTIFACT aValue = m_aRWLock.readLockedGet (() -> m_aMap == null ? null : m_aMap.get (aKey));
     if (aValue != null)
       return aValue;
 
@@ -204,7 +204,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
       return false;
 
     final ISchematronCompilationCacheKey aKey = aCfg.getCacheKey ();
-    return m_aRWLock.readLockedBoolean ( () -> m_aMap != null && m_aMap.containsKey (aKey));
+    return m_aRWLock.readLockedBoolean (() -> m_aMap != null && m_aMap.containsKey (aKey));
   }
 
   /**
@@ -232,8 +232,8 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   public final EChange invalidate (@NonNull final Object aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
-    return m_aRWLock.writeLockedGet ( () -> m_aMap != null && m_aMap.remove (aKey) != null ? EChange.CHANGED
-                                                                                           : EChange.UNCHANGED);
+    return m_aRWLock.writeLockedGet (() -> m_aMap != null && m_aMap.remove (aKey) != null ? EChange.CHANGED
+                                                                                          : EChange.UNCHANGED);
   }
 
   /**
@@ -244,7 +244,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   @NonNull
   public final EChange clear ()
   {
-    return m_aRWLock.writeLockedGet ( () -> {
+    return m_aRWLock.writeLockedGet (() -> {
       if (m_aMap == null || m_aMap.isEmpty ())
         return EChange.UNCHANGED;
       m_aMap.clear ();
@@ -258,7 +258,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   @Nonnegative
   public final int size ()
   {
-    return m_aRWLock.readLockedInt ( () -> m_aMap == null ? 0 : m_aMap.size ());
+    return m_aRWLock.readLockedInt (() -> m_aMap == null ? 0 : m_aMap.size ());
   }
 
   /**
@@ -266,7 +266,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
    */
   public final boolean isEmpty ()
   {
-    return m_aRWLock.readLockedBoolean ( () -> m_aMap == null || m_aMap.isEmpty ());
+    return m_aRWLock.readLockedBoolean (() -> m_aMap == null || m_aMap.isEmpty ());
   }
 
   @Override

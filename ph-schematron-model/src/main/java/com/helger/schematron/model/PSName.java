@@ -36,12 +36,12 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron name-element.<br>
- * Provides the names of nodes from the instance document to allow clearer
- * assertions and diagnostics. The optional path attribute is an expression
- * evaluated in the current context that returns a string that is the name of a
- * node. In the latter case, the name of the node is used.<br>
- * An implementation which does not report natural-language assertions is not
- * required to make use of this element.
+ * Provides the names of nodes from the instance document to allow clearer assertions and
+ * diagnostics. The optional path attribute is an expression evaluated in the current context that
+ * returns a string that is the name of a node. In the latter case, the name of the node is
+ * used.<br>
+ * An implementation which does not report natural-language assertions is not required to make use
+ * of this element.
  *
  * @author Philip Helger
  */
@@ -100,8 +100,7 @@ public class PSName implements IPSClonableElement <PSName>, IPSHasForeignAttribu
   }
 
   /**
-   * @return <code>true</code> if a path is specified, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if a path is specified, <code>false</code> otherwise.
    */
   public boolean hasPath ()
   {

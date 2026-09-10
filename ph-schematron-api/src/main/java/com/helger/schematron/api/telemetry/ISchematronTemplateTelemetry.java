@@ -27,8 +27,8 @@ import org.jspecify.annotations.Nullable;
  * <p>
  * Enabling telemetry forces Saxon's {@code FeatureKeys.COMPILE_WITH_TRACING}, which disables
  * several optimisations and typically costs 1.5&times;&ndash;3&times; wall-clock per transform.
- * Trace-enabled providers are cached under a separate key - the first call with telemetry
- * triggers a fresh compilation.
+ * Trace-enabled providers are cached under a separate key - the first call with telemetry triggers
+ * a fresh compilation.
  * <p>
  * All methods have empty default implementations so consumers can override only what they need.
  * Implementations must be thread-safe if shared across concurrent transforms.
@@ -62,10 +62,10 @@ public interface ISchematronTemplateTelemetry
    *        Static information about the template. Never <code>null</code>.
    * @param nDurationNanos
    *        The wall-clock duration of the template execution in nanoseconds. This is an
-   *        <em>inclusive</em> measurement - it covers the time spent in nested template calls
-   *        as well. To derive per-frame self time (e.g. for a flamegraph), the consumer must
-   *        subtract the inclusive durations of all directly nested {@code onTemplateLeave} events
-   *        that occurred before this one for the same enter/leave pair.
+   *        <em>inclusive</em> measurement - it covers the time spent in nested template calls as
+   *        well. To derive per-frame self time (e.g. for a flamegraph), the consumer must subtract
+   *        the inclusive durations of all directly nested {@code onTemplateLeave} events that
+   *        occurred before this one for the same enter/leave pair.
    */
   default void onTemplateLeave (@NonNull final SchematronTemplateInfo aInfo, final long nDurationNanos)
   {}

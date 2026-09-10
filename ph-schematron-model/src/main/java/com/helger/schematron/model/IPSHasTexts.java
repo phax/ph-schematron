@@ -37,8 +37,7 @@ public interface IPSHasTexts
   void addText (@NonNull String sText);
 
   /**
-   * @return <code>true</code> if at least one text element is contained,
-   *         <code>false</code> if not
+   * @return <code>true</code> if at least one text element is contained, <code>false</code> if not
    */
   boolean hasAnyText ();
 

@@ -45,8 +45,8 @@ import com.helger.xml.serialize.read.DOMReader;
  */
 public final class DocumentationExamples
 {
-  public static boolean validateXMLViaPureSchematron (@NonNull final File aSchematronFile, @NonNull final File aXMLFile)
-                                                                                                                         throws Exception
+  public static boolean validateXMLViaPureSchematron (@NonNull final File aSchematronFile,
+                                                      @NonNull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResPure = SchematronResourcePureXPath.builderFromFile (aSchematronFile).build ();
     if (!aResPure.isValidSchematron ())

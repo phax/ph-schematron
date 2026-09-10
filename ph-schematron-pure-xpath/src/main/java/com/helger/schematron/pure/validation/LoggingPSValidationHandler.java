@@ -145,8 +145,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
-                                                                                              throws SchematronValidationException
+  public void onRuleStart (@NonNull final PSRule aRule,
+                           @NonNull final NodeList aContextList) throws SchematronValidationException
   {
     _log ("onRuleStart (" + aRule + ", " + getAsString (aContextList) + ")");
   }
@@ -213,8 +213,8 @@ public class LoggingPSValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
-                                                                                            throws SchematronValidationException
+  public void onEnd (@NonNull final PSSchema aSchema,
+                     @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     _log ("onEnd (" + aSchema + ", " + aActivePhase + ")");
   }

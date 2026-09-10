@@ -121,7 +121,7 @@ public final class PSQueryBindingRegistry
     ValueEnforcer.notEmpty (sName, "Name");
     ValueEnforcer.notNull (aQueryBinding, "QueryBinding");
 
-    RW_LOCK.writeLockedThrowing ( () -> {
+    RW_LOCK.writeLockedThrowing (() -> {
       if (BINDING_MAP.containsKey (sName))
         throw new SchematronBindException ("A queryBinding with the name '" + sName + "' is already registered!");
       BINDING_MAP.put (sName, aQueryBinding);
@@ -142,7 +142,7 @@ public final class PSQueryBindingRegistry
     if (sName == null)
       return XPATH_QUERY_BINDING;
 
-    return RW_LOCK.readLockedGet ( () -> BINDING_MAP.get (sName));
+    return RW_LOCK.readLockedGet (() -> BINDING_MAP.get (sName));
   }
 
   /**

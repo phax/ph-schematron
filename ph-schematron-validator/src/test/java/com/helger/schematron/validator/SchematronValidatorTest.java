@@ -44,7 +44,8 @@ public final class SchematronValidatorTest
     // Check all documents
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
     {
-      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, x -> LOGGER.error (x.getAsString (Locale.US)));
+      final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes,
+                                                                                      x -> LOGGER.error (x.getAsString (Locale.US)));
       final boolean bIsValid = SchematronValidator.isValidSchematron (aDoc);
       assertTrue (aRes.getPath (), bIsValid);
     }

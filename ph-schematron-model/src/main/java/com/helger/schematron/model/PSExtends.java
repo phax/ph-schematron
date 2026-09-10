@@ -37,9 +37,9 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron extends-element.<br>
- * Abstract rules are named lists of assertions without a context expression.
- * The required rule attribute references an abstract rule. The current rule
- * uses all the assertions from the abstract rule it extends.
+ * Abstract rules are named lists of assertions without a context expression. The required rule
+ * attribute references an abstract rule. The current rule uses all the assertions from the abstract
+ * rule it extends.
  *
  * @author Philip Helger
  */
@@ -118,9 +118,9 @@ public class PSExtends implements IPSElement, IPSHasForeignAttributes
 
   /**
    * Set the optional <code>href</code> attribute introduced in ISO/IEC 19757-3:2016 as an
-   * alternative to <code>rule</code>: when present the referenced fragment is spliced in place
-   * of the <code>&lt;extends&gt;</code> element. The 2025 edition further relaxes the target so
-   * the referenced rule need not be abstract.
+   * alternative to <code>rule</code>: when present the referenced fragment is spliced in place of
+   * the <code>&lt;extends&gt;</code> element. The 2025 edition further relaxes the target so the
+   * referenced rule need not be abstract.
    *
    * @param sHref
    *        The IRI reference. May be <code>null</code>.

@@ -22,8 +22,8 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.ICommonsList;
 
 /**
- * Base interface for a Schematron element that has {@link String} and
- * {@link IPSElement} content mixed.
+ * Base interface for a Schematron element that has {@link String} and {@link IPSElement} content
+ * mixed.
  *
  * @author Philip Helger
  */

@@ -40,7 +40,7 @@ public final class Issue119Test
     final ExecutorService executor = Executors.newCachedThreadPool ();
 
     LOGGER.info ("Spawn task");
-    final Future <?> future = executor.submit ( () -> {
+    final Future <?> future = executor.submit (() -> {
       LOGGER.info ("Loading Schematron");
       final ISchematronResource aSV = SchematronResourceSCH.builderFromClassPath ("/issues/github119/EN16931-UBL-validation-preprocessed.sch")
                                                            .build ();

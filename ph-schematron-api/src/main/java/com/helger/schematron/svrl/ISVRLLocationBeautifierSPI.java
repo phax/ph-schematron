@@ -19,8 +19,8 @@ package com.helger.schematron.svrl;
 import com.helger.annotation.style.IsSPIInterface;
 
 /**
- * Implement this SPI interface to beautify SVRL error messages by replacing
- * namespaceURLs with common prefixes.
+ * Implement this SPI interface to beautify SVRL error messages by replacing namespaceURLs with
+ * common prefixes.
  *
  * @author Philip Helger
  */

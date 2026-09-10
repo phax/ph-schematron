@@ -29,8 +29,7 @@ import com.helger.xml.serialize.write.IXMLWriterSettings;
 public interface IPSWriterSettings
 {
   /**
-   * @return The current XML writer settings to be used. Never <code>null</code>
-   *         .
+   * @return The current XML writer settings to be used. Never <code>null</code> .
    */
   @NonNull
   @ReturnsMutableCopy

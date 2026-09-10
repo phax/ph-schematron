@@ -22,9 +22,9 @@ import com.helger.base.state.EValidity;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 
 /**
- * Base interface for objects that determine the validity of a Schematron
- * validation result. By default a Schematron validation is determined valid if
- * no failed-assert is present and no successful-report is present.
+ * Base interface for objects that determine the validity of a Schematron validation result. By
+ * default a Schematron validation is determined valid if no failed-assert is present and no
+ * successful-report is present.
  * 
  * @author Philip Helger
  */
@@ -35,9 +35,8 @@ public interface ISchematronOutputValidityDeterminator
    * 
    * @param aSO
    *        The Schematron validation result. Never <code>null</code>.
-   * @return {@link EValidity#VALID} if the Schematron validation was
-   *         successful, {@link EValidity#INVALID} if the validation failed.
-   *         Never <code>null</code>.
+   * @return {@link EValidity#VALID} if the Schematron validation was successful,
+   *         {@link EValidity#INVALID} if the validation failed. Never <code>null</code>.
    */
   @NonNull
   EValidity getSchematronOutputValidity (@NonNull SchematronOutputType aSO);

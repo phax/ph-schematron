@@ -35,11 +35,11 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron <code>rules</code> element introduced in ISO/IEC 19757-3:2025.<br>
- * It is a container for one or more abstract {@link PSRule} elements ({@code rule[@abstract='true']})
- * that may be invoked - via {@link PSExtends} - from rules in any pattern in the same
- * schema or library. The pre-2025 model required abstract rules to live inside the pattern they
- * were extended from; the 2025 edition lifts that restriction by allowing this container at the
- * top level of <code>schema</code> and <code>library</code>.
+ * It is a container for one or more abstract {@link PSRule} elements
+ * ({@code rule[@abstract='true']}) that may be invoked - via {@link PSExtends} - from rules in any
+ * pattern in the same schema or library. The pre-2025 model required abstract rules to live inside
+ * the pattern they were extended from; the 2025 edition lifts that restriction by allowing this
+ * container at the top level of <code>schema</code> and <code>library</code>.
  *
  * @author Philip Helger
  * @since 10.0.0 (Schematron 2025)

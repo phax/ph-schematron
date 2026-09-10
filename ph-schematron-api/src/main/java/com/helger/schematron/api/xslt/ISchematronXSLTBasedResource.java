@@ -51,8 +51,8 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
   ISchematronXSLTBasedResource setErrorListener (@Nullable ErrorListener aCustomErrorListener);
 
   /**
-   * @return The {@link URIResolver} to be used for reading the Schematron. May
-   *         be <code>null</code>.
+   * @return The {@link URIResolver} to be used for reading the Schematron. May be
+   *         <code>null</code>.
    */
   @Nullable
   URIResolver getURIResolver ();
@@ -68,21 +68,18 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
   ISchematronXSLTBasedResource setURIResolver (@Nullable URIResolver aCustomURIResolver);
 
   /**
-   * @return A mutable (=writable) copy of the parameters map. Never
-   *         <code>null</code>.
+   * @return A mutable (=writable) copy of the parameters map. Never <code>null</code>.
    */
   @NonNull
   @ReturnsMutableObject
   ICommonsOrderedMap <String, Object> parameters ();
 
   /**
-   * Enable or disable the warning on contained elements from a different
-   * namespace. See #61. It is a shortcut for
-   * <code>parameters ().put ("allow-foreign", bAllow ? "true" : "false");</code>
+   * Enable or disable the warning on contained elements from a different namespace. See #61. It is
+   * a shortcut for <code>parameters ().put ("allow-foreign", bAllow ? "true" : "false");</code>
    *
    * @param bAllow
-   *        <code>true</code> to allow foreign elements, <code>false</code> to
-   *        disallow them.
+   *        <code>true</code> to allow foreign elements, <code>false</code> to disallow them.
    */
   default void setAllowForeignElements (final boolean bAllow)
   {
@@ -90,10 +87,9 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
   }
 
   /**
-   * Set the XML entity resolver to be used when reading the Schematron or the
-   * XML to be validated. This can only be set before the Schematron is bound.
-   * If it is already bound an exception is thrown to indicate the unnecessity
-   * of the call.
+   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
+   * This can only be set before the Schematron is bound. If it is already bound an exception is
+   * thrown to indicate the unnecessity of the call.
    *
    * @param aEntityResolver
    *        The entity resolver to set. May be <code>null</code>.
@@ -106,8 +102,7 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
   /**
    * Note: The method was renamed in v8 from <code>getXSLTValidator</code>.
    *
-   * @return The Schematron output validity determinator to be used. Never
-   *         <code>null</code>.
+   * @return The Schematron output validity determinator to be used. Never <code>null</code>.
    */
   @NonNull
   ISchematronOutputValidityDeterminator getOutputValidityDeterminator ();
@@ -124,8 +119,8 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
   ISchematronXSLTBasedResource setOutputValidityDeterminator (@NonNull ISchematronOutputValidityDeterminator aValidityDeterminator);
 
   /**
-   * @return <code>true</code> if the created SVRL should be validated or not.
-   *         Defaults to <code>true</code>.
+   * @return <code>true</code> if the created SVRL should be validated or not. Defaults to
+   *         <code>true</code>.
    * @since 6.3.3
    */
   boolean isValidateSVRL ();
@@ -134,8 +129,7 @@ public interface ISchematronXSLTBasedResource extends ISchematronResource
    * Enable or disable the validation of the created SVRL.
    *
    * @param bValidateSVRL
-   *        <code>true</code> to enable XSD validation, <code>false</code> to
-   *        disable it.
+   *        <code>true</code> to enable XSD validation, <code>false</code> to disable it.
    * @return this for chaining
    * @since 6.3.3
    */

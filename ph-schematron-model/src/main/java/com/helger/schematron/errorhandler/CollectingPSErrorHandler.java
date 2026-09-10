@@ -21,8 +21,7 @@ import org.jspecify.annotations.Nullable;
 import com.helger.diagnostics.error.list.ErrorList;
 
 /**
- * An implementation if {@link IPSErrorHandler} that collects all error
- * messages.
+ * An implementation if {@link IPSErrorHandler} that collects all error messages.
  *
  * @author Philip Helger
  */

@@ -38,9 +38,8 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWriterSettings
 {
   /**
-   * The default writer settings to be used when nothing else is specified. By
-   * default indent and align is disabled, to avoid that newlines are
-   * interpreted as part of the content.
+   * The default writer settings to be used when nothing else is specified. By default indent and
+   * align is disabled, to avoid that newlines are interpreted as part of the content.
    */
   public static final IPSWriterSettings DEFAULT_SETTINGS = new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.NONE));
 
@@ -83,12 +82,10 @@ public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWrite
   }
 
   /**
-   * Helper method to extract the namespace mapping from the provided
-   * Schematron.
+   * Helper method to extract the namespace mapping from the provided Schematron.
    *
    * @param aSchema
-   *        The schema to extract the namespace context from. May not be
-   *        <code>null</code>.
+   *        The schema to extract the namespace context from. May not be <code>null</code>.
    * @return A non-<code>null</code> but maybe empty namespace context
    */
   @NonNull

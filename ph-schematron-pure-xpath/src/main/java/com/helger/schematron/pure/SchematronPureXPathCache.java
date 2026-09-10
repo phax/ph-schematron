@@ -24,12 +24,13 @@ import com.helger.schematron.api.cache.AbstractSchematronCache;
 import com.helger.schematron.pure.bound.IPSBoundSchema;
 
 /**
- * Cache for compiled {@link IPSBoundSchema} instances produced from {@link SchematronPureXPathConfig}.
+ * Cache for compiled {@link IPSBoundSchema} instances produced from
+ * {@link SchematronPureXPathConfig}.
  * <p>
  * Note: the legacy {@link com.helger.schematron.pure.bound.PSBoundSchemaCache} singleton is kept
  * for backward compatibility but is independent from this cache. Both caches share the same key
- * type (the underlying {@link com.helger.schematron.pure.bound.PSBoundSchemaCacheKey}) but each
- * has its own backing storage.
+ * type (the underlying {@link com.helger.schematron.pure.bound.PSBoundSchemaCacheKey}) but each has
+ * its own backing storage.
  *
  * @author Philip Helger
  * @since 10.0.0

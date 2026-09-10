@@ -79,8 +79,8 @@ public class PSWriter
   }
 
   /**
-   * @return The error handler used to report version-compliance warnings when a
-   *         {@link PSSchema} is serialised. Never <code>null</code>.
+   * @return The error handler used to report version-compliance warnings when a {@link PSSchema} is
+   *         serialised. Never <code>null</code>.
    * @since 10.0.0
    */
   @NonNull
@@ -90,8 +90,8 @@ public class PSWriter
   }
 
   /**
-   * Override the error handler that receives version-compliance warnings when a {@link PSSchema}
-   * is about to be written.
+   * Override the error handler that receives version-compliance warnings when a {@link PSSchema} is
+   * about to be written.
    *
    * @param aErrorHandler
    *        The new error handler. May not be <code>null</code>.

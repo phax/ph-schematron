@@ -97,7 +97,9 @@ public final class SchematronResourceSCHTest
     try
     {
       // null-XML not allowed
-      SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON).build ().applySchematronValidationToSVRL ((Source) null);
+      SchematronResourceSCH.builderFromClassPath (VALID_SCHEMATRON)
+                           .build ()
+                           .applySchematronValidationToSVRL ((Source) null);
       fail ();
     }
     catch (final NullPointerException ex)

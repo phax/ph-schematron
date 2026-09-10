@@ -820,8 +820,8 @@ public class PSSchema implements
   }
 
   /**
-   * @return The <code>properties</code> container declared on this schema, or <code>null</code>
-   *         if none.
+   * @return The <code>properties</code> container declared on this schema, or <code>null</code> if
+   *         none.
    * @since 10.0.0 (Schematron 2016)
    */
   @Nullable

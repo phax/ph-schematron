@@ -235,8 +235,7 @@ public final class PSVersionCheckerTest
     final CollectingErrorHandler aHandler = new CollectingErrorHandler ();
     PSVersionChecker.checkSchematronVersionCompliance (aSchema, aHandler);
 
-    assertTrue ("Pre-2025 schema using a <group> should warn",
-                aHandler.hasWarningContaining ("<group> element"));
+    assertTrue ("Pre-2025 schema using a <group> should warn", aHandler.hasWarningContaining ("<group> element"));
   }
 
   @Test
@@ -253,7 +252,6 @@ public final class PSVersionCheckerTest
     final CollectingErrorHandler aHandler = new CollectingErrorHandler ();
     PSVersionChecker.checkSchematronVersionCompliance (aSchema, aHandler);
 
-    assertTrue ("Pre-2025 schema using let/@as should warn",
-                aHandler.hasWarningContaining ("'as' attribute on <let>"));
+    assertTrue ("Pre-2025 schema using let/@as should warn", aHandler.hasWarningContaining ("'as' attribute on <let>"));
   }
 }

@@ -29,8 +29,7 @@ import com.helger.io.resourceresolver.DefaultResourceResolver;
 
 /**
  * The default implementation of {@link ISchematronIncludeResolver} using the
- * {@link DefaultResourceResolver#getResolvedResource(String, String)} method
- * internally.
+ * {@link DefaultResourceResolver#getResolvedResource(String, String)} method internally.
  *
  * @author Philip Helger
  */

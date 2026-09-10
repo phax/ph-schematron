@@ -29,30 +29,28 @@ import com.helger.xml.microdom.IMicroElement;
 public interface IPSElement
 {
   /**
-   * Check if this element is specified completely. This method stops at the
-   * first encountered error.
+   * Check if this element is specified completely. This method stops at the first encountered
+   * error.
    *
    * @param aErrorHandler
-   *        The error handler where the error details are stored. May not be
-   *        <code>null</code>.
-   * @return <code>true</code> if all mandatory fields are set and the element
-   *         is valid, <code>false</code> otherwise.
+   *        The error handler where the error details are stored. May not be <code>null</code>.
+   * @return <code>true</code> if all mandatory fields are set and the element is valid,
+   *         <code>false</code> otherwise.
    */
   boolean isValid (@NonNull IPSErrorHandler aErrorHandler);
 
   /**
-   * Check if this element is specified completely. This method performs all
-   * validations independent of the number of encountered error.
+   * Check if this element is specified completely. This method performs all validations independent
+   * of the number of encountered error.
    *
    * @param aErrorHandler
-   *        The error handler where the error details are stored. May not be
-   *        <code>null</code>.
+   *        The error handler where the error details are stored. May not be <code>null</code>.
    */
   void validateCompletely (@NonNull IPSErrorHandler aErrorHandler);
 
   /**
-   * @return <code>true</code> if this element conforms to the Schematron
-   *         minimal syntax, <code>false</code> otherwise.
+   * @return <code>true</code> if this element conforms to the Schematron minimal syntax,
+   *         <code>false</code> otherwise.
    */
   boolean isMinimal ();
 

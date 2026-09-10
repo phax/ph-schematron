@@ -24,8 +24,7 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.xml.microdom.IMicroElement;
 
 /**
- * Base interface for Pure Schematron elements that support foreign elements and
- * attributes.
+ * Base interface for Pure Schematron elements that support foreign elements and attributes.
  *
  * @author Philip Helger
  */

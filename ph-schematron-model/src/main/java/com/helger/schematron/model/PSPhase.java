@@ -163,9 +163,9 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   }
 
   /**
-   * Set the optional <code>from</code> attribute introduced in
-   * ISO/IEC 19757-3:2025. When present it restricts the evaluation of patterns
-   * in this phase to a subset of the document selected by the path expression.
+   * Set the optional <code>from</code> attribute introduced in ISO/IEC 19757-3:2025. When present
+   * it restricts the evaluation of patterns in this phase to a subset of the document selected by
+   * the path expression.
    *
    * @param sFrom
    *        The new value. May be <code>null</code>.
@@ -177,8 +177,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   }
 
   /**
-   * @return The value of the <code>from</code> attribute, or <code>null</code>
-   *         if not set.
+   * @return The value of the <code>from</code> attribute, or <code>null</code> if not set.
    * @since 10.0.0 (Schematron 2025)
    */
   @Nullable
@@ -188,10 +187,9 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   }
 
   /**
-   * Set the optional <code>when</code> attribute introduced in
-   * ISO/IEC 19757-3:2025. The expression is evaluated in the root context
-   * when the active phase is {@link CSchematron#PHASE_ANY}; the first phase
-   * whose expression returns <code>true</code> becomes active.
+   * Set the optional <code>when</code> attribute introduced in ISO/IEC 19757-3:2025. The expression
+   * is evaluated in the root context when the active phase is {@link CSchematron#PHASE_ANY}; the
+   * first phase whose expression returns <code>true</code> becomes active.
    *
    * @param sWhen
    *        The new value. May be <code>null</code>.
@@ -203,8 +201,7 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   }
 
   /**
-   * @return The value of the <code>when</code> attribute, or <code>null</code>
-   *         if not set.
+   * @return The value of the <code>when</code> attribute, or <code>null</code> if not set.
    * @since 10.0.0 (Schematron 2025)
    */
   @Nullable

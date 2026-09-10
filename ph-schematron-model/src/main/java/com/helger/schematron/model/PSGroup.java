@@ -28,11 +28,11 @@ import com.helger.schematron.CSchematronXML;
  * content model (the productions <code>pattern</code> and <code>rule-set</code> both expand to
  * <code>rule-set-or-pattern</code>). The difference is at validation time: inside a
  * <code>pattern</code> the &quot;if-then-else&quot; rule semantics apply (only the first matching
- * rule fires per context node), whereas inside a <code>group</code> every contained rule is
- * matched independently of the others.
+ * rule fires per context node), whereas inside a <code>group</code> every contained rule is matched
+ * independently of the others.
  * <p>
- * This class is a sibling of {@link PSPattern} - both extend {@link AbstractPSPatternLike},
- * which captures the shared content model. {@code PSGroup} is deliberately NOT a {@code PSPattern}
+ * This class is a sibling of {@link PSPattern} - both extend {@link AbstractPSPatternLike}, which
+ * captures the shared content model. {@code PSGroup} is deliberately NOT a {@code PSPattern}
  * subtype: code that performs {@code instanceof PSPattern} will continue to match only true
  * patterns and ignore groups.
  *

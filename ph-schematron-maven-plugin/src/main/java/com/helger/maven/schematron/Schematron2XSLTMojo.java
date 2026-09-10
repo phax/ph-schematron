@@ -442,13 +442,13 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 case SCHXSLT2:
                 {
                   final SchematronSchXslt2Config aSchXslt2Config = SchematronSchXslt2Config.builder (aSchematronResource)
-                                                                                            .errorListener (aMojoErrorListener)
-                                                                                            .uriResolver (null)
-                                                                                            .phase (m_sPhaseName)
-                                                                                            .languageCode (m_sLanguageCode)
-                                                                                            .parameters (m_aCustomParameters)
-                                                                                            .forceCacheResult (m_bForceCacheResult)
-                                                                                            .build ();
+                                                                                           .errorListener (aMojoErrorListener)
+                                                                                           .uriResolver (null)
+                                                                                           .phase (m_sPhaseName)
+                                                                                           .languageCode (m_sLanguageCode)
+                                                                                           .parameters (m_aCustomParameters)
+                                                                                           .forceCacheResult (m_bForceCacheResult)
+                                                                                           .build ();
                   yield SchematronProviderXSLTFromSchXslt2.createSchematronXSLT (aSchXslt2Config);
                 }
                 case PURE_XSLT:
@@ -533,7 +533,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
 
             final long nStartTime = System.currentTimeMillis ();
             final AtomicBoolean aLoggedAnything = new AtomicBoolean (false);
-            final Thread t = new Thread ( () -> {
+            final Thread t = new Thread (() -> {
               long nLastSecs = 0;
               while (!Thread.currentThread ().isInterrupted ())
               {

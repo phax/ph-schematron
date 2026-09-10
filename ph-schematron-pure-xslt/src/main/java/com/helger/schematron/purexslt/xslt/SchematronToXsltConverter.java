@@ -48,8 +48,8 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 /**
  * Standalone tool that converts a Schematron schema into the XSLT&nbsp;3.0 stylesheet produced by
  * {@link PureXsltStylesheetGenerator}, and emits it in a variety of forms. Use this when you want
- * the generated stylesheet on its own - e.g. to ship it in a build artifact, apply it through
- * a non-Saxon XSLT processor, or simply inspect what the Saxon-native engine compiles internally.
+ * the generated stylesheet on its own - e.g. to ship it in a build artifact, apply it through a
+ * non-Saxon XSLT processor, or simply inspect what the Saxon-native engine compiles internally.
  * <p>
  * By default the pipeline mirrors the one used at runtime inside
  * {@code SchematronResourcePureXslt}: the schema is read with {@link PSReader} (with let-body

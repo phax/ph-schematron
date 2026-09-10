@@ -77,8 +77,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of errors
    */
-  default void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
-                                                                                               throws SchematronValidationException
+  default void onRuleStart (@NonNull final PSRule aRule,
+                            @NonNull final NodeList aContextList) throws SchematronValidationException
   {}
 
   /**
@@ -188,8 +188,8 @@ public interface IPSValidationHandler
    * @throws SchematronValidationException
    *         In case of validation errors
    */
-  default void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
-                                                                                             throws SchematronValidationException
+  default void onEnd (@NonNull final PSSchema aSchema,
+                      @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {}
 
   /**
@@ -275,8 +275,8 @@ public interface IPSValidationHandler
    *         In case of validation errors
    * @since 10.0.0
    */
-  default void onRuleEvaluated (@NonNull final PSRule aRule, @Nonnegative final long nDurationNanos)
-                                                                                                     throws SchematronValidationException
+  default void onRuleEvaluated (@NonNull final PSRule aRule,
+                                @Nonnegative final long nDurationNanos) throws SchematronValidationException
   {}
 
   /**
@@ -332,8 +332,8 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
-                                                                                                  throws SchematronValidationException
+      public void onRuleStart (@NonNull final PSRule aRule,
+                               @NonNull final NodeList aContextList) throws SchematronValidationException
       {
         lhs.onRuleStart (aRule, aContextList);
         rhs.onRuleStart (aRule, aContextList);
@@ -406,8 +406,8 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
-                                                                                                throws SchematronValidationException
+      public void onEnd (@NonNull final PSSchema aSchema,
+                         @Nullable final PSPhase aActivePhase) throws SchematronValidationException
       {
         lhs.onEnd (aSchema, aActivePhase);
         rhs.onEnd (aSchema, aActivePhase);
@@ -446,8 +446,8 @@ public interface IPSValidationHandler
       }
 
       @Override
-      public void onRuleEvaluated (@NonNull final PSRule aRule, @Nonnegative final long nDurationNanos)
-                                                                                                        throws SchematronValidationException
+      public void onRuleEvaluated (@NonNull final PSRule aRule,
+                                   @Nonnegative final long nDurationNanos) throws SchematronValidationException
       {
         lhs.onRuleEvaluated (aRule, nDurationNanos);
         rhs.onRuleEvaluated (aRule, nDurationNanos);

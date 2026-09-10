@@ -222,8 +222,8 @@ public final class TelemetryValidationHandler implements IPSValidationHandler
   }
 
   @Override
-  public void onEnd (@NonNull final PSSchema aSchema, @Nullable final PSPhase aActivePhase)
-                                                                                            throws SchematronValidationException
+  public void onEnd (@NonNull final PSSchema aSchema,
+                     @Nullable final PSPhase aActivePhase) throws SchematronValidationException
   {
     m_aSW.stop ();
     final String sOutcome = (m_nFailedAsserts == 0 && m_nFiredReports == 0) ? CSchematronTelemetry.OUTCOME_VALID

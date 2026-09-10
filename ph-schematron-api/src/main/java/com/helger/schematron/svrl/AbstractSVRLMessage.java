@@ -31,8 +31,7 @@ import com.helger.schematron.svrl.SVRLResourceError.SVRLErrorBuilder;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 
 /**
- * A wrapper around FailedAssert and SuccessfulReport with easier error level
- * handling.
+ * A wrapper around FailedAssert and SuccessfulReport with easier error level handling.
  *
  * @author Philip Helger
  */

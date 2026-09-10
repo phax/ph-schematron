@@ -69,14 +69,15 @@ public class RelaxNGCompactSchemaCache extends SchemaCache
     this (null, aResourceResolver);
   }
 
-  public RelaxNGCompactSchemaCache (@Nullable final ErrorHandler aErrorHandler, @Nullable final LSResourceResolver aResourceResolver)
+  public RelaxNGCompactSchemaCache (@Nullable final ErrorHandler aErrorHandler,
+                                    @Nullable final LSResourceResolver aResourceResolver)
   {
     super ("RelaxNGCompact", SchemaFactory.newInstance (XMLConstants.RELAXNG_NS_URI), aErrorHandler, aResourceResolver);
   }
 
   /**
-   * @return <code>true</code> if the default singleton is already instantiated,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if the default singleton is already instantiated, <code>false</code>
+   *         if not.
    */
   public static boolean isInstantiated ()
   {

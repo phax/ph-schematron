@@ -37,8 +37,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
- * Test class for class {@link PSSchema} and {@link PSReader} and
- * {@link PSWriter}.
+ * Test class for class {@link PSSchema} and {@link PSReader} and {@link PSWriter}.
  *
  * @author Philip Helger
  */

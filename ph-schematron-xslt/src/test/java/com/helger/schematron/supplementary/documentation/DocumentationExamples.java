@@ -33,7 +33,8 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
  */
 public final class DocumentationExamples
 {
-  public static boolean validateXMLViaXSLTSchematron (@NonNull final File aSchematronFile, @NonNull final File aXMLFile) throws Exception
+  public static boolean validateXMLViaXSLTSchematron (@NonNull final File aSchematronFile,
+                                                      @NonNull final File aXMLFile) throws Exception
   {
     final ISchematronResource aResSCH = SchematronResourceSCH.builderFromFile (aSchematronFile).build ();
     if (!aResSCH.isValidSchematron ())

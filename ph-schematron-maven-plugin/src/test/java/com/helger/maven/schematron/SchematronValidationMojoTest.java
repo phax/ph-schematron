@@ -44,7 +44,8 @@ public final class SchematronValidationMojoTest
     assertTrue (aPOM.isFile ());
 
     // Use "Configured" to get default values injected
-    final SchematronValidationMojo aMojo = (SchematronValidationMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (), "validate");
+    final SchematronValidationMojo aMojo = (SchematronValidationMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
+                                                                                                    "validate");
     assertNotNull (aMojo);
     // Making the files is essential, otherwise the paths are interpreted
     // relative to the test POM!
@@ -71,7 +72,8 @@ public final class SchematronValidationMojoTest
     assertTrue (aPOM.isFile ());
 
     // Use "Configured" to get default values injected
-    final SchematronValidationMojo aMojo = (SchematronValidationMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (), "validate");
+    final SchematronValidationMojo aMojo = (SchematronValidationMojo) m_aRule.lookupConfiguredMojo (aPOM.getParentFile (),
+                                                                                                    "validate");
     assertNotNull (aMojo);
     // Making the files is essential, otherwise the paths are interpreted
     // relative to the test POM!

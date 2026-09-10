@@ -97,8 +97,9 @@ public final class SchematronResourcePureTelemetryTest
 
     // Duration histogram: one entry on this validation, value >= 0
     assertEquals (1, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
-    assertTrue (TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
-                0.0);
+    assertTrue (TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION)
+                         .get (0)
+                         .doubleValue () >= 0.0);
 
     // Per-rule execution timing: one rule -> 1 rule.duration + 1 context.duration; 2 asserts -> 2
     // assert.duration entries

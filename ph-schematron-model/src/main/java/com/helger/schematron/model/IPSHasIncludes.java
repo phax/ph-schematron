@@ -29,8 +29,7 @@ import com.helger.collection.commons.ICommonsList;
 public interface IPSHasIncludes
 {
   /**
-   * @return <code>true</code> if at least one include is present in this
-   *         object.
+   * @return <code>true</code> if at least one include is present in this object.
    */
   boolean hasAnyInclude ();
 

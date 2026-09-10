@@ -22,8 +22,8 @@ import org.jspecify.annotations.Nullable;
 import com.helger.diagnostics.error.list.ErrorList;
 
 /**
- * An implementation if {@link IPSErrorHandler} that collects all error messages
- * in a provided error list.
+ * An implementation if {@link IPSErrorHandler} that collects all error messages in a provided error
+ * list.
  *
  * @author Philip Helger
  * @since 4.2.1
@@ -35,7 +35,8 @@ public class WrappedCollectingPSErrorHandler extends AbstractCollectingPSErrorHa
     super (aErrorList, null);
   }
 
-  public WrappedCollectingPSErrorHandler (@NonNull final ErrorList aErrorList, @Nullable final IPSErrorHandler aNestedErrorHandler)
+  public WrappedCollectingPSErrorHandler (@NonNull final ErrorList aErrorList,
+                                          @Nullable final IPSErrorHandler aNestedErrorHandler)
   {
     super (aErrorList, aNestedErrorHandler);
   }

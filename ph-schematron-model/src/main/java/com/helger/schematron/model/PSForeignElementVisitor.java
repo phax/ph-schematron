@@ -64,8 +64,8 @@ public final class PSForeignElementVisitor
   /**
    * Visit an element with mixed content (like <code>&lt;assert&gt;</code>,
    * <code>&lt;diagnostic&gt;</code> or <code>&lt;p&gt;</code>) and all of its rich text children
-   * (<code>&lt;dir&gt;</code>, <code>&lt;emph&gt;</code> and <code>&lt;span&gt;</code>) - the latter
-   * may carry foreign elements as well. Rich text children can only contain
+   * (<code>&lt;dir&gt;</code>, <code>&lt;emph&gt;</code> and <code>&lt;span&gt;</code>) - the
+   * latter may carry foreign elements as well. Rich text children can only contain
    * <code>&lt;name&gt;</code> and <code>&lt;value-of&gt;</code> elements, so a single level of
    * nesting is sufficient here.
    *

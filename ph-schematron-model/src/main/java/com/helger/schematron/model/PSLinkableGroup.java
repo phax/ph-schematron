@@ -47,10 +47,9 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
   }
 
   /**
-   * A name describing the function of the assertion or context node in the
-   * pattern. If the assertion has a subject attribute, then the role labels the
-   * arc between the context node and any nodes which match the path expression
-   * given by the subject attribute.<br>
+   * A name describing the function of the assertion or context node in the pattern. If the
+   * assertion has a subject attribute, then the role labels the arc between the context node and
+   * any nodes which match the path expression given by the subject attribute.<br>
    * An implementation is not required to make use of this attribute.
    *
    * @return The role value
@@ -67,17 +66,15 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
   }
 
   /**
-   * A path allowing more precise specification of nodes. The path expression is
-   * evaluated in the context of the context node of the current rule. If no
-   * subject attribute is specified, the current subject node may be used.<br>
-   * NOTE: The subject attribute is required because the rule context may have
-   * been selected for reasons of convenience or performance, in association
-   * with the particular assertion tests. In such cases, the rule context may
-   * not be useful to identify the subject, and the nodes located by the subject
-   * attribute may be more useful. Similarly, it may not be possible to
-   * determine from an assertion test which nodes the assertion test has tested.
-   * In such a case, the nodes located by the subject attribute may be more
-   * useful.<br>
+   * A path allowing more precise specification of nodes. The path expression is evaluated in the
+   * context of the context node of the current rule. If no subject attribute is specified, the
+   * current subject node may be used.<br>
+   * NOTE: The subject attribute is required because the rule context may have been selected for
+   * reasons of convenience or performance, in association with the particular assertion tests. In
+   * such cases, the rule context may not be useful to identify the subject, and the nodes located
+   * by the subject attribute may be more useful. Similarly, it may not be possible to determine
+   * from an assertion test which nodes the assertion test has tested. In such a case, the nodes
+   * located by the subject attribute may be more useful.<br>
    * An implementation is not required to make use of this element.
    *
    * @return The subject value
@@ -111,6 +108,8 @@ public class PSLinkableGroup implements ICloneable <PSLinkableGroup>, Serializab
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).appendIfNotNull ("Role", m_sRole).appendIfNotNull ("Subject", m_sSubject).getToString ();
+    return new ToStringGenerator (this).appendIfNotNull ("Role", m_sRole)
+                                       .appendIfNotNull ("Subject", m_sSubject)
+                                       .getToString ();
   }
 }

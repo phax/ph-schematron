@@ -33,7 +33,8 @@ import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
  * @since 10.0.0
  */
 @ThreadSafe
-public final class SchematronSCHCache extends AbstractSchematronCache <SchematronSCHConfig, ISchematronXSLTBasedProvider>
+public final class SchematronSCHCache extends
+                                      AbstractSchematronCache <SchematronSCHConfig, ISchematronXSLTBasedProvider>
 {
   /** Default name of the shared cache. */
   public static final String DEFAULT_NAME = "schematron-sch";

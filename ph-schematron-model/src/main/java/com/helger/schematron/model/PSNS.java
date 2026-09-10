@@ -37,17 +37,14 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron ns-element.<br>
- * Specification of a namespace prefix and URI. The required prefix attribute is
- * an XML name with no colon character. The required uri attribute is a
- * namespace URI.<br>
- * NOTE: Because the characters allowed as names may change in versions of XML
- * subsequent to W3C XML 1.0, the ISO/IEC 19757-2 (RELAX NG Compact Syntax)
- * schema for Schematron does not constrain the prefix to particular characters.
- * <br>
- * In an ISO Schematron schema, namespace prefixes in context expressions,
- * assertion tests and other query expressions should use the namespace bindings
- * provided by this element. Namespace prefixes should not use the namespace
- * bindings in scope for element and attribute names.
+ * Specification of a namespace prefix and URI. The required prefix attribute is an XML name with no
+ * colon character. The required uri attribute is a namespace URI.<br>
+ * NOTE: Because the characters allowed as names may change in versions of XML subsequent to W3C XML
+ * 1.0, the ISO/IEC 19757-2 (RELAX NG Compact Syntax) schema for Schematron does not constrain the
+ * prefix to particular characters. <br>
+ * In an ISO Schematron schema, namespace prefixes in context expressions, assertion tests and other
+ * query expressions should use the namespace bindings provided by this element. Namespace prefixes
+ * should not use the namespace bindings in scope for element and attribute names.
  *
  * @author Philip Helger
  */
@@ -179,8 +176,7 @@ public class PSNS implements IPSClonableElement <PSNS>, IPSHasForeignAttributes
   }
 
   /**
-   * Factory method to create a new {@link PSNS} with certain "prefix" and "uri"
-   * values
+   * Factory method to create a new {@link PSNS} with certain "prefix" and "uri" values
    *
    * @param sPrefix
    *        The namespace prefix to use. May be <code>null</code>.

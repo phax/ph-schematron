@@ -25,7 +25,8 @@ import com.helger.schematron.api.cache.AbstractSchematronCache;
 import net.sf.saxon.s9api.XsltExecutable;
 
 /**
- * Cache for compiled {@link XsltExecutable} instances produced from {@link SchematronPureXsltConfig}.
+ * Cache for compiled {@link XsltExecutable} instances produced from
+ * {@link SchematronPureXsltConfig}.
  *
  * @author Philip Helger
  * @since 10.0.0

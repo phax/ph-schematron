@@ -165,8 +165,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Using '" + sBaseURL + "' as base URL for SCH resource " + aSCHResource);
     m_aCustomErrorListener = aCustomErrorListener;
-    m_aCustomURIResolver = aCustomURIResolver != null ? aCustomURIResolver : new DefaultTransformURIResolver ()
-                                                                                                               .setDefaultBase (sBaseURL);
+    m_aCustomURIResolver = aCustomURIResolver != null ? aCustomURIResolver
+                                                      : new DefaultTransformURIResolver ().setDefaultBase (sBaseURL);
     m_aTFCustomizer = aTFCustomizer;
     m_aTelemetry = aTelemetry;
     m_aSOVDeterminator = aSOVDeterminator != null ? aSOVDeterminator
@@ -421,8 +421,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @NonNull
-  public final EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                               throws TransformerException
+  public final EValidity getSchematronValidity (@NonNull final Node aXMLNode,
+                                                @Nullable final String sBaseURI) throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
@@ -461,8 +461,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                            throws TransformerException
+  public Document applySchematronValidation (@NonNull final Node aXMLNode,
+                                             @Nullable final String sBaseURI) throws TransformerException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 

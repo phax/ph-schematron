@@ -39,8 +39,7 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.TransformSourceFactory;
 
 /**
- * This Schematron validator factory uses an existing, precompiled Schematron
- * XSLT for validation.
+ * This Schematron validator factory uses an existing, precompiled Schematron XSLT for validation.
  *
  * @author Philip Helger
  */
@@ -110,8 +109,8 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
 
       // compile result of read file
       final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
-                                                                                             new DefaultTransformURIResolver (aCustomURIResolver),
-                                                                                             bEnableTracing);
+                                                                                            new DefaultTransformURIResolver (aCustomURIResolver),
+                                                                                            bEnableTracing);
       // Hand the factory to the caller-supplied customizer last so it can register Saxon
       // extension functions (or any other tweak) just before the validation stylesheet compiles.
       if (aTFCustomizer != null)

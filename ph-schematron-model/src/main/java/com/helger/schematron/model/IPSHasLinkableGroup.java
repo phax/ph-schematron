@@ -26,15 +26,13 @@ import org.jspecify.annotations.Nullable;
 public interface IPSHasLinkableGroup
 {
   /**
-   * @return Get the existing linkable group or <code>null</code> if none is
-   *         present.
+   * @return Get the existing linkable group or <code>null</code> if none is present.
    */
   @Nullable
   PSLinkableGroup getLinkable ();
 
   /**
-   * @return <code>true</code> if a linkable group is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if a linkable group is present, <code>false</code> otherwise.
    */
   default boolean hasLinkable ()
   {
@@ -42,8 +40,8 @@ public interface IPSHasLinkableGroup
   }
 
   /**
-   * @return Get a clone of the linkable group or <code>null</code> if no
-   *         linkable group is present at this object.
+   * @return Get a clone of the linkable group or <code>null</code> if no linkable group is present
+   *         at this object.
    */
   @Nullable
   default PSLinkableGroup getLinkableClone ()

@@ -215,8 +215,8 @@ public interface ISchematronResource extends IHasID <String>
    *         In case the transformation somehow goes wrong.
    */
   @Nullable
-  SchematronOutputType applySchematronValidationToSVRL (@NonNull Node aXMLNode, @Nullable String sBaseURI)
-                                                                                                           throws Exception;
+  SchematronOutputType applySchematronValidationToSVRL (@NonNull Node aXMLNode,
+                                                        @Nullable String sBaseURI) throws Exception;
 
   /**
    * Apply the Schematron validation on the passed XML source and return a

@@ -156,8 +156,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
                                                  @NonNull final Transformer aTransformer)
   {
     final ErrorListener aErrorListener = aConfig.getErrorListener ();
-    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (
-                                                                                                                Locale.US));
+    aTransformer.setErrorListener (aErrorListener != null ? aErrorListener
+                                                          : new LoggingTransformErrorListener (Locale.US));
 
     final URIResolver aURIResolver = aConfig.getURIResolver ();
     if (aURIResolver != null)

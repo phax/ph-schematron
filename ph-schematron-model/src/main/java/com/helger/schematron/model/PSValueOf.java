@@ -37,13 +37,13 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron value-of-element.<br>
- * Finds or calculates values from the instance document to allow clearer
- * assertions and diagnostics. The required select attribute is an expression
- * evaluated in the current context that returns a string.<br>
- * Variable references in the select attribute are resolved in the scope of the
- * current schema, phase, pattern and rule.<br>
- * An implementation which does not report natural-language assertions is not
- * required to make use of this element.
+ * Finds or calculates values from the instance document to allow clearer assertions and
+ * diagnostics. The required select attribute is an expression evaluated in the current context that
+ * returns a string.<br>
+ * Variable references in the select attribute are resolved in the scope of the current schema,
+ * phase, pattern and rule.<br>
+ * An implementation which does not report natural-language assertions is not required to make use
+ * of this element.
  *
  * @author Philip Helger
  */
@@ -148,8 +148,7 @@ public class PSValueOf implements IPSClonableElement <PSValueOf>, IPSHasForeignA
   }
 
   /**
-   * Factory method to create a new {@link PSValueOf} with a certain "select"
-   * value
+   * Factory method to create a new {@link PSValueOf} with a certain "select" value
    *
    * @param sSelect
    *        The "select" value to be used. May be <code>null</code>.

@@ -33,12 +33,10 @@ import com.helger.schematron.preprocess.SchematronPreprocessException;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
- * ANT task to perform Schematron preprocessing. It converts an existing schema
- * to the minimal syntax (by default) but allows for a certain degree of
- * customization by keeping certain elements in the resulting schema. The actual
- * query binding is used, so that report test expressions can be converted to
- * assertions, and to replace the content of &lt;param&gt; elements into actual
- * values.
+ * ANT task to perform Schematron preprocessing. It converts an existing schema to the minimal
+ * syntax (by default) but allows for a certain degree of customization by keeping certain elements
+ * in the resulting schema. The actual query binding is used, so that report test expressions can be
+ * converted to assertions, and to replace the content of &lt;param&gt; elements into actual values.
  *
  * @author Philip Helger
  * @since 5.0.0
@@ -66,8 +64,7 @@ public class SchematronPreprocess extends AbstractSchematronTask
   private boolean m_bKeepDiagnostics = PSPreprocessor.DEFAULT_KEEP_DIAGNOSTICS;
 
   /**
-   * Should &lt;report&gt;-elements be kept or should they be converted to
-   * &lt;assert&gt;-elements?
+   * Should &lt;report&gt;-elements be kept or should they be converted to &lt;assert&gt;-elements?
    */
   private boolean m_bKeepReports = PSPreprocessor.DEFAULT_KEEP_REPORTS;
 
@@ -116,7 +113,8 @@ public class SchematronPreprocess extends AbstractSchematronTask
   public void setKeepEmptyPatterns (final boolean bKeepEmptyPatterns)
   {
     m_bKeepEmptyPatterns = bKeepEmptyPatterns;
-    _debug (bKeepEmptyPatterns ? "Keeping <pattern>-elements without rules." : "Deleting <pattern>-elements without rules.");
+    _debug (bKeepEmptyPatterns ? "Keeping <pattern>-elements without rules."
+                               : "Deleting <pattern>-elements without rules.");
   }
 
   @Override

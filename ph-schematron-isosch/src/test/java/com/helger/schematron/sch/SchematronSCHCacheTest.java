@@ -67,7 +67,8 @@ public final class SchematronSCHCacheTest
     final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
-      final SchematronResourceSCH aSV = SchematronResourceSCH.builder (new ClassPathResource (VALID_SCHEMATRON)).build ();
+      final SchematronResourceSCH aSV = SchematronResourceSCH.builder (new ClassPathResource (VALID_SCHEMATRON))
+                                                             .build ();
       final Document aDoc = aSV.applySchematronValidation (aXML, null);
       assertNotNull (aDoc);
       if (false)
@@ -96,7 +97,7 @@ public final class SchematronSCHCacheTest
     final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
-      aSenderThreadPool.submit ( () -> {
+      aSenderThreadPool.submit (() -> {
         try
         {
           final SchematronResourceSCH aSV = SchematronResourceSCH.builder (new ClassPathResource (VALID_SCHEMATRON))

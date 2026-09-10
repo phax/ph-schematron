@@ -375,9 +375,7 @@ public final class SchematronResourcePureXsltTest
 
     // The phsch:path helper must have produced a canonical XPath locator for the offending <tag1>
     final String sLocation = _firstFailedAssert (aSVRL).getLocation ();
-    assertEquals ("phsch:path() should produce the canonical location of the context node",
-                  "/tag1[1]",
-                  sLocation);
+    assertEquals ("phsch:path() should produce the canonical location of the context node", "/tag1[1]", sLocation);
   }
 
   @Test
@@ -402,8 +400,6 @@ public final class SchematronResourcePureXsltTest
 
     // The phsch-path mode templates must have produced the canonical location of the context node
     final String sLocation = _firstFailedAssert (aSVRL).getLocation ();
-    assertEquals ("phsch-path mode should produce the canonical location of the context node",
-                  "/tag1[1]",
-                  sLocation);
+    assertEquals ("phsch-path mode should produce the canonical location of the context node", "/tag1[1]", sLocation);
   }
 }

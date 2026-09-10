@@ -35,8 +35,8 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron <code>properties</code> container introduced in ISO/IEC 19757-3:2016.<br>
- * Holds a sequence of {@link PSProperty} declarations and is itself the child of a
- * {@link PSSchema} or {@link PSLibrary}. The element is optional in the v3 (2020) RNC.
+ * Holds a sequence of {@link PSProperty} declarations and is itself the child of a {@link PSSchema}
+ * or {@link PSLibrary}. The element is optional in the v3 (2020) RNC.
  *
  * @author Philip Helger
  * @since 10.0.0 (Schematron 2016)

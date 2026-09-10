@@ -104,8 +104,9 @@ public final class SchematronResourcePureXsltTelemetryTest
 
     // Duration histogram entry
     assertEquals (1, TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).size ());
-    assertTrue (TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION).get (0).doubleValue () >=
-                0.0);
+    assertTrue (TELEMETRY.getHistogramValues (CSchematronTelemetry.METRIC_VALIDATE_DURATION)
+                         .get (0)
+                         .doubleValue () >= 0.0);
   }
 
   @Test

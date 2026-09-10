@@ -28,9 +28,8 @@ import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
 
 /**
- * Base interface for a single query binding. Extends
- * {@link IPSQueryBindingTransform} with the engine-specific binding step that
- * produces a bound, executable schema.
+ * Base interface for a single query binding. Extends {@link IPSQueryBindingTransform} with the
+ * engine-specific binding step that produces a bound, executable schema.
  *
  * @author Philip Helger
  */
@@ -50,10 +49,9 @@ public interface IPSQueryBinding extends IPSQueryBindingTransform
    * @param aSchema
    *        The schema to be bound. May not be <code>null</code>.
    * @param sPhase
-   *        The phase to use. May be <code>null</code>. If it is
-   *        <code>null</code> than the defaultPhase is used that is defined in
-   *        the schema. If no defaultPhase is present, than all patterns are
-   *        evaluated.
+   *        The phase to use. May be <code>null</code>. If it is <code>null</code> than the
+   *        defaultPhase is used that is defined in the schema. If no defaultPhase is present, than
+   *        all patterns are evaluated.
    * @param aCustomErrorHandler
    *        An optional custom error handler to use. May be <code>null</code>.
    * @param aCustomValidationHandler

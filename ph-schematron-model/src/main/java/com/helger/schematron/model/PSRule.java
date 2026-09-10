@@ -292,9 +292,8 @@ public class PSRule implements
   }
 
   /**
-   * Set the optional <code>visit-each</code> attribute introduced in
-   * ISO/IEC 19757-3:2025. When present it selects a sequence of items for
-   * assertion evaluation, replacing the rule context.
+   * Set the optional <code>visit-each</code> attribute introduced in ISO/IEC 19757-3:2025. When
+   * present it selects a sequence of items for assertion evaluation, replacing the rule context.
    *
    * @param sVisitEach
    *        The new value. May be <code>null</code>.
@@ -306,8 +305,7 @@ public class PSRule implements
   }
 
   /**
-   * @return The value of the <code>visit-each</code> attribute, or
-   *         <code>null</code> if not set.
+   * @return The value of the <code>visit-each</code> attribute, or <code>null</code> if not set.
    * @since 10.0.0 (Schematron 2025)
    */
   @Nullable
@@ -317,10 +315,9 @@ public class PSRule implements
   }
 
   /**
-   * Set the optional <code>severity</code> attribute introduced in
-   * ISO/IEC 19757-3:2025. Reserved values are <code>fatal</code>,
-   * <code>error</code>, <code>warning</code> and <code>info</code>; if the
-   * value is a variable reference it is dynamically evaluated.
+   * Set the optional <code>severity</code> attribute introduced in ISO/IEC 19757-3:2025. Reserved
+   * values are <code>fatal</code>, <code>error</code>, <code>warning</code> and <code>info</code>;
+   * if the value is a variable reference it is dynamically evaluated.
    *
    * @param sSeverity
    *        The new value. May be <code>null</code>.
@@ -332,8 +329,7 @@ public class PSRule implements
   }
 
   /**
-   * @return The value of the <code>severity</code> attribute, or
-   *         <code>null</code> if not set.
+   * @return The value of the <code>severity</code> attribute, or <code>null</code> if not set.
    * @since 10.0.0 (Schematron 2025)
    */
   @Nullable
@@ -446,8 +442,7 @@ public class PSRule implements
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_RULE);
     if (m_aFlags.isNotEmpty ())
-      ret.setAttribute (CSchematronXML.ATTR_FLAG,
-                        StringImplode.imploder ().source (m_aFlags).separator (' ').build ());
+      ret.setAttribute (CSchematronXML.ATTR_FLAG, StringImplode.imploder ().source (m_aFlags).separator (' ').build ());
     if (m_bAbstract)
       ret.setAttribute (CSchematronXML.ATTR_ABSTRACT, "true");
     ret.setAttribute (CSchematronXML.ATTR_CONTEXT, m_sContext);

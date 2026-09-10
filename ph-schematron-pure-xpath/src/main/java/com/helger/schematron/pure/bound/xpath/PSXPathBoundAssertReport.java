@@ -71,8 +71,7 @@ public class PSXPathBoundAssertReport
   }
 
   /**
-   * @return The source XPath expression that was compiled. Never
-   *         <code>null</code>.
+   * @return The source XPath expression that was compiled. Never <code>null</code>.
    */
   @NonNull
   public final String getTestExpression ()
@@ -90,8 +89,8 @@ public class PSXPathBoundAssertReport
   }
 
   /**
-   * @return All contained bound elements. It has the same amount of elements as
-   *         the source assert/report.
+   * @return All contained bound elements. It has the same amount of elements as the source
+   *         assert/report.
    */
   @NonNull
   @ReturnsMutableCopy
@@ -116,8 +115,7 @@ public class PSXPathBoundAssertReport
   /**
    * Get all bound diagnostics
    *
-   * @return A copy of all bound diagnostics. Never <code>null</code> but maybe
-   *         empty.
+   * @return A copy of all bound diagnostics. Never <code>null</code> but maybe empty.
    */
   @Nullable
   public final ICommonsMap <String, PSXPathBoundDiagnostic> getAllBoundDiagnostics ()

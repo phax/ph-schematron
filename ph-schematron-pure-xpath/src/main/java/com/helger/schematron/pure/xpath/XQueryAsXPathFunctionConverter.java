@@ -126,8 +126,7 @@ public class XQueryAsXPathFunctionConverter
    *         if a failure occurs reading the supplied input.
    */
   @NonNull
-  public ICommonsList <ExtensionFunction> loadXQuery (@NonNull @WillClose final InputStream aXQueryIS) throws XPathException,
-                                                                                                       IOException
+  public ICommonsList <ExtensionFunction> loadXQuery (@NonNull @WillClose final InputStream aXQueryIS) throws XPathException, IOException
   {
     ValueEnforcer.notNull (aXQueryIS, "XQueryIS");
 

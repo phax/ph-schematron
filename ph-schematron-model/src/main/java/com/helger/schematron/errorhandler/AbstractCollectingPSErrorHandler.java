@@ -28,8 +28,7 @@ import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.diagnostics.error.list.IErrorList;
 
 /**
- * Abstract collecting {@link IPSErrorHandler} that collects all error messages
- * in an error list.
+ * Abstract collecting {@link IPSErrorHandler} that collects all error messages in an error list.
  *
  * @author Philip Helger
  * @since 4.2.1
@@ -73,8 +72,8 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
   }
 
   /**
-   * Clear all currently stored errors. This might be helpful, if the same error
-   * handler is used several times.
+   * Clear all currently stored errors. This might be helpful, if the same error handler is used
+   * several times.
    *
    * @return {@link EChange#CHANGED} if at least one item was cleared.
    */
@@ -85,8 +84,8 @@ public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHa
   }
 
   /**
-   * @return <code>true</code> if no error is contained, <code>false</code> if
-   *         at least one error is contained.
+   * @return <code>true</code> if no error is contained, <code>false</code> if at least one error is
+   *         contained.
    */
   public boolean isEmpty ()
   {

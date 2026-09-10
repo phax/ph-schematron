@@ -85,7 +85,7 @@ public final class Issue182Test
     final CountDownLatch aFinishedLatch = new CountDownLatch (nNumberOfThreads);
     for (int i = 0; i < nNumberOfThreads; i += 2)
     {
-      aES.execute ( () -> {
+      aES.execute (() -> {
         try
         {
           aStartLatch.await ();
@@ -97,7 +97,7 @@ public final class Issue182Test
         }
         aFinishedLatch.countDown ();
       });
-      aES.execute ( () -> {
+      aES.execute (() -> {
         try
         {
           aStartLatch.await ();

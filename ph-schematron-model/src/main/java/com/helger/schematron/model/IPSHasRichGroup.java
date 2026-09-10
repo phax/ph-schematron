@@ -26,15 +26,13 @@ import org.jspecify.annotations.Nullable;
 public interface IPSHasRichGroup
 {
   /**
-   * @return Get the existing rich group or <code>null</code> if none is
-   *         present.
+   * @return Get the existing rich group or <code>null</code> if none is present.
    */
   @Nullable
   PSRichGroup getRich ();
 
   /**
-   * @return <code>true</code> if a rich group is present, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if a rich group is present, <code>false</code> otherwise.
    */
   default boolean hasRich ()
   {
@@ -42,8 +40,8 @@ public interface IPSHasRichGroup
   }
 
   /**
-   * @return Get a clone of the rich group or <code>null</code> if no rich group
-   *         is present at this object.
+   * @return Get a clone of the rich group or <code>null</code> if no rich group is present at this
+   *         object.
    */
   @Nullable
   default PSRichGroup getRichClone ()

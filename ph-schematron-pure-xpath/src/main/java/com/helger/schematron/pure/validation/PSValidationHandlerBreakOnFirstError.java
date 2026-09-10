@@ -28,10 +28,9 @@ import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSRule;
 
 /**
- * A simple implementation if {@link IPSValidationHandler} that stops validation
- * upon the first error (the first failed assert or the first successful
- * report). The final validation result can be retrieved by invoking
- * {@link #getValidity()}.
+ * A simple implementation if {@link IPSValidationHandler} that stops validation upon the first
+ * error (the first failed assert or the first successful report). The final validation result can
+ * be retrieved by invoking {@link #getValidity()}.
  *
  * @author Philip Helger
  */
@@ -69,9 +68,8 @@ public class PSValidationHandlerBreakOnFirstError implements IPSPartialValidatio
   }
 
   /**
-   * @return The validity of the XML file. {@link EValidity#VALID} if no failed
-   *         assertion and no successful report occurred,
-   *         {@link EValidity#INVALID} otherwise.
+   * @return The validity of the XML file. {@link EValidity#VALID} if no failed assertion and no
+   *         successful report occurred, {@link EValidity#INVALID} otherwise.
    */
   @NonNull
   public final EValidity getValidity ()

@@ -240,10 +240,9 @@ public class PSAssertReport implements
   }
 
   /**
-   * Set the optional <code>severity</code> attribute introduced in
-   * ISO/IEC 19757-3:2025. Reserved values are <code>fatal</code>,
-   * <code>error</code>, <code>warning</code> and <code>info</code>; if the
-   * value is a variable reference it is dynamically evaluated.
+   * Set the optional <code>severity</code> attribute introduced in ISO/IEC 19757-3:2025. Reserved
+   * values are <code>fatal</code>, <code>error</code>, <code>warning</code> and <code>info</code>;
+   * if the value is a variable reference it is dynamically evaluated.
    *
    * @param sSeverity
    *        The new value. May be <code>null</code>.
@@ -255,8 +254,7 @@ public class PSAssertReport implements
   }
 
   /**
-   * @return The value of the <code>severity</code> attribute, or
-   *         <code>null</code> if not set.
+   * @return The value of the <code>severity</code> attribute, or <code>null</code> if not set.
    * @since 10.0.0 (Schematron 2025)
    */
   @Nullable
@@ -463,8 +461,7 @@ public class PSAssertReport implements
                                                             : CSchematronXML.ELEMENT_REPORT);
     ret.setAttribute (CSchematronXML.ATTR_ID, m_sID);
     if (m_aFlags.isNotEmpty ())
-      ret.setAttribute (CSchematronXML.ATTR_FLAG,
-                        StringImplode.imploder ().source (m_aFlags).separator (' ').build ());
+      ret.setAttribute (CSchematronXML.ATTR_FLAG, StringImplode.imploder ().source (m_aFlags).separator (' ').build ());
     if (StringHelper.isNotEmpty (m_sSeverity))
       ret.setAttribute (CSchematronXML.ATTR_SEVERITY, m_sSeverity);
     ret.setAttribute (CSchematronXML.ATTR_TEST, m_sTest);

@@ -35,8 +35,7 @@ public class SchematronReadException extends SchematronException
    * Constructor
    *
    * @param aRes
-   *        The resource in which the error occurred. May not be
-   *        <code>null</code>.
+   *        The resource in which the error occurred. May not be <code>null</code>.
    * @param sMsg
    *        error message
    */
@@ -49,14 +48,15 @@ public class SchematronReadException extends SchematronException
    * Constructor
    *
    * @param aRes
-   *        The resource in which the error occurred. May not be
-   *        <code>null</code>.
+   *        The resource in which the error occurred. May not be <code>null</code>.
    * @param sMsg
    *        error message
    * @param t
    *        Nested exception
    */
-  public SchematronReadException (@NonNull final IReadableResource aRes, @NonNull final String sMsg, @Nullable final Throwable t)
+  public SchematronReadException (@NonNull final IReadableResource aRes,
+                                  @NonNull final String sMsg,
+                                  @Nullable final Throwable t)
   {
     super (aRes.getPath () + ": " + sMsg, t);
     m_aRes = aRes;

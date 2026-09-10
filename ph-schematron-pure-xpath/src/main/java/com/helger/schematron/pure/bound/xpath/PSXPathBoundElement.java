@@ -27,8 +27,8 @@ import com.helger.schematron.model.IPSElement;
 import net.sf.saxon.s9api.XPathExecutable;
 
 /**
- * This class represents a single XPath-bound text element that is contained
- * inside an assert- or report-element.
+ * This class represents a single XPath-bound text element that is contained inside an assert- or
+ * report-element.
  *
  * @author Philip Helger
  */
@@ -62,8 +62,7 @@ public class PSXPathBoundElement
   }
 
   /**
-   * @return {@link String} or {@link IPSElement} objects. May not be
-   *         <code>null</code>.
+   * @return {@link String} or {@link IPSElement} objects. May not be <code>null</code>.
    */
   @NonNull
   public final Object getElement ()
@@ -72,11 +71,10 @@ public class PSXPathBoundElement
   }
 
   /**
-   * @return The source expression that was compiled to an
-   *         {@link XPathExecutable}. It may differ from the XPath expression
-   *         contained in the element because of replaced variables from
-   *         &lt;let&gt; elements. May be <code>null</code> if
-   *         {@link #getExpression()} is <code>null</code>.
+   * @return The source expression that was compiled to an {@link XPathExecutable}. It may differ
+   *         from the XPath expression contained in the element because of replaced variables from
+   *         &lt;let&gt; elements. May be <code>null</code> if {@link #getExpression()} is
+   *         <code>null</code>.
    */
   @Nullable
   public final String getExpression ()

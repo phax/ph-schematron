@@ -28,8 +28,8 @@ import com.helger.base.lang.EnumHelper;
  * {@code SchematronValidationMojo} (Maven plugin) and the Ant {@code Schematron} task.
  * <p>
  * <b>Deprecated since v10.0.0.</b> Merged into {@link ESchematronEngine}, which is now the single
- * authoritative engine selector. Every value here has an equivalent on {@link ESchematronEngine}
- * - see {@link #toEngine()}. All string ids that this enum recognised remain accepted by
+ * authoritative engine selector. Every value here has an equivalent on {@link ESchematronEngine} -
+ * see {@link #toEngine()}. All string ids that this enum recognised remain accepted by
  * {@link ESchematronEngine#getFromIDOrNull(String)} as well, so user-facing configuration values
  * (e.g. {@code schematronProcessingEngine="schematron"}) continue to resolve.
  *

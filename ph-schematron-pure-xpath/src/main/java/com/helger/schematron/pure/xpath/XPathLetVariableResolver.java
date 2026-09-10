@@ -81,12 +81,12 @@ public class XPathLetVariableResolver
   }
 
   /**
-   * Drop every &lt;let&gt; binding that the current thread is holding. Called from a {@code finally}
-   * block in {@code PSXPathBoundSchema.validate(...)} so that early returns
-   * (e.g. {@code IPSValidationHandler} requesting {@code BREAK}) and exceptions out of validation
+   * Drop every &lt;let&gt; binding that the current thread is holding. Called from a
+   * {@code finally} block in {@code PSXPathBoundSchema.validate(...)} so that early returns (e.g.
+   * {@code IPSValidationHandler} requesting {@code BREAK}) and exceptions out of validation
    * callbacks cannot leak per-request bindings into the next request handled by the same
-   * thread-pool worker. Seed variables (supplied by the {@link com.helger.schematron.pure.xpath.IXPathConfig})
-   * are not affected.
+   * thread-pool worker. Seed variables (supplied by the
+   * {@link com.helger.schematron.pure.xpath.IXPathConfig}) are not affected.
    *
    * @since 9.2.0
    */

@@ -33,8 +33,7 @@ import com.helger.base.debug.GlobalDebug;
 public abstract class AbstractSchematronTask extends Task
 {
   /**
-   * <code>true</code> if the build should fail if any error occurs. Defaults to
-   * <code>true</code>.
+   * <code>true</code> if the build should fail if any error occurs. Defaults to <code>true</code>.
    */
   private boolean m_bFailOnError = true;
 

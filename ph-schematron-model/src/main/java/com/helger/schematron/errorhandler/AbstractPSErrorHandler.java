@@ -42,8 +42,8 @@ public abstract class AbstractPSErrorHandler implements IPSErrorHandler
   }
 
   /**
-   * @return The nested error handler as passed in the constructor or
-   *         <code>null</code> if none was provided.
+   * @return The nested error handler as passed in the constructor or <code>null</code> if none was
+   *         provided.
    */
   @Nullable
   public IPSErrorHandler getNestedErrorHandler ()

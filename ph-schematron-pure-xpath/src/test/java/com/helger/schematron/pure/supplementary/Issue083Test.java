@@ -37,8 +37,8 @@ public final class Issue083Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue083Test.class);
 
-  private static void _validateAndProduceSVRL (@NonNull final File aSchematron, @NonNull final File aXML)
-                                                                                                          throws Exception
+  private static void _validateAndProduceSVRL (@NonNull final File aSchematron,
+                                               @NonNull final File aXML) throws Exception
   {
     final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromFile (aSchematron).build ();
     SchematronDebug.setSaveIntermediateXSLTFiles (true);

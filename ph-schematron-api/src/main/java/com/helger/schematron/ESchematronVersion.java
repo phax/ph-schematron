@@ -33,9 +33,8 @@ import com.helger.base.lang.EnumHelper;
  * <li>{@link #SCHEMATRON_2006} - first edition (v1)</li>
  * <li>{@link #SCHEMATRON_2016} - second edition (v2)</li>
  * <li>{@link #SCHEMATRON_2020} - third edition (v3)</li>
- * <li>{@link #SCHEMATRON_2025} - fourth edition (v4) - the
- * <code>schematronEdition</code> attribute on <code>schema</code> uses the year value
- * <code>2025</code></li>
+ * <li>{@link #SCHEMATRON_2025} - fourth edition (v4) - the <code>schematronEdition</code> attribute
+ * on <code>schema</code> uses the year value <code>2025</code></li>
  * </ul>
  *
  * @author Philip Helger

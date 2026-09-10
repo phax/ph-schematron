@@ -99,7 +99,6 @@ public class PSXPathBoundRule
     return m_aVariables;
   }
 
-
   @Override
   public String toString ()
   {

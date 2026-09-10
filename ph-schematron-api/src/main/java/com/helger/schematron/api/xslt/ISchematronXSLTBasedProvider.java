@@ -23,31 +23,30 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 
 /**
- * Interface for a factory creating Schematron validators from XSLT. Sometimes
- * the pre-built XSLTs are already available, and sometimes they need to be
- * built from the underlying Schematron file.
+ * Interface for a factory creating Schematron validators from XSLT. Sometimes the pre-built XSLTs
+ * are already available, and sometimes they need to be built from the underlying Schematron file.
  *
  * @author Philip Helger
  */
 public interface ISchematronXSLTBasedProvider
 {
   /**
-   * @return <code>true</code> if the Schematron was successfully interpreted,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the Schematron was successfully interpreted, <code>false</code>
+   *         otherwise.
    */
   boolean isValidSchematron ();
 
   /**
-   * @return The produced XSLT document from the Schematron document or
-   *         <code>null</code> if preprocessing failed.
+   * @return The produced XSLT document from the Schematron document or <code>null</code> if
+   *         preprocessing failed.
    * @see #isValidSchematron()
    */
   @Nullable
   Document getXSLTDocument ();
 
   /**
-   * @return The XSLT transformer to be used. May be <code>null</code> if the
-   *         compilation of the XSLT failed.
+   * @return The XSLT transformer to be used. May be <code>null</code> if the compilation of the
+   *         XSLT failed.
    * @throws TransformerConfigurationException
    *         In case of an internal error
    */

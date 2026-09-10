@@ -21,18 +21,17 @@ import org.jspecify.annotations.NonNull;
 import com.helger.base.state.EValidity;
 
 /**
- * An extension of {@link IPSValidationHandler} that is used to determine the
- * overall validity of a Schematron validation. The final validation result can
- * be retrieved by invoking {@link #getValidity()}.
+ * An extension of {@link IPSValidationHandler} that is used to determine the overall validity of a
+ * Schematron validation. The final validation result can be retrieved by invoking
+ * {@link #getValidity()}.
  *
  * @author Philip Helger
  */
 public interface IPSPartialValidationHandler extends IPSValidationHandler
 {
   /**
-   * @return The validity of the XML file. {@link EValidity#VALID} if no failed
-   *         assertion and no successful report occurred,
-   *         {@link EValidity#INVALID} otherwise.
+   * @return The validity of the XML file. {@link EValidity#VALID} if no failed assertion and no
+   *         successful report occurred, {@link EValidity#INVALID} otherwise.
    */
   @NonNull
   EValidity getValidity ();

@@ -72,10 +72,10 @@ public final class SchematronResourceXSLTNativeDOMTest
   {
     final URIResolver aResolver = (sHref, sBase) -> new StreamSource (new StringReader ("<extra>resolved</extra>"));
     final SchematronResourceXSLT aResource = SchematronResourceXSLT.builderFromString (XSLT)
-                                                                  .validateSVRL (false)
-                                                                  .parameter ("message", "custom")
-                                                                  .uriResolver (aResolver)
-                                                                  .build ();
+                                                                   .validateSVRL (false)
+                                                                   .parameter ("message", "custom")
+                                                                   .uriResolver (aResolver)
+                                                                   .build ();
     // The raw transformer retains the previous wrapped-DOM behavior.
     final Transformer aOriginal = aResource.getXSLTProvider ().getXSLTTransformer ();
     aOriginal.setParameter ("message", "custom");
@@ -105,9 +105,8 @@ public final class SchematronResourceXSLTNativeDOMTest
     _assertMatchesWrappedDOM (new DOMSource (aDoc, "https://example.org/input.xml"), false);
     aDoc.setDocumentURI ("https://example.org/document-uri.xml");
     _assertMatchesWrappedDOM (new DOMSource (aDoc), false);
-    aDoc.getDocumentElement ().setAttributeNS ("http://www.w3.org/XML/1998/namespace",
-                                             "xml:base",
-                                             "https://example.org/nested/");
+    aDoc.getDocumentElement ()
+        .setAttributeNS ("http://www.w3.org/XML/1998/namespace", "xml:base", "https://example.org/nested/");
     _assertMatchesWrappedDOM (new DOMSource (aDoc, aDoc.getDocumentURI ()), true);
     aDoc.setDocumentURI (null);
     aDoc.getDocumentElement ().removeAttributeNS ("http://www.w3.org/XML/1998/namespace", "base");

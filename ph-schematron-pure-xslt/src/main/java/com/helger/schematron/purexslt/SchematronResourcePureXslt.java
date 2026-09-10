@@ -274,8 +274,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * body runs directly with no span overhead.
    */
   @Nullable
-  private <T> T _phase (@NonNull final String sSpanName, @NonNull final IThrowingSupplier <T, Exception> aBody)
-                                                                                                                throws Exception
+  private <T> T _phase (@NonNull final String sSpanName,
+                        @NonNull final IThrowingSupplier <T, Exception> aBody) throws Exception
   {
     if (!isTelemetry ())
       return aBody.get ();
@@ -335,8 +335,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
                                                                        .phase (m_sPhase)
                                                                        .xsltVersion (m_eXsltVersion)
                                                                        .processor (m_aProcessor)
-                                                                       .errorHandler (m_aErrorHandler != null
-                                                                                                              ? m_aErrorHandler
+                                                                       .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
                                                                                                               : new LoggingPSErrorHandler ())
                                                                        .entityResolver (getEntityResolver ())
                                                                        .uriResolver (m_aURIResolver)
@@ -382,8 +381,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   @NonNull
-  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                           throws Exception
+  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode,
+                                            @Nullable final String sBaseURI) throws Exception
   {
     final XsltExecutable aExecutable = getOrCompileXslt ();
     final Document aResultDoc = XMLFactory.newDocument ();
@@ -411,8 +410,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   @Override
   @NonNull
-  public EValidity getSchematronValidity (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                         throws Exception
+  public EValidity getSchematronValidity (@NonNull final Node aXMLNode,
+                                          @Nullable final String sBaseURI) throws Exception
   {
     final SchematronOutputType aSVRL = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     if (aSVRL == null)
@@ -427,8 +426,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   @Override
   @Nullable
-  public Document applySchematronValidation (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
-                                                                                                            throws Exception
+  public Document applySchematronValidation (@NonNull final Node aXMLNode,
+                                             @Nullable final String sBaseURI) throws Exception
   {
     final SchematronOutputType aSVRL = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     if (aSVRL == null)

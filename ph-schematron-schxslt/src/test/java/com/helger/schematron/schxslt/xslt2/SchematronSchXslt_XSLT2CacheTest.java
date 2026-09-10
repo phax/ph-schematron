@@ -98,7 +98,7 @@ public final class SchematronSchXslt_XSLT2CacheTest
     final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
-      aSenderThreadPool.submit ( () -> {
+      aSenderThreadPool.submit (() -> {
         try
         {
           final SchematronResourceSchXslt_XSLT2 aSV = SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))

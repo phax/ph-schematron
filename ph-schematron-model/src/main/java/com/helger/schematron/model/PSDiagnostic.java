@@ -149,8 +149,8 @@ public class PSDiagnostic implements
   }
 
   /**
-   * Set the optional <code>role</code> attribute, formalised by ISO/IEC 19757-3:2020 (the
-   * pre-2020 RNCs did not declare it, although v2 5.5.1 NOTE 2 hinted at values such as
+   * Set the optional <code>role</code> attribute, formalised by ISO/IEC 19757-3:2020 (the pre-2020
+   * RNCs did not declare it, although v2 5.5.1 NOTE 2 hinted at values such as
    * <code>warning</code>, <code>caution</code> or <code>note</code>).
    *
    * @param sRole

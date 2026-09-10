@@ -93,8 +93,7 @@ public final class PureXsltStylesheetGeneratorTest
     assertEquals ("3.0", aStylesheet.getAttribute ("version"));
 
     // XSLT 3.0 uses the built-in fn:path() and must NOT emit the phsch:path helper function
-    assertEquals (0,
-                  aDoc.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "function").getLength ());
+    assertEquals (0, aDoc.getElementsByTagNameNS (PureXsltStylesheetGenerator.XSLT_NS, "function").getLength ());
     assertEquals ("{path(.)}", _firstLocationAvt (aDoc));
   }
 

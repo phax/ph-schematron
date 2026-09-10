@@ -34,23 +34,21 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron let-element.<br>
- * If the let element is the child of a rule element, the variable is calculated
- * and scoped to the current rule and context. Otherwise, the variable is
- * calculated with the context of the instance document root.<br>
- * The required name attribute is the name of the variable. The required value
- * attribute is an expression evaluated in the current context.<br>
- * It is an error to reference a variable that has not been defined in the
- * current schema, phase, pattern, or rule, if the query language binding allows
- * this to be determined reliably. It is an error for a variable to be multiply
- * defined in the current schema, phase, pattern and rule.<br>
- * The variable is substituted into assertion tests and other expressions in the
- * same rule before the test or expression is evaluated. The query language
- * binding specifies which lexical conventions are used to detect references to
- * variables.<br>
- * An implementation may provide a facility to override the values of top-level
- * variables specified by let elements under the schema element. For example, an
- * implementation may allow top-level variables to be supplied on the command
- * line. The values provided are strings or data objects, not expressions.
+ * If the let element is the child of a rule element, the variable is calculated and scoped to the
+ * current rule and context. Otherwise, the variable is calculated with the context of the instance
+ * document root.<br>
+ * The required name attribute is the name of the variable. The required value attribute is an
+ * expression evaluated in the current context.<br>
+ * It is an error to reference a variable that has not been defined in the current schema, phase,
+ * pattern, or rule, if the query language binding allows this to be determined reliably. It is an
+ * error for a variable to be multiply defined in the current schema, phase, pattern and rule.<br>
+ * The variable is substituted into assertion tests and other expressions in the same rule before
+ * the test or expression is evaluated. The query language binding specifies which lexical
+ * conventions are used to detect references to variables.<br>
+ * An implementation may provide a facility to override the values of top-level variables specified
+ * by let elements under the schema element. For example, an implementation may allow top-level
+ * variables to be supplied on the command line. The values provided are strings or data objects,
+ * not expressions.
  *
  * @author Philip Helger
  */
@@ -130,10 +128,9 @@ public class PSLet implements IPSClonableElement <PSLet>
   }
 
   /**
-   * Set the optional <code>as</code> attribute introduced in
-   * ISO/IEC 19757-3:2025. The attribute declares the datatype of the variable
-   * and is interpreted by the active query language binding (e.g. an XSLT2
-   * sequence type for the <code>xslt2</code> binding).
+   * Set the optional <code>as</code> attribute introduced in ISO/IEC 19757-3:2025. The attribute
+   * declares the datatype of the variable and is interpreted by the active query language binding
+   * (e.g. an XSLT2 sequence type for the <code>xslt2</code> binding).
    *
    * @param sAs
    *        The new value. May be <code>null</code>.
@@ -145,8 +142,7 @@ public class PSLet implements IPSClonableElement <PSLet>
   }
 
   /**
-   * @return The value of the <code>as</code> attribute, or <code>null</code> if
-   *         not set.
+   * @return The value of the <code>as</code> attribute, or <code>null</code> if not set.
    * @since 10.0.0 (Schematron 2025)
    */
   @Nullable
@@ -158,9 +154,10 @@ public class PSLet implements IPSClonableElement <PSLet>
   /**
    * Add a foreign body element to this {@code <let>}. Body elements model XSLT-style sequence
    * constructors carried in the element content (e.g. {@code <xsl:choose>...</xsl:choose>}). They
-   * are only preserved when {@link com.helger.schematron.exchange.PSReader#setPreserveLetBodyElements(boolean)}
-   * is enabled; downstream engines that understand XSLT (such as {@code SchematronResourcePureXslt})
-   * emit them as the body of the generated {@code <xsl:variable>}.
+   * are only preserved when
+   * {@link com.helger.schematron.exchange.PSReader#setPreserveLetBodyElements(boolean)} is enabled;
+   * downstream engines that understand XSLT (such as {@code SchematronResourcePureXslt}) emit them
+   * as the body of the generated {@code <xsl:variable>}.
    *
    * @param aBodyElement
    *        The body element. May not be <code>null</code>.

@@ -34,14 +34,12 @@ public interface ISVRLLocationBeautifier
    *        Namespace URI
    * @param sLocalName
    *        Element local name
-   * @return <code>null</code> to indicate that this object does not know how to
-   *         handle the namespace. Otherwise the replacement text should be
-   *         returned.<br>
+   * @return <code>null</code> to indicate that this object does not know how to handle the
+   *         namespace. Otherwise the replacement text should be returned.<br>
    *         Example for UBL: Input parameters
    *         <code>urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2</code>
-   *         and <code>Party</code>. The result may be <code>cac:Party</code> as
-   *         <i>cac</i> is the common namespace prefix for the passed namespace
-   *         URI.
+   *         and <code>Party</code>. The result may be <code>cac:Party</code> as <i>cac</i> is the
+   *         common namespace prefix for the passed namespace URI.
    */
   @Nullable
   String getReplacementText (@NonNull String sNamespaceURI, @NonNull String sLocalName);

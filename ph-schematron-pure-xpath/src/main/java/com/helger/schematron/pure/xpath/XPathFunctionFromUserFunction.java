@@ -35,11 +35,11 @@ import net.sf.saxon.s9api.SequenceType;
 import net.sf.saxon.s9api.XdmValue;
 
 /**
- * A Saxon {@link ExtensionFunction} that proxies an XQuery {@link UserFunction}. This class is
- * used by {@link XQueryAsXPathFunctionConverter} to expose XQuery user functions as XPath
- * extension functions. The argument and result {@link SequenceType}s are taken from the
- * underlying {@link UserFunction}, so Saxon performs the same automatic coercion (atomization,
- * cardinality checks, etc.) at call time that it would for any built-in function.
+ * A Saxon {@link ExtensionFunction} that proxies an XQuery {@link UserFunction}. This class is used
+ * by {@link XQueryAsXPathFunctionConverter} to expose XQuery user functions as XPath extension
+ * functions. The argument and result {@link SequenceType}s are taken from the underlying
+ * {@link UserFunction}, so Saxon performs the same automatic coercion (atomization, cardinality
+ * checks, etc.) at call time that it would for any built-in function.
  *
  * @author Philip Helger
  */

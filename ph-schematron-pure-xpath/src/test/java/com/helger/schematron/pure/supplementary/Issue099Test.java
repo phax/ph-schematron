@@ -41,8 +41,8 @@ public final class Issue099Test
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (Issue099Test.class);
 
-  private static void _validateAndProduceSVRL (@NonNull final File aSchematron, @NonNull final File aXML)
-                                                                                                          throws Exception
+  private static void _validateAndProduceSVRL (@NonNull final File aSchematron,
+                                               @NonNull final File aXML) throws Exception
   {
     SchematronDebug.setSaveIntermediateXSLTFiles (true);
     try

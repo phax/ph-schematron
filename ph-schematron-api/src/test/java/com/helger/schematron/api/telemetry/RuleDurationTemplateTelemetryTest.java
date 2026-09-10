@@ -26,8 +26,8 @@ import com.helger.telemetry.mock.CapturingTelemetry;
 
 /**
  * Test for {@link RuleDurationTemplateTelemetry} - it records a
- * {@link CSchematronTelemetry#METRIC_RULE_DURATION} entry for every match template (rule), and skips
- * named templates (functions).
+ * {@link CSchematronTelemetry#METRIC_RULE_DURATION} entry for every match template (rule), and
+ * skips named templates (functions).
  *
  * @author Philip Helger
  */

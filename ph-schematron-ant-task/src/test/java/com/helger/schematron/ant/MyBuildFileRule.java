@@ -30,8 +30,8 @@ import org.jspecify.annotations.NonNull;
 import org.junit.rules.ExternalResource;
 
 /**
- * Provides access for JUnit tests to execute Ant targets and access execution
- * details (i.e logs). Example usage: <code>
+ * Provides access for JUnit tests to execute Ant targets and access execution details (i.e logs).
+ * Example usage: <code>
  * public class MyTest {
  *
  *     \@Rule
@@ -70,9 +70,9 @@ public final class MyBuildFileRule extends ExternalResource
   private StringBuffer errorBuffer;
 
   /**
-   * Tidies up following a test execution. If the currently configured project
-   * has a <code>tearDown</code> target then this will automatically be called,
-   * otherwise this method will not perform any actions.
+   * Tidies up following a test execution. If the currently configured project has a
+   * <code>tearDown</code> target then this will automatically be called, otherwise this method will
+   * not perform any actions.
    */
   @Override
   protected void after ()
@@ -90,9 +90,9 @@ public final class MyBuildFileRule extends ExternalResource
   }
 
   /**
-   * Gets the INFO, WARNING and ERROR message from the current execution, unless
-   * the logging level is set above any of these level in which case the message
-   * is excluded. This is only valid if configureProject() has been called.
+   * Gets the INFO, WARNING and ERROR message from the current execution, unless the logging level
+   * is set above any of these level in which case the message is excluded. This is only valid if
+   * configureProject() has been called.
    *
    * @return The INFO, WARN and ERROR messages in the log.
    */
@@ -102,9 +102,9 @@ public final class MyBuildFileRule extends ExternalResource
   }
 
   /**
-   * Gets any messages that have been logged during the current execution,
-   * unless the logging level has been set above the log level defined in the
-   * message. Only valid if configureProject() has been called.
+   * Gets any messages that have been logged during the current execution, unless the logging level
+   * has been set above the log level defined in the message. Only valid if configureProject() has
+   * been called.
    *
    * @return the content of the log.
    */
@@ -114,11 +114,10 @@ public final class MyBuildFileRule extends ExternalResource
   }
 
   /**
-   * Provides all output sent to the System.out stream during the current
-   * execution.
+   * Provides all output sent to the System.out stream during the current execution.
    *
-   * @return all output messages in a single string, normalised to have platform
-   *         independent line breaks.
+   * @return all output messages in a single string, normalised to have platform independent line
+   *         breaks.
    */
   public String getOutput ()
   {
@@ -126,11 +125,10 @@ public final class MyBuildFileRule extends ExternalResource
   }
 
   /**
-   * Provides all output sent to the System.err stream during the current
-   * execution.
+   * Provides all output sent to the System.err stream during the current execution.
    *
-   * @return all error messages in a single string, normalised to have platform
-   *         independent line breaks.
+   * @return all error messages in a single string, normalised to have platform independent line
+   *         breaks.
    */
   public String getError ()
   {
@@ -187,8 +185,8 @@ public final class MyBuildFileRule extends ExternalResource
   }
 
   /**
-   * Executes a target in the configured Ant build file. Requires
-   * #configureProject() to have been invoked before this call.
+   * Executes a target in the configured Ant build file. Requires #configureProject() to have been
+   * invoked before this call.
    *
    * @param targetName
    *        the target in the currently configured build file to run.
@@ -203,12 +201,11 @@ public final class MyBuildFileRule extends ExternalResource
     fullLogBuffer = new StringBuffer ();
 
     /*
-     * we synchronize to protect our custom output streams from being overridden
-     * by other tests executing targets concurrently. Ultimately this would only
-     * happen if we ran a multi-threaded test executing multiple targets at
-     * once, and this protection doesn't prevent a target from internally
-     * modifying the output stream during a test - but at least this scenario is
-     * fairly deterministic so easier to troubleshoot.
+     * we synchronize to protect our custom output streams from being overridden by other tests
+     * executing targets concurrently. Ultimately this would only happen if we ran a multi-threaded
+     * test executing multiple targets at once, and this protection doesn't prevent a target from
+     * internally modifying the output stream during a test - but at least this scenario is fairly
+     * deterministic so easier to troubleshoot.
      */
     synchronized (System.out)
     {
@@ -267,8 +264,7 @@ public final class MyBuildFileRule extends ExternalResource
     private final int m_nLogLevel;
 
     /**
-     * Constructs a test listener which will ignore log events above the given
-     * level.
+     * Constructs a test listener which will ignore log events above the given level.
      *
      * @param logLevel
      *        Log level
@@ -285,8 +281,8 @@ public final class MyBuildFileRule extends ExternalResource
     {}
 
     /**
-     * Fired after the last target has finished. This event will still be thrown
-     * if an error occurred during the build.
+     * Fired after the last target has finished. This event will still be thrown if an error
+     * occurred during the build.
      *
      * @see BuildEvent#getException()
      */
@@ -302,8 +298,8 @@ public final class MyBuildFileRule extends ExternalResource
     {}
 
     /**
-     * Fired when a target has finished. This event will still be thrown if an
-     * error occurred during the build.
+     * Fired when a target has finished. This event will still be thrown if an error occurred during
+     * the build.
      *
      * @see BuildEvent#getException()
      */
@@ -319,8 +315,8 @@ public final class MyBuildFileRule extends ExternalResource
     {}
 
     /**
-     * Fired when a task has finished. This event will still be throw if an
-     * error occurred during the build.
+     * Fired when a task has finished. This event will still be throw if an error occurred during
+     * the build.
      *
      * @see BuildEvent#getException()
      */
@@ -341,7 +337,9 @@ public final class MyBuildFileRule extends ExternalResource
         return;
       }
 
-      if (event.getPriority () == Project.MSG_INFO || event.getPriority () == Project.MSG_WARN || event.getPriority () == Project.MSG_ERR)
+      if (event.getPriority () == Project.MSG_INFO ||
+          event.getPriority () == Project.MSG_WARN ||
+          event.getPriority () == Project.MSG_ERR)
       {
         logBuffer.append (event.getMessage ()).append ('\n');
       }

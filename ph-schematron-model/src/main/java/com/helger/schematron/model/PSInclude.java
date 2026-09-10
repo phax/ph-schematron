@@ -30,10 +30,10 @@ import com.helger.xml.microdom.MicroElement;
 
 /**
  * A single Schematron include-element.<br>
- * The required href attribute references an external well-formed XML document
- * whose document element is a Schematron element of a type which is allowed by
- * the grammar for Schematron at the current position in the schema. The
- * external document is inserted in place of the include element.
+ * The required href attribute references an external well-formed XML document whose document
+ * element is a Schematron element of a type which is allowed by the grammar for Schematron at the
+ * current position in the schema. The external document is inserted in place of the include
+ * element.
  *
  * @author Philip Helger
  */

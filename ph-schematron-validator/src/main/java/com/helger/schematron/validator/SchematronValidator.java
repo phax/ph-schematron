@@ -41,9 +41,8 @@ import com.helger.xml.sax.CollectingSAXErrorHandler;
 import com.helger.xml.transform.TransformSourceFactory;
 
 /**
- * Helper class that validates a Schematron against the RelaxNG Compact scheme.
- * This class is not suitable for validating an XML instance against a
- * Schematron instance.
+ * Helper class that validates a Schematron against the RelaxNG Compact scheme. This class is not
+ * suitable for validating an XML instance against a Schematron instance.
  *
  * @author Philip Helger
  */
@@ -69,8 +68,7 @@ public final class SchematronValidator
    *
    * @param aNode
    *        The micro node to check. May be <code>null</code>.
-   * @return <code>true</code> if the schematron is valid, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if the schematron is valid, <code>false</code> otherwise.
    */
   public static boolean isValidSchematron (@Nullable final IMicroNode aNode)
   {
@@ -85,8 +83,7 @@ public final class SchematronValidator
    *
    * @param aNode
    *        The DOM node to check. May be <code>null</code>.
-   * @return <code>true</code> if the schematron is valid, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if the schematron is valid, <code>false</code> otherwise.
    */
   public static boolean isValidSchematron (@Nullable final Node aNode)
   {
@@ -101,8 +98,7 @@ public final class SchematronValidator
    *
    * @param aRes
    *        The resource to check. May be <code>null</code>.
-   * @return <code>true</code> if the schematron is valid, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if the schematron is valid, <code>false</code> otherwise.
    */
   public static boolean isValidSchematron (@Nullable final IReadableResource aRes)
   {
@@ -116,11 +112,10 @@ public final class SchematronValidator
    * Check if the passed source is a valid Schematron instance.
    *
    * @param aSource
-   *        The source to check. May be <code>null</code>. This may NOT be a
-   *        DOMSource, because the validation with this scheme has not been
-   *        implemented yet.
-   * @return The error list or <code>null</code> if the source is
-   *         <code>null</code> or an Exception occurred.
+   *        The source to check. May be <code>null</code>. This may NOT be a DOMSource, because the
+   *        validation with this scheme has not been implemented yet.
+   * @return The error list or <code>null</code> if the source is <code>null</code> or an Exception
+   *         occurred.
    */
   @Nullable
   public static IErrorList validateSchematron (@Nullable final Source aSource)
@@ -166,8 +161,7 @@ public final class SchematronValidator
    *
    * @param aSource
    *        The source to check. May be <code>null</code>.
-   * @return <code>true</code> if the schematron is valid, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if the schematron is valid, <code>false</code> otherwise.
    */
   public static boolean isValidSchematron (@Nullable final Source aSource)
   {

@@ -98,7 +98,7 @@ public final class SchematronSchXslt2CacheTest
     final StopWatch aSW = StopWatch.createdStarted ();
     for (int i = 0; i < RUNS; ++i)
     {
-      aSenderThreadPool.submit ( () -> {
+      aSenderThreadPool.submit (() -> {
         try
         {
           final SchematronResourceSchXslt2 aSV = SchematronResourceSchXslt2.builder (new ClassPathResource (VALID_SCHEMATRON))
@@ -189,8 +189,7 @@ public final class SchematronSchXslt2CacheTest
                                                                                  .languageCode ("de")
                                                                                  .build ()
                                                                                  .compile ();
-      assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (),
-                     aPreprocessor);
+      assertNotNull ("Failed to parse: " + aRes.toString () + " - " + aCEH.getErrorList ().toString (), aPreprocessor);
       assertTrue (sPath, aPreprocessor.isValidSchematron ());
       assertNotNull (aPreprocessor.getXSLTDocument ());
 
