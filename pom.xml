@@ -75,7 +75,7 @@
     <jaxb-plugin.version>4.0.16</jaxb-plugin.version>
     <ph-jaxb-plugin.version>5.1.2</ph-jaxb-plugin.version>
 
-    <ant.version>1.10.17</ant.version>
+    <ant.version>1.10.18</ant.version>
     <schxslt1.version>1.10.1</schxslt1.version>
     <schxslt2.version>1.11.2</schxslt2.version>
   </properties>
