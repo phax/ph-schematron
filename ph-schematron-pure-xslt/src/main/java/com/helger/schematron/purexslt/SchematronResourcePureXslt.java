@@ -63,6 +63,7 @@ import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.telemetry.PureXsltTelemetry;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -111,7 +112,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   private final String m_sPhase;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
-  private Processor m_aProcessor = new Processor (false);
+  private Processor m_aProcessor;
   private final URIResolver m_aURIResolver;
   private final ErrorListener m_aErrorListener;
   private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
@@ -319,10 +320,12 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     // Cache participation:
     // isUseCache() (inherited) controls the shared module-level cache as a whole;
     // m_bForceCacheResult overrides the safety bypass when custom hooks are installed.
-    // Custom URI/Error hooks bypass the cache unless setForceCacheResult(true) was called, because
-    // the cache key encodes (resource, phase, version, processor) only and the hooks can change
-    // what Saxon compiles.
-    final boolean bHaveCustomHooks = m_aURIResolver != null || m_aErrorListener != null;
+    // Custom URI/Error hooks and a custom Processor bypass the cache unless setForceCacheResult(true)
+    // was called, because the cache key encodes (resource, phase, version, tracing) only and all of
+    // them can change what Saxon compiles.
+    final boolean bHaveCustomHooks = m_aURIResolver != null ||
+                                     m_aErrorListener != null ||
+                                     m_aProcessor != SchematronProcessorFactory.getDefault ();
     final boolean bCacheable = isUseCache () && (!bHaveCustomHooks || m_bForceCacheResult);
 
     if (bCacheable)
@@ -682,7 +685,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     private boolean m_bEntityResolverSet;
     private String m_sPhase;
     private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
-    private Processor m_aProcessor = new Processor (false);
+    private Processor m_aProcessor = SchematronProcessorFactory.getDefault ();
     private URIResolver m_aURIResolver;
     private ErrorListener m_aErrorListener;
     private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;

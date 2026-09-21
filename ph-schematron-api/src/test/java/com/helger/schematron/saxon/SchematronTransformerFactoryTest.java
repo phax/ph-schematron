@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.TransformerFactory;
 
 import org.junit.Test;
@@ -45,6 +46,26 @@ public final class SchematronTransformerFactoryTest
     assertEquals (Boolean.FALSE, aFactory.getAttribute (FeatureKeys.XINCLUDE));
     // Line numbering is always enabled (#52)
     assertEquals (Boolean.TRUE, aFactory.getAttribute (FeatureKeys.LINE_NUMBERING));
+  }
+
+  @Test
+  public void testSecureProcessingEnabledByDefault () throws Exception
+  {
+    // ph-commons XMLFactory.defaultCustomizeTransformerFactory enables secure processing, which
+    // Saxon implements by disallowing external functions
+    for (final TransformerFactory aFactory : new TransformerFactory [] { SchematronTransformerFactory.getDefault (),
+                                                                         SchematronTransformerFactory.createTransformerFactory (false),
+                                                                         SchematronTransformerFactory.createTransformerFactory (true),
+                                                                         SchematronTransformerFactory.createTransformerFactory (null,
+                                                                                                                                null),
+                                                                         SchematronTransformerFactory.createTransformerFactory (null,
+                                                                                                                                null,
+                                                                                                                                true) })
+    {
+      assertNotNull (aFactory);
+      assertTrue (aFactory.getFeature (XMLConstants.FEATURE_SECURE_PROCESSING));
+      assertEquals (Boolean.FALSE, aFactory.getAttribute (FeatureKeys.ALLOW_EXTERNAL_FUNCTIONS));
+    }
   }
 
   @Test

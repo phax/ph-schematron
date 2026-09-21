@@ -60,6 +60,7 @@ import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
@@ -73,8 +74,9 @@ import net.sf.saxon.s9api.XsltExecutable;
 /**
  * Immutable configuration for compiling a Schematron <code>.sch</code> file through the pure-Java
  * Saxon-native pipeline. Cache-key dimensions are
- * <code>(resourceID, phase, xsltVersion, processor identity)</code>. Custom URI resolver or error
- * listener bypass caching unless {@link Builder#forceCacheResult(boolean)} is true.
+ * <code>(resourceID, phase, xsltVersion, tracing)</code> - deliberately without the identity of the
+ * {@link Processor}, so that the cache is actually shared. A custom URI resolver, error listener or
+ * {@link Processor} bypasses caching unless {@link Builder#forceCacheResult(boolean)} is true.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -114,7 +116,6 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     m_aCacheKey = new CacheKey (m_aResource.getResourceID (),
                                 m_sPhase,
                                 m_eXsltVersion.getID (),
-                                System.identityHashCode (m_aProcessor),
                                 isTracingEnabled ());
   }
 
@@ -233,7 +234,14 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   @Override
   public boolean canCacheResult ()
   {
-    final boolean bHaveCustomHooks = m_aURIResolver != null || m_aErrorListener != null;
+    /*
+     * A custom Processor counts as a custom hook, because the cache key does not contain the
+     * identity of the Processor - a cached XsltExecutable was compiled by the shared default
+     * Processor and would silently ignore e.g. the extension functions of a custom one.
+     */
+    final boolean bHaveCustomHooks = m_aURIResolver != null ||
+                                     m_aErrorListener != null ||
+                                     m_aProcessor != SchematronProcessorFactory.getDefault ();
     return !bHaveCustomHooks || m_bForceCacheResult;
   }
 
@@ -451,26 +459,19 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     private final String m_sResourceID;
     private final String m_sPhase;
     private final String m_sVersion;
-    private final int m_nProcessorIdentity;
     private final boolean m_bTracingEnabled;
     private final int m_nHashCode;
 
     private CacheKey (@NonNull final String sResourceID,
                       @Nullable final String sPhase,
                       @NonNull final String sVersion,
-                      final int nProcessorIdentity,
                       final boolean bTracingEnabled)
     {
       m_sResourceID = sResourceID;
       m_sPhase = sPhase;
       m_sVersion = sVersion;
-      m_nProcessorIdentity = nProcessorIdentity;
       m_bTracingEnabled = bTracingEnabled;
-      m_nHashCode = Objects.hash (sResourceID,
-                                  sPhase,
-                                  sVersion,
-                                  Integer.valueOf (nProcessorIdentity),
-                                  Boolean.valueOf (bTracingEnabled));
+      m_nHashCode = Objects.hash (sResourceID, sPhase, sVersion, Boolean.valueOf (bTracingEnabled));
     }
 
     @Override
@@ -480,8 +481,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
         return true;
       if (!(o instanceof final CacheKey aRhs))
         return false;
-      return m_nProcessorIdentity == aRhs.m_nProcessorIdentity &&
-             m_bTracingEnabled == aRhs.m_bTracingEnabled &&
+      return m_bTracingEnabled == aRhs.m_bTracingEnabled &&
              m_sResourceID.equals (aRhs.m_sResourceID) &&
              Objects.equals (m_sPhase, aRhs.m_sPhase) &&
              m_sVersion.equals (aRhs.m_sVersion);
@@ -502,8 +502,6 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
              StringHelper.getNotNull (m_sPhase) +
              ":" +
              m_sVersion +
-             ":" +
-             Integer.toHexString (m_nProcessorIdentity) +
              (m_bTracingEnabled ? ":trace" : "") +
              "]";
     }
@@ -517,7 +515,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     private final IReadableResource m_aResource;
     private String m_sPhase;
     private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
-    private Processor m_aProcessor = new Processor (false);
+    private Processor m_aProcessor = SchematronProcessorFactory.getDefault ();
     private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
     private EntityResolver m_aEntityResolver;
     private URIResolver m_aURIResolver;

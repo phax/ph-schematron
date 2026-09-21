@@ -17,6 +17,7 @@
 package com.helger.schematron.purexslt;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
@@ -24,18 +25,22 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Node;
 
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
+import com.helger.xml.serialize.read.DOMReader;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XsltExecutable;
 
 /**
  * Tests for {@link SchematronPureXsltCache}: cache hits return the same {@link XsltExecutable}
- * instance for repeated lookups under the same key, and different keys (different phase / version /
- * processor) produce different cache entries.
+ * instance for repeated lookups under the same key, and different keys (different phase / version)
+ * produce different cache entries. The {@link Processor} is deliberately not part of the key - a
+ * non-default one bypasses the cache instead.
  *
  * @author Philip Helger
  */
@@ -64,6 +69,17 @@ public final class SchematronPureXsltCacheTest
     return SchematronPureXsltCache.shared ().getOrCompile (aConfig);
   }
 
+  private static XsltExecutable _compileNotForced (final ReadableResourceByteArray aRes,
+                                                  final Processor aProcessor) throws Exception
+  {
+    final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (aRes)
+                                                                     .xsltVersion (EPureXsltVersion.DEFAULT)
+                                                                     .processor (aProcessor)
+                                                                     .errorHandler (new LoggingPSErrorHandler ())
+                                                                     .build ();
+    return SchematronPureXsltCache.shared ().getOrCompile (aConfig);
+  }
+
   @Before
   public void clear ()
   {
@@ -86,16 +102,69 @@ public final class SchematronPureXsltCacheTest
   }
 
   @Test
-  public void testDifferentProcessorProducesDistinctEntries () throws Exception
+  public void testProcessorIsNotPartOfTheCacheKey () throws Exception
   {
     final ReadableResourceByteArray aRes = new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8));
     final Processor aProcA = new Processor (false);
     final Processor aProcB = new Processor (false);
 
+    // Both configs force caching, so both end up under the very same key
     final XsltExecutable aWithA = _compile (aRes, null, aProcA);
     final XsltExecutable aWithB = _compile (aRes, null, aProcB);
-    assertNotSame (aWithA, aWithB);
-    assertEquals (2, SchematronPureXsltCache.shared ().size ());
+    assertSame (aWithA, aWithB);
+    assertEquals (1, SchematronPureXsltCache.shared ().size ());
+  }
+
+  @Test
+  public void testDefaultProcessorIsCachedWithoutForcing () throws Exception
+  {
+    final ReadableResourceByteArray aRes = new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8));
+
+    final XsltExecutable aFirst = _compileNotForced (aRes, SchematronProcessorFactory.getDefault ());
+    assertNotNull (aFirst);
+    assertEquals (1, SchematronPureXsltCache.shared ().size ());
+
+    final XsltExecutable aSecond = _compileNotForced (aRes, SchematronProcessorFactory.getDefault ());
+    assertSame (aFirst, aSecond);
+    assertEquals (1, SchematronPureXsltCache.shared ().size ());
+  }
+
+  @Test
+  public void testCustomProcessorBypassesTheCache () throws Exception
+  {
+    final ReadableResourceByteArray aRes = new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8));
+
+    // A Processor that is not the shared default counts as a custom hook, because the cache key
+    // does not distinguish processors any more
+    final XsltExecutable aFirst = _compileNotForced (aRes, new Processor (false));
+    assertNotNull (aFirst);
+    assertEquals (0, SchematronPureXsltCache.shared ().size ());
+
+    final XsltExecutable aSecond = _compileNotForced (aRes, new Processor (false));
+    assertNotSame (aFirst, aSecond);
+    assertEquals (0, SchematronPureXsltCache.shared ().size ());
+  }
+
+  @Test
+  public void testTwoResourcesShareOneCacheEntry () throws Exception
+  {
+    final ReadableResourceByteArray aRes = new ReadableResourceByteArray (SCHEMATRON.getBytes (StandardCharsets.UTF_8));
+
+    // Two independently built resources for the same Schematron must share the compiled XSLT -
+    // before the Processor was dropped from the cache key, each builder allocated its own Processor
+    // and therefore its own cache entry
+    final Node aXML = DOMReader.readXMLDOM ("<?xml version='1.0' encoding='UTF-8'?><root><item /></root>");
+    assertNotNull (aXML);
+
+    assertNotNull (SchematronResourcePureXslt.builder (aRes)
+                                             .build ()
+                                             .applySchematronValidationToSVRL (aXML, null));
+    assertEquals (1, SchematronPureXsltCache.shared ().size ());
+
+    assertNotNull (SchematronResourcePureXslt.builder (aRes)
+                                             .build ()
+                                             .applySchematronValidationToSVRL (aXML, null));
+    assertEquals (1, SchematronPureXsltCache.shared ().size ());
   }
 
   @Test

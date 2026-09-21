@@ -28,8 +28,10 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
 
 import net.sf.saxon.s9api.ExtensionFunction;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.XdmValue;
@@ -44,9 +46,10 @@ public class XPathConfigBuilder implements IBuilder <IXPathConfig>
 {
   /**
    * The default Saxon {@link Processor} used when no explicit one is provided. It uses Saxon-HE in
-   * non-licensed mode.
+   * non-licensed mode and carries the Schematron security defaults - see
+   * {@link SchematronProcessorFactory#getDefault()}.
    */
-  public static final Processor DEFAULT_PROCESSOR = new Processor (false);
+  public static final Processor DEFAULT_PROCESSOR = SchematronProcessorFactory.getDefault ();
 
   /**
    * The default {@link IXPathConfig} when nothing is customized.
@@ -193,7 +196,7 @@ public class XPathConfigBuilder implements IBuilder <IXPathConfig>
       if (m_aExtensionFunctions.isEmpty ())
         aProcessor = DEFAULT_PROCESSOR;
       else
-        aProcessor = new Processor (false);
+        aProcessor = SchematronProcessorFactory.createProcessor ();
 
     // Register extension functions on the chosen Processor
     for (final ExtensionFunction aFunc : m_aExtensionFunctions)

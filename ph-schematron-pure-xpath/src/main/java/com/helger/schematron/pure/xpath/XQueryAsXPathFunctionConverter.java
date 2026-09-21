@@ -33,6 +33,8 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsIterableIterator;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.file.FileHelper;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
+
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
@@ -138,7 +140,7 @@ public class XQueryAsXPathFunctionConverter
       // up - XPathFunctionFromUserFunction relies on it to translate Saxon-internal SequenceTypes
       // to s9api SequenceTypes (which in turn lets Saxon coerce argument values at call time, e.g.
       // atomize node sequences when the user function declares xs:anyAtomicType*).
-      final Processor aXQProcessor = new Processor (false);
+      final Processor aXQProcessor = SchematronProcessorFactory.createProcessor ();
       final Configuration aConfiguration = aXQProcessor.getUnderlyingConfiguration ();
       final DynamicQueryContext aDynamicQueryContext = new DynamicQueryContext (aConfiguration);
       final StaticQueryContext aStaticQueryCtx = aConfiguration.newStaticQueryContext ();

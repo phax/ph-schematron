@@ -107,9 +107,17 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
       // Read XSLT file as XML
       m_aSchematronXSLTDoc = DOMReader.readXMLDOM (aXSLTResource);
 
-      // compile result of read file
+      /*
+       * Compile the result of the read file. The provided resolver is used as-is and is
+       * deliberately not wrapped in another DefaultTransformURIResolver: since ph-commons 12.5.0 a
+       * resolver ends the resolution of a blocked remote resource itself instead of delegating, so
+       * a wrapping resolver would silently override the caller's decision which remote schemes are
+       * allowed.
+       */
+      final URIResolver aURIResolver = aCustomURIResolver != null ? aCustomURIResolver
+                                                                 : new DefaultTransformURIResolver ();
       final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
-                                                                                            new DefaultTransformURIResolver (aCustomURIResolver),
+                                                                                            aURIResolver,
                                                                                             bEnableTracing);
       // Hand the factory to the caller-supplied customizer last so it can register Saxon
       // extension functions (or any other tweak) just before the validation stylesheet compiles.
