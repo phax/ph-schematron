@@ -65,7 +65,7 @@ public final class SchematronProcessorFactoryTest
   }
 
   @Test
-  public void testRemoteResourceAccessIsDenied () throws XPathException
+  public void testRemoteResourceAccessIsDenied ()
   {
     final Processor aProcessor = SchematronProcessorFactory.createProcessor ();
 
@@ -113,7 +113,7 @@ public final class SchematronProcessorFactoryTest
   }
 
   @Test
-  public void testAllowedRemoteSchemesCanBeSet () throws XPathException
+  public void testAllowedRemoteSchemesCanBeSet ()
   {
     try
     {
