@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsMap;
@@ -78,6 +79,7 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
  *
  * @author Philip Helger
  */
+@Immutable
 public final class MainOtelDemo
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MainOtelDemo.class);

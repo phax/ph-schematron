@@ -22,6 +22,7 @@ import org.apache.tools.ant.Task;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.debug.GlobalDebug;
 
 /**
@@ -30,6 +31,7 @@ import com.helger.base.debug.GlobalDebug;
  * @author Philip Helger
  * @since 5.1.2
  */
+@NotThreadSafe
 public abstract class AbstractSchematronTask extends Task
 {
   /**

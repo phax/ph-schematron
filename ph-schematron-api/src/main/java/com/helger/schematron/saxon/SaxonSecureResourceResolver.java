@@ -25,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
@@ -45,28 +46,31 @@ import net.sf.saxon.trans.XPathException;
  * itself parses.
  * <p>
  * The set of remote URL schemes is the one of ph-commons'
- * {@link XMLResourceSchemeHelper#getAllRemoteNetworkSchemes()}, so this resolver blocks exactly what
- * {@link com.helger.xml.transform.DefaultTransformURIResolver} blocks for the XSLT based engines.
- * Local schemes (<code>file</code>, <code>jar</code>, OSGi <code>bundle</code>, ...) are always
- * allowed. Use {@link #setAllowedRemoteSchemes(String...)} to allow specific remote schemes again.
+ * {@link XMLResourceSchemeHelper#getAllRemoteNetworkSchemes()}, so this resolver blocks exactly
+ * what {@link com.helger.xml.transform.DefaultTransformURIResolver} blocks for the XSLT based
+ * engines. Local schemes (<code>file</code>, <code>jar</code>, OSGi <code>bundle</code>, ...) are
+ * always allowed. Use {@link #setAllowedRemoteSchemes(String...)} to allow specific remote schemes
+ * again.
  * </p>
  * <p>
- * A blocked URI results in an {@link XPathException}, and <b>not</b> in <code>null</code>: the Saxon
- * contract of {@link ResourceResolver#resolve(ResourceRequest)} is that <code>null</code> means "not
- * handled", in which case Saxon resolves the URI itself - which is exactly what must be prevented.
- * An allowed URI is answered with <code>null</code>, so that the next resolver of the chain performs
- * the actual resolution.
+ * A blocked URI results in an {@link XPathException}, and <b>not</b> in <code>null</code>: the
+ * Saxon contract of {@link ResourceResolver#resolve(ResourceRequest)} is that <code>null</code>
+ * means "not handled", in which case Saxon resolves the URI itself - which is exactly what must be
+ * prevented. An allowed URI is answered with <code>null</code>, so that the next resolver of the
+ * chain performs the actual resolution.
  * </p>
  *
  * @author Philip Helger
  * @since 10.1.0
  */
+@NotThreadSafe
 public class SaxonSecureResourceResolver implements ResourceResolver
 {
+  /** The URL scheme that nests another URL scheme in its scheme specific part */
+  public static final String SCHEME_JAR = "jar";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SaxonSecureResourceResolver.class);
   private static final ICommonsSet <String> REMOTE_NETWORK_SCHEMES = XMLResourceSchemeHelper.getAllRemoteNetworkSchemes ();
-  /** The URL scheme that nests another URL scheme in its scheme specific part */
-  private static final String SCHEME_JAR = "jar";
 
   // Remote schemes that are explicitly allowed for resolution. Empty by default.
   private final ICommonsSet <String> m_aAllowedRemoteSchemes = new CommonsHashSet <> ();

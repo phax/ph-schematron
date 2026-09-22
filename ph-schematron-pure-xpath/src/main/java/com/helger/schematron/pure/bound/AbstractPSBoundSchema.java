@@ -21,6 +21,7 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
@@ -53,6 +54,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
  *
  * @author Philip Helger
  */
+@Immutable
 public abstract class AbstractPSBoundSchema implements IPSBoundSchema
 {
   private final IPSQueryBinding m_aQueryBinding;

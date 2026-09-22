@@ -36,6 +36,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
@@ -54,6 +55,7 @@ import net.sf.saxon.s9api.XdmNode;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 @State (Scope.Benchmark)
 @BenchmarkMode (Mode.AverageTime)
 @OutputTimeUnit (TimeUnit.MILLISECONDS)

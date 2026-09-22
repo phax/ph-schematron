@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsLinkedHashSet;
@@ -31,6 +32,7 @@ import com.helger.collection.commons.ICommonsOrderedSet;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 final class DirectoryData
 {
   private final File m_aBaseDir;

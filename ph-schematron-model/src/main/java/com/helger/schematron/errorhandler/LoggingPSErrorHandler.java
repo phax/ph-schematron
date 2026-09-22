@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diagnostics.error.ErrorTextProvider;
@@ -36,6 +37,7 @@ import com.helger.diagnostics.log.LogHelper;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class LoggingPSErrorHandler extends AbstractPSErrorHandler
 {
   // Same as ErrorTextProvider::DEFAULT but without the date and time

@@ -18,12 +18,13 @@ package com.helger.schematron.saxon;
 
 import java.util.Iterator;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import com.helger.annotation.misc.DevelopersNote;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
@@ -33,6 +34,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
 import net.sf.saxon.om.NamespaceResolver;
 import net.sf.saxon.om.NamespaceUri;
 
+@Immutable
 public final class SaxonNamespaceContext implements NamespaceContext, NamespaceResolver
 {
   private final MapBasedNamespaceContext m_aCtx;
@@ -54,7 +56,7 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
   public Iterator <String> iteratePrefixes ()
   {
     final ICommonsList <String> aList = new CommonsArrayList <> (m_aCtx.getPrefixToNamespaceURIMap ().keySet ());
-    aList.add ("");
+    aList.add (XMLConstants.DEFAULT_NS_PREFIX);
     return aList.iterator ();
   }
 
@@ -71,7 +73,6 @@ public final class SaxonNamespaceContext implements NamespaceContext, NamespaceR
   }
 
   @NonNull
-  @DevelopersNote ("Java 8: Iterator; Java 10: Iterator<String>")
   public Iterator <String> getPrefixes (@NonNull final String sNamespaceURI)
   {
     return m_aCtx.getPrefixes (sNamespaceURI);

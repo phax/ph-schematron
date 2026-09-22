@@ -22,10 +22,12 @@ import java.util.Locale;
 import org.jspecify.annotations.NonNull;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringImplode;
 import com.helger.diagnostics.error.IError;
 import com.helger.xml.transform.AbstractTransformErrorListener;
 
+@Immutable
 public class PluginErrorListener extends AbstractTransformErrorListener
 {
   private final BuildContext m_aBuildContext;

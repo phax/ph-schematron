@@ -29,6 +29,7 @@ import org.apache.maven.project.MavenProject;
 import org.jspecify.annotations.NonNull;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.misc.Since;
 import com.helger.base.string.StringHelper;
 import com.helger.io.resource.FileSystemResource;
@@ -56,6 +57,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * @author Philip Helger
  * @since 5.0.9
  */
+@NotThreadSafe
 @Mojo (name = "preprocess", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class SchematronPreprocessMojo extends AbstractMojo
 {

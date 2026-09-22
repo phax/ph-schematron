@@ -19,6 +19,7 @@ package com.helger.schematron.errorhandler;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.diagnostics.error.IError;
 
@@ -27,6 +28,7 @@ import com.helger.diagnostics.error.IError;
  *
  * @author Philip Helger
  */
+@Immutable
 public abstract class AbstractPSErrorHandler implements IPSErrorHandler
 {
   private final IPSErrorHandler m_aNestedErrorHandler;

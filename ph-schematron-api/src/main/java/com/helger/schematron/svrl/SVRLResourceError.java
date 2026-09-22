@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.location.ILocation;
@@ -37,6 +38,7 @@ import com.helger.diagnostics.error.text.IHasErrorText;
  *
  * @author Philip Helger
  */
+@Immutable
 public class SVRLResourceError extends SingleError
 {
   private final String m_sTest;

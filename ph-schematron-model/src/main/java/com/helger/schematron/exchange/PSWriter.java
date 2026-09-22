@@ -24,6 +24,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.WillClose;
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.ESuccess;
@@ -44,6 +45,7 @@ import com.helger.xml.microdom.serialize.MicroWriter;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class PSWriter
 {
   private final IPSWriterSettings m_aWriterSettings;

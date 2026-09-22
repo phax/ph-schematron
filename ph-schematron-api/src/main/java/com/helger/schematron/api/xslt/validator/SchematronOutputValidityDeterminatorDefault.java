@@ -18,6 +18,7 @@ package com.helger.schematron.api.xslt.validator;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.state.EValidity;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -29,6 +30,7 @@ import com.helger.schematron.svrl.jaxb.SuccessfulReport;
  *
  * @author Philip Helger
  */
+@Immutable
 public class SchematronOutputValidityDeterminatorDefault implements ISchematronOutputValidityDeterminator
 {
   @NonNull

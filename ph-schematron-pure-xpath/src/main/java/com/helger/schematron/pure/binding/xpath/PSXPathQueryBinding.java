@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringReplace;
@@ -49,6 +50,7 @@ import com.helger.text.compare.ComparatorHelper;
  *
  * @author Philip Helger
  */
+@Immutable
 public class PSXPathQueryBinding implements IPSQueryBinding
 {
   public static final char PARAM_VARIABLE_PREFIX = '$';

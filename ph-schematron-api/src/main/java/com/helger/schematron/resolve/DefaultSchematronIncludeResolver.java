@@ -23,6 +23,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resourceresolver.DefaultResourceResolver;
@@ -33,6 +34,7 @@ import com.helger.io.resourceresolver.DefaultResourceResolver;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class DefaultSchematronIncludeResolver implements ISchematronIncludeResolver
 {
   private final String m_sBaseHref;

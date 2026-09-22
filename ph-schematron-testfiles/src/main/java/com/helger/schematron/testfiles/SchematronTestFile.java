@@ -19,6 +19,7 @@ package com.helger.schematron.testfiles;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.hashcode.HashCodeGenerator;
 import com.helger.base.tostring.ToStringGenerator;
@@ -29,6 +30,7 @@ import com.helger.io.resource.IReadableResource;
  *
  * @author Philip Helger
  */
+@Immutable
 public class SchematronTestFile
 {
   private final String m_sParentDirBaseName;

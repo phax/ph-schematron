@@ -30,6 +30,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
@@ -50,6 +51,7 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 @State (Scope.Benchmark)
 @BenchmarkMode (Mode.AverageTime)
 @OutputTimeUnit (TimeUnit.NANOSECONDS)

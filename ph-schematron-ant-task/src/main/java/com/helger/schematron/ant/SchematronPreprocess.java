@@ -21,6 +21,7 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.exchange.PSReader;
@@ -41,6 +42,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * @author Philip Helger
  * @since 5.0.0
  */
+@NotThreadSafe
 public class SchematronPreprocess extends AbstractSchematronTask
 {
   /**

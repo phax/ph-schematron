@@ -22,6 +22,7 @@ import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringReplace;
@@ -44,6 +45,7 @@ import com.helger.text.compare.ComparatorHelper;
  * @author Philip Helger
  * @since 10.0.0
  */
+@Immutable
 public final class PureXsltQueryBindingTransform implements IPSQueryBindingTransform
 {
   public static final char PARAM_VARIABLE_PREFIX = '$';

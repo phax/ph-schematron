@@ -18,6 +18,7 @@ package com.helger.schematron.svrl;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.misc.Singleton;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
@@ -26,6 +27,7 @@ import com.helger.xml.namespace.MapBasedNamespaceContext;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 @Singleton
 public class SVRLNamespaceContext extends MapBasedNamespaceContext
 {

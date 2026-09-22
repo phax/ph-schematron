@@ -19,6 +19,7 @@ package com.helger.schematron.errorhandler;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EChange;
@@ -33,6 +34,7 @@ import com.helger.diagnostics.error.list.IErrorList;
  * @author Philip Helger
  * @since 4.2.1
  */
+@NotThreadSafe
 public abstract class AbstractCollectingPSErrorHandler extends AbstractPSErrorHandler
 {
   private final ErrorList m_aErrorList;

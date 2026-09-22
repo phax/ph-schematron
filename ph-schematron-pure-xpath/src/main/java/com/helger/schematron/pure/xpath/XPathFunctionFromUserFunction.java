@@ -20,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 
@@ -43,6 +44,7 @@ import net.sf.saxon.s9api.XdmValue;
  *
  * @author Philip Helger
  */
+@Immutable
 public final class XPathFunctionFromUserFunction implements ExtensionFunction
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (XPathFunctionFromUserFunction.class);

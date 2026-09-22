@@ -18,6 +18,7 @@ package com.helger.schematron.exchange;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.clone.ICloneable;
 import com.helger.base.enforce.ValueEnforcer;
@@ -35,6 +36,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class PSWriterSettings implements ICloneable <PSWriterSettings>, IPSWriterSettings
 {
   /**

@@ -18,6 +18,7 @@ package com.helger.schematron.schxslt.config;
 
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.IsSPIImplementation;
 import com.helger.base.thirdparty.ELicense;
 import com.helger.base.thirdparty.IThirdPartyModule;
@@ -30,6 +31,7 @@ import com.helger.base.version.Version;
  *
  * @author Philip Helger
  */
+@Immutable
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_ph_schematron_schxslt implements IThirdPartyModuleProviderSPI
 {

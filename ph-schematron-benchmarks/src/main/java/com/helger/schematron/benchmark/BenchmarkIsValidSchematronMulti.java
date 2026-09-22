@@ -30,6 +30,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
@@ -45,6 +46,7 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
  *
  * @author Philip Helger
  */
+@Immutable
 @State (Scope.Benchmark)
 @BenchmarkMode (Mode.AverageTime)
 @OutputTimeUnit (TimeUnit.NANOSECONDS)

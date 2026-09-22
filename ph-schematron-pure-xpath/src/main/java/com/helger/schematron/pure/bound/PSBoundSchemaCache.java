@@ -18,6 +18,7 @@ package com.helger.schematron.pure.bound;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.cache.impl.ProviderCache;
 import com.helger.schematron.SchematronException;
 
@@ -27,6 +28,7 @@ import com.helger.schematron.SchematronException;
  *
  * @author Philip Helger
  */
+@ThreadSafe
 public class PSBoundSchemaCache extends ProviderCache <PSBoundSchemaCacheKey, IPSBoundSchema>
 {
   private static final class SingletonHolder

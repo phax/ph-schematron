@@ -31,6 +31,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
@@ -59,6 +60,7 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 @State (Scope.Benchmark)
 @BenchmarkMode (Mode.AverageTime)
 @OutputTimeUnit (TimeUnit.MICROSECONDS)

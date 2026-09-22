@@ -18,6 +18,7 @@ package com.helger.schematron.errorhandler;
 
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.diagnostics.error.list.ErrorList;
 
 /**
@@ -25,6 +26,7 @@ import com.helger.diagnostics.error.list.ErrorList;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class CollectingPSErrorHandler extends AbstractCollectingPSErrorHandler
 {
   public CollectingPSErrorHandler ()

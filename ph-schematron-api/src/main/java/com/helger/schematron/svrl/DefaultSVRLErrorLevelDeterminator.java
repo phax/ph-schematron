@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.diagnostics.error.level.EErrorLevel;
 import com.helger.diagnostics.error.level.IErrorLevel;
@@ -33,6 +34,7 @@ import com.helger.diagnostics.error.level.IErrorLevel;
  *
  * @author Philip Helger
  */
+@Immutable
 public class DefaultSVRLErrorLevelDeterminator implements ISVRLErrorLevelDeterminator
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (DefaultSVRLErrorLevelDeterminator.class);

@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.purexslt.telemetry;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.schematron.ESchematronEngine;
 
 /**
@@ -24,6 +25,7 @@ import com.helger.schematron.ESchematronEngine;
  * @author Philip Helger
  * @since 10.0.0
  */
+@Immutable
 public final class PureXsltTelemetry
 {
   /**

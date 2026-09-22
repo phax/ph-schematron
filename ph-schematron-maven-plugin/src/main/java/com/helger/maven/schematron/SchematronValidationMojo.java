@@ -33,6 +33,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.misc.Since;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.annotation.style.VisibleForTesting;
@@ -70,6 +71,7 @@ import com.helger.xml.transform.TransformSourceFactory;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 @Mojo (name = "validate", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, threadSafe = true)
 public final class SchematronValidationMojo extends AbstractMojo
 {

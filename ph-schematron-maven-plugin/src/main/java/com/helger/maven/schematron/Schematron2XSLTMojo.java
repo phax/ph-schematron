@@ -42,6 +42,7 @@ import org.jspecify.annotations.Nullable;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.w3c.dom.Document;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.misc.Since;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.annotation.style.VisibleForTesting;
@@ -78,6 +79,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@NotThreadSafe
 @Mojo (name = "convert", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true)
 public final class Schematron2XSLTMojo extends AbstractMojo
 {

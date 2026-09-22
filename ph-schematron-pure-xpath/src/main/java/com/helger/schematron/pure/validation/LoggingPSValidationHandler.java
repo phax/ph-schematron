@@ -24,6 +24,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EContinue;
 import com.helger.base.string.StringHelper;
@@ -44,6 +45,7 @@ import com.helger.xml.XMLDebug;
  * @author Philip Helger
  * @since 5.3.0
  */
+@NotThreadSafe
 public class LoggingPSValidationHandler implements IPSValidationHandler
 {
   private final Logger m_aLogger;

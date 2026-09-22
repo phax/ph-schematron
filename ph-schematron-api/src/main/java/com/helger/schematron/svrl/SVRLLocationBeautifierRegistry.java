@@ -23,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.base.spi.ServiceLoaderHelper;
 
@@ -32,7 +32,7 @@ import com.helger.base.spi.ServiceLoaderHelper;
  *
  * @author Philip Helger
  */
-@NotThreadSafe
+@Immutable
 public final class SVRLLocationBeautifierRegistry
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SVRLLocationBeautifierRegistry.class);

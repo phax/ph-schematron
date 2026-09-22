@@ -21,6 +21,7 @@ import java.net.URL;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.io.file.FileHelper;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
@@ -33,6 +34,7 @@ import com.helger.io.resource.IReadableResource;
  * @author Philip Helger
  * @since 10.0.0
  */
+@Immutable
 public final class SchematronXSLTBaseURL
 {
   private SchematronXSLTBaseURL ()

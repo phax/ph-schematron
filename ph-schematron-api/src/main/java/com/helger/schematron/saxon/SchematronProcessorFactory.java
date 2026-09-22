@@ -25,8 +25,10 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsHashSet;
@@ -38,17 +40,17 @@ import net.sf.saxon.lib.Feature;
 import net.sf.saxon.s9api.Processor;
 
 /**
- * Factory for the Saxon {@link Processor} objects used by the engines that talk to Saxon through the
- * s9api instead of through JAXP - the pure XPath engine (<code>ph-schematron-pure-xpath</code>) and
- * the pure XSLT engine (<code>ph-schematron-pure-xslt</code>).
+ * Factory for the Saxon {@link Processor} objects used by the engines that talk to Saxon through
+ * the s9api instead of through JAXP - the pure XPath engine (<code>ph-schematron-pure-xpath</code>)
+ * and the pure XSLT engine (<code>ph-schematron-pure-xslt</code>).
  * <p>
  * It is the s9api counterpart of {@link SchematronTransformerFactory} and applies the same security
  * defaults that ph-commons applies to a JAXP {@link javax.xml.transform.TransformerFactory}:
  * </p>
  * <ul>
- * <li>External functions are disabled ({@link Feature#ALLOW_EXTERNAL_FUNCTIONS}). This is what Saxon
- * does for {@link javax.xml.XMLConstants#FEATURE_SECURE_PROCESSING}. Extension functions that are
- * registered programmatically (e.g. via
+ * <li>External functions are disabled ({@link Feature#ALLOW_EXTERNAL_FUNCTIONS}). This is what
+ * Saxon does for {@link javax.xml.XMLConstants#FEATURE_SECURE_PROCESSING}. Extension functions that
+ * are registered programmatically (e.g. via
  * {@link Processor#registerExtensionFunction(net.sf.saxon.s9api.ExtensionFunction)}) are considered
  * trusted by Saxon and keep working.</li>
  * <li>XInclude processing is enabled or disabled according to
@@ -62,7 +64,7 @@ import net.sf.saxon.s9api.Processor;
  * @author Philip Helger
  * @since 10.1.0
  */
-@Immutable
+@ThreadSafe
 public final class SchematronProcessorFactory
 {
   /**
@@ -80,6 +82,8 @@ public final class SchematronProcessorFactory
 
   private static final AtomicBoolean ALLOW_EXTERNAL_FUNCTIONS = new AtomicBoolean (DEFAULT_ALLOW_EXTERNAL_FUNCTIONS);
   private static final ICommonsSet <String> ALLOWED_REMOTE_SCHEMES = new CommonsHashSet <> ();
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
   private static Consumer <Processor> s_aProcessorCustomizer;
 
   private SchematronProcessorFactory ()
@@ -184,7 +188,7 @@ public final class SchematronProcessorFactory
    */
   public static void setProcessorCustomizer (@Nullable final Consumer <Processor> a)
   {
-    s_aProcessorCustomizer = a;
+    RW_LOCK.writeLocked (() -> s_aProcessorCustomizer = a);
   }
 
   /**
@@ -193,7 +197,7 @@ public final class SchematronProcessorFactory
   @Nullable
   public static Consumer <Processor> getProcessorCustomizer ()
   {
-    return s_aProcessorCustomizer;
+    return RW_LOCK.readLockedGet (() -> s_aProcessorCustomizer);
   }
 
   /**
@@ -232,8 +236,7 @@ public final class SchematronProcessorFactory
      * "environment-variable()", but not the programmatically registered extension functions, which
      * Saxon considers trusted.
      */
-    aProcessor.setConfigurationProperty (Feature.ALLOW_EXTERNAL_FUNCTIONS,
-                                         Boolean.valueOf (bAllowExternalFunctions));
+    aProcessor.setConfigurationProperty (Feature.ALLOW_EXTERNAL_FUNCTIONS, Boolean.valueOf (bAllowExternalFunctions));
 
     // Allow XInclude #86 - disabled by default for security reasons
     aProcessor.setConfigurationProperty (Feature.XINCLUDE, Boolean.valueOf (bAllowXInclude));
@@ -288,8 +291,9 @@ public final class SchematronProcessorFactory
     makeProcessorSecure (aProcessor);
 
     // Call the customizer last, so that it can also relax a security setting
-    if (s_aProcessorCustomizer != null)
-      s_aProcessorCustomizer.accept (aProcessor);
+    final Consumer <Processor> aCustomizer = getProcessorCustomizer ();
+    if (aCustomizer != null)
+      aCustomizer.accept (aProcessor);
 
     return aProcessor;
   }

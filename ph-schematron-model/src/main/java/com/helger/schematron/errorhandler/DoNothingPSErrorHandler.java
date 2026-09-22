@@ -18,6 +18,7 @@ package com.helger.schematron.errorhandler;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.diagnostics.error.IError;
 
 /**
@@ -25,6 +26,7 @@ import com.helger.diagnostics.error.IError;
  *
  * @author Philip Helger
  */
+@Immutable
 public class DoNothingPSErrorHandler extends AbstractPSErrorHandler
 {
   public static final DoNothingPSErrorHandler INSTANCE = new DoNothingPSErrorHandler ();

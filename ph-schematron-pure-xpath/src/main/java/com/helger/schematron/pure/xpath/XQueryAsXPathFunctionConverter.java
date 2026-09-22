@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.WillClose;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.collection.commons.CommonsArrayList;
@@ -58,6 +59,7 @@ import net.sf.saxon.trans.XPathException;
  *
  * @author Philip Helger
  */
+@Immutable
 public class XQueryAsXPathFunctionConverter
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (XQueryAsXPathFunctionConverter.class);

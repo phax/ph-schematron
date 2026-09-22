@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.lang.ClassPathHelper;
 import com.helger.base.string.StringHelper;
@@ -40,6 +41,7 @@ import com.helger.xml.microdom.serialize.MicroReader;
  *
  * @author Philip Helger
  */
+@Immutable
 public final class SchematronTestHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronTestHelper.class);

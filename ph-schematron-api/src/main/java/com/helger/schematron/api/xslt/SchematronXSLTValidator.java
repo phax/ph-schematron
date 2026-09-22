@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.debug.GlobalDebug;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
@@ -58,6 +59,7 @@ import net.sf.saxon.jaxp.TransformerImpl;
  * @author Philip Helger
  * @since 10.0.0
  */
+@Immutable
 public final class SchematronXSLTValidator
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronXSLTValidator.class);

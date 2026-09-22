@@ -29,7 +29,9 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.LoggingTransformErrorListener;
@@ -44,7 +46,7 @@ import net.sf.saxon.lib.FeatureKeys;
  *
  * @author Philip Helger
  */
-@Immutable
+@ThreadSafe
 public final class SchematronTransformerFactory
 {
   /**
@@ -71,6 +73,8 @@ public final class SchematronTransformerFactory
   }
 
   private static final AtomicBoolean ALLOW_XINCLUDE = new AtomicBoolean (DEFAULT_ALLOW_XINCLUDE);
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
   private static Consumer <TransformerFactory> s_aFactoryCustomizer;
 
   private SchematronTransformerFactory ()
@@ -107,7 +111,7 @@ public final class SchematronTransformerFactory
    */
   public static void setTransformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
   {
-    s_aFactoryCustomizer = a;
+    RW_LOCK.writeLocked (() -> s_aFactoryCustomizer = a);
   }
 
   /**
@@ -116,7 +120,7 @@ public final class SchematronTransformerFactory
    */
   public static @Nullable Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
   {
-    return s_aFactoryCustomizer;
+    return RW_LOCK.readLockedGet (() -> s_aFactoryCustomizer);
   }
 
   /**
@@ -193,8 +197,9 @@ public final class SchematronTransformerFactory
       aFactory.setAttribute (FeatureKeys.COMPILE_WITH_TRACING, Boolean.TRUE);
 
     // Call the customizer
-    if (s_aFactoryCustomizer != null)
-      s_aFactoryCustomizer.accept (aFactory);
+    final Consumer <TransformerFactory> aCustomizer = getTransformerFactoryCustomizer ();
+    if (aCustomizer != null)
+      aCustomizer.accept (aFactory);
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Created TransformerFactory is " + aFactory);

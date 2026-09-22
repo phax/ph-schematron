@@ -22,6 +22,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Node;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 
 /**
@@ -42,6 +43,7 @@ import com.helger.base.enforce.ValueEnforcer;
  * @author Philip Helger
  * @since 10.0.2
  */
+@NotThreadSafe
 public class SaxonDOMSource extends DOMSource
 {
   /**

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.location.SimpleLocation;
 import com.helger.base.string.StringHelper;
@@ -50,6 +51,7 @@ import com.helger.xml.serialize.read.SAXReaderSettings;
  *
  * @author Philip Helger
  */
+@NotThreadSafe
 public class PSReader
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PSReader.class);

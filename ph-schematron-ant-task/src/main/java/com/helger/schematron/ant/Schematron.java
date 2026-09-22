@@ -35,6 +35,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.EntityResolver;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.annotation.style.UsedViaReflection;
 import com.helger.base.string.StringHelper;
@@ -77,6 +78,7 @@ import com.helger.xml.transform.TransformSourceFactory;
  * @author Philip Helger
  * @since 4.2.3
  */
+@NotThreadSafe
 public class Schematron extends AbstractSchematronTask
 {
   /**
@@ -85,6 +87,7 @@ public class Schematron extends AbstractSchematronTask
    * @author Philip Helger
    * @since 5.0.2
    */
+  @NotThreadSafe
   public static class ErrorRole implements Serializable
   {
     private String m_sRole;
@@ -116,6 +119,7 @@ public class Schematron extends AbstractSchematronTask
    * @author Philip Helger
    * @since 5.0.6
    */
+  @NotThreadSafe
   public static class Parameter implements Serializable
   {
     private String m_sName;

@@ -21,6 +21,7 @@ import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
@@ -42,6 +43,7 @@ import net.sf.saxon.s9api.XdmValue;
  * @author Philip Helger
  * @since 5.5.0
  */
+@NotThreadSafe
 public class XPathConfigBuilder implements IBuilder <IXPathConfig>
 {
   /**

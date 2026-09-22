@@ -21,6 +21,7 @@ import java.util.List;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
@@ -35,6 +36,7 @@ import com.helger.schematron.svrl.jaxb.DiagnosticReference;
  *
  * @author Philip Helger
  */
+@Immutable
 public abstract class AbstractSVRLMessage
 {
   private final ICommonsList <DiagnosticReference> m_aDiagnosticReferences;
