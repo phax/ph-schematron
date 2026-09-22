@@ -41,20 +41,20 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.ISchematronResource;
-import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
+import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.serialize.read.DOMReader;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * Verifies that <em>no</em> Schematron engine dereferences a remote URL, no matter which of the
- * URI consuming XPath functions is used. A local HTTP server counts the incoming requests, so the
- * test proves the absence of the outbound request itself and not merely that the validation failed.
+ * Verifies that <em>no</em> Schematron engine dereferences a remote URL, no matter which of the URI
+ * consuming XPath functions is used. A local HTTP server counts the incoming requests, so the test
+ * proves the absence of the outbound request itself and not merely that the validation failed.
  * <p>
  * How a blocked access surfaces differs per engine - a failed assertion, a fatal XPath error or a
  * schema that cannot be bound at all - so only the request count is asserted here.
@@ -88,8 +88,11 @@ public final class SchematronRemoteAccessTest
       }
     });
     m_aServer.start ();
-    m_sRemoteURL = "http://" + InetAddress.getLoopbackAddress ().getHostAddress () + ":" +
-                   m_aServer.getAddress ().getPort () + "/blocked";
+    m_sRemoteURL = "http://" +
+                   InetAddress.getLoopbackAddress ().getHostAddress () +
+                   ":" +
+                   m_aServer.getAddress ().getPort () +
+                   "/blocked";
     LOGGER.info ("Started local HTTP server on " + m_sRemoteURL);
   }
 
@@ -158,6 +161,7 @@ public final class SchematronRemoteAccessTest
       final ISchematronResource aRes = aEngineBuilder.build (ReadableResourceString.utf8 (sSCH));
       try
       {
+        // No base URI
         aRes.applySchematronValidationToSVRL (aXML, null);
       }
       catch (final Exception ex)
@@ -165,9 +169,7 @@ public final class SchematronRemoteAccessTest
         // A blocked resource may also surface as a fatal error - that is fine here
         LOGGER.info (aRes.getClass ().getSimpleName () + " failed as expected: " + ex.getMessage ());
       }
-      assertEquals ("Engine " + aRes.getClass ().getName () + " performed a remote request",
-                    0,
-                    m_aRequestCount.get ());
+      assertEquals ("Engine " + aRes.getClass ().getName () + " performed a remote request", 0, m_aRequestCount.get ());
     }
   }
 
@@ -198,9 +200,7 @@ public final class SchematronRemoteAccessTest
     try
     {
       Files.write (aLocalFile, RESPONSE);
-      final String sSCH = _buildSCH ("count(doc('" +
-                                     aLocalFile.toUri ().toASCIIString () +
-                                     "')//*) &gt; 0");
+      final String sSCH = _buildSCH ("count(doc('" + aLocalFile.toUri ().toASCIIString () + "')//*) &gt; 0");
       final Node aXML = DOMReader.readXMLDOM (XML);
       assertNotNull (aXML);
 
