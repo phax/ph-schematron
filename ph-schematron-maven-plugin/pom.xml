@@ -86,6 +86,22 @@
     </dependency>
     
     <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-isosch</artifactId>
     </dependency>
@@ -117,6 +133,7 @@
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
+      <scope>runtime</scope>
     </dependency>
     
     <dependency>

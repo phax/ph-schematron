@@ -60,6 +60,14 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
     </dependency>

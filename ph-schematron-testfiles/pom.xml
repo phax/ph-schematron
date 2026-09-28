@@ -55,6 +55,10 @@
       <artifactId>ph-xml</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

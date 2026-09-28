@@ -57,6 +57,18 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
+      <artifactId>ph-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-text</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
       <artifactId>ph-cache</artifactId>
     </dependency>
     <dependency>
@@ -74,6 +86,10 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
     </dependency>
 
     <dependency>

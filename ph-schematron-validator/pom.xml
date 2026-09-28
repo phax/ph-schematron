@@ -52,11 +52,6 @@
     <dependencies>
       <!-- RelaxNG -->
       <dependency>
-        <groupId>com.helger</groupId>
-        <artifactId>ph-isorelax</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
         <groupId>org.relaxng</groupId>
         <artifactId>jing</artifactId>
         <version>20241231</version>
@@ -94,11 +89,11 @@
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-xml</artifactId>
     </dependency>
-    <!-- RelaxNG -->
     <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-isorelax</artifactId>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-io</artifactId>
     </dependency>
+    <!-- RelaxNG -->
     <dependency>
       <groupId>org.relaxng</groupId>
       <artifactId>jing</artifactId>
