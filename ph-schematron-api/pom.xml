@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>10.1.1-SNAPSHOT</version>
+    <version>10.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-api</artifactId>
   <packaging>jar</packaging>
@@ -73,11 +73,6 @@
     <dependency>
       <groupId>com.helger.xsd</groupId>
       <artifactId>ph-xsds-xml</artifactId>
-    </dependency>
-    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
-    <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>Saxon-HE</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.telemetry</groupId>

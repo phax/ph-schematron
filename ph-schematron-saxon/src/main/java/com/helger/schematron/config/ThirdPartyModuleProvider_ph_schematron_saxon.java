@@ -33,7 +33,7 @@ import com.helger.base.version.Version;
  */
 @Immutable
 @IsSPIImplementation
-public final class ThirdPartyModuleProvider_ph_schematron implements IThirdPartyModuleProviderSPI
+public final class ThirdPartyModuleProvider_ph_schematron_saxon implements IThirdPartyModuleProviderSPI
 {
   public static final IThirdPartyModule SAXON_HE = new ThirdPartyModule ("Saxon HE",
                                                                          "Saxonica Limited",

@@ -24,11 +24,13 @@
     <artifactId>ph-schematron-parent-pom</artifactId>
     <version>10.2.0-SNAPSHOT</version>
   </parent>
-  <artifactId>ph-schematron-validator</artifactId>
+  <artifactId>ph-schematron-saxon</artifactId>
   <packaging>jar</packaging>
-  <name>ph-schematron-validator</name>
-  <url>https://github.com/phax/ph-schematron/ph-schematron-validator</url>
+  <name>ph-schematron-saxon</name>
+  <description>The Saxon specific parts of the library for validating XML documents with Schematron</description>
+  <url>https://github.com/phax/ph-schematron/ph-schematron-saxon</url>
   <inceptionYear>2014</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,10 +38,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <organization>
     <name>Philip Helger</name>
     <url>https://www.helger.com</url>
   </organization>
+  
   <developers>
     <developer>
       <id>philip</id>
@@ -48,80 +52,29 @@
       <url>https://www.helger.com</url>
     </developer>
   </developers>
-  <dependencyManagement>
-    <dependencies>
-      <!-- RelaxNG -->
-      <dependency>
-        <groupId>com.helger</groupId>
-        <artifactId>ph-isorelax</artifactId>
-        <version>1.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.relaxng</groupId>
-        <artifactId>jing</artifactId>
-        <version>20241231</version>
-        <exclusions>
-          <exclusion>
-            <groupId>isorelax</groupId>
-            <artifactId>isorelax</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <!-- Trang -->
-      <dependency>
-        <groupId>org.relaxng</groupId>
-        <artifactId>trang</artifactId>
-        <version>20241231</version>
-        <exclusions>
-          <exclusion>
-            <groupId>isorelax</groupId>
-            <artifactId>isorelax</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
       <artifactId>ph-xml</artifactId>
     </dependency>
-    <!-- RelaxNG -->
-    <dependency>
-      <groupId>com.helger</groupId>
-      <artifactId>ph-isorelax</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.relaxng</groupId>
-      <artifactId>jing</artifactId>
-    </dependency>
-    <!-- Trang -->
-    <dependency>
-      <groupId>org.relaxng</groupId>
-      <artifactId>trang</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-testfiles</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
+    </dependency>
+    <!-- Saxon is required! - does not work with integrated JAXP nor with Xalan 2.7.1! -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.telemetry</groupId>
+      <artifactId>ph-telemetry</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
