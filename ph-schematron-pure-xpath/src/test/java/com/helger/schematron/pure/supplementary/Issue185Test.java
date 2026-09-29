@@ -50,17 +50,15 @@ public final class Issue185Test
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (aXML);
     assertNotNull (aSVRL);
-    if (true)
-      LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
+    LOGGER.info (new SVRLMarshaller ().getAsString (aSVRL));
 
     final ICommonsList <AbstractSVRLMessage> aFailures = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL);
     final int n = aFailures.size ();
     LOGGER.info (n + " failed assertions/successful reports");
     aFailures.forEach (x -> LOGGER.info (x.getAsResourceError (aXML.getPath ()).getAsStringLocaleIndepdent ()));
 
-    // Should be 0 but is 1
-    if (false)
-      assertEquals (0, aFailures.size ());
+    // The <let> with the sequence literal is evaluated correctly since v9.2.0
+    assertEquals (0, aFailures.size ());
   }
 
   @Test
