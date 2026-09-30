@@ -36,7 +36,6 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.io.file.FileHelper;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
 
-
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
 import net.sf.saxon.expr.instruct.UserFunction;

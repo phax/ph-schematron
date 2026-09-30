@@ -320,7 +320,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     // Cache participation:
     // isUseCache() (inherited) controls the shared module-level cache as a whole;
     // m_bForceCacheResult overrides the safety bypass when custom hooks are installed.
-    // Custom URI/Error hooks and a custom Processor bypass the cache unless setForceCacheResult(true)
+    // Custom URI/Error hooks and a custom Processor bypass the cache unless
+    // setForceCacheResult(true)
     // was called, because the cache key encodes (resource, phase, version, tracing) only and all of
     // them can change what Saxon compiles.
     final boolean bHaveCustomHooks = m_aURIResolver != null ||

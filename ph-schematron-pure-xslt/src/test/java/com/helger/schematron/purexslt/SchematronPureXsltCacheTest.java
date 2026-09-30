@@ -70,7 +70,7 @@ public final class SchematronPureXsltCacheTest
   }
 
   private static XsltExecutable _compileNotForced (final ReadableResourceByteArray aRes,
-                                                  final Processor aProcessor) throws Exception
+                                                   final Processor aProcessor) throws Exception
   {
     final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (aRes)
                                                                      .xsltVersion (EPureXsltVersion.DEFAULT)
@@ -156,14 +156,10 @@ public final class SchematronPureXsltCacheTest
     final Node aXML = DOMReader.readXMLDOM ("<?xml version='1.0' encoding='UTF-8'?><root><item /></root>");
     assertNotNull (aXML);
 
-    assertNotNull (SchematronResourcePureXslt.builder (aRes)
-                                             .build ()
-                                             .applySchematronValidationToSVRL (aXML, null));
+    assertNotNull (SchematronResourcePureXslt.builder (aRes).build ().applySchematronValidationToSVRL (aXML, null));
     assertEquals (1, SchematronPureXsltCache.shared ().size ());
 
-    assertNotNull (SchematronResourcePureXslt.builder (aRes)
-                                             .build ()
-                                             .applySchematronValidationToSVRL (aXML, null));
+    assertNotNull (SchematronResourcePureXslt.builder (aRes).build ().applySchematronValidationToSVRL (aXML, null));
     assertEquals (1, SchematronPureXsltCache.shared ().size ());
   }
 

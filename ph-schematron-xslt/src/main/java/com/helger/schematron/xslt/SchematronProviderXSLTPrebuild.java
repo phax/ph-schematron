@@ -115,7 +115,7 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
        * allowed.
        */
       final URIResolver aURIResolver = aCustomURIResolver != null ? aCustomURIResolver
-                                                                 : new DefaultTransformURIResolver ();
+                                                                  : new DefaultTransformURIResolver ();
       final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
                                                                                             aURIResolver,
                                                                                             bEnableTracing);

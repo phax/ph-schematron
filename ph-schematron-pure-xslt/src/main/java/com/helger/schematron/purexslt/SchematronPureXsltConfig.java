@@ -113,10 +113,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     m_aErrorListener = aBuilder.m_aErrorListener;
     m_aTelemetry = aBuilder.m_aTelemetry;
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
-    m_aCacheKey = new CacheKey (m_aResource.getResourceID (),
-                                m_sPhase,
-                                m_eXsltVersion.getID (),
-                                isTracingEnabled ());
+    m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_eXsltVersion.getID (), isTracingEnabled ());
   }
 
   @Override

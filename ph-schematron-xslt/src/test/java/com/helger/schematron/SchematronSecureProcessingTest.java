@@ -154,7 +154,9 @@ public final class SchematronSecureProcessingTest
       final String sXSLT = "<?xml version='1.0' encoding='UTF-8'?>\n" +
                            "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform'" +
                            " xmlns:svrl='http://purl.oclc.org/dsdl/svrl' xmlns:u='urn:test:utils' version='2.0'>\n" +
-                           "  <xsl:include href='" + sURL + "' />\n" +
+                           "  <xsl:include href='" +
+                           sURL +
+                           "' />\n" +
                            "  <xsl:template match='/'><svrl:schematron-output>" +
                            "<xsl:attribute name='title'><xsl:value-of select='u:constant()' /></xsl:attribute>" +
                            "</svrl:schematron-output></xsl:template>\n" +
