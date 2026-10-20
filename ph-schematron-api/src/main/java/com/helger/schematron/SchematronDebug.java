@@ -268,6 +268,7 @@ public final class SchematronDebug
    * @see #setDebugLog(boolean)
    * @since 8.0.0
    */
+  @SuppressWarnings ("deprecation")
   @NonNull
   public static IConditionalLogger getDebugLogger ()
   {
