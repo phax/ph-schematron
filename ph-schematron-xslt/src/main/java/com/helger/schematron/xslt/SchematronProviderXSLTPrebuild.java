@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.io.stream.StreamHelper;
 import com.helger.io.resource.IReadableResource;
+import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.serialize.read.DOMReader;
@@ -48,6 +50,7 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
 
+  private final IReadableResource m_aXSLTResource;
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 
@@ -102,17 +105,21 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
                                          final boolean bEnableTracing,
                                          @Nullable final Consumer <TransformerFactory> aTFCustomizer)
   {
+    // A read-once resource (e.g. an InputStream) is buffered, so that it can be compiled and still be
+    // read by getXSLTDocument
+    final byte [] aXSLTBytes = aXSLTResource == null || aXSLTResource.isReadMultiple () ? null
+                                                                                         : StreamHelper.getAllBytes (aXSLTResource);
+    m_aXSLTResource = aXSLTBytes == null ? aXSLTResource
+                                         : new ReadableResourceByteArray (aXSLTResource.getResourceID (), aXSLTBytes, false);
     try
     {
-      // Read XSLT file as XML
-      m_aSchematronXSLTDoc = DOMReader.readXMLDOM (aXSLTResource);
-
       /*
-       * Compile the result of the read file. The provided resolver is used as-is and is
-       * deliberately not wrapped in another DefaultTransformURIResolver: since ph-commons 12.5.0 a
-       * resolver ends the resolution of a blocked remote resource itself instead of delegating, so
-       * a wrapping resolver would silently override the caller's decision which remote schemes are
-       * allowed.
+       * Compile directly from the resource. Saxon builds its own tree much faster than it can walk
+       * a W3C DOM, and the DOM is not kept in memory for the lifetime of the compiled stylesheet.
+       * The provided resolver is used as-is and is deliberately not wrapped in another
+       * DefaultTransformURIResolver: since ph-commons 12.5.0 a resolver ends the resolution of a
+       * blocked remote resource itself instead of delegating, so a wrapping resolver would silently
+       * override the caller's decision which remote schemes are allowed.
        */
       final URIResolver aURIResolver = aCustomURIResolver != null ? aCustomURIResolver
                                                                   : new DefaultTransformURIResolver ();
@@ -123,7 +130,7 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
       // extension functions (or any other tweak) just before the validation stylesheet compiles.
       if (aTFCustomizer != null)
         aTFCustomizer.accept (aTF);
-      m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aSchematronXSLTDoc));
+      m_aSchematronXSLTTemplates = aTF.newTemplates (TransformSourceFactory.create (m_aXSLTResource));
     }
     catch (final Exception ex)
     {
@@ -136,9 +143,15 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
     return m_aSchematronXSLTTemplates != null;
   }
 
+  /**
+   * {@inheritDoc}<br>
+   * The XSLT is only read as a DOM on the first call, because it is not needed for validation.
+   */
   @Nullable
   public Document getXSLTDocument ()
   {
+    if (m_aSchematronXSLTDoc == null && m_aXSLTResource != null)
+      m_aSchematronXSLTDoc = DOMReader.readXMLDOM (m_aXSLTResource);
     return m_aSchematronXSLTDoc;
   }
 
