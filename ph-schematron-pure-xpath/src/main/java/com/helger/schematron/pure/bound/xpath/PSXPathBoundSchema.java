@@ -571,7 +571,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                    @NonNull final XdmItem aContext,
                                    @NonNull final IPSElement aContextElement)
   {
-    for (final var aEntry : aVariables.getAll ().entrySet ())
+    for (final var aEntry : aVariables.variables ().entrySet ())
     {
       final String sVariableName = aEntry.getKey ();
       final XPathExecutable aXPathExecutable = aEntry.getValue ();
@@ -610,7 +610,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   private void _removeAllVariables (@NonNull final PSXPathVariables aVariables)
   {
-    for (final String sVarName : aVariables.getAllNames ())
+    for (final String sVarName : aVariables.variables ().keySet ())
       m_aLetVars.removeVariable (new QName (sVarName));
   }
 
@@ -719,7 +719,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           _evaluateVariables (aBoundRule.getVariables (), aMatchedXdm, aRule);
 
           // For all contained assert and report elements
-          for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.getAllBoundAssertReports ())
+          for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.boundAssertReports ())
           {
             final PSAssertReport aAssertReport = aBoundAssertReport.getAssertReport ();
             final boolean bIsAssert = aAssertReport.isAssert ();

@@ -141,9 +141,10 @@ public final class SchematronXSLTValidator
     if (SchematronDebug.isShowCreatedXSLT ())
       LOGGER.info ("Created XSLT document: " + XMLWriter.getNodeAsString (aProvider.getXSLTDocument ()));
 
-    LOGGER.info ("Applying Schematron XSLT on XML instance" +
-                 (StringHelper.isNotEmpty (aSource.getSystemId ()) ? " with base URI '" + aSource.getSystemId () + "'"
-                                                                   : ""));
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Applying Schematron XSLT on XML instance" +
+                    (StringHelper.isNotEmpty (aSource.getSystemId ()) ? " with base URI '" + aSource.getSystemId () + "'"
+                                                                      : ""));
 
     final Document ret = XMLFactory.newDocument ();
     final Transformer aTransformer = aProvider.getXSLTTransformer ();

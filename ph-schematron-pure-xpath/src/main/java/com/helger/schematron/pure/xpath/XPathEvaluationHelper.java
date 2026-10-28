@@ -47,18 +47,6 @@ public final class XPathEvaluationHelper
   private XPathEvaluationHelper ()
   {}
 
-  private static boolean _expressionReferencesVariable (@NonNull final XPathExecutable aExecutable,
-                                                        @NonNull final QName aName)
-  {
-    // iterateExternalVariables returns the externally declared variables that the expression
-    // actually references
-    final Iterator <QName> it = aExecutable.iterateExternalVariables ();
-    while (it.hasNext ())
-      if (aName.equals (it.next ()))
-        return true;
-    return false;
-  }
-
   /**
    * Build a {@link XPathSelector} from the executable, bind the context item, and apply all
    * variables.
@@ -84,11 +72,15 @@ public final class XPathEvaluationHelper
 
     if (aVariables != null && aVariables.isNotEmpty ())
     {
-      for (final var aEntry : aVariables.entrySet ())
+      // Only set variables that the expression actually references. Iterate the (usually few)
+      // referenced variables instead of all variables in scope.
+      final Iterator <QName> it = aExecutable.iterateExternalVariables ();
+      while (it.hasNext ())
       {
-        // Only set variables that the expression actually references
-        if (_expressionReferencesVariable (aExecutable, aEntry.getKey ()))
-          aSelector.setVariable (aEntry.getKey (), aEntry.getValue ());
+        final QName aName = it.next ();
+        final XdmValue aValue = aVariables.get (aName);
+        if (aValue != null)
+          aSelector.setVariable (aName, aValue);
       }
     }
     return aSelector;

@@ -902,9 +902,9 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     }
 
     /**
-     * Build the resource and eagerly compile without using any cache. The validation result is
-     * discarded; subsequent validation calls will recompile per the resource's lazy-compile
-     * semantics. Useful as a fail-fast verification at construction time.
+     * Build the resource and eagerly compile without using any cache. The compiled XSLT is kept
+     * in the resource, so subsequent validation calls do not compile again. Useful as a fail-fast
+     * verification at construction time.
      *
      * @return The configured resource. Never <code>null</code>.
      * @throws SchematronException
@@ -915,7 +915,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     {
       useCache (false);
       final SchematronResourcePureXslt ret = build ();
-      ret.toConfig ().compile ();
+      // Keep the result so that the first validation does not compile again
+      ret.m_aCompiledXslt = ret.toConfig ().compile ();
       return ret;
     }
   }

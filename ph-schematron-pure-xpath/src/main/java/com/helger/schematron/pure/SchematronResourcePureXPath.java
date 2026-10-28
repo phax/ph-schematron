@@ -401,7 +401,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     final String sBaseURI = aStreamSrc.getSystemId ();
     final StreamSource aSrcWithURI = new StreamSource (aIS, sBaseURI);
     final Document aDoc = _buildSaxonDocument (aSrcWithURI);
-    LOGGER.info ("Read XML resource " + aXMLResource + " into Saxon TinyTree");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Read XML resource " + aXMLResource + " into Saxon TinyTree");
     return new NodeAndBaseURI (aDoc, sBaseURI);
   }
 

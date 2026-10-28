@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EChange;
 import com.helger.base.string.StringHelper;
@@ -132,6 +133,18 @@ public class PSXPathVariables implements IPSXPathVariables
       for (final String sName : aVars)
         eChange = eChange.or (remove (sName));
     return eChange;
+  }
+
+  /**
+   * @return The internal variable map without copying. Never <code>null</code>. Modifying the
+   *         returned map modifies this object.
+   * @since 10.2.1
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public final ICommonsOrderedMap <String, XPathExecutable> variables ()
+  {
+    return m_aMap;
   }
 
   @NonNull

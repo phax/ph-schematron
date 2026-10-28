@@ -264,7 +264,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
     if (aDoc == null)
       throw new IllegalArgumentException ("Failed to read resource " + aXMLResource + " as XML");
 
-    LOGGER.info ("Read XML resource " + aXMLResource);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Read XML resource " + aXMLResource);
     return new NodeAndBaseURI (aDoc, aStreamSrc.getSystemId ());
   }
 

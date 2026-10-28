@@ -38,6 +38,7 @@ import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.CGlobal;
 import com.helger.base.debug.GlobalDebug;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.iface.IHasInputStream;
 import com.helger.base.state.EValidity;
 import com.helger.base.timing.StopWatch;
 import com.helger.base.tostring.ToStringGenerator;
@@ -52,6 +53,7 @@ import com.helger.schematron.api.telemetry.RuleDurationTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
+import com.helger.schematron.saxon.SaxonDOMSource;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.telemetry.ETelemetrySpanKind;
@@ -482,6 +484,43 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     final DOMSource aSource = new DOMSource (aXMLNode);
     aSource.setSystemId (sBaseURI);
     return applySchematronValidationToSVRL (aSource);
+  }
+
+  @Override
+  @NonNull
+  public EValidity getSchematronValidity (@NonNull final IHasInputStream aXMLResource) throws Exception
+  {
+    final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
+    if (aXMLNode == null)
+      return EValidity.INVALID;
+
+    // The DOM was created internally and is never exposed, so its object identity does not matter.
+    // A SaxonDOMSource lets Saxon build its native tree once instead of navigating the wrapped DOM.
+    return getSchematronValidity (new SaxonDOMSource (aXMLNode.doc (), aXMLNode.baseURI ()));
+  }
+
+  @Override
+  @Nullable
+  public Document applySchematronValidation (@NonNull final IHasInputStream aXMLResource) throws Exception
+  {
+    final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
+    if (aXMLNode == null)
+      return null;
+
+    // Internal DOM - see getSchematronValidity (IHasInputStream)
+    return applySchematronValidation (new SaxonDOMSource (aXMLNode.doc (), aXMLNode.baseURI ()));
+  }
+
+  @Override
+  @Nullable
+  public SchematronOutputType applySchematronValidationToSVRL (@NonNull final IHasInputStream aXMLResource) throws Exception
+  {
+    final NodeAndBaseURI aXMLNode = getAsNode (aXMLResource);
+    if (aXMLNode == null)
+      return null;
+
+    // Internal DOM - see getSchematronValidity (IHasInputStream)
+    return applySchematronValidationToSVRL (new SaxonDOMSource (aXMLNode.doc (), aXMLNode.baseURI ()));
   }
 
   @Override
