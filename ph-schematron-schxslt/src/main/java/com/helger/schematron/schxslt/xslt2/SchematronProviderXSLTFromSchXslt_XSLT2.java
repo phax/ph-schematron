@@ -49,6 +49,7 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.SerializedXSLTDocument;
 import com.helger.schematron.saxon.SchematronTransformerFactory;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -93,7 +94,8 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   private static Templates s_aStep3;
 
   private final SchematronSchXslt_XSLT2Config m_aConfig;
-  private Document m_aSchematronXSLTDoc;
+  // The generated XSLT is kept serialised, because the DOM is much bigger and only needed for debugging
+  private SerializedXSLTDocument m_aSchematronXSLT;
   private Templates m_aSchematronXSLTTemplates;
 
   /**
@@ -323,15 +325,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
    */
   public void convertSchematronToXSLT ()
   {
-    if (m_aSchematronXSLTDoc != null)
+    if (m_aSchematronXSLT != null)
       throw new IllegalStateException ("The conversion from Schematron to XSLT already happened");
 
     final IReadableResource aSchematronResource = m_aConfig.getResource ();
     try
     {
-      // Save the underlying XSLT document....
-      // Note: Saxon 6.5.5 does not allow to clone the document node!!!!
-      m_aSchematronXSLTDoc = createSchematronXSLT (m_aConfig);
+      // Save the underlying XSLT document in serialised form
+      final Document aSchematronXSLTDoc = createSchematronXSLT (m_aConfig);
+      m_aSchematronXSLT = SerializedXSLTDocument.create (aSchematronXSLTDoc);
 
       // compile result of step 3
       // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
@@ -354,7 +356,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
         aTFCustomizer.accept (aTF);
 
       m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
-                                                                       TransformSourceFactory.create (m_aSchematronXSLTDoc));
+                                                                       TransformSourceFactory.create (aSchematronXSLTDoc));
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
@@ -383,10 +385,15 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     return m_aSchematronXSLTTemplates != null;
   }
 
+  /**
+   * {@inheritDoc}<br>
+   * The XSLT is kept in serialised form and only parsed again on the first call, because it is not
+   * needed for validation.
+   */
   @Nullable
   public Document getXSLTDocument ()
   {
-    return m_aSchematronXSLTDoc;
+    return m_aSchematronXSLT == null ? null : m_aSchematronXSLT.getDocument ();
   }
 
   @Nullable

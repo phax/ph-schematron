@@ -87,26 +87,51 @@ import net.sf.saxon.s9api.XdmValue;
 @NotThreadSafe
 public class PSXPathBoundSchema extends AbstractPSBoundSchema
 {
+  /**
+   * A {@link NodeList} over the matched rule context nodes, that converts each node to a DOM node
+   * only when it is accessed. The DOM node is usually only needed for failed asserts and successful
+   * reports.
+   */
   private static final class MyNodeList implements NodeList
   {
-    private final @NonNull ICommonsList <Node> m_aNodes;
+    private final @NonNull ICommonsList <XdmNode> m_aXdmNodes;
+    private final Node [] m_aDomNodes;
 
-    private MyNodeList (@NonNull final ICommonsList <Node> aNodes)
+    private MyNodeList (@NonNull final ICommonsList <XdmNode> aXdmNodes)
     {
-      m_aNodes = aNodes;
+      m_aXdmNodes = aXdmNodes;
+      m_aDomNodes = new Node [aXdmNodes.size ()];
     }
 
     public @Nullable Node item (final @CheckForSigned int nIndex)
     {
-      if (nIndex < 0 || nIndex >= m_aNodes.size ())
+      if (nIndex < 0 || nIndex >= m_aDomNodes.length)
         return null;
-      return m_aNodes.get (nIndex);
+      Node ret = m_aDomNodes[nIndex];
+      if (ret == null)
+      {
+        ret = _xdmToDomNode (m_aXdmNodes.get (nIndex));
+        m_aDomNodes[nIndex] = ret;
+      }
+      return ret;
     }
 
     public @Nonnegative int getLength ()
     {
-      return m_aNodes.size ();
+      return m_aDomNodes.length;
     }
+  }
+
+  /**
+   * Debug statistics about the result types of the evaluated variables. One instance is used per
+   * validation and only if debug logging is enabled.
+   */
+  private static final class VariableStats
+  {
+    private int m_nNodeLists;
+    private int m_nStrings;
+    private int m_nBooleans;
+    private int m_nNodes;
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathBoundSchema.class);
@@ -561,15 +586,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     return "//" + sRuleContext;
   }
 
-  // Status vars for evaluation
-  private int m_nVarForNodeLists = 0;
-  private int m_nVarForString = 0;
-  private int m_nVarForBoolean = 0;
-  private int m_nVarForNode = 0;
-
   private void _evaluateVariables (@NonNull final PSXPathVariables aVariables,
                                    @NonNull final XdmItem aContext,
-                                   @NonNull final IPSElement aContextElement)
+                                   @NonNull final IPSElement aContextElement,
+                                   @Nullable final VariableStats aStats)
   {
     for (final var aEntry : aVariables.variables ().entrySet ())
     {
@@ -583,20 +603,23 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                                                                  m_aLetVars.getCurrentVariables ());
 
         // Debug histogram of result kinds.
-        final int nSize = aResult.size ();
-        if (nSize == 0)
-          m_nVarForBoolean++;
-        else
-          if (nSize > 1)
-            m_nVarForNodeLists++;
+        if (aStats != null)
+        {
+          final int nSize = aResult.size ();
+          if (nSize == 0)
+            aStats.m_nBooleans++;
           else
-          {
-            final XdmItem aSingle = aResult.itemAt (0);
-            if (aSingle.isNode ())
-              m_nVarForNode++;
+            if (nSize > 1)
+              aStats.m_nNodeLists++;
             else
-              m_nVarForString++;
-          }
+            {
+              final XdmItem aSingle = aResult.itemAt (0);
+              if (aSingle.isNode ())
+                aStats.m_nNodes++;
+              else
+                aStats.m_nStrings++;
+            }
+        }
 
         // Variables from <let> are stored without namespace
         m_aLetVars.setVariableValue (new QName (sVariableName), aResult);
@@ -650,7 +673,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     final boolean bMeasureAssertionTiming = aValidationHandler.isMeasureAssertionTiming ();
 
     // Evaluate schema-global variables
-    _evaluateVariables (m_aSchemaVariables, aDocXdm, aSchema);
+    // Debug statistics are only collected if they are logged
+    final VariableStats aVarStats = SchematronDebug.isDebugLog () ? new VariableStats () : null;
+
+    _evaluateVariables (m_aSchemaVariables, aDocXdm, aSchema, aVarStats);
 
     // For all bound patterns
     for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
@@ -659,7 +685,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       aValidationHandler.onPattern (aPattern);
 
       // Evaluate pattern variables
-      _evaluateVariables (aBoundPattern.getVariables (), aDocXdm, aPattern);
+      _evaluateVariables (aBoundPattern.getVariables (), aDocXdm, aPattern, aVarStats);
 
       // For all bound rules
       for (final PSXPathBoundRule aBoundRule : aBoundPattern.getAllBoundRules ())
@@ -693,15 +719,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           aValidationHandler.onContextEvaluated (aRule, aContextSW.getNanos (), aRuleContextXdmNodes.size ());
         }
 
-        final ICommonsList <Node> aRuleContextDomNodes = new CommonsArrayList <> (aRuleContextXdmNodes.size ());
-        for (final XdmNode aMatch : aRuleContextXdmNodes)
-        {
-          final Node aDomNode = _xdmToDomNode (aMatch);
-          if (aDomNode != null)
-            aRuleContextDomNodes.add (aDomNode);
-        }
-
-        aValidationHandler.onRuleStart (aRule, new MyNodeList (aRuleContextDomNodes));
+        // DOM nodes are only created on demand
+        final MyNodeList aRuleContextDomNodes = new MyNodeList (aRuleContextXdmNodes);
+        aValidationHandler.onRuleStart (aRule, aRuleContextDomNodes);
 
         // Check each node, if it matches the assert/report
         final int nRuleMatchingNodes = aRuleContextXdmNodes.size ();
@@ -711,12 +731,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
           aValidationHandler.onFiredRule (aRule, aBoundRule.getRuleContext (), nMatchedNode, nRuleMatchingNodes);
 
           final XdmNode aMatchedXdm = aRuleContextXdmNodes.get (nMatchedNode);
-          final Node aMatchedDom = nMatchedNode < aRuleContextDomNodes.size () ? aRuleContextDomNodes.get (nMatchedNode)
-                                                                               : _xdmToDomNode (aMatchedXdm);
 
           // Evaluate variables declared in the rule with the context of the
           // matching node
-          _evaluateVariables (aBoundRule.getVariables (), aMatchedXdm, aRule);
+          _evaluateVariables (aBoundRule.getVariables (), aMatchedXdm, aRule, aVarStats);
 
           // For all contained assert and report elements
           for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.boundAssertReports ())
@@ -749,7 +767,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                   if (aValidationHandler.onFailedAssert (aBoundRule.getRule (),
                                                          aAssertReport,
                                                          aBoundAssertReport.getTestExpression (),
-                                                         aMatchedDom,
+                                                         aRuleContextDomNodes.item (nMatchedNode),
                                                          nMatchedNode,
                                                          aBoundAssertReport,
                                                          null).isBreak ())
@@ -767,7 +785,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                   if (aValidationHandler.onSuccessfulReport (aBoundRule.getRule (),
                                                              aAssertReport,
                                                              aBoundAssertReport.getTestExpression (),
-                                                             aMatchedDom,
+                                                             aRuleContextDomNodes.item (nMatchedNode),
                                                              nMatchedNode,
                                                              aBoundAssertReport,
                                                              null).isBreak ())
@@ -794,7 +812,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 if (aValidationHandler.onFailedAssert (aBoundRule.getRule (),
                                                        aAssertReport,
                                                        aBoundAssertReport.getTestExpression (),
-                                                       aMatchedDom,
+                                                       aRuleContextDomNodes.item (nMatchedNode),
                                                        nMatchedNode,
                                                        aBoundAssertReport,
                                                        ex).isBreak ())
@@ -808,7 +826,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
                 if (aValidationHandler.onSuccessfulReport (aBoundRule.getRule (),
                                                            aAssertReport,
                                                            aBoundAssertReport.getTestExpression (),
-                                                           aMatchedDom,
+                                                           aRuleContextDomNodes.item (nMatchedNode),
                                                            nMatchedNode,
                                                            aBoundAssertReport,
                                                            ex).isBreak ())
@@ -840,17 +858,18 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     // Call the "end" callback method
     aValidationHandler.onEnd (aSchema, aPhase);
 
-    if (m_nVarForNodeLists > 0 || m_nVarForString > 0 || m_nVarForNode > 0 || m_nVarForBoolean > 0)
+    if (aVarStats != null &&
+        (aVarStats.m_nNodeLists > 0 || aVarStats.m_nStrings > 0 || aVarStats.m_nNodes > 0 || aVarStats.m_nBooleans > 0))
     {
       SchematronDebug.getDebugLogger ()
                      .info (() -> "Variables result types: NodeList=" +
-                                  m_nVarForNodeLists +
+                                  aVarStats.m_nNodeLists +
                                   "; String=" +
-                                  m_nVarForString +
+                                  aVarStats.m_nStrings +
                                   "; Node=" +
-                                  m_nVarForNode +
+                                  aVarStats.m_nNodes +
                                   "; Boolean/Empty=" +
-                                  m_nVarForBoolean);
+                                  aVarStats.m_nBooleans);
     }
   }
 

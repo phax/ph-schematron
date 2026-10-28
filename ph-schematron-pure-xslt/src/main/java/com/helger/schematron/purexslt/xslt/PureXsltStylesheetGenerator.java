@@ -28,8 +28,10 @@ import org.w3c.dom.Element;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronVersion;
@@ -508,13 +510,49 @@ public final class PureXsltStylesheetGenerator
   }
 
   /**
+   * @return A map from diagnostic ID to diagnostic, or <code>null</code> if the schema has no
+   *         diagnostics container. For duplicate IDs the first diagnostic wins, like in
+   *         {@link PSDiagnostics#getDiagnosticOfID(String)}.
+   */
+  @Nullable
+  private static ICommonsMap <String, PSDiagnostic> _getDiagnosticsByID (@Nullable final PSDiagnostics aDiagnostics)
+  {
+    if (aDiagnostics == null)
+      return null;
+
+    final ICommonsMap <String, PSDiagnostic> ret = new CommonsHashMap <> ();
+    for (final PSDiagnostic aDiag : aDiagnostics.getAllDiagnostics ())
+      if (StringHelper.isNotEmpty (aDiag.getID ()) && !ret.containsKey (aDiag.getID ()))
+        ret.put (aDiag.getID (), aDiag);
+    return ret;
+  }
+
+  /**
+   * @return A map from property ID to property, or <code>null</code> if the schema has no
+   *         properties container. For duplicate IDs the first property wins, like in
+   *         {@link PSProperties#getPropertyOfID(String)}.
+   */
+  @Nullable
+  private static ICommonsMap <String, PSProperty> _getPropertiesByID (@Nullable final PSProperties aProperties)
+  {
+    if (aProperties == null)
+      return null;
+
+    final ICommonsMap <String, PSProperty> ret = new CommonsHashMap <> ();
+    for (final PSProperty aProp : aProperties.getAllProperties ())
+      if (StringHelper.isNotEmpty (aProp.getID ()) && !ret.containsKey (aProp.getID ()))
+        ret.put (aProp.getID (), aProp);
+    return ret;
+  }
+
+  /**
    * Emit one {@code <svrl:diagnostic-reference diagnostic="id">} per id in the assert/report's
    * {@code diagnostics} attribute. The reference's text content is the resolved diagnostic's mixed
    * content (text + value-of + name) - interpolated the same way as assert/report messages.
    */
   private static void _appendDiagnosticReferences (@NonNull final Element aSvrlParent,
                                                    @NonNull final PSAssertReport aAR,
-                                                   @Nullable final PSDiagnostics aDiagnostics)
+                                                   @Nullable final ICommonsMap <String, PSDiagnostic> aDiagnostics)
   {
     final ICommonsList <String> aIDs = aAR.getAllDiagnostics ();
     if (aIDs == null || aIDs.isEmpty ())
@@ -530,7 +568,7 @@ public final class PureXsltStylesheetGenerator
 
     for (final String sID : aIDs)
     {
-      final PSDiagnostic aDiag = aDiagnostics.getDiagnosticOfID (sID);
+      final PSDiagnostic aDiag = aDiagnostics.get (sID);
       if (aDiag == null)
       {
         LOGGER.warn ("Diagnostic id '" + sID + "' referenced by an assert/report is not defined");
@@ -618,7 +656,7 @@ public final class PureXsltStylesheetGenerator
    */
   private static void _appendPropertyReferences (@NonNull final Element aSvrlParent,
                                                  @NonNull final PSAssertReport aAR,
-                                                 @Nullable final PSProperties aProperties)
+                                                 @Nullable final ICommonsMap <String, PSProperty> aProperties)
   {
     final ICommonsList <String> aIDs = aAR.getAllProperties ();
     if (aIDs == null || aIDs.isEmpty ())
@@ -632,7 +670,7 @@ public final class PureXsltStylesheetGenerator
 
     for (final String sID : aIDs)
     {
-      final PSProperty aProp = aProperties.getPropertyOfID (sID);
+      final PSProperty aProp = aProperties.get (sID);
       if (aProp == null)
       {
         LOGGER.warn ("Property id '" + sID + "' referenced by an assert/report is not defined");
@@ -652,8 +690,8 @@ public final class PureXsltStylesheetGenerator
 
   private static void _appendAssertReport (@NonNull final Element aRuleTemplate,
                                            @NonNull final PSAssertReport aAR,
-                                           @Nullable final PSDiagnostics aDiagnostics,
-                                           @Nullable final PSProperties aProperties,
+                                           @Nullable final ICommonsMap <String, PSDiagnostic> aDiagnostics,
+                                           @Nullable final ICommonsMap <String, PSProperty> aProperties,
                                            @Nullable final String sLocationAvt)
   {
     final String sTest = aAR.getTest ();
@@ -706,12 +744,12 @@ public final class PureXsltStylesheetGenerator
   }
 
   private static void _appendRuleTemplate (@NonNull final Element aStylesheet,
-                                           @NonNull final PSPattern aPattern,
+                                           @NonNull final ICommonsList <PSLet> aPatternLets,
                                            @NonNull final PSRule aRule,
                                            @NonNull final String sMode,
                                            final int nPriority,
-                                           @Nullable final PSDiagnostics aDiagnostics,
-                                           @Nullable final PSProperties aProperties,
+                                           @Nullable final ICommonsMap <String, PSDiagnostic> aDiagnostics,
+                                           @Nullable final ICommonsMap <String, PSProperty> aProperties,
                                            @Nullable final String sLocationAvt)
   {
     final Element aTemplate = _addXsltChild (aStylesheet, "template");
@@ -722,7 +760,7 @@ public final class PureXsltStylesheetGenerator
     // Pattern- and rule-level <sch:let> become <xsl:variable> at the top of the rule template.
     // Pattern lets are duplicated across every rule template in the pattern (rather than factored
     // out) because they must be in scope inside whichever rule context fires.
-    _appendLetsAsXsltVariables (aTemplate, aPattern.getAllLets ());
+    _appendLetsAsXsltVariables (aTemplate, aPatternLets);
     _appendLetsAsXsltVariables (aTemplate, aRule.getAllLets ());
 
     // <svrl:fired-rule context="..."/>
@@ -748,12 +786,14 @@ public final class PureXsltStylesheetGenerator
   private static void _appendPatternTemplates (@NonNull final Element aStylesheet,
                                                @NonNull final PSPattern aPattern,
                                                final int nPatternIdx,
-                                               @Nullable final PSDiagnostics aDiagnostics,
-                                               @Nullable final PSProperties aProperties,
+                                               @Nullable final ICommonsMap <String, PSDiagnostic> aDiagnostics,
+                                               @Nullable final ICommonsMap <String, PSProperty> aProperties,
                                                @Nullable final String sLocationAvt)
   {
     final String sMode = _getModeName (nPatternIdx);
     final ICommonsList <PSRule> aRules = aPattern.getAllRules ();
+    // Determined once, as they are emitted for every rule of the pattern
+    final ICommonsList <PSLet> aPatternLets = aPattern.getAllLets ();
     int nRuleIdx = 0;
     for (final PSRule aRule : aRules)
     {
@@ -770,7 +810,7 @@ public final class PureXsltStylesheetGenerator
         continue;
       }
       _appendRuleTemplate (aStylesheet,
-                           aPattern,
+                           aPatternLets,
                            aRule,
                            sMode,
                            aRules.size () - nRuleIdx,
@@ -978,8 +1018,9 @@ public final class PureXsltStylesheetGenerator
   {
     final String sResolvedPhase = _resolvePhase (aSchema, sPhase);
     final ICommonsList <PSPattern> aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
-    final PSDiagnostics aDiagnostics = aSchema.getDiagnostics ();
-    final PSProperties aProperties = aSchema.getProperties ();
+    // Index diagnostics and properties once instead of searching them for every reference
+    final ICommonsMap <String, PSDiagnostic> aDiagnostics = _getDiagnosticsByID (aSchema.getDiagnostics ());
+    final ICommonsMap <String, PSProperty> aProperties = _getPropertiesByID (aSchema.getProperties ());
 
     final Document aDoc = XMLFactory.newDocument ();
     aDoc.appendChild (aDoc.createComment (" Created by ph-schematron-pure-xslt " +
