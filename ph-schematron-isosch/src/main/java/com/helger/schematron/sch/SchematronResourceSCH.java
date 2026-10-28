@@ -217,9 +217,16 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public ISchematronXSLTBasedProvider getXSLTProvider ()
   {
     markCompiled ();
+    if (m_aUncachedXSLTProvider != null)
+      return m_aUncachedXSLTProvider;
+
     final SchematronSCHConfig aConfig = toConfig ();
-    if (!isUseCache ())
-      return aConfig.compile ();
+    if (!isUseCache () || !aConfig.canCacheResult ())
+    {
+      // Not served from a cache - keep it, so that it is not compiled again for every validation
+      m_aUncachedXSLTProvider = aConfig.compile ();
+      return m_aUncachedXSLTProvider;
+    }
 
     try
     {

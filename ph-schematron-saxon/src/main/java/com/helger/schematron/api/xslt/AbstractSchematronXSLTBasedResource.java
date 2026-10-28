@@ -97,6 +97,14 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * instead of silently producing a stale provider on the next cache hit.
    */
   protected boolean m_bAlreadyCompiled;
+  /**
+   * The provider compiled by {@link #getXSLTProvider()} when it was not taken from a cache, so that
+   * it is not compiled again for every validation. Providers taken from a cache are not stored, so
+   * that clearing the cache is still honoured.
+   *
+   * @since 10.2.1
+   */
+  protected ISchematronXSLTBasedProvider m_aUncachedXSLTProvider;
 
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
@@ -248,6 +256,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return thisAsT ();
   }
 
+  /**
+   * @return The custom XSLT parameters. Never <code>null</code>. For engines that use the
+   *         parameters while compiling the Schematron (SCH, SchXslt, SchXslt2), changes made after
+   *         the first validation only affect the validation step, but not the compiled XSLT.
+   */
   @NonNull
   @ReturnsMutableObject
   public final ICommonsOrderedMap <String, Object> parameters ()

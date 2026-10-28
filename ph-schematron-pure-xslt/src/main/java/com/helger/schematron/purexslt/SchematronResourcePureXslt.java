@@ -24,8 +24,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -41,6 +43,7 @@ import com.helger.base.CGlobal;
 import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.functional.IThrowingSupplier;
+import com.helger.base.io.iface.IHasInputStream;
 import com.helger.base.state.EValidity;
 import com.helger.base.timing.StopWatch;
 import com.helger.io.resource.ClassPathResource;
@@ -63,6 +66,7 @@ import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.telemetry.PureXsltTelemetry;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
+import com.helger.schematron.saxon.SaxonTinyTreeHelper;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
@@ -74,11 +78,14 @@ import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.xml.transform.TransformSourceFactory;
 
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.lib.ErrorReporterToListener;
 import net.sf.saxon.lib.ResourceResolverWrappingURIResolver;
 import net.sf.saxon.s9api.DOMDestination;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 
@@ -384,6 +391,65 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     return m_aCompiledXslt;
   }
 
+  /**
+   * Read the XML through Saxon's {@link net.sf.saxon.s9api.DocumentBuilder} and present it as a DOM
+   * facade over the resulting TinyTree. The validation then runs on that tree directly, instead of
+   * building a DOM that Saxon copies into its own tree again.
+   * <p>
+   * The TinyTree fast path is skipped when a custom XML entity resolver is configured - in that case
+   * the default DOM parsing path (which honours the resolver) is used instead.
+   * </p>
+   */
+  @Override
+  @Nullable
+  protected NodeAndBaseURI getAsNode (@NonNull final IHasInputStream aXMLResource) throws Exception
+  {
+    if (getEntityResolver () != null)
+    {
+      // Defer to the DOM-based default so the entity resolver is honoured
+      return super.getAsNode (aXMLResource);
+    }
+
+    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
+    InputStream aIS = null;
+    try
+    {
+      aIS = aStreamSrc.getInputStream ();
+    }
+    catch (final IllegalStateException ex)
+    {
+      // Happens e.g. for non-existing resources - fall through
+    }
+    if (aIS == null)
+    {
+      LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
+      return null;
+    }
+
+    final String sBaseURI = aStreamSrc.getSystemId ();
+    final Document aDoc = SaxonTinyTreeHelper.buildDocumentFacade (m_aProcessor, new StreamSource (aIS, sBaseURI));
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Read XML resource " + aXMLResource + " into Saxon TinyTree");
+    return new NodeAndBaseURI (aDoc, sBaseURI);
+  }
+
+  /**
+   * Read a {@link Source} through Saxon's {@link net.sf.saxon.s9api.DocumentBuilder} and present it
+   * as a DOM facade over the resulting TinyTree. The TinyTree fast path is skipped when a custom XML
+   * entity resolver is configured.
+   */
+  @Override
+  @Nullable
+  protected Node getAsNode (@NonNull final Source aXMLSource) throws Exception
+  {
+    if (getEntityResolver () != null)
+    {
+      // Defer to the DOM-based default so the entity resolver is honoured
+      return super.getAsNode (aXMLSource);
+    }
+    return SaxonTinyTreeHelper.buildDocumentFacade (m_aProcessor, aXMLSource);
+  }
+
   @NonNull
   private SchematronOutputType _doValidate (@NonNull final Node aXMLNode,
                                             @Nullable final String sBaseURI) throws Exception
@@ -399,9 +465,21 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
         aTransformer.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
       if (m_aErrorListener != null)
         aTransformer.setErrorListener (m_aErrorListener);
-      if (sBaseURI != null)
-        aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
-      aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
+      if (aXMLNode instanceof final NodeOverNodeInfo aSaxonFacade &&
+          aSaxonFacade.getUnderlyingNodeInfo ().getConfiguration () == aExecutable.getProcessor ()
+                                                                                .getUnderlyingConfiguration ())
+      {
+        // Native Saxon tree created by getAsNode - use it directly instead of copying it
+        final XdmNode aXdmNode = new XdmNode (aSaxonFacade.getUnderlyingNodeInfo ());
+        aTransformer.setGlobalContextItem (aXdmNode);
+        aTransformer.applyTemplates (aXdmNode, aDestination);
+      }
+      else
+      {
+        if (sBaseURI != null)
+          aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
+        aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
+      }
     }
 
     final SchematronOutputType aSVRL = new SVRLMarshaller ().setUseSchema (false).read (aResultDoc);
