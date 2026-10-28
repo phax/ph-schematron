@@ -92,7 +92,7 @@ import com.helger.xml.microdom.serialize.MicroReader;
  * always <code>xslt2</code> because the XSLT version does not tell the binding.
  *
  * @author Philip Helger
- * @since 10.2.1
+ * @since 10.3.0
  */
 @NotThreadSafe
 public class PSXsltReader

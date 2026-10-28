@@ -34,7 +34,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * <code>value-of</code> element gets a line break before its closing tag.
  *
  * @author Philip Helger
- * @since 10.2.1
+ * @since 10.3.0
  */
 public final class PSXsltToSchMain
 {

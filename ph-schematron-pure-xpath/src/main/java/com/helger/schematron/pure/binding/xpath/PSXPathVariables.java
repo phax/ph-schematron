@@ -138,7 +138,7 @@ public class PSXPathVariables implements IPSXPathVariables
   /**
    * @return The internal variable map without copying. Never <code>null</code>. Modifying the
    *         returned map modifies this object.
-   * @since 10.2.1
+   * @since 10.3.0
    */
   @NonNull
   @ReturnsMutableObject

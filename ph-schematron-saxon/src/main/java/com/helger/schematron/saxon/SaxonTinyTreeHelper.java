@@ -45,7 +45,7 @@ import net.sf.saxon.s9api.XdmNode;
  * that the same XXE protection applies as for DOM parsing.
  *
  * @author Philip Helger
- * @since 10.2.1
+ * @since 10.3.0
  */
 @Immutable
 public final class SaxonTinyTreeHelper

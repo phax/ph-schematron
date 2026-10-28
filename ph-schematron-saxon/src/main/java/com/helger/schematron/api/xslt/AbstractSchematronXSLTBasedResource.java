@@ -102,7 +102,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    * it is not compiled again for every validation. Providers taken from a cache are not stored, so
    * that clearing the cache is still honoured.
    *
-   * @since 10.2.1
+   * @since 10.3.0
    */
   protected ISchematronXSLTBasedProvider m_aUncachedXSLTProvider;
 

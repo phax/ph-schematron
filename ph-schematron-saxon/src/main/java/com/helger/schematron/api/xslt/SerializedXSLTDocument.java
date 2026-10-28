@@ -42,7 +42,7 @@ import com.helger.xml.transform.XMLTransformerFactory;
  * </p>
  *
  * @author Philip Helger
- * @since 10.2.1
+ * @since 10.3.0
  */
 @NotThreadSafe
 public final class SerializedXSLTDocument
