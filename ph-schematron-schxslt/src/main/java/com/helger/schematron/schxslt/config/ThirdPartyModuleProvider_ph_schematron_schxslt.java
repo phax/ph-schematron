@@ -38,7 +38,7 @@ public final class ThirdPartyModuleProvider_ph_schematron_schxslt implements ITh
   public static final IThirdPartyModule SCHXSLT = new ThirdPartyModule ("SchXslt",
                                                                         "David Maus",
                                                                         ELicense.MIT,
-                                                                        new Version (1, 10),
+                                                                        new Version (1, 10, 1),
                                                                         "https://github.com/schxslt/schxslt");
 
   @Nullable
