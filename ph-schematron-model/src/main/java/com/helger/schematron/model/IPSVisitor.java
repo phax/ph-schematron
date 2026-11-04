@@ -22,11 +22,11 @@ import com.helger.base.state.EContinue;
 import com.helger.xml.microdom.IMicroElement;
 
 /**
- * Visitor for a {@link PSSchema} as used by {@link PSVisitor}. Elements that may have children are
- * reported with a <code>...Start</code> and a <code>...End</code> callback, all other elements with
- * a single callback that also receives the parent element. Returning {@link EContinue#BREAK} from
- * any callback stops the whole walk immediately - no further callback (including the outstanding
- * <code>...End</code> callbacks) is invoked.<br>
+ * Visitor for a {@link PSSchema} or a {@link PSLibrary} as used by {@link PSVisitor}. Elements
+ * that may have children are reported with a <code>...Start</code> and a <code>...End</code>
+ * callback, all other elements with a single callback that also receives the parent element.
+ * Returning {@link EContinue#BREAK} from any callback stops the whole walk immediately - no further
+ * callback (including the outstanding <code>...End</code> callbacks) is invoked.<br>
  * All methods have a default implementation that does nothing and returns
  * {@link EContinue#CONTINUE}, so only the relevant methods need to be overridden.<br>
  * Use {@link IPSVoidVisitor} together with {@link PSVoidVisitorWrapper} if stopping the walk is
@@ -59,6 +59,32 @@ public interface IPSVisitor
    */
   @NonNull
   default EContinue onSchemaEnd (@NonNull final PSSchema aSchema)
+  {
+    return EContinue.CONTINUE;
+  }
+
+  /**
+   * Called before the children of a library are visited.
+   *
+   * @param aLibrary
+   *        The library. Never <code>null</code>.
+   * @return {@link EContinue#BREAK} to stop the walk.
+   */
+  @NonNull
+  default EContinue onLibraryStart (@NonNull final PSLibrary aLibrary)
+  {
+    return EContinue.CONTINUE;
+  }
+
+  /**
+   * Called after the children of a library were visited.
+   *
+   * @param aLibrary
+   *        The library. Never <code>null</code>.
+   * @return {@link EContinue#BREAK} to stop the walk.
+   */
+  @NonNull
+  default EContinue onLibraryEnd (@NonNull final PSLibrary aLibrary)
   {
     return EContinue.CONTINUE;
   }

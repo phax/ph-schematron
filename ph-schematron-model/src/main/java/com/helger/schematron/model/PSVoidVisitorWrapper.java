@@ -75,6 +75,22 @@ public class PSVoidVisitorWrapper implements IPSVisitor
 
   @Override
   @NonNull
+  public EContinue onLibraryStart (@NonNull final PSLibrary aLibrary)
+  {
+    m_aVisitor.onLibraryStart (aLibrary);
+    return EContinue.CONTINUE;
+  }
+
+  @Override
+  @NonNull
+  public EContinue onLibraryEnd (@NonNull final PSLibrary aLibrary)
+  {
+    m_aVisitor.onLibraryEnd (aLibrary);
+    return EContinue.CONTINUE;
+  }
+
+  @Override
+  @NonNull
   public EContinue onInclude (@NonNull final IPSElement aParent, @NonNull final PSInclude aInclude)
   {
     m_aVisitor.onInclude (aParent, aInclude);

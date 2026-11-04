@@ -21,8 +21,8 @@ import org.jspecify.annotations.NonNull;
 import com.helger.xml.microdom.IMicroElement;
 
 /**
- * Visitor for a {@link PSSchema} that cannot stop the walk. It offers the same callbacks as
- * {@link IPSVisitor} but without a return value. Use {@link PSVoidVisitorWrapper} to turn it into
+ * Visitor for a {@link PSSchema} or a {@link PSLibrary} that cannot stop the walk. It offers the
+ * same callbacks as {@link IPSVisitor} but without a return value. Use {@link PSVoidVisitorWrapper} to turn it into
  * an {@link IPSVisitor}, or call {@link PSVisitor#visit(PSSchema, IPSVoidVisitor)} directly.<br>
  * All methods have a default implementation that does nothing, so only the relevant methods need
  * to be overridden.
@@ -48,6 +48,24 @@ public interface IPSVoidVisitor
    *        The schema. Never <code>null</code>.
    */
   default void onSchemaEnd (@NonNull final PSSchema aSchema)
+  {}
+
+  /**
+   * Called before the children of a library are visited.
+   *
+   * @param aLibrary
+   *        The library. Never <code>null</code>.
+   */
+  default void onLibraryStart (@NonNull final PSLibrary aLibrary)
+  {}
+
+  /**
+   * Called after the children of a library were visited.
+   *
+   * @param aLibrary
+   *        The library. Never <code>null</code>.
+   */
+  default void onLibraryEnd (@NonNull final PSLibrary aLibrary)
   {}
 
   /**

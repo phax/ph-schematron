@@ -102,6 +102,18 @@ public final class PSVisitorTest
     }
 
     @Override
+    public void onLibraryStart (@NonNull final PSLibrary aLibrary)
+    {
+      m_aEvents.add ("LibraryStart");
+    }
+
+    @Override
+    public void onLibraryEnd (@NonNull final PSLibrary aLibrary)
+    {
+      m_aEvents.add ("LibraryEnd");
+    }
+
+    @Override
     public void onInclude (@NonNull final IPSElement aParent, @NonNull final PSInclude aInclude)
     {
       m_aEvents.add ("Include@" + ClassHelper.getClassLocalName (aParent));
@@ -435,6 +447,42 @@ public final class PSVisitorTest
                                            "PropertyEnd",
                                            "PropertiesEnd",
                                            "SchemaEnd"), aVisitor.m_aEvents);
+  }
+
+  @Test
+  public void testLibrary () throws Exception
+  {
+    final String sLibrary = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                            "<sch:library xmlns:sch='http://purl.oclc.org/dsdl/schematron' id='lib'>\n" +
+                            "  <sch:title>Library</sch:title>\n" +
+                            "  <sch:param name='p' value='1'/>\n" +
+                            "  <sch:let name='l' value='2'/>\n" +
+                            "  <sch:pattern id='pat1'>\n" +
+                            "    <sch:rule context='/root'>\n" +
+                            "      <sch:assert test='true()'>Text</sch:assert>\n" +
+                            "    </sch:rule>\n" +
+                            "  </sch:pattern>\n" +
+                            "</sch:library>";
+    final PSReader aReader = new PSReader (new ReadableResourceByteArray (sLibrary.getBytes (StandardCharsets.UTF_8)));
+    final PSLibrary aLibrary = aReader.readLibrary ();
+    assertNotNull (aLibrary);
+
+    final RecordingVisitor aVisitor = new RecordingVisitor ();
+    PSVisitor.visit (aLibrary, aVisitor);
+    assertEquals (new CommonsArrayList <> ("LibraryStart",
+                                           "TitleStart",
+                                           "TextContent@PSTitle",
+                                           "TitleEnd",
+                                           "Param@PSLibrary",
+                                           "Let@PSLibrary",
+                                           "PatternStart",
+                                           "RuleStart",
+                                           "AssertReportStart",
+                                           "TextContent@PSAssertReport",
+                                           "AssertReportEnd",
+                                           "RuleEnd",
+                                           "PatternEnd",
+                                           "LibraryEnd"), aVisitor.m_aEvents);
   }
 
   @Test

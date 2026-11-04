@@ -29,7 +29,8 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.xml.microdom.IMicroElement;
 
 /**
- * Walks a {@link PSSchema} and invokes an {@link IPSVisitor} for every contained element.<br>
+ * Walks a {@link PSSchema} or a {@link PSLibrary} and invokes an {@link IPSVisitor} for every
+ * contained element.<br>
  * Elements with mixed content (like <code>&lt;assert&gt;</code> or <code>&lt;p&gt;</code>) are
  * visited in document order. The children of all other elements are visited in a fixed order by
  * element type, as the model does not retain the original order between different element types.
@@ -90,6 +91,8 @@ public final class PSVisitor
   {
     if (aObject instanceof final PSSchema aSchema)
       return aVisitor.onSchemaStart (aSchema);
+    if (aObject instanceof final PSLibrary aLibrary)
+      return aVisitor.onLibraryStart (aLibrary);
     if (aObject instanceof final PSTitle aTitle)
       return aVisitor.onTitleStart (aTitle);
     if (aObject instanceof final PSP aP)
@@ -152,66 +155,86 @@ public final class PSVisitor
         ret.add (aSchema.getProperties ());
     }
     else
-      if (aElement instanceof final PSPhase aPhase)
+      if (aElement instanceof final PSLibrary aLibrary)
       {
-        ret.addAll (aPhase.getAllForeignElements ());
-        ret.addAll (aPhase.getAllIncludes ());
-        // p, let and active in document order
-        ret.addAll (aPhase.getAllContentElements ());
+        // Foreign elements of a library are not retained in the model
+        ret.addAll (aLibrary.getAllIncludes ());
+        ret.addAll (aLibrary.getAllExtends ());
+        if (aLibrary.hasTitle ())
+          ret.add (aLibrary.getTitle ());
+        ret.addAll (aLibrary.getAllStartPs ());
+        ret.addAll (aLibrary.getAllParams ());
+        ret.addAll (aLibrary.getAllLets ());
+        ret.addAll (aLibrary.getAllAbstractRulesContainers ());
+        ret.addAll (aLibrary.getAllPatterns ());
+        ret.addAll (aLibrary.getAllGroups ());
+        ret.addAll (aLibrary.getAllEndPs ());
+        if (aLibrary.hasDiagnostics ())
+          ret.add (aLibrary.getDiagnostics ());
+        if (aLibrary.hasProperties ())
+          ret.add (aLibrary.getProperties ());
       }
       else
-        if (aElement instanceof final PSRules aRules)
+        if (aElement instanceof final PSPhase aPhase)
         {
-          if (aRules.hasTitle ())
-            ret.add (aRules.getTitle ());
-          ret.addAll (aRules.getAllPs ());
-          ret.addAll (aRules.getAllAbstractRules ());
+          ret.addAll (aPhase.getAllForeignElements ());
+          ret.addAll (aPhase.getAllIncludes ());
+          // p, let and active in document order
+          ret.addAll (aPhase.getAllContentElements ());
         }
         else
-          if (aElement instanceof final AbstractPSPatternLike aPatternLike)
+          if (aElement instanceof final PSRules aRules)
           {
-            // Patterns and groups share the content model
-            ret.addAll (aPatternLike.getAllForeignElements ());
-            ret.addAll (aPatternLike.getAllIncludes ());
-            if (aPatternLike.hasTitle ())
-              ret.add (aPatternLike.getTitle ());
-            // p, let, rule and param in document order
-            ret.addAll (aPatternLike.getAllContentElements ());
+            if (aRules.hasTitle ())
+              ret.add (aRules.getTitle ());
+            ret.addAll (aRules.getAllPs ());
+            ret.addAll (aRules.getAllAbstractRules ());
           }
           else
-            if (aElement instanceof final PSRule aRule)
+            if (aElement instanceof final AbstractPSPatternLike aPatternLike)
             {
-              ret.addAll (aRule.getAllForeignElements ());
-              ret.addAll (aRule.getAllIncludes ());
-              ret.addAll (aRule.getAllLets ());
-              // assert, report and extends in document order
-              ret.addAll (aRule.getAllContentElements ());
+              // Patterns and groups share the content model
+              ret.addAll (aPatternLike.getAllForeignElements ());
+              ret.addAll (aPatternLike.getAllIncludes ());
+              if (aPatternLike.hasTitle ())
+                ret.add (aPatternLike.getTitle ());
+              // p, let, rule and param in document order
+              ret.addAll (aPatternLike.getAllContentElements ());
             }
             else
-              if (aElement instanceof final PSDiagnostics aDiagnostics)
+              if (aElement instanceof final PSRule aRule)
               {
-                ret.addAll (aDiagnostics.getAllForeignElements ());
-                ret.addAll (aDiagnostics.getAllIncludes ());
-                ret.addAll (aDiagnostics.getAllDiagnostics ());
+                ret.addAll (aRule.getAllForeignElements ());
+                ret.addAll (aRule.getAllIncludes ());
+                ret.addAll (aRule.getAllLets ());
+                // assert, report and extends in document order
+                ret.addAll (aRule.getAllContentElements ());
               }
               else
-                if (aElement instanceof final PSProperties aProperties)
-                  ret.addAll (aProperties.getAllProperties ());
+                if (aElement instanceof final PSDiagnostics aDiagnostics)
+                {
+                  ret.addAll (aDiagnostics.getAllForeignElements ());
+                  ret.addAll (aDiagnostics.getAllIncludes ());
+                  ret.addAll (aDiagnostics.getAllDiagnostics ());
+                }
                 else
-                  if (aElement instanceof final IPSHasMixedContent aMixedContent)
-                  {
-                    // Texts and child elements including foreign elements in document order
-                    ret.addAll (aMixedContent.getAllContentElements ());
-                  }
+                  if (aElement instanceof final PSProperties aProperties)
+                    ret.addAll (aProperties.getAllProperties ());
                   else
-                    if (aElement instanceof final PSDir aDir)
-                      ret.addAll (aDir.getAllContentElements ());
+                    if (aElement instanceof final IPSHasMixedContent aMixedContent)
+                    {
+                      // Texts and child elements including foreign elements in document order
+                      ret.addAll (aMixedContent.getAllContentElements ());
+                    }
                     else
-                      if (aElement instanceof final PSEmph aEmph)
-                        ret.addAll (aEmph.getAllContentElements ());
+                      if (aElement instanceof final PSDir aDir)
+                        ret.addAll (aDir.getAllContentElements ());
                       else
-                        if (aElement instanceof final PSSpan aSpan)
-                          ret.addAll (aSpan.getAllContentElements ());
+                        if (aElement instanceof final PSEmph aEmph)
+                          ret.addAll (aEmph.getAllContentElements ());
+                        else
+                          if (aElement instanceof final PSSpan aSpan)
+                            ret.addAll (aSpan.getAllContentElements ());
     return ret;
   }
 
@@ -220,6 +243,8 @@ public final class PSVisitor
   {
     if (aElement instanceof final PSSchema aSchema)
       return aVisitor.onSchemaEnd (aSchema);
+    if (aElement instanceof final PSLibrary aLibrary)
+      return aVisitor.onLibraryEnd (aLibrary);
     if (aElement instanceof final PSTitle aTitle)
       return aVisitor.onTitleEnd (aTitle);
     if (aElement instanceof final PSP aP)
@@ -306,5 +331,39 @@ public final class PSVisitor
     ValueEnforcer.notNull (aVisitor, "Visitor");
 
     visit (aSchema, new PSVoidVisitorWrapper (aVisitor));
+  }
+
+  /**
+   * Walk the whole library and invoke the visitor for each contained element.
+   *
+   * @param aLibrary
+   *        The library to be visited. May not be <code>null</code>.
+   * @param aVisitor
+   *        The visitor to be invoked. May not be <code>null</code>.
+   * @return {@link EContinue#BREAK} if the visitor stopped the walk, {@link EContinue#CONTINUE}
+   *         if the whole library was visited.
+   */
+  @NonNull
+  public static EContinue visit (@NonNull final PSLibrary aLibrary, @NonNull final IPSVisitor aVisitor)
+  {
+    ValueEnforcer.notNull (aLibrary, "Library");
+    ValueEnforcer.notNull (aVisitor, "Visitor");
+
+    return _visitRecursive (aLibrary, aVisitor);
+  }
+
+  /**
+   * Walk the whole library and invoke the visitor for each contained element.
+   *
+   * @param aLibrary
+   *        The library to be visited. May not be <code>null</code>.
+   * @param aVisitor
+   *        The visitor to be invoked. May not be <code>null</code>.
+   */
+  public static void visit (@NonNull final PSLibrary aLibrary, @NonNull final IPSVoidVisitor aVisitor)
+  {
+    ValueEnforcer.notNull (aVisitor, "Visitor");
+
+    visit (aLibrary, new PSVoidVisitorWrapper (aVisitor));
   }
 }
