@@ -252,4 +252,25 @@ public final class SVRLVisitor
 
     visit (aSchematronOutput, new SVRLVoidVisitorWrapper (aVisitor));
   }
+
+  /**
+   * Walk the whole SVRL document and invoke the visitor for each failed assert and successful
+   * report together with the active pattern or group and fired rule it belongs to.
+   *
+   * @param aSchematronOutput
+   *        The SVRL document to be visited. May not be <code>null</code>.
+   * @param aVisitor
+   *        The visitor to be invoked. May not be <code>null</code>.
+   * @return {@link EContinue#BREAK} if the visitor stopped the walk, {@link EContinue#CONTINUE}
+   *         if the whole SVRL document was visited.
+   * @see SVRLContextVisitorWrapper
+   */
+  @NonNull
+  public static EContinue visit (@NonNull final SchematronOutputType aSchematronOutput,
+                                 @NonNull final ISVRLContextVisitor aVisitor)
+  {
+    ValueEnforcer.notNull (aVisitor, "Visitor");
+
+    return visit (aSchematronOutput, new SVRLContextVisitorWrapper (aVisitor));
+  }
 }

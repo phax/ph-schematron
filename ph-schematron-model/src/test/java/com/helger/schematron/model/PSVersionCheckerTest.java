@@ -254,4 +254,44 @@ public final class PSVersionCheckerTest
 
     assertTrue ("Pre-2025 schema using let/@as should warn", aHandler.hasWarningContaining ("'as' attribute on <let>"));
   }
+
+  @Test
+  public void testPre2025ValueOfInDirOfPWarns ()
+  {
+    final PSValueOf aValueOf = new PSValueOf ();
+    aValueOf.setSelect (".");
+    final PSDir aDir = new PSDir ();
+    aDir.addValueOf (aValueOf);
+    final PSP aP = new PSP ();
+    aP.addDir (aDir);
+
+    final PSSchema aSchema = _newSchemaWithRule (_newConcreteRule ());
+    aSchema.addStartP (aP);
+    aSchema.setSchematronEdition (ESchematronVersion.SCHEMATRON_2020);
+
+    final CollectingErrorHandler aHandler = new CollectingErrorHandler ();
+    PSVersionChecker.checkSchematronVersionCompliance (aSchema, aHandler);
+
+    assertTrue ("Pre-2025 schema using <value-of> inside <dir> of a <p> should warn",
+                aHandler.hasWarningContaining ("<value-of> inside <dir>"));
+  }
+
+  @Test
+  public void testPre2016HrefOnRuleExtendsWarns ()
+  {
+    final PSExtends aExtends = new PSExtends ();
+    aExtends.setHref ("rules.sch");
+    final PSRule aRule = _newConcreteRule ();
+    aRule.addExtends (aExtends);
+
+    final PSSchema aSchema = _newSchemaWithRule (aRule);
+    aSchema.setSchematronEdition (ESchematronVersion.SCHEMATRON_2006);
+
+    final CollectingErrorHandler aHandler = new CollectingErrorHandler ();
+    PSVersionChecker.checkSchematronVersionCompliance (aSchema, aHandler);
+
+    assertTrue ("Pre-2016 schema using extends/@href inside a <rule> should warn",
+                aHandler.hasWarningContaining ("'href' attribute on <extends>"));
+    assertFalse ("Rule level extends is not a top-level extends", aHandler.hasWarningContaining ("top-level <extends>"));
+  }
 }

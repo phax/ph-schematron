@@ -21,6 +21,11 @@ import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.numeric.mutable.MutableInt;
+import com.helger.base.state.EContinue;
+import com.helger.schematron.svrl.ISVRLContextVisitor;
+import com.helger.schematron.svrl.SVRLVisitor;
+import com.helger.schematron.svrl.jaxb.Active;
 import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.FiredRule;
@@ -98,7 +103,8 @@ public final class SvrlTelemetryEmitter
 
   /**
    * Walk the SVRL output and emit the aggregate counters, the duration histogram and (optionally) a
-   * span per failed-assert / successful-report.
+   * span per failed-assert / successful-report. The span carries the ID of the active pattern or
+   * active group the assert / report belongs to.
    *
    * @param aSVRL
    *        The SVRL output produced by the validation. May not be <code>null</code>.
@@ -124,42 +130,66 @@ public final class SvrlTelemetryEmitter
                                                                 .put (CSchematronTelemetry.ATTR_ENGINE, sEngineID)
                                                                 .build ();
 
-    int nFailed = 0;
-    String sCurrentPatternID = null;
-    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+    final MutableInt aFailed = new MutableInt (0);
+    SVRLVisitor.visit (aSVRL, new ISVRLContextVisitor ()
     {
-      if (aObj instanceof final ActivePattern aAP)
+      @Override
+      @NonNull
+      public EContinue onActivePattern (@NonNull final ActivePattern aActivePattern)
       {
         COUNTER_PATTERNS.add (1, aEngineAttrs);
-        sCurrentPatternID = aAP.getId ();
+        return EContinue.CONTINUE;
       }
-      else
-        if (aObj instanceof FiredRule)
-        {
-          COUNTER_FIRED_RULES.add (1, aEngineAttrs);
-        }
-        else
-          if (aObj instanceof final FailedAssert aFA)
-          {
-            nFailed++;
-            COUNTER_FAILED_ASSERTS.add (1, aEngineAttrs);
-            if (bPerAssertionSpans)
-              _emitAssertSpan (sEngineID, aFA.getId (), aFA.getTest (), aFA.getLocation (), sCurrentPatternID, true);
-          }
-          else
-            if (aObj instanceof final SuccessfulReport aSR)
-            {
-              nFailed++;
-              COUNTER_SUCCESSFUL_REPORTS.add (1, aEngineAttrs);
-              if (bPerAssertionSpans)
-                _emitAssertSpan (sEngineID, aSR.getId (), aSR.getTest (), aSR.getLocation (), sCurrentPatternID, false);
-            }
-    }
+
+      @Override
+      @NonNull
+      public EContinue onFiredRule (@Nullable final Active aActive, @NonNull final FiredRule aFiredRule)
+      {
+        COUNTER_FIRED_RULES.add (1, aEngineAttrs);
+        return EContinue.CONTINUE;
+      }
+
+      @Override
+      @NonNull
+      public EContinue onFailedAssert (@Nullable final Active aActive,
+                                       @Nullable final FiredRule aFiredRule,
+                                       @NonNull final FailedAssert aFailedAssert)
+      {
+        aFailed.inc ();
+        COUNTER_FAILED_ASSERTS.add (1, aEngineAttrs);
+        if (bPerAssertionSpans)
+          _emitAssertSpan (sEngineID,
+                           aFailedAssert.getId (),
+                           aFailedAssert.getTest (),
+                           aFailedAssert.getLocation (),
+                           aActive == null ? null : aActive.getId (),
+                           true);
+        return EContinue.CONTINUE;
+      }
+
+      @Override
+      @NonNull
+      public EContinue onSuccessfulReport (@Nullable final Active aActive,
+                                           @Nullable final FiredRule aFiredRule,
+                                           @NonNull final SuccessfulReport aSuccessfulReport)
+      {
+        aFailed.inc ();
+        COUNTER_SUCCESSFUL_REPORTS.add (1, aEngineAttrs);
+        if (bPerAssertionSpans)
+          _emitAssertSpan (sEngineID,
+                           aSuccessfulReport.getId (),
+                           aSuccessfulReport.getTest (),
+                           aSuccessfulReport.getLocation (),
+                           aActive == null ? null : aActive.getId (),
+                           false);
+        return EContinue.CONTINUE;
+      }
+    });
 
     final TelemetryAttributes aDurAttrs = TelemetryAttributes.builder ()
                                                              .put (CSchematronTelemetry.ATTR_ENGINE, sEngineID)
                                                              .put (CSchematronTelemetry.ATTR_OUTCOME,
-                                                                   nFailed == 0 ? CSchematronTelemetry.OUTCOME_VALID
+                                                                   aFailed.is0 () ? CSchematronTelemetry.OUTCOME_VALID
                                                                                 : CSchematronTelemetry.OUTCOME_INVALID)
                                                              .build ();
     HIST_DURATION.record (dDurationMs, aDurAttrs);

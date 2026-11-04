@@ -26,7 +26,6 @@ import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.PresentForCodeCoverage;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
-import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.ESchematronVersion;
@@ -129,8 +128,6 @@ public final class PSVersionChecker
                      ESchematronVersion.SCHEMATRON_2025,
                      eDeclared,
                      aErrorHandler);
-    for (final PSLet aLet : aPhase.getAllLets ())
-      _checkLet (aLet, eDeclared, aErrorHandler);
   }
 
   private static void _checkPatternLike (@NonNull final AbstractPSPatternLike aPattern,
@@ -164,10 +161,6 @@ public final class PSVersionChecker
                        eDeclared,
                        aErrorHandler);
     }
-    for (final PSLet aLet : aPattern.getAllLets ())
-      _checkLet (aLet, eDeclared, aErrorHandler);
-    for (final PSRule aRule : aPattern.getAllRules ())
-      _checkRule (aRule, eDeclared, aErrorHandler);
   }
 
   /**
@@ -221,75 +214,25 @@ public final class PSVersionChecker
 
   private static void _checkDirEmphSpan (@NonNull final IPSElement aOwner,
                                          @NonNull @Nonempty final String sOwnerLabel,
-                                         @NonNull final ICommonsList <Object> aChildren,
+                                         @NonNull final ICommonsList <PSName> aNames,
+                                         @NonNull final ICommonsList <PSValueOf> aValueOfs,
                                          @Nullable final ESchematronVersion eDeclared,
                                          @NonNull final IPSErrorHandler aErrorHandler)
   {
-    for (final Object aChild : aChildren)
-    {
-      if (aChild instanceof PSValueOf)
-      {
+    // Only one warning per element
+    if (aNames.isNotEmpty ())
+      _warnIfTooOld (aOwner,
+                     "<name> inside <" + sOwnerLabel + ">",
+                     ESchematronVersion.SCHEMATRON_2025,
+                     eDeclared,
+                     aErrorHandler);
+    else
+      if (aValueOfs.isNotEmpty ())
         _warnIfTooOld (aOwner,
                        "<value-of> inside <" + sOwnerLabel + ">",
                        ESchematronVersion.SCHEMATRON_2025,
                        eDeclared,
                        aErrorHandler);
-        return;
-      }
-      if (aChild instanceof PSName)
-      {
-        _warnIfTooOld (aOwner,
-                       "<name> inside <" + sOwnerLabel + ">",
-                       ESchematronVersion.SCHEMATRON_2025,
-                       eDeclared,
-                       aErrorHandler);
-        return;
-      }
-    }
-  }
-
-  private static void _checkMessageChildren (@NonNull final ICommonsList <Object> aContent,
-                                             @Nullable final ESchematronVersion eDeclared,
-                                             @NonNull final IPSErrorHandler aErrorHandler)
-  {
-    for (final Object aChild : aContent)
-    {
-      if (aChild instanceof final PSDir aDir)
-      {
-        final ICommonsList <Object> aDirContent = new CommonsArrayList <> ();
-        for (final String sText : aDir.getAllTexts ())
-          aDirContent.add (sText);
-        for (final PSName aName : aDir.getAllNames ())
-          aDirContent.add (aName);
-        for (final PSValueOf aVO : aDir.getAllValueOfs ())
-          aDirContent.add (aVO);
-        _checkDirEmphSpan (aDir, "dir", aDirContent, eDeclared, aErrorHandler);
-      }
-      else
-        if (aChild instanceof final PSEmph aEmph)
-        {
-          final ICommonsList <Object> aEmphContent = new CommonsArrayList <> ();
-          for (final String sText : aEmph.getAllTexts ())
-            aEmphContent.add (sText);
-          for (final PSName aName : aEmph.getAllNames ())
-            aEmphContent.add (aName);
-          for (final PSValueOf aVO : aEmph.getAllValueOfs ())
-            aEmphContent.add (aVO);
-          _checkDirEmphSpan (aEmph, "emph", aEmphContent, eDeclared, aErrorHandler);
-        }
-        else
-          if (aChild instanceof final PSSpan aSpan)
-          {
-            final ICommonsList <Object> aSpanContent = new CommonsArrayList <> ();
-            for (final String sText : aSpan.getAllTexts ())
-              aSpanContent.add (sText);
-            for (final PSName aName : aSpan.getAllNames ())
-              aSpanContent.add (aName);
-            for (final PSValueOf aVO : aSpan.getAllValueOfs ())
-              aSpanContent.add (aVO);
-            _checkDirEmphSpan (aSpan, "span", aSpanContent, eDeclared, aErrorHandler);
-          }
-    }
   }
 
   private static void _checkDiagnostic (@NonNull final PSDiagnostic aDiagnostic,
@@ -302,7 +245,6 @@ public final class PSVersionChecker
                      ESchematronVersion.SCHEMATRON_2020,
                      eDeclared,
                      aErrorHandler);
-    _checkMessageChildren (aDiagnostic.getAllContentElements (), eDeclared, aErrorHandler);
   }
 
   private static void _checkRule (@NonNull final PSRule aRule,
@@ -329,54 +271,37 @@ public final class PSVersionChecker
                      ESchematronVersion.SCHEMATRON_2025,
                      eDeclared,
                      aErrorHandler);
-    for (final PSLet aLet : aRule.getAllLets ())
-      _checkLet (aLet, eDeclared, aErrorHandler);
-    for (final PSAssertReport aAR : aRule.getAllAssertReports ())
-    {
-      final String sAR = aAR.isAssert () ? "assert" : "report";
-      if (StringHelper.isNotEmpty (aAR.getSeverity ()))
-        _warnIfTooOld (aAR,
-                       "'severity' attribute on <" + sAR + ">",
-                       ESchematronVersion.SCHEMATRON_2025,
-                       eDeclared,
-                       aErrorHandler);
-      if (aAR.getAllFlags ().size () > 1)
-        _warnIfTooOld (aAR,
-                       "multi-token 'flag' attribute on <" + sAR + ">",
-                       ESchematronVersion.SCHEMATRON_2025,
-                       eDeclared,
-                       aErrorHandler);
-      if (!aAR.getAllProperties ().isEmpty ())
-        _warnIfTooOld (aAR,
-                       "'properties' IDREFS on <" + sAR + ">",
-                       ESchematronVersion.SCHEMATRON_2016,
-                       eDeclared,
-                       aErrorHandler);
-      _checkMessageChildren (aAR.getAllContentElements (), eDeclared, aErrorHandler);
-    }
   }
 
-  /**
-   * Walk the given schema and emit a warning for every Schematron feature whose introducing edition
-   * is newer than the schema's declared {@link PSSchema#getSchematronEdition() schematronEdition}
-   * (or whenever no edition is declared at all). The walk visits the schema's own
-   * attributes/children, every contained {@link PSPattern}/{@link PSGroup} (including their rules
-   * and assert/report children), every {@link PSPhase}, every top-level
-   * {@link PSExtends}/{@link PSParam} and every {@link PSRules} abstract-rules container.
-   *
-   * @param aSchema
-   *        The schema to check. May not be <code>null</code>.
-   * @param aErrorHandler
-   *        Where warnings are sent. May not be <code>null</code>.
-   */
-  public static void checkSchematronVersionCompliance (@NonNull final PSSchema aSchema,
-                                                       @NonNull final IPSErrorHandler aErrorHandler)
+  private static void _checkAssertReport (@NonNull final PSAssertReport aAR,
+                                          @Nullable final ESchematronVersion eDeclared,
+                                          @NonNull final IPSErrorHandler aErrorHandler)
   {
-    ValueEnforcer.notNull (aSchema, "Schema");
-    ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
+    final String sAR = aAR.isAssert () ? "assert" : "report";
+    if (StringHelper.isNotEmpty (aAR.getSeverity ()))
+      _warnIfTooOld (aAR,
+                     "'severity' attribute on <" + sAR + ">",
+                     ESchematronVersion.SCHEMATRON_2025,
+                     eDeclared,
+                     aErrorHandler);
+    if (aAR.getAllFlags ().size () > 1)
+      _warnIfTooOld (aAR,
+                     "multi-token 'flag' attribute on <" + sAR + ">",
+                     ESchematronVersion.SCHEMATRON_2025,
+                     eDeclared,
+                     aErrorHandler);
+    if (!aAR.getAllProperties ().isEmpty ())
+      _warnIfTooOld (aAR,
+                     "'properties' IDREFS on <" + sAR + ">",
+                     ESchematronVersion.SCHEMATRON_2016,
+                     eDeclared,
+                     aErrorHandler);
+  }
 
-    final ESchematronVersion eDeclared = aSchema.getSchematronEdition ();
-
+  private static void _checkSchema (@NonNull final PSSchema aSchema,
+                                    @Nullable final ESchematronVersion eDeclared,
+                                    @NonNull final IPSErrorHandler aErrorHandler)
+  {
     // Schema-level 2025 features
     if (aSchema.hasAnyExtends ())
       _warnIfTooOld (aSchema, "top-level <extends>", ESchematronVersion.SCHEMATRON_2025, eDeclared, aErrorHandler);
@@ -410,33 +335,112 @@ public final class PSVersionChecker
     // 2016 properties feature (schema-level container)
     if (aSchema.hasProperties ())
       _warnIfTooOld (aSchema, "<properties> container", ESchematronVersion.SCHEMATRON_2016, eDeclared, aErrorHandler);
+  }
 
-    // Schema-level lets (2025 'as' attribute)
-    for (final PSLet aLet : aSchema.getAllLets ())
-      _checkLet (aLet, eDeclared, aErrorHandler);
+  /**
+   * The visitor that invokes the checks for all elements of a schema.
+   */
+  private static final class VersionCheckVisitor implements IPSVoidVisitor
+  {
+    private final ESchematronVersion m_eDeclared;
+    private final IPSErrorHandler m_aErrorHandler;
 
-    // Top-level extends carry the 2016 'href' attribute alternative
-    for (final PSExtends aExtends : aSchema.getAllExtends ())
-      _checkExtends (aExtends, eDeclared, aErrorHandler);
+    VersionCheckVisitor (@Nullable final ESchematronVersion eDeclared, @NonNull final IPSErrorHandler aErrorHandler)
+    {
+      m_eDeclared = eDeclared;
+      m_aErrorHandler = aErrorHandler;
+    }
 
-    // Phases
-    for (final PSPhase aPhase : aSchema.getAllPhases ())
-      _checkPhase (aPhase, eDeclared, aErrorHandler);
+    @Override
+    public void onSchemaStart (@NonNull final PSSchema aSchema)
+    {
+      _checkSchema (aSchema, m_eDeclared, m_aErrorHandler);
+    }
 
-    // Patterns and groups share content model - check both the same way.
-    for (final PSPattern aPattern : aSchema.getAllPatterns ())
-      _checkPatternLike (aPattern, eDeclared, aErrorHandler);
-    for (final PSGroup aGroup : aSchema.getAllGroups ())
-      _checkPatternLike (aGroup, eDeclared, aErrorHandler);
+    @Override
+    public void onLet (@NonNull final IPSElement aParent, @NonNull final PSLet aLet)
+    {
+      _checkLet (aLet, m_eDeclared, m_aErrorHandler);
+    }
 
-    // 2025 abstract-rules containers carry rules that may use new attributes
-    for (final PSRules aRules : aSchema.getAllAbstractRulesContainers ())
-      for (final PSRule aRule : aRules.getAllAbstractRules ())
-        _checkRule (aRule, eDeclared, aErrorHandler);
+    @Override
+    public void onExtends (@NonNull final IPSElement aParent, @NonNull final PSExtends aExtends)
+    {
+      _checkExtends (aExtends, m_eDeclared, m_aErrorHandler);
+    }
 
-    // Diagnostics: 2020 introduced the 'role' attribute on <diagnostic>.
-    if (aSchema.hasDiagnostics ())
-      for (final PSDiagnostic aDiagnostic : aSchema.getDiagnostics ().getAllDiagnostics ())
-        _checkDiagnostic (aDiagnostic, eDeclared, aErrorHandler);
+    @Override
+    public void onPhaseStart (@NonNull final PSPhase aPhase)
+    {
+      _checkPhase (aPhase, m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onPatternStart (@NonNull final PSPattern aPattern)
+    {
+      _checkPatternLike (aPattern, m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onGroupStart (@NonNull final PSGroup aGroup)
+    {
+      _checkPatternLike (aGroup, m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onRuleStart (@NonNull final PSRule aRule)
+    {
+      _checkRule (aRule, m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onAssertReportStart (@NonNull final PSAssertReport aAssertReport)
+    {
+      _checkAssertReport (aAssertReport, m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onDiagnosticStart (@NonNull final PSDiagnostic aDiagnostic)
+    {
+      _checkDiagnostic (aDiagnostic, m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onDirStart (@NonNull final PSDir aDir)
+    {
+      _checkDirEmphSpan (aDir, "dir", aDir.getAllNames (), aDir.getAllValueOfs (), m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onEmphStart (@NonNull final PSEmph aEmph)
+    {
+      _checkDirEmphSpan (aEmph, "emph", aEmph.getAllNames (), aEmph.getAllValueOfs (), m_eDeclared, m_aErrorHandler);
+    }
+
+    @Override
+    public void onSpanStart (@NonNull final PSSpan aSpan)
+    {
+      _checkDirEmphSpan (aSpan, "span", aSpan.getAllNames (), aSpan.getAllValueOfs (), m_eDeclared, m_aErrorHandler);
+    }
+  }
+
+  /**
+   * Walk the given schema and emit a warning for every Schematron feature whose introducing edition
+   * is newer than the schema's declared {@link PSSchema#getSchematronEdition() schematronEdition}
+   * (or whenever no edition is declared at all). All elements of the schema are visited via
+   * {@link PSVisitor}.
+   *
+   * @param aSchema
+   *        The schema to check. May not be <code>null</code>.
+   * @param aErrorHandler
+   *        Where warnings are sent. May not be <code>null</code>.
+   */
+  public static void checkSchematronVersionCompliance (@NonNull final PSSchema aSchema,
+                                                       @NonNull final IPSErrorHandler aErrorHandler)
+  {
+    ValueEnforcer.notNull (aSchema, "Schema");
+    ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
+
+    PSVisitor.visit (aSchema, new VersionCheckVisitor (aSchema.getSchematronEdition (), aErrorHandler));
   }
 }
