@@ -51,8 +51,8 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -60,8 +60,8 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -115,8 +115,8 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_TITLE);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof String)
-        ret.addText ((String) aContent);
+      if (aContent instanceof final String sContent)
+        ret.addText (sContent);
       else
         ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     return ret;
@@ -127,8 +127,8 @@ public class PSTitle implements IPSClonableElement <PSTitle>, IPSOptionalElement
   {
     final PSTitle ret = new PSTitle ();
     for (final Object aContent : m_aContent)
-      if (aContent instanceof String)
-        ret.addText ((String) aContent);
+      if (aContent instanceof final String sContent)
+        ret.addText (sContent);
       else
         if (aContent instanceof PSDir)
           ret.addDir (((PSDir) aContent).getClone ());

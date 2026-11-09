@@ -56,8 +56,8 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -65,8 +65,8 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -144,9 +144,8 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   {
     if (StringHelper.isNotEmpty (sID))
       for (final Object aContent : m_aContent)
-        if (aContent instanceof PSDiagnostic)
+        if (aContent instanceof final PSDiagnostic aDiagnostic)
         {
-          final PSDiagnostic aDiagnostic = (PSDiagnostic) aContent;
           if (sID.equals (aDiagnostic.getID ()))
             return aDiagnostic;
         }
@@ -165,10 +164,11 @@ public class PSDiagnostics implements IPSElement, IPSOptionalElement, IPSHasFore
   {
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_DIAGNOSTICS);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
         ret.addChild (((IPSElement) aContent).getAsMicroElement ());
+
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

@@ -64,6 +64,21 @@ public class PreprocessorIDPool
     s_sDefaultSeparator = sDefaultSeparator;
   }
 
+  /**
+   * An ID pool that returns all IDs unchanged, even if they were used before.
+   *
+   * @since 10.3.2
+   */
+  public static class Unchanged extends PreprocessorIDPool
+  {
+    @Override
+    @Nullable
+    public String getUniqueID (@Nullable final String sID)
+    {
+      return sID;
+    }
+  }
+
   private final ICommonsSet <String> m_aUsedIDs = new CommonsHashSet <> ();
 
   public PreprocessorIDPool ()

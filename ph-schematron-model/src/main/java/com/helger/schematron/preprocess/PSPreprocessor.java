@@ -63,6 +63,7 @@ public class PSPreprocessor
   public static final boolean DEFAULT_KEEP_REPORTS = false;
   public static final boolean DEFAULT_KEEP_EMPTY_PATTERNS = true;
   public static final boolean DEFAULT_KEEP_EMPTY_SCHEMA = true;
+  public static final boolean DEFAULT_MAKE_IDS_UNIQUE = true;
   private static final Logger LOGGER = LoggerFactory.getLogger (PSPreprocessor.class);
 
   private final IPSQueryBindingTransform m_aQueryBinding;
@@ -71,6 +72,7 @@ public class PSPreprocessor
   private boolean m_bKeepReports = DEFAULT_KEEP_REPORTS;
   private boolean m_bKeepEmptyPatterns = DEFAULT_KEEP_EMPTY_PATTERNS;
   private boolean m_bKeepEmptySchema = DEFAULT_KEEP_EMPTY_SCHEMA;
+  private boolean m_bMakeIDsUnique = DEFAULT_MAKE_IDS_UNIQUE;
 
   public PSPreprocessor (@NonNull final IPSQueryBindingTransform aQueryBinding)
   {
@@ -206,6 +208,35 @@ public class PSPreprocessor
     return this;
   }
 
+  /**
+   * @return <code>true</code> if IDs that occur more than once (e.g. through abstract rules and
+   *         patterns or through included files) are made unique by appending a counter,
+   *         <code>false</code> if all IDs are kept as they are. Default is
+   *         {@value #DEFAULT_MAKE_IDS_UNIQUE}.
+   * @since 10.3.2
+   */
+  public boolean isMakeIDsUnique ()
+  {
+    return m_bMakeIDsUnique;
+  }
+
+  /**
+   * Should IDs that occur more than once be made unique by appending a counter? The ISO Schematron
+   * XSLT keeps all IDs as they are, so <code>false</code> gives the same IDs as that
+   * implementation.
+   *
+   * @param bMakeIDsUnique
+   *        <code>true</code> to make IDs unique, <code>false</code> to keep them as they are.
+   * @return this for chaining
+   * @since 10.3.2
+   */
+  @NonNull
+  public PSPreprocessor setMakeIDsUnique (final boolean bMakeIDsUnique)
+  {
+    m_bMakeIDsUnique = bMakeIDsUnique;
+    return this;
+  }
+
   @NonNull
   private static PSPhase _getPreprocessedPhase (@NonNull final PSPhase aPhase,
                                                 @NonNull final PreprocessorIDPool aIDPool) throws SchematronPreprocessException
@@ -217,11 +248,11 @@ public class PSPreprocessor
       throw new SchematronPreprocessException ("Cannot preprocess <phase> with an <include>");
     for (final IPSElement aElement : aPhase.getAllContentElements ())
     {
-      if (aElement instanceof PSActive)
-        ret.addActive (((PSActive) aElement).getClone ());
+      if (aElement instanceof final PSActive aActive)
+        ret.addActive (aActive.getClone ());
       else
-        if (aElement instanceof PSLet)
-          ret.addLet (((PSLet) aElement).getClone ());
+        if (aElement instanceof final PSLet aLet)
+          ret.addLet (aLet.getClone ());
       // ps are ignored
     }
     ret.addForeignElements (aPhase.getAllForeignElements ());
@@ -423,16 +454,12 @@ public class PSPreprocessor
 
       for (final IPSElement aElement : aBasePattern.getAllContentElements ())
       {
-        if (aElement instanceof PSLet)
-          ret.addLet (((PSLet) aElement).getClone ());
+        if (aElement instanceof final PSLet aLet)
+          ret.addLet (aLet.getClone ());
         else
-          if (aElement instanceof PSRule)
+          if (aElement instanceof final PSRule aRule)
           {
-            final PSRule aMinifiedRule = _getPreprocessedRule (aPattern,
-                                                               (PSRule) aElement,
-                                                               aLookup,
-                                                               aIDPool,
-                                                               aParamValueMap);
+            final PSRule aMinifiedRule = _getPreprocessedRule (aPattern, aRule, aLookup, aIDPool, aParamValueMap);
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
@@ -444,12 +471,12 @@ public class PSPreprocessor
     {
       for (final IPSElement aElement : aPattern.getAllContentElements ())
       {
-        if (aElement instanceof PSLet)
-          ret.addLet (((PSLet) aElement).getClone ());
+        if (aElement instanceof final PSLet aLet)
+          ret.addLet (aLet.getClone ());
         else
-          if (aElement instanceof PSRule)
+          if (aElement instanceof final PSRule aRule)
           {
-            final PSRule aMinifiedRule = _getPreprocessedRule (aPattern, (PSRule) aElement, aLookup, aIDPool, null);
+            final PSRule aMinifiedRule = _getPreprocessedRule (aPattern, aRule, aLookup, aIDPool, null);
             if (aMinifiedRule != null)
               ret.addRule (aMinifiedRule);
           }
@@ -542,7 +569,8 @@ public class PSPreprocessor
     ValueEnforcer.notNull (aSchema, "Schema");
 
     final PreprocessorLookup aLookup = new PreprocessorLookup (aSchema);
-    final PreprocessorIDPool aIDPool = new PreprocessorIDPool ();
+    final PreprocessorIDPool aIDPool = m_bMakeIDsUnique ? new PreprocessorIDPool ()
+                                                        : new PreprocessorIDPool.Unchanged ();
 
     final PSSchema ret = new PSSchema (aSchema.getResource ());
     ret.setID (aIDPool.getUniqueID (aSchema.getID ()));

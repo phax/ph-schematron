@@ -70,9 +70,10 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
+
     if (StringHelper.isEmpty (m_sID))
     {
       aErrorHandler.error (this, "<phase> has no 'id'");
@@ -84,8 +85,8 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
     if (StringHelper.isEmpty (m_sID))
       aErrorHandler.error (this, "<phase> has no 'id'");
   }
@@ -93,8 +94,8 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   public boolean isMinimal ()
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isMinimal ())
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isMinimal ())
           return false;
     return true;
   }
@@ -265,9 +266,8 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
   {
     final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
     for (final Object aElement : m_aContent)
-      if (aElement instanceof PSLet)
+      if (aElement instanceof final PSLet aLet)
       {
-        final PSLet aLet = (PSLet) aElement;
         ret.put (aLet.getName (), aLet.getValue ());
       }
     return ret;
@@ -309,8 +309,8 @@ public class PSPhase implements IPSElement, IPSHasForeignElements, IPSHasInclude
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
         ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)

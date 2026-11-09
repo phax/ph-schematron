@@ -229,6 +229,7 @@ public class PSSpan implements IPSClonableElement <PSSpan>, IPSOptionalElement, 
           ret.addText (x);
         else
           ret.addChild (((IPSElement) aContent).getAsMicroElement ());
+
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

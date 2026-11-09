@@ -71,8 +71,8 @@ public class PSDiagnostic implements
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     if (StringHelper.isEmpty (m_sID))
     {
@@ -85,8 +85,8 @@ public class PSDiagnostic implements
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
     if (StringHelper.isEmpty (m_sID))
       aErrorHandler.error (this, "<diagnostic> has no 'id'");
   }
@@ -274,11 +274,11 @@ public class PSDiagnostic implements
     if (m_aRich != null)
       m_aRich.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
-        if (aContent instanceof String)
-          ret.addText ((String) aContent);
+        if (aContent instanceof final String sContent)
+          ret.addText (sContent);
         else
           ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
@@ -296,23 +296,23 @@ public class PSDiagnostic implements
     ret.setRich (getRichClone ());
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof IMicroElement)
-        ret.addForeignElement (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addForeignElement (aElement.getClone ());
       else
-        if (aContent instanceof String)
-          ret.addText ((String) aContent);
+        if (aContent instanceof final String sContent)
+          ret.addText (sContent);
         else
-          if (aContent instanceof PSValueOf)
-            ret.addValueOf (((PSValueOf) aContent).getClone ());
+          if (aContent instanceof final PSValueOf aValueOf)
+            ret.addValueOf (aValueOf.getClone ());
           else
-            if (aContent instanceof PSEmph)
-              ret.addEmph (((PSEmph) aContent).getClone ());
+            if (aContent instanceof final PSEmph aEmph)
+              ret.addEmph (aEmph.getClone ());
             else
-              if (aContent instanceof PSDir)
-                ret.addDir (((PSDir) aContent).getClone ());
+              if (aContent instanceof final PSDir aDir)
+                ret.addDir (aDir.getClone ());
               else
-                if (aContent instanceof PSSpan)
-                  ret.addSpan (((PSSpan) aContent).getClone ());
+                if (aContent instanceof final PSSpan aSpan)
+                  ret.addSpan (aSpan.getClone ());
                 else
                   throw new IllegalStateException ("Unexpected content element: " + aContent);
     }

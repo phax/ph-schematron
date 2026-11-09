@@ -91,8 +91,8 @@ public class PSAssertReport implements
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     if (StringHelper.isEmpty (m_sTest))
     {
@@ -105,8 +105,8 @@ public class PSAssertReport implements
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
     if (StringHelper.isEmpty (m_sTest))
       aErrorHandler.error (this, (m_bIsAssert ? "<assert>" : "<report>") + " has no 'test'");
   }
@@ -116,8 +116,8 @@ public class PSAssertReport implements
     if (!m_bIsAssert)
       return false;
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isMinimal ())
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isMinimal ())
           return false;
     return true;
   }

@@ -200,4 +200,37 @@ public final class PSPreprocessorTest
       PreprocessorIDPool.setDefaultSeparator (PreprocessorIDPool.DEFAULT_SEPARATOR);
     }
   }
+
+  @Test
+  public void testKeepDuplicateIDs () throws SchematronException
+  {
+    final IReadableResource aRes = new FileSystemResource ("src/test/resources/external/issues/github138/test138.sch");
+    final IMicroDocument aDoc = SchematronHelper.getWithResolvedSchematronIncludes (aRes, new LoggingPSErrorHandler ());
+    final PSReader aReader = new PSReader (aRes);
+    final PSSchema aSchema = aReader.readSchemaFromXML (aDoc.getDocumentElement ());
+    assertNotNull (aSchema);
+
+    // Like the ISO Schematron XSLT: the second "ab" stays "ab"
+    final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ()).setMakeIDsUnique (false);
+    assertFalse (aPreprocessor.isMakeIDsUnique ());
+    final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
+    assertNotNull (aPreprocessedSchema);
+
+    final PSWriterSettings aPWS = new PSWriterSettings ();
+    aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
+                                                       .setNewLineMode (ENewLineMode.WINDOWS));
+    final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
+    assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                  "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
+                  "  <pattern name=\"Customer\">\r\n" +
+                  "    <rule context=\"/file/Customer\">\r\n" +
+                  "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab1</assert>\r\n" +
+                  "    </rule>\r\n" +
+                  "    <rule context=\"/file/Client\">\r\n" +
+                  "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab2</assert>\r\n" +
+                  "    </rule>\r\n" +
+                  "  </pattern>\r\n" +
+                  "</schema>\r\n",
+                  sXML);
+  }
 }

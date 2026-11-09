@@ -112,8 +112,8 @@ public class PSRule implements
       return false;
     }
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -133,15 +133,15 @@ public class PSRule implements
     if (m_aContent.isEmpty ())
       aErrorHandler.error (this, "<rule> has no content");
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isMinimal ())
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isMinimal ())
           return false;
     return true;
   }
@@ -380,9 +380,8 @@ public class PSRule implements
   {
     final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
     for (final Object aContent : m_aContent)
-      if (aContent instanceof PSLet)
+      if (aContent instanceof final PSLet aLet)
       {
-        final PSLet aLet = (PSLet) aContent;
         ret.put (aLet.getName (), aLet.getValue ());
       }
     return ret;
@@ -457,11 +456,12 @@ public class PSRule implements
       m_aLinkable.fillMicroElement (ret);
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
         ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     }
+
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

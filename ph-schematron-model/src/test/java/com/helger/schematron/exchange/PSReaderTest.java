@@ -17,6 +17,7 @@
 package com.helger.schematron.exchange;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -24,11 +25,14 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.model.PSLet;
+import com.helger.schematron.model.PSP;
 import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.model.PSValueOf;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroWriter;
@@ -100,5 +104,41 @@ public final class PSReaderTest
     final PSLet aLet = aSchema.getAllPatterns ().get (0).getAllRules ().get (0).getAllLets ().get (0);
     assertEquals ("cnt", aLet.getName ());
     assertEquals ("count(item)", aLet.getValue ());
+  }
+
+  @Test
+  public void testReadValueOfInP () throws Exception
+  {
+    // Not permitted by ISO Schematron, but evaluated by the ISO Schematron XSLT
+    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                           "  <iso:p>Type '<iso:value-of select='$type'/>'</iso:p>\n" +
+                           "  <iso:let name='type' value='name(/*)'/>\n" +
+                           "  <iso:pattern>\n" +
+                           "    <iso:rule context='/root'>\n" +
+                           "      <iso:assert test='item'>at least one item</iso:assert>\n" +
+                           "    </iso:rule>\n" +
+                           "  </iso:pattern>\n" +
+                           "</iso:schema>";
+
+    final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
+    final PSReader aReader = new PSReader (new ReadableResourceByteArray (sSchema.getBytes (StandardCharsets.UTF_8)),
+                                           aErrorHandler,
+                                           null);
+    final PSSchema aSchema = aReader.readSchema ();
+    assertNotNull (aSchema);
+    // One warning, no error
+    assertEquals (aErrorHandler.getErrorList ().toString (), 1, aErrorHandler.getErrorList ().size ());
+    assertFalse (aErrorHandler.getErrorList ().containsAtLeastOneError ());
+
+    final PSP aP = aSchema.getAllStartPs ().get (0);
+    final ICommonsList <Object> aContent = aP.getAllContentElements ();
+    assertEquals (3, aContent.size ());
+    assertEquals ("Type '", aContent.get (0));
+    assertEquals ("$type", ((PSValueOf) aContent.get (1)).getSelect ());
+    assertEquals ("'", aContent.get (2));
+
+    // Written back as it was read
+    assertTrue (MicroWriter.getNodeAsString (aP.getAsMicroElement ()).contains ("<value-of select=\"$type\""));
   }
 }

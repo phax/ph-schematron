@@ -59,8 +59,8 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     if (StringHelper.isEmpty (m_sPattern))
     {
@@ -73,8 +73,8 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
     if (StringHelper.isEmpty (m_sPattern))
       aErrorHandler.error (this, "<active> has no 'pattern'");
   }
@@ -82,8 +82,8 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
   public boolean isMinimal ()
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isMinimal ())
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isMinimal ())
           return false;
     return true;
   }
@@ -220,11 +220,11 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     final IMicroElement ret = new MicroElement (CSchematron.NAMESPACE_SCHEMATRON, CSchematronXML.ELEMENT_ACTIVE);
     ret.setAttribute (CSchematronXML.ATTR_PATTERN, m_sPattern);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
-        if (aContent instanceof String)
-          ret.addText ((String) aContent);
+        if (aContent instanceof final String sContent)
+          ret.addText (sContent);
         else
           ret.addChild (((IPSElement) aContent).getAsMicroElement ());
     if (m_aForeignAttrs != null)
@@ -240,20 +240,20 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     ret.setPattern (m_sPattern);
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof String)
-        ret.addText ((String) aContent);
+      if (aContent instanceof final String sContent)
+        ret.addText (sContent);
       else
-        if (aContent instanceof PSDir)
-          ret.addDir (((PSDir) aContent).getClone ());
+        if (aContent instanceof final PSDir aDir)
+          ret.addDir (aDir.getClone ());
         else
-          if (aContent instanceof PSEmph)
-            ret.addEmph (((PSEmph) aContent).getClone ());
+          if (aContent instanceof final PSEmph aEmph)
+            ret.addEmph (aEmph.getClone ());
           else
-            if (aContent instanceof PSSpan)
-              ret.addSpan (((PSSpan) aContent).getClone ());
+            if (aContent instanceof final PSSpan aSpan)
+              ret.addSpan (aSpan.getClone ());
             else
-              if (aContent instanceof IMicroElement)
-                ret.addForeignElement (((IMicroElement) aContent).getClone ());
+              if (aContent instanceof final IMicroElement aElement)
+                ret.addForeignElement (aElement.getClone ());
     }
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);

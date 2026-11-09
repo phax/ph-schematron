@@ -70,8 +70,8 @@ public class PSProperty implements IPSElement, IPSHasID, IPSHasForeignElements, 
       return false;
     }
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -81,8 +81,8 @@ public class PSProperty implements IPSElement, IPSHasID, IPSHasForeignElements, 
     if (StringHelper.isEmpty (m_sID))
       aErrorHandler.error (this, "<property> has no 'id'");
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -264,13 +264,14 @@ public class PSProperty implements IPSElement, IPSHasID, IPSHasForeignElements, 
     if (StringHelper.isNotEmpty (m_sScheme))
       ret.setAttribute (CSchematronXML.ATTR_SCHEME, m_sScheme);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
-        if (aContent instanceof String)
-          ret.addText ((String) aContent);
+        if (aContent instanceof final String sContent)
+          ret.addText (sContent);
         else
           ret.addChild (((IPSElement) aContent).getAsMicroElement ());
+
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

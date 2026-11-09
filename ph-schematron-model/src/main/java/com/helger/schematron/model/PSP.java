@@ -62,8 +62,8 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   public boolean isValid (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -71,8 +71,8 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   public void validateCompletely (@NonNull final IPSErrorHandler aErrorHandler)
   {
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()
@@ -218,7 +218,30 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
   }
 
   /**
-   * @return A list of {@link String}, {@link PSDir}, {@link PSEmph} and {@link PSSpan} elements.
+   * Append a {@link PSValueOf} dynamic-content child. No edition of ISO Schematron permits it in a
+   * &lt;p&gt;, but the ISO Schematron XSLT evaluates it, and
+   * {@link com.helger.schematron.exchange.PSReader} reads it with a warning.
+   *
+   * @param aValueOf
+   *        The element to add. May not be <code>null</code>.
+   * @since 10.3.2
+   */
+  public void addValueOf (@NonNull final PSValueOf aValueOf)
+  {
+    ValueEnforcer.notNull (aValueOf, "ValueOf");
+    m_aContent.add (aValueOf);
+  }
+
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <PSValueOf> getAllValueOfs ()
+  {
+    return m_aContent.getAllInstanceOf (PSValueOf.class);
+  }
+
+  /**
+   * @return A list of {@link String}, {@link PSDir}, {@link PSEmph}, {@link PSSpan} and
+   *         {@link PSValueOf} elements.
    */
   @NonNull
   @ReturnsMutableCopy
@@ -235,13 +258,14 @@ public class PSP implements IPSElement, IPSOptionalElement, IPSHasForeignElement
     ret.setAttribute (CSchematronXML.ATTR_CLASS, m_sClass);
     ret.setAttribute (CSchematronXML.ATTR_ICON, m_sIcon);
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IMicroElement)
-        ret.addChild (((IMicroElement) aContent).getClone ());
+      if (aContent instanceof final IMicroElement aElement)
+        ret.addChild (aElement.getClone ());
       else
-        if (aContent instanceof String)
-          ret.addText ((String) aContent);
+        if (aContent instanceof final String sContent)
+          ret.addText (sContent);
         else
           ret.addChild (((IPSElement) aContent).getAsMicroElement ());
+
     if (m_aForeignAttrs != null)
       for (final Map.Entry <String, String> aEntry : m_aForeignAttrs.entrySet ())
         ret.setAttribute (aEntry.getKey (), aEntry.getValue ());

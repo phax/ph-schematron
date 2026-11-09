@@ -62,8 +62,8 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
       return false;
     }
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        if (!((IPSElement) aContent).isValid (aErrorHandler))
+      if (aContent instanceof final IPSElement aElement)
+        if (!aElement.isValid (aErrorHandler))
           return false;
     return true;
   }
@@ -73,8 +73,8 @@ public class PSEmph implements IPSClonableElement <PSEmph>, IPSOptionalElement, 
     if (m_aContent.isEmpty ())
       aErrorHandler.error (this, "<emph> has no content");
     for (final Object aContent : m_aContent)
-      if (aContent instanceof IPSElement)
-        ((IPSElement) aContent).validateCompletely (aErrorHandler);
+      if (aContent instanceof final IPSElement aElement)
+        aElement.validateCompletely (aErrorHandler);
   }
 
   public boolean isMinimal ()

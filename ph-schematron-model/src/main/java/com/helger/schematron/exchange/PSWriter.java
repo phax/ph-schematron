@@ -117,8 +117,8 @@ public class PSWriter
    */
   protected void runVersionCheck (@NonNull final IPSElement aPSElement)
   {
-    if (aPSElement instanceof PSSchema)
-      PSVersionChecker.checkSchematronVersionCompliance ((PSSchema) aPSElement, m_aErrorHandler);
+    if (aPSElement instanceof final PSSchema aSchema)
+      PSVersionChecker.checkSchematronVersionCompliance (aSchema, m_aErrorHandler);
   }
 
   @NonNull

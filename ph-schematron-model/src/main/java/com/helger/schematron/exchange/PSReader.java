@@ -872,7 +872,14 @@ public class PSReader
                 if (sLocalName.equals (CSchematronXML.ELEMENT_SPAN))
                   ret.addSpan (readSpanFromXML (eElement));
                 else
-                  _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
+                  if (sLocalName.equals (CSchematronXML.ELEMENT_VALUE_OF))
+                  {
+                    // Not permitted by ISO Schematron, but evaluated by the ISO Schematron XSLT
+                    _warn (ret, "<value-of> is not permitted in <p> by ISO Schematron but is kept for compatibility");
+                    ret.addValueOf (readValueOfFromXML (eElement));
+                  }
+                  else
+                    _warn (ret, "Unsupported Schematron element '" + sLocalName + "'");
           }
           else
             ret.addForeignElement (eElement.getClone ());
