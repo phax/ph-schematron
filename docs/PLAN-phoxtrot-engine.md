@@ -340,6 +340,13 @@ phoxtrot again. S40 items 1 and 2 (no unused serialisation for a `DOMResult`, no
 validation of 20,000 items from 56.5 to 46.5 ms (Saxon 42.9 ms); see `docs/benchmarks/2026-11-11-phoxtrot-vs-saxon.md`.
 The remaining execution hotspots are filed as S41.
 
+### phoxtrot `c09e6c0` (2026-11-11)
+
+S36 is done in phoxtrot (`xsl:result-document` with `href` is rejected under secure processing, as by Saxon), so
+`SchematronSecureProcessingTest` runs on both processors and the phoxtrot copy `PhoxtrotSecureProcessingTest` (with
+its copied test files) was removed. With S41 and S42, phoxtrot validates the larger documents 4 to 10 % faster than
+Saxon; the remaining hotspots are filed as S43.
+
 ## Integration
 
 - `ESchematronEngine`: unchanged constants; new method `isXsltProcessorSelectable ()` (`true` for `ISO_SCHEMATRON`,
@@ -353,7 +360,7 @@ The remaining execution hotspots are filed as S41.
 - `ph-schematron-ant-task` (`Schematron`): attribute `xsltProcessor`, same rules (Saxon contained).
 - `ph-schematron-it`: all JAXP pipelines on both processors (`SchematronAllEnginesTelemetryTest`,
   `SchematronRemoteAccessTest`, `MainOtelDemo`), and the comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`,
-  `SVRLPhoxtrotVsSaxonComparisonTest`, `PhoxtrotSecureProcessingTest`). They moved there from
+  `SVRLPhoxtrotVsSaxonComparisonTest`; until S36 also `PhoxtrotSecureProcessingTest`). They moved there from
   `ph-schematron-phoxtrot` (2026-11-11), because the pipeline modules need `ph-schematron-phoxtrot` as test
   dependency for test 5, which would otherwise be a dependency cycle.
 - Root `pom.xml`: version 11.0.0-SNAPSHOT, `java.version` 21, Saxon-HE 13.1, phoxtrot 0.2.0-SNAPSHOT in the dependency management, module

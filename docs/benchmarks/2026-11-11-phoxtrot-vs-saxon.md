@@ -117,3 +117,46 @@ Input plus execution is on par. The JAXB difference does not come from the DOM: 
 one JVM takes the same time. The hotspots of phoxtrot's execution (the union `*|comment()|processing-instruction()` of
 the ISO skeleton, the template rule search, the namespace declarations of literal result elements, the name index of
 the input) are filed as phoxtrot suggestion S41.
+
+## Third measurement: phoxtrot `c09e6c0` (2026-11-11, 23:39 to 23:52)
+
+Same setup and command, phoxtrot 0.2.0-SNAPSHOT commit `c09e6c0` (S41: lazy pattern context, shared namespace maps of
+literal result elements, child lists without the document index; S42: union of single steps in one pass; S36).
+
+| Benchmark | Saxon | phoxtrot | phoxtrot / Saxon | Saxon alloc [MB/op] | phoxtrot alloc [MB/op] |
+| --------- | ----: | -------: | ---------------: | ------------------: | ---------------------: |
+| `BenchmarkProcessorSize` DOM, 1,000 items [ms] | 2.00 ± 0.14 | 1.83 ± 0.07 | 0.91 | 3.8 | 4.0 |
+| `BenchmarkProcessorSize` DOM, 5,000 items [ms] | 10.29 ± 0.35 | 9.39 ± 0.85 | 0.91 | 18.8 | 19.6 |
+| `BenchmarkProcessorSize` DOM, 20,000 items [ms] | 42.52 ± 1.19 | 38.48 ± 6.25 | 0.90 | 71.5 | 79.1 |
+| `BenchmarkProcessorSize` stream, 1,000 items [ms] | 2.29 ± 0.40 | 2.21 ± 0.08 | 0.96 | 4.4 | 4.7 |
+| `BenchmarkProcessorSize` stream, 5,000 items [ms] | 11.51 ± 2.53 | 11.01 ± 0.42 | 0.96 | 21.6 | 23.4 |
+| `BenchmarkProcessorSize` stream, 20,000 items [ms] | 47.12 ± 1.48 | 44.69 ± 0.60 | 0.95 | 85.9 | 94.2 |
+| `BenchmarkProcessorCompile.iso` [ms] | 67.47 ± 5.76 | 8.07 ± 0.22 | 0.12 | 220.0 | 38.6 |
+| `BenchmarkProcessorCompile.schXslt` [ms] | 11.07 ± 6.51 | 9.52 ± 1.40 | 0.86 | 31.6 | 29.1 |
+| `BenchmarkProcessorCompile.schXslt2` [ms] | 10.28 ± 12.03 | 8.50 ± 1.44 | 0.83 | 18.8 | 31.5 |
+| `BenchmarkSchematronValidity.sch` [µs] | 55.7 ± 2.0 | 62.5 ± 1.2 | 1.12 | 0.30 | 0.26 |
+| `BenchmarkSchematronValidity.schXslt` [µs] | 723.0 ± 189.6 | 400.5 ± 68.8 | 0.55 | 1.76 | 1.48 |
+| `BenchmarkSchematronValidity.schXslt2` [µs] | 51.4 ± 1.0 | 67.1 ± 51.3 | 1.31 | 0.30 | 0.26 |
+| `BenchmarkXsltVsSaxon.coldXslt` [µs] | 57.1 ± 15.4 | 63.2 ± 1.7 | 1.11 | 0.30 | 0.26 |
+| `BenchmarkXsltVsSaxon.warmXslt` [µs] | 55.1 ± 1.2 | 62.9 ± 1.4 | 1.14 | 0.30 | 0.26 |
+
+This run has larger error bars (the compile benchmarks on Saxon, `schXslt2` on phoxtrot); a separate run of
+`validateDom` with 20,000 items gave 42.4 ms (Saxon) and 37.6 ms (phoxtrot).
+
+* Validation of larger documents: phoxtrot is now 4 to 10 % faster than Saxon and allocates 5 to 10 % more.
+* Very small documents (`valid03`, about 60 µs): phoxtrot still takes 1.11 to 1.14 times Saxon's time (the
+  `schXslt2` value has an error of ± 51 µs), with less allocation.
+* Conversion: unchanged (ISO about 8 times faster).
+
+JFR profile of the DOM validation with 20,000 items (37.6 ms on phoxtrot, 42.4 ms on Saxon):
+
+| Phase | Saxon [ms] | phoxtrot [ms] |
+| ----- | ---------: | ------------: |
+| Input: DOM navigation through the wrapper (Saxon) / conversion with `DomToXdm` (phoxtrot) | 16.7 | 5.9 |
+| XSLT execution | 14.4 | 23.6 |
+| Result tree to the DOM | 8.8 | 5.2 |
+| Reading the SVRL with JAXB | 2.4 | 3.0 |
+
+The union of the ISO skeleton (S42) now costs phoxtrot 6.3 ms in the stand-alone measurement (before 9.1 ms, Saxon
+5.9 ms). The remaining hotspots (the namespace fixup pass over the result tree, the name index built for an empty
+check) are filed as phoxtrot suggestion S43.

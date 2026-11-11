@@ -140,8 +140,6 @@
                 <classpathDependencyExclude>net.sf.saxon:Saxon-HE</classpathDependencyExclude>
               </classpathDependencyExcludes>
               <excludes>
-                <!-- expects that Saxon rejects xsl:result-document (phoxtrot suggestion S36); the phoxtrot variant is in ph-schematron-it -->
-                <exclude>com/helger/schematron/SchematronSecureProcessingTest*</exclude>
                 <!-- uses Saxon classes -->
                 <exclude>com/helger/schematron/supplementary/Issue129Test*</exclude>
                 <!-- uses Saxon classes -->
