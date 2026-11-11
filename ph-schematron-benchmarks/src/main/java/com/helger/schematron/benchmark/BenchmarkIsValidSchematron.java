@@ -24,6 +24,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -35,6 +36,8 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.CSchematron;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
@@ -60,11 +63,18 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkIsValidSchematron
 {
+  /** The XSLT processor of the XSLT based engines */
+  @Param ({ "saxon", "phoxtrot" })
+  public String xsltProcessor;
+
+  private ISchematronXsltProcessor m_aXsltProcessor;
+
   private ICommonsList <IReadableResource> m_aSchemas;
 
   @Setup
   public void setup ()
   {
+    m_aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (xsltProcessor);
     m_aSchemas = new CommonsArrayList <> ();
     for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
       if (!aRes.getPath ().endsWith ("/BIICORE-UBL-T01.sch") &&
@@ -85,6 +95,7 @@ public class BenchmarkIsValidSchematron
     {
       final SchematronResourceSCH r = SchematronResourceSCH.builder (aRes)
                                                            .errorListener (new DoNothingTransformErrorListener ())
+                                                           .xsltProcessor (m_aXsltProcessor)
                                                            .build ();
       bh.consume (r.isValidSchematron ());
     }
@@ -97,6 +108,7 @@ public class BenchmarkIsValidSchematron
     {
       final SchematronResourceSchXslt_XSLT2 r = SchematronResourceSchXslt_XSLT2.builder (aRes)
                                                                                .errorListener (new DoNothingTransformErrorListener ())
+                                                                               .xsltProcessor (m_aXsltProcessor)
                                                                                .build ();
       bh.consume (r.isValidSchematron ());
     }
@@ -109,6 +121,7 @@ public class BenchmarkIsValidSchematron
     {
       final SchematronResourceSchXslt2 r = SchematronResourceSchXslt2.builder (aRes)
                                                                      .errorListener (new DoNothingTransformErrorListener ())
+                                                                     .xsltProcessor (m_aXsltProcessor)
                                                                      .build ();
       bh.consume (r.isValidSchematron ());
     }

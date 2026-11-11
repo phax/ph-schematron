@@ -77,10 +77,14 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
     </dependency>
-    <!-- The XSLT processor of the XSLT based engines -->
+    <!-- The XSLT processors of the XSLT based engines - the benchmarks select one explicitly -->
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-saxon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-phoxtrot</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>

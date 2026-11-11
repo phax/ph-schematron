@@ -25,6 +25,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -33,6 +34,8 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.io.resource.ClassPathResource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
@@ -69,6 +72,12 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkXsltVsSaxon
 {
+  /** The XSLT processor of the XSLT based engines */
+  @Param ({ "saxon", "phoxtrot" })
+  public String xsltProcessor;
+
+  private ISchematronXsltProcessor m_aXsltProcessor;
+
   private static final ClassPathResource SCHEMATRON = new ClassPathResource ("external/test-sch/valid03.sch",
                                                                              SchematronTestHelper.getCL ());
   private static final ClassPathResource XMLINSTANCE = new ClassPathResource ("external/test-xml/valid03.xml",
@@ -81,8 +90,10 @@ public class BenchmarkXsltVsSaxon
   @Setup (Level.Trial)
   public void setup () throws Exception
   {
+    m_aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (xsltProcessor);
     m_aWarmSch = SchematronResourceSCH.builder (SCHEMATRON)
                                       .errorListener (new DoNothingTransformErrorListener ())
+                                      .xsltProcessor (m_aXsltProcessor)
                                       .build ();
     // Force one validation to materialize the cached XSLT before the timed loop starts
     m_aWarmSch.getSchematronValidity (XMLINSTANCE);
@@ -100,6 +111,7 @@ public class BenchmarkXsltVsSaxon
   {
     final SchematronResourceSCH r = SchematronResourceSCH.builder (SCHEMATRON)
                                                          .errorListener (new DoNothingTransformErrorListener ())
+                                                         .xsltProcessor (m_aXsltProcessor)
                                                          .build ();
     bh.consume (r.getSchematronValidity (XMLINSTANCE));
   }

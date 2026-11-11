@@ -24,6 +24,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -32,6 +33,8 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.io.resource.ClassPathResource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.sch.SchematronResourceSCH;
@@ -64,6 +67,12 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkSchematronValidity
 {
+  /** The XSLT processor of the XSLT based engines */
+  @Param ({ "saxon", "phoxtrot" })
+  public String xsltProcessor;
+
+  private ISchematronXsltProcessor m_aXsltProcessor;
+
   private static final ClassPathResource VALID_SCHEMATRON = new ClassPathResource ("external/test-sch/valid03.sch",
                                                                                    SchematronTestHelper.getCL ());
   private static final ClassPathResource VALID_XMLINSTANCE = new ClassPathResource ("external/test-xml/valid03.xml",
@@ -72,6 +81,7 @@ public class BenchmarkSchematronValidity
   @Setup
   public void setup ()
   {
+    m_aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (xsltProcessor);
     // Touch the resources once so any classpath discovery cost is paid before timing starts.
     VALID_SCHEMATRON.exists ();
     VALID_XMLINSTANCE.exists ();
@@ -82,6 +92,7 @@ public class BenchmarkSchematronValidity
   {
     final SchematronResourceSCH r = SchematronResourceSCH.builder (VALID_SCHEMATRON)
                                                          .errorListener (new DoNothingTransformErrorListener ())
+                                                         .xsltProcessor (m_aXsltProcessor)
                                                          .build ();
     bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }
@@ -91,6 +102,7 @@ public class BenchmarkSchematronValidity
   {
     final SchematronResourceSchXslt_XSLT2 r = SchematronResourceSchXslt_XSLT2.builder (VALID_SCHEMATRON)
                                                                              .errorListener (new DoNothingTransformErrorListener ())
+                                                                             .xsltProcessor (m_aXsltProcessor)
                                                                              .build ();
     bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }
@@ -100,6 +112,7 @@ public class BenchmarkSchematronValidity
   {
     final SchematronResourceSchXslt2 r = SchematronResourceSchXslt2.builder (VALID_SCHEMATRON)
                                                                    .errorListener (new DoNothingTransformErrorListener ())
+                                                                   .xsltProcessor (m_aXsltProcessor)
                                                                    .build ();
     bh.consume (r.getSchematronValidity (VALID_XMLINSTANCE));
   }

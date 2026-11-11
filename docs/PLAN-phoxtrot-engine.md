@@ -253,6 +253,15 @@ Details:
 
 ### Pure engine: core and XPath bindings (D13)
 
+**Deferred (2026-11-11), the split below needs a new decision first.** The assumption that
+`SchematronResourcePureXPath` is Saxon-free was wrong: its public API uses Saxon types through `XPathConfig`/
+`XPathConfigBuilder` (s9api `Processor`, `ExtensionFunction`, `XdmValue`), it parses input with Saxon's
+`DocumentBuilder`, and `SchematronResourcePure` and `SchematronResourcePureXslt` build on it. Saxon-free is only the
+layer below (validation handlers, `AbstractPSBoundSchema`, `IPSQueryBinding`, `PSQueryBindingRegistry` without its
+default registration, `PSBoundSchemaCacheKey`, `TelemetryValidationHandler`). Options when it is taken up again: one
+resource class per binding (the Saxon one keeps today's API), or one binding-neutral resource with the Saxon types
+behind a binding-specific config.
+
 | Module | Content |
 |---|---|
 | `ph-schematron-pure` (directory renamed from `ph-schematron-pure-xpath`) | The Saxon-free classes: resource, config, cache, validation handlers, `AbstractPSBoundSchema`, `IPSQueryBinding`, `PSQueryBindingRegistry`. Depends on `ph-schematron-api` and `ph-schematron-model` only |
@@ -418,8 +427,8 @@ dated file `docs/benchmarks/...md`). The first results are measured before the r
 | P2 | `PhoxtrotXsltProcessor` with D5, D6, D9; ISO pipeline on phoxtrot | tests 1 and 2 (ISO) green — done 2026-11-11, see "P2 results" |
 | P3 | Validation on phoxtrot: input sources, telemetry bridge; SVRL comparator | tests 3, 4, 6 green for ISO — done 2026-11-11, see "P3 results" |
 | P4 | SchXslt1, SchXslt2, prebuilt XSLT on phoxtrot; tests parameterised by processor; Maven plugin, Ant task, IT | tests 2 to 6 green for all four pipelines; test 7 — done 2026-11-11, see "P4 results" |
-| P4a | Split of the pure engine into `ph-schematron-pure` and `ph-schematron-pure-xpath-saxon`, binding SPI | all existing pure tests green, unchanged |
-| P4b | `ph-schematron-pure-xpath-phoxtrot` | tests 3 to 5 green for the pure engine on both bindings |
+| P4a | Split of the pure engine into `ph-schematron-pure` and `ph-schematron-pure-xpath-saxon`, binding SPI | **deferred** (2026-11-11), see "Pure engine: core and XPath bindings" |
+| P4b | `ph-schematron-pure-xpath-phoxtrot` | **deferred** (2026-11-11) |
 | P5 | Benchmarks, first results, wiki (`Migrations.md` and the rest), news, `CLAUDE.md` | results recorded, documentation complete |
 
 ## Risks
