@@ -299,6 +299,25 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
   converts it once (`createSourceForInternalDocument`). Parsing streams directly with `XdmParser` is an optimisation
   for P5 (benchmarks decide).
 
+### P4 results (2026-11-11)
+
+- Tests 2 and 3 for all pipelines (`ph-schematron-it`, parameterised by `ComparedPipeline`): the SVRL is identical for
+  ISO (497 pairs), SchXslt 1 and 2 (511 pairs each) and the prebuilt XSLT (7 pairs). The created XSLT of SchXslt 1
+  and 2 is identical after renumbering the `generate-id()` values (S37), except `example-assert.sch`, where the
+  generated `id1` of phoxtrot collides with an author ID `id1` (S38).
+- Test 4: same validity of the invalid Schematron files for every pipeline; the dynamic error has the same code
+  (FORG0001 for ISO and SchXslt 1; `ValidationError` from `xsl:message terminate` for SchXslt 2).
+- Test 5: the tests of `isosch` (8), `schxslt` (14), `schxslt2` (14) and `xslt` (64 on Saxon, 50 on phoxtrot) pass
+  on both processors. Excluded on phoxtrot: the tests that use Saxon classes (`Issue129Test`, `Issue137XsltTest`,
+  `SchematronResourceXSLTNativeDOMTest`), `SchematronSecureProcessingTest` (S36, phoxtrot variant in the IT module)
+  and `Issue077Test` (the URI resolver gets a different base: S39). `Issue110Test` deletes its own fixture and now
+  works on a copy.
+- Test 7 (`LimitsPhoxtrotVsSaxonTest`): 20,000 items with the default limits give the same SVRL (Saxon 608 ms,
+  phoxtrot 401 ms); a set interrupt flag ends the conversion with `SchematronInterruptedException` on both; an `or`
+  chain of 200 terms gives the same SVRL. 1,000 terms (about 20,000 characters) work on Saxon and fail on phoxtrot
+  in the ISO include step (S35). 5,000 terms fail on Saxon itself with a `StackOverflowError` while optimising on the
+  calling thread (not filed: a stack limit of the environment, not a behaviour).
+
 ## Integration
 
 - `ESchematronEngine`: unchanged constants; new method `isXsltProcessorSelectable ()` (`true` for `ISO_SCHEMATRON`,
@@ -398,7 +417,7 @@ dated file `docs/benchmarks/...md`). The first results are measured before the r
 | P1 | Processor interface and registry in `ph-schematron-api`; moves of the base classes; `SaxonXsltProcessor`; pipeline modules on the interface, Saxon as test dependency; plugin, Ant task, IT and benchmarks add `ph-schematron-saxon` | all existing tests green on Saxon |
 | P2 | `PhoxtrotXsltProcessor` with D5, D6, D9; ISO pipeline on phoxtrot | tests 1 and 2 (ISO) green — done 2026-11-11, see "P2 results" |
 | P3 | Validation on phoxtrot: input sources, telemetry bridge; SVRL comparator | tests 3, 4, 6 green for ISO — done 2026-11-11, see "P3 results" |
-| P4 | SchXslt1, SchXslt2, prebuilt XSLT on phoxtrot; tests parameterised by processor; Maven plugin, Ant task, IT | tests 2 to 6 green for all four pipelines; test 7 |
+| P4 | SchXslt1, SchXslt2, prebuilt XSLT on phoxtrot; tests parameterised by processor; Maven plugin, Ant task, IT | tests 2 to 6 green for all four pipelines; test 7 — done 2026-11-11, see "P4 results" |
 | P4a | Split of the pure engine into `ph-schematron-pure` and `ph-schematron-pure-xpath-saxon`, binding SPI | all existing pure tests green, unchanged |
 | P4b | `ph-schematron-pure-xpath-phoxtrot` | tests 3 to 5 green for the pure engine on both bindings |
 | P5 | Benchmarks, first results, wiki (`Migrations.md` and the rest), news, `CLAUDE.md` | results recorded, documentation complete |
