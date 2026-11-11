@@ -142,8 +142,6 @@
               <excludes>
                 <!-- expects that Saxon rejects xsl:result-document (phoxtrot suggestion S36); the phoxtrot variant is in ph-schematron-it -->
                 <exclude>com/helger/schematron/SchematronSecureProcessingTest*</exclude>
-                <!-- phoxtrot calls the URIResolver with a different base, so the include of the created XSLT is not found (phoxtrot suggestion S39) -->
-                <exclude>com/helger/schematron/supplementary/Issue077Test*</exclude>
                 <!-- uses Saxon classes -->
                 <exclude>com/helger/schematron/supplementary/Issue129Test*</exclude>
                 <!-- uses Saxon classes -->

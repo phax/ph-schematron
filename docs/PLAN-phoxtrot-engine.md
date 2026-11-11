@@ -333,6 +333,13 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
 (`setMaxDepth`), as Saxon has no nesting counter. `EUGEN-UBL-T14`/`-T15` and the 1,000 term `or` chain now give the
 same XSLT and SVRL as Saxon; the ISO comparison covers 73 files and 511 Schematron/XML pairs without exceptions.
 
+### phoxtrot `a996fee` (2026-11-11)
+
+S39 is done in phoxtrot (the `URIResolver` gets the `href` as written and the base URI), so `Issue077Test` runs on
+phoxtrot again. S40 items 1 and 2 (no unused serialisation for a `DOMResult`, no namespace map copies) brought the
+validation of 20,000 items from 56.5 to 46.5 ms (Saxon 42.9 ms); see `docs/benchmarks/2026-11-11-phoxtrot-vs-saxon.md`.
+The remaining execution hotspots are filed as S41.
+
 ## Integration
 
 - `ESchematronEngine`: unchanged constants; new method `isXsltProcessorSelectable ()` (`true` for `ISO_SCHEMATRON`,
