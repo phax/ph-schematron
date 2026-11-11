@@ -15,7 +15,7 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 1. `ph-schematron-testfiles` — shared test resources (`.sch` / XML samples).
 2. `ph-schematron-api` — public API surface: `ISchematronResource`, base classes (incl. the XSLT base classes `AbstractSchematronXSLTBasedResource`, `SchematronXSLTValidator`), SVRL JAXB bindings, the XSLT processor interface `ISchematronXsltProcessor` and its registry.
 3. `ph-schematron-saxon` — the Saxon XSLT processor (`SaxonXsltProcessor`) and the other Saxon specific parts (transformer factory, DOM bridge, trace listener, s9api processor factory).
-4. `ph-schematron-phoxtrot` — the phoxtrot specific parts (still empty, see `docs/PLAN-phoxtrot-engine.md`).
+4. `ph-schematron-phoxtrot` — the phoxtrot XSLT processor (`PhoxtrotXsltProcessor`, `PhoxtrotTransformerFactories`, telemetry bridge). Its tests have both processors on the class path and compare phoxtrot with Saxon (e.g. `IsoSchematronPhoxtrotVsSaxonComparisonTest`), so they always select the processor explicitly.
 5. `ph-schematron-xslt` — engine for prebuilt XSLT files (`SchematronResourceXSLT`).
 6. `ph-schematron-isosch` — ISO Schematron XSLT pipeline (`SchematronResourceSCH`).
 7. `ph-schematron-schxslt` — SchXslt 1.x engine.

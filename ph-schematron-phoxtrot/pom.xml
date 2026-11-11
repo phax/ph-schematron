@@ -86,5 +86,21 @@
       <artifactId>ph-unittest-support-ext</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-testfiles</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- The pipelines and Saxon as the reference for the comparison tests -->
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-isosch</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-saxon</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

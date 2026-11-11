@@ -236,10 +236,10 @@ Depends on `ph-schematron-api` and `com.helger.phoxtrot:phoxtrot-xslt` 0.2.0-SNA
 
 | Class | Role |
 |---|---|
-| `PhoxtrotXsltProcessor` | `ISchematronXsltProcessor`: `PhoxtrotTransformerFactory` with `URIResolver`, `ErrorListener`, `ATTR_MAX_STEPS` (D6), `ATTR_THREADING` (D9), `ATTR_LOAD_EXTERNAL_ENTITIES` off; input as `XdmSource` (`XdmParser` with the configured entity resolver and without locations for streams, `DomToXdm.convertDocument` for a DOM); telemetry via `PhoxtrotTransformer.setTraceListener` |
-| `PhoxtrotXsltProcessorSpi` | `ServiceLoader` registration |
+| `PhoxtrotXsltProcessor` | `ISchematronXsltProcessorSpi` (ID `phoxtrot`): factories from `PhoxtrotTransformerFactories`; internal documents become an `XdmSource` (`DomToXdm.convertDocument`); other sources are passed on unchanged (phoxtrot converts them itself); telemetry via `PhoxtrotTransformer.setTraceListener` |
+| `META-INF/services/...ISchematronXsltProcessorSpi` | `ServiceLoader` registration of `PhoxtrotXsltProcessor` |
 | `PhoxtrotTemplateTelemetry` | `IXsltTraceListener` → `ISchematronTemplateTelemetry`: template rules and named templates become `SchematronTemplateInfo` (name, match pattern, mode, module URI, line); the duration from enter to leave; functions and instructions are not forwarded, as with the Saxon listener |
-| `PhoxtrotSettings` (or similar) | The phoxtrot-only options: step limit, threading |
+| `PhoxtrotTransformerFactories` | Like `SchematronTransformerFactory`: shared default factory and new factories with `XMLFactory.defaultCustomizeTransformerFactory` (secure processing), `ATTR_MAX_STEPS` (D6, default `UNLIMITED_STEPS`) and `ATTR_THREADING` (D9, default `THREAD_POOL`); `setMaxSteps`/`setThreading` apply to factories created afterwards |
 
 Details:
 
@@ -265,6 +265,20 @@ Details:
   stream is parsed with `XdmParser`, and the handlers get nodes of an `XdmDomView`.
 - The SVRL of the phoxtrot binding must equal the SVRL of the Saxon binding (test 3).
 - Telemetry: the core's `TelemetryValidationHandler` is binding-neutral.
+
+### P2 results (2026-11-11)
+
+Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematron test files:
+
+- 71 created XSLTs are identical after one normalisation: the IDs of patterns instantiated from abstract patterns are
+  `concat(generate-id(.), $is-a)` (`iso_abstract_expand.xsl` line 234), and `generate-id()` values are
+  implementation-dependent (Saxon `w141aac11…`, phoxtrot `id1…`). Accepted; the SVRL comparator (test 3) must
+  normalise the same IDs in `active-pattern/@id`.
+- `BIICORE-UBL-T01`, `-T10`, `-T14`, `-T15` take 56 to 96 s each on Saxon (known, skipped in `SchematronSCHCacheTest`)
+  and about 1 s on phoxtrot; they are converted on phoxtrot only.
+- `EUGEN-UBL-T14`, `-T15` fail on phoxtrot with XPDY0130 (nesting deeper than 10,000; a 23,537 character code list
+  expression in the include step). The depth limit cannot be raised through the JAXP adapter: phoxtrot suggestion S35.
+  The test expects exactly these two failures until then.
 
 ## Integration
 
@@ -353,7 +367,7 @@ dated file `docs/benchmarks/...md`). The first results are measured before the r
 |---|---|---|
 | P0 | Version 11.0.0-SNAPSHOT, Java 21, CI matrix 21/25 and deploy from 21, Saxon-HE 13.1 (D14), phoxtrot 0.2.0-SNAPSHOT in the dependency management, empty `ph-schematron-phoxtrot`, news entry | `mvn install` green on JDK 21 and 25 |
 | P1 | Processor interface and registry in `ph-schematron-api`; moves of the base classes; `SaxonXsltProcessor`; pipeline modules on the interface, Saxon as test dependency; plugin, Ant task, IT and benchmarks add `ph-schematron-saxon` | all existing tests green on Saxon |
-| P2 | `PhoxtrotXsltProcessor` with D5, D6, D9; ISO pipeline on phoxtrot | tests 1 and 2 (ISO) green |
+| P2 | `PhoxtrotXsltProcessor` with D5, D6, D9; ISO pipeline on phoxtrot | tests 1 and 2 (ISO) green — done 2026-11-11, see "P2 results" |
 | P3 | Validation on phoxtrot: input sources, telemetry bridge; SVRL comparator | tests 3, 4, 6 green for ISO |
 | P4 | SchXslt1, SchXslt2, prebuilt XSLT on phoxtrot; tests parameterised by processor; Maven plugin, Ant task, IT | tests 2 to 6 green for all four pipelines; test 7 |
 | P4a | Split of the pure engine into `ph-schematron-pure` and `ph-schematron-pure-xpath-saxon`, binding SPI | all existing pure tests green, unchanged |
