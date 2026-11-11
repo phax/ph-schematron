@@ -38,7 +38,7 @@ public final class ThirdPartyModuleProvider_ph_schematron_saxon implements IThir
   public static final IThirdPartyModule SAXON_HE = new ThirdPartyModule ("Saxon HE",
                                                                          "Saxonica Limited",
                                                                          ELicense.MPL20,
-                                                                         new Version (12, 10, 0, "HE"),
+                                                                         new Version (13, 1, 0, "HE"),
                                                                          "http://saxon.sourceforge.net/");
 
   @Nullable

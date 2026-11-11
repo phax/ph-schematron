@@ -189,7 +189,10 @@ public class XQueryAsXPathFunctionConverter
         else
           if (aFuncLib instanceof final XQueryFunctionLibrary aRealFuncLib)
           {
-            for (final XQueryFunction aXQueryFunction : new CommonsIterableIterator <> (aRealFuncLib.getFunctionDefinitions ()))
+            // Collect first, because compiling may throw a checked exception
+            final ICommonsList <XQueryFunction> aXQueryFunctions = new CommonsArrayList <> ();
+            aRealFuncLib.processAllFunctions (aXQueryFunctions::add);
+            for (final XQueryFunction aXQueryFunction : aXQueryFunctions)
             {
               // Ensure the function is compiled
               aXQueryFunction.compile ();
