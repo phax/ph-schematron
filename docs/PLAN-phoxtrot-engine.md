@@ -429,7 +429,7 @@ dated file `docs/benchmarks/...md`). The first results are measured before the r
 | P4 | SchXslt1, SchXslt2, prebuilt XSLT on phoxtrot; tests parameterised by processor; Maven plugin, Ant task, IT | tests 2 to 6 green for all four pipelines; test 7 — done 2026-11-11, see "P4 results" |
 | P4a | Split of the pure engine into `ph-schematron-pure` and `ph-schematron-pure-xpath-saxon`, binding SPI | **deferred** (2026-11-11), see "Pure engine: core and XPath bindings" |
 | P4b | `ph-schematron-pure-xpath-phoxtrot` | **deferred** (2026-11-11) |
-| P5 | Benchmarks, first results, wiki (`Migrations.md` and the rest), news, `CLAUDE.md` | results recorded, documentation complete |
+| P5 | Benchmarks, first results, wiki (`Migrations.md` and the rest), news, `CLAUDE.md` | results recorded, documentation complete — done 2026-11-11: `docs/benchmarks/2026-11-11-phoxtrot-vs-saxon.md`; wiki pages written, not yet committed (until v11 is on `master`) |
 
 ## Risks
 
