@@ -106,9 +106,7 @@ final class ComparedPipeline
                                                                                                           .build (),
                                                                  BIICORE_SLOW,
                                                                  new CommonsHashSet <> (),
-                                                                 // The generated pattern ID 'id1' of phoxtrot collides with the assert ID 'id1'
-                                                                 // of the Schematron, so the normalisation cannot map it (phoxtrot suggestion S38)
-                                                                 new CommonsHashSet <> ("external/test-sch/example-assert.sch"));
+                                                                 new CommonsHashSet <> ());
 
   static final ComparedPipeline SCHXSLT2 = new ComparedPipeline ("schxslt2",
                                                                  SchematronTestHelper.getAllValidSchematronFiles (),
@@ -122,9 +120,7 @@ final class ComparedPipeline
                                                                                                      .build (),
                                                                  BIICORE_SLOW,
                                                                  new CommonsHashSet <> (),
-                                                                 // The generated pattern ID 'id1' of phoxtrot collides with the assert ID 'id1'
-                                                                 // of the Schematron, so the normalisation cannot map it (phoxtrot suggestion S38)
-                                                                 new CommonsHashSet <> ("external/test-sch/example-assert.sch"));
+                                                                 new CommonsHashSet <> ());
 
   static final ComparedPipeline XSLT_PREBUILT = new ComparedPipeline ("xslt",
                                                                       new CommonsArrayList <> (new ClassPathResource ("external/test-xslt/valid01.xslt")),
