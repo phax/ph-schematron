@@ -64,7 +64,8 @@ Follow the rules already in `~/.claude/rules/naming.md` and `~/.claude/rules/beh
 
 ## Git
 
-- **Never** run `git commit` or `git push` — the user always commits/pushes themselves. Stage with `git add <specific paths>` and stop. A PreToolUse hook in `.claude/settings.json` blocks these commands deterministically.
+- **Never** run `git push` — the user always pushes. A PreToolUse hook in `.claude/settings.json` blocks it deterministically.
+- `git commit` only when the user has given permission for the task at hand; otherwise stage with `git add <specific paths>` and stop. Commit messages carry no assistant attribution.
 - Read-only git commands (`status`, `diff`, `log`, `show`, `branch`) are fine.
 
 ## Wiki
