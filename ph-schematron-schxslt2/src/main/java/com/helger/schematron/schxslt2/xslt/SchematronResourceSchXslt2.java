@@ -52,6 +52,8 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 
 /**
@@ -99,6 +101,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
            aBuilder.m_aErrorListener,
            aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
            aBuilder.m_aTFCustomizer,
+           aBuilder.m_aXsltProcessor,
            aBuilder.m_aTelemetry,
            aBuilder.m_aSOVDeterminator,
            aBuilder.m_bValidateSVRL);
@@ -209,6 +212,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
                                    .parameters (parameters ())
                                    .forceCacheResult (m_bForceCacheResult)
                                    .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
+                                   .xsltProcessor (getXsltProcessor ())
                                    .telemetry (getEffectiveTemplateTelemetry ())
                                    .build ();
   }
@@ -640,6 +644,7 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
     private boolean m_bForceCacheResult = SchematronSchXslt2Config.DEFAULT_FORCE_CACHE_RESULT;
     private Consumer <TransformerFactory> m_aTFCustomizer;
+    private ISchematronXsltProcessor m_aXsltProcessor;
     private ISchematronTemplateTelemetry m_aTelemetry;
     private ISchematronOutputValidityDeterminator m_aSOVDeterminator;
     private boolean m_bValidateSVRL = AbstractSchematronXSLTBasedResource.DEFAULT_VALIDATE_SVRL;
@@ -797,6 +802,21 @@ public class SchematronResourceSchXslt2 extends AbstractSchematronXSLTBasedResou
     public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
     {
       m_aTFCustomizer = a;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The XSLT processor that compiles and runs the XSLT, or <code>null</code> to use the only
+     *        one on the class path (see {@link SchematronXsltProcessorRegistry#getDefaultProcessor()}).
+     *        Default is <code>null</code>.
+     * @return this for chaining
+     * @since 11.0.0
+     */
+    @NonNull
+    public Builder xsltProcessor (@Nullable final ISchematronXsltProcessor a)
+    {
+      m_aXsltProcessor = a;
       return this;
     }
 

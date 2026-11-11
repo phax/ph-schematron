@@ -55,11 +55,14 @@ import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 
 /**
  * Immutable configuration for compiling a Schematron <code>.sch</code> file via SchXslt 1.x. The
- * cache-key dimensions are <code>(resourceID, phase, languageCode, tracingEnabled)</code>.
+ * cache-key dimensions are <code>(resourceID, phase, languageCode, tracingEnabled,
+ * xsltProcessorID)</code>.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -84,6 +87,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   private final boolean m_bForceCacheResult;
   private final ISchematronTemplateTelemetry m_aTelemetry;
   private final Consumer <TransformerFactory> m_aTFCustomizer;
+  private final ISchematronXsltProcessor m_aXsltProcessor;
   private final CacheKey m_aCacheKey;
 
   private SchematronSchXslt_XSLT2Config (@NonNull final Builder b)
@@ -97,7 +101,13 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     m_bForceCacheResult = b.m_bForceCacheResult;
     m_aTelemetry = b.m_aTelemetry;
     m_aTFCustomizer = b.m_aTFCustomizer;
-    m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_sLanguageCode, m_aTelemetry != null);
+    m_aXsltProcessor = b.m_aXsltProcessor != null ? b.m_aXsltProcessor
+                                                  : SchematronXsltProcessorRegistry.getDefaultProcessor ();
+    m_aCacheKey = new CacheKey (m_aResource.getResourceID (),
+                                m_sPhase,
+                                m_sLanguageCode,
+                                m_aTelemetry != null,
+                                m_aXsltProcessor.getID ());
   }
 
   @Override
@@ -178,7 +188,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   /**
    * @return The per-template telemetry callback configured for the XSLT transformation, or
    *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the final
-   *         validation stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and
+   *         validation stylesheet is compiled with tracing (on Saxon {@code COMPILE_WITH_TRACING}) and
    *         the trace-enabled provider is cached under a separate key.
    */
   @Nullable
@@ -189,7 +199,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
 
   /**
    * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the final
-   *         validation stylesheet should be compiled with Saxon tracing enabled.
+   *         validation stylesheet should be compiled with tracing enabled.
    */
   public boolean isTracingEnabled ()
   {
@@ -213,6 +223,17 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
   public Consumer <TransformerFactory> getTransformerFactoryCustomizer ()
   {
     return m_aTFCustomizer;
+  }
+
+  /**
+   * @return The XSLT processor that compiles and runs the XSLT. Never <code>null</code>.
+   *         Participates in the cache key by its ID.
+   * @since 11.0.0
+   */
+  @NonNull
+  public ISchematronXsltProcessor getXsltProcessor ()
+  {
+    return m_aXsltProcessor;
   }
 
   @Override
@@ -254,7 +275,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
                                     .parameters (m_aParameters)
                                     .forceCacheResult (m_bForceCacheResult)
                                     .telemetry (m_aTelemetry)
-                                    .transformerFactoryCustomizer (m_aTFCustomizer);
+                                    .transformerFactoryCustomizer (m_aTFCustomizer)
+                                    .xsltProcessor (m_aXsltProcessor);
   }
 
   @Override
@@ -269,6 +291,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
                                        .append ("ForceCacheResult", m_bForceCacheResult)
                                        .appendIfNotNull ("Telemetry", m_aTelemetry)
                                        .appendIfNotNull ("TransformerFactoryCustomizer", m_aTFCustomizer)
+                                       .append ("XsltProcessor", m_aXsltProcessor)
                                        .getToString ();
   }
 
@@ -415,18 +438,25 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     private final String m_sPhase;
     private final String m_sLanguageCode;
     private final boolean m_bTracingEnabled;
+    private final String m_sXsltProcessorID;
     private final int m_nHashCode;
 
     private CacheKey (@NonNull final String sResourceID,
                       @Nullable final String sPhase,
                       @Nullable final String sLanguageCode,
-                      final boolean bTracingEnabled)
+                      final boolean bTracingEnabled,
+                      @NonNull final String sXsltProcessorID)
     {
       m_sResourceID = sResourceID;
       m_sPhase = sPhase;
       m_sLanguageCode = sLanguageCode;
       m_bTracingEnabled = bTracingEnabled;
-      m_nHashCode = Objects.hash (sResourceID, sPhase, sLanguageCode, Boolean.valueOf (bTracingEnabled));
+      m_sXsltProcessorID = sXsltProcessorID;
+      m_nHashCode = Objects.hash (sResourceID,
+                                  sPhase,
+                                  sLanguageCode,
+                                  Boolean.valueOf (bTracingEnabled),
+                                  sXsltProcessorID);
     }
 
     @Override
@@ -439,7 +469,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
       return m_sResourceID.equals (aRhs.m_sResourceID) &&
              Objects.equals (m_sPhase, aRhs.m_sPhase) &&
              Objects.equals (m_sLanguageCode, aRhs.m_sLanguageCode) &&
-             m_bTracingEnabled == aRhs.m_bTracingEnabled;
+             m_bTracingEnabled == aRhs.m_bTracingEnabled &&
+             m_sXsltProcessorID.equals (aRhs.m_sXsltProcessorID);
     }
 
     @Override
@@ -455,6 +486,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
                                          .appendIfNotNull ("Phase", m_sPhase)
                                          .appendIfNotNull ("LanguageCode", m_sLanguageCode)
                                          .append ("TracingEnabled", m_bTracingEnabled)
+                                         .append ("XsltProcessorID", m_sXsltProcessorID)
                                          .getToString ();
     }
   }
@@ -473,6 +505,7 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
     private ISchematronTemplateTelemetry m_aTelemetry;
     private Consumer <TransformerFactory> m_aTFCustomizer;
+    private ISchematronXsltProcessor m_aXsltProcessor;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -590,9 +623,8 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
 
     /**
      * Set the per-template telemetry callback. When non-<code>null</code>, the final validation
-     * stylesheet is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache
-     * entry) and a {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is installed
-     * on each transform.
+     * stylesheet is compiled with tracing (on Saxon {@code COMPILE_WITH_TRACING}, separate cache
+     * entry) and the trace listener of the XSLT processor is installed on each transform.
      *
      * @param a
      *        The telemetry callback, or <code>null</code> to disable telemetry. Default is
@@ -622,6 +654,23 @@ public final class SchematronSchXslt_XSLT2Config implements ISchematronCompilati
     public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
     {
       m_aTFCustomizer = a;
+      return this;
+    }
+
+    /**
+     * Set the XSLT processor that compiles and runs the XSLT.
+     *
+     * @param a
+     *        The XSLT processor, or <code>null</code> to use the only one on the class path (see
+     *        {@link SchematronXsltProcessorRegistry#getDefaultProcessor()}). Default is
+     *        <code>null</code>.
+     * @return this for chaining
+     * @since 11.0.0
+     */
+    @NonNull
+    public Builder xsltProcessor (@Nullable final ISchematronXsltProcessor a)
+    {
+      m_aXsltProcessor = a;
       return this;
     }
 

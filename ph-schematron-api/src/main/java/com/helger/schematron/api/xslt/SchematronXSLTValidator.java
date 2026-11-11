@@ -40,16 +40,12 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
-import com.helger.schematron.api.telemetry.SaxonTraceListenerInstaller;
-import com.helger.schematron.api.telemetry.SchematronTraceListener;
-import com.helger.schematron.saxon.SaxonDOMSource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.transform.LoggingTransformErrorListener;
-
-import net.sf.saxon.jaxp.TransformerImpl;
 
 /**
  * Stateless utility that applies a previously-compiled {@link ISchematronXSLTBasedProvider
@@ -99,7 +95,8 @@ public final class SchematronXSLTValidator
   /**
    * Apply the compiled Schematron provider to the given XML source, optionally dispatching
    * per-template events to the supplied telemetry callback. Telemetry only fires when the provider
-   * was compiled with Saxon's {@code COMPILE_WITH_TRACING} feature.
+   * was compiled with tracing enabled (see
+   * {@link ISchematronXsltProcessor#createTransformerFactory(boolean)}).
    *
    * @param aProvider
    *        The compiled provider. May be <code>null</code>; in that case a warning is logged and
@@ -114,9 +111,9 @@ public final class SchematronXSLTValidator
    * @param aParameters
    *        Optional XSLT parameters applied to the transformer.
    * @param aTelemetry
-   *        Optional per-template telemetry callback. When non-<code>null</code>, a Saxon
-   *        {@link net.sf.saxon.lib.TraceListener} bridging to this callback is installed on the
-   *        underlying Saxon controller for the duration of the transform.
+   *        Optional per-template telemetry callback. When non-<code>null</code>, it is installed on
+   *        the transformer by the XSLT processor of the provider for the duration of the
+   *        transform.
    * @return The SVRL DOM document or <code>null</code> if the provider is unusable.
    * @throws TransformerException
    *         If the XSLT transformation fails.
@@ -165,21 +162,12 @@ public final class SchematronXSLTValidator
         aTransformer.setParameter (aEntry.getKey (), aEntry.getValue ());
       }
 
+    final ISchematronXsltProcessor aXsltProcessor = aProvider.getXsltProcessor ();
     if (aTelemetry != null)
-      SaxonTraceListenerInstaller.install (aTransformer, new SchematronTraceListener (aTelemetry));
+      aXsltProcessor.installTemplateTelemetry (aTransformer, aTelemetry);
 
-    Source aEffectiveSource = aSource;
-    if (aSource instanceof final SaxonDOMSource aDOMSource &&
-        aDOMSource.getNode () instanceof Document &&
-        aTransformer instanceof final TransformerImpl aSaxonTransformer)
-    {
-      // Repeated XPath navigation over a wrapped DOM is expensive, especially for
-      // large sibling lists. Build the configured Saxon tree once per validation.
-      aEffectiveSource = aSaxonTransformer.getUnderlyingController ()
-                                          .getConfiguration ()
-                                          .buildDocumentTree (aSource)
-                                          .getRootNode ();
-    }
+    // The processor may convert the source into its own tree model
+    final Source aEffectiveSource = aXsltProcessor.getEffectiveSource (aSource, aTransformer);
     aTransformer.transform (aEffectiveSource, new DOMResult (ret));
 
     if (SchematronDebug.isShowCreatedSVRL ())

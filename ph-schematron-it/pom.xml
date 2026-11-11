@@ -83,6 +83,11 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
     </dependency>
+    <!-- The XSLT processor of the XSLT based engines -->
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-saxon</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-pure</artifactId>

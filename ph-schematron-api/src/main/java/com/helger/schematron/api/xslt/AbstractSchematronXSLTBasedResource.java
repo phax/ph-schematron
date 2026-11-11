@@ -51,9 +51,9 @@ import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.telemetry.RuleDurationTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
-import com.helger.schematron.saxon.SaxonDOMSource;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.telemetry.ETelemetrySpanKind;
@@ -86,10 +86,11 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected URIResolver m_aCustomURIResolver = new DefaultTransformURIResolver ();
   protected final ICommonsOrderedMap <String, Object> m_aCustomParameters = new CommonsLinkedHashMap <> ();
   protected Consumer <TransformerFactory> m_aTFCustomizer;
+  protected ISchematronXsltProcessor m_aXsltProcessor;
   protected ISchematronTemplateTelemetry m_aTelemetry;
   protected ISchematronOutputValidityDeterminator m_aSOVDeterminator;
   protected boolean m_bValidateSVRL;
-  // Per-rule execution timing (rule.duration) via the Saxon trace listener
+  // Per-rule execution timing (rule.duration) via the trace listener of the XSLT processor
   protected boolean m_bPerRuleExecutionTelemetry;
   /**
    * Latched <code>true</code> the first time {@link #getXSLTProvider()} is called on this instance.
@@ -114,6 +115,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
           null,
           DEFAULT_TELEMETRY,
           DEFAULT_PER_ASSERTION_RESULT_TELEMETRY,
+          null,
           null,
           null,
           null,
@@ -146,6 +148,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *        The URI resolver to use, or <code>null</code> for the engine default.
    * @param aTFCustomizer
    *        The optional TransformerFactory customizer - may be <code>null</code>.
+   * @param aXsltProcessor
+   *        The XSLT processor to use, or <code>null</code> for the only one on the class path (see
+   *        {@link com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry#getDefaultProcessor()}).
    * @param aTelemetry
    *        The telemetry callback, or <code>null</code> to disable telemetry.
    * @param aSOVDeterminator
@@ -163,6 +168,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                                                  @Nullable final ErrorListener aCustomErrorListener,
                                                  @Nullable final URIResolver aCustomURIResolver,
                                                  @Nullable final Consumer <TransformerFactory> aTFCustomizer,
+                                                 @Nullable final ISchematronXsltProcessor aXsltProcessor,
                                                  @Nullable final ISchematronTemplateTelemetry aTelemetry,
                                                  @Nullable final ISchematronOutputValidityDeterminator aSOVDeterminator,
                                                  final boolean bValidateSVRL)
@@ -178,6 +184,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     m_aCustomURIResolver = aCustomURIResolver != null ? aCustomURIResolver
                                                       : new DefaultTransformURIResolver ().setDefaultBase (sBaseURL);
     m_aTFCustomizer = aTFCustomizer;
+    m_aXsltProcessor = aXsltProcessor;
     m_aTelemetry = aTelemetry;
     m_aSOVDeterminator = aSOVDeterminator != null ? aSOVDeterminator
                                                   : new SchematronOutputValidityDeterminatorDefault ();
@@ -281,6 +288,17 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   /**
+   * @return The XSLT processor selected explicitly for this resource, or <code>null</code> to use
+   *         the only one on the class path.
+   * @since 11.0.0
+   */
+  @Nullable
+  public final ISchematronXsltProcessor getXsltProcessor ()
+  {
+    return m_aXsltProcessor;
+  }
+
+  /**
    * @return The per-template telemetry callback configured for the XSLT transformation, or
    *         <code>null</code> if telemetry is disabled.
    * @since 10.0.0
@@ -296,8 +314,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
    *         to {@link #getTelemetry()} unless per-rule execution profiling is enabled together with
    *         telemetry, in which case the built-in {@link RuleDurationTemplateTelemetry} is composed
    *         in to emit {@link CSchematronTelemetry#METRIC_RULE_DURATION}. A non-null result forces
-   *         Saxon's {@code COMPILE_WITH_TRACING} (1.5&times;&ndash;3&times; slower), so the
-   *         per-rule timing is opt-in via {@code perRuleExecutionTelemetry(true)}.
+   *         the compilation with tracing (on Saxon {@code COMPILE_WITH_TRACING},
+   *         1.5&times;&ndash;3&times; slower), so the per-rule timing is opt-in via
+   *         {@code perRuleExecutionTelemetry(true)}.
    * @since 10.0.0
    */
   @Nullable
@@ -311,7 +330,8 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
 
   /**
    * @return <code>true</code> if per-rule execution timing ({@code schematron.rule.duration}) is
-   *         recorded via the Saxon trace listener. This forces {@code COMPILE_WITH_TRACING}
+   *         recorded via the trace listener of the XSLT processor. On Saxon this forces
+   *         {@code COMPILE_WITH_TRACING}
    *         (1.5&times;&ndash;3&times; slower). Only meaningful when {@link #isTelemetry()} is also
    *         <code>true</code>. Default is <code>false</code>.
    * @since 10.0.0
@@ -499,6 +519,22 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return applySchematronValidationToSVRL (aSource);
   }
 
+  /**
+   * Create the source for an internally parsed document. The DOM is never exposed, so the XSLT
+   * processor may convert it into its own tree model.
+   */
+  @NonNull
+  private Source _createSourceForInternalDocument (@NonNull final NodeAndBaseURI aXMLNode)
+  {
+    final ISchematronXSLTBasedProvider aXSLTProvider = getXSLTProvider ();
+    if (aXSLTProvider == null)
+    {
+      // The validation will not happen anyway
+      return new DOMSource (aXMLNode.doc (), aXMLNode.baseURI ());
+    }
+    return aXSLTProvider.getXsltProcessor ().createSourceForInternalDocument (aXMLNode.doc (), aXMLNode.baseURI ());
+  }
+
   @Override
   @NonNull
   public EValidity getSchematronValidity (@NonNull final IHasInputStream aXMLResource) throws Exception
@@ -507,9 +543,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (aXMLNode == null)
       return EValidity.INVALID;
 
-    // The DOM was created internally and is never exposed, so its object identity does not matter.
-    // A SaxonDOMSource lets Saxon build its native tree once instead of navigating the wrapped DOM.
-    return getSchematronValidity (new SaxonDOMSource (aXMLNode.doc (), aXMLNode.baseURI ()));
+    return getSchematronValidity (_createSourceForInternalDocument (aXMLNode));
   }
 
   @Override
@@ -520,8 +554,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (aXMLNode == null)
       return null;
 
-    // Internal DOM - see getSchematronValidity (IHasInputStream)
-    return applySchematronValidation (new SaxonDOMSource (aXMLNode.doc (), aXMLNode.baseURI ()));
+    return applySchematronValidation (_createSourceForInternalDocument (aXMLNode));
   }
 
   @Override
@@ -532,8 +565,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     if (aXMLNode == null)
       return null;
 
-    // Internal DOM - see getSchematronValidity (IHasInputStream)
-    return applySchematronValidationToSVRL (new SaxonDOMSource (aXMLNode.doc (), aXMLNode.baseURI ()));
+    return applySchematronValidationToSVRL (_createSourceForInternalDocument (aXMLNode));
   }
 
   @Override
@@ -586,6 +618,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
                             .append ("CustomURIResolver", m_aCustomURIResolver)
                             .append ("CustomParameters", m_aCustomParameters)
                             .append ("TFCustomizer", m_aTFCustomizer)
+                            .append ("XsltProcessor", m_aXsltProcessor)
                             .append ("Telemetry", m_aTelemetry)
                             .append ("XSLTValidator", m_aSOVDeterminator)
                             .append ("ValidateSVRL", m_bValidateSVRL)

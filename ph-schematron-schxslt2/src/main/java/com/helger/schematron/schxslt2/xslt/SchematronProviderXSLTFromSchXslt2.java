@@ -39,6 +39,8 @@ import org.w3c.dom.Document;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.timing.StopWatch;
+import com.helger.collection.commons.CommonsConcurrentHashMap;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
@@ -46,7 +48,8 @@ import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SerializedXSLTDocument;
-import com.helger.schematron.saxon.SchematronTransformerFactory;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.transform.LoggingTransformErrorListener;
 import com.helger.xml.transform.TransformSourceFactory;
@@ -54,7 +57,7 @@ import com.helger.xml.transform.XMLTransformerFactory;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an XSLT document. This
- * implementation uses JAXP with Saxon to be used as the respective parser/compiler.
+ * implementation uses JAXP with the configured XSLT processor (see {@link ISchematronXsltProcessor}).
  *
  * @author Philip Helger
  */
@@ -68,7 +71,8 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
    */
   public static final String TRANSPILE_PATH = "/content/transpile.xsl";
 
-  private static Templates s_aTemplate;
+  // The compiled transpile stylesheet per XSLT processor ID
+  private static final ICommonsMap <String, Templates> TRANSPILE_TEMPLATES = new CommonsConcurrentHashMap <> ();
 
   private final SchematronSchXslt2Config m_aConfig;
   // The generated XSLT is kept serialised, because the DOM is much bigger and only needed for debugging
@@ -81,17 +85,33 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
    */
   public static void cacheXSLTTemplate ()
   {
-    final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
+    cacheXSLTTemplate (SchematronXsltProcessorRegistry.getDefaultProcessor ());
+  }
+
+  /**
+   * Ensure that the XSLT template for converting Schematron to XSLT is cached for the provided XSLT
+   * processor. That may be called on application startup, otherwise it is done lazily on demand.
+   *
+   * @param aXsltProcessor
+   *        The XSLT processor to compile the template with. May not be <code>null</code>.
+   * @since 11.0.0
+   */
+  public static void cacheXSLTTemplate (@NonNull final ISchematronXsltProcessor aXsltProcessor)
+  {
+    ValueEnforcer.notNull (aXsltProcessor, "XsltProcessor");
+    final String sXsltProcessorID = aXsltProcessor.getID ();
+    final TransformerFactory aTF = aXsltProcessor.getDefaultTransformerFactory ();
     final ClassLoader aCL = SchematronProviderXSLTFromSchXslt2.class.getClassLoader ();
 
     // prepare all steps
-    if (s_aTemplate == null)
+    if (!TRANSPILE_TEMPLATES.containsKey (sXsltProcessorID))
     {
       // Step 1
       SchematronDebug.getDebugLogger ().info ("Creating SchXslt2 template");
-      s_aTemplate = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (TRANSPILE_PATH, aCL));
-      if (s_aTemplate == null)
+      final Templates aTemplate = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (TRANSPILE_PATH, aCL));
+      if (aTemplate == null)
         throw new IllegalStateException ("Failed to compile '" + TRANSPILE_PATH + "'");
+      TRANSPILE_TEMPLATES.put (sXsltProcessorID, aTemplate);
       SchematronDebug.getDebugLogger ().info ("Finished creating SchXslt2 template");
 
       if (Thread.interrupted ())
@@ -136,7 +156,10 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
     if (Thread.interrupted ())
       throw new SchematronInterruptedException ("before XSLT starts");
 
-    cacheXSLTTemplate ();
+    // On the first call, initializes the template
+    final ISchematronXsltProcessor aXsltProcessor = aConfig.getXsltProcessor ();
+    cacheXSLTTemplate (aXsltProcessor);
+    final String sXsltProcessorID = aXsltProcessor.getID ();
 
     final IReadableResource aSchematronResource = aConfig.getResource ();
 
@@ -145,7 +168,7 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
     {
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult1 = new DOMResult (aResult1Doc);
-      final Transformer aTransformer = s_aTemplate.newTransformer ();
+      final Transformer aTransformer = TRANSPILE_TEMPLATES.get (sXsltProcessorID).newTransformer ();
       _applyConfigToTransformer (aConfig, aTransformer);
       aSrc1 = TransformSourceFactory.create (aSchematronResource);
 
@@ -197,10 +220,11 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
       m_aSchematronXSLT = SerializedXSLTDocument.create (aSchematronXSLTDoc);
 
       // compile XSLT
-      // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
+      // When telemetry is enabled, the final stylesheet must be compiled with tracing
       // so that per-template events fire at execution time.
-      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (true)
-                                                                   : SchematronTransformerFactory.getDefault ();
+      final ISchematronXsltProcessor aXsltProcessor = m_aConfig.getXsltProcessor ();
+      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? aXsltProcessor.createTransformerFactory (true)
+                                                                   : aXsltProcessor.getDefaultTransformerFactory ();
 
       // Apply error listener + URI resolver to the final-compile factory
       final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
@@ -239,6 +263,12 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
   public IReadableResource getSchematronResource ()
   {
     return m_aConfig.getResource ();
+  }
+
+  @NonNull
+  public ISchematronXsltProcessor getXsltProcessor ()
+  {
+    return m_aConfig.getXsltProcessor ();
   }
 
   public boolean isValidSchematron ()

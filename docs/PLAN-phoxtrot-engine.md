@@ -42,7 +42,7 @@ ph-schematron 11.0.0 separates two things that are one today: the **pipeline** (
 | D2 | ISO XSLT files without Saxon | **No separate module** (decided 2026-11-10): `ph-schematron-isosch` itself becomes Saxon-free, the files stay where they are |
 | D3 | Engine identity | **Two dimensions**: `ESchematronEngine` stays the pipeline; the XSLT processor is a separate setting |
 | D4 | Module and package | `ph-schematron-phoxtrot`, package `com.helger.schematron.phoxtrot`: the processor binding, symmetric to `ph-schematron-saxon` |
-| D5 | `document()`/`doc()` at validation time | **Same as Saxon**: local schemes always allowed, remote network schemes blocked unless explicitly allowed, `jar:` checked against the nested URI. The check of `SaxonSecureResourceResolver` moves to a Saxon-free place and is used by both processors |
+| D5 | `document()`/`doc()` at validation time | **Same as Saxon** (corrected 2026-11-11): the JAXP pipelines do not use `SaxonSecureResourceResolver` (that is the s9api path of the pure engines). They rely on secure processing on the factory (`XMLFactory.defaultCustomizeTransformerFactory`) and resolve through `DefaultTransformURIResolver`; the behaviour is pinned by `SchematronSecureProcessingTest` (remote `document()` gives an empty document, remote `xsl:include` fails, local include works, `xsl:result-document` rejected, `system-property ()` empty, an explicit resolver may allow `http`). phoxtrot must pass the same test (P2) |
 | D6 | Step limit | **Unlimited** by default (`UNLIMITED_STEPS`), a limit as option |
 | D7 | Processor lookup | `ServiceLoader` SPI in `ph-schematron-api`, implemented by both processor modules |
 | D8 | Architecture | Saxon-free base classes with a processor interface (see below) |
@@ -68,9 +68,13 @@ ph-schematron (10.3.2-SNAPSHOT):
 - `ISchematronXSLTBasedProvider`, `ISchematronResource`, `AbstractSchematronResource`, `AbstractSchematronCache`,
   `SVRLMarshaller` and `SvrlTelemetryEmitter` are in `ph-schematron-api`, which has no Saxon dependency.
 - `SchematronTransformerFactory` holds global Saxon state (default factory, customizer, XInclude flag).
-- `SaxonSecureResourceResolver` (Saxon `ResourceResolver`): relative URIs and local schemes allowed, remote network
-  schemes (`XMLResourceSchemeHelper.getAllRemoteNetworkSchemes ()`) blocked unless allowed, `jar:` checked against
-  the nested URI; a blocked URI throws, because `null` would let Saxon resolve it.
+- `SaxonSecureResourceResolver` (Saxon `ResourceResolver`, installed only by `SchematronProcessorFactory`, i.e. the
+  s9api path of the pure engines): relative URIs and local schemes allowed, remote network schemes
+  (`XMLResourceSchemeHelper.getAllRemoteNetworkSchemes ()`) blocked unless allowed, `jar:` checked against the nested
+  URI; a blocked URI throws, because `null` would let Saxon resolve it.
+- `SchematronTransformerFactory` (the JAXP path of the XSLT pipelines) applies
+  `XMLFactory.defaultCustomizeTransformerFactory` (secure processing), line numbering, XInclude off by default, and
+  `COMPILE_WITH_TRACING` on request.
 - `pure-xslt`: the generator (`PureXsltStylesheetGenerator`, `SchematronToXsltConverter`, `EPureXsltVersion`,
   `PureXsltQueryBindingTransform`) has no Saxon import; `SchematronResourcePureXslt`, its config and cache use s9api
   (compile, `applyTemplates` into a `DOMDestination`, `XdmNode` input, resolver and error wrappers).
@@ -190,13 +194,22 @@ Proposed names, package `com.helger.schematron.api.xslt.processor`:
 
 | Type | Role |
 |---|---|
-| `ISchematronXsltProcessor` | One XSLT processor. `getID ()` (`"saxon"`, `"phoxtrot"`); `createTransformerFactory (ErrorListener, URIResolver, boolean bTracing)` for the conversion steps and the final compile; `prepareSource (Document, String sBaseURI)` for internally parsed input; `prepareSource (Source, Transformer)` before the validation; `installTelemetry (Transformer, ISchematronTemplateTelemetry)`; `createSecureUriResolver (URIResolver, Set <String> aAllowedRemoteSchemes)` for D5 |
-| `ISchematronXsltProcessorSpi` | `ServiceLoader` entry, one per processor module |
-| `SchematronXsltProcessorRegistry` | Finds the processors on the class path, applies D11, gives the processor by ID; error texts name the modules to add |
-| `SchematronResourceAccessHelper` | The scheme check of `SaxonSecureResourceResolver.isResourceAccessAllowed`, Saxon-free, used by both processors |
+| `ISchematronXsltProcessor` | One XSLT processor (`IHasID`: `"saxon"`, `"phoxtrot"`): `getDefaultTransformerFactory ()` (shared, for the conversion steps and the untraced final compile), `createTransformerFactory (boolean bEnableTracing)` and a default `createTransformerFactory (ErrorListener, URIResolver, boolean)`, `createSourceForInternalDocument (Document, String sBaseUri)` for internally parsed input, `getEffectiveSource (Source, Transformer)` right before the validation transform, `installTemplateTelemetry (Transformer, ISchematronTemplateTelemetry)` |
+| `ISchematronXsltProcessorSpi` | `ServiceLoader` interface (`@IsSPIInterface`, extends `ISchematronXsltProcessor`), one implementation per processor module, like `ISVRLLocationBeautifierSPI` |
+| `SchematronXsltProcessorRegistry` | Finds the processors on the class path: `getAllProcessors ()`, `getProcessorOfID (String)`, `getDefaultProcessor ()` (D11; the error texts name the modules to add) |
 
-The `URIResolver` given to phoxtrot for D5 throws a `TransformerException` for a blocked URI (phoxtrot turns it
-into FODC0002); for an allowed URI it delegates to the user's resolver and returns `null` otherwise.
+Implemented in P1 (2026-11-11):
+
+- `ISchematronXSLTBasedProvider.getXsltProcessor ()`: the validator and the resource reach the processor through
+  the provider.
+- The processor is resolved once, when a config is built (explicit setting, else the registry default); its ID is
+  part of the cache key. The resources keep the explicit setting only (`getXsltProcessor ()` may be `null`).
+- The conversion stylesheets of the ISO and SchXslt pipelines are cached per processor ID
+  (`cacheXSLTTemplates (ISchematronXsltProcessor)`; the no-argument variant uses the default processor).
+- `SchematronProviderXSLTPrebuild` has a constructor with the processor; the existing ones use the default.
+- No Saxon-free resource access helper: with the D5 correction the JAXP path does not need one. P2 adds it only if
+  `SchematronSecureProcessingTest` requires it on phoxtrot.
+
 
 ### Moves in `ph-schematron-api` and `ph-schematron-saxon`
 
@@ -204,8 +217,7 @@ into FODC0002); for an allowed URI it delegates to the user's resolver and retur
   `ph-schematron-api`, same package `com.helger.schematron.api.xslt`. The three Saxon places go through
   `ISchematronXsltProcessor`.
 - `ph-schematron-saxon` keeps `SchematronTransformerFactory`, `SaxonDOMSource`, `SaxonTinyTreeHelper`,
-  `SchematronProcessorFactory`, the trace listener classes and `SaxonSecureResourceResolver` (on top of
-  `SchematronResourceAccessHelper`), and adds `SaxonXsltProcessor` with exactly today's behaviour (TinyTree built
+  `SchematronProcessorFactory`, the trace listener classes and `SaxonSecureResourceResolver`, and adds `SaxonXsltProcessor` with exactly today's behaviour (TinyTree built
   once per validation, trace listener and `COMPILE_WITH_TRACING` only with telemetry).
 - Gate: all tests of all existing modules pass on Saxon, unchanged except for the added processor dependency.
 
@@ -314,8 +326,8 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
    on Saxon raises one on phoxtrot (same error code where available).
 5. The existing tests of the four pipeline modules run on both processors (parameterised by processor); the existing
    pure tests run on both XPath bindings.
-6. D5 end to end: a schematron with `document()` on a local file (allowed), on `http:` (blocked, error), on `http:`
-   with `http` allowed (delegated), on `jar:http:` (blocked), on both processors with the same outcome.
+6. D5 end to end: `SchematronSecureProcessingTest` (`ph-schematron-xslt`) passes on both processors with the same
+   outcome.
 7. Limits: a large document (e.g. 20,000 `item` elements, as generated in `BenchmarkDomVsTinyTree`) with the default
    step limit; interruption; a deep `and`/`or` chain.
 

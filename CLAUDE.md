@@ -13,8 +13,8 @@ Parent POM: `com.helger:parent-pom:3.1.0` — many plugin defaults (compiler, su
 Multi-module Maven build. Order matters (later modules depend on earlier ones), as in the root `pom.xml`:
 
 1. `ph-schematron-testfiles` — shared test resources (`.sch` / XML samples).
-2. `ph-schematron-api` — public API surface: `ISchematronResource`, base classes, SVRL JAXB bindings.
-3. `ph-schematron-saxon` — the Saxon specific parts (transformer factory, DOM bridge, trace listener, XSLT base classes).
+2. `ph-schematron-api` — public API surface: `ISchematronResource`, base classes (incl. the XSLT base classes `AbstractSchematronXSLTBasedResource`, `SchematronXSLTValidator`), SVRL JAXB bindings, the XSLT processor interface `ISchematronXsltProcessor` and its registry.
+3. `ph-schematron-saxon` — the Saxon XSLT processor (`SaxonXsltProcessor`) and the other Saxon specific parts (transformer factory, DOM bridge, trace listener, s9api processor factory).
 4. `ph-schematron-phoxtrot` — the phoxtrot specific parts (still empty, see `docs/PLAN-phoxtrot-engine.md`).
 5. `ph-schematron-xslt` — engine for prebuilt XSLT files (`SchematronResourceXSLT`).
 6. `ph-schematron-isosch` — ISO Schematron XSLT pipeline (`SchematronResourceSCH`).
@@ -30,7 +30,9 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 16. `ph-schematron-it` — integration tests (all engines, telemetry).
 
 Version 11 (branch `phoxtrot`) separates the pipeline (`ESchematronEngine`) from the XSLT processor (Saxon or phoxtrot);
-the plan with all decisions is `docs/PLAN-phoxtrot-engine.md`.
+the plan with all decisions is `docs/PLAN-phoxtrot-engine.md`. The JAXP pipeline modules (`isosch`, `xslt`, `schxslt`,
+`schxslt2`) have no processor dependency; they use `ph-schematron-saxon` only as test dependency. With exactly one
+processor on the class path it is used automatically, otherwise it must be set via `xsltProcessor (...)`.
 
 Public API entry points users see first: `SchematronResourceSCH`, `SchematronResourceXSLT`, `SchematronResourcePure`, `SchematronResourceSchXslt`.
 
