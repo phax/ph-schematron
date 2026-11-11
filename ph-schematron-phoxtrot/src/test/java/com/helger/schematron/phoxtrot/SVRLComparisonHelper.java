@@ -29,9 +29,11 @@ import org.w3c.dom.Node;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.CommonsTreeMap;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.collection.commons.ICommonsSortedMap;
 import com.helger.io.resource.IReadableResource;
@@ -45,23 +47,13 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 @Immutable
 final class SVRLComparisonHelper
 {
-  /**
-   * Saxon takes very long for these (see SchematronSCHCacheTest in ph-schematron-isosch), so they are only converted on
-   * phoxtrot.
-   */
-  static final ICommonsSet <String> NO_SAXON_REFERENCE = new CommonsHashSet <> ("external/test-sch/biicore/BIICORE-UBL-T01.sch",
-                                                                                        "external/test-sch/biicore/BIICORE-UBL-T10.sch",
-                                                                                        "external/test-sch/biicore/BIICORE-UBL-T14.sch",
-                                                                                        "external/test-sch/biicore/BIICORE-UBL-T15.sch");
-
-  /**
-   * The include step nests deeper than the phoxtrot limit of 10,000 levels, which the JAXP adapter
-   * cannot raise yet (phoxtrot suggestion S35).
-   */
-  static final ICommonsSet <String> KNOWN_PHOXTROT_FAILURES = new CommonsHashSet <> ("external/test-sch/eugen/EUGEN-UBL-T14.sch",
-                                                                                             "external/test-sch/eugen/EUGEN-UBL-T15.sch");
-
   private static final Pattern IS_A = Pattern.compile ("is-a=\"([^\"]+)\"");
+  /**
+   * A complete <code>generate-id()</code> value: Saxon on a wrapped DOM (<code>w84110aab7</code>),
+   * Saxon on its own tree (<code>d84976e9</code>), phoxtrot (<code>id1</code>); phoxtrot suggestion
+   * S37.
+   */
+  private static final Pattern GENERATED_ID = Pattern.compile ("\\b(?:w[0-9]+[a-z][0-9a-z]*|d[0-9]+e[0-9]+|id[0-9]+)\\b");
 
   private SVRLComparisonHelper ()
   {}
@@ -99,7 +91,20 @@ final class SVRLComparisonHelper
     String ret = sText;
     for (final String sIsA : aIsA)
       ret = ret.replaceAll ("(?:w[0-9a-z]+|id[0-9]+)(" + Pattern.quote (sIsA) + ")", "GENERATED-ID$1");
-    return ret;
+
+    // Whole generated IDs (e.g. the template names, modes and keys of SchXslt) are numbered in the
+    // order of their first occurrence, so that a different reference stays visible
+    final ICommonsMap <String, String> aMapping = new CommonsHashMap <> ();
+    final Matcher aMatcher = GENERATED_ID.matcher (ret);
+    final StringBuilder aSB = new StringBuilder ();
+    while (aMatcher.find ())
+    {
+      final String sReplacement = aMapping.computeIfAbsent (aMatcher.group (),
+                                                            k -> "GENID-" + (aMapping.size () + 1));
+      aMatcher.appendReplacement (aSB, sReplacement);
+    }
+    aMatcher.appendTail (aSB);
+    return aSB.toString ();
   }
 
   private static void _appendStartTag (@NonNull final Element aElement, @NonNull final StringBuilder aSB)

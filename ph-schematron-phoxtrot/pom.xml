@@ -109,6 +109,16 @@
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-schxslt</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-schxslt2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-saxon</artifactId>
       <scope>test</scope>
     </dependency>

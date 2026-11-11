@@ -17,20 +17,19 @@
 package com.helger.schematron.phoxtrot;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collection;
 
 import javax.xml.transform.TransformerException;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
-import com.helger.base.timing.StopWatch;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsList;
@@ -40,43 +39,45 @@ import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.saxon.SaxonXsltProcessor;
-import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
-import com.helger.schematron.sch.SchematronSCHConfig;
-import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
- * Compare the XSLT that the ISO Schematron pipeline creates on phoxtrot with the one it creates on
- * Saxon, for all valid Schematron test files. Differences are written to
- * <code>target/pipeline-compare/iso</code>.
+ * Compare the XSLT that the Schematron pipelines create on phoxtrot with the one they create on
+ * Saxon, for all Schematron test files of the pipeline. Differences are written to
+ * <code>target/pipeline-compare/&lt;pipeline&gt;</code>.
  * <p>
- * Accepted differences:
- * <ul>
- * <li>The IDs of patterns instantiated from abstract patterns are built from
- * <code>generate-id()</code> in <code>iso_abstract_expand.xsl</code>, whose values are
- * implementation-dependent (phoxtrot suggestion S37). They are normalised before the comparison.</li>
- * </ul>
+ * Accepted differences, each filed as phoxtrot suggestion: see {@link SVRLComparisonHelper} and the
+ * known failures of {@link ComparedPipeline}.
  *
  * @author Philip Helger
  */
-public final class IsoSchematronPhoxtrotVsSaxonComparisonTest
+@RunWith (Parameterized.class)
+public final class CreatedXSLTPhoxtrotVsSaxonComparisonTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (IsoSchematronPhoxtrotVsSaxonComparisonTest.class);
-  private static final File TARGET_DIR = new File ("target/pipeline-compare/iso");
+  private static final Logger LOGGER = LoggerFactory.getLogger (CreatedXSLTPhoxtrotVsSaxonComparisonTest.class);
 
-  @Nullable
-  private static String _createXSLT (@NonNull final IReadableResource aRes,
-                                     @NonNull final ISchematronXsltProcessor aProcessor) throws TransformerException
+  private final ComparedPipeline m_aPipeline;
+
+  public CreatedXSLTPhoxtrotVsSaxonComparisonTest (@NonNull final ComparedPipeline aPipeline)
   {
-    final StopWatch aSW = StopWatch.createdStarted ();
-    final Document aDoc = SchematronProviderXSLTFromSCH.createSchematronXSLT (SchematronSCHConfig.builder (aRes)
-                                                                                                    .xsltProcessor (aProcessor)
-                                                                                                    .build ());
-    aSW.stop ();
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Created XSLT of " + aRes.getPath () + " on " + aProcessor.getID () + " in " + aSW.getMillis () + " ms");
-    return XMLWriter.getNodeAsString (aDoc, XMLWriterSettings.DEFAULT_XML_SETTINGS);
+    m_aPipeline = aPipeline;
+  }
+
+  @Parameterized.Parameters (name = "{0}")
+  public static Collection <Object []> getAllPipelines ()
+  {
+    return new CommonsArrayList <> (new Object [] { ComparedPipeline.ISO },
+                                    new Object [] { ComparedPipeline.SCHXSLT1 },
+                                    new Object [] { ComparedPipeline.SCHXSLT2 });
+  }
+
+  @NonNull
+  private String _createXSLT (@NonNull final IReadableResource aRes,
+                              @NonNull final ISchematronXsltProcessor aProcessor) throws TransformerException
+  {
+    return XMLWriter.getNodeAsString (m_aPipeline.getXSLTCreator ().createXSLT (aRes, aProcessor),
+                                      XMLWriterSettings.DEFAULT_XML_SETTINGS);
   }
 
   @Test
@@ -84,11 +85,12 @@ public final class IsoSchematronPhoxtrotVsSaxonComparisonTest
   {
     final ISchematronXsltProcessor aSaxon = new SaxonXsltProcessor ();
     final ISchematronXsltProcessor aPhoxtrot = new PhoxtrotXsltProcessor ();
+    final File aTargetDir = new File ("target/pipeline-compare/" + m_aPipeline.getID ());
 
     final ICommonsList <String> aDifferent = new CommonsArrayList <> ();
     final ICommonsSet <String> aFailed = new CommonsHashSet <> ();
     int nCompared = 0;
-    for (final IReadableResource aRes : SchematronTestHelper.getAllValidSchematronFiles ())
+    for (final IReadableResource aRes : m_aPipeline.getAllSources ())
     {
       final String sPath = aRes.getPath ();
       final String sPhoxtrot;
@@ -98,36 +100,39 @@ public final class IsoSchematronPhoxtrotVsSaxonComparisonTest
       }
       catch (final TransformerException ex)
       {
-        LOGGER.warn ("phoxtrot failed on " + sPath + ": " + ex.getMessage ());
+        LOGGER.warn ("[" + m_aPipeline.getID () + "] phoxtrot failed on " + sPath + ": " + ex.getMessage ());
         aFailed.add (sPath);
         continue;
       }
-      if (SVRLComparisonHelper.NO_SAXON_REFERENCE.contains (sPath))
+      if (m_aPipeline.getNoSaxonReference ().contains (sPath))
         continue;
 
       final String sSaxon = _createXSLT (aRes, aSaxon);
       nCompared++;
 
       final ICommonsSet <String> aIsA = SVRLComparisonHelper.getAllIsA (aRes);
-      if (!SVRLComparisonHelper.normaliseGeneratedIDs (sSaxon, aIsA).equals (SVRLComparisonHelper.normaliseGeneratedIDs (sPhoxtrot, aIsA)))
+      if (!SVRLComparisonHelper.normaliseGeneratedIDs (sSaxon, aIsA)
+                               .equals (SVRLComparisonHelper.normaliseGeneratedIDs (sPhoxtrot, aIsA)))
       {
         aDifferent.add (sPath);
         final String sBaseName = FilenameHelper.getWithoutExtension (sPath).replace ('/', '_');
-        SimpleFileIO.writeFile (new File (TARGET_DIR, sBaseName + ".saxon.xslt"),
+        SimpleFileIO.writeFile (new File (aTargetDir, sBaseName + ".saxon.xslt"),
                                 sSaxon,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
-        SimpleFileIO.writeFile (new File (TARGET_DIR, sBaseName + ".phoxtrot.xslt"),
+        SimpleFileIO.writeFile (new File (aTargetDir, sBaseName + ".phoxtrot.xslt"),
                                 sPhoxtrot,
                                 XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
       }
     }
-    LOGGER.info ("Compared the created XSLT of " +
+    LOGGER.info ("[" +
+                 m_aPipeline.getID () +
+                 "] Compared the created XSLT of " +
                  nCompared +
                  " Schematron files: " +
                  aDifferent.size () +
                  " differ; phoxtrot failed on " +
                  aFailed.size ());
-    assertEquals ("Unexpected phoxtrot failures", SVRLComparisonHelper.KNOWN_PHOXTROT_FAILURES, aFailed);
-    assertTrue ("Different created XSLT: " + aDifferent, aDifferent.isEmpty ());
+    assertEquals ("Unexpected phoxtrot failures", m_aPipeline.getKnownPhoxtrotFailures (), aFailed);
+    assertEquals ("Unexpected created XSLT differences", m_aPipeline.getKnownDifferentXSLT (), new CommonsHashSet <> (aDifferent));
   }
 }
