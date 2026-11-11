@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.phoxtrot;
+package com.helger.schematron.it;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,6 +38,7 @@ import com.helger.io.file.FilenameHelper;
 import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;

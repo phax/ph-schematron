@@ -49,5 +49,27 @@ public final class SchematronXsltProcessorRegistryTest
       assertTrue (ex.getMessage ().contains ("ph-schematron-saxon"));
       assertTrue (ex.getMessage ().contains ("ph-schematron-phoxtrot"));
     }
+
+    // No ID: the default, which fails without processor
+    try
+    {
+      SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (null);
+      fail ();
+    }
+    catch (final IllegalStateException ex)
+    {
+      // expected
+    }
+    // Unknown ID
+    try
+    {
+      SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault ("saxon");
+      fail ();
+    }
+    catch (final IllegalArgumentException ex)
+    {
+      assertTrue (ex.getMessage ().contains ("'saxon'"));
+      assertTrue (ex.getMessage ().contains ("none"));
+    }
   }
 }

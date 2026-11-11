@@ -301,13 +301,20 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
 
 ## Integration
 
-- `ESchematronEngine`: unchanged constants; Javadoc names the processors per pipeline. New method
-  `isProcessorSelectable ()` (or similar) for the four JAXP pipelines and `PURE_XPATH`.
-- `ph-schematron-maven-plugin` (`SchematronValidationMojo`, `XSLTMojo`): new parameter `xsltProcessor`
-  (`saxon`/`phoxtrot`, default: D11). The plugin itself depends on no processor; the user adds one as plugin
-  dependency. Error message if none or two without the parameter. Plugin documentation.
-- `ph-schematron-ant-task` (`Schematron`): attribute `xsltProcessor`, same rules.
-- `ph-schematron-it`: all JAXP pipelines on both processors (`SchematronAllEnginesTelemetryTest`, `MainOtelDemo`).
+- `ESchematronEngine`: unchanged constants; new method `isXsltProcessorSelectable ()` (`true` for `ISO_SCHEMATRON`,
+  `SCHXSLT1`, `SCHXSLT2`, `XSLT_PREBUILT`; `PURE_XPATH` follows with its own binding mechanism in P4a/P4b).
+- `SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (String)`: the lookup for configuration values (empty →
+  D11 default, unknown ID → `IllegalArgumentException` that lists the available processors).
+- `ph-schematron-maven-plugin` (`SchematronValidationMojo`, `Schematron2XSLTMojo`): new parameter `xsltProcessor`
+  (`saxon`/`phoxtrot`). Corrected 2026-11-11: the plugin contains Saxon (the pure engines need it anyway); phoxtrot
+  users add `ph-schematron-phoxtrot` as plugin dependency and must then set `xsltProcessor` (two processors, D11).
+  A wrong or missing choice is a `MojoExecutionException` with the registry's message.
+- `ph-schematron-ant-task` (`Schematron`): attribute `xsltProcessor`, same rules (Saxon contained).
+- `ph-schematron-it`: all JAXP pipelines on both processors (`SchematronAllEnginesTelemetryTest`,
+  `SchematronRemoteAccessTest`, `MainOtelDemo`), and the comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`,
+  `SVRLPhoxtrotVsSaxonComparisonTest`, `PhoxtrotSecureProcessingTest`). They moved there from
+  `ph-schematron-phoxtrot` (2026-11-11), because the pipeline modules need `ph-schematron-phoxtrot` as test
+  dependency for test 5, which would otherwise be a dependency cycle.
 - Root `pom.xml`: version 11.0.0-SNAPSHOT, `java.version` 21, Saxon-HE 13.1, phoxtrot 0.2.0-SNAPSHOT in the dependency management, module
   `ph-schematron-phoxtrot`.
 - CI: matrix 21 and 25, snapshot deploy from the Java 21 job.
@@ -358,8 +365,10 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
 4. Error equivalence: both processors give the same `isValidSchematron ()` for the invalid SCH files (corrected
    2026-11-11: these files are invalid for the pure engine; the ISO pipeline accepts 5 of the 8 on both processors);
    XML that raises a dynamic error on Saxon raises one on phoxtrot with the same error code.
-5. The existing tests of the four pipeline modules run on both processors (parameterised by processor); the existing
-   pure tests run on both XPath bindings.
+5. The existing tests of the four pipeline modules run on both processors (decided 2026-11-11: two surefire
+   executions per module, each with exactly one processor on the class path via `classpathDependencyExcludes`; the
+   phoxtrot run excludes the tests that use Saxon classes and `SchematronSecureProcessingTest` (S36)); the existing
+   pure tests run on both XPath bindings (P4b).
 6. D5 end to end: `SchematronSecureProcessingTest` (`ph-schematron-xslt`) passes on both processors with the same
    outcome.
 7. Limits: a large document (e.g. 20,000 `item` elements, as generated in `BenchmarkDomVsTinyTree`) with the default

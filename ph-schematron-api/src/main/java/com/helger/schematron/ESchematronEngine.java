@@ -34,30 +34,30 @@ import com.helger.collection.commons.ICommonsSet;
 public enum ESchematronEngine implements IHasID <String>
 {
   /** Pure-Java XPath-only engine; same as {@link #PURE}. */
-  PURE_XPATH ("pure-xpath", new CommonsHashSet <> ("pure"), false),
+  PURE_XPATH ("pure-xpath", new CommonsHashSet <> ("pure"), false, false),
 
   /**
    * Pure-Java engine that generates an XSLT 3.0 stylesheet in Java (no external ISO Schematron
    * stylesheet chain) and runs it through Saxon s9api. Suitable both as a validation engine and as
    * a {@code SCH -> XSLT} converter.
    */
-  PURE_XSLT ("pure-xslt", new CommonsHashSet <> ("pure-saxon"), true),
+  PURE_XSLT ("pure-xslt", new CommonsHashSet <> ("pure-saxon"), true, false),
 
   /**
    * ISO Schematron: SCH-to-XSLT preprocessing through the canonical ISO Schematron XSL stylesheet
    * chain. The {@code "schematron"} and {@code "sch"} aliases mirror the pre-v10
    * {@code ESchematronMode.SCHEMATRON} id.
    */
-  ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron", "schematron", "sch"), true),
+  ISO_SCHEMATRON ("iso-schematron", new CommonsHashSet <> ("iso", "isoschematron", "schematron", "sch"), true, true),
 
   /**
    * SchXslt v1 (XSLT 2). The {@code "schxslt-xslt2"} alias mirrors the pre-v10
    * {@code ESchematronMode.SCHXSLT_XSLT2} id.
    */
-  SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1", "schxslt-xslt2"), true),
+  SCHXSLT1 ("schxslt", new CommonsHashSet <> ("schxslt1", "schxslt-xslt2"), true, true),
 
   /** SchXslt v2 (XSLT 3). */
-  SCHXSLT2 ("schxslt2", new CommonsHashSet <> (), true),
+  SCHXSLT2 ("schxslt2", new CommonsHashSet <> (), true, true),
 
   /**
    * Apply a pre-built XSLT stylesheet directly to the XML instance (does not perform any
@@ -66,7 +66,7 @@ public enum ESchematronEngine implements IHasID <String>
    * is consumed by {@code Schematron2XSLTMojo} which only accepts engines that can produce XSLT
    * from SCH.
    */
-  XSLT_PREBUILT ("xslt", new CommonsHashSet <> (), false);
+  XSLT_PREBUILT ("xslt", new CommonsHashSet <> (), false, true);
 
   /** Pure-Java XPath-only engine (alias of {@link #PURE_XPATH}; kept for compatibility) */
   @Deprecated (forRemoval = true, since = "10.0.0")
@@ -75,16 +75,19 @@ public enum ESchematronEngine implements IHasID <String>
   private final @NonNull @Nonempty String m_sID;
   private final @NonNull ICommonsSet <String> m_aIDs;
   private final boolean m_bIsXSLTBased;
+  private final boolean m_bIsXsltProcessorSelectable;
 
   ESchematronEngine (@NonNull @Nonempty final String sID,
                      @NonNull final ICommonsSet <String> aAlternativeIDs,
-                     final boolean bIsXSLTBased)
+                     final boolean bIsXSLTBased,
+                     final boolean bIsXsltProcessorSelectable)
   {
     m_sID = sID;
 
     m_aIDs = aAlternativeIDs;
     m_aIDs.add (sID);
     m_bIsXSLTBased = bIsXSLTBased;
+    m_bIsXsltProcessorSelectable = bIsXsltProcessorSelectable;
   }
 
   @NonNull
@@ -97,6 +100,18 @@ public enum ESchematronEngine implements IHasID <String>
   public boolean isXSLTBased ()
   {
     return m_bIsXSLTBased;
+  }
+
+  /**
+   * @return <code>true</code> if this engine runs on a selectable XSLT processor (see
+   *         {@link com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor}), i.e. on
+   *         Saxon or phoxtrot. <code>false</code> for the engines that are bound to Saxon or need
+   *         no XSLT processor.
+   * @since 11.0.0
+   */
+  public boolean isXsltProcessorSelectable ()
+  {
+    return m_bIsXsltProcessorSelectable;
   }
 
   @Nullable

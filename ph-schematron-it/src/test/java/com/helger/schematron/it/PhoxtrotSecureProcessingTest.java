@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.phoxtrot;
+package com.helger.schematron.it;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,6 +34,8 @@ import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.phoxtrot.PhoxtrotTransformerFactories;
+import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.svrl.SVRLHelper;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;

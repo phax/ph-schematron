@@ -91,4 +91,38 @@ public final class SchematronXsltProcessorRegistry
                                        "). Select one explicitly.");
     return LIST.getFirstOrNull ();
   }
+
+  /**
+   * Get the XSLT processor with the provided ID, or the default one if no ID is provided. This is
+   * the lookup for configuration values like the <code>xsltProcessor</code> parameter of the Maven
+   * plugin and the Ant task.
+   *
+   * @param sID
+   *        The processor ID. May be <code>null</code> or empty to use
+   *        {@link #getDefaultProcessor()}.
+   * @return The XSLT processor. Never <code>null</code>.
+   * @throws IllegalArgumentException
+   *         If no processor with the provided ID is on the class path
+   * @throws IllegalStateException
+   *         If no ID is provided and no or more than one processor is on the class path
+   */
+  @NonNull
+  public static ISchematronXsltProcessor getProcessorOfIDOrDefault (@Nullable final String sID)
+  {
+    if (StringHelper.isEmpty (sID))
+      return getDefaultProcessor ();
+
+    final ISchematronXsltProcessor ret = getProcessorOfID (sID);
+    if (ret == null)
+      throw new IllegalArgumentException ("The Schematron XSLT processor '" +
+                                          sID +
+                                          "' is not on the class path. Available are: " +
+                                          (LIST.isEmpty () ? "none" : StringImplode.imploder ()
+                                                                                    .source (LIST,
+                                                                                             ISchematronXsltProcessor::getID)
+                                                                                    .separator (", ")
+                                                                                    .build ()) +
+                                          ". Add 'ph-schematron-saxon' or 'ph-schematron-phoxtrot' as a dependency.");
+    return ret;
+  }
 }

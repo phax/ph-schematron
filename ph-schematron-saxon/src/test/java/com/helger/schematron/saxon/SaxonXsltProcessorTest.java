@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 
@@ -55,6 +56,20 @@ public final class SaxonXsltProcessorTest
     assertEquals (SaxonXsltProcessor.ID, aProcessor.getID ());
     assertSame (aProcessor, SchematronXsltProcessorRegistry.getProcessorOfID (SaxonXsltProcessor.ID));
     assertNull (SchematronXsltProcessorRegistry.getProcessorOfID ("phoxtrot"));
+
+    assertSame (aProcessor, SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (null));
+    assertSame (aProcessor, SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (""));
+    assertSame (aProcessor, SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (SaxonXsltProcessor.ID));
+    try
+    {
+      SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault ("phoxtrot");
+      fail ();
+    }
+    catch (final IllegalArgumentException ex)
+    {
+      // The available processors are listed
+      assertTrue (ex.getMessage ().contains ("saxon"));
+    }
   }
 
   @Test

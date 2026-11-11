@@ -15,7 +15,7 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 1. `ph-schematron-testfiles` — shared test resources (`.sch` / XML samples).
 2. `ph-schematron-api` — public API surface: `ISchematronResource`, base classes (incl. the XSLT base classes `AbstractSchematronXSLTBasedResource`, `SchematronXSLTValidator`), SVRL JAXB bindings, the XSLT processor interface `ISchematronXsltProcessor` and its registry.
 3. `ph-schematron-saxon` — the Saxon XSLT processor (`SaxonXsltProcessor`) and the other Saxon specific parts (transformer factory, DOM bridge, trace listener, s9api processor factory).
-4. `ph-schematron-phoxtrot` — the phoxtrot XSLT processor (`PhoxtrotXsltProcessor`, `PhoxtrotTransformerFactories`, telemetry bridge). Its tests have both processors on the class path and compare phoxtrot with Saxon (e.g. `IsoSchematronPhoxtrotVsSaxonComparisonTest`), so they always select the processor explicitly.
+4. `ph-schematron-phoxtrot` — the phoxtrot XSLT processor (`PhoxtrotXsltProcessor`, `PhoxtrotTransformerFactories`, telemetry bridge).
 5. `ph-schematron-xslt` — engine for prebuilt XSLT files (`SchematronResourceXSLT`).
 6. `ph-schematron-isosch` — ISO Schematron XSLT pipeline (`SchematronResourceSCH`).
 7. `ph-schematron-schxslt` — SchXslt 1.x engine.
@@ -27,12 +27,16 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 13. `ph-schematron-maven-plugin` — Maven plugin (`packaging = maven-plugin`).
 14. `ph-schematron-ant-task` — Ant task.
 15. `ph-schematron-benchmarks` — JMH benchmarks.
-16. `ph-schematron-it` — integration tests (all engines, telemetry).
+16. `ph-schematron-it` — integration tests (all engines on both XSLT processors, telemetry) and the phoxtrot vs. Saxon comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`, `SVRLPhoxtrotVsSaxonComparisonTest`, `PhoxtrotSecureProcessingTest`). Both processors are on its class path, so its tests always select the processor explicitly.
 
 Version 11 (branch `phoxtrot`) separates the pipeline (`ESchematronEngine`) from the XSLT processor (Saxon or phoxtrot);
 the plan with all decisions is `docs/PLAN-phoxtrot-engine.md`. The JAXP pipeline modules (`isosch`, `xslt`, `schxslt`,
-`schxslt2`) have no processor dependency; they use `ph-schematron-saxon` only as test dependency. With exactly one
-processor on the class path it is used automatically, otherwise it must be set via `xsltProcessor (...)`.
+`schxslt2`) have no processor dependency. Their tests run twice (two surefire executions): once with only
+`ph-schematron-saxon`, once with only `ph-schematron-phoxtrot` on the class path (`classpathDependencyExcludes`);
+reports of the second run are in `target/surefire-reports-phoxtrot`. With exactly one processor on the class path it
+is used automatically, otherwise it must be set via `xsltProcessor (...)`. Saxon is the reference: every difference
+of phoxtrot is filed in `../phoxtrot/docs/SUGGESTIONS.md`, and a test may only exclude or normalise it with a comment
+naming the suggestion. Do not change anything else in the phoxtrot repository (another session works there).
 
 Public API entry points users see first: `SchematronResourceSCH`, `SchematronResourceXSLT`, `SchematronResourcePure`, `SchematronResourceSchXslt`.
 

@@ -90,6 +90,10 @@
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-phoxtrot</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-pure</artifactId>
     </dependency>
     <dependency>
@@ -107,6 +111,10 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-schxslt2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
 
     <!-- ph-telemetry abstraction + the real OpenTelemetry binding for the Grafana demo -->
@@ -145,6 +153,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-testfiles</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

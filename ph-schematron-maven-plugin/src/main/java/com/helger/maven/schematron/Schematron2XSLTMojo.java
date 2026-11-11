@@ -60,6 +60,8 @@ import com.helger.io.file.FilenameHelper;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ESchematronEngine;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.SchematronSCHConfig;
 import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSLT2;
@@ -189,6 +191,16 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   @Since ("9.1.1")
   private String m_sSchematronEngine = ESchematronEngine.ISO_SCHEMATRON.getID ();
 
+  /**
+   * The XSLT processor for the engines <code>iso-schematron</code>, <code>schxslt</code> and
+   * <code>schxslt2</code>: <code>saxon</code> (contained in the plugin) or <code>phoxtrot</code>
+   * (requires <code>ph-schematron-phoxtrot</code> as plugin dependency). If not set, the only XSLT
+   * processor on the class path is used; with both on the class path it must be set.
+   */
+  @Parameter (name = "xsltProcessor")
+  @Since ("11.0.0")
+  private String m_sXsltProcessor;
+
   public void setSchematronDirectory (@NonNull final File aDir)
   {
     m_aSchematronDirectory = aDir;
@@ -310,6 +322,12 @@ public final class Schematron2XSLTMojo extends AbstractMojo
     return m_sSchematronEngine;
   }
 
+  public void setXsltProcessor (@Nullable final String s)
+  {
+    m_sXsltProcessor = s;
+    getLog ().debug ("Using the XSLT processor '" + s + "'");
+  }
+
   public void execute () throws MojoExecutionException, MojoFailureException
   {
     if (m_aSchematronDirectory == null)
@@ -342,6 +360,21 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                                                               e -> "'" + e.getID () + "'")
                                                      .separator (", ")
                                                      .build ());
+
+    // The XSLT processor of the XSLT based engines
+    final ISchematronXsltProcessor aXsltProcessor;
+    if (eEngine.isXsltProcessorSelectable ())
+      try
+      {
+        aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (m_sXsltProcessor);
+        getLog ().debug ("Using the XSLT processor '" + aXsltProcessor.getID () + "'");
+      }
+      catch (final IllegalArgumentException | IllegalStateException ex)
+      {
+        throw new MojoExecutionException (ex.getMessage ());
+      }
+    else
+      aXsltProcessor = null;
 
     // for all Schematron files that match the pattern
     final DirectoryScanner aScanner = new DirectoryScanner ();
@@ -419,6 +452,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                   // Specified language code - default = null
                   final SchematronSCHConfig aConfig = SchematronSCHConfig.builder (aSchematronResource)
                                                                          .errorListener (aMojoErrorListener)
+                                                                         .xsltProcessor (aXsltProcessor)
                                                                          .uriResolver (null)
                                                                          .phase (m_sPhaseName)
                                                                          .languageCode (m_sLanguageCode)
@@ -433,6 +467,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                   aEffectiveCustomParams.put ("schxslt.compile.metadata", "false");
                   final SchematronSchXslt_XSLT2Config aSchXsltConfig = SchematronSchXslt_XSLT2Config.builder (aSchematronResource)
                                                                                                     .errorListener (aMojoErrorListener)
+                                                                                                    .xsltProcessor (aXsltProcessor)
                                                                                                     .uriResolver (null)
                                                                                                     .phase (m_sPhaseName)
                                                                                                     .languageCode (m_sLanguageCode)
@@ -445,6 +480,7 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                 {
                   final SchematronSchXslt2Config aSchXslt2Config = SchematronSchXslt2Config.builder (aSchematronResource)
                                                                                            .errorListener (aMojoErrorListener)
+                                                                                           .xsltProcessor (aXsltProcessor)
                                                                                            .uriResolver (null)
                                                                                            .phase (m_sPhaseName)
                                                                                            .languageCode (m_sLanguageCode)

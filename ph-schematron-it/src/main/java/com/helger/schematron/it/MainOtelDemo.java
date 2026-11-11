@@ -35,8 +35,11 @@ import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.CSchematronVersion;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
@@ -82,6 +85,8 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 @Immutable
 public final class MainOtelDemo
 {
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+  private static final ISchematronXsltProcessor PHOXTROT = new PhoxtrotXsltProcessor ();
   private static final Logger LOGGER = LoggerFactory.getLogger (MainOtelDemo.class);
 
   private static final String DEFAULT_ENDPOINT = "http://localhost:4317";
@@ -164,34 +169,58 @@ public final class MainOtelDemo
   private static ICommonsOrderedMap <String, ISchematronResource> _buildEngines (@NonNull final byte [] aSch)
   {
     // Demo: emit everything - per-finding spans AND per-rule execution timing. The XSLT-based
-    // engines force Saxon tracing for the rule timing (slower, fine for a demo). The pure-XSLT
+    // engines force tracing for the rule timing (slower on Saxon, fine for a demo). The pure-XSLT
     // engine has no per-rule execution timing, so it only gets the per-finding spans.
-    final ICommonsMap <ESchematronEngine, IEngineBuilder> aBuilders = new CommonsLinkedHashMap <> ();
-    aBuilders.put (ESchematronEngine.PURE_XPATH,
+    final ICommonsMap <String, IEngineBuilder> aBuilders = new CommonsLinkedHashMap <> ();
+    aBuilders.put (ESchematronEngine.PURE_XPATH.getID (),
                    r -> SchematronResourcePureXPath.builder (r)
                                                    .telemetry (true)
                                                    .perAssertionResultTelemetry (true)
                                                    .perRuleExecutionTelemetry (true)
                                                    .build ());
-    aBuilders.put (ESchematronEngine.PURE_XSLT,
+    aBuilders.put (ESchematronEngine.PURE_XSLT.getID (),
                    r -> SchematronResourcePureXslt.builder (r)
                                                   .telemetry (true)
                                                   .perAssertionResultTelemetry (true)
                                                   .build ());
-    aBuilders.put (ESchematronEngine.ISO_SCHEMATRON,
+    aBuilders.put (ESchematronEngine.ISO_SCHEMATRON.getID () + " (saxon)",
                    r -> SchematronResourceSCH.builder (r)
+                                             .xsltProcessor (SAXON)
                                              .telemetry (true)
                                              .perAssertionResultTelemetry (true)
                                              .perRuleExecutionTelemetry (true)
                                              .build ());
-    aBuilders.put (ESchematronEngine.SCHXSLT1,
+    aBuilders.put (ESchematronEngine.ISO_SCHEMATRON.getID () + " (phoxtrot)",
+                   r -> SchematronResourceSCH.builder (r)
+                                             .xsltProcessor (PHOXTROT)
+                                             .telemetry (true)
+                                             .perAssertionResultTelemetry (true)
+                                             .perRuleExecutionTelemetry (true)
+                                             .build ());
+    aBuilders.put (ESchematronEngine.SCHXSLT1.getID () + " (saxon)",
                    r -> SchematronResourceSchXslt_XSLT2.builder (r)
+                                                       .xsltProcessor (SAXON)
                                                        .telemetry (true)
                                                        .perAssertionResultTelemetry (true)
                                                        .perRuleExecutionTelemetry (true)
                                                        .build ());
-    aBuilders.put (ESchematronEngine.SCHXSLT2,
+    aBuilders.put (ESchematronEngine.SCHXSLT1.getID () + " (phoxtrot)",
+                   r -> SchematronResourceSchXslt_XSLT2.builder (r)
+                                                       .xsltProcessor (PHOXTROT)
+                                                       .telemetry (true)
+                                                       .perAssertionResultTelemetry (true)
+                                                       .perRuleExecutionTelemetry (true)
+                                                       .build ());
+    aBuilders.put (ESchematronEngine.SCHXSLT2.getID () + " (saxon)",
                    r -> SchematronResourceSchXslt2.builder (r)
+                                                  .xsltProcessor (SAXON)
+                                                  .telemetry (true)
+                                                  .perAssertionResultTelemetry (true)
+                                                  .perRuleExecutionTelemetry (true)
+                                                  .build ());
+    aBuilders.put (ESchematronEngine.SCHXSLT2.getID () + " (phoxtrot)",
+                   r -> SchematronResourceSchXslt2.builder (r)
+                                                  .xsltProcessor (PHOXTROT)
                                                   .telemetry (true)
                                                   .perAssertionResultTelemetry (true)
                                                   .perRuleExecutionTelemetry (true)
@@ -200,7 +229,7 @@ public final class MainOtelDemo
     // Convert
     final ICommonsOrderedMap <String, ISchematronResource> ret = new CommonsLinkedHashMap <> ();
     for (final var e : aBuilders.entrySet ())
-      ret.put (e.getKey ().getID (), e.getValue ().build (new ReadableResourceByteArray (aSch)));
+      ret.put (e.getKey (), e.getValue ().build (new ReadableResourceByteArray (aSch)));
     return ret;
   }
 

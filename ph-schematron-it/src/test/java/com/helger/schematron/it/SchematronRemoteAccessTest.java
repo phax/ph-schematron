@@ -41,8 +41,11 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
@@ -64,6 +67,9 @@ import com.sun.net.httpserver.HttpServer;
  */
 public final class SchematronRemoteAccessTest
 {
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+  private static final ISchematronXsltProcessor PHOXTROT = new PhoxtrotXsltProcessor ();
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronRemoteAccessTest.class);
 
   // Non-empty, so that a successful fetch makes the assertions below pass
@@ -116,9 +122,12 @@ public final class SchematronRemoteAccessTest
     final ICommonsList <IEngineBuilder> ret = new CommonsArrayList <> ();
     ret.add (r -> SchematronResourcePureXPath.builder (r).useCache (false).build ());
     ret.add (r -> SchematronResourcePureXslt.builder (r).useCache (false).build ());
-    ret.add (r -> SchematronResourceSCH.builder (r).useCache (false).build ());
-    ret.add (r -> SchematronResourceSchXslt_XSLT2.builder (r).useCache (false).build ());
-    ret.add (r -> SchematronResourceSchXslt2.builder (r).useCache (false).build ());
+    ret.add (r -> SchematronResourceSCH.builder (r).xsltProcessor (SAXON).useCache (false).build ());
+    ret.add (r -> SchematronResourceSCH.builder (r).xsltProcessor (PHOXTROT).useCache (false).build ());
+    ret.add (r -> SchematronResourceSchXslt_XSLT2.builder (r).xsltProcessor (SAXON).useCache (false).build ());
+    ret.add (r -> SchematronResourceSchXslt_XSLT2.builder (r).xsltProcessor (PHOXTROT).useCache (false).build ());
+    ret.add (r -> SchematronResourceSchXslt2.builder (r).xsltProcessor (SAXON).useCache (false).build ());
+    ret.add (r -> SchematronResourceSchXslt2.builder (r).xsltProcessor (PHOXTROT).useCache (false).build ());
     return ret;
   }
 

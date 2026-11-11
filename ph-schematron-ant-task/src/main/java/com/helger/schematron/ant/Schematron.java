@@ -52,6 +52,8 @@ import com.helger.diagnostics.error.list.IErrorList;
 import com.helger.io.file.FileOperations;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
@@ -177,6 +179,14 @@ public class Schematron extends AbstractSchematronTask
   private ESchematronEngine m_eSchematronProcessingEngine = ESchematronEngine.ISO_SCHEMATRON;
 
   /**
+   * The XSLT processor for the engines <code>iso-schematron</code>, <code>schxslt</code>,
+   * <code>schxslt2</code> and <code>xslt</code>: <code>saxon</code> or <code>phoxtrot</code>. If not
+   * set, the only XSLT processor on the class path is used; with both on the class path it must be
+   * set.
+   */
+  private String m_sXsltProcessor;
+
+  /**
    * The collection for resources (like FileSets etc.) which are to be validated.
    */
   private final ICommonsList <ResourceCollection> m_aResCollections = new CommonsArrayList <> ();
@@ -261,6 +271,18 @@ public class Schematron extends AbstractSchematronTask
   {
     m_eSchematronProcessingEngine = ESchematronEngine.getFromIDOrNull (sEngine);
     _debug ("Schematron processing mode set to '" + m_eSchematronProcessingEngine + "'");
+  }
+
+  /**
+   * @param sXsltProcessor
+   *        The ID of the XSLT processor (<code>saxon</code> or <code>phoxtrot</code>). May be
+   *        <code>null</code> to use the only one on the class path.
+   * @since 11.0.0
+   */
+  public void setXsltProcessor (@Nullable final String sXsltProcessor)
+  {
+    m_sXsltProcessor = sXsltProcessor;
+    _debug ("XSLT processor set to '" + sXsltProcessor + "'");
   }
 
   /**
@@ -652,6 +674,20 @@ public class Schematron extends AbstractSchematronTask
             else
               bCanRun = true;
 
+    // The XSLT processor of the XSLT based engines
+    ISchematronXsltProcessor aXsltProcessor = null;
+    if (bCanRun && m_eSchematronProcessingEngine.isXsltProcessorSelectable ())
+      try
+      {
+        aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (m_sXsltProcessor);
+        _debug ("Using the XSLT processor '" + aXsltProcessor.getID () + "'");
+      }
+      catch (final IllegalArgumentException | IllegalStateException ex)
+      {
+        _errorOrFail (ex.getMessage ());
+        bCanRun = false;
+      }
+
     if (bCanRun)
     {
       // Set error level
@@ -728,6 +764,7 @@ public class Schematron extends AbstractSchematronTask
                                                                       .languageCode (m_sLanguageCode)
                                                                       .forceCacheResult (m_bForceCacheResult)
                                                                       .errorListener (aErrorHdl)
+                                                                      .xsltProcessor (aXsltProcessor)
                                                                       .uriResolver (getURIResolver ())
                                                                       .entityResolver (getEntityResolver ())
                                                                       .parameters (aParams)
@@ -752,6 +789,7 @@ public class Schematron extends AbstractSchematronTask
                                                                                           .languageCode (m_sLanguageCode)
                                                                                           .forceCacheResult (m_bForceCacheResult)
                                                                                           .errorListener (aErrorHdl)
+                                                                                          .xsltProcessor (aXsltProcessor)
                                                                                           .uriResolver (getURIResolver ())
                                                                                           .entityResolver (getEntityResolver ())
                                                                                           .parameters (aParams)
@@ -776,6 +814,7 @@ public class Schematron extends AbstractSchematronTask
                                                                                 .languageCode (m_sLanguageCode)
                                                                                 .forceCacheResult (m_bForceCacheResult)
                                                                                 .errorListener (aErrorHdl)
+                                                                                .xsltProcessor (aXsltProcessor)
                                                                                 .uriResolver (getURIResolver ())
                                                                                 .entityResolver (getEntityResolver ())
                                                                                 .parameters (aParams)
@@ -799,6 +838,7 @@ public class Schematron extends AbstractSchematronTask
           // XSLT was created
           final SchematronResourceXSLT aRealSCH = SchematronResourceXSLT.builderFromFile (m_aSchematronFile)
                                                                         .errorListener (aErrorHdl)
+                                                                        .xsltProcessor (aXsltProcessor)
                                                                         .uriResolver (getURIResolver ())
                                                                         .entityResolver (getEntityResolver ())
                                                                         .parameters (aParams)

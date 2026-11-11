@@ -16,6 +16,7 @@
  */
 package com.helger.schematron;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -43,5 +44,16 @@ public final class ESchematronEngineTest
     assertSame (ESchematronEngine.ISO_SCHEMATRON, ESchematronEngine.getFromIDOrNull ("iso"));
     // Case sensitive
     assertNull (ESchematronEngine.getFromIDOrNull ("ISO"));
+  }
+
+  @Test
+  public void testXsltProcessorSelectable ()
+  {
+    assertFalse (ESchematronEngine.PURE_XPATH.isXsltProcessorSelectable ());
+    assertFalse (ESchematronEngine.PURE_XSLT.isXsltProcessorSelectable ());
+    assertTrue (ESchematronEngine.ISO_SCHEMATRON.isXsltProcessorSelectable ());
+    assertTrue (ESchematronEngine.SCHXSLT1.isXsltProcessorSelectable ());
+    assertTrue (ESchematronEngine.SCHXSLT2.isXsltProcessorSelectable ());
+    assertTrue (ESchematronEngine.XSLT_PREBUILT.isXsltProcessorSelectable ());
   }
 }

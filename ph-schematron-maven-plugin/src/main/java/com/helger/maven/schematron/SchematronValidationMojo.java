@@ -51,6 +51,8 @@ import com.helger.io.file.FileOperationManager;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
@@ -235,6 +237,17 @@ public final class SchematronValidationMojo extends AbstractMojo
   @Since ("7.1.3")
   private boolean m_bIgnoreWarnings = false;
 
+  /**
+   * The XSLT processor for the engines <code>iso-schematron</code>, <code>schxslt</code>,
+   * <code>schxslt2</code> and <code>xslt</code>: <code>saxon</code> (contained in the plugin) or
+   * <code>phoxtrot</code> (requires <code>ph-schematron-phoxtrot</code> as plugin dependency). If not
+   * set, the only XSLT processor on the class path is used; with both on the class path it must be
+   * set.
+   */
+  @Parameter (name = "xsltProcessor")
+  @Since ("11.0.0")
+  private String m_sXsltProcessor;
+
   public void setSchematronFile (@NonNull final File aFile)
   {
     m_aSchematronFile = aFile;
@@ -250,6 +263,13 @@ public final class SchematronValidationMojo extends AbstractMojo
     m_sSchematronProcessingEngine = eEngine == null ? null : eEngine.getID ();
     if (getLog ().isDebugEnabled ())
       getLog ().debug ("Schematron processing engine set to '" + eEngine + "'");
+  }
+
+  public void setXsltProcessor (@Nullable final String sXsltProcessor)
+  {
+    m_sXsltProcessor = sXsltProcessor;
+    if (getLog ().isDebugEnabled ())
+      getLog ().debug ("XSLT processor set to '" + sXsltProcessor + "'");
   }
 
   public void setXmlDirectory (@NonNull final File aDir)
@@ -575,10 +595,24 @@ public final class SchematronValidationMojo extends AbstractMojo
       }
     }
 
+    // The XSLT processor of the XSLT based engines
+    final ESchematronEngine eEngine = ESchematronEngine.getFromIDOrNull (m_sSchematronProcessingEngine);
+    ISchematronXsltProcessor aXsltProcessor = null;
+    if (eEngine != null && eEngine.isXsltProcessorSelectable ())
+      try
+      {
+        aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (m_sXsltProcessor);
+        getLog ().debug ("Using the XSLT processor '" + aXsltProcessor.getID () + "'");
+      }
+      catch (final IllegalArgumentException | IllegalStateException ex)
+      {
+        throw new MojoExecutionException (ex.getMessage ());
+      }
+
     // 1. Parse Schematron file
     ISchematronResource aSch;
     IErrorList aSCHErrors;
-    switch (ESchematronEngine.getFromIDOrNull (m_sSchematronProcessingEngine))
+    switch (eEngine)
     {
       case PURE_XPATH:
       {
@@ -623,6 +657,7 @@ public final class SchematronValidationMojo extends AbstractMojo
                                                                     .forceCacheResult (m_bForceCacheResult)
                                                                     .parameters (m_aCustomParameters)
                                                                     .errorListener (aErrorHdl)
+                                                                    .xsltProcessor (aXsltProcessor)
                                                                     .build ();
         aRealSCH.isValidSchematron ();
 
@@ -640,6 +675,7 @@ public final class SchematronValidationMojo extends AbstractMojo
                                                                                         .forceCacheResult (m_bForceCacheResult)
                                                                                         .parameters (m_aCustomParameters)
                                                                                         .errorListener (aErrorHdl)
+                                                                                        .xsltProcessor (aXsltProcessor)
                                                                                         .build ();
         aRealSCH.isValidSchematron ();
 
@@ -657,6 +693,7 @@ public final class SchematronValidationMojo extends AbstractMojo
                                                                               .forceCacheResult (m_bForceCacheResult)
                                                                               .parameters (m_aCustomParameters)
                                                                               .errorListener (aErrorHdl)
+                                                                              .xsltProcessor (aXsltProcessor)
                                                                               .build ();
         aRealSCH.isValidSchematron ();
 
@@ -673,6 +710,7 @@ public final class SchematronValidationMojo extends AbstractMojo
         final SchematronResourceXSLT aRealSCH = SchematronResourceXSLT.builderFromFile (m_aSchematronFile)
                                                                       .parameters (m_aCustomParameters)
                                                                       .errorListener (aErrorHdl)
+                                                                      .xsltProcessor (aXsltProcessor)
                                                                       .build ();
         aRealSCH.isValidSchematron ();
 

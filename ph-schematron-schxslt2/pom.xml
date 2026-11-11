@@ -80,10 +80,15 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- The XSLT processor for the tests -->
+    <!-- The XSLT processors for the tests - each surefire execution uses one of them -->
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-saxon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-phoxtrot</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -107,4 +112,40 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Run all tests with exactly one XSLT processor on the class path: first Saxon, then phoxtrot -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <configuration>
+              <classpathDependencyExcludes>
+                <classpathDependencyExclude>com.helger.schematron:ph-schematron-phoxtrot</classpathDependencyExclude>
+                <classpathDependencyExclude>com.helger.phoxtrot:phoxtrot-xslt</classpathDependencyExclude>
+                <classpathDependencyExclude>com.helger.phoxtrot:phoxtrot-xpath</classpathDependencyExclude>
+                <classpathDependencyExclude>com.helger.phoxtrot:phoxtrot-xdm</classpathDependencyExclude>
+              </classpathDependencyExcludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-phoxtrot</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <reportsDirectory>${project.build.directory}/surefire-reports-phoxtrot</reportsDirectory>
+              <classpathDependencyExcludes>
+                <classpathDependencyExclude>com.helger.schematron:ph-schematron-saxon</classpathDependencyExclude>
+                <classpathDependencyExclude>net.sf.saxon:Saxon-HE</classpathDependencyExclude>
+              </classpathDependencyExcludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
