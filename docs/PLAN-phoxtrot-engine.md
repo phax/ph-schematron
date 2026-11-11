@@ -280,6 +280,25 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
   expression in the include step). The depth limit cannot be raised through the JAXP adapter: phoxtrot suggestion S35.
   The test expects exactly these two failures until then.
 
+### P3 results (2026-11-11)
+
+- Test 3 (`IsoSchematronSVRLPhoxtrotVsSaxonComparisonTest`): every valid Schematron test file (without the
+  `NO_SAXON_REFERENCE` and `KNOWN_PHOXTROT_FAILURES` of P2) against every test XML file, 497 pairs: the SVRL is
+  identical (canonical form of `SVRLComparisonHelper`: each child of the root with sorted attributes and its content;
+  generated pattern IDs normalised as in P2). No pair raised an error on either processor.
+- Test 4: same validity for all invalid Schematron files; `xs:integer('abc')` in an assert fails with FORG0001 on
+  both.
+- Test 6 (`PhoxtrotSecureProcessingTest`, the assertions of `SchematronSecureProcessingTest` on phoxtrot, with copies
+  of its test files): remote `document()` gives an empty document, `system-property()` is empty, remote
+  `xsl:include` fails, local include works, an explicit resolver may allow `http`.
+  **One difference, open for decision:** Saxon rejects a stylesheet with `xsl:result-document` under secure
+  processing; phoxtrot accepts it and never writes secondary results (only `PhoxtrotTransformer.getLastResult ()`),
+  so no file is written either way. The test documents the phoxtrot behaviour. Options: accept, or ask phoxtrot to
+  reject `xsl:result-document` with an `href` under `FEATURE_SECURE_PROCESSING`.
+- Input from streams: the resource parses the DOM as before (`getAsNode`, with the entity resolver) and phoxtrot
+  converts it once (`createSourceForInternalDocument`). Parsing streams directly with `XdmParser` is an optimisation
+  for P5 (benchmarks decide).
+
 ## Integration
 
 - `ESchematronEngine`: unchanged constants; Javadoc names the processors per pipeline. New method
@@ -336,8 +355,9 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
      order, `active-pattern`, `fired-rule`, `failed-assert` and `successful-report` with their IDs, flags, roles,
      locations and texts.
    - It requires 0 differences, except an explicit list of accepted ones with their reason.
-4. Error equivalence: invalid SCH files give `isValidSchematron () == false` on both; XML that raises a dynamic error
-   on Saxon raises one on phoxtrot (same error code where available).
+4. Error equivalence: both processors give the same `isValidSchematron ()` for the invalid SCH files (corrected
+   2026-11-11: these files are invalid for the pure engine; the ISO pipeline accepts 5 of the 8 on both processors);
+   XML that raises a dynamic error on Saxon raises one on phoxtrot with the same error code.
 5. The existing tests of the four pipeline modules run on both processors (parameterised by processor); the existing
    pure tests run on both XPath bindings.
 6. D5 end to end: `SchematronSecureProcessingTest` (`ph-schematron-xslt`) passes on both processors with the same
@@ -368,7 +388,7 @@ dated file `docs/benchmarks/...md`). The first results are measured before the r
 | P0 | Version 11.0.0-SNAPSHOT, Java 21, CI matrix 21/25 and deploy from 21, Saxon-HE 13.1 (D14), phoxtrot 0.2.0-SNAPSHOT in the dependency management, empty `ph-schematron-phoxtrot`, news entry | `mvn install` green on JDK 21 and 25 |
 | P1 | Processor interface and registry in `ph-schematron-api`; moves of the base classes; `SaxonXsltProcessor`; pipeline modules on the interface, Saxon as test dependency; plugin, Ant task, IT and benchmarks add `ph-schematron-saxon` | all existing tests green on Saxon |
 | P2 | `PhoxtrotXsltProcessor` with D5, D6, D9; ISO pipeline on phoxtrot | tests 1 and 2 (ISO) green — done 2026-11-11, see "P2 results" |
-| P3 | Validation on phoxtrot: input sources, telemetry bridge; SVRL comparator | tests 3, 4, 6 green for ISO |
+| P3 | Validation on phoxtrot: input sources, telemetry bridge; SVRL comparator | tests 3, 4, 6 green for ISO — done 2026-11-11, see "P3 results" |
 | P4 | SchXslt1, SchXslt2, prebuilt XSLT on phoxtrot; tests parameterised by processor; Maven plugin, Ant task, IT | tests 2 to 6 green for all four pipelines; test 7 |
 | P4a | Split of the pure engine into `ph-schematron-pure` and `ph-schematron-pure-xpath-saxon`, binding SPI | all existing pure tests green, unchanged |
 | P4b | `ph-schematron-pure-xpath-phoxtrot` | tests 3 to 5 green for the pure engine on both bindings |
