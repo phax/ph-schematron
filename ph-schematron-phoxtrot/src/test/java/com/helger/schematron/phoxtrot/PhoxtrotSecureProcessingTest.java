@@ -109,7 +109,8 @@ public final class PhoxtrotSecureProcessingTest
   public void testResultDocumentIsNotWritten () throws Exception
   {
     // Unlike Saxon, which rejects the stylesheet with secure processing, phoxtrot accepts
-    // "xsl:result-document" but never writes a secondary result anywhere
+    // "xsl:result-document" but never writes a secondary result anywhere. To be aligned with Saxon
+    // (phoxtrot suggestion S36) - then this test must expect an invalid stylesheet.
     final File aSecondary = new File (BASE + "secondary.xml");
     final File aSecondaryInWorkingDir = new File ("secondary.xml");
     final SchematronResourceXSLT aXSLT = SchematronResourceXSLT.builder (_res ("result-document.xslt"))

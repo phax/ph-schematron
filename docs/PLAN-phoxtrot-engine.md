@@ -293,8 +293,8 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
   `xsl:include` fails, local include works, an explicit resolver may allow `http`.
   **One difference, open for decision:** Saxon rejects a stylesheet with `xsl:result-document` under secure
   processing; phoxtrot accepts it and never writes secondary results (only `PhoxtrotTransformer.getLastResult ()`),
-  so no file is written either way. The test documents the phoxtrot behaviour. Options: accept, or ask phoxtrot to
-  reject `xsl:result-document` with an `href` under `FEATURE_SECURE_PROCESSING`.
+  so no file is written either way. Decided 2026-11-11: phoxtrot shall reject it like Saxon (phoxtrot suggestion
+  S36); until then the test documents the phoxtrot behaviour.
 - Input from streams: the resource parses the DOM as before (`getAsNode`, with the entity resolver) and phoxtrot
   converts it once (`createSourceForInternalDocument`). Parsing streams directly with `XdmParser` is an optimisation
   for P5 (benchmarks decide).
