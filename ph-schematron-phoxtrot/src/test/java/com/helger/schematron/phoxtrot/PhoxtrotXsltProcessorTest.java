@@ -92,6 +92,8 @@ public final class PhoxtrotXsltProcessorTest
       assertTrue (aTF.getFeature (XMLConstants.FEATURE_SECURE_PROCESSING));
       assertEquals (Long.valueOf (XsltTransformRequest.UNLIMITED_STEPS),
                     aTF.getAttribute (PhoxtrotTransformerFactory.ATTR_MAX_STEPS));
+      assertEquals (Integer.valueOf (XsltTransformRequest.UNLIMITED_DEPTH),
+                    aTF.getAttribute (PhoxtrotTransformerFactory.ATTR_MAX_DEPTH));
       assertEquals (PhoxtrotTransformerFactories.DEFAULT_THREADING,
                     aTF.getAttribute (PhoxtrotTransformerFactory.ATTR_THREADING));
     }

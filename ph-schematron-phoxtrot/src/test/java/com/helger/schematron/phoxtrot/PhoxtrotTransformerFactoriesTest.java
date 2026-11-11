@@ -42,7 +42,9 @@ public final class PhoxtrotTransformerFactoriesTest
   public void testDefaults ()
   {
     assertEquals (XsltTransformRequest.UNLIMITED_STEPS, PhoxtrotTransformerFactories.DEFAULT_MAX_STEPS);
+    assertEquals (XsltTransformRequest.UNLIMITED_DEPTH, PhoxtrotTransformerFactories.DEFAULT_MAX_DEPTH);
     assertEquals (EThreading.THREAD_POOL, PhoxtrotTransformerFactories.DEFAULT_THREADING);
+    assertEquals (PhoxtrotTransformerFactories.DEFAULT_MAX_DEPTH, PhoxtrotTransformerFactories.getMaxDepth ());
     assertEquals (PhoxtrotTransformerFactories.DEFAULT_MAX_STEPS, PhoxtrotTransformerFactories.getMaxSteps ());
     assertSame (PhoxtrotTransformerFactories.DEFAULT_THREADING, PhoxtrotTransformerFactories.getThreading ());
     assertSame (PhoxtrotTransformerFactories.getDefault (), PhoxtrotTransformerFactories.getDefault ());
@@ -54,14 +56,17 @@ public final class PhoxtrotTransformerFactoriesTest
     try
     {
       PhoxtrotTransformerFactories.setMaxSteps (1000);
+      PhoxtrotTransformerFactories.setMaxDepth (500);
       PhoxtrotTransformerFactories.setThreading (EThreading.CALLING_THREAD);
       final TransformerFactory aTF = PhoxtrotTransformerFactories.createTransformerFactory ();
       assertEquals (Long.valueOf (1000), aTF.getAttribute (PhoxtrotTransformerFactory.ATTR_MAX_STEPS));
+      assertEquals (Integer.valueOf (500), aTF.getAttribute (PhoxtrotTransformerFactory.ATTR_MAX_DEPTH));
       assertSame (EThreading.CALLING_THREAD, aTF.getAttribute (PhoxtrotTransformerFactory.ATTR_THREADING));
     }
     finally
     {
       PhoxtrotTransformerFactories.setMaxSteps (PhoxtrotTransformerFactories.DEFAULT_MAX_STEPS);
+      PhoxtrotTransformerFactories.setMaxDepth (PhoxtrotTransformerFactories.DEFAULT_MAX_DEPTH);
       PhoxtrotTransformerFactories.setThreading (PhoxtrotTransformerFactories.DEFAULT_THREADING);
     }
   }
@@ -80,6 +85,15 @@ public final class PhoxtrotTransformerFactoriesTest
     try
     {
       PhoxtrotTransformerFactories.setMaxSteps (0);
+      fail ();
+    }
+    catch (final IllegalArgumentException ex)
+    {
+      // expected
+    }
+    try
+    {
+      PhoxtrotTransformerFactories.setMaxDepth (0);
       fail ();
     }
     catch (final IllegalArgumentException ex)

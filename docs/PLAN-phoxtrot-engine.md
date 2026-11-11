@@ -327,6 +327,12 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
   in the ISO include step (S35). 5,000 terms fail on Saxon itself with a `StackOverflowError` while optimising on the
   calling thread (not filed: a stack limit of the environment, not a behaviour).
 
+### S35 adopted (2026-11-11)
+
+`PhoxtrotTransformerFactories` sets `ATTR_MAX_DEPTH` (new in phoxtrot `7fab8a1`) to `UNLIMITED_DEPTH` by default
+(`setMaxDepth`), as Saxon has no nesting counter. `EUGEN-UBL-T14`/`-T15` and the 1,000 term `or` chain now give the
+same XSLT and SVRL as Saxon; the ISO comparison covers 73 files and 511 Schematron/XML pairs without exceptions.
+
 ## Integration
 
 - `ESchematronEngine`: unchanged constants; new method `isXsltProcessorSelectable ()` (`true` for `ISO_SCHEMATRON`,

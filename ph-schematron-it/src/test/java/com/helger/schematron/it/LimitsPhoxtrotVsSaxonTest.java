@@ -17,7 +17,6 @@
 package com.helger.schematron.it;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -145,15 +144,15 @@ public final class LimitsPhoxtrotVsSaxonTest
   }
 
   @Test
-  public void testLongOrChainKnownDifference () throws Exception
+  public void testLongOrChain () throws Exception
   {
-    // About 20,000 characters: Saxon validates it, but the ISO include step nests deeper than the
-    // phoxtrot limit of 10,000 levels (phoxtrot suggestion S35). When that is fixed, compare the
-    // SVRL here instead.
+    // About 20,000 characters: the ISO include step recurses about once per character, which needs
+    // phoxtrot without the default nesting limit (phoxtrot suggestion S35)
     final int nTerms = 1_000;
     final String sSCH = _createOrChainSCH (nTerms);
-    assertNotNull (_validate (sSCH, _createOrChainXML (nTerms), PROCESSORS[0]));
-    assertFalse (_create (sSCH, PROCESSORS[1]).isValidSchematron ());
+    final ICommonsList <String> aSaxon = _validate (sSCH, _createOrChainXML (nTerms), PROCESSORS[0]);
+    final ICommonsList <String> aPhoxtrot = _validate (sSCH, _createOrChainXML (nTerms), PROCESSORS[1]);
+    assertEquals (aSaxon, aPhoxtrot);
   }
 
   @Test

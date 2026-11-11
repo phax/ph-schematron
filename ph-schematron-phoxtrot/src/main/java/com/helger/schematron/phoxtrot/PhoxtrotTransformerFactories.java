@@ -17,6 +17,7 @@
 package com.helger.schematron.phoxtrot;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,7 +42,7 @@ import com.helger.xml.transform.LoggingTransformErrorListener;
 /**
  * Creates the phoxtrot {@link TransformerFactory} instances for Schematron, configured like the
  * Saxon ones: secure processing (see {@link XMLFactory#defaultCustomizeTransformerFactory(TransformerFactory)}),
- * plus the phoxtrot specific step limit and threading.
+ * plus the phoxtrot specific step limit, depth limit and threading.
  *
  * @author Philip Helger
  * @since 11.0.0
@@ -51,12 +52,18 @@ public final class PhoxtrotTransformerFactories
 {
   /** By default there is no step limit, as with Saxon */
   public static final long DEFAULT_MAX_STEPS = XsltTransformRequest.UNLIMITED_STEPS;
+  /**
+   * By default there is no nesting depth limit of templates and functions, as with Saxon: only the
+   * stack of the thread limits it (a stack overflow fails with XPDY0130)
+   */
+  public static final int DEFAULT_MAX_DEPTH = XsltTransformRequest.UNLIMITED_DEPTH;
   /** By default the transformations run on the phoxtrot thread pool with a large stack */
   public static final EThreading DEFAULT_THREADING = EThreading.THREAD_POOL;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PhoxtrotTransformerFactories.class);
 
   private static final AtomicLong MAX_STEPS = new AtomicLong (DEFAULT_MAX_STEPS);
+  private static final AtomicInteger MAX_DEPTH = new AtomicInteger (DEFAULT_MAX_DEPTH);
   private static final AtomicReference <EThreading> THREADING = new AtomicReference <> (DEFAULT_THREADING);
 
   private static final class SingletonHolder
@@ -104,6 +111,31 @@ public final class PhoxtrotTransformerFactories
   }
 
   /**
+   * @return The nesting depth limit of templates and functions of transformations of new factories.
+   *         {@link XsltTransformRequest#UNLIMITED_DEPTH} for no limit. Default is
+   *         {@link #DEFAULT_MAX_DEPTH}.
+   */
+  public static int getMaxDepth ()
+  {
+    return MAX_DEPTH.get ();
+  }
+
+  /**
+   * Set the nesting depth limit of templates and functions of transformations of new factories. A
+   * transformation that exceeds it fails with the error XPDY0130. Changing it does not affect
+   * factories that were already created, including the default factory if it was already used.
+   *
+   * @param nMaxDepth
+   *        The maximum nesting depth. Must be &gt; 0. {@link XsltTransformRequest#UNLIMITED_DEPTH}
+   *        for no limit other than the stack of the thread.
+   */
+  public static void setMaxDepth (final int nMaxDepth)
+  {
+    ValueEnforcer.isGT0 (nMaxDepth, "MaxDepth");
+    MAX_DEPTH.set (nMaxDepth);
+  }
+
+  /**
    * @return The thread on which compilations and transformations of new factories run. Never
    *         <code>null</code>. Default is {@link #DEFAULT_THREADING}.
    */
@@ -130,7 +162,8 @@ public final class PhoxtrotTransformerFactories
 
   /**
    * Create a new phoxtrot {@link TransformerFactory} with secure processing, the step limit of
-   * {@link #getMaxSteps()} and the threading of {@link #getThreading()}.
+   * {@link #getMaxSteps()}, the depth limit of {@link #getMaxDepth()} and the threading of
+   * {@link #getThreading()}.
    *
    * @return A new factory. Never <code>null</code>.
    */
@@ -140,6 +173,7 @@ public final class PhoxtrotTransformerFactories
     final TransformerFactory aFactory = new PhoxtrotTransformerFactory ();
     XMLFactory.defaultCustomizeTransformerFactory (aFactory);
     aFactory.setAttribute (PhoxtrotTransformerFactory.ATTR_MAX_STEPS, Long.valueOf (getMaxSteps ()));
+    aFactory.setAttribute (PhoxtrotTransformerFactory.ATTR_MAX_DEPTH, Integer.valueOf (getMaxDepth ()));
     aFactory.setAttribute (PhoxtrotTransformerFactory.ATTR_THREADING, getThreading ());
 
     if (LOGGER.isDebugEnabled ())

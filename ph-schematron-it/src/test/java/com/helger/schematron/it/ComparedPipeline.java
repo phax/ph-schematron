@@ -87,11 +87,7 @@ final class ComparedPipeline
                                                                                            .useCache (false)
                                                                                            .build (),
                                                             BIICORE_SLOW,
-                                                            // The include step nests deeper than the
-                                                            // phoxtrot limit of 10,000 levels (phoxtrot
-                                                            // suggestion S35)
-                                                            new CommonsHashSet <> ("external/test-sch/eugen/EUGEN-UBL-T14.sch",
-                                                                                   "external/test-sch/eugen/EUGEN-UBL-T15.sch"),
+                                                            new CommonsHashSet <> (),
                                                             new CommonsHashSet <> ());
 
   static final ComparedPipeline SCHXSLT1 = new ComparedPipeline ("schxslt1",
