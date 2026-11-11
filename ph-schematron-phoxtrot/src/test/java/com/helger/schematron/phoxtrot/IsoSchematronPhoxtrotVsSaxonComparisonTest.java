@@ -55,7 +55,7 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
  * <ul>
  * <li>The IDs of patterns instantiated from abstract patterns are built from
  * <code>generate-id()</code> in <code>iso_abstract_expand.xsl</code>, whose values are
- * implementation-dependent. They are normalised before the comparison.</li>
+ * implementation-dependent (phoxtrot suggestion S37). They are normalised before the comparison.</li>
  * </ul>
  *
  * @author Philip Helger

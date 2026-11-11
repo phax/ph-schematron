@@ -85,7 +85,7 @@ final class SVRLComparisonHelper
    * The ISO Schematron pipeline builds the IDs of pattern instances as
    * <code>concat(generate-id(.), $is-a)</code> (<code>iso_abstract_expand.xsl</code>), and the values
    * of <code>generate-id()</code> are implementation-dependent (Saxon e.g. <code>w141aac11</code>,
-   * phoxtrot e.g. <code>id1</code>). Replace that part with a fixed text.
+   * phoxtrot e.g. <code>id1</code>; phoxtrot suggestion S37). Replace that part with a fixed text.
    *
    * @param sText
    *        The text (an XSLT or SVRL) to normalise. May not be <code>null</code>.

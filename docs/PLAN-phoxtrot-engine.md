@@ -272,8 +272,8 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
 
 - 71 created XSLTs are identical after one normalisation: the IDs of patterns instantiated from abstract patterns are
   `concat(generate-id(.), $is-a)` (`iso_abstract_expand.xsl` line 234), and `generate-id()` values are
-  implementation-dependent (Saxon `w141aac11…`, phoxtrot `id1…`). Accepted; the SVRL comparator (test 3) must
-  normalise the same IDs in `active-pattern/@id`.
+  implementation-dependent (Saxon `w141aac11…`, phoxtrot `id1…`). Filed as phoxtrot suggestion S37; until then the
+  comparison tests normalise them (also in `active-pattern/@id` of the SVRL).
 - `BIICORE-UBL-T01`, `-T10`, `-T14`, `-T15` take 56 to 96 s each on Saxon (known, skipped in `SchematronSCHCacheTest`)
   and about 1 s on phoxtrot; they are converted on phoxtrot only.
 - `EUGEN-UBL-T14`, `-T15` fail on phoxtrot with XPDY0130 (nesting deeper than 10,000; a 23,537 character code list
@@ -405,8 +405,9 @@ a decision, and one item of S18; S20 without compilation), S21 to S25 from the v
   with it.
 - **Java 21 baseline:** users on Java 17 stay on 10.x. Decide whether 10.x gets maintenance releases.
 - **Semantic differences phoxtrot vs. Saxon** (lazy variable evaluation, early exit, error behaviour of rule tests),
-  now for four pipelines instead of one: the SVRL equality test (test 3) is the gate. Every difference is either
-  fixed in phoxtrot or accepted with a documented reason.
+  now for four pipelines instead of one: the SVRL equality test (test 3) is the gate. **Saxon is the authoritative
+  source** (decided 2026-11-11): every difference is filed as a phoxtrot suggestion; a test may only normalise or
+  expect a difference with a comment that names the suggestion.
 - **SchXslt2 is XSLT 3.0** and has not been run on phoxtrot yet (the measurements so far are ISO only). Which XSLT
   3.0 features it uses is still to be checked; conformance of phoxtrot is about 99.9 %, so failures are possible and
   are found by test 2.
