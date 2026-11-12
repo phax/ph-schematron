@@ -76,8 +76,9 @@ final class SVRLComparisonHelper
   /**
    * The ISO Schematron pipeline builds the IDs of pattern instances as
    * <code>concat(generate-id(.), $is-a)</code> (<code>iso_abstract_expand.xsl</code>), and the values
-   * of <code>generate-id()</code> are implementation-dependent (Saxon e.g. <code>w141aac11</code>,
-   * phoxtrot e.g. <code>d1n1</code>; phoxtrot suggestion S37). Replace that part with a fixed text.
+   * of <code>generate-id()</code> are implementation-dependent (Saxon e.g. <code>w141aac11</code> on
+   * a wrapped DOM, <code>d251e98</code> on its own tree, phoxtrot e.g. <code>d1n1</code>; phoxtrot
+   * suggestion S37). Replace that part with a fixed text.
    *
    * @param sText
    *        The text (an XSLT or SVRL) to normalise. May not be <code>null</code>.
@@ -90,7 +91,7 @@ final class SVRLComparisonHelper
   {
     String ret = sText;
     for (final String sIsA : aIsA)
-      ret = ret.replaceAll ("(?:w[0-9a-z]+|d[0-9]+n[0-9]+)(" + Pattern.quote (sIsA) + ")", "GENERATED-ID$1");
+      ret = ret.replaceAll ("(?:w[0-9a-z]+|d[0-9]+e[0-9]+|d[0-9]+n[0-9]+)(" + Pattern.quote (sIsA) + ")", "GENERATED-ID$1");
 
     // Whole generated IDs (e.g. the template names, modes and keys of SchXslt) are numbered in the
     // order of their first occurrence, so that a different reference stays visible

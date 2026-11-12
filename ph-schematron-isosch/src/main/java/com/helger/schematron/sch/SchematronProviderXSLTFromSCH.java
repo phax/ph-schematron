@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -29,7 +30,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
@@ -252,10 +252,11 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       final DOMResult aResult2 = new DOMResult (aResult2Doc);
       final Transformer aTransformer2 = STEP2_TEMPLATES.get (sXsltProcessorID).newTransformer ();
       _applyConfigToTransformer (aConfig, false, aTransformer2);
-      final DOMSource aSrc2 = TransformSourceFactory.create (aResult1Doc);
-      // SystemId is required for "base-uri(.)" to work
-      if (aSrc2.getSystemId () == null)
-        aSrc2.setSystemId (aSrc1.getSystemId ());
+      // SystemId is required for "base-uri(.)" to work. The document is internal, so the processor may convert it
+      // into its own tree model, which is much faster than navigating the DOM
+      final Source aInternalSrc2 = aXsltProcessor.createSourceForInternalDocument (aResult1Doc,
+                                                                                    aSrc1.getSystemId ());
+      final Source aSrc2 = aXsltProcessor.getEffectiveSource (aInternalSrc2, aTransformer2);
 
       SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 2 on " + aSchematronResource);
       aTransformer2.transform (aSrc2, aResult2);
@@ -296,10 +297,11 @@ public class SchematronProviderXSLTFromSCH implements ISchematronXSLTBasedProvid
       final DOMResult aResult3 = new DOMResult (aResult3Doc);
       final Transformer aTransformer3 = STEP3_TEMPLATES.get (sXsltProcessorID).newTransformer ();
       _applyConfigToTransformer (aConfig, true, aTransformer3);
-      final DOMSource aSrc3 = TransformSourceFactory.create (aResult2Doc);
-      // SystemId is required for "base-uri(.)" to work
-      if (aSrc3.getSystemId () == null)
-        aSrc3.setSystemId (aSrc1.getSystemId ());
+      // SystemId is required for "base-uri(.)" to work. The document is internal, so the processor may convert it
+      // into its own tree model, which is much faster than navigating the DOM
+      final Source aInternalSrc3 = aXsltProcessor.createSourceForInternalDocument (aResult2Doc,
+                                                                                    aSrc1.getSystemId ());
+      final Source aSrc3 = aXsltProcessor.getEffectiveSource (aInternalSrc3, aTransformer3);
 
       SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 3 on " + aSchematronResource);
       aTransformer3.transform (aSrc3, aResult3);
