@@ -43,6 +43,7 @@ java -Dorg.slf4j.simpleLogger.defaultLogLevel=warn -jar ph-schematron-benchmarks
 | `BenchmarkXsltVsSaxon` | Head-to-head of the ISO XSLT pipeline (`SchematronResourceSCH`) vs. the pure-Java-to-XSLT&nbsp;3.0 pipeline (`SchematronResourcePureXslt`), in `cold` (per-invocation compile) and `warm` (validate only) profiles. |
 | `BenchmarkPureXsltVersion` | The three XSLT language versions the pure-XSLT engine can emit (`1.0` / `2.0` / `3.0`), isolating the cost of the SVRL `location` fallback scaffolding lower versions require. `cold` and `warm` profiles. |
 | `BenchmarkDomVsTinyTree` | The two XML-to-Saxon bridges used by the pure-XPath engine: a `org.w3c.dom` tree vs. the Saxon TinyTree DOM facade, parameterized by document size. |
+| `BenchmarkPureEngines` | The two pure engines (`SchematronResourcePureXPath`, `SchematronResourcePureXslt`) on a generated flat document with many items: SVRL for a document where half of the items fail an assert (DOM and Saxon tree input) and `getSchematronValidity` for a valid DOM document. Bound/compiled once. |
 | `BenchmarkIsValidSchematronMulti` | `isValidSchematron()` (parse + bind cost, no validation) for a single schema across all engines. |
 | `BenchmarkIsValidSchematron` | `isValidSchematron()` across the full curated set of valid schema files. |
 
