@@ -32,9 +32,12 @@ import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.location.SimpleLocation;
 import com.helger.base.state.ESuccess;
 import com.helger.base.string.StringImplode;
-import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.CommonsLinkedHashSet;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.collection.commons.ICommonsOrderedSet;
 import com.helger.collection.hierarchy.visit.ChildrenProviderHierarchyVisitor;
 import com.helger.collection.hierarchy.visit.DefaultHierarchyVisitorCallback;
 import com.helger.collection.hierarchy.visit.EHierarchyVisitorReturn;
@@ -152,13 +155,79 @@ public final class SchematronHelper
     return ret;
   }
 
+  /**
+   * An included document as read. It is never modified; the included content is always a clone, so that the document
+   * can be used for every include of the same resource. The elements by ID are only collected on first use.
+   */
+  private static final class IncludedDocument
+  {
+    private final IMicroDocument m_aDoc;
+    private ICommonsMap <String, IMicroElement> m_aElementsByID;
+
+    IncludedDocument (@NonNull final IMicroDocument aDoc)
+    {
+      m_aDoc = aDoc;
+    }
+
+    @NonNull
+    IMicroElement getDocumentElement ()
+    {
+      return m_aDoc.getDocumentElement ();
+    }
+
+    /**
+     * @return The first element in document order (including the document element) with the passed value of the
+     *         <code>id</code> attribute, or <code>null</code> if there is none.
+     */
+    @Nullable
+    IMicroElement getElementOfID (@NonNull final String sID)
+    {
+      if (m_aElementsByID == null)
+      {
+        final ICommonsMap <String, IMicroElement> aElementsByID = new CommonsHashMap <> ();
+        ChildrenProviderHierarchyVisitor.visitFrom (m_aDoc.getDocumentElement (),
+                                                    new DefaultHierarchyVisitorCallback <IMicroNode> ()
+                                                    {
+                                                      @Override
+                                                      public EHierarchyVisitorReturn onItemBeforeChildren (@NonNull final IMicroNode aItem)
+                                                      {
+                                                        if (aItem instanceof final IMicroElement aCurElement)
+                                                        {
+                                                          final String sCurID = aCurElement.getAttributeValue ("id");
+                                                          if (sCurID != null)
+                                                            aElementsByID.putIfAbsent (sCurID, aCurElement);
+                                                        }
+                                                        return EHierarchyVisitorReturn.CONTINUE;
+                                                      }
+                                                    },
+                                                    true);
+        m_aElementsByID = aElementsByID;
+      }
+      return m_aElementsByID.get (sID);
+    }
+  }
+
+  /**
+   * An include on the current include path: the resource and the optional anchor.
+   */
+  private record IncludeTarget (@NonNull IReadableResource resource, @Nullable String anchor)
+  {
+    @NonNull
+    String getDisplayName ()
+    {
+      return resource.getPath () + (anchor == null ? "" : "#" + anchor);
+    }
+  }
+
   @NonNull
   private static ESuccess _recursiveResolveAllSchematronIncludes (@Nullable final IMicroElement eRoot,
                                                                   @NonNull final IReadableResource aResource,
                                                                   @Nullable final ISAXReaderSettings aSettings,
                                                                   @NonNull final ISchematronErrorHandler aErrorHandler,
                                                                   @Nullable final ISchematronIncludeResolver aCustomIncludeResolver,
-                                                                  final boolean bLenient)
+                                                                  final boolean bLenient,
+                                                                  @NonNull final ICommonsMap <IReadableResource, IncludedDocument> aIncludedDocs,
+                                                                  @NonNull final ICommonsOrderedSet <IncludeTarget> aIncludePath)
   {
     if (eRoot != null)
     {
@@ -200,15 +269,38 @@ public final class SchematronHelper
                             aIncludeRes.getPath () +
                             "'");
 
-            // Read XML to be included
-            final IMicroDocument aIncludedDoc = MicroReader.readMicroXML (aIncludeRes, aSettings);
-            if (aIncludedDoc == null)
+            final IncludeTarget aIncludeTarget = new IncludeTarget (aIncludeRes, sAnchor);
+            if (aIncludePath.contains (aIncludeTarget))
             {
               aErrorHandler.handleError (SingleError.builderError ()
                                                     .errorLocation (new SimpleLocation (aResource.getPath ()))
-                                                    .errorText ("Failed to parse include " + aIncludeRes)
+                                                    .errorText ("Cyclic include of '" +
+                                                                aIncludeTarget.getDisplayName () +
+                                                                "' via " +
+                                                                StringImplode.imploder ()
+                                                                             .source (aIncludePath,
+                                                                                      x -> "'" + x.getDisplayName () + "'")
+                                                                             .separator (" -> ")
+                                                                             .build ())
                                                     .build ());
               return ESuccess.FAILURE;
+            }
+
+            // Read XML to be included, each resource only once
+            IncludedDocument aIncludedDoc = aIncludedDocs.get (aIncludeRes);
+            if (aIncludedDoc == null)
+            {
+              final IMicroDocument aReadDoc = MicroReader.readMicroXML (aIncludeRes, aSettings);
+              if (aReadDoc == null)
+              {
+                aErrorHandler.handleError (SingleError.builderError ()
+                                                      .errorLocation (new SimpleLocation (aResource.getPath ()))
+                                                      .errorText ("Failed to parse include " + aIncludeRes)
+                                                      .build ());
+                return ESuccess.FAILURE;
+              }
+              aIncludedDoc = new IncludedDocument (aReadDoc);
+              aIncludedDocs.put (aIncludeRes, aIncludedDoc);
             }
 
             IMicroElement aIncludedContent;
@@ -221,30 +313,7 @@ public final class SchematronHelper
             }
             else
             {
-              final String sFinalAnchor = sAnchor;
-              final Wrapper <IMicroElement> aMatch = new Wrapper <> ();
-              // Also include the root element in the search
-              ChildrenProviderHierarchyVisitor.visitFrom (aIncludedDoc.getDocumentElement (),
-                                                          new DefaultHierarchyVisitorCallback <IMicroNode> ()
-                                                          {
-                                                            @Override
-                                                            public EHierarchyVisitorReturn onItemBeforeChildren (@NonNull final IMicroNode aItem)
-                                                            {
-                                                              if (aItem.isElement ())
-                                                              {
-                                                                final IMicroElement aCurElement = (IMicroElement) aItem;
-                                                                final String sID = aCurElement.getAttributeValue ("id");
-                                                                if (sFinalAnchor.equals (sID))
-                                                                {
-                                                                  aMatch.set (aCurElement);
-                                                                  return EHierarchyVisitorReturn.STOP_ITERATION;
-                                                                }
-                                                              }
-                                                              return EHierarchyVisitorReturn.CONTINUE;
-                                                            }
-                                                          },
-                                                          true);
-              aIncludedContent = aMatch.get ();
+              aIncludedContent = aIncludedDoc.getElementOfID (sAnchor);
               if (aIncludedContent == null)
               {
                 aErrorHandler.handleError (SingleError.builderWarn ()
@@ -259,8 +328,8 @@ public final class SchematronHelper
               }
             }
 
-            // Important to detach from parent!
-            aIncludedContent.detachFromParent ();
+            // Clone, because the read document is used for all includes of the resource
+            aIncludedContent = aIncludedContent.getClone ();
 
             // It is okay to include sthg else
             if (false)
@@ -298,12 +367,17 @@ public final class SchematronHelper
             }
 
             // Recursive resolve includes
-            if (_recursiveResolveAllSchematronIncludes (aIncludedContent,
-                                                        aIncludeRes,
-                                                        aSettings,
-                                                        aErrorHandler,
-                                                        aCustomIncludeResolver,
-                                                        bLenient).isFailure ())
+            aIncludePath.add (aIncludeTarget);
+            final ESuccess eSuccess = _recursiveResolveAllSchematronIncludes (aIncludedContent,
+                                                                              aIncludeRes,
+                                                                              aSettings,
+                                                                              aErrorHandler,
+                                                                              aCustomIncludeResolver,
+                                                                              bLenient,
+                                                                              aIncludedDocs,
+                                                                              aIncludePath);
+            aIncludePath.remove (aIncludeTarget);
+            if (eSuccess.isFailure ())
               return ESuccess.FAILURE;
 
             // Now replace "include" element with content in MicroDOM
@@ -424,12 +498,16 @@ public final class SchematronHelper
     if (aDoc != null)
     {
       // Resolve all Schematron includes
+      final ICommonsOrderedSet <IncludeTarget> aIncludePath = new CommonsLinkedHashSet <> ();
+      aIncludePath.add (new IncludeTarget (aResource, null));
       if (_recursiveResolveAllSchematronIncludes (aDoc.getDocumentElement (),
                                                   aResource,
                                                   aSettings,
                                                   aErrorHandler,
                                                   aCustomIncludeResolver,
-                                                  bLenient).isFailure ())
+                                                  bLenient,
+                                                  new CommonsHashMap <> (),
+                                                  aIncludePath).isFailure ())
       {
         // Error resolving includes
         return null;
