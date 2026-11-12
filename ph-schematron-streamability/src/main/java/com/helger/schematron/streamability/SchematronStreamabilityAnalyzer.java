@@ -16,6 +16,7 @@
  */
 package com.helger.schematron.streamability;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -27,7 +28,9 @@ import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.phoxtrot.xdm.XdmQName;
 import com.helger.phoxtrot.xpath.EStreamContextMode;
@@ -46,6 +49,7 @@ import com.helger.schematron.exchange.SchematronReadException;
 import com.helger.schematron.model.AbstractPSPatternLike;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSDiagnostic;
+import com.helger.schematron.model.PSDiagnostics;
 import com.helger.schematron.model.PSGroup;
 import com.helger.schematron.model.PSLet;
 import com.helger.schematron.model.PSNS;
@@ -197,38 +201,64 @@ public final class SchematronStreamabilityAnalyzer
   }
 
   /**
-   * @return <code>true</code> if the expression contains a reference to the variable. A match in a string literal also
+   * @return The pattern that finds a reference to the variable in an expression. A match in a string literal also
    *         counts, which can only make the analysis more conservative.
    */
-  private static boolean _isVariableReferenced (@NonNull final String sExpression, @NonNull final String sName)
+  @NonNull
+  private static Pattern _getVariableReferencePattern (@NonNull final String sName)
   {
-    return Pattern.compile ("\\$\\s*" + Pattern.quote (sName) + "(?![\\w.\\-:])", Pattern.UNICODE_CHARACTER_CLASS)
-                  .matcher (sExpression)
-                  .find ();
+    return Pattern.compile ("\\$\\s*" + Pattern.quote (sName) + "(?![\\w.\\-:])", Pattern.UNICODE_CHARACTER_CLASS);
   }
 
   /**
-   * @return The <code>sch:let</code>s among the first <code>nCount</code> of the passed ones that the expression uses,
-   *         directly or through another of them, in their original order.
+   * The <code>sch:let</code>s of a rule, with the reference pattern of each and the transitive closure of the
+   * <code>sch:let</code>s each one uses, so that both are computed only once per rule.
    */
-  @NonNull
-  private static ICommonsList <PSLet> _getUsedLets (@NonNull final List <PSLet> aLets,
-                                                    final int nCount,
-                                                    @NonNull final String sExpression)
+  private static final class RuleLets
   {
-    final ICommonsList <PSLet> ret = new CommonsArrayList <> ();
-    final ICommonsList <String> aUsingExpressions = new CommonsArrayList <> (sExpression);
-    for (int i = nCount - 1; i >= 0; --i)
+    private final List <PSLet> m_aLets;
+    private final Pattern [] m_aPatterns;
+    /** For each let the indices of itself and of the earlier lets its value uses, directly or indirectly */
+    private final BitSet [] m_aClosures;
+
+    RuleLets (@NonNull final List <PSLet> aLets)
     {
-      final PSLet aLet = aLets.get (i);
-      if (aUsingExpressions.containsAny (x -> _isVariableReferenced (x, aLet.getName ())))
+      m_aLets = aLets;
+      final int nCount = aLets.size ();
+      m_aPatterns = new Pattern [nCount];
+      m_aClosures = new BitSet [nCount];
+      for (int i = 0; i < nCount; ++i)
       {
-        ret.add (0, aLet);
-        if (aLet.getValue () != null)
-          aUsingExpressions.add (aLet.getValue ());
+        final PSLet aLet = aLets.get (i);
+        m_aPatterns[i] = _getVariableReferencePattern (aLet.getName ());
+        final BitSet aClosure = new BitSet (nCount);
+        aClosure.set (i);
+        final String sValue = aLet.getValue ();
+        if (sValue != null)
+          for (int j = 0; j < i; ++j)
+            if (m_aPatterns[j].matcher (sValue).find ())
+              aClosure.or (m_aClosures[j]);
+        m_aClosures[i] = aClosure;
       }
     }
-    return ret;
+
+    /**
+     * @return The <code>sch:let</code>s among the first <code>nCount</code> ones that the expression uses, directly or
+     *         through another of them, in their original order.
+     */
+    @NonNull
+    ICommonsList <PSLet> getUsedLets (final int nCount, @NonNull final String sExpression)
+    {
+      final BitSet aUsed = new BitSet (nCount);
+      for (int i = nCount - 1; i >= 0; --i)
+        if (!aUsed.get (i) && m_aPatterns[i].matcher (sExpression).find ())
+          aUsed.or (m_aClosures[i]);
+
+      final ICommonsList <PSLet> ret = new CommonsArrayList <> ();
+      for (int i = aUsed.nextSetBit (0); i >= 0; i = aUsed.nextSetBit (i + 1))
+        ret.add (m_aLets.get (i));
+      return ret;
+    }
   }
 
   /**
@@ -263,12 +293,12 @@ public final class SchematronStreamabilityAnalyzer
                                                                  @Nullable final String sLabel,
                                                                  @NonNull final String sExpression,
                                                                  @NonNull final String sWrapperStart,
-                                                                 @NonNull final List <PSLet> aLets,
+                                                                 @NonNull final RuleLets aRuleLets,
                                                                  final int nLetCount,
                                                                  @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
                                                                  @NonNull final StaticContext aSC)
   {
-    final ICommonsList <PSLet> aUsedLets = _getUsedLets (aLets, nLetCount, sExpression);
+    final ICommonsList <PSLet> aUsedLets = aRuleLets.getUsedLets (nLetCount, sExpression);
     final StreamabilityExpression ret = _analyzeExpression (eType,
                                                             sLabel,
                                                             sExpression,
@@ -413,9 +443,26 @@ public final class SchematronStreamabilityAnalyzer
                                                                                                       aExpr.getReason ()));
   }
 
+  /**
+   * @return A map from diagnostic ID to diagnostic, or <code>null</code> if the schema has no diagnostics container.
+   *         For duplicate IDs the first diagnostic wins, like in {@link PSDiagnostics#getDiagnosticOfID(String)}.
+   */
+  @Nullable
+  private static ICommonsMap <String, PSDiagnostic> _getDiagnosticsByID (@Nullable final PSDiagnostics aDiagnostics)
+  {
+    if (aDiagnostics == null)
+      return null;
+
+    final ICommonsMap <String, PSDiagnostic> ret = new CommonsHashMap <> ();
+    for (final PSDiagnostic aDiag : aDiagnostics.getAllDiagnostics ())
+      if (StringHelper.isNotEmpty (aDiag.getID ()) && !ret.containsKey (aDiag.getID ()))
+        ret.put (aDiag.getID (), aDiag);
+    return ret;
+  }
+
   @NonNull
   private static RuleStreamability _analyzeRule (@NonNull final PSRule aRule,
-                                                 @NonNull final PSSchema aSchema,
+                                                 @Nullable final ICommonsMap <String, PSDiagnostic> aDiagnostics,
                                                  @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
                                                  @NonNull final StaticContext aSC)
   {
@@ -424,6 +471,7 @@ public final class SchematronStreamabilityAnalyzer
 
     final ICommonsList <PSLet> aLets = aRule.getAllLets ();
     final int nLetCount = aLets.size ();
+    final RuleLets aRuleLets = new RuleLets (aLets);
     for (int i = 0; i < nLetCount; ++i)
     {
       final PSLet aLet = aLets.get (i);
@@ -440,7 +488,7 @@ public final class SchematronStreamabilityAnalyzer
                                                   aLet.getName (),
                                                   aLet.getValue (),
                                                   "count(",
-                                                  aLets,
+                                                  aRuleLets,
                                                   i,
                                                   aAnalyzer,
                                                   aSC));
@@ -456,7 +504,7 @@ public final class SchematronStreamabilityAnalyzer
                                                   sLabel,
                                                   aAssertReport.getTest (),
                                                   "boolean(",
-                                                  aLets,
+                                                  aRuleLets,
                                                   nLetCount,
                                                   aAnalyzer,
                                                   aSC));
@@ -465,7 +513,7 @@ public final class SchematronStreamabilityAnalyzer
                                                   sLabel,
                                                   aValueOf.getSelect (),
                                                   "data(",
-                                                  aLets,
+                                                  aRuleLets,
                                                   nLetCount,
                                                   aAnalyzer,
                                                   aSC));
@@ -475,21 +523,22 @@ public final class SchematronStreamabilityAnalyzer
                                                     sLabel,
                                                     aName.getPath (),
                                                     "name(",
-                                                    aLets,
+                                                    aRuleLets,
                                                     nLetCount,
                                                     aAnalyzer,
                                                     aSC));
-      if (aSchema.hasDiagnostics ())
+      if (aDiagnostics != null)
         for (final String sDiagnosticID : aAssertReport.getAllDiagnostics ())
         {
-          final PSDiagnostic aDiagnostic = aSchema.getDiagnostics ().getDiagnosticOfID (sDiagnosticID);
+          final PSDiagnostic aDiagnostic = StringHelper.isNotEmpty (sDiagnosticID) ? aDiagnostics.get (sDiagnosticID)
+                                                                                    : null;
           if (aDiagnostic != null)
             for (final PSValueOf aValueOf : aDiagnostic.getAllValueOfs ())
               aExpressions.add (_analyzeRuleExpression (EStreamabilityExpressionType.VALUE_OF,
                                                         sDiagnosticID,
                                                         aValueOf.getSelect (),
                                                         "data(",
-                                                        aLets,
+                                                        aRuleLets,
                                                         nLetCount,
                                                         aAnalyzer,
                                                         aSC));
@@ -545,12 +594,13 @@ public final class SchematronStreamabilityAnalyzer
     for (final PSLet aLet : aGlobalLets)
       aGlobalExpressions.add (_analyzeGlobalLet (aLet, aAnalyzer, aSC));
 
+    final ICommonsMap <String, PSDiagnostic> aDiagnostics = _getDiagnosticsByID (aPreprocessed.getDiagnostics ());
     final ICommonsList <PatternStreamability> aPatterns = new CommonsArrayList <> ();
     for (final PSPattern aPattern : aPreprocessed.getAllPatterns ())
     {
       final ICommonsList <RuleStreamability> aRules = new CommonsArrayList <> ();
       for (final PSRule aRule : aPattern.getAllRules ())
-        aRules.add (_analyzeRule (aRule, aPreprocessed, aAnalyzer, aSC));
+        aRules.add (_analyzeRule (aRule, aDiagnostics, aAnalyzer, aSC));
       aPatterns.add (new PatternStreamability (aPattern.getID (), aRules));
     }
     return new SchematronStreamabilityReport (aGlobalExpressions, aPatterns);
