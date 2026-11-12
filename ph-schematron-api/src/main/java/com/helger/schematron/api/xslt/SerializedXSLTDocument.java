@@ -18,6 +18,7 @@ package com.helger.schematron.api.xslt;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -25,7 +26,9 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 
+import com.helger.annotation.concurrent.GuardedBy;
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.concurrent.SimpleLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.xml.serialize.read.DOMReader;
@@ -47,6 +50,10 @@ import com.helger.xml.transform.XMLTransformerFactory;
 @NotThreadSafe
 public final class SerializedXSLTDocument
 {
+  private static final SimpleLock FACTORY_LOCK = new SimpleLock ();
+  @GuardedBy ("FACTORY_LOCK")
+  private static final TransformerFactory FACTORY = XMLTransformerFactory.createTransformerFactory (null, null);
+
   private final byte [] m_aBytes;
   private Document m_aDoc;
 
@@ -89,10 +96,9 @@ public final class SerializedXSLTDocument
   {
     ValueEnforcer.notNull (aDoc, "Document");
 
-    // Own factory, because the default factory is not thread-safe and compilations may run in
-    // parallel
-    final Transformer aTransformer = XMLTransformerFactory.newTransformer (XMLTransformerFactory.createTransformerFactory (null,
-                                                                                                                       null));
+    // Creating a factory is expensive (e.g. a new Saxon configuration), so one factory is shared.
+    // It is not thread-safe, so it is only used under a lock - the transformer is used without
+    final Transformer aTransformer = FACTORY_LOCK.lockedGet (() -> XMLTransformerFactory.newTransformer (FACTORY));
     if (aTransformer == null)
       throw new TransformerException ("Failed to create the identity transformer to serialise the XSLT");
 
