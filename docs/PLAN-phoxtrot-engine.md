@@ -416,7 +416,9 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
   - phoxtrot's `CONSUMING` and `BURST` verdicts are both `burst`; the rule context is analysed with `analyzePattern`.
   - Expressions are analysed as the host evaluates them: `boolean (test)`, `data (value-of)`, `name (path)`, and
     `count (value)` for a rule `sch:let`; only the rule `sch:let`s an expression uses (directly or through another
-    one) are put around it as `let` clauses.
+    one) are bound around it. Each value is compiled once per rule (`analyzeBinding`) and bound with
+    `addBoundVariable` (phoxtrot S46, `422534e`) on an analyser per expression, because phoxtrot binds every bound
+    variable around every expression, used or not; a static error in a `sch:let` is reported where it is used.
   - Global `sch:let`s are analysed as `data (value)`: motionless means they do not read the instance; otherwise they
     are `non-local` (a first pass) and declared with `addExternalNodeVariable`.
   - Unknown functions compile through `setUnknownFunctionErrorCode ("XTDE1425")`, the XSLT functions through

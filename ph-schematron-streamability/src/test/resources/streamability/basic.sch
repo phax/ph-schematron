@@ -60,6 +60,14 @@
     <rule id="predicate" context="cac:Line[cbc:Q &lt; 0]">
       <assert id="in-predicate-rule" test="@id">ID</assert>
     </rule>
+    <rule id="let-scope" context="cac:Delivery">
+      <let name="allIDs" value="//cbc:ID" />
+      <let name="broken" value="cbc:X[" />
+      <let name="viaBroken" value="count($broken)" />
+      <assert id="let-unused" test="@id">ID</assert>
+      <assert id="let-used" test="$allIDs = @id">Known ID</assert>
+      <assert id="let-broken" test="$viaBroken &gt; 0">Broken let</assert>
+    </rule>
   </pattern>
   <pattern abstract="true" id="abstract-required">
     <rule context="$element">

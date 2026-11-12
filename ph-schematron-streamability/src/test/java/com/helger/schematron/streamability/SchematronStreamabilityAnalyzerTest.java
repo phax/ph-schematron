@@ -220,6 +220,17 @@ public final class SchematronStreamabilityAnalyzerTest
              EStreamabilityClass.BURST,
              "axis step child::cbc:Q");
     _assert (aPredicate, EStreamabilityExpressionType.ASSERT, "in-predicate-rule", EStreamabilityClass.MOTIONLESS, null);
+
+    // Only the sch:lets an expression uses count for it; a static error in one is reported where it is used
+    final RuleStreamability aLetScope = _getRule (aReport, "let-scope");
+    _assert (aLetScope, EStreamabilityExpressionType.RULE_LET, "allIDs", EStreamabilityClass.NON_LOCAL, "axis step //");
+    _assert (aLetScope, EStreamabilityExpressionType.ASSERT, "let-unused", EStreamabilityClass.MOTIONLESS, null);
+    _assert (aLetScope, EStreamabilityExpressionType.ASSERT, "let-used", EStreamabilityClass.NON_LOCAL, "axis step //");
+    final StreamabilityExpression aLetError = _getExpression (aLetScope,
+                                                              EStreamabilityExpressionType.ASSERT,
+                                                              "let-broken");
+    assertEquals (EStreamabilityClass.NON_LOCAL, aLetError.getStreamabilityClass ());
+    assertTrue (aLetError.getReason (), aLetError.getReason ().startsWith ("static error in sch:let $broken: XPST0003"));
   }
 
   @Test

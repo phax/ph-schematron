@@ -37,6 +37,7 @@ import com.helger.phoxtrot.xpath.EStreamContextMode;
 import com.helger.phoxtrot.xpath.EStreamabilityVerdict;
 import com.helger.phoxtrot.xpath.XPathException;
 import com.helger.phoxtrot.xpath.XPathStreamabilityAnalyzer;
+import com.helger.phoxtrot.xpath.XPathStreamabilityBinding;
 import com.helger.phoxtrot.xpath.XPathStreamabilityReason;
 import com.helger.phoxtrot.xpath.XPathStreamabilityResult;
 import com.helger.phoxtrot.xpath.ast.SeqType;
@@ -78,8 +79,9 @@ import com.helger.xml.microdom.IMicroElement;
  * <li>The tests of assertions and reports, the <code>sch:value-of</code> and <code>sch:name</code> of their messages
  * and of the diagnostics they reference, and the rule's <code>sch:let</code>s are analysed with the rule context as
  * context, as the host evaluates them (effective boolean value of a test, atomised value of a
- * <code>sch:value-of</code>). The <code>sch:let</code>s of the rule are put around each expression as XPath
- * <code>let</code> clauses, so their values are analysed where they are used.</li>
+ * <code>sch:value-of</code>). The <code>sch:let</code>s of the rule an expression uses are bound around it as XPath
+ * <code>let</code> clauses would be, so their values are analysed where they are used; each value is compiled once per
+ * rule.</li>
  * <li>The <code>sch:let</code>s of the schema, the phases and the patterns are computed once with the document node as
  * context: one that reads the instance needs a first pass and is {@link EStreamabilityClass#NON_LOCAL}; a rule may
  * compare its value, but navigating from its nodes is non-local. One that does not read the instance (a literal, a
@@ -211,8 +213,78 @@ public final class SchematronStreamabilityAnalyzer
   }
 
   /**
-   * The <code>sch:let</code>s of a rule, with the reference pattern of each and the transitive closure of the
-   * <code>sch:let</code>s each one uses, so that both are computed only once per rule.
+   * The settings of a schema that every static context and every analyser of it gets. phoxtrot puts all variables
+   * bound on an analyser around every expression it analyses, used or not, so an expression that uses
+   * <code>sch:let</code>s of its rule gets an analyser of its own with only these.
+   */
+  private static final class SchemaSettings
+  {
+    private record FunctionDeclaration (@NonNull XdmQName name,
+                                        @NonNull EStreamFunctionCategory category,
+                                        @NonNull ICommonsList <SeqType> paramTypes)
+    {}
+
+    private final FunctionLibrary m_aFunctionLibrary = FunctionLibrary.createDefaultWithXsltSignatures ();
+    private final ICommonsList <PSNS> m_aNSs;
+    private final ICommonsList <XdmQName> m_aVariables = new CommonsArrayList <> ();
+    private final ICommonsList <FunctionDeclaration> m_aFunctions = new CommonsArrayList <> ();
+    private final ICommonsList <XdmQName> m_aExternalNodeVariables = new CommonsArrayList <> ();
+
+    SchemaSettings (@NonNull final ICommonsList <PSNS> aNSs)
+    {
+      m_aNSs = aNSs;
+    }
+
+    void addVariable (@NonNull final XdmQName aName)
+    {
+      m_aVariables.add (aName);
+    }
+
+    void addFunction (@NonNull final XdmQName aName,
+                      @NonNull final EStreamFunctionCategory eCategory,
+                      @NonNull final ICommonsList <SeqType> aParamTypes)
+    {
+      m_aFunctions.add (new FunctionDeclaration (aName, eCategory, aParamTypes));
+    }
+
+    void addExternalNodeVariable (@NonNull final XdmQName aName)
+    {
+      m_aExternalNodeVariables.add (aName);
+    }
+
+    /**
+     * @return A new static context with the namespaces and the variables added so far.
+     */
+    @NonNull
+    StaticContext createStaticContext ()
+    {
+      final StaticContext ret = new StaticContext ().setFunctionLibrary (m_aFunctionLibrary)
+                                                    .setUnknownFunctionErrorCode (UNKNOWN_FUNCTION_ERROR_CODE);
+      for (final PSNS aNS : m_aNSs)
+        ret.declareNamespace (aNS.getPrefix (), aNS.getUri ());
+      for (final XdmQName aName : m_aVariables)
+        ret.declareVariable (aName);
+      return ret;
+    }
+
+    /**
+     * @return A new analyser in burst mode with the functions and the external node variables added so far.
+     */
+    @NonNull
+    XPathStreamabilityAnalyzer createAnalyzer ()
+    {
+      final XPathStreamabilityAnalyzer ret = new XPathStreamabilityAnalyzer ().setContextMode (EStreamContextMode.BURST);
+      for (final FunctionDeclaration aFunction : m_aFunctions)
+        ret.addFunction (aFunction.name (), aFunction.category (), aFunction.paramTypes ());
+      for (final XdmQName aName : m_aExternalNodeVariables)
+        ret.addExternalNodeVariable (aName);
+      return ret;
+    }
+  }
+
+  /**
+   * The <code>sch:let</code>s of a rule, with the reference pattern of each, the transitive closure of the
+   * <code>sch:let</code>s each one uses and the compiled value of each, so that all are computed only once per rule.
    */
   private static final class RuleLets
   {
@@ -220,13 +292,21 @@ public final class SchematronStreamabilityAnalyzer
     private final Pattern [] m_aPatterns;
     /** For each let the indices of itself and of the earlier lets its value uses, directly or indirectly */
     private final BitSet [] m_aClosures;
+    private final XdmQName [] m_aNames;
+    /** The compiled value of each let; <code>null</code> for element content or a static error */
+    private final XPathStreamabilityBinding [] m_aBindings;
+    /** The static error of the value of each let, if any */
+    private final String [] m_aBindingErrors;
 
-    RuleLets (@NonNull final List <PSLet> aLets)
+    RuleLets (@NonNull final List <PSLet> aLets, @NonNull final StaticContext aSC)
     {
       m_aLets = aLets;
       final int nCount = aLets.size ();
       m_aPatterns = new Pattern [nCount];
       m_aClosures = new BitSet [nCount];
+      m_aNames = new XdmQName [nCount];
+      m_aBindings = new XPathStreamabilityBinding [nCount];
+      m_aBindingErrors = new String [nCount];
       for (int i = 0; i < nCount; ++i)
       {
         final PSLet aLet = aLets.get (i);
@@ -239,54 +319,54 @@ public final class SchematronStreamabilityAnalyzer
             if (m_aPatterns[j].matcher (sValue).find ())
               aClosure.or (m_aClosures[j]);
         m_aClosures[i] = aClosure;
+        m_aNames[i] = _getQName (aLet.getName (), aSC);
       }
     }
 
     /**
-     * @return The <code>sch:let</code>s among the first <code>nCount</code> ones that the expression uses, directly or
-     *         through another of them, in their original order.
+     * Compile the value of a <code>sch:let</code> and declare its variable in the static context, so that the
+     * <code>sch:let</code>s after it and the expressions of the rule may use it.
+     */
+    void bind (final int nIndex,
+               @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
+               @NonNull final StaticContext aSC)
+    {
+      final String sValue = m_aLets.get (nIndex).getValue ();
+      if (sValue != null)
+        try
+        {
+          m_aBindings[nIndex] = aAnalyzer.analyzeBinding (sValue, aSC);
+        }
+        catch (final XPathException ex)
+        {
+          m_aBindingErrors[nIndex] = ex.getMessage ();
+        }
+      aSC.declareVariable (m_aNames[nIndex]);
+    }
+
+    /**
+     * @return The indices of the <code>sch:let</code>s among the first <code>nCount</code> ones that the expression
+     *         uses, directly or through another of them.
      */
     @NonNull
-    ICommonsList <PSLet> getUsedLets (final int nCount, @NonNull final String sExpression)
+    BitSet getUsedLets (final int nCount, @NonNull final String sExpression)
     {
-      final BitSet aUsed = new BitSet (nCount);
+      final BitSet ret = new BitSet (nCount);
       for (int i = nCount - 1; i >= 0; --i)
-        if (!aUsed.get (i) && m_aPatterns[i].matcher (sExpression).find ())
-          aUsed.or (m_aClosures[i]);
-
-      final ICommonsList <PSLet> ret = new CommonsArrayList <> ();
-      for (int i = aUsed.nextSetBit (0); i >= 0; i = aUsed.nextSetBit (i + 1))
-        ret.add (m_aLets.get (i));
+        if (!ret.get (i) && m_aPatterns[i].matcher (sExpression).find ())
+          ret.or (m_aClosures[i]);
       return ret;
     }
   }
 
   /**
-   * @return The XPath <code>let</code> clauses for the passed <code>sch:let</code>s, e.g.
-   *         <code>let $a := (x), $b := (y) return </code>, or an empty string if there is none with a value.
-   */
-  @NonNull
-  private static String _getLetClauses (@NonNull final List <PSLet> aLets)
-  {
-    final StringBuilder aSB = new StringBuilder ();
-    for (final PSLet aLet : aLets)
-      if (aLet.getValue () != null)
-        aSB.append (aSB.isEmpty () ? "let $" : ", $")
-           .append (aLet.getName ())
-           .append (" := (")
-           .append (aLet.getValue ())
-           .append (')');
-    if (!aSB.isEmpty ())
-      aSB.append (" return ");
-    return aSB.toString ();
-  }
-
-  /**
-   * Analyse an expression of a rule with the <code>sch:let</code>s of the rule it uses as <code>let</code> clauses
-   * around it.
+   * Analyse an expression of a rule with the <code>sch:let</code>s of the rule it uses bound around it, as
+   * <code>let</code> clauses would.
    *
    * @param sWrapperStart
    *        The start of the function call the host evaluates the expression with, e.g. <code>boolean(</code>.
+   * @param aRuleAnalyzer
+   *        The analyser of the rule, without bound variables.
    */
   @NonNull
   private static StreamabilityExpression _analyzeRuleExpression (@NonNull final EStreamabilityExpressionType eType,
@@ -295,31 +375,44 @@ public final class SchematronStreamabilityAnalyzer
                                                                  @NonNull final String sWrapperStart,
                                                                  @NonNull final RuleLets aRuleLets,
                                                                  final int nLetCount,
-                                                                 @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
+                                                                 @NonNull final SchemaSettings aSettings,
+                                                                 @NonNull final XPathStreamabilityAnalyzer aRuleAnalyzer,
                                                                  @NonNull final StaticContext aSC)
   {
-    final ICommonsList <PSLet> aUsedLets = aRuleLets.getUsedLets (nLetCount, sExpression);
+    final String sAnalysedExpression = sWrapperStart + "(" + sExpression + "))";
+    final BitSet aUsedLets = aRuleLets.getUsedLets (nLetCount, sExpression);
+    if (aUsedLets.isEmpty ())
+      return _analyzeExpression (eType, sLabel, sExpression, sAnalysedExpression, aRuleAnalyzer, aSC);
+
+    final XPathStreamabilityAnalyzer aAnalyzer = aSettings.createAnalyzer ();
+    final StringBuilder aSB = new StringBuilder ("via sch:let");
+    boolean bFirst = true;
+    for (int i = aUsedLets.nextSetBit (0); i >= 0; i = aUsedLets.nextSetBit (i + 1))
+    {
+      final String sName = aRuleLets.m_aLets.get (i).getName ();
+      if (aRuleLets.m_aBindingErrors[i] != null)
+        return new StreamabilityExpression (eType,
+                                            sLabel,
+                                            sExpression,
+                                            EStreamabilityClass.NON_LOCAL,
+                                            "static error in sch:let $" + sName + ": " + aRuleLets.m_aBindingErrors[i]);
+      // A let with element content stays a grounded variable
+      if (aRuleLets.m_aBindings[i] != null)
+        aAnalyzer.addBoundVariable (aRuleLets.m_aNames[i], aRuleLets.m_aBindings[i]);
+      aSB.append (bFirst ? " $" : ", $").append (sName);
+      bFirst = false;
+    }
+
     final StreamabilityExpression ret = _analyzeExpression (eType,
                                                             sLabel,
                                                             sExpression,
-                                                            _getLetClauses (aUsedLets) +
-                                                                         sWrapperStart +
-                                                                         "(" +
-                                                                         sExpression +
-                                                                         "))",
+                                                            sAnalysedExpression,
                                                             aAnalyzer,
                                                             aSC);
     if (!REASON_LET_EXPRESSION.equals (ret.getReason ()))
       return ret;
 
     // The let clauses as a whole decide: name them instead
-    final StringBuilder aSB = new StringBuilder ("via sch:let");
-    boolean bFirst = true;
-    for (final PSLet aLet : aUsedLets)
-    {
-      aSB.append (bFirst ? " $" : ", $").append (aLet.getName ());
-      bFirst = false;
-    }
     return new StreamabilityExpression (eType, sLabel, sExpression, ret.getStreamabilityClass (), aSB.toString ());
   }
 
@@ -386,7 +479,7 @@ public final class SchematronStreamabilityAnalyzer
    * stay unknown, which the analysis treats as not streamable.
    */
   private static void _addFunctions (@NonNull final PSSchema aSchema,
-                                     @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
+                                     @NonNull final SchemaSettings aSettings,
                                      @NonNull final StaticContext aSC)
   {
     for (final IMicroElement eForeign : aSchema.getAllForeignElements ())
@@ -403,7 +496,7 @@ public final class SchematronStreamabilityAnalyzer
             final ICommonsList <SeqType> aParamTypes = new CommonsArrayList <> ();
             for (int i = eForeign.getAllChildElements (CSchematron.NAMESPACE_URI_XSL, "param").size (); i > 0; --i)
               aParamTypes.add (null);
-            aAnalyzer.addFunction (_getQName (sName, aSC), eCategory, aParamTypes);
+            aSettings.addFunction (_getQName (sName, aSC), eCategory, aParamTypes);
           }
         }
       }
@@ -411,6 +504,7 @@ public final class SchematronStreamabilityAnalyzer
 
   @NonNull
   private static StreamabilityExpression _analyzeGlobalLet (@NonNull final PSLet aLet,
+                                                            @NonNull final SchemaSettings aSettings,
                                                             @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
                                                             @NonNull final StaticContext aSC)
   {
@@ -432,7 +526,9 @@ public final class SchematronStreamabilityAnalyzer
       return aExpr;
 
     // Computed from the instance: the rules may compare its value, but not navigate from its nodes
-    aAnalyzer.addExternalNodeVariable (_getQName (aLet.getName (), aSC));
+    final XdmQName aName = _getQName (aLet.getName (), aSC);
+    aAnalyzer.addExternalNodeVariable (aName);
+    aSettings.addExternalNodeVariable (aName);
     return new StreamabilityExpression (EStreamabilityExpressionType.GLOBAL_LET,
                                         aLet.getName (),
                                         aLet.getValue (),
@@ -463,15 +559,17 @@ public final class SchematronStreamabilityAnalyzer
   @NonNull
   private static RuleStreamability _analyzeRule (@NonNull final PSRule aRule,
                                                  @Nullable final ICommonsMap <String, PSDiagnostic> aDiagnostics,
-                                                 @NonNull final XPathStreamabilityAnalyzer aAnalyzer,
-                                                 @NonNull final StaticContext aSC)
+                                                 @NonNull final SchemaSettings aSettings)
   {
+    // The sch:lets of the rule are declared in its own static context
+    final StaticContext aSC = aSettings.createStaticContext ();
+    final XPathStreamabilityAnalyzer aAnalyzer = aSettings.createAnalyzer ();
     final ICommonsList <StreamabilityExpression> aExpressions = new CommonsArrayList <> ();
     aExpressions.add (_analyzeRuleContext (aRule.getContext (), aAnalyzer, aSC));
 
     final ICommonsList <PSLet> aLets = aRule.getAllLets ();
     final int nLetCount = aLets.size ();
-    final RuleLets aRuleLets = new RuleLets (aLets);
+    final RuleLets aRuleLets = new RuleLets (aLets, aSC);
     for (int i = 0; i < nLetCount; ++i)
     {
       final PSLet aLet = aLets.get (i);
@@ -490,9 +588,11 @@ public final class SchematronStreamabilityAnalyzer
                                                   "count(",
                                                   aRuleLets,
                                                   i,
+                                                  aSettings,
                                                   aAnalyzer,
                                                   aSC));
       }
+      aRuleLets.bind (i, aAnalyzer, aSC);
     }
 
     for (final PSAssertReport aAssertReport : aRule.getAllAssertReports ())
@@ -506,6 +606,7 @@ public final class SchematronStreamabilityAnalyzer
                                                   "boolean(",
                                                   aRuleLets,
                                                   nLetCount,
+                                                  aSettings,
                                                   aAnalyzer,
                                                   aSC));
       for (final PSValueOf aValueOf : aAssertReport.getAllValueOfs ())
@@ -515,6 +616,7 @@ public final class SchematronStreamabilityAnalyzer
                                                   "data(",
                                                   aRuleLets,
                                                   nLetCount,
+                                                  aSettings,
                                                   aAnalyzer,
                                                   aSC));
       for (final PSName aName : aAssertReport.getAllNames ())
@@ -525,6 +627,7 @@ public final class SchematronStreamabilityAnalyzer
                                                     "name(",
                                                     aRuleLets,
                                                     nLetCount,
+                                                    aSettings,
                                                     aAnalyzer,
                                                     aSC));
       if (aDiagnostics != null)
@@ -540,6 +643,7 @@ public final class SchematronStreamabilityAnalyzer
                                                         "data(",
                                                         aRuleLets,
                                                         nLetCount,
+                                                        aSettings,
                                                         aAnalyzer,
                                                         aSC));
         }
@@ -567,32 +671,37 @@ public final class SchematronStreamabilityAnalyzer
     final PSSchema aPreprocessed = PSPreprocessor.createPreprocessorWithoutInformationLoss (StreamabilityQueryBindingTransform.INSTANCE)
                                                  .getAsPreprocessedSchema (aSchema);
 
-    final StaticContext aSC = new StaticContext ().setFunctionLibrary (FunctionLibrary.createDefaultWithXsltSignatures ())
-                                                  .setUnknownFunctionErrorCode (UNKNOWN_FUNCTION_ERROR_CODE);
-    for (final PSNS aNS : aPreprocessed.getAllNSs ())
-      aSC.declareNamespace (aNS.getPrefix (), aNS.getUri ());
+    final SchemaSettings aSettings = new SchemaSettings (aPreprocessed.getAllNSs ());
+    final StaticContext aSC = aSettings.createStaticContext ();
 
-    // All global names, and the rule lets with element content, which have no let clause
+    // All global names, and the rule lets with element content, which are not bound
     final ICommonsList <PSLet> aGlobalLets = new CommonsArrayList <> (aPreprocessed.getAllLets ());
     for (final PSPhase aPhase : aPreprocessed.getAllPhases ())
       aGlobalLets.addAll (aPhase.getAllLets ());
     for (final PSPattern aPattern : aPreprocessed.getAllPatterns ())
       aGlobalLets.addAll (aPattern.getAllLets ());
+    final ICommonsList <String> aVariableNames = new CommonsArrayList <> ();
     for (final PSLet aLet : aGlobalLets)
-      aSC.declareVariable (_getQName (aLet.getName (), aSC));
+      aVariableNames.add (aLet.getName ());
     for (final PSParam aParam : aPreprocessed.getAllParams ())
-      aSC.declareVariable (_getQName (aParam.getName (), aSC));
+      aVariableNames.add (aParam.getName ());
     for (final PSPattern aPattern : aPreprocessed.getAllPatterns ())
       for (final PSRule aRule : aPattern.getAllRules ())
         for (final PSLet aLet : aRule.getAllLets ())
           if (aLet.getValue () == null)
-            aSC.declareVariable (_getQName (aLet.getName (), aSC));
+            aVariableNames.add (aLet.getName ());
+    for (final String sName : aVariableNames)
+    {
+      final XdmQName aName = _getQName (sName, aSC);
+      aSC.declareVariable (aName);
+      aSettings.addVariable (aName);
+    }
 
-    final XPathStreamabilityAnalyzer aAnalyzer = new XPathStreamabilityAnalyzer ().setContextMode (EStreamContextMode.BURST);
-    _addFunctions (aPreprocessed, aAnalyzer, aSC);
+    _addFunctions (aPreprocessed, aSettings, aSC);
+    final XPathStreamabilityAnalyzer aAnalyzer = aSettings.createAnalyzer ();
 
     for (final PSLet aLet : aGlobalLets)
-      aGlobalExpressions.add (_analyzeGlobalLet (aLet, aAnalyzer, aSC));
+      aGlobalExpressions.add (_analyzeGlobalLet (aLet, aSettings, aAnalyzer, aSC));
 
     final ICommonsMap <String, PSDiagnostic> aDiagnostics = _getDiagnosticsByID (aPreprocessed.getDiagnostics ());
     final ICommonsList <PatternStreamability> aPatterns = new CommonsArrayList <> ();
@@ -600,7 +709,7 @@ public final class SchematronStreamabilityAnalyzer
     {
       final ICommonsList <RuleStreamability> aRules = new CommonsArrayList <> ();
       for (final PSRule aRule : aPattern.getAllRules ())
-        aRules.add (_analyzeRule (aRule, aDiagnostics, aAnalyzer, aSC));
+        aRules.add (_analyzeRule (aRule, aDiagnostics, aSettings));
       aPatterns.add (new PatternStreamability (aPattern.getID (), aRules));
     }
     return new SchematronStreamabilityReport (aGlobalExpressions, aPatterns);
