@@ -226,22 +226,27 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
       final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? aXsltProcessor.createTransformerFactory (true)
                                                                    : aXsltProcessor.getDefaultTransformerFactory ();
 
-      // Apply error listener + URI resolver to the final-compile factory
-      final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
-      aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+      // The default factory is shared: configuring it and compiling must not interleave with other
+      // compilations that run in parallel
+      synchronized (aTF)
+      {
+        // Apply error listener + URI resolver to the final-compile factory
+        final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
+        aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
 
-      final URIResolver aURIResolver = m_aConfig.getURIResolver ();
-      if (aURIResolver != null)
-        aTF.setURIResolver (aURIResolver);
+        final URIResolver aURIResolver = m_aConfig.getURIResolver ();
+        if (aURIResolver != null)
+          aTF.setURIResolver (aURIResolver);
 
-      // Hand the factory to the caller-supplied customizer last so it can register Saxon
-      // extension functions (or any other tweak) just before the validation stylesheet compiles.
-      final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
-      if (aTFCustomizer != null)
-        aTFCustomizer.accept (aTF);
+        // Hand the factory to the caller-supplied customizer last so it can register Saxon
+        // extension functions (or any other tweak) just before the validation stylesheet compiles.
+        final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
+        if (aTFCustomizer != null)
+          aTFCustomizer.accept (aTF);
 
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
-                                                                       TransformSourceFactory.create (aSchematronXSLTDoc));
+        m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
+                                                                         TransformSourceFactory.create (aSchematronXSLTDoc));
+      }
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
