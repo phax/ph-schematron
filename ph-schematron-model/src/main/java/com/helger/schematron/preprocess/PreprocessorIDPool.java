@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.CommonsHashSet;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsSet;
 
 /**
@@ -80,6 +82,11 @@ public class PreprocessorIDPool
   }
 
   private final ICommonsSet <String> m_aUsedIDs = new CommonsHashSet <> ();
+  /**
+   * The next index to probe per base ID (ID plus separator): all smaller indices are already used, so the probing does
+   * not start at 0 again for every repetition of an ID.
+   */
+  private final ICommonsMap <String, Integer> m_aNextIndex = new CommonsHashMap <> ();
 
   public PreprocessorIDPool ()
   {}
@@ -123,12 +130,14 @@ public class PreprocessorIDPool
 
     // Non-unique ID
     final String sNewBaseID = sID + getSeparator ();
-    int nIndex = 0;
+    final Integer aNextIndex = m_aNextIndex.get (sNewBaseID);
+    int nIndex = aNextIndex == null ? 0 : aNextIndex.intValue ();
     String sNewID = sNewBaseID + nIndex;
     do
     {
       if (m_aUsedIDs.add (sNewID))
       {
+        m_aNextIndex.put (sNewBaseID, Integer.valueOf (nIndex + 1));
         // Now it's unique
         LOGGER.warn ("The ID '" +
                      sID +
