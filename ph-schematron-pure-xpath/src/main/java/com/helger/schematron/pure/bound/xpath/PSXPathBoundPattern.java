@@ -20,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.ICommonsList;
@@ -54,6 +55,18 @@ public class PSXPathBoundPattern
   public PSPattern getPattern ()
   {
     return m_aPattern;
+  }
+
+  /**
+   * @return The internal list of bound rules without copying. Never <code>null</code>. Modifying
+   *         the returned list modifies this object.
+   * @since 11.0.0
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public final ICommonsList <PSXPathBoundRule> boundRules ()
+  {
+    return m_aBoundRules;
   }
 
   @NonNull

@@ -22,6 +22,8 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
@@ -30,6 +32,7 @@ import com.helger.base.location.SimpleLocation;
 import com.helger.base.state.EContinue;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.CollectionHelper;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
@@ -64,10 +67,8 @@ import com.helger.schematron.svrl.jaxb.Text;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
 
-import net.sf.saxon.s9api.QName;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmValue;
 
 /**
  * A special validation handler that creates an SVRL document. This class only works for the XPath
@@ -79,9 +80,21 @@ import net.sf.saxon.s9api.XdmValue;
 @NotThreadSafe
 public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
 {
+  /**
+   * The number of child elements with the same name, used to create the location paths.
+   */
+  private static final class SiblingNameCount
+  {
+    private int m_nTotal;
+    private int m_nHandled;
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PSXPathValidationHandlerSVRL.class);
 
   private final IPSErrorHandler m_aErrorHandler;
+  private final MapBasedNamespaceContext m_aSchemaNSContext;
+  // The location path of all element nodes that were already used, per validation
+  private final ICommonsMap <Node, String> m_aElementPaths = new CommonsHashMap <> ();
   private SchematronOutputType m_aSchematronOutput;
   private PSSchema m_aSchema;
   private MapBasedNamespaceContext m_aNSContext;
@@ -94,8 +107,26 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
    */
   public PSXPathValidationHandlerSVRL (@NonNull final IPSErrorHandler aErrorHandler)
   {
+    this (aErrorHandler, null);
+  }
+
+  /**
+   * Constructor
+   *
+   * @param aErrorHandler
+   *        The error handler to be used. May not be <code>null</code>.
+   * @param aSchemaNSContext
+   *        The namespace context of the schema to be validated, as created by
+   *        {@link PSSchema#getAsNamespaceContext()}. It is only read. May be <code>null</code> in
+   *        which case it is created from the schema for every validation.
+   * @since 11.0.0
+   */
+  public PSXPathValidationHandlerSVRL (@NonNull final IPSErrorHandler aErrorHandler,
+                                       @Nullable final MapBasedNamespaceContext aSchemaNSContext)
+  {
     ValueEnforcer.notNull (aErrorHandler, "ErrorHandler");
     m_aErrorHandler = aErrorHandler;
+    m_aSchemaNSContext = aSchemaNSContext;
   }
 
   @NonNull
@@ -165,7 +196,8 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     // Add namespace prefixes
     m_aSchematronOutput = aSchematronOutput;
     m_aSchema = aSchema;
-    m_aNSContext = aSchema.getAsNamespaceContext ();
+    m_aNSContext = m_aSchemaNSContext != null ? m_aSchemaNSContext : aSchema.getAsNamespaceContext ();
+    m_aElementPaths.clear ();
 
     for (final var aEntry : m_aNSContext.getPrefixToNamespaceURIMap ().entrySet ())
     {
@@ -214,8 +246,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       return null;
 
     final XdmNode aCtxXdm = aCtx.wrap (aSourceNode);
-    final ICommonsMap <QName, XdmValue> aVars = aCtx.getCurrentVariables ();
-    return XPathEvaluationHelper.evaluateAsString (aBoundElement.getBoundExpression (), aCtxXdm, aVars, " ");
+    return XPathEvaluationHelper.getAsString (aCtx.evaluate (aBoundElement.getBoundExpression (), aCtxXdm), " ");
   }
 
   /**
@@ -365,19 +396,146 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     }
   }
 
+  /**
+   * @param aNode
+   *        An element or attribute node. May not be <code>null</code>.
+   * @return The name of the node inside a location path, with the namespace prefix of the schema
+   *         (if any). The same as {@link XMLHelper#pathToNodeBuilder()} creates.
+   */
+  @NonNull
+  private String _getNameInPath (@NonNull final Node aNode)
+  {
+    final String sNamespaceURI = aNode.getNamespaceURI ();
+    if (StringHelper.isEmpty (sNamespaceURI))
+      return aNode.getNodeName ();
+
+    final String sPrefix = m_aNSContext.getPrefix (sNamespaceURI);
+    return StringHelper.isNotEmpty (sPrefix) ? sPrefix + ":" + aNode.getLocalName () : aNode.getLocalName ();
+  }
+
+  /**
+   * @param aElement
+   *        The element to check. May not be <code>null</code>.
+   * @return The key of all elements that have the same name, as compared by
+   *         {@link XMLHelper#hasSameElementName(Element, Element)}.
+   */
+  @NonNull
+  private static String _getSiblingNameKey (@NonNull final Element aElement)
+  {
+    final String sNamespaceURI = aElement.getNamespaceURI ();
+    if (StringHelper.isNotEmpty (sNamespaceURI))
+      return "{" + sNamespaceURI + "}" + aElement.getLocalName ();
+    // A tag name never starts with a curly brace
+    return aElement.getTagName ();
+  }
+
+  /**
+   * Remember the location path of all child elements of the provided parent element. The index of
+   * an element is only part of its path if there are other child elements with the same name. Each
+   * parent is handled only once per validation, so that many failures in a long list of sibling
+   * elements do not count the siblings again and again.
+   *
+   * @param aParent
+   *        The parent element. May not be <code>null</code>.
+   * @param sParentPath
+   *        The location path of the parent element. May not be <code>null</code>.
+   */
+  private void _addAllChildElementPaths (@NonNull final Element aParent, @NonNull final String sParentPath)
+  {
+    final ICommonsMap <String, SiblingNameCount> aCountPerName = new CommonsHashMap <> ();
+    for (Node aChild = aParent.getFirstChild (); aChild != null; aChild = aChild.getNextSibling ())
+      if (aChild.getNodeType () == Node.ELEMENT_NODE)
+        aCountPerName.computeIfAbsent (_getSiblingNameKey ((Element) aChild), k -> new SiblingNameCount ()).m_nTotal++;
+
+    for (Node aChild = aParent.getFirstChild (); aChild != null; aChild = aChild.getNextSibling ())
+      if (aChild.getNodeType () == Node.ELEMENT_NODE)
+      {
+        final SiblingNameCount aCount = aCountPerName.get (_getSiblingNameKey ((Element) aChild));
+        aCount.m_nHandled++;
+        String sPath = sParentPath + "/" + _getNameInPath (aChild);
+        if (aCount.m_nTotal > 1)
+          sPath += "[" + aCount.m_nHandled + "]";
+        m_aElementPaths.put (aChild, sPath);
+      }
+  }
+
+  /**
+   * Get the location path of an element, using the paths remembered before. The result is identical
+   * to the one {@link #_getPathToNodeUncached(Node)} creates.
+   *
+   * @param aElement
+   *        The element to get the path for. May not be <code>null</code>.
+   * @return <code>null</code> if the element or one of its ancestors is not part of a document.
+   */
+  @Nullable
+  private String _getElementPathRecursive (@NonNull final Element aElement)
+  {
+    String ret = m_aElementPaths.get (aElement);
+    if (ret == null)
+    {
+      final Node aParent = aElement.getParentNode ();
+      if (aParent == null)
+        return null;
+
+      final short nParentType = aParent.getNodeType ();
+      if (nParentType == Node.DOCUMENT_NODE)
+      {
+        // The root element never has an index
+        ret = "/" + _getNameInPath (aElement);
+        m_aElementPaths.put (aElement, ret);
+      }
+      else
+        if (nParentType == Node.ELEMENT_NODE)
+        {
+          final String sParentPath = _getElementPathRecursive ((Element) aParent);
+          if (sParentPath == null)
+            return null;
+          _addAllChildElementPaths ((Element) aParent, sParentPath);
+          ret = m_aElementPaths.get (aElement);
+        }
+    }
+    return ret;
+  }
+
+  @NonNull
+  private String _getPathToNodeUncached (@NonNull final Node aNode)
+  {
+    return XMLHelper.pathToNodeBuilder ()
+                    .node (aNode)
+                    .separator ("/")
+                    .excludeDocumentNode ()
+                    .oneBasedIndex ()
+                    .forceUseIndex (false)
+                    .trailingSeparator (false)
+                    .compareIncludingNamespaceURI (true)
+                    .namespaceContext (m_aNSContext)
+                    .build ();
+  }
+
   @NonNull
   private String _getPathToNode (@NonNull final Node aNode)
   {
-    final String ret = XMLHelper.pathToNodeBuilder ()
-                                .node (aNode)
-                                .separator ("/")
-                                .excludeDocumentNode ()
-                                .oneBasedIndex ()
-                                .forceUseIndex (false)
-                                .trailingSeparator (false)
-                                .compareIncludingNamespaceURI (true)
-                                .namespaceContext (m_aNSContext)
-                                .build ();
+    String ret = null;
+    final short nNodeType = aNode.getNodeType ();
+    if (nNodeType == Node.ELEMENT_NODE)
+      ret = _getElementPathRecursive ((Element) aNode);
+    else
+      if (nNodeType == Node.ATTRIBUTE_NODE)
+      {
+        final Element aOwner = ((Attr) aNode).getOwnerElement ();
+        if (aOwner != null)
+        {
+          final String sOwnerPath = _getElementPathRecursive (aOwner);
+          if (sOwnerPath != null)
+            ret = sOwnerPath + "/@" + _getNameInPath (aNode);
+        }
+      }
+    if (ret == null)
+    {
+      // Any other node, or a node that is not part of a document
+      ret = _getPathToNodeUncached (aNode);
+    }
+
     if (LOGGER.isTraceEnabled ())
       LOGGER.trace ("Converted Node to path '" + ret + "'");
     return ret;

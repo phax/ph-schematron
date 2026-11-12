@@ -22,6 +22,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
@@ -148,7 +149,22 @@ public final class XPathEvaluationHelper
                                          @Nullable final ICommonsMap <QName, XdmValue> aVariables,
                                          @NonNull final String sItemSeparator) throws SaxonApiException
   {
-    final XdmValue aResult = evaluate (aExecutable, aContext, aVariables);
+    return getAsString (evaluate (aExecutable, aContext, aVariables), sItemSeparator);
+  }
+
+  /**
+   * Get the concatenated string value of an evaluation result.
+   *
+   * @param aResult
+   *        The evaluation result. Never <code>null</code>.
+   * @param sItemSeparator
+   *        The separator to be printed between multiple items. May not be <code>null</code>.
+   * @return The result as a string. Empty string if the result is the empty sequence.
+   * @since 11.0.0
+   */
+  @NonNull
+  public static String getAsString (@NonNull final XdmValue aResult, @NonNull final String sItemSeparator)
+  {
     if (aResult.isEmptySequence ())
       return "";
 
@@ -183,7 +199,21 @@ public final class XPathEvaluationHelper
                                                            @Nullable final XdmItem aContext,
                                                            @Nullable final ICommonsMap <QName, XdmValue> aVariables) throws SaxonApiException
   {
-    final XdmValue aResult = evaluate (aExecutable, aContext, aVariables);
+    return getAllXdmNodes (evaluate (aExecutable, aContext, aVariables));
+  }
+
+  /**
+   * Collect all items of an evaluation result that are XML nodes.
+   *
+   * @param aResult
+   *        The evaluation result. Never <code>null</code>.
+   * @return A list of all {@link XdmNode} items. Never <code>null</code>.
+   * @since 11.0.0
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public static ICommonsList <XdmNode> getAllXdmNodes (@NonNull final XdmValue aResult)
+  {
     final ICommonsList <XdmNode> ret = new CommonsArrayList <> (aResult.size ());
     for (final XdmItem aItem : aResult)
       if (aItem instanceof final XdmNode aNode)

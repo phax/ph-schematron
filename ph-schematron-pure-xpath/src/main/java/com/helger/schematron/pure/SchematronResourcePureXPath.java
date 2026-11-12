@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
@@ -77,6 +78,7 @@ import com.helger.telemetry.Telemetry;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 
+import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.SaxonApiException;
 
@@ -98,6 +100,14 @@ import net.sf.saxon.s9api.SaxonApiException;
 @NotThreadSafe
 public class SchematronResourcePureXPath extends AbstractSchematronResource
 {
+  /**
+   * By default a DOM document is validated directly, so that validation handlers receive the
+   * original DOM nodes.
+   *
+   * @since 11.0.0
+   */
+  public static final boolean DEFAULT_COPY_DOM_TO_SAXON_TREE = false;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXPath.class);
 
   private String m_sPhase;
@@ -105,8 +115,11 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   private IPSValidationHandler m_aCustomValidationHandler;
   private IXPathConfig m_aXPathConfig = XPathConfigBuilder.DEFAULT;
   private boolean m_bPerRuleExecutionTelemetry = false;
+  private boolean m_bCopyDomToSaxonTree = DEFAULT_COPY_DOM_TO_SAXON_TREE;
   // Status var
   private IPSBoundSchema m_aBoundSchema;
+  // true once the bound schema was found to be valid
+  private boolean m_bBoundSchemaValid;
 
   @Deprecated (since = "10.0.0", forRemoval = false)
   public SchematronResourcePureXPath (@NonNull final IReadableResource aResource)
@@ -144,6 +157,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     m_aCustomValidationHandler = aBuilder.m_aCustomValidationHandler;
     m_aXPathConfig = aBuilder.m_aXPathConfig;
     m_bPerRuleExecutionTelemetry = aBuilder.m_bPerRuleExecutionTelemetry;
+    m_bCopyDomToSaxonTree = aBuilder.m_bCopyDomToSaxonTree;
   }
 
   /**
@@ -276,6 +290,18 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   public final boolean isPerRuleExecutionTelemetry ()
   {
     return m_bPerRuleExecutionTelemetry;
+  }
+
+  /**
+   * @return <code>true</code> if a DOM document passed for validation is copied into a Saxon tree
+   *         first, <code>false</code> if the DOM is validated directly. Default is
+   *         {@link #DEFAULT_COPY_DOM_TO_SAXON_TREE}.
+   * @see Builder#copyDomToSaxonTree(boolean)
+   * @since 11.0.0
+   */
+  public final boolean isCopyDomToSaxonTree ()
+  {
+    return m_bCopyDomToSaxonTree;
   }
 
   /**
@@ -510,16 +536,50 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     }
   }
 
+  /**
+   * @param aXMLNode
+   *        The node passed for validation. May not be <code>null</code>.
+   * @param sBaseURI
+   *        The base URI of the node. May be <code>null</code>.
+   * @return The node to be validated. Either the passed node or a DOM facade over a Saxon tree copy
+   *         of it, if {@link #isCopyDomToSaxonTree()} is enabled.
+   * @throws SchematronException
+   *         If the DOM cannot be copied
+   */
+  @NonNull
+  private Node _getNodeToValidate (@NonNull final Node aXMLNode,
+                                   @Nullable final String sBaseURI) throws SchematronException
+  {
+    if (m_bCopyDomToSaxonTree && aXMLNode instanceof Document && !(aXMLNode instanceof NodeOverNodeInfo))
+      try
+      {
+        return SaxonTinyTreeHelper.buildDocumentFacade (m_aXPathConfig.getProcessor (),
+                                                        new DOMSource (aXMLNode, sBaseURI));
+      }
+      catch (final SaxonApiException ex)
+      {
+        throw new SchematronException ("Failed to copy the DOM document into a Saxon tree", ex);
+      }
+    return aXMLNode;
+  }
+
   @NonNull
   public EValidity getSchematronValidity (@NonNull final Node aXMLNode,
                                           @Nullable final String sBaseURI) throws SchematronException
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    if (!isValidSchematron ())
-      return EValidity.INVALID;
+    if (!m_bBoundSchemaValid)
+    {
+      if (!isValidSchematron ())
+        return EValidity.INVALID;
 
-    return getOrCreateBoundSchema ().validatePartially (aXMLNode, sBaseURI);
+      // The bound schema cannot change any more, and a valid schema reports nothing to the error
+      // handler - so the schema does not need to be checked again for the next document
+      m_bBoundSchemaValid = true;
+    }
+
+    return getOrCreateBoundSchema ().validatePartially (_getNodeToValidate (aXMLNode, sBaseURI), sBaseURI);
   }
 
   /**
@@ -539,6 +599,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
+    final Node aNodeToValidate = _getNodeToValidate (aXMLNode, sBaseURI);
     final SchematronOutputType aSOT;
     if (isTelemetry ())
     {
@@ -554,7 +615,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
 
         try
         {
-          aSOT = aBound.validateComplete (aXMLNode, sBaseURI);
+          aSOT = aBound.validateComplete (aNodeToValidate, sBaseURI);
           aSpan.setStatusOk ();
         }
         catch (final SchematronException ex)
@@ -566,7 +627,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     }
     else
     {
-      aSOT = getOrCreateBoundSchema ().validateComplete (aXMLNode, sBaseURI);
+      aSOT = getOrCreateBoundSchema ().validateComplete (aNodeToValidate, sBaseURI);
     }
 
     // Debug print the created SVRL document
@@ -1015,6 +1076,7 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     private boolean m_bUseTelemetry;
     private boolean m_bPerAssertionResultTelemetry;
     private boolean m_bPerRuleExecutionTelemetry;
+    private boolean m_bCopyDomToSaxonTree = DEFAULT_COPY_DOM_TO_SAXON_TREE;
 
     Builder (@NonNull final IReadableResource aResource)
     {
@@ -1150,6 +1212,28 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
     public Builder perRuleExecutionTelemetry (final boolean b)
     {
       m_bPerRuleExecutionTelemetry = b;
+      return this;
+    }
+
+    /**
+     * Opt-in to copy a DOM document passed for validation into a Saxon tree first, instead of
+     * evaluating all XPath expressions through the slower DOM bridge. This is only applied to
+     * {@link Document} nodes. The validation then uses a snapshot of the DOM: the nodes passed to
+     * validation handlers are DOM facades over the Saxon tree ({@link NodeOverNodeInfo}) and not
+     * the original DOM nodes, and base URIs are resolved against the provided base URI. Leave it
+     * disabled if a custom validation handler requires the original DOM nodes.
+     *
+     * @param b
+     *        <code>true</code> to copy a DOM document into a Saxon tree before validation,
+     *        <code>false</code> to validate the DOM directly. Default is
+     *        {@link SchematronResourcePureXPath#DEFAULT_COPY_DOM_TO_SAXON_TREE}.
+     * @return this for chaining
+     * @since 11.0.0
+     */
+    @NonNull
+    public Builder copyDomToSaxonTree (final boolean b)
+    {
+      m_bCopyDomToSaxonTree = b;
       return this;
     }
 

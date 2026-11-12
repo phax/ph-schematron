@@ -27,9 +27,12 @@ import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.location.SimpleLocation;
 import com.helger.base.state.EValidity;
+import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.pure.binding.IPSQueryBinding;
@@ -110,11 +113,22 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
     }
     else
     {
+      // Index the patterns by ID once - the first pattern with an ID wins, like in
+      // PSSchema.getPatternOfID
+      final ICommonsMap <String, PSPattern> aPatternsByID = new CommonsHashMap <> ();
+      for (final PSPattern aPattern : aOrigSchema.getAllPatterns ())
+      {
+        final String sPatternID = aPattern.getID ();
+        if (StringHelper.isNotEmpty (sPatternID))
+          aPatternsByID.putIfAbsent (sPatternID, aPattern);
+      }
+
       // Scan all active phases
       for (final PSActive aActive : m_aPhase.getAllActives ())
       {
         final String sActivePatternID = aActive.getPattern ();
-        final PSPattern aPattern = aOrigSchema.getPatternOfID (sActivePatternID);
+        final PSPattern aPattern = StringHelper.isNotEmpty (sActivePatternID) ? aPatternsByID.get (sActivePatternID)
+                                                                              : null;
         if (aPattern == null)
         {
           warn (aOrigSchema,
@@ -256,7 +270,10 @@ public abstract class AbstractPSBoundSchema implements IPSBoundSchema
   public SchematronOutputType validateComplete (@NonNull final Node aNode,
                                                 @Nullable final String sBaseURI) throws SchematronValidationException
   {
-    final PSXPathValidationHandlerSVRL aValidationHandler = new PSXPathValidationHandlerSVRL (getErrorHandler ());
+    // The namespace context of the schema is only read, so the one created at construction time can
+    // be used for all validations
+    final PSXPathValidationHandlerSVRL aValidationHandler = new PSXPathValidationHandlerSVRL (getErrorHandler (),
+                                                                                              m_aNamespaceContext);
     validate (aNode, sBaseURI, aValidationHandler.and (m_aCustomValidationHandler));
     return aValidationHandler.getSVRL ();
   }

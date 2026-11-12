@@ -138,6 +138,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   private final IXPathConfig m_aXPathConfig;
   private final XPathLetVariableResolver m_aLetVars;
+  // The names of all <let> variables, created once at bind time
+  private final ICommonsMap <String, QName> m_aLetVarNames = new CommonsHashMap <> ();
 
   // Status vars
   private ICommonsList <PSXPathBoundPattern> m_aBoundPatterns;
@@ -480,6 +482,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
            (StringHelper.isEmpty (sNamespaceURI) ? " without a namespace" : " from namespace '" + sNamespaceURI + "'");
   }
 
+  private void _addLetVarNames (@NonNull final PSXPathVariables aVariables)
+  {
+    for (final String sVarName : aVariables.variables ().keySet ())
+      // Variables from <let> are stored without namespace
+      m_aLetVarNames.computeIfAbsent (sVarName, QName::new);
+  }
+
   @NonNull
   public PSXPathBoundSchema bind () throws SchematronBindException
   {
@@ -562,6 +571,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     m_aBoundPatterns = _createBoundPatterns (aCompiler, aBoundDiagnostics, m_aSchemaVariables);
     if (m_aBoundPatterns == null)
       throw new SchematronBindException ("Failed to precompile the supplied schema.");
+
+    // Create the variable names once, instead of once per evaluation
+    _addLetVarNames (m_aSchemaVariables);
+    for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
+    {
+      _addLetVarNames (aBoundPattern.getVariables ());
+      for (final PSXPathBoundRule aBoundRule : aBoundPattern.boundRules ())
+        _addLetVarNames (aBoundRule.getVariables ());
+    }
     return this;
   }
 
@@ -586,10 +604,19 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     return "//" + sRuleContext;
   }
 
+  @NonNull
+  private QName _getLetVarName (@NonNull final String sVarName)
+  {
+    final QName ret = m_aLetVarNames.get (sVarName);
+    // Variables from <let> are stored without namespace
+    return ret != null ? ret : new QName (sVarName);
+  }
+
   private void _evaluateVariables (@NonNull final PSXPathVariables aVariables,
                                    @NonNull final XdmItem aContext,
                                    @NonNull final IPSElement aContextElement,
-                                   @Nullable final VariableStats aStats)
+                                   @Nullable final VariableStats aStats,
+                                   @NonNull final XPathEvaluationContext aEvalContext)
   {
     for (final var aEntry : aVariables.variables ().entrySet ())
     {
@@ -598,9 +625,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
       try
       {
-        final XdmValue aResult = XPathEvaluationHelper.evaluate (aXPathExecutable,
-                                                                 aContext,
-                                                                 m_aLetVars.getCurrentVariables ());
+        final XdmValue aResult = aEvalContext.evaluate (aXPathExecutable, aContext);
 
         // Debug histogram of result kinds.
         if (aStats != null)
@@ -621,8 +646,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             }
         }
 
-        // Variables from <let> are stored without namespace
-        m_aLetVars.setVariableValue (new QName (sVariableName), aResult);
+        m_aLetVars.setVariableValue (_getLetVarName (sVariableName), aResult);
       }
       catch (final SaxonApiException ex)
       {
@@ -634,7 +658,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
   private void _removeAllVariables (@NonNull final PSXPathVariables aVariables)
   {
     for (final String sVarName : aVariables.variables ().keySet ())
-      m_aLetVars.removeVariable (new QName (sVarName));
+      m_aLetVars.removeVariable (_getLetVarName (sVarName));
   }
 
   @Nullable
@@ -660,7 +684,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
   private void _validateSerial (@NonNull final XdmNode aDocXdm,
                                 @Nullable final String sBaseURI,
-                                @NonNull final IPSValidationHandler aValidationHandler) throws SchematronValidationException
+                                @NonNull final IPSValidationHandler aValidationHandler,
+                                @NonNull final XPathEvaluationContext aEvalContext) throws SchematronValidationException
   {
     final PSSchema aSchema = getOriginalSchema ();
     final PSPhase aPhase = getPhase ();
@@ -676,7 +701,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     // Debug statistics are only collected if they are logged
     final VariableStats aVarStats = SchematronDebug.isDebugLog () ? new VariableStats () : null;
 
-    _evaluateVariables (m_aSchemaVariables, aDocXdm, aSchema, aVarStats);
+    _evaluateVariables (m_aSchemaVariables, aDocXdm, aSchema, aVarStats, aEvalContext);
 
     // For all bound patterns
     for (final PSXPathBoundPattern aBoundPattern : m_aBoundPatterns)
@@ -685,10 +710,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       aValidationHandler.onPattern (aPattern);
 
       // Evaluate pattern variables
-      _evaluateVariables (aBoundPattern.getVariables (), aDocXdm, aPattern, aVarStats);
+      _evaluateVariables (aBoundPattern.getVariables (), aDocXdm, aPattern, aVarStats, aEvalContext);
 
       // For all bound rules
-      for (final PSXPathBoundRule aBoundRule : aBoundPattern.getAllBoundRules ())
+      for (final PSXPathBoundRule aBoundRule : aBoundPattern.boundRules ())
       {
         final PSRule aRule = aBoundRule.getRule ();
 
@@ -700,9 +725,8 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         final StopWatch aContextSW = bMeasureTiming ? StopWatch.createdStarted () : null;
         try
         {
-          aRuleContextXdmNodes = XPathEvaluationHelper.evaluateAsXdmNodes (aBoundRule.getBoundRuleContext (),
-                                                                           aDocXdm,
-                                                                           m_aLetVars.getCurrentVariables ());
+          aRuleContextXdmNodes = XPathEvaluationHelper.getAllXdmNodes (aEvalContext.evaluate (aBoundRule.getBoundRuleContext (),
+                                                                                              aDocXdm));
         }
         catch (final SaxonApiException ex)
         {
@@ -734,7 +758,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
           // Evaluate variables declared in the rule with the context of the
           // matching node
-          _evaluateVariables (aBoundRule.getVariables (), aMatchedXdm, aRule, aVarStats);
+          _evaluateVariables (aBoundRule.getVariables (), aMatchedXdm, aRule, aVarStats, aEvalContext);
 
           // For all contained assert and report elements
           for (final PSXPathBoundAssertReport aBoundAssertReport : aBoundRule.boundAssertReports ())
@@ -746,9 +770,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             try
             {
               final StopWatch aTestSW = bMeasureAssertionTiming ? StopWatch.createdStarted () : null;
-              final boolean bTestResult = XPathEvaluationHelper.evaluateAsBoolean (aTestExecutable,
-                                                                                   aMatchedXdm,
-                                                                                   m_aLetVars.getCurrentVariables ());
+              final boolean bTestResult = aEvalContext.evaluateAsBoolean (aTestExecutable, aMatchedXdm);
               if (aTestSW != null)
               {
                 aTestSW.stop ();
@@ -915,7 +937,7 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
     try
     {
       XPathEvaluationContext.set (aEvalContext);
-      _validateSerial (aContextXdm, sBaseURI, aValidationHandler);
+      _validateSerial (aContextXdm, sBaseURI, aValidationHandler, aEvalContext);
     }
     finally
     {
