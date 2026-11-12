@@ -69,7 +69,8 @@ import com.helger.xml.microdom.IMicroElement;
  * <ul>
  * <li>The schema is preprocessed first (includes, abstract patterns and rules, <code>extends</code>).</li>
  * <li>A rule context is an XSLT pattern: {@link EStreamabilityClass#MOTIONLESS} if it can be matched on the streamed
- * node alone, else {@link EStreamabilityClass#NON_LOCAL}.</li>
+ * node alone, {@link EStreamabilityClass#BURST} if a predicate reads only the subtree of the node, else
+ * {@link EStreamabilityClass#NON_LOCAL}.</li>
  * <li>The tests of assertions and reports, the <code>sch:value-of</code> and <code>sch:name</code> of their messages
  * and of the diagnostics they reference, and the rule's <code>sch:let</code>s are analysed with the rule context as
  * context, as the host evaluates them (effective boolean value of a test, atomised value of a

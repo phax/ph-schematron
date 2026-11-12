@@ -33,6 +33,9 @@
       <assert id="other-document" test="cbc:Code = $codes">Code</assert>
       <assert id="ancestor" test="ancestor::cac:Invoice/@version">Version</assert>
       <assert id="parent-child" test="../cbc:ID">Parent ID</assert>
+      <assert id="document-element" test="/cac:Invoice/@version">Invoice version</assert>
+      <assert id="first-pass-let" test="cbc:ID != $invoiceID">Invoice ID</assert>
+      <assert id="first-pass-let-path" test="$invoiceID/@schemeID">Invoice ID scheme</assert>
     </rule>
     <rule id="party" context="cac:Party">
       <let name="name" value="cbc:Name" />

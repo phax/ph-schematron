@@ -146,6 +146,19 @@ public final class SchematronStreamabilityAnalyzerTest
              "parent-child",
              EStreamabilityClass.NON_LOCAL,
              "axis step parent::node()");
+    // The document element is an ancestor of every context
+    _assert (aLine, EStreamabilityExpressionType.ASSERT, "document-element", EStreamabilityClass.MOTIONLESS, null);
+    // The value of a let from the first pass can be used, navigating from it cannot
+    _assert (aLine,
+             EStreamabilityExpressionType.ASSERT,
+             "first-pass-let",
+             EStreamabilityClass.BURST,
+             "axis step child::cbc:ID");
+    _assert (aLine,
+             EStreamabilityExpressionType.ASSERT,
+             "first-pass-let-path",
+             EStreamabilityClass.NON_LOCAL,
+             "variable $invoiceID");
 
     // Rule lets are analysed where they are used
     final RuleStreamability aParty = _getRule (aReport, "party");
@@ -199,12 +212,12 @@ public final class SchematronStreamabilityAnalyzerTest
     assertEquals (EStreamabilityClass.NON_LOCAL, aStaticError.getStreamabilityClass ());
     assertTrue (aStaticError.getReason (), aStaticError.getReason ().startsWith ("static error XPST0003"));
 
-    // A pattern with a predicate that reads the subtree cannot be matched on the streamed node
+    // A pattern with a predicate that reads the subtree is matched on the buffered subtree
     final RuleStreamability aPredicate = _getRule (aReport, "predicate");
     _assert (aPredicate,
              EStreamabilityExpressionType.RULE_CONTEXT,
              null,
-             EStreamabilityClass.NON_LOCAL,
+             EStreamabilityClass.BURST,
              "axis step child::cbc:Q");
     _assert (aPredicate, EStreamabilityExpressionType.ASSERT, "in-predicate-rule", EStreamabilityClass.MOTIONLESS, null);
   }

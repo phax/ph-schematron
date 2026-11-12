@@ -425,9 +425,9 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
   - `sch:group`, `pattern/@documents`, `rule/@visit-each` (all dropped by the preprocessor), `sch:let` with element
     content and static errors are `non-local`.
   - All 75 valid test Schematrons are analysed without a static error or an unsupported construct.
-  - Filed as phoxtrot S45: a burst-motionless expression navigating from an external node variable is motionless;
-    patterns with predicates that need only the subtree are free-ranging; `/ex:Document/@x` is free-ranging although
-    the document element is an ancestor. The last two make the report more conservative than necessary.
+  - Filed as phoxtrot S45 and fixed there (`17a53fb`): navigating from an external node variable is free-ranging;
+    a pattern whose predicates read only the subtree is burst; the document element counts as an ancestor
+    (`/ex:Document/@x` is motionless).
 
 ## Tests
 
