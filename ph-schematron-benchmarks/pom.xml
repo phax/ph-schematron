@@ -54,6 +54,8 @@
   
   <properties>
     <jmh.version>1.37</jmh.version>
+    <!-- JDK 23+ no longer runs annotation processors implicitly; the JMH processor creates the benchmark list -->
+    <maven.compiler.proc>full</maven.compiler.proc>
   </properties>
 
   <dependencies>
