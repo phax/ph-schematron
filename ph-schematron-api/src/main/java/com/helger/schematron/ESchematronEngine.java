@@ -68,10 +68,6 @@ public enum ESchematronEngine implements IHasID <String>
    */
   XSLT_PREBUILT ("xslt", new CommonsHashSet <> (), false, true);
 
-  /** Pure-Java XPath-only engine (alias of {@link #PURE_XPATH}; kept for compatibility) */
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static final ESchematronEngine PURE = PURE_XPATH;
-
   private final @NonNull @Nonempty String m_sID;
   private final @NonNull ICommonsSet <String> m_aIDs;
   private final boolean m_bIsXSLTBased;

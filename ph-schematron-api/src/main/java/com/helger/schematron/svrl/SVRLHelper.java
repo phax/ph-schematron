@@ -31,9 +31,7 @@ import com.helger.cache.regex.RegExHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.level.IErrorLevel;
-import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
-import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
@@ -286,47 +284,5 @@ public final class SVRLHelper
         sResult = StringReplace.replaceAll (sResult, aMatcher.group (), sBeautified);
     }
     return sResult;
-  }
-
-  @NonNull
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@NonNull final FailedAssert aFA)
-  {
-    return new CommonsArrayList <> (aFA.getDiagnosticReference ());
-  }
-
-  @NonNull
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static ICommonsList <PropertyReference> getAllPropertyReferences (@NonNull final FailedAssert aFA)
-  {
-    return new CommonsArrayList <> (aFA.getPropertyReference ());
-  }
-
-  @NonNull
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static Text getText (@NonNull final FailedAssert aFA)
-  {
-    return aFA.getText ();
-  }
-
-  @NonNull
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static ICommonsList <DiagnosticReference> getAllDiagnosticReferences (@NonNull final SuccessfulReport aSR)
-  {
-    return new CommonsArrayList <> (aSR.getDiagnosticReference ());
-  }
-
-  @NonNull
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static ICommonsList <PropertyReference> getAllPropertyReferences (@NonNull final SuccessfulReport aSR)
-  {
-    return new CommonsArrayList <> (aSR.getPropertyReference ());
-  }
-
-  @NonNull
-  @Deprecated (forRemoval = true, since = "10.0.0")
-  public static Text getText (@NonNull final SuccessfulReport aSR)
-  {
-    return aSR.getText ();
   }
 }
