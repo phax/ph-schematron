@@ -181,6 +181,11 @@
       </dependency>
       <dependency>
         <groupId>com.helger.schematron</groupId>
+        <artifactId>ph-schematron-streamability</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger.schematron</groupId>
         <artifactId>ph-schematron-pure</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -230,6 +235,7 @@
     <module>ph-schematron-schxslt</module>
     <module>ph-schematron-schxslt2</module>
     <module>ph-schematron-model</module>
+    <module>ph-schematron-streamability</module>
     <module>ph-schematron-pure-xpath</module>
     <module>ph-schematron-pure-xslt</module>
     <module>ph-schematron-validator</module>

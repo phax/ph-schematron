@@ -21,13 +21,14 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 7. `ph-schematron-schxslt` — SchXslt 1.x engine.
 8. `ph-schematron-schxslt2` — SchXslt 2.x engine.
 9. `ph-schematron-model` — the Schematron object model (`PSSchema`, reader, writer, preprocessor).
-10. `ph-schematron-pure-xpath` (artifact `ph-schematron-pure`) — pure-Java engine (no XSLT; XPath-only Schematron, Saxon XPath).
-11. `ph-schematron-pure-xslt` — pure-Java SCH → XSLT generator, run on Saxon s9api.
-12. `ph-schematron-validator` — XML Schema and RELAX NG validation of Schematron files (Jing/Trang); no Schematron engine.
-13. `ph-schematron-maven-plugin` — Maven plugin (`packaging = maven-plugin`).
-14. `ph-schematron-ant-task` — Ant task.
-15. `ph-schematron-benchmarks` — JMH benchmarks.
-16. `ph-schematron-it` — integration tests (all engines on both XSLT processors, telemetry) and the phoxtrot vs. Saxon comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`, `SVRLPhoxtrotVsSaxonComparisonTest`). Both processors are on its class path, so its tests always select the processor explicitly.
+10. `ph-schematron-streamability` — streamability report of a Schematron (`SchematronStreamabilityAnalyzer`: motionless, burst or non-local per rule), on `phoxtrot-xpath` only (burst mode of `XPathStreamabilityAnalyzer`); no engine, no XSLT processor.
+11. `ph-schematron-pure-xpath` (artifact `ph-schematron-pure`) — pure-Java engine (no XSLT; XPath-only Schematron, Saxon XPath).
+12. `ph-schematron-pure-xslt` — pure-Java SCH → XSLT generator, run on Saxon s9api.
+13. `ph-schematron-validator` — XML Schema and RELAX NG validation of Schematron files (Jing/Trang); no Schematron engine.
+14. `ph-schematron-maven-plugin` — Maven plugin (`packaging = maven-plugin`).
+15. `ph-schematron-ant-task` — Ant task.
+16. `ph-schematron-benchmarks` — JMH benchmarks.
+17. `ph-schematron-it` — integration tests (all engines on both XSLT processors, telemetry) and the phoxtrot vs. Saxon comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`, `SVRLPhoxtrotVsSaxonComparisonTest`). Both processors are on its class path, so its tests always select the processor explicitly.
 
 Version 11 (branch `phoxtrot`) separates the pipeline (`ESchematronEngine`) from the XSLT processor (Saxon or phoxtrot);
 the plan with all decisions is `docs/PLAN-phoxtrot-engine.md`. The JAXP pipeline modules (`isosch`, `xslt`, `schxslt`,

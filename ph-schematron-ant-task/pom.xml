@@ -119,6 +119,10 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-pure-xslt</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-streamability</artifactId>
+    </dependency>
 
     <!-- Ant -->
     <dependency>

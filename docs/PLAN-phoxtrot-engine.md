@@ -373,7 +373,7 @@ Saxon; the remaining hotspots are filed as S43.
     `Maven-plugin.md`, `ANT-tasks.md`, `_Sidebar.md`, `Home.md`.
   - `News-and-noteworthy.md`: `v11.0.0 - work in progress`.
 
-## Streamability assessment (open, 2026-11-11)
+## Streamability assessment (done 2026-11-12, report only)
 
 Goal: tell upfront, per rule, whether a Schematron can be validated while streaming:
 
@@ -385,14 +385,49 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
 
 - The rule context must also be matchable on the current node alone (motionless pattern).
 - The analysis is the XSLT 3.0 posture and sweep analysis (section 19). phoxtrot has it internally
-  (`com.helger.phoxtrot.xpath.stream`); a public facade is phoxtrot suggestion S34.
+  (`com.helger.phoxtrot.xpath.stream`); the public facade `XPathStreamabilityAnalyzer` is phoxtrot suggestion S34
+  (done 2026-11-11).
 - **Saxon-HE has no streamability analysis.** The 12.10 JAR contains only `net.sf.saxon.trans.FunctionStreamability`;
   streaming and its analysis are Saxon-EE features. So the assessment cannot be a per-processor engine parameter on
   Saxon-HE. Proposal: the analysis is a property of the schema, not of the processor, and runs on phoxtrot-xpath for
   every engine (a separate analysis module or part of `ph-schematron-pure`), so it works for SCH files regardless of
   the processor used for validation.
-- Not decided: scope in v11 (report only, or also a streaming validation mode), API shape (per-rule report object,
-  Maven plugin goal), and how the pipelines' `sch:let`/`xsl:function`/`xsl:key` are classified.
+- Decided 2026-11-12:
+  - Scope in v11: a report only, no streaming validation mode (that can follow in 11.x on top of the report).
+  - A new module `ph-schematron-streamability`, depending on `ph-schematron-model` and `phoxtrot-xpath` only, so it
+    works for every engine and processor and does not bring the phoxtrot XSLT engine to Saxon users.
+  - Entry points: a Java API (an immutable report per pattern and rule: verdict of the context, of each
+    `sch:assert`/`sch:report` and `sch:let`, with the reason), a Maven plugin goal and an Ant task.
+  - Conservative classification: schema-, phase- and pattern-level `sch:let` are grounded (computed in a first pass,
+    so the schema needs two passes if they read the instance); rule-level `sch:let` is analysed as an expression
+    (as XPath `let` clauses around each test); `xsl:function` without a declared category and `key ()`/`id ()` over
+    the instance are non-local.
+- Finding 2026-11-12 (probe against phoxtrot `cc8329b`): the facade cannot separate burst from non-local. With a
+  streamed context it applies the XSLT 3.0 rules for one pass without buffering, so `cbc:A = 'x' or cbc:B = 'y'`,
+  `sum (cac:L/cbc:A) = cbc:Total` and any `let` binding a streamed node are free-ranging, like `//cbc:ID`; with a
+  grounded context everything is motionless, `//cbc:ID`, `../cbc:ID` and `key ()` included. Filed as phoxtrot
+  suggestion S44 (a burst context mode, and XSLT function signatures such as `key`, `current`, `document` for analysis
+  hosts without `phoxtrot-xslt`). Decided: the module is built only after S44, so the report has all three classes
+  from its first version.
+- Done 2026-11-12 against phoxtrot `8297590` (S44): module `ph-schematron-streamability`
+  (`SchematronStreamabilityAnalyzer`, report classes, `EStreamabilityClass` with `motionless`, `burst`, `non-local`),
+  Maven goal `streamability` and Ant task `SchematronStreamability` (both with an optional `maximumClass`), wiki page
+  `Streamability.md`. Details of the implementation:
+  - phoxtrot's `CONSUMING` and `BURST` verdicts are both `burst`; the rule context is analysed with `analyzePattern`.
+  - Expressions are analysed as the host evaluates them: `boolean (test)`, `data (value-of)`, `name (path)`, and
+    `count (value)` for a rule `sch:let`; only the rule `sch:let`s an expression uses (directly or through another
+    one) are put around it as `let` clauses.
+  - Global `sch:let`s are analysed as `data (value)`: motionless means they do not read the instance; otherwise they
+    are `non-local` (a first pass) and declared with `addExternalNodeVariable`.
+  - Unknown functions compile through `setUnknownFunctionErrorCode ("XTDE1425")`, the XSLT functions through
+    `FunctionLibrary.createDefaultWithXsltSignatures ()`; `xsl:function` with a `streamability` attribute is declared
+    with `addFunction` (parameter types not parsed).
+  - `sch:group`, `pattern/@documents`, `rule/@visit-each` (all dropped by the preprocessor), `sch:let` with element
+    content and static errors are `non-local`.
+  - All 75 valid test Schematrons are analysed without a static error or an unsupported construct.
+  - Filed as phoxtrot S45: a burst-motionless expression navigating from an external node variable is motionless;
+    patterns with predicates that need only the subtree are free-ranging; `/ex:Document/@x` is free-ranging although
+    the document element is an ancestor. The last two make the report more conservative than necessary.
 
 ## Tests
 
