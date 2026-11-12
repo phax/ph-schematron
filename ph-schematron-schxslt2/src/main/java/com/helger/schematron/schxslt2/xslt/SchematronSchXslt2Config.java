@@ -52,6 +52,7 @@ import com.helger.io.resource.inmemory.ReadableResourceInputStream;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
+import com.helger.schematron.api.cache.SchematronCacheKeyHelper;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
@@ -62,7 +63,11 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
 /**
  * Immutable configuration for compiling a Schematron <code>.sch</code> file via SchXslt 2.x. The
  * cache-key dimensions are <code>(resourceID, phase, languageCode, tracingEnabled,
- * xsltProcessorID)</code>.
+ * xsltProcessorID, parameters)</code>. The custom XSLT parameters are only part of the cache key if
+ * all values can be compared reliably (see
+ * {@link SchematronCacheKeyHelper#isCacheableParameterValue(Object)}) and caching is not forced;
+ * other parameter values cause {@link #canCacheResult()} to return <code>false</code> unless
+ * caching is forced.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -85,6 +90,8 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
   private final ISchematronTemplateTelemetry m_aTelemetry;
   private final Consumer <TransformerFactory> m_aTFCustomizer;
   private final ISchematronXsltProcessor m_aXsltProcessor;
+  // Are the parameters part of the cache key?
+  private final boolean m_bParametersInCacheKey;
   private final CacheKey m_aCacheKey;
 
   private SchematronSchXslt2Config (@NonNull final Builder aBuilder)
@@ -100,11 +107,15 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
     m_aTFCustomizer = aBuilder.m_aTFCustomizer;
     m_aXsltProcessor = aBuilder.m_aXsltProcessor != null ? aBuilder.m_aXsltProcessor
                                                          : SchematronXsltProcessorRegistry.getDefaultProcessor ();
+    // With forced caching the parameters are not part of the cache key, as before
+    m_bParametersInCacheKey = !m_bForceCacheResult &&
+                              SchematronCacheKeyHelper.areAllParameterValuesCacheable (m_aParameters);
     m_aCacheKey = new CacheKey (m_aResource.getResourceID (),
                                 m_sPhase,
                                 m_sLanguageCode,
                                 m_aTelemetry != null,
-                                m_aXsltProcessor.getID ());
+                                m_aXsltProcessor.getID (),
+                                m_bParametersInCacheKey ? m_aParameters : new CommonsLinkedHashMap <> ());
   }
 
   @Override
@@ -236,7 +247,7 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
   @Override
   public boolean canCacheResult ()
   {
-    return (!hasParameters () && m_aTFCustomizer == null) || m_bForceCacheResult;
+    return ((!hasParameters () || m_bParametersInCacheKey) && m_aTFCustomizer == null) || m_bForceCacheResult;
   }
 
   @Override
@@ -436,24 +447,28 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
     private final String m_sLanguageCode;
     private final boolean m_bTracingEnabled;
     private final String m_sXsltProcessorID;
+    private final ICommonsOrderedMap <String, Object> m_aParameters;
     private final int m_nHashCode;
 
     private CacheKey (@NonNull final String sResourceID,
                       @Nullable final String sPhase,
                       @Nullable final String sLanguageCode,
                       final boolean bTracingEnabled,
-                      @NonNull final String sXsltProcessorID)
+                      @NonNull final String sXsltProcessorID,
+                      @NonNull final ICommonsOrderedMap <String, Object> aParameters)
     {
       m_sResourceID = sResourceID;
       m_sPhase = sPhase;
       m_sLanguageCode = sLanguageCode;
       m_bTracingEnabled = bTracingEnabled;
       m_sXsltProcessorID = sXsltProcessorID;
+      m_aParameters = aParameters;
       m_nHashCode = Objects.hash (sResourceID,
                                   sPhase,
                                   sLanguageCode,
                                   Boolean.valueOf (bTracingEnabled),
-                                  sXsltProcessorID);
+                                  sXsltProcessorID,
+                                  aParameters);
     }
 
     @Override
@@ -467,7 +482,8 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
              Objects.equals (m_sPhase, aRhs.m_sPhase) &&
              Objects.equals (m_sLanguageCode, aRhs.m_sLanguageCode) &&
              m_bTracingEnabled == aRhs.m_bTracingEnabled &&
-             m_sXsltProcessorID.equals (aRhs.m_sXsltProcessorID);
+             m_sXsltProcessorID.equals (aRhs.m_sXsltProcessorID) &&
+             m_aParameters.equals (aRhs.m_aParameters);
     }
 
     @Override
@@ -484,6 +500,7 @@ public final class SchematronSchXslt2Config implements ISchematronCompilation <I
                                          .appendIfNotNull ("LanguageCode", m_sLanguageCode)
                                          .append ("TracingEnabled", m_bTracingEnabled)
                                          .append ("XsltProcessorID", m_sXsltProcessorID)
+                                         .append ("Parameters", m_aParameters)
                                          .getToString ();
     }
   }

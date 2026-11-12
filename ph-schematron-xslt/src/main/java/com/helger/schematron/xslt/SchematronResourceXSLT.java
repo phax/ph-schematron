@@ -149,6 +149,11 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
     if (m_aUncachedXSLTProvider != null)
       return m_aUncachedXSLTProvider;
 
+    final SchematronXSLTCache aCache = m_aCache != null ? m_aCache : SchematronXSLTCache.shared ();
+    final ISchematronXSLTBasedProvider aRemembered = getRememberedCachedXSLTProvider (aCache);
+    if (aRemembered != null)
+      return aRemembered;
+
     final SchematronXSLTConfig aConfig = toConfig ();
     try
     {
@@ -158,8 +163,7 @@ public class SchematronResourceXSLT extends AbstractSchematronXSLTBasedResource 
         m_aUncachedXSLTProvider = aConfig.compile ();
         return m_aUncachedXSLTProvider;
       }
-      final SchematronXSLTCache aCache = m_aCache != null ? m_aCache : SchematronXSLTCache.shared ();
-      return aCache.getOrCompile (aConfig);
+      return getOrCompileAndRemember (aCache, aConfig);
     }
     catch (final com.helger.schematron.SchematronException ex)
     {

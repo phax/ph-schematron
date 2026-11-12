@@ -173,7 +173,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *
    * @param bForceCacheResult
    *        <code>true</code> to force result caching, <code>false</code> to cache only if no
-   *        parameters are present.
+   *        parameters are present or all parameter values can be part of the cache key.
    * @since 5.2.1
    * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
    *             remain for backward compatibility.
@@ -224,6 +224,11 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     if (m_aUncachedXSLTProvider != null)
       return m_aUncachedXSLTProvider;
 
+    final SchematronSCHCache aCache = m_aCache != null ? m_aCache : SchematronSCHCache.shared ();
+    final ISchematronXSLTBasedProvider aRemembered = getRememberedCachedXSLTProvider (aCache);
+    if (aRemembered != null)
+      return aRemembered;
+
     final SchematronSCHConfig aConfig = toConfig ();
     if (!isUseCache () || !aConfig.canCacheResult ())
     {
@@ -234,8 +239,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 
     try
     {
-      final SchematronSCHCache aCache = m_aCache != null ? m_aCache : SchematronSCHCache.shared ();
-      return aCache.getOrCompile (aConfig);
+      return getOrCompileAndRemember (aCache, aConfig);
     }
     catch (final SchematronException ex)
     {

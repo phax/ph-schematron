@@ -16,8 +16,10 @@
  */
 package com.helger.schematron.schxslt.xslt2;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
@@ -203,5 +205,23 @@ public final class SchematronSchXslt_XSLT2CacheTest
         LOGGER.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
       }
     }
+  }
+
+  @Test
+  public void testDefaultParameterIsCached () throws Exception
+  {
+    // The default parameter "schxslt.compile.metadata" must not prevent caching
+    final SchematronSchXslt_XSLT2Cache aCache = new SchematronSchXslt_XSLT2Cache ();
+    final ISchematronXSLTBasedProvider aProvider = SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))
+                                                                                  .cache (aCache)
+                                                                                  .build ()
+                                                                                  .getXSLTProvider ();
+    assertNotNull (aProvider);
+    assertSame (aProvider,
+                SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource (VALID_SCHEMATRON))
+                                               .cache (aCache)
+                                               .build ()
+                                               .getXSLTProvider ());
+    assertEquals (1, aCache.size ());
   }
 }

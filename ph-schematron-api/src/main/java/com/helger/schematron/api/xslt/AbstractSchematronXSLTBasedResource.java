@@ -36,7 +36,6 @@ import org.xml.sax.EntityResolver;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.CGlobal;
-import com.helger.base.debug.GlobalDebug;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.iface.IHasInputStream;
 import com.helger.base.state.EValidity;
@@ -47,6 +46,9 @@ import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.AbstractSchematronResource;
+import com.helger.schematron.SchematronException;
+import com.helger.schematron.api.cache.AbstractSchematronCache;
+import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.telemetry.RuleDurationTemplateTelemetry;
@@ -54,14 +56,10 @@ import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 import com.helger.schematron.api.xslt.validator.SchematronOutputValidityDeterminatorDefault;
-import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.telemetry.ETelemetrySpanKind;
 import com.helger.telemetry.ITelemetrySpan;
 import com.helger.telemetry.Telemetry;
-import com.helger.xml.serialize.write.EXMLSerializeIndent;
-import com.helger.xml.serialize.write.XMLWriter;
-import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 
 /**
@@ -100,12 +98,19 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected boolean m_bAlreadyCompiled;
   /**
    * The provider compiled by {@link #getXSLTProvider()} when it was not taken from a cache, so that
-   * it is not compiled again for every validation. Providers taken from a cache are not stored, so
-   * that clearing the cache is still honoured.
+   * it is not compiled again for every validation. Providers taken from a cache are remembered
+   * separately (see {@link #getRememberedCachedXSLTProvider(AbstractSchematronCache)}), so that
+   * clearing the cache is still honoured.
    *
    * @since 10.3.0
    */
   protected ISchematronXSLTBasedProvider m_aUncachedXSLTProvider;
+  // The provider last taken from a cache, with the state it was taken for, so that the cache is not
+  // asked again for every validation
+  private ISchematronXSLTBasedProvider m_aCachedXSLTProvider;
+  private AbstractSchematronCache <?, ?> m_aCachedXSLTProviderCache;
+  private long m_nCachedXSLTProviderChangeCount;
+  private ICommonsOrderedMap <String, Object> m_aCachedXSLTProviderParameters;
 
   protected AbstractSchematronXSLTBasedResource (@NonNull final IReadableResource aSCHResource)
   {
@@ -215,6 +220,61 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected final void markCompiled ()
   {
     m_bAlreadyCompiled = true;
+  }
+
+  /**
+   * Get the provider that was taken from the provided cache by
+   * {@link #getOrCompileAndRemember(AbstractSchematronCache, ISchematronCompilation)} before, if it
+   * is still valid: the cache is still used, no entries were removed from the cache explicitly
+   * since (see {@link AbstractSchematronCache#getChangeCount()}) and the parameters are unchanged.
+   *
+   * @param aCache
+   *        The cache to be used. May not be <code>null</code>.
+   * @return The remembered provider or <code>null</code> if there is none or if it may be outdated.
+   * @since 11.0.0
+   */
+  @Nullable
+  protected final ISchematronXSLTBasedProvider getRememberedCachedXSLTProvider (@NonNull final AbstractSchematronCache <?, ?> aCache)
+  {
+    if (m_aCachedXSLTProvider != null &&
+        isUseCache () &&
+        m_aCachedXSLTProviderCache == aCache &&
+        m_nCachedXSLTProviderChangeCount == aCache.getChangeCount () &&
+        m_aCustomParameters.equals (m_aCachedXSLTProviderParameters))
+      return m_aCachedXSLTProvider;
+    return null;
+  }
+
+  /**
+   * Get the provider from the cache, compiling it if needed, and remember it for
+   * {@link #getRememberedCachedXSLTProvider(AbstractSchematronCache)}.
+   *
+   * @param <CFG>
+   *        The engine specific config type
+   * @param aCache
+   *        The cache to be used. May not be <code>null</code>.
+   * @param aConfig
+   *        The cacheable config of this resource. May not be <code>null</code>.
+   * @return The provider from the cache. May be <code>null</code> if the compilation failed.
+   * @throws SchematronException
+   *         If compilation fails.
+   * @since 11.0.0
+   */
+  @Nullable
+  protected final <CFG extends ISchematronCompilation <ISchematronXSLTBasedProvider>> ISchematronXSLTBasedProvider getOrCompileAndRemember (@NonNull final AbstractSchematronCache <CFG, ISchematronXSLTBasedProvider> aCache,
+                                                                                                                                           @NonNull final CFG aConfig) throws SchematronException
+  {
+    // Read the change count first, so that a removal during the compilation is not missed
+    final long nChangeCount = aCache.getChangeCount ();
+    final ISchematronXSLTBasedProvider ret = aCache.getOrCompile (aConfig);
+    if (ret != null)
+    {
+      m_aCachedXSLTProvider = ret;
+      m_aCachedXSLTProviderCache = aCache;
+      m_nCachedXSLTProviderChangeCount = nChangeCount;
+      m_aCachedXSLTProviderParameters = m_aCustomParameters.getClone ();
+    }
+    return ret;
   }
 
   @Nullable
@@ -430,29 +490,16 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   }
 
   @Nullable
-  private SchematronOutputType _readSVRL (@Nullable final Document aDoc)
+  private SchematronOutputType _applyToSVRL (@NonNull final Source aXMLSource) throws TransformerException
   {
-    if (aDoc == null)
-      return null;
-
-    // Avoid NPE later on
-    if (aDoc.getDocumentElement () == null)
-      throw new IllegalStateException ("Internal error: created SVRL DOM Document has no document node!");
-
-    if (false)
-      LOGGER.info (XMLWriter.getNodeAsString (aDoc,
-                                              new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
-
-    // Now try to read the resulting XML document as a SVRL document - may fail
-    final var aMarshaller = new SVRLMarshaller ().setUseSchema (m_bValidateSVRL);
-    if (GlobalDebug.isDebugMode ())
-    {
-      // Set an exception callback that logs the source node as well
-      aMarshaller.readExceptionCallbacks ()
-                 .set (ex -> LOGGER.error ("Error parsing the following SVRL:\n" + XMLWriter.getNodeAsString (aDoc),
-                                           ex));
-    }
-    return aMarshaller.read (aDoc);
+    // Reads the SVRL without building an SVRL DOM
+    return SchematronXSLTValidator.applyToSVRL (getXSLTProvider (),
+                                                aXMLSource,
+                                                m_aCustomErrorListener,
+                                                m_aCustomURIResolver,
+                                                m_aCustomParameters,
+                                                m_bValidateSVRL,
+                                                getEffectiveTemplateTelemetry ());
   }
 
   @NonNull
@@ -573,7 +620,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   public final SchematronOutputType applySchematronValidationToSVRL (@NonNull final Source aXMLSource) throws TransformerException
   {
     if (!isTelemetry ())
-      return _readSVRL (applySchematronValidation (aXMLSource));
+      return _applyToSVRL (aXMLSource);
 
     // Wrap the whole transform in a schematron.validate span; the aggregate counters and the
     // duration histogram are derived from the resulting SVRL by SvrlTelemetryEmitter.
@@ -587,7 +634,7 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
       try
       {
         // Validate and evaluate
-        aSVRL = _readSVRL (applySchematronValidation (aXMLSource));
+        aSVRL = _applyToSVRL (aXMLSource);
         aSpan.setStatusOk ();
         return aSVRL;
       }

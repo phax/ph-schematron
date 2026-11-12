@@ -16,6 +16,10 @@
  */
 package com.helger.schematron.api.cache;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -30,10 +34,12 @@ import com.helger.base.concurrent.SimpleReadWriteLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.state.EChange;
 import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsConcurrentHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.map.SoftHashMap;
 import com.helger.collection.map.SoftLinkedHashMap;
 import com.helger.schematron.SchematronException;
+import com.helger.schematron.SchematronInterruptedException;
 
 /**
  * Generic base class for Schematron engine caches. Each engine subclasses this with concrete
@@ -47,6 +53,10 @@ import com.helger.schematron.SchematronException;
  * <p>
  * Compilations whose {@link ISchematronCompilation#canCacheResult()} returns <code>false</code>
  * bypass the cache entirely. Failed compilations (returning <code>null</code>) are not memoized.
+ * <p>
+ * A configuration is compiled outside of the cache lock: concurrent requests for the same key wait
+ * for the one compilation in progress and share its result, requests for different keys compile in
+ * parallel, and lookups of cached entries never wait for a compilation.
  *
  * @author Philip Helger
  * @param <CFG>
@@ -68,6 +78,10 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   protected final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("m_aRWLock")
   private ICommonsMap <ISchematronCompilationCacheKey, ARTIFACT> m_aMap;
+  // The compilations in progress per key
+  private final ICommonsMap <ISchematronCompilationCacheKey, CompletableFuture <ARTIFACT>> m_aInFlight = new CommonsConcurrentHashMap <> ();
+  // Increased on every explicit removal of entries
+  private final AtomicLong m_aChangeCount = new AtomicLong (0);
 
   /**
    * Constructor with no maximum size.
@@ -131,11 +145,63 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
     return m_aMap;
   }
 
+  @Nullable
+  private ARTIFACT _getCached (@NonNull final ISchematronCompilationCacheKey aKey)
+  {
+    return m_aRWLock.readLockedGet (() -> m_aMap == null ? null : m_aMap.get (aKey));
+  }
+
+  /**
+   * Compile the configuration as the owner of the in-flight compilation of the key, put a
+   * non-<code>null</code> result into the cache and hand the outcome to all callers waiting for
+   * it.
+   */
+  @Nullable
+  private ARTIFACT _compileInFlight (@NonNull final CFG aCfg,
+                                     @NonNull final ISchematronCompilationCacheKey aKey,
+                                     @NonNull final CompletableFuture <ARTIFACT> aCompilation) throws SchematronException
+  {
+    try
+    {
+      // Another thread may have finished the compilation between the lookup and the registration
+      ARTIFACT aValue = _getCached (aKey);
+      if (aValue == null)
+      {
+        aValue = aCfg.compile ();
+        if (aValue == null)
+        {
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Cache '" + m_sName + "': compilation returned null for key '" + aKey + "'; not caching");
+        }
+        else
+        {
+          final ARTIFACT aValueToPut = aValue;
+          m_aRWLock.writeLocked (() -> _ensureMap ().put (aKey, aValueToPut));
+        }
+      }
+      aCompilation.complete (aValue);
+      return aValue;
+    }
+    catch (final SchematronException | RuntimeException | Error ex)
+    {
+      aCompilation.completeExceptionally (ex);
+      throw ex;
+    }
+    finally
+    {
+      m_aInFlight.remove (aKey, aCompilation);
+    }
+  }
+
   /**
    * Retrieve the compiled artifact for the given configuration, computing and caching it on demand.
    * Configurations for which {@link ISchematronCompilation#canCacheResult()} returns
    * <code>false</code> bypass the cache entirely and recompile each time. Compilation failures
    * (returning <code>null</code>) are not cached.
+   * <p>
+   * The compilation runs without holding the cache lock. If the same key is requested while it is
+   * compiled, the caller waits for that compilation and gets its result (including a
+   * <code>null</code> result or the exception).
    *
    * @param aCfg
    *        The compilation config. May not be <code>null</code>.
@@ -143,6 +209,8 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
    *         (e.g. invalid Schematron).
    * @throws SchematronException
    *         If compilation fails.
+   * @throws SchematronInterruptedException
+   *         If the thread is interrupted while waiting for the compilation of another thread.
    */
   @Nullable
   public final ARTIFACT getOrCompile (@NonNull final CFG aCfg) throws SchematronException
@@ -159,34 +227,42 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
     final ISchematronCompilationCacheKey aKey = aCfg.getCacheKey ();
     ValueEnforcer.notNull (aKey, "CacheKey");
 
-    // First attempt: read-locked lookup
-    ARTIFACT aValue = m_aRWLock.readLockedGet (() -> m_aMap == null ? null : m_aMap.get (aKey));
-    if (aValue != null)
-      return aValue;
+    while (true)
+    {
+      final ARTIFACT aValue = _getCached (aKey);
+      if (aValue != null)
+        return aValue;
 
-    // Compile under the write lock so concurrent callers for the same key share the result
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
-      if (m_aMap != null)
+      final CompletableFuture <ARTIFACT> aOwnCompilation = new CompletableFuture <> ();
+      final CompletableFuture <ARTIFACT> aOtherCompilation = m_aInFlight.putIfAbsent (aKey, aOwnCompilation);
+      if (aOtherCompilation == null)
+        return _compileInFlight (aCfg, aKey, aOwnCompilation);
+
+      // Wait for the compilation of the same key in another thread
+      try
       {
-        aValue = m_aMap.get (aKey);
-        if (aValue != null)
-          return aValue;
+        return aOtherCompilation.get ();
       }
-      aValue = aCfg.compile ();
-      if (aValue == null)
+      catch (final InterruptedException ex)
       {
-        if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Cache '" + m_sName + "': compilation returned null for key '" + aKey + "'; not caching");
-        return null;
+        Thread.currentThread ().interrupt ();
+        throw new SchematronInterruptedException ("while waiting for the compilation of '" + aKey + "'");
       }
-      _ensureMap ().put (aKey, aValue);
-      return aValue;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
+      catch (final ExecutionException ex)
+      {
+        final Throwable aCause = ex.getCause ();
+        // The compiling thread was interrupted, not this one - try again
+        if (aCause instanceof SchematronInterruptedException)
+          continue;
+        if (aCause instanceof final SchematronException aSchematronEx)
+          throw new SchematronException ("The compilation of '" + aKey + "' failed: " + aSchematronEx.getMessage (),
+                                         aSchematronEx);
+        if (aCause instanceof final RuntimeException aRuntimeEx)
+          throw aRuntimeEx;
+        if (aCause instanceof final Error aError)
+          throw aError;
+        throw new SchematronException ("The compilation of '" + aKey + "' failed", aCause);
+      }
     }
   }
 
@@ -232,6 +308,7 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   public final EChange invalidate (@NonNull final Object aKey)
   {
     ValueEnforcer.notNull (aKey, "Key");
+    m_aChangeCount.incrementAndGet ();
     return m_aRWLock.writeLockedGet (() -> m_aMap != null && m_aMap.remove (aKey) != null ? EChange.CHANGED
                                                                                           : EChange.UNCHANGED);
   }
@@ -244,12 +321,24 @@ public abstract class AbstractSchematronCache <CFG extends ISchematronCompilatio
   @NonNull
   public final EChange clear ()
   {
+    m_aChangeCount.incrementAndGet ();
     return m_aRWLock.writeLockedGet (() -> {
       if (m_aMap == null || m_aMap.isEmpty ())
         return EChange.UNCHANGED;
       m_aMap.clear ();
       return EChange.CHANGED;
     });
+  }
+
+  /**
+   * @return A counter that is increased on every call to {@link #invalidate(Object)} and
+   *         {@link #clear()}. A caller that remembers an artifact taken from this cache can compare
+   *         the counter to find out whether entries were removed explicitly in the meantime.
+   * @since 11.0.0
+   */
+  public final long getChangeCount ()
+  {
+    return m_aChangeCount.get ();
   }
 
   /**
