@@ -35,7 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
@@ -68,6 +70,7 @@ import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
 import com.helger.schematron.saxon.SaxonTinyTreeHelper;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
+import com.helger.schematron.svrl.CSVRL;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -80,14 +83,24 @@ import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 import com.helger.xml.transform.TransformSourceFactory;
 
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshallerHandler;
+
+import net.sf.saxon.Controller;
 import net.sf.saxon.dom.NodeOverNodeInfo;
 import net.sf.saxon.lib.ErrorReporterToListener;
 import net.sf.saxon.lib.ResourceResolverWrappingURIResolver;
 import net.sf.saxon.s9api.DOMDestination;
+import net.sf.saxon.s9api.Destination;
 import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.SAXDestination;
+import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.trans.XPathException;
 
 /**
  * A Schematron resource that runs a pure-Java pipeline on top of Saxon s9api. Unlike
@@ -113,6 +126,52 @@ import net.sf.saxon.s9api.XsltExecutable;
 @NotThreadSafe
 public class SchematronResourcePureXslt extends AbstractSchematronResource
 {
+  /**
+   * Thrown out of the JAXB unmarshalling callback if the transformation that feeds it fails, so that
+   * the original exception can be rethrown unchanged.
+   */
+  private static final class TransformationFailedException extends RuntimeException
+  {
+    private TransformationFailedException (@NonNull final SaxonApiException aCause)
+    {
+      super (aCause);
+    }
+
+    @NonNull
+    private SaxonApiException getSaxonApiException ()
+    {
+      return (SaxonApiException) getCause ();
+    }
+  }
+
+  /**
+   * A SAX handler that only checks whether the SVRL output contains a <code>failed-assert</code>
+   * element directly below the root element - the elements that end up as {@link FailedAssert}
+   * objects when the SVRL is read via JAXB.
+   */
+  private static final class FailedAssertDetector extends DefaultHandler
+  {
+    private int m_nDepth;
+    private boolean m_bFailedAssert;
+
+    @Override
+    public void startElement (final String sURI,
+                              final String sLocalName,
+                              final String sQName,
+                              final Attributes aAttributes)
+    {
+      m_nDepth++;
+      if (m_nDepth == 2 && CSVRL.SVRL_NAMESPACE_URI.equals (sURI) && "failed-assert".equals (sLocalName))
+        m_bFailedAssert = true;
+    }
+
+    @Override
+    public void endElement (final String sURI, final String sLocalName, final String sQName)
+    {
+      m_nDepth--;
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXslt.class);
 
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
@@ -450,17 +509,28 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     return SaxonTinyTreeHelper.buildDocumentFacade (m_aProcessor, aXMLSource);
   }
 
-  @NonNull
-  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode,
-                                            @Nullable final String sBaseURI) throws Exception
+  /**
+   * Run the compiled XSLT on the provided node.
+   *
+   * @param aExecutable
+   *        The compiled XSLT. May not be <code>null</code>.
+   * @param aXMLNode
+   *        The node to be validated. May not be <code>null</code>.
+   * @param sBaseURI
+   *        The base URI of the node. May be <code>null</code>.
+   * @param aDestination
+   *        The destination of the SVRL output. May not be <code>null</code>.
+   * @throws SaxonApiException
+   *         If the transformation fails
+   */
+  private void _transform (@NonNull final XsltExecutable aExecutable,
+                           @NonNull final Node aXMLNode,
+                           @Nullable final String sBaseURI,
+                           @NonNull final Destination aDestination) throws SaxonApiException
   {
-    final XsltExecutable aExecutable = getOrCompileXslt ();
-    final Document aResultDoc = XMLFactory.newDocument ();
-    final DOMDestination aDestination = new DOMDestination (aResultDoc);
-
     try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_EXECUTE))
     {
-      final var aTransformer = aExecutable.load30 ();
+      final Xslt30Transformer aTransformer = aExecutable.load30 ();
       if (m_aURIResolver != null)
         aTransformer.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
       if (m_aErrorListener != null)
@@ -475,18 +545,76 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
         aTransformer.applyTemplates (aXdmNode, aDestination);
       }
       else
-      {
-        if (sBaseURI != null)
-          aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
-        aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
-      }
+        if (sBaseURI != null && aXMLNode instanceof Document)
+        {
+          // Copy the DOM document into a Saxon tree once, exactly the way applyTemplates does it for a
+          // DOMSource (incl. whitespace stripping and registration under the base URI), and use that
+          // tree as the global context item as well. That avoids the additional wrapping of the DOM
+          // for the global variables, and both see the same nodes.
+          final Controller aController = aTransformer.getUnderlyingController ();
+          final XdmNode aXdmNode;
+          try
+          {
+            aXdmNode = new XdmNode (aController.makeSourceTree (new DOMSource (aXMLNode, sBaseURI),
+                                                                aController.getSchemaValidationMode ()));
+          }
+          catch (final XPathException ex)
+          {
+            throw new SaxonApiException (ex);
+          }
+          // The tree was already stripped while building it
+          aTransformer.setGlobalContextItem (aXdmNode, true);
+          aTransformer.applyTemplates (aXdmNode, aDestination);
+        }
+        else
+        {
+          if (sBaseURI != null)
+            aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
+          aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
+        }
+    }
+  }
+
+  @NonNull
+  private SchematronOutputType _doValidate (@NonNull final Node aXMLNode,
+                                            @Nullable final String sBaseURI) throws Exception
+  {
+    final XsltExecutable aExecutable = getOrCompileXslt ();
+
+    // Feed the SVRL output directly into JAXB, without building an intermediate DOM
+    final SchematronOutputType aSVRL;
+    try
+    {
+      aSVRL = new SVRLMarshaller ().setUseSchema (false).read ( (aUnmarshaller, aClass) -> {
+        final UnmarshallerHandler aHandler = aUnmarshaller.getUnmarshallerHandler ();
+        try
+        {
+          _transform (aExecutable, aXMLNode, sBaseURI, new SAXDestination (aHandler));
+        }
+        catch (final SaxonApiException ex)
+        {
+          throw new TransformationFailedException (ex);
+        }
+        if (aHandler.getResult () instanceof final JAXBElement <?> aElement &&
+            aElement.getValue () instanceof final SchematronOutputType aSOT)
+          return new JAXBElement <> (aElement.getName (), aClass, aSOT);
+        throw new JAXBException ("The SVRL output has an unexpected root element");
+      });
+    }
+    catch (final TransformationFailedException ex)
+    {
+      throw ex.getSaxonApiException ();
     }
 
-    final SchematronOutputType aSVRL = new SVRLMarshaller ().setUseSchema (false).read (aResultDoc);
     if (aSVRL == null)
+    {
+      // Error case only: run again into a DOM, to show what was created
+      final Document aResultDoc = XMLFactory.newDocument ();
+      _transform (aExecutable, aXMLNode, sBaseURI, new DOMDestination (aResultDoc));
       throw new IllegalStateException ("Saxon transformation did not produce a parseable SVRL document:\n" +
                                        XMLWriter.getNodeAsString (aResultDoc,
                                                                   new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
+    }
     return aSVRL;
   }
 
@@ -495,6 +623,15 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   public EValidity getSchematronValidity (@NonNull final Node aXMLNode,
                                           @Nullable final String sBaseURI) throws Exception
   {
+    if (!isTelemetry ())
+    {
+      // Only look for a failed assert while the SVRL output is created, without building the SVRL
+      // object. With telemetry, the complete SVRL is needed to emit the metrics.
+      final FailedAssertDetector aDetector = new FailedAssertDetector ();
+      _transform (getOrCompileXslt (), aXMLNode, sBaseURI, new SAXDestination (aDetector));
+      return EValidity.valueOf (!aDetector.m_bFailedAssert);
+    }
+
     final SchematronOutputType aSVRL = applySchematronValidationToSVRL (aXMLNode, sBaseURI);
     if (aSVRL == null)
       return EValidity.INVALID;

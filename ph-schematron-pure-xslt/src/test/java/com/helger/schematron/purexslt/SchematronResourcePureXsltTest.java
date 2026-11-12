@@ -21,20 +21,28 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.state.EValidity;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.saxon.SaxonTinyTreeHelper;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * Phase 1 smoke tests for {@link SchematronResourcePureXslt}.
@@ -401,5 +409,59 @@ public final class SchematronResourcePureXsltTest
     // The phsch-path mode templates must have produced the canonical location of the context node
     final String sLocation = _firstFailedAssert (aSVRL).getLocation ();
     assertEquals ("phsch-path mode should produce the canonical location of the context node", "/tag1[1]", sLocation);
+  }
+
+  @Test
+  public void testGetSchematronValidityMatchesSVRL () throws Exception
+  {
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
+                        "  <sch:pattern>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='@id'>id missing</sch:assert>\n" +
+                        "      <sch:report test='@id = \"r\"'>report only</sch:report>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "</sch:schema>";
+    final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromString (sSch).build ();
+    for (final String sXML : new String [] { "<root><item id='1'/></root>",
+                                             "<root><item id='r'/></root>",
+                                             "<root><item id='1'/><item/></root>",
+                                             "<root/>" })
+    {
+      final byte [] aBytes = sXML.getBytes (StandardCharsets.UTF_8);
+      final Document aFacade = SaxonTinyTreeHelper.buildDocumentFacade (SchematronProcessorFactory.getDefault (),
+                                                                        new StreamSource (new NonBlockingByteArrayInputStream (aBytes)));
+      for (final Document aDoc : new Document [] { DOMReader.readXMLDOM (aBytes), aFacade })
+        for (final String sBaseURI : new String [] { null, "urn:test" })
+        {
+          final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (aDoc, sBaseURI);
+          assertNotNull (aSVRL);
+          final EValidity eExpected = _countFailedAsserts (aSVRL) == 0 ? EValidity.VALID : EValidity.INVALID;
+          assertEquals (sXML, eExpected, aRes.getSchematronValidity (aDoc, sBaseURI));
+        }
+    }
+  }
+
+  @Test
+  public void testGlobalLetSeesSameNodesAsRules () throws Exception
+  {
+    // A schema level variable is a global XSLT variable. For a DOM document with a base URI it is
+    // evaluated on the same tree the rules are applied to, so node identity works
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
+                        "  <sch:let name='items' value='//item'/>\n" +
+                        "  <sch:pattern>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='some $i in $items satisfies $i is current()'>not the same node</sch:assert>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "</sch:schema>";
+    final Document aDoc = DOMReader.readXMLDOM ("<root><item/><item/></root>");
+    final SchematronOutputType aSVRL = SchematronResourcePureXslt.builderFromString (sSch)
+                                                                 .build ()
+                                                                 .applySchematronValidationToSVRL (aDoc, "urn:test");
+    assertNotNull (aSVRL);
+    assertEquals (0, _countFailedAsserts (aSVRL));
   }
 }
