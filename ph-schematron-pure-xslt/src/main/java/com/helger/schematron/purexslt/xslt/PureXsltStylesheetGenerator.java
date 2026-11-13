@@ -35,6 +35,7 @@ import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.schematron.CSchematron;
 import com.helger.schematron.CSchematronVersion;
+import com.helger.schematron.api.xslt.CSchematronLocationFunctions;
 import com.helger.schematron.model.PSActive;
 import com.helger.schematron.model.PSAssertReport;
 import com.helger.schematron.model.PSDiagnostic;
@@ -54,6 +55,7 @@ import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSSpan;
 import com.helger.schematron.model.PSValueOf;
+import com.helger.schematron.saxon.SaxonLocationFunctions;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.microdom.IMicroCDATA;
@@ -95,8 +97,8 @@ public final class PureXsltStylesheetGenerator
    * {@code fn:path()}). Not emitted for XSLT&nbsp;3.0 (which uses {@code fn:path()}) or
    * XSLT&nbsp;1.0 (which has no {@code xsl:function} and uses {@link #PATH_MODE} instead).
    */
-  public static final String PATH_FUNC_NS = "urn:com:helger:schematron:pure-xslt-functions:v1.0";
-  public static final String PATH_FUNC_PREFIX = "phsch";
+  public static final String PATH_FUNC_NS = CSchematronLocationFunctions.NAMESPACE_URI;
+  public static final String PATH_FUNC_PREFIX = CSchematronLocationFunctions.DEFAULT_PREFIX;
 
   /**
    * The XSLT mode name used for the recursive {@code location}-computing templates that are
@@ -855,7 +857,7 @@ public final class PureXsltStylesheetGenerator
 
   /**
    * Like {@link #PATH_FUNC_SELECT}, but the positions are determined by the
-   * {@link PureXsltLocationFunctions} extension functions instead of counting the preceding
+   * {@link SaxonLocationFunctions} extension functions instead of counting the preceding
    * siblings again for every node.
    */
   private static final String PATH_FUNC_SELECT_NATIVE = "concat(" +
@@ -865,12 +867,12 @@ public final class PureXsltStylesheetGenerator
                                                         "then concat('/', name($e), '[', " +
                                                         PATH_FUNC_PREFIX +
                                                         ":" +
-                                                        PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NAME +
+                                                        CSchematronLocationFunctions.LOCAL_NAME_INDEX_BY_NAME +
                                                         "($e), ']') " +
                                                         "else concat('/*:', local-name($e), '[namespace-uri()=\"', namespace-uri($e), '\"][', " +
                                                         PATH_FUNC_PREFIX +
                                                         ":" +
-                                                        PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME +
+                                                        CSchematronLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME +
                                                         "($e), ']')" +
                                                         ", '')" +
                                                         ", " +
@@ -908,7 +910,7 @@ public final class PureXsltStylesheetGenerator
    * @param eVersion
    *        The target XSLT version. May not be <code>null</code>.
    * @param bNativeLocation
-   *        <code>true</code> to use the {@link PureXsltLocationFunctions} extension functions.
+   *        <code>true</code> to use the {@link SaxonLocationFunctions} extension functions.
    * @return The attribute value template for the SVRL {@code location} attribute: {@code fn:path()}
    *         (or {@code phsch:fn-path()} if native) for XSLT&nbsp;3.0, the generated
    *         {@code phsch:path} function for XSLT&nbsp;2.x, or
@@ -921,7 +923,7 @@ public final class PureXsltStylesheetGenerator
                                                final boolean bNativeLocation)
   {
     if (!eVersion.isLT (EPureXsltVersion.XSLT_3_0))
-      return bNativeLocation ? "{" + PATH_FUNC_PREFIX + ":" + PureXsltLocationFunctions.LOCAL_NAME_FN_PATH + "(.)}"
+      return bNativeLocation ? "{" + PATH_FUNC_PREFIX + ":" + CSchematronLocationFunctions.LOCAL_NAME_FN_PATH + "(.)}"
                              : "{path(.)}";
     if (_needsPathFunction (eVersion))
       return "{" + PATH_FUNC_PREFIX + ":path(.)}";
@@ -989,7 +991,7 @@ public final class PureXsltStylesheetGenerator
       _addXsltValueOf (aWhen, "name()");
       _addXsltText (aWhen, "[");
       _addXsltValueOf (aWhen,
-                       bNativeLocation ? PATH_FUNC_PREFIX + ":" + PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NAME + "(.)"
+                       bNativeLocation ? PATH_FUNC_PREFIX + ":" + CSchematronLocationFunctions.LOCAL_NAME_INDEX_BY_NAME + "(.)"
                                        : "1+count(preceding-sibling::*[name()=name(current())])");
       _addXsltText (aWhen, "]");
 
@@ -1001,7 +1003,7 @@ public final class PureXsltStylesheetGenerator
       _addXsltText (aOtherwise, "']");
       _addXsltText (aOtherwise, "[");
       _addXsltValueOf (aOtherwise,
-                       bNativeLocation ? PATH_FUNC_PREFIX + ":" + PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME + "(.)"
+                       bNativeLocation ? PATH_FUNC_PREFIX + ":" + CSchematronLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME + "(.)"
                                        : "1+count(preceding-sibling::*[local-name()=local-name(current()) and namespace-uri()=namespace-uri(current())])");
       _addXsltText (aOtherwise, "]");
     }
@@ -1046,9 +1048,9 @@ public final class PureXsltStylesheetGenerator
    *        attribute. May not be <code>null</code>.
    * @param bNativeLocation
    *        <code>true</code> to compute the SVRL {@code location} attribute with the
-   *        {@link PureXsltLocationFunctions} extension functions, which take linear time. Such a
+   *        {@link SaxonLocationFunctions} extension functions, which take linear time. Such a
    *        stylesheet only runs on a Saxon {@link net.sf.saxon.s9api.Processor} the functions were
-   *        registered on (see {@link PureXsltLocationFunctions#registerIfMissing}). Use
+   *        registered on (see {@link SaxonLocationFunctions#registerIfMissing}). Use
    *        <code>false</code> for a portable stylesheet.
    * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
    * @since 11.0.0

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.purexslt.xslt;
+package com.helger.schematron.saxon;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -29,6 +29,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.schematron.api.xslt.CSchematronLocationFunctions;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.Controller;
@@ -49,38 +50,21 @@ import net.sf.saxon.value.SequenceType;
 import net.sf.saxon.value.StringValue;
 
 /**
- * Saxon extension functions that compute the SVRL <code>location</code> of a node in linear time.
- * The portable variants - <code>fn:path()</code>, and the <code>count(preceding-sibling::*[...])</code>
- * expressions of the XSLT&nbsp;2.0 and 1.0 stand-ins - count the preceding siblings again for every
- * node, which makes a document with many failures on many siblings quadratic. These functions
- * determine the positions of all child elements of a parent once per transformation and remember
- * them.
- * <ul>
- * <li><code>phsch:fn-path($n)</code> - the same result as <code>fn:path($n)</code> without
- * options</li>
- * <li><code>phsch:index-by-name($e)</code> - the same result as
- * <code>1 + count($e/preceding-sibling::*[name() = name($e)])</code></li>
- * <li><code>phsch:index-by-ns-name($e)</code> - the same result as
- * <code>1 + count($e/preceding-sibling::*[local-name() = local-name($e) and namespace-uri() = namespace-uri($e)])</code></li>
- * </ul>
- * The stylesheets that use them are only compiled in-process (see
- * {@link PureXsltStylesheetGenerator#generate(com.helger.schematron.model.PSSchema, String, EPureXsltVersion, boolean)}),
- * the exported stylesheets stay portable.
+ * The Saxon implementation of the extension functions of {@link CSchematronLocationFunctions},
+ * which compute the SVRL <code>location</code> of a node in linear time. They determine the
+ * positions of all child elements of a parent once per transformation and remember them.
+ * <p>
+ * They are registered on the {@link Processor} of the pure XSLT engine and on every
+ * {@link javax.xml.transform.TransformerFactory} created by {@link SchematronTransformerFactory}.
+ * </p>
  *
  * @author Philip Helger
  * @since 11.0.0
  */
 @ThreadSafe
-public final class PureXsltLocationFunctions
+public final class SaxonLocationFunctions
 {
-  /** Local name of the <code>fn:path()</code> replacement */
-  public static final String LOCAL_NAME_FN_PATH = "fn-path";
-  /** Local name of the position by <code>name()</code> */
-  public static final String LOCAL_NAME_INDEX_BY_NAME = "index-by-name";
-  /** Local name of the position by namespace URI and local name */
-  public static final String LOCAL_NAME_INDEX_BY_NS_NAME = "index-by-ns-name";
-
-  private static final String CACHE_KEY = PureXsltLocationFunctions.class.getName ();
+  private static final String CACHE_KEY = SaxonLocationFunctions.class.getName ();
   private static final String CACHE_NAME = "element-indexes";
   private static final String FN_ROOT = "Q{" + NamespaceUri.FN.toString () + "}root()";
 
@@ -135,7 +119,7 @@ public final class PureXsltLocationFunctions
     }
   }
 
-  private PureXsltLocationFunctions ()
+  private SaxonLocationFunctions ()
   {}
 
   @NonNull
@@ -248,8 +232,8 @@ public final class PureXsltLocationFunctions
 
     AbstractLocationFunction (@NonNull final String sLocalName, @NonNull final SequenceType aResultType)
     {
-      m_aName = new StructuredQName (PureXsltStylesheetGenerator.PATH_FUNC_PREFIX,
-                                     PureXsltStylesheetGenerator.PATH_FUNC_NS,
+      m_aName = new StructuredQName (CSchematronLocationFunctions.DEFAULT_PREFIX,
+                                     CSchematronLocationFunctions.NAMESPACE_URI,
                                      sLocalName);
       m_aResultType = aResultType;
     }
@@ -318,7 +302,7 @@ public final class PureXsltLocationFunctions
   {
     PathFunction ()
     {
-      super (LOCAL_NAME_FN_PATH, SequenceType.SINGLE_STRING);
+      super (CSchematronLocationFunctions.LOCAL_NAME_FN_PATH, SequenceType.SINGLE_STRING);
     }
 
     @Override
@@ -331,23 +315,37 @@ public final class PureXsltLocationFunctions
   }
 
   /**
-   * Register the location functions on the passed {@link Processor}, unless that was already done
-   * for its {@link Configuration}. Saxon considers functions registered this way as trusted, so they
-   * also work if calls to external functions are disallowed.
+   * Register the location functions on the passed {@link Configuration}, unless that was already
+   * done. Saxon considers functions registered this way as trusted, so they also work if calls to
+   * external functions are disallowed.
    *
-   * @param aProcessor
-   *        The processor that compiles the stylesheet. May not be <code>null</code>.
+   * @param aConfig
+   *        The configuration that compiles the stylesheet. May not be <code>null</code>.
    */
-  public static void registerIfMissing (@NonNull final Processor aProcessor)
+  public static void registerIfMissing (@NonNull final Configuration aConfig)
   {
-    final Configuration aConfig = aProcessor.getUnderlyingConfiguration ();
     LOCK.locked ( () -> {
       if (REGISTERED.put (aConfig, Boolean.TRUE) == null)
       {
-        aProcessor.registerExtensionFunction (new PathFunction ());
-        aProcessor.registerExtensionFunction (new IndexFunction (LOCAL_NAME_INDEX_BY_NAME, 0));
-        aProcessor.registerExtensionFunction (new IndexFunction (LOCAL_NAME_INDEX_BY_NS_NAME, 1));
+        aConfig.registerExtensionFunction (new PathFunction ());
+        aConfig.registerExtensionFunction (new IndexFunction (CSchematronLocationFunctions.LOCAL_NAME_INDEX_BY_NAME,
+                                                              0));
+        aConfig.registerExtensionFunction (new IndexFunction (CSchematronLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME,
+                                                              1));
       }
     });
+  }
+
+  /**
+   * Register the location functions on the {@link Configuration} of the passed {@link Processor},
+   * unless that was already done.
+   *
+   * @param aProcessor
+   *        The processor that compiles the stylesheet. May not be <code>null</code>.
+   * @see #registerIfMissing(Configuration)
+   */
+  public static void registerIfMissing (@NonNull final Processor aProcessor)
+  {
+    registerIfMissing (aProcessor.getUnderlyingConfiguration ());
   }
 }

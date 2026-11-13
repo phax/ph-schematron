@@ -14,44 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.schematron.purexslt.xslt;
+package com.helger.schematron.saxon;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
+import java.io.StringWriter;
 
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.jspecify.annotations.NonNull;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import com.helger.collection.commons.CommonsArrayList;
-import com.helger.collection.commons.ICommonsList;
-import com.helger.io.resource.inmemory.ReadableResourceString;
-import com.helger.schematron.exchange.PSReader;
-import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.saxon.SchematronProcessorFactory;
-import com.helger.schematron.svrl.CSVRL;
-import com.helger.xml.XMLFactory;
+import com.helger.schematron.api.xslt.CSchematronLocationFunctions;
 
-import net.sf.saxon.s9api.DOMDestination;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltExecutable;
 
 /**
- * Test class for class {@link PureXsltLocationFunctions}.
+ * Test class for class {@link SaxonLocationFunctions}.
  *
  * @author Philip Helger
  */
-public final class PureXsltLocationFunctionsTest
+public final class SaxonLocationFunctionsTest
 {
   /**
    * Same named siblings in no namespace, in the default namespace and with two prefixes for the same
@@ -72,7 +61,7 @@ public final class PureXsltLocationFunctionsTest
   private static final String CHECK_XSLT = "<xsl:stylesheet version='3.0'" +
                                            " xmlns:xsl='http://www.w3.org/1999/XSL/Transform'" +
                                            " xmlns:phsch='" +
-                                           PureXsltStylesheetGenerator.PATH_FUNC_NS +
+                                           CSchematronLocationFunctions.NAMESPACE_URI +
                                            "'>" +
                                            "<xsl:output method='text'/>" +
                                            "<xsl:template match='/'>" +
@@ -102,26 +91,32 @@ public final class PureXsltLocationFunctionsTest
                                            "</xsl:template>" +
                                            "</xsl:stylesheet>";
 
-  private static final String SCH = "<?xml version='1.0' encoding='UTF-8'?>" +
-                                    "<schema xmlns='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>" +
-                                    "<ns prefix='a' uri='urn:a'/>" +
-                                    "<ns prefix='c' uri='urn:c'/>" +
-                                    "<pattern>" +
-                                    "<rule context='*'><report test='true()'>element</report></rule>" +
-                                    "</pattern>" +
-                                    "<pattern>" +
-                                    "<rule context='@*'><report test='true()'>attribute</report></rule>" +
-                                    "</pattern>" +
-                                    "</schema>";
+  /**
+   * An XSLT 2.0 stylesheet that uses the function only if it is available, like the ISO Schematron
+   * skeleton does.
+   */
+  private static final String USE_WHEN_XSLT = "<xsl:stylesheet version='2.0'" +
+                                              " xmlns:xsl='http://www.w3.org/1999/XSL/Transform'" +
+                                              " xmlns:phsch='" +
+                                              CSchematronLocationFunctions.NAMESPACE_URI +
+                                              "'>" +
+                                              "<xsl:output method='text'/>" +
+                                              "<xsl:template match='/'>" +
+                                              "<xsl:value-of use-when=\"function-available('phsch:index-by-ns-name', 1)\"" +
+                                              " select='phsch:index-by-ns-name(/root/*[8]), phsch:index-by-ns-name(/root/*[4])'/>" +
+                                              "<xsl:value-of use-when=\"not(function-available('phsch:index-by-ns-name', 1))\"" +
+                                              " select=\"'missing'\"/>" +
+                                              "</xsl:template>" +
+                                              "</xsl:stylesheet>";
 
   @Test
   public void testSameResultsAsXPath () throws Exception
   {
     // The shared default processor disallows calls to external functions
     final Processor aProcessor = SchematronProcessorFactory.getDefault ();
-    PureXsltLocationFunctions.registerIfMissing (aProcessor);
+    SaxonLocationFunctions.registerIfMissing (aProcessor);
     // Registering again does nothing
-    PureXsltLocationFunctions.registerIfMissing (aProcessor);
+    SaxonLocationFunctions.registerIfMissing (aProcessor);
 
     final XsltExecutable aExecutable = aProcessor.newXsltCompiler ()
                                                  .compile (new StreamSource (new StringReader (CHECK_XSLT)));
@@ -136,38 +131,18 @@ public final class PureXsltLocationFunctionsTest
     assertTrue (sResult, Integer.parseInt (aCounts[1]) > 15);
   }
 
-  @NonNull
-  private static ICommonsList <String> _getLocations (@NonNull final PSSchema aSchema,
-                                                       @NonNull final EPureXsltVersion eVersion,
-                                                       final boolean bNativeLocation) throws Exception
-  {
-    final Processor aProcessor = SchematronProcessorFactory.getDefault ();
-    PureXsltLocationFunctions.registerIfMissing (aProcessor);
-
-    final Document aXslt = PureXsltStylesheetGenerator.generate (aSchema, null, eVersion, bNativeLocation);
-    final XsltExecutable aExecutable = aProcessor.newXsltCompiler ().compile (new DOMSource (aXslt));
-    final XdmNode aInput = aProcessor.newDocumentBuilder ().build (new StreamSource (new StringReader (XML)));
-    final Document aSVRL = XMLFactory.newDocument ();
-    aExecutable.load30 ().applyTemplates (aInput, new DOMDestination (aSVRL));
-
-    final ICommonsList <String> ret = new CommonsArrayList <> ();
-    final NodeList aReports = aSVRL.getElementsByTagNameNS (CSVRL.SVRL_NAMESPACE_URI, "successful-report");
-    for (int i = 0; i < aReports.getLength (); ++i)
-      ret.add (((Element) aReports.item (i)).getAttribute ("location"));
-    return ret;
-  }
-
   @Test
-  public void testNativeLocationEqualsPortable () throws Exception
+  public void testRegisteredOnTransformerFactory () throws Exception
   {
-    final PSSchema aSchema = new PSReader (new ReadableResourceString (SCH, StandardCharsets.UTF_8)).readSchema ();
-    for (final EPureXsltVersion eVersion : EPureXsltVersion.values ())
+    // Secure processing is on, which disallows calls to external functions
+    for (final TransformerFactory aTF : new TransformerFactory [] { SchematronTransformerFactory.getDefault (),
+                                                                    SchematronTransformerFactory.createTransformerFactory (true) })
     {
-      final ICommonsList <String> aPortable = _getLocations (aSchema, eVersion, false);
-      final ICommonsList <String> aNative = _getLocations (aSchema, eVersion, true);
-      // 14 elements and 4 attributes
-      assertEquals (eVersion.getID (), 18, aPortable.size ());
-      assertEquals (eVersion.getID (), aPortable, aNative);
+      final StringWriter aSW = new StringWriter ();
+      aTF.newTransformer (new StreamSource (new StringReader (USE_WHEN_XSLT)))
+         .transform (new StreamSource (new StringReader (XML)), new StreamResult (aSW));
+      // The third item without namespace and the third item in namespace urn:a
+      assertEquals ("3 3", aSW.toString ());
     }
   }
 }

@@ -145,10 +145,11 @@ public final class SchematronTransformerFactory
 
   /**
    * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
-   * applied: line numbering (#52) is enabled and XInclude (#86) is enabled or disabled according to
-   * {@link #isAllowXInclude()}. Optionally enables Saxon's {@code COMPILE_WITH_TRACING} feature so
-   * that stylesheets compiled by the returned factory emit per-instruction events to a
-   * {@link net.sf.saxon.lib.TraceListener} at execution time.
+   * applied: line numbering (#52) is enabled, XInclude (#86) is enabled or disabled according to
+   * {@link #isAllowXInclude()} and the {@link SaxonLocationFunctions} are registered. Optionally
+   * enables Saxon's {@code COMPILE_WITH_TRACING} feature so that stylesheets compiled by the returned
+   * factory emit per-instruction events to a {@link net.sf.saxon.lib.TraceListener} at execution
+   * time.
    * <p>
    * Tracing disables several Saxon optimisations and typically costs 1.5&times;&ndash;3&times;
    * wall-clock per transform; callers should treat trace-enabled factories as distinct from the
@@ -172,8 +173,11 @@ public final class SchematronTransformerFactory
                     bAllowXInclude +
                     ")");
 
-    final TransformerFactory aFactory = new TransformerFactoryImpl ();
+    final TransformerFactoryImpl aFactory = new TransformerFactoryImpl ();
     XMLFactory.defaultCustomizeTransformerFactory (aFactory);
+
+    // Compute the SVRL location in linear time
+    SaxonLocationFunctions.registerIfMissing (aFactory.getConfiguration ());
 
     // Maintain position #52
     aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);

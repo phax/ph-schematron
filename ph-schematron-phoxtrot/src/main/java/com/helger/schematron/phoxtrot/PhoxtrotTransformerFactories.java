@@ -163,13 +163,17 @@ public final class PhoxtrotTransformerFactories
   /**
    * Create a new phoxtrot {@link TransformerFactory} with secure processing, the step limit of
    * {@link #getMaxSteps()}, the depth limit of {@link #getMaxDepth()} and the threading of
-   * {@link #getThreading()}.
+   * {@link #getThreading()}. It also makes sure the function of {@link PhoxtrotLocationFunctions} is
+   * registered.
    *
    * @return A new factory. Never <code>null</code>.
    */
   @NonNull
   public static TransformerFactory createTransformerFactory ()
   {
+    // Compute the SVRL location in linear time
+    PhoxtrotLocationFunctions.registerIfMissing ();
+
     final TransformerFactory aFactory = new PhoxtrotTransformerFactory ();
     XMLFactory.defaultCustomizeTransformerFactory (aFactory);
     aFactory.setAttribute (PhoxtrotTransformerFactory.ATTR_MAX_STEPS, Long.valueOf (getMaxSteps ()));

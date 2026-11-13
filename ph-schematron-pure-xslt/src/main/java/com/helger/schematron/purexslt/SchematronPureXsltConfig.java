@@ -59,8 +59,8 @@ import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
-import com.helger.schematron.purexslt.xslt.PureXsltLocationFunctions;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
+import com.helger.schematron.saxon.SaxonLocationFunctions;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -266,7 +266,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
                       XMLWriter.getNodeAsString (aXsltDoc,
                                                  new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
 
-      PureXsltLocationFunctions.registerIfMissing (m_aProcessor);
+      SaxonLocationFunctions.registerIfMissing (m_aProcessor);
       final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
       if (m_aURIResolver != null)
         aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
