@@ -35,11 +35,13 @@ import com.helger.base.version.Version;
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_ph_schematron_saxon implements IThirdPartyModuleProviderSPI
 {
-  public static final IThirdPartyModule SAXON_HE = new ThirdPartyModule ("Saxon HE",
-                                                                         "Saxonica Limited",
-                                                                         ELicense.MPL20,
-                                                                         new Version (13, 1, 0, "HE"),
-                                                                         "http://saxon.sourceforge.net/");
+  public static final IThirdPartyModule SAXON_HE = ThirdPartyModule.builder ()
+                                                                   .displayName ("Saxon HE")
+                                                                   .copyrightOwner ("Saxonica Limited")
+                                                                   .license (ELicense.MPL20)
+                                                                   .version (new Version (13, 1, 0, "HE"))
+                                                                   .webSiteUrl ("http://saxon.sourceforge.net/")
+                                                                   .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()
