@@ -854,6 +854,32 @@ public final class PureXsltStylesheetGenerator
                                                  ")";
 
   /**
+   * Like {@link #PATH_FUNC_SELECT}, but the positions are determined by the
+   * {@link PureXsltLocationFunctions} extension functions instead of counting the preceding
+   * siblings again for every node.
+   */
+  private static final String PATH_FUNC_SELECT_NATIVE = "concat(" +
+                                                        "string-join(" +
+                                                        "for $e in $n/ancestor-or-self::* return " +
+                                                        "if (namespace-uri($e) = '') " +
+                                                        "then concat('/', name($e), '[', " +
+                                                        PATH_FUNC_PREFIX +
+                                                        ":" +
+                                                        PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NAME +
+                                                        "($e), ']') " +
+                                                        "else concat('/*:', local-name($e), '[namespace-uri()=\"', namespace-uri($e), '\"][', " +
+                                                        PATH_FUNC_PREFIX +
+                                                        ":" +
+                                                        PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME +
+                                                        "($e), ']')" +
+                                                        ", '')" +
+                                                        ", " +
+                                                        "if ($n instance of attribute()) " +
+                                                        "then concat('/@', if (namespace-uri($n) = '') then name($n) else concat('*:', local-name($n), '[namespace-uri()=\"', namespace-uri($n), '\"]')) " +
+                                                        "else ''" +
+                                                        ")";
+
+  /**
    * @param eVersion
    *        The target XSLT version. May not be <code>null</code>.
    * @return <code>true</code> if the generated stylesheet needs the {@code phsch:path} helper
@@ -881,17 +907,22 @@ public final class PureXsltStylesheetGenerator
   /**
    * @param eVersion
    *        The target XSLT version. May not be <code>null</code>.
+   * @param bNativeLocation
+   *        <code>true</code> to use the {@link PureXsltLocationFunctions} extension functions.
    * @return The attribute value template for the SVRL {@code location} attribute: {@code fn:path()}
-   *         for XSLT&nbsp;3.0, the generated {@code phsch:path} function for XSLT&nbsp;2.x, or
+   *         (or {@code phsch:fn-path()} if native) for XSLT&nbsp;3.0, the generated
+   *         {@code phsch:path} function for XSLT&nbsp;2.x, or
    *         <code>null</code> for XSLT&nbsp;1.x (which cannot express this as an AVT and instead
    *         computes the location via the {@link #PATH_MODE} templates - see
    *         {@link #_appendAssertReport}).
    */
   @Nullable
-  private static String _getLocationAttrValue (@NonNull final EPureXsltVersion eVersion)
+  private static String _getLocationAttrValue (@NonNull final EPureXsltVersion eVersion,
+                                               final boolean bNativeLocation)
   {
     if (!eVersion.isLT (EPureXsltVersion.XSLT_3_0))
-      return "{path(.)}";
+      return bNativeLocation ? "{" + PATH_FUNC_PREFIX + ":" + PureXsltLocationFunctions.LOCAL_NAME_FN_PATH + "(.)}"
+                             : "{path(.)}";
     if (_needsPathFunction (eVersion))
       return "{" + PATH_FUNC_PREFIX + ":path(.)}";
     return null;
@@ -902,14 +933,14 @@ public final class PureXsltStylesheetGenerator
    * declaration on the stylesheet root. Only used for XSLT&nbsp;2.x output, where {@code fn:path()}
    * is not available.
    */
-  private static void _appendPathFunctionXslt2 (@NonNull final Element aStylesheet)
+  private static void _appendPathFunctionXslt2 (@NonNull final Element aStylesheet, final boolean bNativeLocation)
   {
     final Element aFunc = _addXsltChild (aStylesheet, "function");
     aFunc.setAttribute ("name", PATH_FUNC_PREFIX + ":path");
     final Element aParam = _addXsltChild (aFunc, "param");
     aParam.setAttribute ("name", "n");
     final Element aSeq = _addXsltChild (aFunc, "sequence");
-    aSeq.setAttribute ("select", PATH_FUNC_SELECT);
+    aSeq.setAttribute ("select", bNativeLocation ? PATH_FUNC_SELECT_NATIVE : PATH_FUNC_SELECT);
   }
 
   /**
@@ -938,7 +969,8 @@ public final class PureXsltStylesheetGenerator
    * The generated path uses the {@code *[local-name()=...]} predicate form so it is resolvable
    * without in-scope prefixes and stays within XPath 1.0.
    */
-  private static void _appendPathModeTemplatesXslt1 (@NonNull final Element aStylesheet)
+  private static void _appendPathModeTemplatesXslt1 (@NonNull final Element aStylesheet,
+                                                     final boolean bNativeLocation)
   {
     // <xsl:template match="*" mode="phsch-path">
     {
@@ -956,7 +988,9 @@ public final class PureXsltStylesheetGenerator
       aWhen.setAttribute ("test", "namespace-uri()=''");
       _addXsltValueOf (aWhen, "name()");
       _addXsltText (aWhen, "[");
-      _addXsltValueOf (aWhen, "1+count(preceding-sibling::*[name()=name(current())])");
+      _addXsltValueOf (aWhen,
+                       bNativeLocation ? PATH_FUNC_PREFIX + ":" + PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NAME + "(.)"
+                                       : "1+count(preceding-sibling::*[name()=name(current())])");
       _addXsltText (aWhen, "]");
 
       final Element aOtherwise = _addXsltChild (aChoose, "otherwise");
@@ -967,7 +1001,8 @@ public final class PureXsltStylesheetGenerator
       _addXsltText (aOtherwise, "']");
       _addXsltText (aOtherwise, "[");
       _addXsltValueOf (aOtherwise,
-                       "1+count(preceding-sibling::*[local-name()=local-name(current()) and namespace-uri()=namespace-uri(current())])");
+                       bNativeLocation ? PATH_FUNC_PREFIX + ":" + PureXsltLocationFunctions.LOCAL_NAME_INDEX_BY_NS_NAME + "(.)"
+                                       : "1+count(preceding-sibling::*[local-name()=local-name(current()) and namespace-uri()=namespace-uri(current())])");
       _addXsltText (aOtherwise, "]");
     }
 
@@ -1009,12 +1044,20 @@ public final class PureXsltStylesheetGenerator
    * @param eVersion
    *        The XSLT language version to declare on the generated stylesheet's {@code version}
    *        attribute. May not be <code>null</code>.
+   * @param bNativeLocation
+   *        <code>true</code> to compute the SVRL {@code location} attribute with the
+   *        {@link PureXsltLocationFunctions} extension functions, which take linear time. Such a
+   *        stylesheet only runs on a Saxon {@link net.sf.saxon.s9api.Processor} the functions were
+   *        registered on (see {@link PureXsltLocationFunctions#registerIfMissing}). Use
+   *        <code>false</code> for a portable stylesheet.
    * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
+   * @since 11.0.0
    */
   @NonNull
   public static Document generate (@NonNull final PSSchema aSchema,
                                    @Nullable final String sPhase,
-                                   @NonNull final EPureXsltVersion eVersion)
+                                   @NonNull final EPureXsltVersion eVersion,
+                                   final boolean bNativeLocation)
   {
     final String sResolvedPhase = _resolvePhase (aSchema, sPhase);
     final ICommonsList <PSPattern> aActivePatterns = _resolveActivePatterns (aSchema, sResolvedPhase);
@@ -1044,18 +1087,21 @@ public final class PureXsltStylesheetGenerator
     // For XSLT versions that lack fn:path(), emit a helper used to populate the SVRL location
     // attribute: XSLT 2.x gets the phsch:path xsl:function; XSLT 1.x gets the recursive phsch-path
     // mode templates (no xsl:function available).
-    final String sLocationAvt = _getLocationAttrValue (eVersion);
-    if (_needsPathFunction (eVersion))
-    {
+    // With native location, all versions call the extension functions, whose prefix is not needed
+    // in the SVRL output.
+    final String sLocationAvt = _getLocationAttrValue (eVersion, bNativeLocation);
+    if (_needsPathFunction (eVersion) || bNativeLocation)
       aStylesheet.setAttributeNS (XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
                                   XMLConstants.XMLNS_ATTRIBUTE + ":" + PATH_FUNC_PREFIX,
                                   PATH_FUNC_NS);
-      _appendPathFunctionXslt2 (aStylesheet);
-    }
+    if (bNativeLocation)
+      aStylesheet.setAttribute ("exclude-result-prefixes", PATH_FUNC_PREFIX);
+    if (_needsPathFunction (eVersion))
+      _appendPathFunctionXslt2 (aStylesheet, bNativeLocation);
     else
       if (_needsPathMode (eVersion))
       {
-        _appendPathModeTemplatesXslt1 (aStylesheet);
+        _appendPathModeTemplatesXslt1 (aStylesheet, bNativeLocation);
       }
 
     // Pass through ALL schema-level foreign elements. The XSLT-namespace ones (xsl:function,
@@ -1089,5 +1135,29 @@ public final class PureXsltStylesheetGenerator
       nPatternIdx++;
     }
     return aDoc;
+  }
+
+  /**
+   * Generate a portable XSLT stylesheet from the passed Schematron schema, restricted to the
+   * patterns activated by the named phase, targeting the given XSLT language version.
+   *
+   * @param aSchema
+   *        The parsed schema. May not be <code>null</code>.
+   * @param sPhase
+   *        The phase to evaluate. May be <code>null</code>, empty or {@link CSchematron#PHASE_ALL}
+   *        (process all patterns), {@link CSchematron#PHASE_DEFAULT} (use
+   *        {@link PSSchema#getDefaultPhase()}), or a specific phase id.
+   * @param eVersion
+   *        The XSLT language version to declare on the generated stylesheet's {@code version}
+   *        attribute. May not be <code>null</code>.
+   * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
+   * @see #generate(PSSchema, String, EPureXsltVersion, boolean)
+   */
+  @NonNull
+  public static Document generate (@NonNull final PSSchema aSchema,
+                                   @Nullable final String sPhase,
+                                   @NonNull final EPureXsltVersion eVersion)
+  {
+    return generate (aSchema, sPhase, eVersion, false);
   }
 }

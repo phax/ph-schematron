@@ -59,6 +59,7 @@ import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.purexslt.xslt.PureXsltLocationFunctions;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.xml.serialize.write.XMLWriter;
@@ -258,13 +259,14 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
       final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
       final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
 
-      // Generate
-      final Document aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion);
+      // Generate, with the linear location functions, as the stylesheet is only compiled here
+      final Document aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion, true);
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" +
                       XMLWriter.getNodeAsString (aXsltDoc,
                                                  new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
 
+      PureXsltLocationFunctions.registerIfMissing (m_aProcessor);
       final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
       if (m_aURIResolver != null)
         aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
