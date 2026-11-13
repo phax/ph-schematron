@@ -35,11 +35,13 @@ import com.helger.base.version.Version;
 @IsSPIImplementation
 public final class ThirdPartyModuleProvider_ph_schematron_schxslt implements IThirdPartyModuleProviderSPI
 {
-  public static final IThirdPartyModule SCHXSLT = new ThirdPartyModule ("SchXslt",
-                                                                        "David Maus",
-                                                                        ELicense.MIT,
-                                                                        new Version (1, 10, 1),
-                                                                        "https://github.com/schxslt/schxslt");
+  public static final IThirdPartyModule SCHXSLT = ThirdPartyModule.builder ()
+                                                                  .displayName ("SchXslt")
+                                                                  .copyrightOwner ("David Maus")
+                                                                  .license (ELicense.MIT)
+                                                                  .version (new Version (1, 10, 1))
+                                                                  .webSiteUrl ("https://github.com/schxslt/schxslt")
+                                                                  .build ();
 
   @Nullable
   public IThirdPartyModule [] getAllThirdPartyModules ()
