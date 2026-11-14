@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>3.1.0</version>
+    <version>3.2.0</version>
   </parent>
   <groupId>com.helger.schematron</groupId>
   <artifactId>ph-schematron-parent-pom</artifactId>
@@ -84,25 +84,26 @@
     <dependencies>
       <dependency>
         <groupId>com.helger.commons</groupId>
-        <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.5.3</version>
+        <artifactId>ph-commons-bom</artifactId>
+        <version>12.7.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.telemetry</groupId>
-        <artifactId>ph-telemetry-parent-pom</artifactId>
-        <version>1.1.1</version>
+        <artifactId>ph-telemetry-bom</artifactId>
+        <version>1.1.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.xsd</groupId>
-        <artifactId>ph-xsds-parent-pom</artifactId>
-        <version>4.1.1</version>
+        <artifactId>ph-xsds-bom</artifactId>
+        <version>4.1.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
@@ -113,6 +114,18 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit4.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-bom</artifactId>
+        <version>4.0.9</version>
+        <scope>import</scope>
+        <type>pom</type>
       </dependency>
       
       <dependency>
@@ -175,6 +188,7 @@
   </dependencyManagement>
   
   <modules>
+    <module>ph-schematron-bom</module>
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron-api</module>
     <module>ph-schematron-saxon</module>
