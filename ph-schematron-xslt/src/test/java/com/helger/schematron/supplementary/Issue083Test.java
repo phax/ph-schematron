@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
+import javax.xml.transform.stream.StreamSource;
+
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -53,8 +55,13 @@ public final class Issue083Test
       if (true)
         LOGGER.info ("SVRL:\n" + sSVRL);
 
-      // XXX should be 1 according to #83
-      assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+      // The comment in the XML is found
+      assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+
+      // Also when the XML is not read into a DOM first
+      final SchematronOutputType aSVRL2 = aSCH.applySchematronValidationToSVRL (new StreamSource (aXML));
+      assertNotNull (aSVRL2);
+      assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL2).size ());
     }
     finally
     {

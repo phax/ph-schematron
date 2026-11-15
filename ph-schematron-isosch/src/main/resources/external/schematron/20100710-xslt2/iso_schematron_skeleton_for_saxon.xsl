@@ -482,13 +482,23 @@ which require a preprocess.
 
 <!-- DPC set to true if contexts should be checked on just elements in the child axis
          defaults to true if there is any possibility that a context could match an comment or PI
-         err on the side if caution, a context of *[.='('] would cause this param to defualt to true
+         err on the side if caution, a context of *[.='('] would cause this param to default to true
          even though ( is in a string, but node() comment() and processing-instruction()  all have a (
 -->
 <xsl:param name="only-child-elements">
+  <!-- [ph] See #83: the original test was inverted - a context like comment() made it "true" and so
+       switched off the traversal of comments and PIs. Now it is "false" if a context may match a
+       comment or a PI (comment(), processing-instruction() or node(), also with whitespace before
+       the parenthesis) and "true" otherwise -->
+  <!--
   <xsl:choose>
     <xsl:when test="//iso:rule[contains(@context,'(')]">true</xsl:when>
     <xsl:otherwise>false</xsl:otherwise>
+  </xsl:choose>
+  -->
+  <xsl:choose>
+    <xsl:when test="//iso:rule[matches(@context,'(comment|processing-instruction|node)\s*\(')]">false</xsl:when>
+    <xsl:otherwise>true</xsl:otherwise>
   </xsl:choose>
 </xsl:param>
 

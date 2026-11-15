@@ -212,7 +212,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
 
   /**
    * @return The {@link DOMReaderSettings} to be used for reading the XML files to be validated.
-   *         This includes the {@link EntityResolver} to be used.
+   *         This includes the {@link EntityResolver} to be used. Comments are kept, so that rules
+   *         with a <code>comment()</code> context can match them.
    * @see #getEntityResolver()
    */
   @NonNull
@@ -220,6 +221,8 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   protected DOMReaderSettings internalCreateDOMReaderSettings ()
   {
     final DOMReaderSettings aDRS = new DOMReaderSettings ();
+    // Comments are part of the XML to be validated
+    aDRS.setIgnoringComments (false);
     if (m_aEntityResolver != null)
       aDRS.setEntityResolver (m_aEntityResolver);
     return aDRS;
