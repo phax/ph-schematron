@@ -106,8 +106,10 @@ public final class PureXsltVsSchXslt2ComparisonTest
     LOGGER.info ("--- SchXslt2 SVRL ---\n" + sSchXslt2);
     final String sPure = XMLWriter.getNodeAsString (aPureDoc, PRETTY);
     LOGGER.info ("--- PureXslt SVRL ---\n" + sPure);
+    // SchXslt2 copies the documents attribute of the pattern to active-pattern, whereas pure-xslt
+    // emits the URI of the validated document there, like the ISO Schematron XSLT and SchXslt 1
     if (bAssertStructuralEquality)
-      assertEquals (sSchXslt2.replaceAll (" document=\"[^\"]+\"", ""), sPure);
+      assertEquals (sSchXslt2.replaceAll (" document=\"[^\"]+\"", ""), sPure.replaceAll (" documents=\"[^\"]+\"", ""));
 
     final int nSchXslt2Failed = SVRLHelper.getAllFailedAssertions (aSchXslt2SVRL).size ();
     final int nPureFailed = SVRLHelper.getAllFailedAssertions (aPureSVRL).size ();

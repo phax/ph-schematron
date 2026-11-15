@@ -18,6 +18,7 @@ package com.helger.schematron.purexslt;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -33,11 +34,14 @@ import org.w3c.dom.Document;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.state.EValidity;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.saxon.SaxonTinyTreeHelper;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
@@ -52,6 +56,16 @@ import com.helger.xml.serialize.read.DOMReader;
 public final class SchematronResourcePureXsltTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXsltTest.class);
+
+  @NonNull
+  private static ICommonsList <ActivePattern> _getAllActivePatterns (@NonNull final SchematronOutputType aSVRL)
+  {
+    final ICommonsList <ActivePattern> ret = new CommonsArrayList <> ();
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+      if (aObj instanceof final ActivePattern aAP)
+        ret.add (aAP);
+    return ret;
+  }
 
   private static int _countFailedAsserts (final SchematronOutputType aSVRL)
   {
@@ -463,5 +477,53 @@ public final class SchematronResourcePureXsltTest
                                                                  .applySchematronValidationToSVRL (aDoc, "urn:test");
     assertNotNull (aSVRL);
     assertEquals (0, _countFailedAsserts (aSVRL));
+  }
+
+  @Test
+  public void testActivePatternRoleAndDocuments () throws Exception
+  {
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'>\n" +
+                        "  <sch:pattern id='p1' role='{critical}'>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='false()'>fails</sch:assert>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "  <sch:pattern id='p2'>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='true()'>never</sch:assert>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "</sch:schema>";
+    final Document aDoc = DOMReader.readXMLDOM ("<root><item/></root>");
+    for (final EPureXsltVersion eVersion : EPureXsltVersion.values ())
+    {
+      final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromString (sSch)
+                                                                        .xsltVersion (eVersion)
+                                                                        .build ();
+      // XSLT 1.0 has no function for the document URI
+      final String sExpectedDocuments = eVersion == EPureXsltVersion.XSLT_1_0 ? null : "urn:test";
+
+      SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (aDoc, "urn:test");
+      assertNotNull (aSVRL);
+      ICommonsList <ActivePattern> aPatterns = _getAllActivePatterns (aSVRL);
+      assertEquals (2, aPatterns.size ());
+      assertEquals ("p1", aPatterns.get (0).getId ());
+      // Curly braces are not evaluated as an attribute value template
+      assertEquals ("{critical}", aPatterns.get (0).getRole ());
+      assertEquals (sExpectedDocuments, aPatterns.get (0).getDocuments ());
+      assertEquals ("p2", aPatterns.get (1).getId ());
+      assertNull (aPatterns.get (1).getRole ());
+      assertEquals (sExpectedDocuments, aPatterns.get (1).getDocuments ());
+
+      // No base URI - no documents attribute
+      aSVRL = aRes.applySchematronValidationToSVRL (aDoc, null);
+      assertNotNull (aSVRL);
+      aPatterns = _getAllActivePatterns (aSVRL);
+      assertEquals (2, aPatterns.size ());
+      assertEquals ("{critical}", aPatterns.get (0).getRole ());
+      assertNull (aPatterns.get (0).getDocuments ());
+      assertNull (aPatterns.get (1).getDocuments ());
+    }
   }
 }

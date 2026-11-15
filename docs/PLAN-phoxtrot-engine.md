@@ -2,7 +2,8 @@
 
 Draft, 2026-11-08, updated 2026-11-09 for phoxtrot suggestions S9 to S16 and S18, and 2026-11-10 for the release.
 Rewritten 2026-11-10 for the decisions on version 11 (branch `phoxtrot`), updated 2026-11-11 for phoxtrot
-0.2.0-SNAPSHOT (S27 and S29 done).
+0.2.0-SNAPSHOT (S27 and S29 done), and 2026-11-15 for the release of phoxtrot 0.2.0 (2026-11-14) and the done
+suggestions S36 and S39.
 
 phoxtrot (the XPath/XSLT engine formerly named ph-xslt) 0.1.0 is released (2026-11-10, tag
 `phoxtrot-parent-pom-0.1.0`), as `com.helger.phoxtrot:phoxtrot-xslt` (with `phoxtrot-xpath` and `phoxtrot-xdm`). It
@@ -97,13 +98,13 @@ ph-schematron (10.3.2-SNAPSHOT):
   `dependency:tree -Dverbose`, 2026-11-11). So `ph-schematron-schxslt` and `ph-schematron-schxslt2` become
   processor-free exactly like `ph-schematron-isosch`: one module per pipeline, the processor chosen by the user.
 
-phoxtrot 0.1.0 and 0.2.0-SNAPSHOT:
+phoxtrot 0.1.0 and 0.2.0:
 
 - XPath 3.1 and XSLT 3.0, about 99.9 % of the applicable XSLT 3.0 test cases. An XSLT 2.0 stylesheet runs as 3.0.
 - XSLT 1.0 backwards compatible processing is implemented and claimed by default
   (`XsltCompileOptions.DEFAULT_BACKWARDS_COMPATIBLE_CLAIM`), plus EXSLT - Common (`exsl:node-set`,
   `exsl:object-type`). Relevant for `XSLT_PREBUILT` with XSLT 1.0 files.
-- It requires Java 21. 0.1.0 uses ph-commons 12.5.2, 0.2.0-SNAPSHOT uses ph-commons 12.6.0.
+- It requires Java 21. 0.1.0 uses ph-commons 12.5.2, 0.2.0 uses ph-commons 12.7.1.
 - **JAXP adapter** `com.helger.phoxtrot.xslt.jaxp.PhoxtrotTransformerFactory`:
   - `Templates` (`PhoxtrotTemplates`, thread-safe, `getExecutable ()` gives the native `XsltExecutable`) and
     `Transformer` (`PhoxtrotTransformer`, one thread at a time).
@@ -232,7 +233,7 @@ Implemented in P1 (2026-11-11):
 
 ### `ph-schematron-phoxtrot`
 
-Depends on `ph-schematron-api` and `com.helger.phoxtrot:phoxtrot-xslt` 0.2.0-SNAPSHOT, not on Saxon.
+Depends on `ph-schematron-api` and `com.helger.phoxtrot:phoxtrot-xslt` 0.2.0, not on Saxon.
 
 | Class | Role |
 |---|---|
@@ -300,10 +301,11 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
 - Test 6 (`PhoxtrotSecureProcessingTest`, the assertions of `SchematronSecureProcessingTest` on phoxtrot, with copies
   of its test files): remote `document()` gives an empty document, `system-property()` is empty, remote
   `xsl:include` fails, local include works, an explicit resolver may allow `http`.
-  **One difference, open for decision:** Saxon rejects a stylesheet with `xsl:result-document` under secure
-  processing; phoxtrot accepts it and never writes secondary results (only `PhoxtrotTransformer.getLastResult ()`),
-  so no file is written either way. Decided 2026-11-11: phoxtrot shall reject it like Saxon (phoxtrot suggestion
-  S36); until then the test documents the phoxtrot behaviour.
+  One difference at that time: Saxon rejects a stylesheet with `xsl:result-document` under secure processing;
+  phoxtrot accepted it and never wrote secondary results (only `PhoxtrotTransformer.getLastResult ()`), so no file
+  was written either way. Decided 2026-11-11: phoxtrot shall reject it like Saxon (phoxtrot suggestion S36).
+  Resolved 2026-11-11 with phoxtrot `c09e6c0`: phoxtrot rejects it as well, `SchematronSecureProcessingTest` runs on
+  both processors and `PhoxtrotSecureProcessingTest` was removed.
 - Input from streams: the resource parses the DOM as before (`getAsNode`, with the entity resolver) and phoxtrot
   converts it once (`createSourceForInternalDocument`). Parsing streams directly with `XdmParser` is an optimisation
   for P5 (benchmarks decide).
@@ -320,7 +322,8 @@ Test 2 (`IsoSchematronPhoxtrotVsSaxonComparisonTest`) for the 75 valid Schematro
   on both processors. Excluded on phoxtrot: the tests that use Saxon classes (`Issue129Test`, `Issue137XsltTest`,
   `SchematronResourceXSLTNativeDOMTest`), `SchematronSecureProcessingTest` (S36, phoxtrot variant in the IT module)
   and `Issue077Test` (the URI resolver gets a different base: S39). `Issue110Test` deletes its own fixture and now
-  works on a copy.
+  works on a copy. Update 2026-11-15: with S36 and S39 done, `SchematronSecureProcessingTest` and `Issue077Test` run
+  on phoxtrot too; only the three tests that use Saxon classes stay excluded.
 - Test 7 (`LimitsPhoxtrotVsSaxonTest`): 20,000 items with the default limits give the same SVRL (Saxon 608 ms,
   phoxtrot 401 ms); a set interrupt flag ends the conversion with `SchematronInterruptedException` on both; an `or`
   chain of 200 terms gives the same SVRL. 1,000 terms (about 20,000 characters) work on Saxon and fail on phoxtrot
@@ -360,10 +363,10 @@ Saxon; the remaining hotspots are filed as S43.
 - `ph-schematron-ant-task` (`Schematron`): attribute `xsltProcessor`, same rules (Saxon contained).
 - `ph-schematron-it`: all JAXP pipelines on both processors (`SchematronAllEnginesTelemetryTest`,
   `SchematronRemoteAccessTest`, `MainOtelDemo`), and the comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`,
-  `SVRLPhoxtrotVsSaxonComparisonTest`; until S36 also `PhoxtrotSecureProcessingTest`). They moved there from
+  `SVRLPhoxtrotVsSaxonComparisonTest`; until S36 also `PhoxtrotSecureProcessingTest`, removed 2026-11-11). They moved there from
   `ph-schematron-phoxtrot` (2026-11-11), because the pipeline modules need `ph-schematron-phoxtrot` as test
   dependency for test 5, which would otherwise be a dependency cycle.
-- Root `pom.xml`: version 11.0.0-SNAPSHOT, `java.version` 21, Saxon-HE 13.1, phoxtrot 0.2.0-SNAPSHOT in the dependency management, module
+- Root `pom.xml`: version 11.0.0-SNAPSHOT, `java.version` 21, Saxon-HE 13.1, phoxtrot 0.2.0 in the dependency management, module
   `ph-schematron-phoxtrot`.
 - CI: matrix 21 and 25, snapshot deploy from the Java 21 job.
 - Documentation:
@@ -452,7 +455,7 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
    XML that raises a dynamic error on Saxon raises one on phoxtrot with the same error code.
 5. The existing tests of the four pipeline modules run on both processors (decided 2026-11-11: two surefire
    executions per module, each with exactly one processor on the class path via `classpathDependencyExcludes`; the
-   phoxtrot run excludes the tests that use Saxon classes and `SchematronSecureProcessingTest` (S36)); the existing
+   phoxtrot run excludes the tests that use Saxon classes); the existing
    pure tests run on both XPath bindings (P4b).
 6. D5 end to end: `SchematronSecureProcessingTest` (`ph-schematron-xslt`) passes on both processors with the same
    outcome.
@@ -510,12 +513,12 @@ a decision, and one item of S18; S20 without compilation), S21 to S25 from the v
 - **phoxtrot XPath binding is new code** (P4b), not an adapter. XQuery function modules
   (`XQueryAsXPathFunctionConverter`) have no phoxtrot counterpart; the phoxtrot binding takes `xsl:function` modules
   instead, a documented difference between the bindings.
-- **phoxtrot version:** v11 is developed against phoxtrot 0.2.0-SNAPSHOT (S27, S29, S33, S34) and released only
-  after phoxtrot 0.2.0. phoxtrot stays a snapshot until the streamability assessment is resolved. Until it is
-  deployed (not in Central snapshots on 2026-11-11), the branch builds only locally against the installed snapshot,
-  and its CI fails.
+- **phoxtrot version:** resolved 2026-11-14. v11 was developed against phoxtrot 0.2.0-SNAPSHOT (S27, S29, S33, S34)
+  and released only after phoxtrot 0.2.0. phoxtrot 0.2.0 is released (2026-11-14, on Maven Central), and
+  `phoxtrot.version` is `0.2.0`, so the branch no longer needs a locally installed snapshot.
 - **Threading and stack:** `THREAD_POOL` (D9) gives the 2 GB stack; `CALLING_THREAD` as option fails on the ISO
-  include step for long expressions unless the caller has a large stack. To be documented.
+  include step for long expressions unless the caller has a large stack. Documented on the wiki page
+  `XSLT-processors.md`.
 - **Speed:** the Peppol billing rules and large Peppol reports are still slower on phoxtrot (see "Validation
   speed"); the processor is announced with the measured numbers, not as a faster replacement.
 - **Memory:** 1.4 to 4.3 times the heap of the TinyTree for the input document; documented on the wiki page.
@@ -525,5 +528,4 @@ a decision, and one item of S18; S20 without compilation), S21 to S25 from the v
   `XQueryAsXPathFunctionConverter`) is read before the switch. The phoxtrot speed and memory figures above were
   measured against 12.10 and are measured again against 13.1. If Saxonica still recommends 12 at the v11 release,
   decide whether to release on 13.1 anyway.
-- **ph-commons version:** phoxtrot 0.2.0-SNAPSHOT and ph-schematron (since 05b41744 on the branch) both use
-  ph-commons 12.6.0.
+- **ph-commons version:** phoxtrot 0.2.0 and ph-schematron both use ph-commons 12.7.1 (`ph-commons-bom`).

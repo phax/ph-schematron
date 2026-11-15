@@ -18,6 +18,7 @@ package com.helger.schematron.pure.validation.xpath;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.nio.charset.StandardCharsets;
 
@@ -38,6 +39,7 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.saxon.SaxonTinyTreeHelper;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
+import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.xml.XMLHelper;
@@ -107,6 +109,16 @@ public final class PSXPathValidationHandlerSVRLTest
     return ret;
   }
 
+  @NonNull
+  private static ICommonsList <ActivePattern> _getAllActivePatterns (@NonNull final SchematronOutputType aSVRL)
+  {
+    final ICommonsList <ActivePattern> ret = new CommonsArrayList <> ();
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+      if (aObj instanceof final ActivePattern aAP)
+        ret.add (aAP);
+    return ret;
+  }
+
   @Test
   public void testLocationsAreIdenticalToXMLHelper () throws Exception
   {
@@ -154,5 +166,46 @@ public final class PSXPathValidationHandlerSVRLTest
     final SchematronOutputType aSVRL3 = aSch.applySchematronValidationToSVRL (aFacade, null);
     assertNotNull (aSVRL3);
     assertEquals (aExpected, _getAllLocations (aSVRL3));
+  }
+
+  @Test
+  public void testActivePatternRoleAndDocuments () throws Exception
+  {
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                        "  <iso:pattern id='p1' role='critical'>\n" +
+                        "    <iso:rule context='item'>\n" +
+                        "      <iso:assert test='false()'>fails</iso:assert>\n" +
+                        "    </iso:rule>\n" +
+                        "  </iso:pattern>\n" +
+                        "  <iso:pattern id='p2'>\n" +
+                        "    <iso:rule context='item'>\n" +
+                        "      <iso:assert test='true()'>never</iso:assert>\n" +
+                        "    </iso:rule>\n" +
+                        "  </iso:pattern>\n" +
+                        "</iso:schema>";
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (sSch).build ();
+    final Document aDoc = DOMReader.readXMLDOM ("<root><item/></root>");
+    assertNotNull (aDoc);
+
+    SchematronOutputType aSVRL = aSch.applySchematronValidationToSVRL (aDoc, "urn:test");
+    assertNotNull (aSVRL);
+    ICommonsList <ActivePattern> aPatterns = _getAllActivePatterns (aSVRL);
+    assertEquals (2, aPatterns.size ());
+    assertEquals ("p1", aPatterns.get (0).getId ());
+    assertEquals ("critical", aPatterns.get (0).getRole ());
+    assertEquals ("urn:test", aPatterns.get (0).getDocuments ());
+    assertEquals ("p2", aPatterns.get (1).getId ());
+    assertNull (aPatterns.get (1).getRole ());
+    assertEquals ("urn:test", aPatterns.get (1).getDocuments ());
+
+    // No base URI - no documents attribute
+    aSVRL = aSch.applySchematronValidationToSVRL (aDoc, null);
+    assertNotNull (aSVRL);
+    aPatterns = _getAllActivePatterns (aSVRL);
+    assertEquals (2, aPatterns.size ());
+    assertEquals ("critical", aPatterns.get (0).getRole ());
+    assertNull (aPatterns.get (0).getDocuments ());
+    assertNull (aPatterns.get (1).getDocuments ());
   }
 }

@@ -107,6 +107,12 @@ public final class PureXsltStylesheetGenerator
    */
   public static final String PATH_MODE = "phsch-path";
 
+  /**
+   * The XPath expression for the {@code documents} attribute of {@code svrl:active-pattern}: the URI
+   * of the validated document, or the empty string if it is unknown. Requires XPath&nbsp;2.0.
+   */
+  private static final String DOCUMENTS_SELECT = "string((document-uri(/), base-uri(/))[1])";
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PureXsltStylesheetGenerator.class);
 
   private PureXsltStylesheetGenerator ()
@@ -371,7 +377,8 @@ public final class PureXsltStylesheetGenerator
   private static void _appendRootTemplate (@NonNull final Element aStylesheet,
                                            @NonNull final PSSchema aSchema,
                                            @NonNull final ICommonsList <PSPattern> aActivePatterns,
-                                           @Nullable final String sResolvedPhase)
+                                           @Nullable final String sResolvedPhase,
+                                           @NonNull final EPureXsltVersion eVersion)
   {
     final Element aTemplate = _addXsltChild (aStylesheet, "template");
     aTemplate.setAttribute ("match", "/");
@@ -399,6 +406,18 @@ public final class PureXsltStylesheetGenerator
       final Element aActive = _addSvrlChild (aSchemaOutput, "active-pattern");
       if (StringHelper.isNotEmpty (aPattern.getID ()))
         aActive.setAttribute ("id", aPattern.getID ());
+      if (StringHelper.isNotEmpty (aPattern.getRole ()))
+        aActive.setAttribute ("role", _escapeAttrValue (aPattern.getRole ()));
+      // The URI of the validated document, like the ISO Schematron XSLT and SchXslt do. XSLT 1.0 has
+      // no function for it.
+      if (!eVersion.isLT (EPureXsltVersion.XSLT_2_0))
+      {
+        final Element aDocIf = _addXsltChild (aActive, "if");
+        aDocIf.setAttribute ("test", DOCUMENTS_SELECT);
+        final Element aDocAttr = _addXsltChild (aDocIf, "attribute");
+        aDocAttr.setAttribute ("name", "documents");
+        aDocAttr.setAttribute ("select", DOCUMENTS_SELECT);
+      }
 
       final Element aApply = _addXsltChild (aSchemaOutput, "apply-templates");
       aApply.setAttribute ("select", "/");
@@ -1127,7 +1146,7 @@ public final class PureXsltStylesheetGenerator
     }
 
     // Root template: emit <svrl:schematron-output> and walk patterns
-    _appendRootTemplate (aStylesheet, aSchema, aActivePatterns, sResolvedPhase);
+    _appendRootTemplate (aStylesheet, aSchema, aActivePatterns, sResolvedPhase, eVersion);
 
     // Per pattern: emit rule context templates + catch-all
     int nPatternIdx = 0;

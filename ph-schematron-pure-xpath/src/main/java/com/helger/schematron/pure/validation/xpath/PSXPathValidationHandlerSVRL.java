@@ -98,6 +98,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   private SchematronOutputType m_aSchematronOutput;
   private PSSchema m_aSchema;
   private MapBasedNamespaceContext m_aNSContext;
+  private String m_sBaseURI;
 
   /**
    * Constructor
@@ -197,6 +198,7 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
     m_aSchematronOutput = aSchematronOutput;
     m_aSchema = aSchema;
     m_aNSContext = m_aSchemaNSContext != null ? m_aSchemaNSContext : aSchema.getAsNamespaceContext ();
+    m_sBaseURI = sBaseURI;
     m_aElementPaths.clear ();
 
     for (final var aEntry : m_aNSContext.getPrefixToNamespaceURIMap ().entrySet ())
@@ -212,11 +214,14 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
   public void onPattern (@NonNull final PSPattern aPattern) throws SchematronValidationException
   {
     final ActivePattern aRetPattern = new ActivePattern ();
-    // TODO documents
+    // The URI of the validated document, like the ISO Schematron XSLT and SchXslt do
+    if (StringHelper.isNotEmpty (m_sBaseURI))
+      aRetPattern.setDocuments (m_sBaseURI);
     aRetPattern.setId (aPattern.getID ());
     if (aPattern.hasTitle ())
       aRetPattern.setName (_getTitleAsString (aPattern.getTitle ()));
-    // TODO role
+    if (StringHelper.isNotEmpty (aPattern.getRole ()))
+      aRetPattern.setRole (aPattern.getRole ());
     m_aSchematronOutput.addActivePatternOrActiveGroupAndFiredRule (aRetPattern);
   }
 
