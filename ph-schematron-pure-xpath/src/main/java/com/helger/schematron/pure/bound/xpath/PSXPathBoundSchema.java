@@ -36,8 +36,10 @@ import com.helger.base.timing.StopWatch;
 import com.helger.base.tostring.ToStringGenerator;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.collection.commons.ICommonsSet;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.model.IPSElement;
@@ -687,6 +689,9 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
       // Evaluate pattern variables
       _evaluateVariables (aBoundPattern.getVariables (), aDocXdm, aPattern, aVarStats);
 
+      // All nodes matched by a previous rule of this pattern
+      final ICommonsSet <XdmNode> aPatternMatchedXdmNodes = new CommonsHashSet <> ();
+
       // For all bound rules
       for (final PSXPathBoundRule aBoundRule : aBoundPattern.getAllBoundRules ())
       {
@@ -696,13 +701,13 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         final StopWatch aRuleSW = bMeasureTiming ? StopWatch.createdStarted () : null;
 
         // Find all nodes matching the rules
-        final ICommonsList <XdmNode> aRuleContextXdmNodes;
+        final ICommonsList <XdmNode> aSelectedXdmNodes;
         final StopWatch aContextSW = bMeasureTiming ? StopWatch.createdStarted () : null;
         try
         {
-          aRuleContextXdmNodes = XPathEvaluationHelper.evaluateAsXdmNodes (aBoundRule.getBoundRuleContext (),
-                                                                           aDocXdm,
-                                                                           m_aLetVars.getCurrentVariables ());
+          aSelectedXdmNodes = XPathEvaluationHelper.evaluateAsXdmNodes (aBoundRule.getBoundRuleContext (),
+                                                                        aDocXdm,
+                                                                        m_aLetVars.getCurrentVariables ());
         }
         catch (final SaxonApiException ex)
         {
@@ -716,8 +721,15 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
         if (aContextSW != null)
         {
           aContextSW.stop ();
-          aValidationHandler.onContextEvaluated (aRule, aContextSW.getNanos (), aRuleContextXdmNodes.size ());
+          aValidationHandler.onContextEvaluated (aRule, aContextSW.getNanos (), aSelectedXdmNodes.size ());
         }
+
+        // A node is only processed by the first rule of a pattern that matches it - like the XSLT
+        // based engines, where the rules of a pattern are templates in the same mode
+        final ICommonsList <XdmNode> aRuleContextXdmNodes = new CommonsArrayList <> (aSelectedXdmNodes.size ());
+        for (final XdmNode aSelectedXdmNode : aSelectedXdmNodes)
+          if (aPatternMatchedXdmNodes.add (aSelectedXdmNode))
+            aRuleContextXdmNodes.add (aSelectedXdmNode);
 
         // DOM nodes are only created on demand
         final MyNodeList aRuleContextDomNodes = new MyNodeList (aRuleContextXdmNodes);
