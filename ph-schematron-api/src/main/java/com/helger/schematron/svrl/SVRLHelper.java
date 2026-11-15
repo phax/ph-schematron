@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Node;
 
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.PresentForCodeCoverage;
@@ -31,8 +32,11 @@ import com.helger.cache.regex.RegExHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.level.IErrorLevel;
+import com.helger.schematron.svrl.jaxb.Dir;
+import com.helger.schematron.svrl.jaxb.Emph;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.Span;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 import com.helger.schematron.svrl.jaxb.Text;
 
@@ -54,6 +58,15 @@ public final class SVRLHelper
   private SVRLHelper ()
   {}
 
+  /**
+   * Get the plain text of an SVRL text element. The text of the nested <code>dir</code>,
+   * <code>emph</code> and <code>span</code> elements and of foreign elements is included, without
+   * the markup.
+   *
+   * @param aText
+   *        The SVRL text to use. May be <code>null</code>.
+   * @return <code>null</code> if the parameter is <code>null</code>, the plain text otherwise.
+   */
   @Nullable
   public static String getAsString (@Nullable final Text aText)
   {
@@ -62,7 +75,36 @@ public final class SVRLHelper
 
     final StringBuilder aSB = new StringBuilder ();
     for (final Object aObj : aText.getContent ())
-      aSB.append (aObj);
+    {
+      if (aObj instanceof final String sText)
+        aSB.append (sText);
+      else
+        if (aObj instanceof final Dir aDir)
+        {
+          if (aDir.getContent () != null)
+            aSB.append (aDir.getContent ());
+        }
+        else
+          if (aObj instanceof final Emph aEmph)
+          {
+            if (aEmph.getContent () != null)
+              aSB.append (aEmph.getContent ());
+          }
+          else
+            if (aObj instanceof final Span aSpan)
+            {
+              if (aSpan.getContent () != null)
+                aSB.append (aSpan.getContent ());
+            }
+            else
+              if (aObj instanceof final Node aNode)
+              {
+                // Foreign element
+                aSB.append (aNode.getTextContent ());
+              }
+              else
+                aSB.append (aObj);
+    }
     return aSB.toString ();
   }
 
