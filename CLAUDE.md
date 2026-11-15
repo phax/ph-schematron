@@ -6,12 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ph-schematron is a Java library for validating XML documents via ISO Schematron, SchXslt, or a pure-Java implementation. Published to Maven Central under `com.helger.schematron`.
 
-Parent POM: `com.helger:parent-pom:3.1.0` — many plugin defaults (compiler, surefire, javadoc, license, formatter if any) are inherited from there, not declared in this repo.
+Parent POM: `com.helger:parent-pom:3.2.0` — many plugin defaults (compiler, surefire, javadoc, license, formatter if any) are inherited from there, not declared in this repo.
 
 ## Modules
 
 Multi-module Maven build. Order matters (later modules depend on earlier ones), as in the root `pom.xml`:
 
+0. `ph-schematron-bom` — Bill of Materials for all published artifacts (managed with `${project.version}`); add every new published module there too.
 1. `ph-schematron-testfiles` — shared test resources (`.sch` / XML samples).
 2. `ph-schematron-api` — public API surface: `ISchematronResource`, base classes (incl. the XSLT base classes `AbstractSchematronXSLTBasedResource`, `SchematronXSLTValidator`), SVRL JAXB bindings, the XSLT processor interface `ISchematronXsltProcessor` and its registry.
 3. `ph-schematron-saxon` — the Saxon XSLT processor (`SaxonXsltProcessor`) and the other Saxon specific parts (transformer factory, DOM bridge, trace listener, s9api processor factory).

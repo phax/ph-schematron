@@ -81,32 +81,48 @@
     <ant.version>1.10.18</ant.version>
     <schxslt1.version>1.10.1</schxslt1.version>
     <schxslt2.version>1.11.3</schxslt2.version>
-    <phoxtrot.version>0.2.0-SNAPSHOT</phoxtrot.version>
+    <phoxtrot.version>0.2.0</phoxtrot.version>
   </properties>
   
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>com.helger.commons</groupId>
-        <artifactId>ph-commons-parent-pom</artifactId>
-        <version>12.6.0</version>
+        <artifactId>ph-commons-bom</artifactId>
+        <version>12.7.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.telemetry</groupId>
-        <artifactId>ph-telemetry-parent-pom</artifactId>
-        <version>1.1.1</version>
+        <artifactId>ph-telemetry-bom</artifactId>
+        <version>1.1.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.xsd</groupId>
-        <artifactId>ph-xsds-parent-pom</artifactId>
-        <version>4.1.1</version>
+        <artifactId>ph-xsds-bom</artifactId>
+        <version>4.1.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>com.helger.phoxtrot</groupId>
+        <artifactId>phoxtrot-bom</artifactId>
+        <version>${phoxtrot.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-bom</artifactId>
+        <version>4.0.9</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      
       <dependency>
         <groupId>net.sf.saxon</groupId>
         <artifactId>Saxon-HE</artifactId>
@@ -119,21 +135,11 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.helger.phoxtrot</groupId>
-        <artifactId>phoxtrot-xdm</artifactId>
-        <version>${phoxtrot.version}</version>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit4.version}</version>
       </dependency>
-      <dependency>
-        <groupId>com.helger.phoxtrot</groupId>
-        <artifactId>phoxtrot-xpath</artifactId>
-        <version>${phoxtrot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.helger.phoxtrot</groupId>
-        <artifactId>phoxtrot-xslt</artifactId>
-        <version>${phoxtrot.version}</version>
-      </dependency>
-
+      
       <dependency>
         <groupId>com.helger.schematron</groupId>
         <artifactId>ph-schematron-testfiles</artifactId>
@@ -226,6 +232,7 @@
   </build>
 
   <modules>
+    <module>ph-schematron-bom</module>
     <module>ph-schematron-testfiles</module>
     <module>ph-schematron-api</module>
     <module>ph-schematron-saxon</module>

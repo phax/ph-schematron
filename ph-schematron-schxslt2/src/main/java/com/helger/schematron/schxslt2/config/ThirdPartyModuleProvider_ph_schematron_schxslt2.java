@@ -40,7 +40,7 @@ public final class ThirdPartyModuleProvider_ph_schematron_schxslt2 implements IT
                                                                    .copyrightOwner ("David Maus")
                                                                    .license (ELicense.MIT)
                                                                    .version (new Version (1, 11, 2))
-                                                                   .copyrightOwner ("https://codeberg.org/SchXslt/schxslt2/")
+                                                                   .webSiteUrl ("https://codeberg.org/SchXslt/schxslt2/")
                                                                    .build ();
 
   @Nullable
