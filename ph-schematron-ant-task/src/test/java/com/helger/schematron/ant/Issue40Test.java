@@ -16,18 +16,24 @@
  */
 package com.helger.schematron.ant;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Test for issue #40: XML files with a DTD that is resolved via an Ant XML catalog.
+ *
+ * @author Philip Helger
+ */
 public final class Issue40Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue40Test.class);
-
   @Rule
   public final BuildFileRule m_aBuildRule = new BuildFileRule ();
 
@@ -35,20 +41,29 @@ public final class Issue40Test
   public void init ()
   {
     m_aBuildRule.configureProject ("src/test/resources/external/issues/40/build.xml");
+    // The basedir of the build file is relative to it, but Ant takes it relative to the working directory
+    m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/40"));
     m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
   }
 
   @Test
   public void testWithExternalDTD ()
   {
+    m_aBuildRule.executeTarget ("check");
+    assertTrue (m_aBuildRule.getLog ().contains ("test.xml' was validated against Schematron"));
+  }
+
+  @Test
+  public void testDTDNotInCatalog ()
+  {
     try
     {
-      // Do not redirect stdout etc.
-      m_aBuildRule.getProject ().executeTarget ("check");
+      m_aBuildRule.executeTarget ("check-unknown-dtd");
+      fail ();
     }
     catch (final BuildException ex)
     {
-      LOGGER.error ("Ooops", ex);
+      assertTrue (ex.getMessage (), ex.getMessage ().contains ("is not in the XML catalog"));
     }
   }
 }

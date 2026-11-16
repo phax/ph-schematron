@@ -23,4 +23,17 @@
       </xmlcatalog>
     </schematron>
   </target>
+  <!-- A DTD that is not in the catalog makes the file fail -->
+  <target name="check-unknown-dtd">
+    <schematron schematronFile="test.sch" 
+                expectSuccess="true"
+                schematronProcessingEngine="schematron">
+      <fileset dir=".">
+        <include name="test-unknown-dtd.xml" />
+      </fileset>
+      <xmlcatalog>
+        <dtd publicId="-//bla//DTD XML test//EN" location="test.dtd"/>
+      </xmlcatalog>
+    </schematron>
+  </target>
 </project>

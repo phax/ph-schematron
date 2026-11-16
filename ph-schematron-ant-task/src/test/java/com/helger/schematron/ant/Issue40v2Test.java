@@ -16,18 +16,22 @@
  */
 package com.helger.schematron.ant;
 
-import org.apache.tools.ant.BuildException;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
 import org.apache.tools.ant.BuildFileRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Test for issue #40: XML files with a DTD that is resolved via an Ant XML catalog.
+ *
+ * @author Philip Helger
+ */
 public final class Issue40v2Test
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (Issue40v2Test.class);
-
   @Rule
   public final BuildFileRule m_aBuildRule = new BuildFileRule ();
 
@@ -35,20 +39,15 @@ public final class Issue40v2Test
   public void init ()
   {
     m_aBuildRule.configureProject ("src/test/resources/external/issues/40v2/build.xml");
+    // The basedir of the build file is relative to it, but Ant takes it relative to the working directory
+    m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/40v2/xml"));
     m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
   }
 
   @Test
   public void testWithExternalDTD ()
   {
-    try
-    {
-      // Do not redirect stdout etc.
-      m_aBuildRule.getProject ().executeTarget ("check");
-    }
-    catch (final BuildException ex)
-    {
-      LOGGER.error ("Ooops", ex);
-    }
+    m_aBuildRule.executeTarget ("check");
+    assertTrue (m_aBuildRule.getLog ().contains ("test.xml' was validated against Schematron"));
   }
 }

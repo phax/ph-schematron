@@ -16,36 +16,48 @@
  */
 package com.helger.schematron.ant;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileRule;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
+/**
+ * Test for issue #40: a successful report with the flag "error" fails the validation.
+ *
+ * @author Philip Helger
+ */
 public final class Issue40v4Test
 {
+  @Rule
   public final BuildFileRule m_aBuildRule = new BuildFileRule ();
 
   @Before
   public void init ()
   {
     m_aBuildRule.configureProject ("src/test/resources/external/issues/40v4/build.xml");
-    m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener (false));
+    // The basedir of the build file is relative to it, but Ant takes it relative to the working directory
+    m_aBuildRule.getProject ().setBaseDir (new File ("src/test/resources/external/issues/40v4"));
+    m_aBuildRule.getProject ().addBuildListener (new LoggingBuildListener ());
   }
 
   @Test
-  public void testWithExternalDTD ()
+  public void testReportFails ()
   {
     try
     {
-      // Do not redirect stdout etc.
-      m_aBuildRule.getProject ().executeTarget ("check");
+      m_aBuildRule.executeTarget ("check");
       fail ();
     }
     catch (final BuildException ex)
     {
-      // Expected
+      // The successful report with flag "error" is expected
+      assertTrue (ex.getMessage (), ex.getMessage ().contains ("1 Schematron error"));
     }
   }
 }
