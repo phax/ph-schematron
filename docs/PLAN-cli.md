@@ -278,3 +278,8 @@ Step 2 is implemented: module `ph-schematron-cli` (package `com.helger.schematro
 
 Next: step 3 (Dockerfile, `phelger/schematron`).
 
+Step 3 is implemented: `ph-schematron-cli/Dockerfile` as in 4.5, plus a `.dockerignore` that sends only the shaded
+JAR as build context. Verified locally (image built, `validate` on Saxon and phoxtrot, `--user` for non-root output
+files). The image is not published yet; publishing is a manual release step (command on the wiki page
+`Command-line-client.md`).
+
