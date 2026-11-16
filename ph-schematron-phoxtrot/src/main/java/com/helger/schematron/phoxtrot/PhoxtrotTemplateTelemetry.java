@@ -66,6 +66,8 @@ public final class PhoxtrotTemplateTelemetry implements IXsltTraceListener
   {
     if (aName == null)
       return null;
+
+    // TODO phoxtrot >= 0.2.1 use aName.getClarkName()
     if (aName.namespaceUri ().isEmpty ())
       return aName.localName ();
     return "{" + aName.namespaceUri () + "}" + aName.localName ();
