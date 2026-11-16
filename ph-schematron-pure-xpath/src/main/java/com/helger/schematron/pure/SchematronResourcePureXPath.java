@@ -85,14 +85,11 @@ import net.sf.saxon.s9api.SaxonApiException;
 /**
  * Canonical name for the pure-Java XPath-driven Schematron engine, introduced in v10.0.0. This
  * class itself is not thread safe, but the underlying cache is thread safe. So once you have
- * configured this object fully (via the setters), it can be considered thread safe.<br>
+ * configured this object fully (via the builder), it can be considered thread safe.<br>
  * <b>Important:</b> This class can only handle XPath expressions but no XSLT functions in
  * Schematron asserts and reports! If your Schematrons use XSLT functionality you're better off
  * using the {@code com.helger.schematron.sch.SchematronResourceSCH} or
  * {@code com.helger.schematron.purexslt.SchematronResourcePureXslt} classes instead.
- * <p>
- * The pre-v10 name <code>SchematronResourcePure</code> is preserved as a deprecated
- * source-compatible subclass for callers that already use it.
  *
  * @author Philip Helger
  * @since 10.0.0
@@ -120,22 +117,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   private IPSBoundSchema m_aBoundSchema;
   // true once the bound schema was found to be valid
   private boolean m_bBoundSchemaValid;
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public SchematronResourcePureXPath (@NonNull final IReadableResource aResource)
-  {
-    super (aResource);
-  }
-
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public SchematronResourcePureXPath (@NonNull final IReadableResource aResource,
-                                      @Nullable final String sPhase,
-                                      @Nullable final IPSErrorHandler aErrorHandler)
-  {
-    super (aResource);
-    setPhase (sPhase);
-    setErrorHandler (aErrorHandler);
-  }
 
   /**
    * Builder-based constructor. Applies all configurable state from the supplied {@link Builder} to
@@ -170,51 +151,12 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Set the Schematron phase to be evaluated. Changing the phase will result in a newly bound
-   * schema!
-   *
-   * @param sPhase
-   *        The name of the phase to use. May be <code>null</code> which means all phases.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setPhase (@Nullable final String sPhase)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_sPhase = sPhase;
-    return this;
-  }
-
-  /**
    * @return The error handler to be used to bind the schema. May be <code>null</code>.
    */
   @Nullable
   public final IPSErrorHandler getErrorHandler ()
   {
     return m_aErrorHandler;
-  }
-
-  /**
-   * Set the error handler to be used during binding.
-   *
-   * @param aErrorHandler
-   *        The error handler. May be <code>null</code>.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setErrorHandler (@Nullable final IPSErrorHandler aErrorHandler)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aErrorHandler = aErrorHandler;
-    return this;
   }
 
   /**
@@ -228,26 +170,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   }
 
   /**
-   * Set the custom validation handler to be used during binding.
-   *
-   * @param aCustomValidationHandler
-   *        The validation handler. May be <code>null</code>.
-   * @return this
-   * @since 5.3.0
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setCustomValidationHandler (@Nullable final IPSValidationHandler aCustomValidationHandler)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aCustomValidationHandler = aCustomValidationHandler;
-    return this;
-  }
-
-  /**
    * @return The contained {@link IXPathConfig}. Never <code>null</code>.
    * @since 8.0.0
    */
@@ -255,28 +177,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   public final IXPathConfig getXPathConfig ()
   {
     return m_aXPathConfig;
-  }
-
-  /**
-   * Set the {@link XPathConfig} to be used in the XPath statements. This can only be set before the
-   * Schematron is bound. If it is already bound an exception is thrown to indicate the unnecessity
-   * of the call.
-   *
-   * @param aXPathConfig
-   *        The XPath config to set. May be <code>null</code>.
-   * @return this
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setXPathConfig (@NonNull final IXPathConfig aXPathConfig)
-  {
-    ValueEnforcer.notNull (aXPathConfig, "XPathConfig");
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    m_aXPathConfig = aXPathConfig;
-    return this;
   }
 
   /**
@@ -302,28 +202,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   public final boolean isCopyDomToSaxonTree ()
   {
     return m_bCopyDomToSaxonTree;
-  }
-
-  /**
-   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
-   * This can only be set before the Schematron is bound. If it is already bound an exception is
-   * thrown to indicate the unnecessity of the call.
-   *
-   * @param aEntityResolver
-   *        The entity resolver to set. May be <code>null</code>.
-   * @return this
-   * @since 4.1.1
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public SchematronResourcePureXPath setEntityResolver (@Nullable final EntityResolver aEntityResolver)
-  {
-    if (m_aBoundSchema != null)
-      throw new IllegalStateException ("Schematron was already bound and can therefore not be altered!");
-    internalSetEntityResolver (aEntityResolver);
-    return this;
   }
 
   @NonNull
@@ -870,188 +748,6 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   public static Builder builderFromSchema (@NonNull final PSSchema aSchematron)
   {
     return builderFromString (new PSWriter ().getXMLString (aSchematron), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from a Classpath Schematron rules
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron rules.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromClassPath (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourcePureXPath (new ClassPathResource (sSCHPath));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from a Classpath Schematron rules
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron rules.
-   * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.0.4
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromClassPath (@NonNull @Nonempty final String sSCHPath,
-                                                           @Nullable final ClassLoader aClassLoader)
-  {
-    return new SchematronResourcePureXPath (new ClassPathResource (sSCHPath, aClassLoader));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from file system Schematron rules
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron rules.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromFile (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourcePureXPath (new FileSystemResource (sSCHPath));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from file system Schematron rules
-   *
-   * @param aSCHFile
-   *        The file system path to the Schematron rules.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromFile (@NonNull final File aSCHFile)
-  {
-    return new SchematronResourcePureXPath (new FileSystemResource (aSCHFile));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided at a URL
-   *
-   * @param sSCHURL
-   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
-   * @return Never <code>null</code>.
-   * @throws MalformedURLException
-   *         In case an invalid URL is provided
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
-  {
-    return new SchematronResourcePureXPath (new URLResource (sSCHURL));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided at a URL
-   *
-   * @param aSCHURL
-   *        The URL to the Schematron rules. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromURL (@NonNull final URL aSCHURL)
-  {
-    return new SchematronResourcePureXPath (new URLResource (aSCHURL));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by an arbitrary
-   * {@link InputStream}.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
-   * @param aSchematronIS
-   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.5
-   * @deprecated since 10.0.0 — use {@link #builderFromInputStream(String, InputStream)} instead.
-   *             Will remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromInputStream (@NonNull @Nonempty final String sResourceID,
-                                                             @NonNull final InputStream aSchematronIS)
-  {
-    return new SchematronResourcePureXPath (new ReadableResourceInputStream (sResourceID, aSchematronIS));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by an arbitrary
-   * byte array.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param aSchematron
-   *        The byte array representing the Schematron. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromByteArray(byte[])} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromByteArray (@NonNull final byte [] aSchematron)
-  {
-    return new SchematronResourcePureXPath (new ReadableResourceByteArray (aSchematron));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by an arbitrary
-   * String.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param sSchematron
-   *        The String representing the Schematron. May not be <code>null</code> .
-   * @param aCharset
-   *        The charset to be used to convert the String to a byte array.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
-   *             for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromString (@NonNull final String sSchematron,
-                                                        @NonNull final Charset aCharset)
-  {
-    return fromByteArray (sSchematron.getBytes (aCharset));
-  }
-
-  /**
-   * Create a new {@link SchematronResourcePureXPath} from Schematron rules provided by a domain
-   * model.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param aSchematron
-   *        The Schematron model to be used. May not be <code>null</code> .
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromSchema(PSSchema)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourcePureXPath fromSchema (@NonNull final PSSchema aSchematron)
-  {
-    return fromString (new PSWriter ().getXMLString (aSchematron), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ);
   }
 
   // === Builder ===

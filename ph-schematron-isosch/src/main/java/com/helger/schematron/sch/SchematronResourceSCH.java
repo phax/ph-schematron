@@ -125,36 +125,10 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     return m_sPhase;
   }
 
-  /**
-   * @param sPhase
-   *        The Schematron phase to use, or <code>null</code> for the default phase.
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setPhase (@Nullable final String sPhase)
-  {
-    checkNotCompiledYet ();
-    m_sPhase = sPhase;
-  }
-
   @Nullable
   public final String getLanguageCode ()
   {
     return m_sLanguageCode;
-  }
-
-  /**
-   * @param sLanguageCode
-   *        The diagnostics language code, or <code>null</code> for the default language.
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setLanguageCode (@Nullable final String sLanguageCode)
-  {
-    checkNotCompiledYet ();
-    m_sLanguageCode = sLanguageCode;
   }
 
   /**
@@ -165,24 +139,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public final boolean isForceCacheResult ()
   {
     return m_bForceCacheResult;
-  }
-
-  /**
-   * Force the caching of results. This only applies when Schematron to XSLT conversion is
-   * performed.
-   *
-   * @param bForceCacheResult
-   *        <code>true</code> to force result caching, <code>false</code> to cache only if no
-   *        parameters are present or all parameter values can be part of the cache key.
-   * @since 5.2.1
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setForceCacheResult (final boolean bForceCacheResult)
-  {
-    checkNotCompiledYet ();
-    m_bForceCacheResult = bForceCacheResult;
   }
 
   /**
@@ -456,175 +412,6 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
   public static SchematronResourceSCH compileUncached (@NonNull final IReadableResource aSCHResource) throws SchematronException
   {
     return builder (aSCHResource).buildUncached ();
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
-   *        empty.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromClassPath (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath));
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
-   *        empty.
-   * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.0.4
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromClassPath (@NonNull @Nonempty final String sSCHPath,
-                                                     @Nullable final ClassLoader aClassLoader)
-  {
-    return new SchematronResourceSCH (new ClassPathResource (sSCHPath, aClassLoader));
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be <code>null</code> nor empty.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromFile (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (sSCHPath));
-  }
-
-  /**
-   * Create a new Schematron resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromFile (@NonNull final File aSCHFile)
-  {
-    return new SchematronResourceSCH (new FileSystemResource (aSCHFile));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided at a URL
-   *
-   * @param sSCHURL
-   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
-   * @return Never <code>null</code>.
-   * @throws MalformedURLException
-   *         In case an invalid URL is provided
-   * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
-  {
-    return new SchematronResourceSCH (new URLResource (sSCHURL));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided at a URL
-   *
-   * @param aSCHURL
-   *        The URL to the Schematron rules. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromURL (@NonNull final URL aSCHURL)
-  {
-    return new SchematronResourceSCH (new URLResource (aSCHURL));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided by an arbitrary
-   * {@link InputStream}.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
-   * @param aSchematronIS
-   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromInputStream(String, InputStream)} instead.
-   *             Will remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromInputStream (@NonNull @Nonempty final String sResourceID,
-                                                       @NonNull final InputStream aSchematronIS)
-  {
-    return new SchematronResourceSCH (new ReadableResourceInputStream (sResourceID, aSchematronIS));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided by an arbitrary byte
-   * array.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param aSchematron
-   *        The byte array representing the Schematron. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromByteArray(byte[])} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromByteArray (@NonNull final byte [] aSchematron)
-  {
-    return new SchematronResourceSCH (new ReadableResourceByteArray (aSchematron));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSCH} from Schematron rules provided by an arbitrary
-   * String.<br>
-   * <b>Important:</b> in this case, no include resolution will be performed!!
-   *
-   * @param sSchematron
-   *        The String representing the Schematron. May not be <code>null</code> .
-   * @param aCharset
-   *        The charset to be used to convert the String to a byte array.
-   * @return Never <code>null</code>.
-   * @since 6.2.6
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
-   *             for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSCH fromString (@NonNull final String sSchematron, @NonNull final Charset aCharset)
-  {
-    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
   // === Builder ===

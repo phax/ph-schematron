@@ -37,7 +37,7 @@ public final class Issue044Test
 {
   public static void validateAndProduceSVRL (@NonNull final File aSchematron, final File aXML) throws Exception
   {
-    // SchematronResourcePure fails!
+    // SchematronResourcePureXPath fails!
     ISchematronResource aSCH = SchematronResourcePureXPath.builderFromFile (aSchematron).build ();
     // Parsing Schematron works!
     aSCH = SchematronResourceSCH.builderFromFile (aSchematron).build ();

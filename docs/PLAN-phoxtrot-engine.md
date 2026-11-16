@@ -500,7 +500,7 @@ a decision, and one item of S18; S20 without compilation), S21 to S25 from the v
 - **Breaking change for every user:** the pipeline modules no longer bring Saxon, so an upgrade without adding
   `ph-schematron-saxon` fails at run time. The registry error must name the module, and `Migrations.md` must lead
   with it.
-- **Java 21 baseline:** users on Java 17 stay on 10.x. Decide whether 10.x gets maintenance releases.
+- **Java 21 baseline:** users on Java 17 stay on 10.x. Resolved: 10.x is maintained on the branch `v10`.
 - **Semantic differences phoxtrot vs. Saxon** (lazy variable evaluation, early exit, error behaviour of rule tests),
   now for four pipelines instead of one: the SVRL equality test (test 3) is the gate. **Saxon is the authoritative
   source** (decided 2026-11-11): every difference is filed as a phoxtrot suggestion; a test may only normalise or

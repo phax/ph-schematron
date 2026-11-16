@@ -72,24 +72,10 @@ public class SchematronResourceSchXslt_XSLT2 extends
   private SchematronSchXslt_XSLT2Cache m_aCache;
 
   /**
-   * Constructor
-   *
-   * @param aSCHResource
-   *        The Schematron resource. May not be <code>null</code>.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public SchematronResourceSchXslt_XSLT2 (@NonNull final IReadableResource aSCHResource)
-  {
-    super (aSCHResource);
-    // Avoid creating the SVRL Metadata, because it is not schema compliant
-    parameters ().put ("schxslt.compile.metadata", "false");
-  }
-
-  /**
    * Builder-based constructor. Applies all configurable state from the supplied {@link Builder} to
-   * the newly-constructed resource. Invoked by {@link Builder#build()}. The
-   * {@code schxslt.compile.metadata=false} constructor default is preserved when no explicit
-   * parameters were configured on the builder.
+   * the newly-constructed resource. Invoked by {@link Builder#build()}. The default
+   * {@code schxslt.compile.metadata=false} is used when no explicit parameters were configured on
+   * the builder.
    *
    * @param aBuilder
    *        The configured builder. May not be <code>null</code>.
@@ -110,8 +96,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
            aBuilder.m_aTelemetry,
            aBuilder.m_aSOVDeterminator,
            aBuilder.m_bValidateSVRL);
-    // Preserve the constructor-set schxslt.compile.metadata=false unless the Builder caller
-    // explicitly configured parameters.
+    // Avoid creating the SVRL Metadata, because it is not schema compliant - unless the Builder
+    // caller explicitly configured parameters.
     if (aBuilder.m_aParameters.isEmpty ())
       parameters ().put ("schxslt.compile.metadata", "false");
     else
@@ -136,36 +122,10 @@ public class SchematronResourceSchXslt_XSLT2 extends
     return m_sPhase;
   }
 
-  /**
-   * @param sPhase
-   *        The Schematron phase to use, or <code>null</code> for the default phase.
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setPhase (@Nullable final String sPhase)
-  {
-    checkNotCompiledYet ();
-    m_sPhase = sPhase;
-  }
-
   @Nullable
   public final String getLanguageCode ()
   {
     return m_sLanguageCode;
-  }
-
-  /**
-   * @param sLanguageCode
-   *        The diagnostics language code, or <code>null</code> for the default language.
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setLanguageCode (@Nullable final String sLanguageCode)
-  {
-    checkNotCompiledYet ();
-    m_sLanguageCode = sLanguageCode;
   }
 
   /**
@@ -175,23 +135,6 @@ public class SchematronResourceSchXslt_XSLT2 extends
   public final boolean isForceCacheResult ()
   {
     return m_bForceCacheResult;
-  }
-
-  /**
-   * Force the caching of results. This only applies when Schematron to XSLT conversion is
-   * performed.
-   *
-   * @param bForceCacheResult
-   *        <code>true</code> to force result caching, <code>false</code> to cache only if no
-   *        parameters are present or all parameter values can be part of the cache key.
-   * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  public final void setForceCacheResult (final boolean bForceCacheResult)
-  {
-    checkNotCompiledYet ();
-    m_bForceCacheResult = bForceCacheResult;
   }
 
   /**
@@ -466,173 +409,6 @@ public class SchematronResourceSchXslt_XSLT2 extends
   public static SchematronResourceSchXslt_XSLT2 compileUncached (@NonNull final IReadableResource aSCHResource) throws SchematronException
   {
     return builder (aSCHResource).buildUncached ();
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
-   *        empty.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new ClassPathResource (sSCHPath));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
-   *
-   * @param sSCHPath
-   *        The classpath relative path to the Schematron file. May neither be <code>null</code> nor
-   *        empty.
-   * @param aClassLoader
-   *        The class loader to be used to retrieve the classpath resource. May be
-   *        <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.0.4
-   * @deprecated since 10.0.0 — use {@link #builderFromClassPath(String, ClassLoader)} instead. Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromClassPath (@NonNull @Nonempty final String sSCHPath,
-                                                               @Nullable final ClassLoader aClassLoader)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new ClassPathResource (sSCHPath, aClassLoader));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
-   *
-   * @param sSCHPath
-   *        The file system path to the Schematron file. May neither be <code>null</code> nor empty.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromFile (@NonNull @Nonempty final String sSCHPath)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (sSCHPath));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} resource.
-   *
-   * @param aSCHFile
-   *        The Schematron file. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @deprecated since 10.0.0 — use {@link #builderFromFile(File)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromFile (@NonNull final File aSCHFile)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new FileSystemResource (aSCHFile));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules provided at a URL
-   *
-   * @param sSCHURL
-   *        The URL to the Schematron rules. May neither be <code>null</code> nor empty.
-   * @return Never <code>null</code>.
-   * @throws MalformedURLException
-   *         In case an invalid URL is provided
-   * @since 6.2.5
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(String)} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromURL (@NonNull @Nonempty final String sSCHURL) throws MalformedURLException
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new URLResource (sSCHURL));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules provided at a URL
-   *
-   * @param aSCHURL
-   *        The URL to the Schematron rules. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.5
-   * @deprecated since 10.0.0 — use {@link #builderFromURL(URL)} instead. Will remain for backward
-   *             compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromURL (@NonNull final URL aSCHURL)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new URLResource (aSCHURL));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules provided by an
-   * arbitrary {@link InputStream}.<br>
-   *
-   * @param sResourceID
-   *        Resource ID to be used as the cache key. Should neither be <code>null</code> nor empty.
-   * @param aSchematronIS
-   *        The {@link InputStream} to read the Schematron rules from. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.5
-   * @deprecated since 10.0.0 — use {@link #builderFromInputStream(String, InputStream)} instead.
-   *             Will remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromInputStream (@NonNull @Nonempty final String sResourceID,
-                                                                 @NonNull final InputStream aSchematronIS)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new ReadableResourceInputStream (sResourceID, aSchematronIS));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules provided by an
-   * arbitrary byte array.<br>
-   *
-   * @param aSchematron
-   *        The byte array representing the Schematron. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   * @since 6.2.5
-   * @deprecated since 10.0.0 — use {@link #builderFromByteArray(byte[])} instead. Will remain for
-   *             backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromByteArray (@NonNull final byte [] aSchematron)
-  {
-    return new SchematronResourceSchXslt_XSLT2 (new ReadableResourceByteArray (aSchematron));
-  }
-
-  /**
-   * Create a new {@link SchematronResourceSchXslt_XSLT2} from Schematron rules provided by an
-   * arbitrary String.<br>
-   *
-   * @param sSchematron
-   *        The String representing the Schematron. May not be <code>null</code> .
-   * @param aCharset
-   *        The charset to be used to convert the String to a byte array.
-   * @return Never <code>null</code>.
-   * @since 6.2.5
-   * @deprecated since 10.0.0 — use {@link #builderFromString(String, Charset)} instead. Will remain
-   *             for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public static SchematronResourceSchXslt_XSLT2 fromString (@NonNull final String sSchematron,
-                                                            @NonNull final Charset aCharset)
-  {
-    return fromByteArray (sSchematron.getBytes (aCharset));
   }
 
   // === Builder ===
@@ -938,8 +714,8 @@ public class SchematronResourceSchXslt_XSLT2 extends
 
     /**
      * @return A new {@link SchematronResourceSchXslt_XSLT2} configured with the values of this
-     *         builder. Never <code>null</code>. The {@code schxslt.compile.metadata=false}
-     *         constructor default is preserved when no explicit parameters were configured.
+     *         builder. Never <code>null</code>. The default {@code schxslt.compile.metadata=false} is
+     *         used when no explicit parameters were configured.
      */
     @NonNull
     public SchematronResourceSchXslt_XSLT2 build ()

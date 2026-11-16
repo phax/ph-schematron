@@ -105,7 +105,7 @@ import net.sf.saxon.trans.XPathException;
 
 /**
  * A Schematron resource that runs a pure-Java pipeline on top of Saxon s9api. Unlike
- * {@code SchematronResourcePure}, this class is intended to support Schematron schemas that contain
+ * {@code SchematronResourcePureXPath}, this class is intended to support Schematron schemas that contain
  * XSLT extensions (such as {@code <xsl:function>} or {@code <xsl:include>}) by compiling and
  * executing the schema through Saxon's XSLT engine natively - without going through the external
  * ISO Schematron XSLT preprocessing chain that {@code SchematronResourceSCH} uses.

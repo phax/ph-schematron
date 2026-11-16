@@ -51,15 +51,6 @@ public interface ISchematronResource extends IHasID <String>
   boolean isUseCache ();
 
   /**
-   * Enable or disable caching.
-   *
-   * @param bUseCache
-   *        <code>true</code> to use the cache, <code>false</code> to not use it.
-   * @since 5.0.2 in this interface
-   */
-  void setUseCache (boolean bUseCache);
-
-  /**
    * This is currently only supported for the "pure Schematron".
    *
    * @return <code>true</code> if 'old' schematron NS is tolerated, <code>false</code> if not.
@@ -67,15 +58,6 @@ public interface ISchematronResource extends IHasID <String>
    * @since 5.4.1
    */
   boolean isLenient ();
-
-  /**
-   * This is currently only supported for the "pure Schematron". Allow use of 'old' schematron NS.
-   *
-   * @param bLenient
-   *        <code>true</code> if 'old' schematron NS is tolerated, <code>false</code> if not.
-   * @since 5.4.1
-   */
-  void setLenient (boolean bLenient);
 
   /**
    * @return The XML entity resolver to be used to read the Schematron or XML to be validated. May

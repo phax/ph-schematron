@@ -283,44 +283,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aCustomErrorListener;
   }
 
-  /**
-   * @param aCustomErrorListener
-   *        The error listener to use, or <code>null</code> for the engine default.
-   * @return this
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).errorListener(...).build()</code>). Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setErrorListener (@Nullable final ErrorListener aCustomErrorListener)
-  {
-    checkNotCompiledYet ();
-    m_aCustomErrorListener = aCustomErrorListener;
-    return thisAsT ();
-  }
-
   @Nullable
   public final URIResolver getURIResolver ()
   {
     return m_aCustomURIResolver;
-  }
-
-  /**
-   * @param aCustomURIResolver
-   *        The URI resolver to use, or <code>null</code> for the engine default.
-   * @return this
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).uriResolver(...).build()</code>). Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setURIResolver (@Nullable final URIResolver aCustomURIResolver)
-  {
-    checkNotCompiledYet ();
-    m_aCustomURIResolver = aCustomURIResolver;
-    return thisAsT ();
   }
 
   /**
@@ -411,25 +377,6 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   protected abstract String getTelemetryEngineID ();
 
   /**
-   * Set the XML entity resolver to be used when reading the XML to be validated.
-   *
-   * @param aEntityResolver
-   *        The entity resolver to set. May be <code>null</code>.
-   * @return this
-   * @since 4.2.3
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).entityResolver(...).build()</code>). Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setEntityResolver (@Nullable final EntityResolver aEntityResolver)
-  {
-    internalSetEntityResolver (aEntityResolver);
-    return thisAsT ();
-  }
-
-  /**
    * @return The XSLT provider passed in the constructor. May be <code>null</code>.
    */
   @Nullable
@@ -444,43 +391,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     return m_aSOVDeterminator;
   }
 
-  /**
-   * @param aSOVDeterminator
-   *        The validity determinator to use. May not be <code>null</code>.
-   * @return this
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).outputValidityDeterminator(...).build()</code>).
-   *             Will remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setOutputValidityDeterminator (@NonNull final ISchematronOutputValidityDeterminator aSOVDeterminator)
-  {
-    ValueEnforcer.notNull (aSOVDeterminator, "SchematronOutputValidityDeterminator");
-    m_aSOVDeterminator = aSOVDeterminator;
-    return thisAsT ();
-  }
-
   public final boolean isValidateSVRL ()
   {
     return m_bValidateSVRL;
-  }
-
-  /**
-   * @param bValidateSVRL
-   *        <code>true</code> to validate the produced SVRL against its XSD, <code>false</code> to
-   *        skip validation.
-   * @return this
-   * @deprecated since 10.0.0 — configure via the engine-specific resource Builder instead (e.g.
-   *             <code>SchematronResourceSCH.builder(res).validateSVRL(false).build()</code>). Will
-   *             remain for backward compatibility.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = false)
-  @NonNull
-  public final IMPLTYPE setValidateSVRL (final boolean bValidateSVRL)
-  {
-    m_bValidateSVRL = bValidateSVRL;
-    return thisAsT ();
   }
 
   public final boolean isValidSchematron ()

@@ -46,10 +46,10 @@ import com.helger.telemetry.TelemetryMetrics;
 
 /**
  * Implementation of {@link IPSValidationHandler} that emits runtime telemetry - counters, spans and
- * a duration histogram - via ph-telemetry. Install on a {@code SchematronResourcePure} by calling
- * {@code setTelemetry(true)} (which composes this with any caller-supplied custom handler). All
- * span / metric / attribute names come from the shared {@link CSchematronTelemetry} vocabulary so
- * every engine stays in lock-step.
+ * a duration histogram - via ph-telemetry. Install on a {@code SchematronResourcePureXPath} by
+ * calling {@code telemetry(true)} on its builder (which composes this with any caller-supplied
+ * custom handler). All span / metric / attribute names come from the shared
+ * {@link CSchematronTelemetry} vocabulary so every engine stays in lock-step.
  * <p>
  * Independently controllable modes:
  * <ul>
