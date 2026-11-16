@@ -288,16 +288,13 @@ public final class PureXsltStylesheetGenerator
     if (aChildren != null)
       for (final IMicroNode aChild : aChildren)
       {
-        if (aChild instanceof final IMicroElement aChildElem)
-          _appendMicroAsDom (aDomElem, aChildElem);
-        else
-          if (aChild instanceof final IMicroText aText)
-            aDomElem.appendChild (aDoc.createTextNode (aText.getData ().toString ()));
-          else
-            if (aChild instanceof final IMicroCDATA aCDATA)
-              aDomElem.appendChild (aDoc.createCDATASection (aCDATA.getData ().toString ()));
-            else
-              LOGGER.warn ("Skipping unsupported foreign node " + aChild.getClass ().getSimpleName ());
+        switch (aChild)
+        {
+          case final IMicroElement aChildElem -> _appendMicroAsDom (aDomElem, aChildElem);
+          case final IMicroText aText -> aDomElem.appendChild (aDoc.createTextNode (aText.getData ().toString ()));
+          case final IMicroCDATA aCDATA -> aDomElem.appendChild (aDoc.createCDATASection (aCDATA.getData ().toString ()));
+          default -> LOGGER.warn ("Skipping unsupported foreign node " + aChild.getClass ().getSimpleName ());
+        }
       }
   }
 
@@ -457,14 +454,15 @@ public final class PureXsltStylesheetGenerator
    */
   private static void _appendRichTextSpan (@NonNull final Element aParent, @NonNull final Object aSpan)
   {
-    if (aSpan instanceof final PSEmph aEmph)
+    switch (aSpan)
     {
-      final Element aOut = _addSvrlChild (aParent, "emph");
-      for (final Object aPiece : aEmph.getAllContentElements ())
-        _appendRichTextPiece (aOut, aPiece);
-    }
-    else
-      if (aSpan instanceof final PSDir aDir)
+      case final PSEmph aEmph ->
+      {
+        final Element aOut = _addSvrlChild (aParent, "emph");
+        for (final Object aPiece : aEmph.getAllContentElements ())
+          _appendRichTextPiece (aOut, aPiece);
+      }
+      case final PSDir aDir ->
       {
         final Element aOut = _addSvrlChild (aParent, "dir");
         if (aDir.getValue () != null)
@@ -472,15 +470,19 @@ public final class PureXsltStylesheetGenerator
         for (final Object aPiece : aDir.getAllContentElements ())
           _appendRichTextPiece (aOut, aPiece);
       }
-      else
-        if (aSpan instanceof final PSSpan aSp)
-        {
-          final Element aOut = _addSvrlChild (aParent, "span");
-          if (StringHelper.isNotEmpty (aSp.getClazz ()))
-            aOut.setAttribute ("class", _escapeAttrValue (aSp.getClazz ()));
-          for (final Object aPiece : aSp.getAllContentElements ())
-            _appendRichTextPiece (aOut, aPiece);
-        }
+      case final PSSpan aSp ->
+      {
+        final Element aOut = _addSvrlChild (aParent, "span");
+        if (StringHelper.isNotEmpty (aSp.getClazz ()))
+          aOut.setAttribute ("class", _escapeAttrValue (aSp.getClazz ()));
+        for (final Object aPiece : aSp.getAllContentElements ())
+          _appendRichTextPiece (aOut, aPiece);
+      }
+      default ->
+      {
+        // Ignore
+      }
+    }
   }
 
   /**
@@ -491,22 +493,17 @@ public final class PureXsltStylesheetGenerator
    */
   private static void _appendRichTextPiece (@NonNull final Element aParent, @NonNull final Object aPiece)
   {
-    if (aPiece instanceof final String sText)
-      aParent.appendChild (aParent.getOwnerDocument ().createTextNode (sText));
-    else
-      if (aPiece instanceof final PSValueOf aValueOf)
-        _appendValueOf (aParent, aValueOf);
-      else
-        if (aPiece instanceof final PSName aName)
-          _appendName (aParent, aName);
-        else
-          if (aPiece instanceof PSEmph || aPiece instanceof PSDir || aPiece instanceof PSSpan)
-            _appendRichTextSpan (aParent, aPiece);
-          else
-            if (aPiece instanceof final IMicroElement aForeign)
-              _appendMicroAsDom (aParent, aForeign);
-            else
-              LOGGER.warn ("Skipping unsupported rich-text content of type " + aPiece.getClass ().getSimpleName ());
+    switch (aPiece)
+    {
+      case final String sText -> aParent.appendChild (aParent.getOwnerDocument ().createTextNode (sText));
+      case final PSValueOf aValueOf -> _appendValueOf (aParent, aValueOf);
+      case final PSName aName -> _appendName (aParent, aName);
+      case final PSEmph aEmph -> _appendRichTextSpan (aParent, aEmph);
+      case final PSDir aDir -> _appendRichTextSpan (aParent, aDir);
+      case final PSSpan aSp -> _appendRichTextSpan (aParent, aSp);
+      case final IMicroElement aForeign -> _appendMicroAsDom (aParent, aForeign);
+      default -> LOGGER.warn ("Skipping unsupported rich-text content of type " + aPiece.getClass ().getSimpleName ());
+    }
   }
 
   /**

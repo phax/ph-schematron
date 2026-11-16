@@ -76,34 +76,18 @@ public final class SVRLHelper
     final StringBuilder aSB = new StringBuilder ();
     for (final Object aObj : aText.getContent ())
     {
-      if (aObj instanceof final String sText)
-        aSB.append (sText);
-      else
-        if (aObj instanceof final Dir aDir)
-        {
-          if (aDir.getContent () != null)
-            aSB.append (aDir.getContent ());
-        }
-        else
-          if (aObj instanceof final Emph aEmph)
-          {
-            if (aEmph.getContent () != null)
-              aSB.append (aEmph.getContent ());
-          }
-          else
-            if (aObj instanceof final Span aSpan)
-            {
-              if (aSpan.getContent () != null)
-                aSB.append (aSpan.getContent ());
-            }
-            else
-              if (aObj instanceof final Node aNode)
-              {
-                // Foreign element
-                aSB.append (aNode.getTextContent ());
-              }
-              else
-                aSB.append (aObj);
+      final String sPart = switch (aObj)
+      {
+        case final String sText -> sText;
+        case final Dir aDir -> aDir.getContent ();
+        case final Emph aEmph -> aEmph.getContent ();
+        case final Span aSpan -> aSpan.getContent ();
+        // Foreign element
+        case final Node aNode -> aNode.getTextContent ();
+        case null, default -> String.valueOf (aObj);
+      };
+      if (sPart != null)
+        aSB.append (sPart);
     }
     return aSB.toString ();
   }

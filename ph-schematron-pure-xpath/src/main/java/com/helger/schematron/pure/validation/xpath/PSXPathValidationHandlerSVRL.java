@@ -290,10 +290,10 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
       for (final PSXPathBoundElement aBoundElement : aBoundContentElements)
       {
         final Object aContent = aBoundElement.getElement ();
-        if (aContent instanceof final String s)
-          aSB.append (s);
-        else
-          if (aContent instanceof final PSName aName)
+        switch (aContent)
+        {
+          case final String sText -> aSB.append (sText);
+          case final PSName aName ->
           {
             if (aName.hasPath ())
             {
@@ -319,35 +319,28 @@ public class PSXPathValidationHandlerSVRL implements IPSValidationHandler
               aSB.append (aSourceNode.getNodeName ());
             }
           }
-          else
-            if (aContent instanceof final PSValueOf aValueOf)
+          case final PSValueOf aValueOf ->
+          {
+            try
             {
-              try
-              {
-                final String sValue = _evaluateAsString (aBoundElement, aSourceNode);
-                if (sValue != null)
-                  aSB.append (sValue);
-              }
-              catch (final SaxonApiException ex)
-              {
-                _onError (aValueOf,
-                          "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
-                          ex);
-                // Append the path so that something is present in the output
-                aSB.append (aValueOf.getSelect ());
-              }
+              final String sValue = _evaluateAsString (aBoundElement, aSourceNode);
+              if (sValue != null)
+                aSB.append (sValue);
             }
-            else
-              if (aContent instanceof final PSEmph aEmph)
-                aSB.append (aEmph.getAsText ());
-              else
-                if (aContent instanceof final PSDir aDir)
-                  aSB.append (aDir.getAsText ());
-                else
-                  if (aContent instanceof final PSSpan aSpan)
-                    aSB.append (aSpan.getAsText ());
-                  else
-                    throw new SchematronValidationException ("Unsupported assert/report content element: " + aContent);
+            catch (final SaxonApiException ex)
+            {
+              _onError (aValueOf,
+                        "Failed to evaluate XPath expression to a string: '" + aBoundElement.getExpression () + "'",
+                        ex);
+              // Append the path so that something is present in the output
+              aSB.append (aValueOf.getSelect ());
+            }
+          }
+          case final PSEmph aEmph -> aSB.append (aEmph.getAsText ());
+          case final PSDir aDir -> aSB.append (aDir.getAsText ());
+          case final PSSpan aSpan -> aSB.append (aSpan.getAsText ());
+          default -> throw new SchematronValidationException ("Unsupported assert/report content element: " + aContent);
+        }
       }
     }
 

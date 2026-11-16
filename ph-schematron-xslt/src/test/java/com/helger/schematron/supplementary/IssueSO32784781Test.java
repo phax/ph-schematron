@@ -37,23 +37,24 @@ public final class IssueSO32784781Test
   @Test
   public void testBasic ()
   {
-    final String sSCH = "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\">\r\n" +
-                        "  <ns prefix=\"m\" uri=\"http://www.ociweb.com/movies\"/>\r\n" +
-                        "  <pattern name=\"all\">\r\n" +
-                        "    <rule context=\"m:actor\">\r\n" +
-                        "      <report test=\"@role=preceding-sibling::m:actor/@role\"\r\n" +
-                        "          diagnostics=\"duplicateActorRole\">\r\n" +
-                        "        Duplicate role!\r\n" +
-                        "      </report>\r\n" +
-                        "    </rule>\r\n" +
-                        "  </pattern>\r\n" +
-                        "  <diagnostics>\r\n" +
-                        "    <diagnostic id=\"duplicateActorRole\">\r\n" +
-                        "      More than one actor plays the role<value-of select=\"@role\"/>.\r\n" +
-                        "      A duplicate is named<value-of select=\"@name\"/>.\r\n" +
-                        "    </diagnostic>\r\n" +
-                        "  </diagnostics>\r\n" +
-                        "</schema>";
+    final String sSCH = """
+        <schema xmlns="http://purl.oclc.org/dsdl/schematron">
+          <ns prefix="m" uri="http://www.ociweb.com/movies"/>
+          <pattern name="all">
+            <rule context="m:actor">
+              <report test="@role=preceding-sibling::m:actor/@role"
+                  diagnostics="duplicateActorRole">
+                Duplicate role!
+              </report>
+            </rule>
+          </pattern>
+          <diagnostics>
+            <diagnostic id="duplicateActorRole">
+              More than one actor plays the role<value-of select="@role"/>.
+              A duplicate is named<value-of select="@name"/>.
+            </diagnostic>
+          </diagnostics>
+        </schema>""";
     final ISchematronResource isr = new SchematronResourceSCH (new ReadableResourceString (sSCH,
                                                                                            StandardCharsets.UTF_8));
     assertTrue (isr.isValidSchematron ());

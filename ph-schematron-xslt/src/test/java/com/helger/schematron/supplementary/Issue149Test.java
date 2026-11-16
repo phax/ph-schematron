@@ -36,12 +36,14 @@ public final class Issue149Test
   {
     final String xml = "<xml id='1'/>";
 
-    final String sch = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                       "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\n" +
-                       "  <pattern>\n" +
-                       "    <rule context=\"xml\"><assert test=\"exists(@id)\">No id</assert></rule>\n" +
-                       "  </pattern>\n" +
-                       "</schema>\n";
+    final String sch = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
+          <pattern>
+            <rule context="xml"><assert test="exists(@id)">No id</assert></rule>
+          </pattern>
+        </schema>
+        """;
 
     final SchematronResourceSCH schResource = SchematronResourceSCH.builderFromString (sch, StandardCharsets.UTF_8)
                                                                    .build ();

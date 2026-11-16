@@ -38,29 +38,30 @@ import com.helger.schematron.exchange.PSReader;
  */
 public final class PSForeignElementVisitorTest
 {
-  private static final String SCHEMA = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                       "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'\n" +
-                                       "            xmlns:xsl='http://www.w3.org/1999/XSL/Transform'\n" +
-                                       "            xmlns:foo='urn:foo'>\n" +
-                                       "  <iso:title>Title <iso:dir><foo:ext/></iso:dir></iso:title>\n" +
-                                       "  <xsl:function name='local'/>\n" +
-                                       "  <iso:p>Intro <foo:ext/></iso:p>\n" +
-                                       "  <iso:phase id='ph1'>\n" +
-                                       "    <foo:ext/>\n" +
-                                       "    <iso:active pattern='pat1'><foo:ext/></iso:active>\n" +
-                                       "  </iso:phase>\n" +
-                                       "  <iso:pattern id='pat1'>\n" +
-                                       "    <foo:ext/>\n" +
-                                       "    <iso:rule context='/root'>\n" +
-                                       "      <xsl:variable name='v' select='1'/>\n" +
-                                       "      <iso:assert test='true()' diagnostics='d1'>Text <foo:ext/> and <iso:emph>emphasized <foo:ext/></iso:emph></iso:assert>\n" +
-                                       "    </iso:rule>\n" +
-                                       "  </iso:pattern>\n" +
-                                       "  <iso:diagnostics>\n" +
-                                       "    <foo:ext/>\n" +
-                                       "    <iso:diagnostic id='d1'>Diagnostic <foo:ext/></iso:diagnostic>\n" +
-                                       "  </iso:diagnostics>\n" +
-                                       "</iso:schema>";
+  private static final String SCHEMA = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'
+                  xmlns:xsl='http://www.w3.org/1999/XSL/Transform'
+                  xmlns:foo='urn:foo'>
+        <iso:title>Title <iso:dir><foo:ext/></iso:dir></iso:title>
+        <xsl:function name='local'/>
+        <iso:p>Intro <foo:ext/></iso:p>
+        <iso:phase id='ph1'>
+          <foo:ext/>
+          <iso:active pattern='pat1'><foo:ext/></iso:active>
+        </iso:phase>
+        <iso:pattern id='pat1'>
+          <foo:ext/>
+          <iso:rule context='/root'>
+            <xsl:variable name='v' select='1'/>
+            <iso:assert test='true()' diagnostics='d1'>Text <foo:ext/> and <iso:emph>emphasized <foo:ext/></iso:emph></iso:assert>
+          </iso:rule>
+        </iso:pattern>
+        <iso:diagnostics>
+          <foo:ext/>
+          <iso:diagnostic id='d1'>Diagnostic <foo:ext/></iso:diagnostic>
+        </iso:diagnostics>
+      </iso:schema>""";
 
   /**
    * @param sSchema
@@ -107,14 +108,15 @@ public final class PSForeignElementVisitorTest
   @Test
   public void testNoForeignElements () throws Exception
   {
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <iso:pattern>\n" +
-                           "    <iso:rule context='/root'>\n" +
-                           "      <iso:assert test='true()'>Text</iso:assert>\n" +
-                           "    </iso:rule>\n" +
-                           "  </iso:pattern>\n" +
-                           "</iso:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='/root'>
+              <iso:assert test='true()'>Text</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
     assertTrue (_getAllForeignElements (sSchema).isEmpty ());
   }
 }

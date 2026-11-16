@@ -283,28 +283,24 @@ public class PSPreprocessor
     ret.setLinkable (aAssertReport.getLinkableClone ());
     for (final Object aContent : aAssertReport.getAllContentElements ())
     {
-      if (aContent instanceof final String sValue)
-        ret.addText (sValue);
-      else
-        if (aContent instanceof final PSName aName)
-          ret.addName (aName.getClone ());
-        else
-          if (aContent instanceof final PSValueOf aValueOf)
-          {
-            final PSValueOf aNewValueOf = aValueOf.getClone ();
-            aNewValueOf.setSelect (m_aQueryBinding.getWithParamTextsReplaced (aNewValueOf.getSelect (),
-                                                                              aParamValueMap));
-            ret.addValueOf (aNewValueOf);
-          }
-          else
-            if (aContent instanceof final PSEmph aEmph)
-              ret.addEmph (aEmph.getClone ());
-            else
-              if (aContent instanceof final PSDir aDir)
-                ret.addDir (aDir.getClone ());
-              else
-                if (aContent instanceof final PSSpan aSpan)
-                  ret.addSpan (aSpan.getClone ());
+      switch (aContent)
+      {
+        case final String sValue -> ret.addText (sValue);
+        case final PSName aName -> ret.addName (aName.getClone ());
+        case final PSValueOf aValueOf ->
+        {
+          final PSValueOf aNewValueOf = aValueOf.getClone ();
+          aNewValueOf.setSelect (m_aQueryBinding.getWithParamTextsReplaced (aNewValueOf.getSelect (), aParamValueMap));
+          ret.addValueOf (aNewValueOf);
+        }
+        case final PSEmph aEmph -> ret.addEmph (aEmph.getClone ());
+        case final PSDir aDir -> ret.addDir (aDir.getClone ());
+        case final PSSpan aSpan -> ret.addSpan (aSpan.getClone ());
+        default ->
+        {
+          // Ignore
+        }
+      }
     }
     ret.addForeignElements (aAssertReport.getAllForeignElements ());
     ret.addForeignAttributes (aAssertReport.getAllForeignAttributes ());

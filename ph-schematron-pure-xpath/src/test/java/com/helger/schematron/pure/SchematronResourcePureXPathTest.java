@@ -99,24 +99,25 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testFromByteArray ()
   {
-    final String sTest = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n" +
-                         "<iso:schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" \n" +
-                         "         xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" \n" +
-                         "         xmlns:sch=\"http://www.ascc.net/xml/schematron\"\n" +
-                         "         queryBinding='xpath2'\n" +
-                         "         schemaVersion=\"ISO19757-3\">\n" +
-                         "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n" +
-                         "  <iso:ns prefix=\"dp\" uri=\"http://www.dpawson.co.uk/ns#\" />\n" +
-                         " <iso:pattern >\n" +
-                         "    <iso:title>A very simple pattern with a title</iso:title>\n" +
-                         "    <iso:rule context=\"chapter\">\n" +
-                         "      <iso:assert test=\"title\">Chapter should have a title</iso:assert>\n" +
-                         "      <iso:report test=\"count(para)\">\n" +
-                         "      <iso:value-of select=\"count(para)\"/> paragraphs</iso:report>\n" +
-                         "    </iso:rule>\n" +
-                         "  </iso:pattern>\n" +
-                         "\n" +
-                         "</iso:schema>";
+    final String sTest = """
+        <?xml version="1.0" encoding="iso-8859-1"?>
+        <iso:schema xmlns="http://purl.oclc.org/dsdl/schematron"\s
+                 xmlns:iso="http://purl.oclc.org/dsdl/schematron"\s
+                 xmlns:sch="http://www.ascc.net/xml/schematron"
+                 queryBinding='xpath2'
+                 schemaVersion="ISO19757-3">
+          <iso:title>Test ISO schematron file. Introduction mode</iso:title>
+          <iso:ns prefix="dp" uri="http://www.dpawson.co.uk/ns#" />
+         <iso:pattern >
+            <iso:title>A very simple pattern with a title</iso:title>
+            <iso:rule context="chapter">
+              <iso:assert test="title">Chapter should have a title</iso:assert>
+              <iso:report test="count(para)">
+              <iso:value-of select="count(para)"/> paragraphs</iso:report>
+            </iso:rule>
+          </iso:pattern>
+
+        </iso:schema>""";
     assertTrue (SchematronResourcePureXPath.builderFromByteArray (sTest.getBytes (StandardCharsets.UTF_8))
                                            .build ()
                                            .isValidSchematron ());
@@ -180,14 +181,15 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testXPathVersionPicksFunctions () throws Exception
   {
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <iso:pattern>\n" +
-                           "    <iso:rule context='/root'>\n" +
-                           "      <iso:assert test=\"head(('first','second')) = 'first'\">head() must return 'first'</iso:assert>\n" +
-                           "    </iso:rule>\n" +
-                           "  </iso:pattern>\n" +
-                           "</iso:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='/root'>
+              <iso:assert test="head(('first','second')) = 'first'">head() must return 'first'</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
 
     final Document aDoc = DOMReader.readXMLDOM ("<?xml version='1.0'?><root/>");
 
@@ -229,14 +231,15 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testSaxonTinyTreeFastPath () throws Exception
   {
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <iso:pattern>\n" +
-                           "    <iso:rule context='/root'>\n" +
-                           "      <iso:assert test='count(item) = 3'>three items expected</iso:assert>\n" +
-                           "    </iso:rule>\n" +
-                           "  </iso:pattern>\n" +
-                           "</iso:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='/root'>
+              <iso:assert test='count(item) = 3'>three items expected</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
 
     final byte [] aXmlBytes = "<root><item/><item/><item/></root>".getBytes (StandardCharsets.UTF_8);
 
@@ -292,21 +295,23 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testFastPathHardenedAgainstXXE ()
   {
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <iso:pattern>\n" +
-                           "    <iso:rule context='/root'>\n" +
-                           "      <iso:assert test='true()'>ok</iso:assert>\n" +
-                           "    </iso:rule>\n" +
-                           "  </iso:pattern>\n" +
-                           "</iso:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='/root'>
+              <iso:assert test='true()'>ok</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
 
     // Hostile XML: an external-entity reference that would, if resolved, fetch /etc/passwd.
-    final String sHostileXml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                               "<!DOCTYPE root [\n" +
-                               "  <!ENTITY xxe SYSTEM \"file:///etc/passwd\">\n" +
-                               "]>\n" +
-                               "<root>&xxe;</root>";
+    final String sHostileXml = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <!DOCTYPE root [
+          <!ENTITY xxe SYSTEM "file:///etc/passwd">
+        ]>
+        <root>&xxe;</root>""";
 
     final SchematronResourcePureXPath aSCH = SchematronResourcePureXPath.builderFromString (sSchema,
                                                                                             StandardCharsets.UTF_8)
@@ -615,23 +620,24 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testResolveFunctXAreDistinctValuesQueryFunctions () throws Exception
   {
-    final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
-                         "<iso:schema xmlns='http://purl.oclc.org/dsdl/schematron' \n" +
-                         "         xmlns:iso='http://purl.oclc.org/dsdl/schematron' \n" +
-                         "         xmlns:sch='http://www.ascc.net/xml/schematron'\n" +
-                         "         queryBinding='xslt2'\n" +
-                         "         schemaVersion='ISO19757-3'>\n" +
-                         "  <iso:title>Test ISO schematron file. Introduction mode</iso:title>\n" +
-                         "  <iso:ns prefix='dp' uri='http://www.dpawson.co.uk/ns#' />\n" +
-                         "  <iso:ns prefix='fn' uri='http://www.w3.org/2005/xpath-functions' />\n" +
-                         "  <iso:ns prefix='functx' uri='http://www.functx.com' />\n" +
-                         "  <iso:pattern >\n" +
-                         "    <iso:title>A very simple pattern with a title</iso:title>\n" +
-                         "    <iso:rule context='chapter'>\n" +
-                         "      <iso:assert test='functx:are-distinct-values(para)'>Should have distinct values</iso:assert>\n" +
-                         "    </iso:rule>\n" +
-                         "  </iso:pattern>\n" +
-                         "</iso:schema>";
+    final String sTest = """
+        <?xml version='1.0' encoding='iso-8859-1'?>
+        <iso:schema xmlns='http://purl.oclc.org/dsdl/schematron'\s
+                 xmlns:iso='http://purl.oclc.org/dsdl/schematron'\s
+                 xmlns:sch='http://www.ascc.net/xml/schematron'
+                 queryBinding='xslt2'
+                 schemaVersion='ISO19757-3'>
+          <iso:title>Test ISO schematron file. Introduction mode</iso:title>
+          <iso:ns prefix='dp' uri='http://www.dpawson.co.uk/ns#' />
+          <iso:ns prefix='fn' uri='http://www.w3.org/2005/xpath-functions' />
+          <iso:ns prefix='functx' uri='http://www.functx.com' />
+          <iso:pattern >
+            <iso:title>A very simple pattern with a title</iso:title>
+            <iso:rule context='chapter'>
+              <iso:assert test='functx:are-distinct-values(para)'>Should have distinct values</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
 
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addAllExtensionFunctions (new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ)))
                                                                .build ();
@@ -707,18 +713,19 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testFunctXAreDistinctValuesWithXSD () throws Exception
   {
-    final String sTest = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
-                         "<schema xmlns='http://purl.oclc.org/dsdl/schematron'>\n" +
-                         "  <ns prefix=\"xs\" uri=\"http://www.w3.org/2001/XMLSchema\"/>\n" +
-                         "  <ns prefix='fn' uri='http://www.w3.org/2005/xpath-functions' />\n" +
-                         "  <ns prefix='functx' uri='http://www.functx.com' />\n" +
-                         "  <pattern name='toto'>\n" +
-                         "    <title>A very simple pattern with a title</title>\n" +
-                         "    <rule context='chapter'>\n" +
-                         "      <assert test='fn:count(fn:distinct-values(para)) = fn:count(para)'>Should have distinct values</assert>\n" +
-                         "      </rule>\n" +
-                         "  </pattern>\n" +
-                         "</schema>";
+    final String sTest = """
+        <?xml version='1.0' encoding='iso-8859-1'?>
+        <schema xmlns='http://purl.oclc.org/dsdl/schematron'>
+          <ns prefix="xs" uri="http://www.w3.org/2001/XMLSchema"/>
+          <ns prefix='fn' uri='http://www.w3.org/2005/xpath-functions' />
+          <ns prefix='functx' uri='http://www.functx.com' />
+          <pattern name='toto'>
+            <title>A very simple pattern with a title</title>
+            <rule context='chapter'>
+              <assert test='fn:count(fn:distinct-values(para)) = fn:count(para)'>Should have distinct values</assert>
+              </rule>
+          </pattern>
+        </schema>""";
 
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addAllExtensionFunctions (new XQueryAsXPathFunctionConverter ().loadXQuery (ClassPathResource.getInputStream (FILE_XQ)))
                                                                .build ();
@@ -750,16 +757,17 @@ public final class SchematronResourcePureXPathTest
   {
     // The same expressions are evaluated for every item, with different rule variable values and an
     // external variable that does not change
-    final String sTest = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                         "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                         "  <iso:let name='count' value='count(//item)'/>\n" +
-                         "  <iso:pattern>\n" +
-                         "    <iso:rule context='item'>\n" +
-                         "      <iso:let name='v' value='number(.)'/>\n" +
-                         "      <iso:assert test='$v &lt; $limit'><iso:value-of select='$v'/> of <iso:value-of select='$count'/> is too large</iso:assert>\n" +
-                         "    </iso:rule>\n" +
-                         "  </iso:pattern>\n" +
-                         "</iso:schema>";
+    final String sTest = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:let name='count' value='count(//item)'/>
+          <iso:pattern>
+            <iso:rule context='item'>
+              <iso:let name='v' value='number(.)'/>
+              <iso:assert test='$v &lt; $limit'><iso:value-of select='$v'/> of <iso:value-of select='$count'/> is too large</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
     final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addExternalVariable (new QName ("limit"),
                                                                                      new XdmAtomicValue (3))
                                                                .build ();
@@ -780,14 +788,15 @@ public final class SchematronResourcePureXPathTest
   public void testFailingDocumentIsLoadedAgain () throws Exception
   {
     // The same failing expression evaluated for multiple nodes must report the same error each time
-    final String sTest = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                         "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                         "  <iso:pattern>\n" +
-                         "    <iso:rule context='item'>\n" +
-                         "      <iso:assert test=\"doc('file:/does/not/exist.xml')\">doc</iso:assert>\n" +
-                         "    </iso:rule>\n" +
-                         "  </iso:pattern>\n" +
-                         "</iso:schema>";
+    final String sTest = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='item'>
+              <iso:assert test="doc('file:/does/not/exist.xml')">doc</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
     final Document aTestDoc = DOMReader.readXMLDOM ("<root><item/><item/><item/></root>");
     final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromString (sTest)
                                                                 .build ()
@@ -802,14 +811,15 @@ public final class SchematronResourcePureXPathTest
   @Test
   public void testSchematronValidityRepeated () throws Exception
   {
-    final String sTest = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                         "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                         "  <iso:pattern>\n" +
-                         "    <iso:rule context='item'>\n" +
-                         "      <iso:assert test='@id'>id missing</iso:assert>\n" +
-                         "    </iso:rule>\n" +
-                         "  </iso:pattern>\n" +
-                         "</iso:schema>";
+    final String sTest = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='item'>
+              <iso:assert test='@id'>id missing</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
     final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (sTest).build ();
     final Document aValid = DOMReader.readXMLDOM ("<root><item id='1'/></root>");
     final Document aInvalid = DOMReader.readXMLDOM ("<root><item/></root>");

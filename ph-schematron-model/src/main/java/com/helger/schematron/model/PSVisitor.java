@@ -65,67 +65,46 @@ public final class PSVisitor
                                        @NonNull final Object aObject,
                                        @NonNull final IPSVisitor aVisitor)
   {
-    if (aObject instanceof final String sText)
-      return aVisitor.onTextContent (aParent, sText);
-    if (aObject instanceof final IMicroElement aForeignElement)
-      return aVisitor.onForeignElement (aParent, aForeignElement);
-    if (aObject instanceof final PSInclude aInclude)
-      return aVisitor.onInclude (aParent, aInclude);
-    if (aObject instanceof final PSExtends aExtends)
-      return aVisitor.onExtends (aParent, aExtends);
-    if (aObject instanceof final PSNS aNs)
-      return aVisitor.onNs (aParent, aNs);
-    if (aObject instanceof final PSParam aParam)
-      return aVisitor.onParam (aParent, aParam);
-    if (aObject instanceof final PSLet aLet)
-      return aVisitor.onLet (aParent, aLet);
-    if (aObject instanceof final PSName aName)
-      return aVisitor.onName (aParent, aName);
-    if (aObject instanceof final PSValueOf aValueOf)
-      return aVisitor.onValueOf (aParent, aValueOf);
-    return null;
+    return switch (aObject)
+    {
+      case final String sText -> aVisitor.onTextContent (aParent, sText);
+      case final IMicroElement aForeignElement -> aVisitor.onForeignElement (aParent, aForeignElement);
+      case final PSInclude aInclude -> aVisitor.onInclude (aParent, aInclude);
+      case final PSExtends aExtends -> aVisitor.onExtends (aParent, aExtends);
+      case final PSNS aNs -> aVisitor.onNs (aParent, aNs);
+      case final PSParam aParam -> aVisitor.onParam (aParent, aParam);
+      case final PSLet aLet -> aVisitor.onLet (aParent, aLet);
+      case final PSName aName -> aVisitor.onName (aParent, aName);
+      case final PSValueOf aValueOf -> aVisitor.onValueOf (aParent, aValueOf);
+      default -> null;
+    };
   }
 
   @NonNull
   private static EContinue _onStart (@NonNull final Object aObject, @NonNull final IPSVisitor aVisitor)
   {
-    if (aObject instanceof final PSSchema aSchema)
-      return aVisitor.onSchemaStart (aSchema);
-    if (aObject instanceof final PSLibrary aLibrary)
-      return aVisitor.onLibraryStart (aLibrary);
-    if (aObject instanceof final PSTitle aTitle)
-      return aVisitor.onTitleStart (aTitle);
-    if (aObject instanceof final PSP aP)
-      return aVisitor.onPStart (aP);
-    if (aObject instanceof final PSPhase aPhase)
-      return aVisitor.onPhaseStart (aPhase);
-    if (aObject instanceof final PSActive aActive)
-      return aVisitor.onActiveStart (aActive);
-    if (aObject instanceof final PSRules aRules)
-      return aVisitor.onRulesStart (aRules);
-    if (aObject instanceof final PSPattern aPattern)
-      return aVisitor.onPatternStart (aPattern);
-    if (aObject instanceof final PSGroup aGroup)
-      return aVisitor.onGroupStart (aGroup);
-    if (aObject instanceof final PSRule aRule)
-      return aVisitor.onRuleStart (aRule);
-    if (aObject instanceof final PSAssertReport aAssertReport)
-      return aVisitor.onAssertReportStart (aAssertReport);
-    if (aObject instanceof final PSDiagnostics aDiagnostics)
-      return aVisitor.onDiagnosticsStart (aDiagnostics);
-    if (aObject instanceof final PSDiagnostic aDiagnostic)
-      return aVisitor.onDiagnosticStart (aDiagnostic);
-    if (aObject instanceof final PSProperties aProperties)
-      return aVisitor.onPropertiesStart (aProperties);
-    if (aObject instanceof final PSProperty aProperty)
-      return aVisitor.onPropertyStart (aProperty);
-    if (aObject instanceof final PSDir aDir)
-      return aVisitor.onDirStart (aDir);
-    if (aObject instanceof final PSEmph aEmph)
-      return aVisitor.onEmphStart (aEmph);
-    if (aObject instanceof final PSSpan aSpan)
-      return aVisitor.onSpanStart (aSpan);
-    throw new IllegalStateException ("Unsupported Schematron object to visit: " + aObject);
+    return switch (aObject)
+    {
+      case final PSSchema aSchema -> aVisitor.onSchemaStart (aSchema);
+      case final PSLibrary aLibrary -> aVisitor.onLibraryStart (aLibrary);
+      case final PSTitle aTitle -> aVisitor.onTitleStart (aTitle);
+      case final PSP aP -> aVisitor.onPStart (aP);
+      case final PSPhase aPhase -> aVisitor.onPhaseStart (aPhase);
+      case final PSActive aActive -> aVisitor.onActiveStart (aActive);
+      case final PSRules aRules -> aVisitor.onRulesStart (aRules);
+      case final PSPattern aPattern -> aVisitor.onPatternStart (aPattern);
+      case final PSGroup aGroup -> aVisitor.onGroupStart (aGroup);
+      case final PSRule aRule -> aVisitor.onRuleStart (aRule);
+      case final PSAssertReport aAssertReport -> aVisitor.onAssertReportStart (aAssertReport);
+      case final PSDiagnostics aDiagnostics -> aVisitor.onDiagnosticsStart (aDiagnostics);
+      case final PSDiagnostic aDiagnostic -> aVisitor.onDiagnosticStart (aDiagnostic);
+      case final PSProperties aProperties -> aVisitor.onPropertiesStart (aProperties);
+      case final PSProperty aProperty -> aVisitor.onPropertyStart (aProperty);
+      case final PSDir aDir -> aVisitor.onDirStart (aDir);
+      case final PSEmph aEmph -> aVisitor.onEmphStart (aEmph);
+      case final PSSpan aSpan -> aVisitor.onSpanStart (aSpan);
+      default -> throw new IllegalStateException ("Unsupported Schematron object to visit: " + aObject);
+    };
   }
 
   @NonNull
@@ -133,29 +112,30 @@ public final class PSVisitor
   private static ICommonsList <Object> _getAllChildren (@NonNull final IPSElement aElement)
   {
     final ICommonsList <Object> ret = new CommonsArrayList <> ();
-    if (aElement instanceof final PSSchema aSchema)
+    switch (aElement)
     {
-      ret.addAll (aSchema.getAllForeignElements ());
-      ret.addAll (aSchema.getAllIncludes ());
-      ret.addAll (aSchema.getAllExtends ());
-      if (aSchema.hasTitle ())
-        ret.add (aSchema.getTitle ());
-      ret.addAll (aSchema.getAllNSs ());
-      ret.addAll (aSchema.getAllStartPs ());
-      ret.addAll (aSchema.getAllParams ());
-      ret.addAll (aSchema.getAllLets ());
-      ret.addAll (aSchema.getAllPhases ());
-      ret.addAll (aSchema.getAllAbstractRulesContainers ());
-      ret.addAll (aSchema.getAllPatterns ());
-      ret.addAll (aSchema.getAllGroups ());
-      ret.addAll (aSchema.getAllEndPs ());
-      if (aSchema.hasDiagnostics ())
-        ret.add (aSchema.getDiagnostics ());
-      if (aSchema.hasProperties ())
-        ret.add (aSchema.getProperties ());
-    }
-    else
-      if (aElement instanceof final PSLibrary aLibrary)
+      case final PSSchema aSchema ->
+      {
+        ret.addAll (aSchema.getAllForeignElements ());
+        ret.addAll (aSchema.getAllIncludes ());
+        ret.addAll (aSchema.getAllExtends ());
+        if (aSchema.hasTitle ())
+          ret.add (aSchema.getTitle ());
+        ret.addAll (aSchema.getAllNSs ());
+        ret.addAll (aSchema.getAllStartPs ());
+        ret.addAll (aSchema.getAllParams ());
+        ret.addAll (aSchema.getAllLets ());
+        ret.addAll (aSchema.getAllPhases ());
+        ret.addAll (aSchema.getAllAbstractRulesContainers ());
+        ret.addAll (aSchema.getAllPatterns ());
+        ret.addAll (aSchema.getAllGroups ());
+        ret.addAll (aSchema.getAllEndPs ());
+        if (aSchema.hasDiagnostics ())
+          ret.add (aSchema.getDiagnostics ());
+        if (aSchema.hasProperties ())
+          ret.add (aSchema.getProperties ());
+      }
+      case final PSLibrary aLibrary ->
       {
         // Foreign elements of a library are not retained in the model
         ret.addAll (aLibrary.getAllIncludes ());
@@ -174,110 +154,83 @@ public final class PSVisitor
         if (aLibrary.hasProperties ())
           ret.add (aLibrary.getProperties ());
       }
-      else
-        if (aElement instanceof final PSPhase aPhase)
-        {
-          ret.addAll (aPhase.getAllForeignElements ());
-          ret.addAll (aPhase.getAllIncludes ());
-          // p, let and active in document order
-          ret.addAll (aPhase.getAllContentElements ());
-        }
-        else
-          if (aElement instanceof final PSRules aRules)
-          {
-            if (aRules.hasTitle ())
-              ret.add (aRules.getTitle ());
-            ret.addAll (aRules.getAllPs ());
-            ret.addAll (aRules.getAllAbstractRules ());
-          }
-          else
-            if (aElement instanceof final AbstractPSPatternLike aPatternLike)
-            {
-              // Patterns and groups share the content model
-              ret.addAll (aPatternLike.getAllForeignElements ());
-              ret.addAll (aPatternLike.getAllIncludes ());
-              if (aPatternLike.hasTitle ())
-                ret.add (aPatternLike.getTitle ());
-              // p, let, rule and param in document order
-              ret.addAll (aPatternLike.getAllContentElements ());
-            }
-            else
-              if (aElement instanceof final PSRule aRule)
-              {
-                ret.addAll (aRule.getAllForeignElements ());
-                ret.addAll (aRule.getAllIncludes ());
-                ret.addAll (aRule.getAllLets ());
-                // assert, report and extends in document order
-                ret.addAll (aRule.getAllContentElements ());
-              }
-              else
-                if (aElement instanceof final PSDiagnostics aDiagnostics)
-                {
-                  ret.addAll (aDiagnostics.getAllForeignElements ());
-                  ret.addAll (aDiagnostics.getAllIncludes ());
-                  ret.addAll (aDiagnostics.getAllDiagnostics ());
-                }
-                else
-                  if (aElement instanceof final PSProperties aProperties)
-                    ret.addAll (aProperties.getAllProperties ());
-                  else
-                    if (aElement instanceof final IPSHasMixedContent aMixedContent)
-                    {
-                      // Texts and child elements including foreign elements in document order
-                      ret.addAll (aMixedContent.getAllContentElements ());
-                    }
-                    else
-                      if (aElement instanceof final PSDir aDir)
-                        ret.addAll (aDir.getAllContentElements ());
-                      else
-                        if (aElement instanceof final PSEmph aEmph)
-                          ret.addAll (aEmph.getAllContentElements ());
-                        else
-                          if (aElement instanceof final PSSpan aSpan)
-                            ret.addAll (aSpan.getAllContentElements ());
+      case final PSPhase aPhase ->
+      {
+        ret.addAll (aPhase.getAllForeignElements ());
+        ret.addAll (aPhase.getAllIncludes ());
+        // p, let and active in document order
+        ret.addAll (aPhase.getAllContentElements ());
+      }
+      case final PSRules aRules ->
+      {
+        if (aRules.hasTitle ())
+          ret.add (aRules.getTitle ());
+        ret.addAll (aRules.getAllPs ());
+        ret.addAll (aRules.getAllAbstractRules ());
+      }
+      case final AbstractPSPatternLike aPatternLike ->
+      {
+        // Patterns and groups share the content model
+        ret.addAll (aPatternLike.getAllForeignElements ());
+        ret.addAll (aPatternLike.getAllIncludes ());
+        if (aPatternLike.hasTitle ())
+          ret.add (aPatternLike.getTitle ());
+        // p, let, rule and param in document order
+        ret.addAll (aPatternLike.getAllContentElements ());
+      }
+      case final PSRule aRule ->
+      {
+        ret.addAll (aRule.getAllForeignElements ());
+        ret.addAll (aRule.getAllIncludes ());
+        ret.addAll (aRule.getAllLets ());
+        // assert, report and extends in document order
+        ret.addAll (aRule.getAllContentElements ());
+      }
+      case final PSDiagnostics aDiagnostics ->
+      {
+        ret.addAll (aDiagnostics.getAllForeignElements ());
+        ret.addAll (aDiagnostics.getAllIncludes ());
+        ret.addAll (aDiagnostics.getAllDiagnostics ());
+      }
+      case final PSProperties aProperties -> ret.addAll (aProperties.getAllProperties ());
+      // Texts and child elements including foreign elements in document order
+      case final IPSHasMixedContent aMixedContent -> ret.addAll (aMixedContent.getAllContentElements ());
+      case final PSDir aDir -> ret.addAll (aDir.getAllContentElements ());
+      case final PSEmph aEmph -> ret.addAll (aEmph.getAllContentElements ());
+      case final PSSpan aSpan -> ret.addAll (aSpan.getAllContentElements ());
+      default ->
+      {
+        // No children
+      }
+    }
     return ret;
   }
 
   @NonNull
   private static EContinue _onEnd (@NonNull final IPSElement aElement, @NonNull final IPSVisitor aVisitor)
   {
-    if (aElement instanceof final PSSchema aSchema)
-      return aVisitor.onSchemaEnd (aSchema);
-    if (aElement instanceof final PSLibrary aLibrary)
-      return aVisitor.onLibraryEnd (aLibrary);
-    if (aElement instanceof final PSTitle aTitle)
-      return aVisitor.onTitleEnd (aTitle);
-    if (aElement instanceof final PSP aP)
-      return aVisitor.onPEnd (aP);
-    if (aElement instanceof final PSPhase aPhase)
-      return aVisitor.onPhaseEnd (aPhase);
-    if (aElement instanceof final PSActive aActive)
-      return aVisitor.onActiveEnd (aActive);
-    if (aElement instanceof final PSRules aRules)
-      return aVisitor.onRulesEnd (aRules);
-    if (aElement instanceof final PSPattern aPattern)
-      return aVisitor.onPatternEnd (aPattern);
-    if (aElement instanceof final PSGroup aGroup)
-      return aVisitor.onGroupEnd (aGroup);
-    if (aElement instanceof final PSRule aRule)
-      return aVisitor.onRuleEnd (aRule);
-    if (aElement instanceof final PSAssertReport aAssertReport)
-      return aVisitor.onAssertReportEnd (aAssertReport);
-    if (aElement instanceof final PSDiagnostics aDiagnostics)
-      return aVisitor.onDiagnosticsEnd (aDiagnostics);
-    if (aElement instanceof final PSDiagnostic aDiagnostic)
-      return aVisitor.onDiagnosticEnd (aDiagnostic);
-    if (aElement instanceof final PSProperties aProperties)
-      return aVisitor.onPropertiesEnd (aProperties);
-    if (aElement instanceof final PSProperty aProperty)
-      return aVisitor.onPropertyEnd (aProperty);
-    if (aElement instanceof final PSDir aDir)
-      return aVisitor.onDirEnd (aDir);
-    if (aElement instanceof final PSEmph aEmph)
-      return aVisitor.onEmphEnd (aEmph);
-    if (aElement instanceof final PSSpan aSpan)
-      return aVisitor.onSpanEnd (aSpan);
-    throw new IllegalStateException ("Unsupported Schematron element to visit: " + aElement);
+    return switch (aElement)
+    {
+      case final PSSchema aSchema -> aVisitor.onSchemaEnd (aSchema);
+      case final PSLibrary aLibrary -> aVisitor.onLibraryEnd (aLibrary);
+      case final PSTitle aTitle -> aVisitor.onTitleEnd (aTitle);
+      case final PSP aP -> aVisitor.onPEnd (aP);
+      case final PSPhase aPhase -> aVisitor.onPhaseEnd (aPhase);
+      case final PSActive aActive -> aVisitor.onActiveEnd (aActive);
+      case final PSRules aRules -> aVisitor.onRulesEnd (aRules);
+      case final PSPattern aPattern -> aVisitor.onPatternEnd (aPattern);
+      case final PSGroup aGroup -> aVisitor.onGroupEnd (aGroup);
+      case final PSRule aRule -> aVisitor.onRuleEnd (aRule);
+      case final PSAssertReport aAssertReport -> aVisitor.onAssertReportEnd (aAssertReport);
+      case final PSDiagnostics aDiagnostics -> aVisitor.onDiagnosticsEnd (aDiagnostics);
+      case final PSDiagnostic aDiagnostic -> aVisitor.onDiagnosticEnd (aDiagnostic);
+      case final PSProperties aProperties -> aVisitor.onPropertiesEnd (aProperties);
+      case final PSProperty aProperty -> aVisitor.onPropertyEnd (aProperty);
+      case final PSDir aDir -> aVisitor.onDirEnd (aDir);
+      case final PSEmph aEmph -> aVisitor.onEmphEnd (aEmph);
+      case final PSSpan aSpan -> aVisitor.onSpanEnd (aSpan);
+      default -> throw new IllegalStateException ("Unsupported Schematron element to visit: " + aElement);
+    };
   }
 
   @NonNull

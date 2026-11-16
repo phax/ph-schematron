@@ -176,30 +176,31 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
 
     for (final Object aContentElement : aMixedContent.getAllContentElements ())
     {
-      if (aContentElement instanceof final PSName aName)
+      switch (aContentElement)
       {
-        if (aName.hasPath ())
+        case final PSName aName ->
         {
-          final String sPath = aName.getPath ();
-          try
+          if (aName.hasPath ())
           {
-            final XPathExecutable aBound = _compileXPath (aCompiler, sPath);
-            ret.add (new PSXPathBoundElement (aName, sPath, aBound));
+            final String sPath = aName.getPath ();
+            try
+            {
+              final XPathExecutable aBound = _compileXPath (aCompiler, sPath);
+              ret.add (new PSXPathBoundElement (aName, sPath, aBound));
+            }
+            catch (final SaxonApiException ex)
+            {
+              error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex);
+              bHasAnyError = true;
+            }
           }
-          catch (final SaxonApiException ex)
+          else
           {
-            error (aName, "Failed to compile XPath expression in <name>: '" + sPath + "'", ex);
-            bHasAnyError = true;
+            // No XPath required
+            ret.add (new PSXPathBoundElement (aName));
           }
         }
-        else
-        {
-          // No XPath required
-          ret.add (new PSXPathBoundElement (aName));
-        }
-      }
-      else
-        if (aContentElement instanceof final PSValueOf aValueOf)
+        case final PSValueOf aValueOf ->
         {
           final String sSelect = aValueOf.getSelect ();
           try
@@ -213,14 +214,10 @@ public class PSXPathBoundSchema extends AbstractPSBoundSchema
             bHasAnyError = true;
           }
         }
-        else
-        {
-          // No XPath compilation necessary
-          if (aContentElement instanceof String)
-            ret.add (new PSXPathBoundElement ((String) aContentElement));
-          else
-            ret.add (new PSXPathBoundElement ((IPSElement) aContentElement));
-        }
+        // No XPath compilation necessary
+        case final String sText -> ret.add (new PSXPathBoundElement (sText));
+        default -> ret.add (new PSXPathBoundElement ((IPSElement) aContentElement));
+      }
     }
 
     if (bHasAnyError)

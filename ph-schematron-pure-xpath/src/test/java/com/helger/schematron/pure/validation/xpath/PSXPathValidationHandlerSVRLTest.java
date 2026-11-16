@@ -54,34 +54,36 @@ import com.helger.xml.serialize.read.DOMReader;
 public final class PSXPathValidationHandlerSVRLTest
 {
   // Every element and every attribute named "x" fails an assert
-  private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                                           "  <iso:ns prefix='a' uri='urn:a'/>\n" +
-                                           "  <iso:pattern>\n" +
-                                           "    <iso:rule context='*'>\n" +
-                                           "      <iso:assert test='false()'>element</iso:assert>\n" +
-                                           "    </iso:rule>\n" +
-                                           "  </iso:pattern>\n" +
-                                           "  <iso:pattern>\n" +
-                                           "    <iso:rule context='@x'>\n" +
-                                           "      <iso:assert test='false()'>attribute</iso:assert>\n" +
-                                           "    </iso:rule>\n" +
-                                           "  </iso:pattern>\n" +
-                                           "</iso:schema>";
+  private static final String SCHEMATRON = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+        <iso:ns prefix='a' uri='urn:a'/>
+        <iso:pattern>
+          <iso:rule context='*'>
+            <iso:assert test='false()'>element</iso:assert>
+          </iso:rule>
+        </iso:pattern>
+        <iso:pattern>
+          <iso:rule context='@x'>
+            <iso:assert test='false()'>attribute</iso:assert>
+          </iso:rule>
+        </iso:pattern>
+      </iso:schema>""";
 
   // Siblings with the same local name in different namespaces, nested lists and mixed content
-  private static final String XML = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                    "<root xmlns:a='urn:a' xmlns:b='urn:b'>\n" +
-                                    "  <item/>\n" +
-                                    "  <a:item x='1'/>\n" +
-                                    "  <item><sub/><sub x='2'/><other/></item>\n" +
-                                    "  <b:item/>\n" +
-                                    "  text <!-- comment --> <?pi data?>\n" +
-                                    "  <a:item><a:sub/></a:item>\n" +
-                                    "  <b:item x='3'><item/></b:item>\n" +
-                                    "  <single/>\n" +
-                                    "  <item/>\n" +
-                                    "</root>";
+  private static final String XML = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <root xmlns:a='urn:a' xmlns:b='urn:b'>
+        <item/>
+        <a:item x='1'/>
+        <item><sub/><sub x='2'/><other/></item>
+        <b:item/>
+        text <!-- comment --> <?pi data?>
+        <a:item><a:sub/></a:item>
+        <b:item x='3'><item/></b:item>
+        <single/>
+        <item/>
+      </root>""";
 
   @NonNull
   private static String _getExpectedPath (@NonNull final Node aNode, @NonNull final MapBasedNamespaceContext aNSCtx)
@@ -171,19 +173,20 @@ public final class PSXPathValidationHandlerSVRLTest
   @Test
   public void testActivePatternRoleAndDocuments () throws Exception
   {
-    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                        "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                        "  <iso:pattern id='p1' role='critical'>\n" +
-                        "    <iso:rule context='item'>\n" +
-                        "      <iso:assert test='false()'>fails</iso:assert>\n" +
-                        "    </iso:rule>\n" +
-                        "  </iso:pattern>\n" +
-                        "  <iso:pattern id='p2'>\n" +
-                        "    <iso:rule context='item'>\n" +
-                        "      <iso:assert test='true()'>never</iso:assert>\n" +
-                        "    </iso:rule>\n" +
-                        "  </iso:pattern>\n" +
-                        "</iso:schema>";
+    final String sSch = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern id='p1' role='critical'>
+            <iso:rule context='item'>
+              <iso:assert test='false()'>fails</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+          <iso:pattern id='p2'>
+            <iso:rule context='item'>
+              <iso:assert test='true()'>never</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
     final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (sSch).build ();
     final Document aDoc = DOMReader.readXMLDOM ("<root><item/></root>");
     assertNotNull (aDoc);

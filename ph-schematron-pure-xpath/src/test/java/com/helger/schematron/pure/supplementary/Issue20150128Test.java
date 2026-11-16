@@ -40,17 +40,18 @@ public final class Issue20150128Test
   @Test
   public void testEq () throws Exception
   {
-    final String sTest2 = "<?xml version='1.0' encoding='iso-8859-1'?>\n" +
-                          "<schema xmlns='http://purl.oclc.org/dsdl/schematron'>\n" +
-                          "  <ns prefix='functx' uri='http://www.functx.com' />\n" +
-                          "  <pattern >\n" +
-                          "    <title>A very simple pattern with a title</title>\n" +
-                          "    <rule context='chapter'>\n" +
-                          "      <assert test='aaa eq 1'>aaa equals 1></assert>\n" +
-                          "      </rule>\n" +
-                          "  </pattern>\n" +
-                          "\n" +
-                          "</schema>";
+    final String sTest2 = """
+        <?xml version='1.0' encoding='iso-8859-1'?>
+        <schema xmlns='http://purl.oclc.org/dsdl/schematron'>
+          <ns prefix='functx' uri='http://www.functx.com' />
+          <pattern >
+            <title>A very simple pattern with a title</title>
+            <rule context='chapter'>
+              <assert test='aaa eq 1'>aaa equals 1></assert>
+              </rule>
+          </pattern>
+
+        </schema>""";
 
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
 

@@ -39,51 +39,49 @@ import com.helger.xml.microdom.IMicroElement;
  */
 public final class PSVisitorTest
 {
-  private static final String SCHEMA = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                       "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'\n" +
-                                       "            xmlns:foo='urn:foo'\n" +
-                                       "            schematronEdition='2025'>\n" +
-                                       "  <sch:title>Title</sch:title>\n" +
-                                       "  <sch:ns prefix='x' uri='urn:x'/>\n" +
-                                       "  <sch:p>Intro <sch:dir value='ltr'>dir</sch:dir></sch:p>\n" +
-                                       "  <sch:let name='g' value='1'/>\n" +
-                                       "  <sch:phase id='ph1'>\n" +
-                                       "    <sch:let name='l' value='2'/>\n" +
-                                       "    <sch:active pattern='pat1'>Active</sch:active>\n" +
-                                       "  </sch:phase>\n" +
-                                       "  <sch:rules>\n" +
-                                       "    <sch:rule abstract='true' id='abs2'>\n" +
-                                       "      <sch:assert test='true()'>Rules</sch:assert>\n" +
-                                       "    </sch:rule>\n" +
-                                       "  </sch:rules>\n" +
-                                       "  <sch:pattern id='pat1'>\n" +
-                                       "    <foo:ext/>\n" +
-                                       "    <sch:title>Pattern</sch:title>\n" +
-                                       "    <sch:let name='p' value='3'/>\n" +
-                                       "    <sch:rule abstract='true' id='abs'>\n" +
-                                       "      <sch:report test='false()'>Report</sch:report>\n" +
-                                       "    </sch:rule>\n" +
-                                       "    <sch:rule context='/root'>\n" +
-                                       "      <sch:let name='r' value='4'/>\n" +
-                                       "      <sch:extends rule='abs'/>\n" +
-                                       "      <sch:assert test='true()' diagnostics='d1' properties='pr1'>" +
-                                       "Text <sch:name/> <sch:value-of select='.'/>" +
-                                       "<sch:emph>e</sch:emph><sch:span class='c'>s</sch:span><foo:ext/>" +
-                                       "</sch:assert>\n" +
-                                       "    </sch:rule>\n" +
-                                       "  </sch:pattern>\n" +
-                                       "  <sch:group>\n" +
-                                       "    <sch:rule context='/root'>\n" +
-                                       "      <sch:assert test='true()'>Group</sch:assert>\n" +
-                                       "    </sch:rule>\n" +
-                                       "  </sch:group>\n" +
-                                       "  <sch:diagnostics>\n" +
-                                       "    <sch:diagnostic id='d1'>Diagnostic</sch:diagnostic>\n" +
-                                       "  </sch:diagnostics>\n" +
-                                       "  <sch:properties>\n" +
-                                       "    <sch:property id='pr1'>Property</sch:property>\n" +
-                                       "  </sch:properties>\n" +
-                                       "</sch:schema>";
+  private static final String SCHEMA = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'
+                  xmlns:foo='urn:foo'
+                  schematronEdition='2025'>
+        <sch:title>Title</sch:title>
+        <sch:ns prefix='x' uri='urn:x'/>
+        <sch:p>Intro <sch:dir value='ltr'>dir</sch:dir></sch:p>
+        <sch:let name='g' value='1'/>
+        <sch:phase id='ph1'>
+          <sch:let name='l' value='2'/>
+          <sch:active pattern='pat1'>Active</sch:active>
+        </sch:phase>
+        <sch:rules>
+          <sch:rule abstract='true' id='abs2'>
+            <sch:assert test='true()'>Rules</sch:assert>
+          </sch:rule>
+        </sch:rules>
+        <sch:pattern id='pat1'>
+          <foo:ext/>
+          <sch:title>Pattern</sch:title>
+          <sch:let name='p' value='3'/>
+          <sch:rule abstract='true' id='abs'>
+            <sch:report test='false()'>Report</sch:report>
+          </sch:rule>
+          <sch:rule context='/root'>
+            <sch:let name='r' value='4'/>
+            <sch:extends rule='abs'/>
+            <sch:assert test='true()' diagnostics='d1' properties='pr1'>Text <sch:name/> <sch:value-of select='.'/><sch:emph>e</sch:emph><sch:span class='c'>s</sch:span><foo:ext/></sch:assert>
+          </sch:rule>
+        </sch:pattern>
+        <sch:group>
+          <sch:rule context='/root'>
+            <sch:assert test='true()'>Group</sch:assert>
+          </sch:rule>
+        </sch:group>
+        <sch:diagnostics>
+          <sch:diagnostic id='d1'>Diagnostic</sch:diagnostic>
+        </sch:diagnostics>
+        <sch:properties>
+          <sch:property id='pr1'>Property</sch:property>
+        </sch:properties>
+      </sch:schema>""";
 
   private static final class RecordingVisitor implements IPSVoidVisitor
   {
@@ -452,17 +450,18 @@ public final class PSVisitorTest
   @Test
   public void testLibrary () throws Exception
   {
-    final String sLibrary = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                            "<sch:library xmlns:sch='http://purl.oclc.org/dsdl/schematron' id='lib'>\n" +
-                            "  <sch:title>Library</sch:title>\n" +
-                            "  <sch:param name='p' value='1'/>\n" +
-                            "  <sch:let name='l' value='2'/>\n" +
-                            "  <sch:pattern id='pat1'>\n" +
-                            "    <sch:rule context='/root'>\n" +
-                            "      <sch:assert test='true()'>Text</sch:assert>\n" +
-                            "    </sch:rule>\n" +
-                            "  </sch:pattern>\n" +
-                            "</sch:library>";
+    final String sLibrary = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <sch:library xmlns:sch='http://purl.oclc.org/dsdl/schematron' id='lib'>
+          <sch:title>Library</sch:title>
+          <sch:param name='p' value='1'/>
+          <sch:let name='l' value='2'/>
+          <sch:pattern id='pat1'>
+            <sch:rule context='/root'>
+              <sch:assert test='true()'>Text</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:library>""";
     final PSReader aReader = new PSReader (new ReadableResourceByteArray (sLibrary.getBytes (StandardCharsets.UTF_8)));
     final PSLibrary aLibrary = aReader.readLibrary ();
     assertNotNull (aLibrary);

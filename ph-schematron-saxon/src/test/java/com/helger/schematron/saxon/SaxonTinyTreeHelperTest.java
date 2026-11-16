@@ -60,9 +60,10 @@ public final class SaxonTinyTreeHelperTest
   {
     final Processor aProcessor = SchematronProcessorFactory.getDefault ();
     // Internal entity only - the DOCTYPE declaration itself must be rejected
-    final String sXML = "<?xml version=\"1.0\"?>\n" +
-                        "<!DOCTYPE root [<!ENTITY e \"expanded\">]>\n" +
-                        "<root>&e;</root>";
+    final String sXML = """
+        <?xml version="1.0"?>
+        <!DOCTYPE root [<!ENTITY e "expanded">]>
+        <root>&e;</root>""";
     try
     {
       SaxonTinyTreeHelper.buildDocumentFacade (aProcessor, new StreamSource (new StringReader (sXML)));
@@ -78,9 +79,10 @@ public final class SaxonTinyTreeHelperTest
   public void testExternalEntityIsRejected ()
   {
     final Processor aProcessor = SchematronProcessorFactory.getDefault ();
-    final String sXML = "<?xml version=\"1.0\"?>\n" +
-                        "<!DOCTYPE root [<!ENTITY xxe SYSTEM \"file:///etc/passwd\">]>\n" +
-                        "<root>&xxe;</root>";
+    final String sXML = """
+        <?xml version="1.0"?>
+        <!DOCTYPE root [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+        <root>&xxe;</root>""";
     try
     {
       SaxonTinyTreeHelper.buildDocumentFacade (aProcessor, new StreamSource (new StringReader (sXML)));
@@ -96,9 +98,10 @@ public final class SaxonTinyTreeHelperTest
   public void testSAXSourceWithoutXMLReader ()
   {
     final Processor aProcessor = SchematronProcessorFactory.getDefault ();
-    final String sXML = "<?xml version=\"1.0\"?>\n" +
-                        "<!DOCTYPE root [<!ENTITY xxe SYSTEM \"file:///etc/passwd\">]>\n" +
-                        "<root>&xxe;</root>";
+    final String sXML = """
+        <?xml version="1.0"?>
+        <!DOCTYPE root [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>
+        <root>&xxe;</root>""";
     final SAXSource aSource = new SAXSource (new InputSource (new StringReader (sXML)));
     try
     {

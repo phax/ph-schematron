@@ -296,25 +296,16 @@ public class PSDiagnostic implements
     ret.setRich (getRichClone ());
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof final IMicroElement aElement)
-        ret.addForeignElement (aElement.getClone ());
-      else
-        if (aContent instanceof final String sContent)
-          ret.addText (sContent);
-        else
-          if (aContent instanceof final PSValueOf aValueOf)
-            ret.addValueOf (aValueOf.getClone ());
-          else
-            if (aContent instanceof final PSEmph aEmph)
-              ret.addEmph (aEmph.getClone ());
-            else
-              if (aContent instanceof final PSDir aDir)
-                ret.addDir (aDir.getClone ());
-              else
-                if (aContent instanceof final PSSpan aSpan)
-                  ret.addSpan (aSpan.getClone ());
-                else
-                  throw new IllegalStateException ("Unexpected content element: " + aContent);
+      switch (aContent)
+      {
+        case final IMicroElement aElement -> ret.addForeignElement (aElement.getClone ());
+        case final String sContent -> ret.addText (sContent);
+        case final PSValueOf aValueOf -> ret.addValueOf (aValueOf.getClone ());
+        case final PSEmph aEmph -> ret.addEmph (aEmph.getClone ());
+        case final PSDir aDir -> ret.addDir (aDir.getClone ());
+        case final PSSpan aSpan -> ret.addSpan (aSpan.getClone ());
+        default -> throw new IllegalStateException ("Unexpected content element: " + aContent);
+      }
     }
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);

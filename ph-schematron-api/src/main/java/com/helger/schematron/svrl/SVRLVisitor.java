@@ -62,23 +62,15 @@ public final class SVRLVisitor
   {
     for (final Object aContent : aRichText.getContent ())
     {
-      final EContinue eResult;
-      if (aContent instanceof final String sText)
-        eResult = aVisitor.onTextContent (aRichText, sText);
-      else
-        if (aContent instanceof final Dir aDir)
-          eResult = aVisitor.onDir (aRichText, aDir);
-        else
-          if (aContent instanceof final Emph aEmph)
-            eResult = aVisitor.onEmph (aRichText, aEmph);
-          else
-            if (aContent instanceof final Span aSpan)
-              eResult = aVisitor.onSpan (aRichText, aSpan);
-            else
-              if (aContent instanceof final Element aForeignElement)
-                eResult = aVisitor.onForeignElement (aRichText, aForeignElement);
-              else
-                throw new IllegalStateException ("Unsupported SVRL rich text content to visit: " + aContent);
+      final EContinue eResult = switch (aContent)
+      {
+        case final String sText -> aVisitor.onTextContent (aRichText, sText);
+        case final Dir aDir -> aVisitor.onDir (aRichText, aDir);
+        case final Emph aEmph -> aVisitor.onEmph (aRichText, aEmph);
+        case final Span aSpan -> aVisitor.onSpan (aRichText, aSpan);
+        case final Element aForeignElement -> aVisitor.onForeignElement (aRichText, aForeignElement);
+        default -> throw new IllegalStateException ("Unsupported SVRL rich text content to visit: " + aContent);
+      };
       if (eResult.isBreak ())
         return EContinue.BREAK;
     }
@@ -159,43 +151,48 @@ public final class SVRLVisitor
                                                              @NonNull final Object aObject,
                                                              @NonNull final ISVRLVisitor aVisitor)
   {
-    if (aObject instanceof final ActivePattern aActivePattern)
+    switch (aObject)
     {
-      if (aVisitor.onActivePatternStart (aActivePattern).isBreak ())
-        return EContinue.BREAK;
-      for (final Error aError : aActivePattern.getError ())
-        if (_visitError (aError, aVisitor).isBreak ())
+      case final ActivePattern aActivePattern ->
+      {
+        if (aVisitor.onActivePatternStart (aActivePattern).isBreak ())
           return EContinue.BREAK;
-      return aVisitor.onActivePatternEnd (aActivePattern);
-    }
-    if (aObject instanceof final ActiveGroup aActiveGroup)
-    {
-      if (aVisitor.onActiveGroupStart (aActiveGroup).isBreak ())
-        return EContinue.BREAK;
-      for (final Error aError : aActiveGroup.getError ())
-        if (_visitError (aError, aVisitor).isBreak ())
+        for (final Error aError : aActivePattern.getError ())
+          if (_visitError (aError, aVisitor).isBreak ())
+            return EContinue.BREAK;
+        return aVisitor.onActivePatternEnd (aActivePattern);
+      }
+      case final ActiveGroup aActiveGroup ->
+      {
+        if (aVisitor.onActiveGroupStart (aActiveGroup).isBreak ())
           return EContinue.BREAK;
-      return aVisitor.onActiveGroupEnd (aActiveGroup);
+        for (final Error aError : aActiveGroup.getError ())
+          if (_visitError (aError, aVisitor).isBreak ())
+            return EContinue.BREAK;
+        return aVisitor.onActiveGroupEnd (aActiveGroup);
+      }
+      case final FiredRule aFiredRule ->
+      {
+        return aVisitor.onFiredRule (aSchematronOutput, aFiredRule);
+      }
+      case final FailedAssert aFailedAssert ->
+      {
+        if (aVisitor.onFailedAssertStart (aFailedAssert).isBreak ())
+          return EContinue.BREAK;
+        if (_visitAssertionMessageChildren (aFailedAssert, aVisitor).isBreak ())
+          return EContinue.BREAK;
+        return aVisitor.onFailedAssertEnd (aFailedAssert);
+      }
+      case final SuccessfulReport aSuccessfulReport ->
+      {
+        if (aVisitor.onSuccessfulReportStart (aSuccessfulReport).isBreak ())
+          return EContinue.BREAK;
+        if (_visitAssertionMessageChildren (aSuccessfulReport, aVisitor).isBreak ())
+          return EContinue.BREAK;
+        return aVisitor.onSuccessfulReportEnd (aSuccessfulReport);
+      }
+      default -> throw new IllegalStateException ("Unsupported SVRL object to visit: " + aObject);
     }
-    if (aObject instanceof final FiredRule aFiredRule)
-      return aVisitor.onFiredRule (aSchematronOutput, aFiredRule);
-    if (aObject instanceof final FailedAssert aFailedAssert)
-    {
-      if (aVisitor.onFailedAssertStart (aFailedAssert).isBreak ())
-        return EContinue.BREAK;
-      if (_visitAssertionMessageChildren (aFailedAssert, aVisitor).isBreak ())
-        return EContinue.BREAK;
-      return aVisitor.onFailedAssertEnd (aFailedAssert);
-    }
-    if (aObject instanceof final SuccessfulReport aSuccessfulReport)
-    {
-      if (aVisitor.onSuccessfulReportStart (aSuccessfulReport).isBreak ())
-        return EContinue.BREAK;
-      if (_visitAssertionMessageChildren (aSuccessfulReport, aVisitor).isBreak ())
-        return EContinue.BREAK;
-      return aVisitor.onSuccessfulReportEnd (aSuccessfulReport);
-    }
-    throw new IllegalStateException ("Unsupported SVRL object to visit: " + aObject);
   }
 
   /**

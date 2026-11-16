@@ -83,15 +83,16 @@ public final class PSReaderTest
   @Test
   public void testReadLetWithBodyValue () throws Exception
   {
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <iso:pattern>\n" +
-                           "    <iso:rule context='/root'>\n" +
-                           "      <iso:let name='cnt'>count(item)</iso:let>\n" +
-                           "      <iso:assert test='$cnt &gt; 0'>at least one item</iso:assert>\n" +
-                           "    </iso:rule>\n" +
-                           "  </iso:pattern>\n" +
-                           "</iso:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:pattern>
+            <iso:rule context='/root'>
+              <iso:let name='cnt'>count(item)</iso:let>
+              <iso:assert test='$cnt &gt; 0'>at least one item</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
 
     final PSReader aReader = new PSReader (new ReadableResourceByteArray (sSchema.getBytes (StandardCharsets.UTF_8)));
     final PSSchema aSchema = aReader.readSchema ();
@@ -110,16 +111,17 @@ public final class PSReaderTest
   public void testReadValueOfInP () throws Exception
   {
     // Not permitted by ISO Schematron, but evaluated by the ISO Schematron XSLT
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <iso:p>Type '<iso:value-of select='$type'/>'</iso:p>\n" +
-                           "  <iso:let name='type' value='name(/*)'/>\n" +
-                           "  <iso:pattern>\n" +
-                           "    <iso:rule context='/root'>\n" +
-                           "      <iso:assert test='item'>at least one item</iso:assert>\n" +
-                           "    </iso:rule>\n" +
-                           "  </iso:pattern>\n" +
-                           "</iso:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+          <iso:p>Type '<iso:value-of select='$type'/>'</iso:p>
+          <iso:let name='type' value='name(/*)'/>
+          <iso:pattern>
+            <iso:rule context='/root'>
+              <iso:assert test='item'>at least one item</iso:assert>
+            </iso:rule>
+          </iso:pattern>
+        </iso:schema>""";
 
     final CollectingPSErrorHandler aErrorHandler = new CollectingPSErrorHandler ();
     final PSReader aReader = new PSReader (new ReadableResourceByteArray (sSchema.getBytes (StandardCharsets.UTF_8)),

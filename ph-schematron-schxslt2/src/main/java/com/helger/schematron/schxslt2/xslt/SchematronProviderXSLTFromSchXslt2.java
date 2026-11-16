@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.base.concurrent.SimpleLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.timing.StopWatch;
 import com.helger.collection.commons.CommonsConcurrentHashMap;
@@ -48,6 +49,7 @@ import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SerializedXSLTDocument;
+import com.helger.schematron.api.xslt.TransformerFactoryLocks;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.xml.XMLFactory;
@@ -228,7 +230,9 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
 
       // The default factory is shared: configuring it and compiling must not interleave with other
       // compilations that run in parallel
-      synchronized (aTF)
+      final SimpleLock aTFLock = TransformerFactoryLocks.getLock (aTF);
+      aTFLock.lock ();
+      try
       {
         // Apply error listener + URI resolver to the final-compile factory
         final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
@@ -246,6 +250,10 @@ public class SchematronProviderXSLTFromSchXslt2 implements ISchematronXSLTBasedP
 
         m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
                                                                          TransformSourceFactory.create (aSchematronXSLTDoc));
+      }
+      finally
+      {
+        aTFLock.unlock ();
       }
 
       if (LOGGER.isDebugEnabled ())
