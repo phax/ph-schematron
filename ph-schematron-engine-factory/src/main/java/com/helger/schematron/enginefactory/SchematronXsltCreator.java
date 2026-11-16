@@ -45,6 +45,7 @@ import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
+import com.helger.xml.serialize.write.IXMLWriterSettings;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
 
@@ -109,21 +110,9 @@ public class SchematronXsltCreator
     return this;
   }
 
-  /**
-   * Write an XSLT document with all namespaces of the root element declared on the root element.
-   *
-   * @param aXsltDoc
-   *        The XSLT document to write. May not be <code>null</code>.
-   * @param sXsltHeader
-   *        An optional header that is added as an XML comment. May be <code>null</code>.
-   * @param aXsltFile
-   *        The file to write to. May not be <code>null</code>.
-   * @throws SchematronToolException
-   *         If the file cannot be opened
-   */
-  public static void writeXsltDocument (@NonNull final Document aXsltDoc,
-                                        @Nullable final String sXsltHeader,
-                                        @NonNull final File aXsltFile) throws SchematronToolException
+  @NonNull
+  private static IXMLWriterSettings _prepareForWriting (@NonNull final Document aXsltDoc,
+                                                        @Nullable final String sXsltHeader)
   {
     if (StringHelper.isNotEmpty (sXsltHeader))
     {
@@ -145,14 +134,54 @@ public class SchematronXsltCreator
     for (final var e : aMapFromXml.entrySet ())
       aNSContext.addMapping (e.getKey (), e.getValue ());
 
-    final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
-                                                           .setPutNamespaceContextPrefixesInRoot (true);
+    return new XMLWriterSettings ().setNamespaceContext (aNSContext).setPutNamespaceContextPrefixesInRoot (true);
+  }
+
+  /**
+   * Write an XSLT document with all namespaces of the root element declared on the root element.
+   *
+   * @param aXsltDoc
+   *        The XSLT document to write. May not be <code>null</code>.
+   * @param sXsltHeader
+   *        An optional header that is added as an XML comment. May be <code>null</code>.
+   * @param aXsltFile
+   *        The file to write to. May not be <code>null</code>.
+   * @throws SchematronToolException
+   *         If the file cannot be opened
+   */
+  public static void writeXsltDocument (@NonNull final Document aXsltDoc,
+                                        @Nullable final String sXsltHeader,
+                                        @NonNull final File aXsltFile) throws SchematronToolException
+  {
+    final IXMLWriterSettings aXWS = _prepareForWriting (aXsltDoc, sXsltHeader);
 
     final OutputStream aOS = FileHelper.getOutputStream (aXsltFile);
     if (aOS == null)
       throw new SchematronToolException ("Failed to open output stream for file '" + aXsltFile.getAbsolutePath () + "'");
     if (XMLWriter.writeToStream (aXsltDoc, aOS, aXWS).isFailure ())
       throw new SchematronToolException ("Failed to write XSLT file '" + aXsltFile.getAbsolutePath () + "'");
+  }
+
+  /**
+   * Get an XSLT document as a string, the same way {@link #writeXsltDocument(Document, String, File)}
+   * writes it.
+   *
+   * @param aXsltDoc
+   *        The XSLT document to serialise. May not be <code>null</code>.
+   * @param sXsltHeader
+   *        An optional header that is added as an XML comment. May be <code>null</code>.
+   * @return The XSLT as a string. Never <code>null</code>.
+   * @throws SchematronToolException
+   *         If serialising fails
+   */
+  @NonNull
+  public static String getXsltDocumentAsString (@NonNull final Document aXsltDoc,
+                                                @Nullable final String sXsltHeader) throws SchematronToolException
+  {
+    final String ret = XMLWriter.getNodeAsString (aXsltDoc, _prepareForWriting (aXsltDoc, sXsltHeader));
+    if (ret == null)
+      throw new SchematronToolException ("Failed to serialise the XSLT document");
+    return ret;
   }
 
   private void _convert (@NonNull final File aSchematronFile,

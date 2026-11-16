@@ -53,8 +53,8 @@ Maven: `sourceFile`, `targetFile`, `overwriteWithoutNotice`, `keepTitles`, `keep
 ## 2. Module
 
 - New module `ph-schematron-cli` (artifact `ph-schematron-cli`), package `com.helger.schematron.cli`, placed in the
-  root `pom.xml` after `ph-schematron-validator` and before `ph-schematron-maven-plugin`; added to
-  `ph-schematron-bom`.
+  root `pom.xml` after `ph-schematron-validator` and before `ph-schematron-maven-plugin`. Not in
+  `ph-schematron-bom`: the BOM is generated from `EProject` in `../meta`, and applications are no BOM members.
 - Dependencies: the same set as the Maven plugin (`api`, `saxon`, `model`, `isosch`, `xslt`, `schxslt`, `schxslt2`,
   `pure`, `pure-xslt`, `streamability`), plus `ph-schematron-validator` (if `check` is in scope), `jaxb-impl` (runtime),
   `slf4j-simple` (runtime), `info.picocli:picocli` 4.7.7.
@@ -211,7 +211,7 @@ process; must be documented if the factory (Q1) is shared.
 ### 4.5 Docker
 
 `Dockerfile` in the module: `FROM eclipse-temurin:25-jre`, copy the shaded jar,
-`ENTRYPOINT ["java", "-jar", "/opt/ph-schematron/ph-schematron-cli-full.jar"]`, `WORKDIR /data` for volume mounts.
+copy `target/ph-schematron-cli-*-shaded.jar` to the fixed name `/opt/ph-schematron/ph-schematron-cli.jar`, `ENTRYPOINT ["java", "-jar", "/opt/ph-schematron/ph-schematron-cli.jar"]`, `WORKDIR /data` for volume mounts.
 Published to Docker Hub as `phelger/schematron`, tags `<version>` and `latest`, platforms `linux/amd64` and
 `linux/arm64` (`docker buildx`). Published manually by the maintainer; the wiki documents the `docker buildx build --platform linux/amd64,linux/arm64 --push` command. No CI workflow.
 
@@ -265,4 +265,16 @@ Maven plugin and the Ant tasks switched to it and aligned. Decisions made while 
 | Catalog for XML files | With a catalog, each XML file is read into a DOM with it; external DTDs and entities only from the catalog, an unknown one fails the file (option 3) |
 
 Next: step 2 (`ph-schematron-cli`) on top of the factory.
+
+Step 2 is implemented: module `ph-schematron-cli` (package `com.helger.schematron.cli`). Differences to section 3:
+
+| Topic | Implemented |
+|-------|-------------|
+| Fail on levels | `--fail-on-error`, `--fail-on-warning`, `--fail-on-info` (names aligned with Maven/Ant `failOnValidation*`) instead of `--fail-on LEVEL` |
+| Logging options | `-v` / `-q` on every command (picocli mixin), not on the top level |
+| Catalogs | `--catalog` on `validate` only (`convert` has no catalog, like Maven and Ant) |
+| Published JAR | Classifier `shaded`: `ph-schematron-cli-x.y.z-shaded.jar`, the same name locally in `target/` and deployed |
+| Library logging | slf4j-simple to stderr from level warn (`simplelogger.properties`) |
+
+Next: step 3 (Dockerfile, `phelger/schematron`).
 

@@ -82,6 +82,7 @@
     <schxslt1.version>1.10.1</schxslt1.version>
     <schxslt2.version>1.11.3</schxslt2.version>
     <phoxtrot.version>0.2.0</phoxtrot.version>
+    <picocli.version>4.7.7</picocli.version>
   </properties>
   
   <dependencyManagement>
@@ -210,6 +211,11 @@
         <artifactId>ph-schematron-engine-factory</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>info.picocli</groupId>
+        <artifactId>picocli</artifactId>
+        <version>${picocli.version}</version>
+      </dependency>
       <!-- benchmarks and it don't need to be listed -->
     </dependencies>
   </dependencyManagement>
@@ -252,6 +258,7 @@
     <module>ph-schematron-pure-xslt</module>
     <module>ph-schematron-engine-factory</module>
     <module>ph-schematron-validator</module>
+    <module>ph-schematron-cli</module>
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>
     <module>ph-schematron-benchmarks</module>

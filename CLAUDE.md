@@ -12,7 +12,7 @@ Parent POM: `com.helger:parent-pom:3.2.0` — many plugin defaults (compiler, su
 
 Multi-module Maven build. Order matters (later modules depend on earlier ones), as in the root `pom.xml`:
 
-0. `ph-schematron-bom` — Bill of Materials for all published artifacts (managed with `${project.version}`); add every new published module there too.
+0. `ph-schematron-bom` — Bill of Materials for all published artifacts (managed with `${project.version}`). It is generated from `EProject` in `../meta` (`MainCreateBOMs`): add a new module to `EProject`, not by hand to the BOM.
 1. `ph-schematron-testfiles` — shared test resources (`.sch` / XML samples).
 2. `ph-schematron-api` — public API surface: `ISchematronResource`, base classes (incl. the XSLT base classes `AbstractSchematronXSLTBasedResource`, `SchematronXSLTValidator`), SVRL JAXB bindings, the XSLT processor interface `ISchematronXsltProcessor` and its registry.
 3. `ph-schematron-saxon` — the Saxon XSLT processor (`SaxonXsltProcessor`) and the other Saxon specific parts (transformer factory, DOM bridge, trace listener, s9api processor factory).
@@ -27,10 +27,11 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 12. `ph-schematron-pure-xslt` — pure-Java SCH → XSLT generator, run on Saxon s9api.
 13. `ph-schematron-engine-factory` — the logic shared by the Maven plugin, the Ant tasks and the command line client: `SchematronEngineFactory` (resource / XSLT of every `ESchematronEngine` from `SchematronEngineSettings`), `SchematronValidationRunner`, `SchematronXsltCreator`, `SchematronFilePreprocessor`, `SchematronCatalogHelper`; logging goes to a ph-commons `ILogHandler` (each tool adapts its own log; `SchematronToolLogHelper` logs by `IErrorLevel`). No XSLT processor dependency of its own (the pure engines bring Saxon), so its tests select the processor explicitly. Only error and fatal error decide whether a file is valid; a new option belongs here first, then into Maven and Ant (keep them aligned).
 14. `ph-schematron-validator` — XML Schema and RELAX NG validation of Schematron files (Jing/Trang); no Schematron engine.
-15. `ph-schematron-maven-plugin` — Maven plugin (`packaging = maven-plugin`).
-16. `ph-schematron-ant-task` — Ant task.
-17. `ph-schematron-benchmarks` — JMH benchmarks.
-18. `ph-schematron-it` — integration tests (all engines on both XSLT processors, telemetry) and the phoxtrot vs. Saxon comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`, `SVRLPhoxtrotVsSaxonComparisonTest`). Both processors are on its class path, so its tests always select the processor explicitly.
+15. `ph-schematron-cli` — command line client (picocli; `SchematronCli` with the commands `validate`, `convert`, `preprocess`, `streamability`, `check`) on top of `ph-schematron-engine-factory`. Shaded JAR `ph-schematron-cli-<version>-shaded.jar` (same name locally in `target/` and deployed) with both XSLT processors; Saxon unless `--xslt-processor` is given. Exit codes 0 ok, 1 expectation not met, 2 usage, 3 invalid Schematron / technical error. Tests run it in-process via `CliRunner`.
+16. `ph-schematron-maven-plugin` — Maven plugin (`packaging = maven-plugin`).
+17. `ph-schematron-ant-task` — Ant task.
+18. `ph-schematron-benchmarks` — JMH benchmarks.
+19. `ph-schematron-it` — integration tests (all engines on both XSLT processors, telemetry) and the phoxtrot vs. Saxon comparison tests (`CreatedXSLTPhoxtrotVsSaxonComparisonTest`, `SVRLPhoxtrotVsSaxonComparisonTest`). Both processors are on its class path, so its tests always select the processor explicitly.
 
 Version 11 (branch `phoxtrot`) separates the pipeline (`ESchematronEngine`) from the XSLT processor (Saxon or phoxtrot);
 the plan with all decisions is `docs/PLAN-phoxtrot-engine.md`. The JAXP pipeline modules (`isosch`, `xslt`, `schxslt`,

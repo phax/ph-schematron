@@ -25,10 +25,12 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.w3c.dom.Document;
 
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.diagnostics.log.ErrorListLogHandler;
 import com.helger.io.file.SimpleFileIO;
+import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.saxon.SaxonXsltProcessor;
 
@@ -89,5 +91,16 @@ public final class SchematronXsltCreatorTest
       {
         assertTrue (ex.getMessage ().contains ("cannot create an XSLT"));
       }
+  }
+
+  @Test
+  public void testGetXsltDocumentAsString () throws Exception
+  {
+    final Document aXslt = SchematronEngineFactory.createXsltDocument (new FileSystemResource (SCH),
+                                                                       _createSettings (ESchematronEngine.ISO_SCHEMATRON),
+                                                                       null);
+    final String sXslt = SchematronXsltCreator.getXsltDocumentAsString (aXslt, "Version 1.2.3");
+    assertTrue (sXslt.contains ("<!--Version 1.2.3-->"));
+    assertTrue (sXslt.contains ("xmlns:svrl="));
   }
 }

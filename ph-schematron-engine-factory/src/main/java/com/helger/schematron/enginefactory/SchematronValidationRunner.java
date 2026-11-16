@@ -271,14 +271,22 @@ public class SchematronValidationRunner
     aDRS.setFeatureValue (EXMLParserFeature.LOAD_EXTERNAL_DTD, true);
     aDRS.setFeatureValue (EXMLParserFeature.EXTERNAL_GENERAL_ENTITIES, true);
     aDRS.setFeatureValue (EXMLParserFeature.EXTERNAL_PARAMETER_ENTITIES, true);
+    // Remember the parse error for the failure message instead of logging it
+    final Wrapper <Throwable> aParseError = new Wrapper <> ();
+    aDRS.exceptionCallbacks ().set (aParseError::set);
     final Document aDoc = DOMReader.readXMLDOM (new FileSystemResource (aXMLFile), aDRS);
     if (aDoc == null)
-      throw new IllegalArgumentException ("Failed to read XML file '" +
-                                          aXMLFile.getPath () +
-                                          "'" +
-                                          (aUnresolved.isSet () ? ": the external entity with " +
-                                                                  aUnresolved.get () +
-                                                                  " is not in the XML catalog" : ""));
+    {
+      final String sReason;
+      if (aUnresolved.isSet ())
+        sReason = ": the external entity with " + aUnresolved.get () + " is not in the XML catalog";
+      else
+        if (aParseError.isSet ())
+          sReason = ": " + aParseError.get ().getMessage ();
+        else
+          sReason = "";
+      throw new IllegalArgumentException ("Failed to read XML file '" + aXMLFile.getPath () + "'" + sReason);
+    }
     return m_aSchematron.applySchematronValidationToSVRL (aDoc, aXMLFile.getAbsoluteFile ().toURI ().toString ());
   }
 
