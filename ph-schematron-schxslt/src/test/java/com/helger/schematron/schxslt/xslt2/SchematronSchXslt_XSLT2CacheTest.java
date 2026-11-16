@@ -126,11 +126,11 @@ public final class SchematronSchXslt_XSLT2CacheTest
   @Test
   public void testInvalidSchematron () throws Exception
   {
-    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource ("test-sch/invalid01.sch"))
+    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource ("external/test-sch/invalid01.sch"))
                                                 .useCache (false)
                                                 .build ()
                                                 .isValidSchematron ());
-    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource ("test-sch/this.file.does.not.exists"))
+    assertFalse (SchematronResourceSchXslt_XSLT2.builder (new ClassPathResource ("external/test-sch/this.file.does.not.exists"))
                                                 .useCache (false)
                                                 .build ()
                                                 .isValidSchematron ());
@@ -154,8 +154,8 @@ public final class SchematronSchXslt_XSLT2CacheTest
     {
       final String sPath = aRes.getPath ();
 
-      if ("test-sch/biicore/BIICORE-UBL-T01.sch".equals (sPath) ||
-          "test-sch/biicore/BIICORE-UBL-T10.sch".equals (sPath))
+      if ("external/test-sch/biicore/BIICORE-UBL-T01.sch".equals (sPath) ||
+          "external/test-sch/biicore/BIICORE-UBL-T10.sch".equals (sPath))
       {
         /**
          * SchXslt preprocessor error ; SystemID:
@@ -166,12 +166,12 @@ public final class SchematronSchXslt_XSLT2CacheTest
         continue;
       }
 
-      if ("test-sch/biirules/BIIRULES-Facturae-T10.sch".equals (sPath) ||
-          "test-sch/biirules/BIIRULES-UBL-T01.sch".equals (sPath) ||
-          "test-sch/biirules/BIIRULES-UBL-T10.sch".equals (sPath) ||
-          "test-sch/biirules/BIIRULES-UBL-T14.sch".equals (sPath) ||
-          "test-sch/biirules/BIIRULES-UBL-T15.sch".equals (sPath) ||
-          "test-sch/nonat/NONAT-ubl-T17.sch".equals (sPath))
+      if ("external/test-sch/biirules/BIIRULES-Facturae-T10.sch".equals (sPath) ||
+          "external/test-sch/biirules/BIIRULES-UBL-T01.sch".equals (sPath) ||
+          "external/test-sch/biirules/BIIRULES-UBL-T10.sch".equals (sPath) ||
+          "external/test-sch/biirules/BIIRULES-UBL-T14.sch".equals (sPath) ||
+          "external/test-sch/biirules/BIIRULES-UBL-T15.sch".equals (sPath) ||
+          "external/test-sch/nonat/NONAT-ubl-T17.sch".equals (sPath))
       {
         // Saxon 12.0 issue; resolved in 12.9 (maybe sooner)
         /**
