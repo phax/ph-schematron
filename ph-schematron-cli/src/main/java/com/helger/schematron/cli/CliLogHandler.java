@@ -36,11 +36,27 @@ import com.helger.base.log.ILogHandler;
 @NotThreadSafe
 final class CliLogHandler implements ILogHandler
 {
+  /** The target of the info messages. */
   private final PrintWriter m_aOut;
+  /** The target of all other messages. */
   private final PrintWriter m_aErr;
+  /** <code>true</code> to print debug and trace messages and stack traces. */
   private final boolean m_bVerbose;
+  /** <code>true</code> to suppress info messages. */
   private final boolean m_bQuiet;
 
+  /**
+   * Constructor.
+   *
+   * @param aOut
+   *        The target of the info messages. May not be <code>null</code>.
+   * @param aErr
+   *        The target of all other messages. May not be <code>null</code>.
+   * @param bVerbose
+   *        <code>true</code> to print debug and trace messages and stack traces.
+   * @param bQuiet
+   *        <code>true</code> to suppress info messages.
+   */
   CliLogHandler (@NonNull final PrintWriter aOut,
                  @NonNull final PrintWriter aErr,
                  final boolean bVerbose,
@@ -54,6 +70,20 @@ final class CliLogHandler implements ILogHandler
     m_bQuiet = bQuiet;
   }
 
+  /**
+   * Print a single message line and flush.
+   *
+   * @param aPW
+   *        The target. May not be <code>null</code>.
+   * @param sPrefix
+   *        The level prefix, used unless the message starts with its own level. May not be
+   *        <code>null</code>.
+   * @param sMsg
+   *        The message. May not be <code>null</code>.
+   * @param t
+   *        The optional exception. Printed as stack trace in verbose mode, otherwise only its
+   *        message is appended. May be <code>null</code>.
+   */
   private void _print (@NonNull final PrintWriter aPW,
                        @NonNull final String sPrefix,
                        @NonNull final String sMsg,

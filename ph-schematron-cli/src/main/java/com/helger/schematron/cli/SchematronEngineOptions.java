@@ -39,34 +39,47 @@ import picocli.CommandLine.ParameterException;
  */
 final class SchematronEngineOptions
 {
+  /** The ID or alias of the engine. Resolved with {@link ESchematronEngine#getFromIDOrNull(String)}. */
   @Option (names = { "-e", "--engine" },
            paramLabel = "ID",
            defaultValue = "iso-schematron",
            description = "The Schematron engine: pure-xpath, pure-xslt, iso-schematron, schxslt, schxslt2 or xslt (pre-built XSLT). Default: ${DEFAULT-VALUE}.")
   String m_sEngine;
 
+  /** The ID of the XSLT processor. <code>null</code> for Saxon. */
   @Option (names = { "-x", "--xslt-processor" },
            paramLabel = "ID",
            description = "The XSLT processor of the engines iso-schematron, schxslt, schxslt2 and xslt: saxon or phoxtrot. Default: saxon.")
   String m_sXsltProcessor;
 
+  /** The phase to use. <code>null</code> for the default phase of the Schematron. */
   @Option (names = "--phase", paramLabel = "NAME", description = "The phase to use. Default: the defaultPhase of the Schematron.")
   String m_sPhase;
 
+  /** The language code. <code>null</code> for English. */
   @Option (names = "--language",
            paramLabel = "CODE",
            description = "The language code of the engines iso-schematron, schxslt and schxslt2 (cs, de, en, fr, nl). Default: en.")
   String m_sLanguageCode;
 
+  /** The custom XSLT parameters. May be <code>null</code>. */
   @Option (names = { "-P", "--param" },
            paramLabel = "NAME=VALUE",
            description = "A custom XSLT parameter of the engines iso-schematron, schxslt, schxslt2 and xslt. Repeatable.")
   Map <String, String> m_aParameters;
 
+  /** <code>true</code> to force the caching of the SCH to XSLT conversion. */
   @Option (names = "--force-cache-result", description = "Force the caching of the SCH to XSLT conversion.")
   boolean m_bForceCacheResult;
 
+  /** Constructor. Called by picocli. */
+  SchematronEngineOptions ()
+  {}
+
   /**
+   * Create the engine settings from these options. Without <code>--xslt-processor</code> Saxon is
+   * used, because both XSLT processors are on the class path.
+   *
    * @param aSpec
    *        The command for usage errors. May not be <code>null</code>.
    * @param aAllowedEngines

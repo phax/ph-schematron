@@ -79,6 +79,13 @@ public final class CliFileCollector
     return sGlob.startsWith ("**/") && FileSystems.getDefault ().getPathMatcher ("glob:" + sGlob.substring (3)).matches (aPath);
   }
 
+  /**
+   * @param sRelativePath
+   *        The relative path to check. May not be <code>null</code>.
+   * @param aGlobs
+   *        The patterns to check. May be <code>null</code>.
+   * @return <code>true</code> if at least one pattern matches
+   */
   private static boolean _matchesAny (@NonNull final String sRelativePath, @Nullable final List <String> aGlobs)
   {
     if (aGlobs != null)

@@ -60,53 +60,74 @@ import picocli.CommandLine.Spec;
 public final class ConvertCommand implements Callable <Integer>
 {
   /** The output value for the standard output */
+  /** The value of <code>--out</code> that writes the XSLT to the standard output. */
   public static final String OUT_STDOUT = "-";
 
+  /** The model of this command, for the output streams and usage errors. Injected by picocli. */
   @Spec
   CommandSpec m_aSpec;
 
+  /** The logging options <code>-v</code> and <code>-q</code>. */
   @Mixin
   CliLogOptions m_aLogOptions;
 
+  /** The engine options, shared with the command <code>validate</code>. */
   @Mixin
   SchematronEngineOptions m_aEngineOptions;
 
+  /** The directory for the XSLT files, or {@link #OUT_STDOUT}. */
   @Option (names = { "-o", "--out" },
            required = true,
            paramLabel = "DIR",
            description = "The directory for the XSLT files, or " + OUT_STDOUT + " to write the XSLT of a single Schematron file to the standard output.")
   String m_sOut;
 
+  /** The pattern a Schematron file in a directory argument must match. */
   @Option (names = "--pattern",
            paramLabel = "GLOB",
            defaultValue = "**/*.sch",
            description = "The Schematron files to convert in a directory argument. Default: ${DEFAULT-VALUE}.")
   String m_sPattern;
 
+  /** The file extension of the XSLT files, including the leading dot. */
   @Option (names = "--xslt-extension",
            paramLabel = "EXT",
            defaultValue = ".xslt",
            description = "The file extension of the XSLT files. Default: ${DEFAULT-VALUE}.")
   String m_sXsltExtension;
 
+  /** <code>true</code> to leave existing XSLT files untouched. */
   @Option (names = "--no-overwrite", description = "Leave existing XSLT files untouched.")
   boolean m_bNoOverwrite;
 
+  /** A text added as XML comment to each XSLT file. May be <code>null</code>. */
   @Option (names = "--xslt-header", paramLabel = "TEXT", description = "A text added as XML comment to each XSLT file.")
   String m_sXsltHeader;
 
+  /** <code>true</code> to log a message every 5 seconds while a conversion is running. */
   @Option (names = "--show-progress", description = "Log a message every 5 seconds while a conversion takes longer.")
   boolean m_bShowProgress;
 
+  /** <code>true</code> to continue with the next Schematron file after an error. */
   @Option (names = "--continue-on-error", description = "Continue with the next Schematron file after an error.")
   boolean m_bContinueOnError;
 
+  /** The Schematron files and directories to convert. */
   @Parameters (paramLabel = "PATH", arity = "1..*", description = "The Schematron files or directories.")
   List <File> m_aInputs;
 
+  /** Constructor. Called by picocli. */
   public ConvertCommand ()
   {}
 
+  /**
+   * Log the errors of the XSLT pipeline with their level.
+   *
+   * @param aLog
+   *        The log handler to use. May not be <code>null</code>.
+   * @param aErrorListener
+   *        The error listener that collected the errors. May not be <code>null</code>.
+   */
   private static void _logErrors (@NonNull final ILogHandler aLog, @NonNull final CollectingTransformErrorListener aErrorListener)
   {
     for (final IError aError : aErrorListener.getErrorList ())
@@ -114,6 +135,16 @@ public final class ConvertCommand implements Callable <Integer>
   }
 
   @NonNull
+  /**
+   * Convert the single Schematron file argument and write the XSLT to the standard output.
+   *
+   * @param aSettings
+   *        The engine settings. May not be <code>null</code>.
+   * @param aLog
+   *        The log handler, writing info messages to the error output. May not be
+   *        <code>null</code>.
+   * @return The exit code. Never <code>null</code>.
+   */
   private Integer _convertToStdOut (@NonNull final SchematronEngineSettings aSettings, @NonNull final ILogHandler aLog)
   {
     if (m_aInputs.size () != 1 || !m_aInputs.get (0).isFile ())
@@ -145,10 +176,18 @@ public final class ConvertCommand implements Callable <Integer>
     }
   }
 
+  /**
+   * Convert all Schematron files of the arguments.
+   *
+   * @return {@link SchematronCli#EXIT_OK} if all files were converted (or skipped), and
+   *         {@link SchematronCli#EXIT_ERROR} if at least one conversion failed.
+   */
   public Integer call ()
   {
     final boolean bToStdOut = OUT_STDOUT.equals (m_sOut);
+    // With the XSLT on the standard output, info messages must go to the error output
     final ILogHandler aLog = m_aLogOptions.createLogHandler (m_aSpec, bToStdOut);
+    // Only the engines that create an XSLT
     final SchematronEngineSettings aSettings = m_aEngineOptions.createSettings (m_aSpec,
                                                                                 SchematronEngineFactory::isXsltCreating);
     if (bToStdOut)
@@ -177,6 +216,7 @@ public final class ConvertCommand implements Callable <Integer>
     int nFailed = 0;
     for (final CliInputFile aInput : aFiles)
     {
+      // Same relative path as the Schematron file, with the XSLT extension
       final File aXsltFile = new File (aOutDir,
                                        FilenameHelper.getWithoutExtension (aInput.relativePath ()) + m_sXsltExtension);
       if (m_bNoOverwrite && aXsltFile.exists ())

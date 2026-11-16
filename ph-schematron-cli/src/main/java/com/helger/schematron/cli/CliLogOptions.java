@@ -31,13 +31,21 @@ import picocli.CommandLine.Option;
  */
 final class CliLogOptions
 {
+  /** <code>true</code> to also print debug and trace messages and stack traces. */
   @Option (names = { "-v", "--verbose" }, description = "Also print debug messages and stack traces.")
   boolean m_bVerbose;
 
+  /** <code>true</code> to suppress info messages. */
   @Option (names = { "-q", "--quiet" }, description = "Only print warnings and errors.")
   boolean m_bQuiet;
 
+  /** Constructor. Called by picocli. */
+  CliLogOptions ()
+  {}
+
   /**
+   * Create the log handler for a command, based on these options.
+   *
    * @param aSpec
    *        The command whose output streams are used. May not be <code>null</code>.
    * @param bResultOnStdOut

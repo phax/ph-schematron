@@ -48,18 +48,29 @@ import picocli.CommandLine.Spec;
           description = "Validate Schematron files against the RELAX NG Compact schema of ISO Schematron (ISO/IEC 19757-3:2006).")
 public final class CheckCommand implements Callable <Integer>
 {
+  /** The model of this command, for the output streams and usage errors. Injected by picocli. */
   @Spec
   CommandSpec m_aSpec;
 
+  /** The logging options <code>-v</code> and <code>-q</code>. */
   @Mixin
   CliLogOptions m_aLogOptions;
 
+  /** The Schematron files to check. */
   @Parameters (paramLabel = "FILE", arity = "1..*", description = "The Schematron files to check.")
   List <File> m_aSchematronFiles;
 
+  /** Constructor. Called by picocli. */
   public CheckCommand ()
   {}
 
+  /**
+   * Check all Schematron files against the RELAX NG schema and log the findings.
+   *
+   * @return {@link SchematronCli#EXIT_OK} if all files are valid, {@link SchematronCli#EXIT_FAILURE}
+   *         if at least one is not, and {@link SchematronCli#EXIT_ERROR} if a file could not be
+   *         read.
+   */
   public Integer call ()
   {
     final ILogHandler aLog = m_aLogOptions.createLogHandler (m_aSpec, false);
@@ -70,6 +81,7 @@ public final class CheckCommand implements Callable <Integer>
       if (!aFile.isFile ())
         throw new ParameterException (m_aSpec.commandLine (), "The Schematron file '" + aFile.getPath () + "' does not exist");
 
+      // null means the file could not be read at all
       final IErrorList aErrors = SchematronValidator.validateSchematron (TransformSourceFactory.create (aFile));
       if (aErrors == null)
       {

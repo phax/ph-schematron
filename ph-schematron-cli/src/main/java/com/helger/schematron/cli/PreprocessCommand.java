@@ -44,44 +44,66 @@ import picocli.CommandLine.Spec;
           description = "Write a preprocessed Schematron: includes, abstract patterns and abstract rules are resolved, with the query binding of the Schematron.")
 public final class PreprocessCommand implements Callable <Integer>
 {
+  /** The model of this command, for the output streams and usage errors. Injected by picocli. */
   @Spec
   CommandSpec m_aSpec;
 
+  /** The logging options <code>-v</code> and <code>-q</code>. */
   @Mixin
   CliLogOptions m_aLogOptions;
 
+  /** The Schematron file to preprocess. */
   @Option (names = { "-s", "--schematron" }, required = true, paramLabel = "FILE", description = "The Schematron file to preprocess.")
   File m_aSourceFile;
 
+  /** The file to write. <code>null</code> to write to the standard output. */
   @Option (names = { "-o", "--out" },
            paramLabel = "FILE",
            description = "The file to write. Default: the standard output.")
   File m_aTargetFile;
 
+  /** <code>true</code> to keep the <code>title</code> elements. */
   @Option (names = "--keep-titles", description = "Keep the title elements.")
   boolean m_bKeepTitles;
 
+  /** <code>true</code> to keep the <code>diagnostic</code> elements. */
   @Option (names = "--keep-diagnostics", description = "Keep the diagnostic elements.")
   boolean m_bKeepDiagnostics;
 
+  /**
+   * <code>true</code> to keep the <code>report</code> elements instead of converting them to
+   * <code>assert</code> elements.
+   */
   @Option (names = "--keep-reports", description = "Keep the report elements instead of converting them to assert elements.")
   boolean m_bKeepReports;
 
+  /** <code>true</code> to keep <code>pattern</code> elements without a rule. */
   @Option (names = "--keep-empty-patterns", description = "Keep pattern elements without a rule.")
   boolean m_bKeepEmptyPatterns;
 
+  /** A text added as XML comment. May be <code>null</code>. */
   @Option (names = "--sch-header", paramLabel = "TEXT", description = "A text added as XML comment.")
   String m_sSchHeader;
 
+  /** <code>true</code> to leave an existing output file untouched. */
   @Option (names = "--no-overwrite", description = "Leave an existing output file untouched.")
   boolean m_bNoOverwrite;
 
+  /** Constructor. Called by picocli. */
   public PreprocessCommand ()
   {}
 
+  /**
+   * Preprocess the Schematron and write it to the output file or the standard output.
+   *
+   * @return {@link SchematronCli#EXIT_OK} on success (also if an existing output file was left
+   *         untouched), {@link SchematronCli#EXIT_ERROR} if the Schematron cannot be read or
+   *         preprocessed.
+   */
   public Integer call ()
   {
     final boolean bToStdOut = m_aTargetFile == null;
+    // With the Schematron on the standard output, info messages must go to the error output
     final ILogHandler aLog = m_aLogOptions.createLogHandler (m_aSpec, bToStdOut);
     if (!m_aSourceFile.isFile ())
       throw new ParameterException (m_aSpec.commandLine (),

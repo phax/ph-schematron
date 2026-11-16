@@ -71,12 +71,19 @@ public final class SchematronCli implements Callable <Integer>
     }
   }
 
+  /** The model of the top level command, for the usage message. Injected by picocli. */
   @Spec
   CommandSpec m_aSpec;
 
+  /** Constructor. Called by {@link #createCommandLine()}. */
   public SchematronCli ()
   {}
 
+  /**
+   * Called when no command is given: print the usage.
+   *
+   * @return Always {@link #EXIT_USAGE}.
+   */
   public Integer call ()
   {
     // No sub command given
@@ -85,6 +92,9 @@ public final class SchematronCli implements Callable <Integer>
   }
 
   /**
+   * Create the picocli command line of this client. Used by {@link #main(String[])} and by tests
+   * that run the client in-process.
+   *
    * @return A new command line for this client, with technical errors mapped to
    *         {@link #EXIT_ERROR}. Never <code>null</code>.
    */
@@ -100,6 +110,12 @@ public final class SchematronCli implements Callable <Integer>
     return ret;
   }
 
+  /**
+   * Entry point of the executable JAR. Exits the JVM with the exit code of the command.
+   *
+   * @param aArgs
+   *        The command line arguments. May not be <code>null</code>.
+   */
   public static void main (final String [] aArgs)
   {
     System.exit (createCommandLine ().execute (aArgs));

@@ -47,23 +47,35 @@ import picocli.CommandLine.Spec;
           description = "Report per rule whether a Schematron can be validated while streaming the instance document: motionless, burst or non-local.")
 public final class StreamabilityCommand implements Callable <Integer>
 {
+  /** The model of this command, for the output streams and usage errors. Injected by picocli. */
   @Spec
   CommandSpec m_aSpec;
 
+  /** The logging options <code>-v</code> and <code>-q</code>. */
   @Mixin
   CliLogOptions m_aLogOptions;
 
+  /** The worst streamability class allowed. <code>null</code> to only report. */
   @Option (names = "--max-class",
            paramLabel = "CLASS",
            description = "The worst streamability class allowed: motionless, burst or non-local. A Schematron that needs more fails.")
   String m_sMaximumClass;
 
+  /** The Schematron files to analyse. */
   @Parameters (paramLabel = "FILE", arity = "1..*", description = "The Schematron files to analyse.")
   List <File> m_aSchematronFiles;
 
+  /** Constructor. Called by picocli. */
   public StreamabilityCommand ()
   {}
 
+  /**
+   * Analyse all Schematron files and log their reports.
+   *
+   * @return {@link SchematronCli#EXIT_OK} if all files are within the maximum class,
+   *         {@link SchematronCli#EXIT_FAILURE} if at least one needs more, and
+   *         {@link SchematronCli#EXIT_ERROR} if a file could not be analysed.
+   */
   public Integer call ()
   {
     final ILogHandler aLog = m_aLogOptions.createLogHandler (m_aSpec, false);
