@@ -45,7 +45,8 @@ public interface ISchematronCompilation <ARTIFACT>
   /**
    * @return An immutable, value-equality-based key used by caches. The key must include every
    *         dimension that influences the shape of the compiled artifact. Runtime hooks such as
-   *         error listeners or per-call parameters must NOT participate. Never <code>null</code>.
+   *         error listeners, and parameters whose values cannot be compared reliably (see
+   *         {@link SchematronCacheKeyHelper}), must NOT participate. Never <code>null</code>.
    */
   @NonNull
   ISchematronCompilationCacheKey getCacheKey ();

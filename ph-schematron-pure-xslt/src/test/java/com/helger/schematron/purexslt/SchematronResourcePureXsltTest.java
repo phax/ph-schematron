@@ -18,23 +18,35 @@ package com.helger.schematron.purexslt;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.state.EValidity;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.saxon.SaxonTinyTreeHelper;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.xml.serialize.read.DOMReader;
 
 /**
  * Phase 1 smoke tests for {@link SchematronResourcePureXslt}.
@@ -44,6 +56,16 @@ import com.helger.schematron.svrl.jaxb.SuccessfulReport;
 public final class SchematronResourcePureXsltTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXsltTest.class);
+
+  @NonNull
+  private static ICommonsList <ActivePattern> _getAllActivePatterns (@NonNull final SchematronOutputType aSVRL)
+  {
+    final ICommonsList <ActivePattern> ret = new CommonsArrayList <> ();
+    for (final Object aObj : aSVRL.getActivePatternOrActiveGroupAndFiredRule ())
+      if (aObj instanceof final ActivePattern aAP)
+        ret.add (aAP);
+    return ret;
+  }
 
   private static int _countFailedAsserts (final SchematronOutputType aSVRL)
   {
@@ -401,5 +423,107 @@ public final class SchematronResourcePureXsltTest
     // The phsch-path mode templates must have produced the canonical location of the context node
     final String sLocation = _firstFailedAssert (aSVRL).getLocation ();
     assertEquals ("phsch-path mode should produce the canonical location of the context node", "/tag1[1]", sLocation);
+  }
+
+  @Test
+  public void testGetSchematronValidityMatchesSVRL () throws Exception
+  {
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
+                        "  <sch:pattern>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='@id'>id missing</sch:assert>\n" +
+                        "      <sch:report test='@id = \"r\"'>report only</sch:report>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "</sch:schema>";
+    final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromString (sSch).build ();
+    for (final String sXML : new String [] { "<root><item id='1'/></root>",
+                                             "<root><item id='r'/></root>",
+                                             "<root><item id='1'/><item/></root>",
+                                             "<root/>" })
+    {
+      final byte [] aBytes = sXML.getBytes (StandardCharsets.UTF_8);
+      final Document aFacade = SaxonTinyTreeHelper.buildDocumentFacade (SchematronProcessorFactory.getDefault (),
+                                                                        new StreamSource (new NonBlockingByteArrayInputStream (aBytes)));
+      for (final Document aDoc : new Document [] { DOMReader.readXMLDOM (aBytes), aFacade })
+        for (final String sBaseURI : new String [] { null, "urn:test" })
+        {
+          final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (aDoc, sBaseURI);
+          assertNotNull (aSVRL);
+          final EValidity eExpected = _countFailedAsserts (aSVRL) == 0 ? EValidity.VALID : EValidity.INVALID;
+          assertEquals (sXML, eExpected, aRes.getSchematronValidity (aDoc, sBaseURI));
+        }
+    }
+  }
+
+  @Test
+  public void testGlobalLetSeesSameNodesAsRules () throws Exception
+  {
+    // A schema level variable is a global XSLT variable. For a DOM document with a base URI it is
+    // evaluated on the same tree the rules are applied to, so node identity works
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
+                        "  <sch:let name='items' value='//item'/>\n" +
+                        "  <sch:pattern>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='some $i in $items satisfies $i is current()'>not the same node</sch:assert>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "</sch:schema>";
+    final Document aDoc = DOMReader.readXMLDOM ("<root><item/><item/></root>");
+    final SchematronOutputType aSVRL = SchematronResourcePureXslt.builderFromString (sSch)
+                                                                 .build ()
+                                                                 .applySchematronValidationToSVRL (aDoc, "urn:test");
+    assertNotNull (aSVRL);
+    assertEquals (0, _countFailedAsserts (aSVRL));
+  }
+
+  @Test
+  public void testActivePatternRoleAndDocuments () throws Exception
+  {
+    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'>\n" +
+                        "  <sch:pattern id='p1' role='{critical}'>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='false()'>fails</sch:assert>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "  <sch:pattern id='p2'>\n" +
+                        "    <sch:rule context='item'>\n" +
+                        "      <sch:assert test='true()'>never</sch:assert>\n" +
+                        "    </sch:rule>\n" +
+                        "  </sch:pattern>\n" +
+                        "</sch:schema>";
+    final Document aDoc = DOMReader.readXMLDOM ("<root><item/></root>");
+    for (final EPureXsltVersion eVersion : EPureXsltVersion.values ())
+    {
+      final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromString (sSch)
+                                                                        .xsltVersion (eVersion)
+                                                                        .build ();
+      // XSLT 1.0 has no function for the document URI
+      final String sExpectedDocuments = eVersion == EPureXsltVersion.XSLT_1_0 ? null : "urn:test";
+
+      SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (aDoc, "urn:test");
+      assertNotNull (aSVRL);
+      ICommonsList <ActivePattern> aPatterns = _getAllActivePatterns (aSVRL);
+      assertEquals (2, aPatterns.size ());
+      assertEquals ("p1", aPatterns.get (0).getId ());
+      // Curly braces are not evaluated as an attribute value template
+      assertEquals ("{critical}", aPatterns.get (0).getRole ());
+      assertEquals (sExpectedDocuments, aPatterns.get (0).getDocuments ());
+      assertEquals ("p2", aPatterns.get (1).getId ());
+      assertNull (aPatterns.get (1).getRole ());
+      assertEquals (sExpectedDocuments, aPatterns.get (1).getDocuments ());
+
+      // No base URI - no documents attribute
+      aSVRL = aRes.applySchematronValidationToSVRL (aDoc, null);
+      assertNotNull (aSVRL);
+      aPatterns = _getAllActivePatterns (aSVRL);
+      assertEquals (2, aPatterns.size ());
+      assertEquals ("{critical}", aPatterns.get (0).getRole ());
+      assertNull (aPatterns.get (0).getDocuments ());
+      assertNull (aPatterns.get (1).getDocuments ());
+    }
   }
 }

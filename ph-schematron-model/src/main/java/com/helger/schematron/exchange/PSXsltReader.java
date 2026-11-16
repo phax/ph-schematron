@@ -16,7 +16,12 @@
  */
 package com.helger.schematron.exchange;
 
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,9 +35,11 @@ import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.CommonsHashSet;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.io.resource.IReadableResource;
@@ -140,6 +147,8 @@ public class PSXsltReader
   private static final String ATTR_SELECT = "select";
   private static final String NS_SCHXSLT1 = "https://doi.org/10.5281/zenodo.1495494";
   private static final String SCHXSLT_MARKER = "schxslt";
+  /** The generated pattern key in the first parameter of the SchXslt2 <code>next-match</code> */
+  private static final Pattern SCHXSLT2_PATTERN_KEY = Pattern.compile ("^\\(?\\s*'([^']*)'");
 
   private static final String COMMENT_PATTERN_PREFIX = "PATTERN";
   private static final String NAME_FUNCTION_PREFIX = "name(";
@@ -715,7 +724,7 @@ public class PSXsltReader
     }
     if (sSelect == null)
       return null;
-    final Matcher aMatcher = Pattern.compile ("^\\(?\\s*'([^']*)'").matcher (sSelect);
+    final Matcher aMatcher = SCHXSLT2_PATTERN_KEY.matcher (sSelect);
     return aMatcher.find () ? aMatcher.group (1) : null;
   }
 
@@ -828,33 +837,42 @@ public class PSXsltReader
 
       // First match by the pattern ID, than by order
       final ICommonsOrderedMap <String, PSPattern> aPatternsByKey = new CommonsLinkedHashMap <> ();
+      final Set <PSPattern> aAssignedPatterns = Collections.newSetFromMap (new IdentityHashMap <> ());
+      final ICommonsMap <String, Queue <PSPattern>> aPatternsByID = new CommonsHashMap <> ();
+      for (final PSPattern aPattern : aPatterns)
+        if (aPattern.getID () != null)
+          aPatternsByID.computeIfAbsent (aPattern.getID (), k -> new ArrayDeque <> ()).add (aPattern);
       for (final String sKey : aRulesByKey.keySet ())
       {
         final String sPatternID = aUserPatternIDByKey.get (sKey);
         if (sPatternID != null)
-          for (final PSPattern aPattern : aPatterns)
-            if (sPatternID.equals (aPattern.getID ()) && !aPatternsByKey.containsValue (aPattern))
-            {
-              aPatternsByKey.put (sKey, aPattern);
-              break;
-            }
+        {
+          final Queue <PSPattern> aCandidates = aPatternsByID.get (sPatternID);
+          final PSPattern aPattern = aCandidates == null ? null : aCandidates.poll ();
+          if (aPattern != null)
+          {
+            aPatternsByKey.put (sKey, aPattern);
+            aAssignedPatterns.add (aPattern);
+          }
+        }
       }
+      int nFreeIndex = 0;
       for (final String sKey : aRulesByKey.keySet ())
         if (!aPatternsByKey.containsKey (sKey))
         {
-          PSPattern aFree = null;
-          for (final PSPattern aPattern : aPatterns)
-            if (!aPatternsByKey.containsValue (aPattern))
-            {
-              aFree = aPattern;
-              break;
-            }
-          if (aFree == null)
+          // The assigned patterns only grow, so the first free one is never before the last one
+          while (nFreeIndex < aPatterns.size () && aAssignedPatterns.contains (aPatterns.get (nFreeIndex)))
+            ++nFreeIndex;
+          final PSPattern aFree;
+          if (nFreeIndex < aPatterns.size ())
+            aFree = aPatterns.get (nFreeIndex);
+          else
           {
             aFree = new PSPattern ();
             aPatterns.add (aFree);
           }
           aPatternsByKey.put (sKey, aFree);
+          aAssignedPatterns.add (aFree);
         }
       for (final Map.Entry <String, ICommonsList <PSRule>> aEntry : aRulesByKey.entrySet ())
         for (final PSRule aRule : aEntry.getValue ())

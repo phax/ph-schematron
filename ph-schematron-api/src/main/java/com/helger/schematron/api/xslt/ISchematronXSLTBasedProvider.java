@@ -19,8 +19,11 @@ package com.helger.schematron.api.xslt;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
+
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 
 /**
  * Interface for a factory creating Schematron validators from XSLT. Sometimes the pre-built XSLTs
@@ -30,6 +33,14 @@ import org.w3c.dom.Document;
  */
 public interface ISchematronXSLTBasedProvider
 {
+  /**
+   * @return The XSLT processor that compiled the XSLT of this provider and that creates its
+   *         transformers. Never <code>null</code>.
+   * @since 11.0.0
+   */
+  @NonNull
+  ISchematronXsltProcessor getXsltProcessor ();
+
   /**
    * @return <code>true</code> if the Schematron was successfully interpreted, <code>false</code>
    *         otherwise.

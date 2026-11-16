@@ -21,6 +21,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
@@ -30,16 +35,55 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.exchange.PSReader;
 import com.helger.schematron.model.PSSchema;
+import com.helger.schematron.saxon.SaxonLocationFunctions;
+import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.CSVRL;
+import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
+
+import net.sf.saxon.s9api.DOMDestination;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XsltExecutable;
 
 public final class PureXsltStylesheetGeneratorTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (PureXsltStylesheetGeneratorTest.class);
+
+  /**
+   * Same named siblings in no namespace, in the default namespace and with two prefixes for the same
+   * namespace, attributes with and without namespace, text, comments and processing instructions.
+   */
+  private static final String XML = "<?xml version='1.0' encoding='UTF-8'?>" +
+                                    "<root xmlns:a='urn:a' xmlns:b='urn:a' xmlns:c='urn:c'>" +
+                                    "<item id='1'>t1<!--c1--><?pi x?>t2</item>" +
+                                    "<a:item a:id='2'/>" +
+                                    "<item xmlns='urn:a'/>" +
+                                    "<b:item/>" +
+                                    "<item/>" +
+                                    "<c:item c:id='3' id='4'>t3<?pi y?><?other z?><!--c2--><item/><item/></c:item>" +
+                                    "<other/>" +
+                                    "<item><a:item/><b:item/><item/></item>" +
+                                    "</root>";
+
+  private static final String SCH = "<?xml version='1.0' encoding='UTF-8'?>" +
+                                    "<schema xmlns='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>" +
+                                    "<ns prefix='a' uri='urn:a'/>" +
+                                    "<ns prefix='c' uri='urn:c'/>" +
+                                    "<pattern>" +
+                                    "<rule context='*'><report test='true()'>element</report></rule>" +
+                                    "</pattern>" +
+                                    "<pattern>" +
+                                    "<rule context='@*'><report test='true()'>attribute</report></rule>" +
+                                    "</pattern>" +
+                                    "</schema>";
 
   @Test
   public void testDumpGeneratedXsltForGithub137 () throws Exception
@@ -161,5 +205,40 @@ public final class PureXsltStylesheetGeneratorTest
       }
     }
     assertTrue ("expected an <xsl:attribute name='location'> in the failed-assert", bFoundLocationAttr);
+  }
+
+  @NonNull
+  private static ICommonsList <String> _getLocations (@NonNull final PSSchema aSchema,
+                                                       @NonNull final EPureXsltVersion eVersion,
+                                                       final boolean bNativeLocation) throws Exception
+  {
+    final Processor aProcessor = SchematronProcessorFactory.getDefault ();
+    SaxonLocationFunctions.registerIfMissing (aProcessor);
+
+    final Document aXslt = PureXsltStylesheetGenerator.generate (aSchema, null, eVersion, bNativeLocation);
+    final XsltExecutable aExecutable = aProcessor.newXsltCompiler ().compile (new DOMSource (aXslt));
+    final XdmNode aInput = aProcessor.newDocumentBuilder ().build (new StreamSource (new StringReader (XML)));
+    final Document aSVRL = XMLFactory.newDocument ();
+    aExecutable.load30 ().applyTemplates (aInput, new DOMDestination (aSVRL));
+
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
+    final NodeList aReports = aSVRL.getElementsByTagNameNS (CSVRL.SVRL_NAMESPACE_URI, "successful-report");
+    for (int i = 0; i < aReports.getLength (); ++i)
+      ret.add (((Element) aReports.item (i)).getAttribute ("location"));
+    return ret;
+  }
+
+  @Test
+  public void testNativeLocationEqualsPortable () throws Exception
+  {
+    final PSSchema aSchema = new PSReader (new ReadableResourceString (SCH, StandardCharsets.UTF_8)).readSchema ();
+    for (final EPureXsltVersion eVersion : EPureXsltVersion.values ())
+    {
+      final ICommonsList <String> aPortable = _getLocations (aSchema, eVersion, false);
+      final ICommonsList <String> aNative = _getLocations (aSchema, eVersion, true);
+      // 14 elements and 4 attributes
+      assertEquals (eVersion.getID (), 18, aPortable.size ());
+      assertEquals (eVersion.getID (), aPortable, aNative);
+    }
   }
 }

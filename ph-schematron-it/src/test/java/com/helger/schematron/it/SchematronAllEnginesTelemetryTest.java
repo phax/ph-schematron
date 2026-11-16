@@ -30,8 +30,11 @@ import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
@@ -53,6 +56,9 @@ import com.helger.xml.serialize.read.DOMReader;
  */
 public final class SchematronAllEnginesTelemetryTest
 {
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+  private static final ISchematronXsltProcessor PHOXTROT = new PhoxtrotXsltProcessor ();
+
   // queryBinding=xslt2 so the SchXslt (XSLT2/3) engines emit SVRL; the tests use plain XPath only,
   // so the XPath-only pure engine handles them too.
   private static final String SCH = "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -78,11 +84,20 @@ public final class SchematronAllEnginesTelemetryTest
   private static final class Engine
   {
     final String m_sEngineID;
+    final String m_sDisplayName;
     final IEngineBuilder m_aBuilder;
 
     Engine (@NonNull final String sEngineID, @NonNull final IEngineBuilder aBuilder)
     {
+      this (sEngineID, sEngineID, aBuilder);
+    }
+
+    Engine (@NonNull final String sEngineID,
+            @NonNull final String sDisplayName,
+            @NonNull final IEngineBuilder aBuilder)
+    {
       m_sEngineID = sEngineID;
+      m_sDisplayName = sDisplayName;
       m_aBuilder = aBuilder;
     }
   }
@@ -102,17 +117,44 @@ public final class SchematronAllEnginesTelemetryTest
                                                         .perAssertionResultTelemetry (true)
                                                         .build ()));
     ret.add (new Engine ("iso-schematron",
+                         "iso-schematron (saxon)",
                          r -> SchematronResourceSCH.builder (r)
+                                                   .xsltProcessor (SAXON)
+                                                   .telemetry (true)
+                                                   .perAssertionResultTelemetry (true)
+                                                   .build ()));
+    ret.add (new Engine ("iso-schematron",
+                         "iso-schematron (phoxtrot)",
+                         r -> SchematronResourceSCH.builder (r)
+                                                   .xsltProcessor (PHOXTROT)
                                                    .telemetry (true)
                                                    .perAssertionResultTelemetry (true)
                                                    .build ()));
     ret.add (new Engine ("schxslt",
+                         "schxslt (saxon)",
                          r -> SchematronResourceSchXslt_XSLT2.builder (r)
+                                                             .xsltProcessor (SAXON)
+                                                             .telemetry (true)
+                                                             .perAssertionResultTelemetry (true)
+                                                             .build ()));
+    ret.add (new Engine ("schxslt",
+                         "schxslt (phoxtrot)",
+                         r -> SchematronResourceSchXslt_XSLT2.builder (r)
+                                                             .xsltProcessor (PHOXTROT)
                                                              .telemetry (true)
                                                              .perAssertionResultTelemetry (true)
                                                              .build ()));
     ret.add (new Engine ("schxslt2",
+                         "schxslt2 (saxon)",
                          r -> SchematronResourceSchXslt2.builder (r)
+                                                        .xsltProcessor (SAXON)
+                                                        .telemetry (true)
+                                                        .perAssertionResultTelemetry (true)
+                                                        .build ()));
+    ret.add (new Engine ("schxslt2",
+                         "schxslt2 (phoxtrot)",
+                         r -> SchematronResourceSchXslt2.builder (r)
+                                                        .xsltProcessor (PHOXTROT)
                                                         .telemetry (true)
                                                         .perAssertionResultTelemetry (true)
                                                         .build ()));
@@ -138,12 +180,12 @@ public final class SchematronAllEnginesTelemetryTest
       aCapture.install ();
 
       final ISchematronResource aRes = aEngine.m_aBuilder.build (ReadableResourceString.utf8 (SCH));
-      assertNotNull ("Engine " + aEngine.m_sEngineID + " produced no resource", aRes);
-      assertNotNull ("Engine " + aEngine.m_sEngineID + " produced no SVRL",
+      assertNotNull ("Engine " + aEngine.m_sDisplayName + " produced no resource", aRes);
+      assertNotNull ("Engine " + aEngine.m_sDisplayName + " produced no SVRL",
                      aRes.applySchematronValidationToSVRL (aInvalid, null));
 
       // Exactly one root validate span ...
-      assertEquals ("Engine " + aEngine.m_sEngineID + " must emit exactly one validate span",
+      assertEquals ("Engine " + aEngine.m_sDisplayName + " must emit exactly one validate span",
                     1,
                     aCapture.getSpanCount (CSchematronTelemetry.SPAN_VALIDATE));
 
@@ -155,7 +197,7 @@ public final class SchematronAllEnginesTelemetryTest
       // Two failing asserts -> two per-assertion spans. pure-xpath emits the live
       // schematron.assertion span; the SVRL-based engines emit schematron.svrl.assertion - count
       // both.
-      assertEquals ("Engine " + aEngine.m_sEngineID + " must emit one assertion span per failed assert",
+      assertEquals ("Engine " + aEngine.m_sDisplayName + " must emit one assertion span per failed assert",
                     2,
                     aCapture.getSpanCount (CSchematronTelemetry.SPAN_SVRL_ASSERTION));
     }

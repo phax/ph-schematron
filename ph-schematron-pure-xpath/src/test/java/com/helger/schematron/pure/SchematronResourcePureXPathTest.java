@@ -35,6 +35,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.state.EValidity;
 import com.helger.base.io.stream.StringInputStream;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.ClassPathResource;
@@ -52,6 +53,7 @@ import com.helger.schematron.pure.xpath.IXPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.pure.xpath.XQueryAsXPathFunctionConverter;
 import com.helger.schematron.svrl.SVRLHelper;
+import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.schema.XMLSchemaCache;
@@ -741,5 +743,127 @@ public final class SchematronResourcePureXPathTest
       LOGGER.info (SVRLHelper.getAllFailedAssertions (aOT).get (0).getText ());
     }
     assertTrue (SVRLHelper.getAllFailedAssertions (aOT).isEmpty ());
+  }
+
+  @Test
+  public void testRuleVariablesChangePerNode () throws Exception
+  {
+    // The same expressions are evaluated for every item, with different rule variable values and an
+    // external variable that does not change
+    final String sTest = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                         "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                         "  <iso:let name='count' value='count(//item)'/>\n" +
+                         "  <iso:pattern>\n" +
+                         "    <iso:rule context='item'>\n" +
+                         "      <iso:let name='v' value='number(.)'/>\n" +
+                         "      <iso:assert test='$v &lt; $limit'><iso:value-of select='$v'/> of <iso:value-of select='$count'/> is too large</iso:assert>\n" +
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "</iso:schema>";
+    final IXPathConfig aXPathConfig = new XPathConfigBuilder ().addExternalVariable (new QName ("limit"),
+                                                                                     new XdmAtomicValue (3))
+                                                               .build ();
+    final Document aTestDoc = DOMReader.readXMLDOM ("<root><item>1</item><item>5</item><item>2</item><item>4</item><item>3</item></root>");
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (sTest)
+                                                                        .xpathConfig (aXPathConfig)
+                                                                        .build ();
+    for (int i = 0; i < 2; ++i)
+    {
+      final SchematronOutputType aOT = aSch.applySchematronValidationToSVRL (aTestDoc, null);
+      assertNotNull (aOT);
+      final ICommonsList <String> aTexts = SVRLHelper.getAllFailedAssertions (aOT).getAllMapped (x -> x.getText ());
+      assertEquals ("[5 of 5 is too large, 4 of 5 is too large, 3 of 5 is too large]", aTexts.toString ());
+    }
+  }
+
+  @Test
+  public void testFailingDocumentIsLoadedAgain () throws Exception
+  {
+    // The same failing expression evaluated for multiple nodes must report the same error each time
+    final String sTest = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                         "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                         "  <iso:pattern>\n" +
+                         "    <iso:rule context='item'>\n" +
+                         "      <iso:assert test=\"doc('file:/does/not/exist.xml')\">doc</iso:assert>\n" +
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "</iso:schema>";
+    final Document aTestDoc = DOMReader.readXMLDOM ("<root><item/><item/><item/></root>");
+    final SchematronOutputType aOT = SchematronResourcePureXPath.builderFromString (sTest)
+                                                                .build ()
+                                                                .applySchematronValidationToSVRL (aTestDoc, null);
+    assertNotNull (aOT);
+    final ICommonsList <String> aTexts = SVRLHelper.getAllFailedAssertions (aOT).getAllMapped (x -> x.getText ());
+    assertEquals (3, aTexts.size ());
+    assertEquals (aTexts.get (0), aTexts.get (1));
+    assertEquals (aTexts.get (0), aTexts.get (2));
+  }
+
+  @Test
+  public void testSchematronValidityRepeated () throws Exception
+  {
+    final String sTest = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+                         "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
+                         "  <iso:pattern>\n" +
+                         "    <iso:rule context='item'>\n" +
+                         "      <iso:assert test='@id'>id missing</iso:assert>\n" +
+                         "    </iso:rule>\n" +
+                         "  </iso:pattern>\n" +
+                         "</iso:schema>";
+    final SchematronResourcePureXPath aSch = SchematronResourcePureXPath.builderFromString (sTest).build ();
+    final Document aValid = DOMReader.readXMLDOM ("<root><item id='1'/></root>");
+    final Document aInvalid = DOMReader.readXMLDOM ("<root><item/></root>");
+    for (int i = 0; i < 2; ++i)
+    {
+      assertEquals (EValidity.VALID, aSch.getSchematronValidity (aValid, null));
+      assertEquals (EValidity.INVALID, aSch.getSchematronValidity (aInvalid, null));
+    }
+
+    // An invalid Schematron stays invalid
+    final SchematronResourcePureXPath aInvalidSch = SchematronResourcePureXPath.builderFromString ("<?xml version='1.0'?><iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'/>")
+                                                                               .errorHandler (new DoNothingPSErrorHandler ())
+                                                                               .build ();
+    for (int i = 0; i < 2; ++i)
+      assertEquals (EValidity.INVALID, aInvalidSch.getSchematronValidity (aValid, null));
+  }
+
+  @Test
+  public void testCopyDomToSaxonTree () throws Exception
+  {
+    final IReadableResource aSchRes = new ClassPathResource ("external/test-sch/valid01.sch",
+                                                             SchematronTestHelper.getCL ());
+    final Document aTestDoc = DOMReader.readXMLDOM (new ClassPathResource ("external/test-xml/valid01.xml",
+                                                                           SchematronTestHelper.getCL ()));
+    assertNotNull (aTestDoc);
+
+    final SchematronResourcePureXPath aDomSch = SchematronResourcePureXPath.builder (aSchRes).build ();
+    assertFalse (aDomSch.isCopyDomToSaxonTree ());
+    final SchematronResourcePureXPath aCopySch = SchematronResourcePureXPath.builder (aSchRes)
+                                                                            .copyDomToSaxonTree (true)
+                                                                            .build ();
+    assertTrue (aCopySch.isCopyDomToSaxonTree ());
+
+    // Same SVRL, but the validation handlers get Saxon nodes
+    final SVRLMarshaller aMarshaller = new SVRLMarshaller ();
+    assertEquals (aMarshaller.getAsString (aDomSch.applySchematronValidationToSVRL (aTestDoc, "urn:test")),
+                  aMarshaller.getAsString (aCopySch.applySchematronValidationToSVRL (aTestDoc, "urn:test")));
+    assertEquals (aDomSch.getSchematronValidity (aTestDoc, "urn:test"),
+                  aCopySch.getSchematronValidity (aTestDoc, "urn:test"));
+
+    final IPSValidationHandler aNodeTypeChecker = new IPSValidationHandler ()
+    {
+      @Override
+      public void onRuleStart (@NonNull final PSRule aRule, @NonNull final NodeList aContextList)
+      {
+        for (int i = 0; i < aContextList.getLength (); ++i)
+          assertTrue (aContextList.item (i) instanceof NodeOverNodeInfo);
+      }
+    };
+    SchematronResourcePureXPath.builder (aSchRes)
+                               .copyDomToSaxonTree (true)
+                               .customValidationHandler (aNodeTypeChecker)
+                               .useCache (false)
+                               .build ()
+                               .applySchematronValidationToSVRL (aTestDoc, null);
   }
 }

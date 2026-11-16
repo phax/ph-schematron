@@ -16,8 +16,11 @@
  */
 package com.helger.schematron.sch;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
@@ -183,5 +186,66 @@ public final class SchematronSCHCacheTest
           LOGGER.info ("!!" + XMLWriter.getNodeAsString (aPreprocessor.getXSLTDocument ()));
         }
       }
+  }
+
+  @Test
+  public void testParametersInCacheKey () throws Exception
+  {
+    final SchematronSCHCache aCache = new SchematronSCHCache ();
+    final IReadableResource aRes = new ClassPathResource (VALID_SCHEMATRON);
+    final ISchematronXSLTBasedProvider aProviderA = SchematronResourceSCH.builder (aRes)
+                                                                         .cache (aCache)
+                                                                         .parameter ("p", "a")
+                                                                         .build ()
+                                                                         .getXSLTProvider ();
+    assertNotNull (aProviderA);
+    // Same parameter value - same cache entry
+    assertSame (aProviderA,
+                SchematronResourceSCH.builder (aRes).cache (aCache).parameter ("p", "a").build ().getXSLTProvider ());
+    // Other parameter value - other cache entry
+    final ISchematronXSLTBasedProvider aProviderB = SchematronResourceSCH.builder (aRes)
+                                                                         .cache (aCache)
+                                                                         .parameter ("p", "b")
+                                                                         .build ()
+                                                                         .getXSLTProvider ();
+    assertNotNull (aProviderB);
+    assertNotSame (aProviderA, aProviderB);
+    assertEquals (2, aCache.size ());
+
+    // Values without a reliable equals are not cached, unless forced
+    assertTrue (SchematronSCHConfig.builder (aRes).parameter ("p", Integer.valueOf (5)).build ().canCacheResult ());
+    assertFalse (SchematronSCHConfig.builder (aRes).parameter ("p", new Object ()).build ().canCacheResult ());
+    assertTrue (SchematronSCHConfig.builder (aRes)
+                                   .parameter ("p", new Object ())
+                                   .forceCacheResult (true)
+                                   .build ()
+                                   .canCacheResult ());
+  }
+
+  @Test
+  public void testRememberedProvider () throws Exception
+  {
+    final SchematronSCHCache aCache = new SchematronSCHCache ();
+    final SchematronResourceSCH aResource = SchematronResourceSCH.builder (new ClassPathResource (VALID_SCHEMATRON))
+                                                                 .cache (aCache)
+                                                                 .build ();
+    final ISchematronXSLTBasedProvider aProvider1 = aResource.getXSLTProvider ();
+    assertNotNull (aProvider1);
+    assertSame (aProvider1, aResource.getXSLTProvider ());
+
+    // Clearing the cache is honoured
+    aCache.clear ();
+    final ISchematronXSLTBasedProvider aProvider2 = aResource.getXSLTProvider ();
+    assertNotNull (aProvider2);
+    assertNotSame (aProvider1, aProvider2);
+    assertEquals (1, aCache.size ());
+
+    // Changed parameters lead to another provider
+    aResource.parameters ().put ("p", "x");
+    final ISchematronXSLTBasedProvider aProvider3 = aResource.getXSLTProvider ();
+    assertNotNull (aProvider3);
+    assertNotSame (aProvider2, aProvider3);
+    assertEquals (2, aCache.size ());
+    assertSame (aProvider3, aResource.getXSLTProvider ());
   }
 }

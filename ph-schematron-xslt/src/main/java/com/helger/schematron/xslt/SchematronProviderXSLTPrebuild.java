@@ -25,6 +25,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ import com.helger.base.io.stream.StreamHelper;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
-import com.helger.schematron.saxon.SchematronTransformerFactory;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.xml.serialize.read.DOMReader;
 import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.helger.xml.transform.TransformSourceFactory;
@@ -51,6 +53,7 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronProviderXSLTPrebuild.class);
 
   private final IReadableResource m_aXSLTResource;
+  private final ISchematronXsltProcessor m_aXsltProcessor;
   private Document m_aSchematronXSLTDoc;
   private Templates m_aSchematronXSLTTemplates;
 
@@ -105,6 +108,38 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
                                          final boolean bEnableTracing,
                                          @Nullable final Consumer <TransformerFactory> aTFCustomizer)
   {
+    this (aXSLTResource, aCustomErrorListener, aCustomURIResolver, bEnableTracing, aTFCustomizer, null);
+  }
+
+  /**
+   * @param aXSLTResource
+   *        The XSLT resource. May be <code>null</code>.
+   * @param aCustomErrorListener
+   *        An optional XSLT error listener.
+   * @param aCustomURIResolver
+   *        An optional XSLT URI resolver.
+   * @param bEnableTracing
+   *        <code>true</code> to compile the stylesheet with tracing (on Saxon
+   *        {@code COMPILE_WITH_TRACING}) so that per-instruction trace events fire at execution
+   *        time.
+   * @param aTFCustomizer
+   *        Optional customizer applied to the {@link TransformerFactory} after the standard error
+   *        listener / URI resolver are set, just before the stylesheet is compiled. Use this e.g. to
+   *        register Saxon extension functions on the underlying {@code Processor}.
+   * @param aXsltProcessor
+   *        The XSLT processor that compiles and runs the XSLT, or <code>null</code> to use the only
+   *        one on the class path (see {@link SchematronXsltProcessorRegistry#getDefaultProcessor()}).
+   * @since 11.0.0
+   */
+  public SchematronProviderXSLTPrebuild (@Nullable final IReadableResource aXSLTResource,
+                                         @Nullable final ErrorListener aCustomErrorListener,
+                                         @Nullable final URIResolver aCustomURIResolver,
+                                         final boolean bEnableTracing,
+                                         @Nullable final Consumer <TransformerFactory> aTFCustomizer,
+                                         @Nullable final ISchematronXsltProcessor aXsltProcessor)
+  {
+    m_aXsltProcessor = aXsltProcessor != null ? aXsltProcessor : SchematronXsltProcessorRegistry.getDefaultProcessor ();
+
     // A read-once resource (e.g. an InputStream) is buffered, so that it can be compiled and still be
     // read by getXSLTDocument
     final byte [] aXSLTBytes = aXSLTResource == null || aXSLTResource.isReadMultiple () ? null
@@ -114,8 +149,8 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
     try
     {
       /*
-       * Compile directly from the resource. Saxon builds its own tree much faster than it can walk
-       * a W3C DOM, and the DOM is not kept in memory for the lifetime of the compiled stylesheet.
+       * Compile directly from the resource. The XSLT processor builds its own tree much faster than
+       * it can walk a W3C DOM, and the DOM is not kept in memory for the lifetime of the compiled stylesheet.
        * The provided resolver is used as-is and is deliberately not wrapped in another
        * DefaultTransformURIResolver: since ph-commons 12.5.0 a resolver ends the resolution of a
        * blocked remote resource itself instead of delegating, so a wrapping resolver would silently
@@ -123,9 +158,9 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
        */
       final URIResolver aURIResolver = aCustomURIResolver != null ? aCustomURIResolver
                                                                   : new DefaultTransformURIResolver ();
-      final TransformerFactory aTF = SchematronTransformerFactory.createTransformerFactory (aCustomErrorListener,
-                                                                                            aURIResolver,
-                                                                                            bEnableTracing);
+      final TransformerFactory aTF = m_aXsltProcessor.createTransformerFactory (aCustomErrorListener,
+                                                                                aURIResolver,
+                                                                                bEnableTracing);
       // Hand the factory to the caller-supplied customizer last so it can register Saxon
       // extension functions (or any other tweak) just before the validation stylesheet compiles.
       if (aTFCustomizer != null)
@@ -136,6 +171,12 @@ public class SchematronProviderXSLTPrebuild implements ISchematronXSLTBasedProvi
     {
       LOGGER.error ("XSLT read/compilation error for " + aXSLTResource, ex);
     }
+  }
+
+  @NonNull
+  public ISchematronXsltProcessor getXsltProcessor ()
+  {
+    return m_aXsltProcessor;
   }
 
   public boolean isValidSchematron ()

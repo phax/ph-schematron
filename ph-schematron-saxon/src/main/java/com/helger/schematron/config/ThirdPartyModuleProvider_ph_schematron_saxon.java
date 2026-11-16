@@ -39,7 +39,7 @@ public final class ThirdPartyModuleProvider_ph_schematron_saxon implements IThir
                                                                    .displayName ("Saxon HE")
                                                                    .copyrightOwner ("Saxonica Limited")
                                                                    .license (ELicense.MPL20)
-                                                                   .version (new Version (12, 10, 0, "HE"))
+                                                                   .version (new Version (13, 1, 0, "HE"))
                                                                    .webSiteUrl ("http://saxon.sourceforge.net/")
                                                                    .build ();
 

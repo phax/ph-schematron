@@ -91,17 +91,6 @@ public final class SchematronTransformerFactory
   }
 
   /**
-   * @return The default cached Saxon-based {@link TransformerFactory}. Never <code>null</code>.
-   * @deprecated Since 10.0.0; use {@link #getDefault()} instead.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = true)
-  @NonNull
-  public static TransformerFactory getDefaultSaxonFirst ()
-  {
-    return getDefault ();
-  }
-
-  /**
    * Set an optional {@link Consumer} that is called for every {@link TransformerFactory} created by
    * this class. This may e.g. be used to add implementation specific configuration. Based on #176.
    *
@@ -156,10 +145,11 @@ public final class SchematronTransformerFactory
 
   /**
    * Create a new Saxon-based {@link TransformerFactory} with the standard Schematron defaults
-   * applied: line numbering (#52) is enabled and XInclude (#86) is enabled or disabled according to
-   * {@link #isAllowXInclude()}. Optionally enables Saxon's {@code COMPILE_WITH_TRACING} feature so
-   * that stylesheets compiled by the returned factory emit per-instruction events to a
-   * {@link net.sf.saxon.lib.TraceListener} at execution time.
+   * applied: line numbering (#52) is enabled, XInclude (#86) is enabled or disabled according to
+   * {@link #isAllowXInclude()} and the {@link SaxonLocationFunctions} are registered. Optionally
+   * enables Saxon's {@code COMPILE_WITH_TRACING} feature so that stylesheets compiled by the returned
+   * factory emit per-instruction events to a {@link net.sf.saxon.lib.TraceListener} at execution
+   * time.
    * <p>
    * Tracing disables several Saxon optimisations and typically costs 1.5&times;&ndash;3&times;
    * wall-clock per transform; callers should treat trace-enabled factories as distinct from the
@@ -183,8 +173,11 @@ public final class SchematronTransformerFactory
                     bAllowXInclude +
                     ")");
 
-    final TransformerFactory aFactory = new TransformerFactoryImpl ();
+    final TransformerFactoryImpl aFactory = new TransformerFactoryImpl ();
     XMLFactory.defaultCustomizeTransformerFactory (aFactory);
+
+    // Compute the SVRL location in linear time
+    SaxonLocationFunctions.registerIfMissing (aFactory.getConfiguration ());
 
     // Maintain position #52
     aFactory.setAttribute (FeatureKeys.LINE_NUMBERING, Boolean.TRUE);
@@ -260,28 +253,5 @@ public final class SchematronTransformerFactory
       aFactory.setURIResolver (aURIResolver);
 
     return aFactory;
-  }
-
-  /**
-   * Create a new Saxon-based {@link TransformerFactory}. The {@code aClassLoader} parameter is no
-   * longer required - Saxon is a hard compile-time dependency of this module - and is ignored.
-   *
-   * @param aClassLoader
-   *        Ignored.
-   * @param aErrorListener
-   *        An optional XSLT error listener to be used. May be <code>null</code>.
-   * @param aURIResolver
-   *        An optional XSLT URI resolver to be used. May be <code>null</code>.
-   * @return A new {@link TransformerFactory} and not <code>null</code>.
-   * @deprecated Since 10.0.0; use {@link #createTransformerFactory(ErrorListener, URIResolver)}
-   *             instead.
-   */
-  @Deprecated (since = "10.0.0", forRemoval = true)
-  @NonNull
-  public static TransformerFactory createTransformerFactorySaxonFirst (@Nullable final ClassLoader aClassLoader,
-                                                                       @Nullable final ErrorListener aErrorListener,
-                                                                       @Nullable final URIResolver aURIResolver)
-  {
-    return createTransformerFactory (aErrorListener, aURIResolver);
   }
 }

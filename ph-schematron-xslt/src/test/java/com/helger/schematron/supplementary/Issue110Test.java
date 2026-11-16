@@ -19,11 +19,13 @@ package com.helger.schematron.supplementary;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import com.helger.io.file.FileOperations;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.io.resourceresolver.DefaultResourceResolver;
 import com.helger.schematron.ISchematronResource;
@@ -35,7 +37,11 @@ public final class Issue110Test
   public void testIncludedFilesNotDeleted () throws Exception
   {
     DefaultResourceResolver.setDebugResolve (true);
-    final String sPath = "target/test-classes/external/issues/github110/";
+    // Work on a copy, because the test deletes a file and the tests run once per XSLT processor
+    final File aDir = new File ("target/issue110-" + System.nanoTime ());
+    assertTrue (FileOperations.copyDirRecursive (new File ("target/test-classes/external/issues/github110"), aDir)
+                              .isSuccess ());
+    final String sPath = aDir.getPath () + "/";
     final ISchematronResource aSV = SchematronResourceSCH.builderFromFile (sPath + "ATGOV-UBL-T10.sch").build ();
     assertTrue (aSV.getResource ().exists ());
 

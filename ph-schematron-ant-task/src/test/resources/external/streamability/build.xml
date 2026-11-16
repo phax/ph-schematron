@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".">
+  <taskdef name="schematron-streamability" classname="com.helger.schematron.ant.SchematronStreamability" />
+
+  <target name="burst">
+    <schematron-streamability schematronFile="burst.sch" maximumClass="burst" />
+  </target>
+
+  <target name="non-local">
+    <schematron-streamability schematronFile="non-local.sch" maximumClass="burst" />
+  </target>
+
+  <target name="report-only">
+    <schematron-streamability schematronFile="non-local.sch" />
+  </target>
+
+  <target name="unknown-class">
+    <schematron-streamability schematronFile="burst.sch" maximumClass="fast" />
+  </target>
+</project>

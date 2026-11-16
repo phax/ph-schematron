@@ -52,6 +52,8 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.api.xslt.validator.ISchematronOutputValidityDeterminator;
 
 /**
@@ -98,6 +100,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
            aBuilder.m_aErrorListener,
            aBuilder.m_bURIResolverSet ? aBuilder.m_aURIResolver : null,
            aBuilder.m_aTFCustomizer,
+           aBuilder.m_aXsltProcessor,
            aBuilder.m_aTelemetry,
            aBuilder.m_aSOVDeterminator,
            aBuilder.m_bValidateSVRL);
@@ -170,7 +173,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *
    * @param bForceCacheResult
    *        <code>true</code> to force result caching, <code>false</code> to cache only if no
-   *        parameters are present.
+   *        parameters are present or all parameter values can be part of the cache key.
    * @since 5.2.1
    * @deprecated since 10.0.0 — configure via {@link #builder(IReadableResource)} instead. Will
    *             remain for backward compatibility.
@@ -208,6 +211,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
                               .parameters (parameters ())
                               .forceCacheResult (m_bForceCacheResult)
                               .transformerFactoryCustomizer (getTransformerFactoryCustomizer ())
+                              .xsltProcessor (getXsltProcessor ())
                               .telemetry (getEffectiveTemplateTelemetry ())
                               .build ();
   }
@@ -220,6 +224,11 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     if (m_aUncachedXSLTProvider != null)
       return m_aUncachedXSLTProvider;
 
+    final SchematronSCHCache aCache = m_aCache != null ? m_aCache : SchematronSCHCache.shared ();
+    final ISchematronXSLTBasedProvider aRemembered = getRememberedCachedXSLTProvider (aCache);
+    if (aRemembered != null)
+      return aRemembered;
+
     final SchematronSCHConfig aConfig = toConfig ();
     if (!isUseCache () || !aConfig.canCacheResult ())
     {
@@ -230,8 +239,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
 
     try
     {
-      final SchematronSCHCache aCache = m_aCache != null ? m_aCache : SchematronSCHCache.shared ();
-      return aCache.getOrCompile (aConfig);
+      return getOrCompileAndRemember (aCache, aConfig);
     }
     catch (final SchematronException ex)
     {
@@ -642,6 +650,7 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     private final ICommonsOrderedMap <String, Object> m_aParameters = new CommonsLinkedHashMap <> ();
     private boolean m_bForceCacheResult = SchematronSCHConfig.DEFAULT_FORCE_CACHE_RESULT;
     private Consumer <TransformerFactory> m_aTFCustomizer;
+    private ISchematronXsltProcessor m_aXsltProcessor;
     private ISchematronTemplateTelemetry m_aTelemetry;
     private ISchematronOutputValidityDeterminator m_aSOVDeterminator;
     private boolean m_bValidateSVRL = AbstractSchematronXSLTBasedResource.DEFAULT_VALIDATE_SVRL;
@@ -801,6 +810,21 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
     public Builder transformerFactoryCustomizer (@Nullable final Consumer <TransformerFactory> a)
     {
       m_aTFCustomizer = a;
+      return this;
+    }
+
+    /**
+     * @param a
+     *        The XSLT processor that compiles and runs the XSLT, or <code>null</code> to use the only
+     *        one on the class path (see {@link SchematronXsltProcessorRegistry#getDefaultProcessor()}).
+     *        Default is <code>null</code>.
+     * @return this for chaining
+     * @since 11.0.0
+     */
+    @NonNull
+    public Builder xsltProcessor (@Nullable final ISchematronXsltProcessor a)
+    {
+      m_aXsltProcessor = a;
       return this;
     }
 

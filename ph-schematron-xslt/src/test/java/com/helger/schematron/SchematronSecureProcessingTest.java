@@ -40,9 +40,11 @@ import com.helger.xml.transform.DefaultTransformURIResolver;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * Test the effects of the secure processing defaults that ph-commons applies to the Saxon
+ * Test the effects of the secure processing defaults that ph-commons applies to the
  * {@link javax.xml.transform.TransformerFactory} of all XSLT based engines - see
- * {@link com.helger.schematron.saxon.SchematronTransformerFactory}.
+ * {@link com.helger.schematron.saxon.SchematronTransformerFactory} and
+ * {@link com.helger.schematron.phoxtrot.PhoxtrotTransformerFactories}. Runs on both XSLT
+ * processors (two surefire executions).
  *
  * @author Philip Helger
  */
@@ -101,7 +103,7 @@ public final class SchematronSecureProcessingTest
   public void testResultDocumentIsRejected ()
   {
     // Saxon disables the secondary output destinations of "xsl:result-document" if external
-    // functions are disallowed
+    // functions are disallowed; phoxtrot does the same under secure processing
     final SchematronResourceXSLT aXSLT = SchematronResourceXSLT.builder (_res ("result-document.xslt"))
                                                                .useCache (false)
                                                                .build ();

@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.schematron</groupId>
     <artifactId>ph-schematron-parent-pom</artifactId>
-    <version>10.3.4-SNAPSHOT</version>
+    <version>11.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>ph-schematron-it</artifactId>
   <packaging>jar</packaging>
@@ -83,6 +83,15 @@
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-api</artifactId>
     </dependency>
+    <!-- The XSLT processor of the XSLT based engines -->
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-saxon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-phoxtrot</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-pure</artifactId>
@@ -102,6 +111,10 @@
     <dependency>
       <groupId>com.helger.schematron</groupId>
       <artifactId>ph-schematron-schxslt2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-xslt</artifactId>
     </dependency>
 
     <!-- ph-telemetry abstraction + the real OpenTelemetry binding for the Grafana demo -->
@@ -140,6 +153,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.schematron</groupId>
+      <artifactId>ph-schematron-testfiles</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

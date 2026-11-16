@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -29,7 +30,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.jspecify.annotations.NonNull;
@@ -41,6 +41,8 @@ import org.w3c.dom.Document;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.timing.StopWatch;
+import com.helger.collection.commons.CommonsConcurrentHashMap;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
 import com.helger.io.file.FilenameHelper;
 import com.helger.io.file.SimpleFileIO;
@@ -50,7 +52,8 @@ import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.SchematronInterruptedException;
 import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 import com.helger.schematron.api.xslt.SerializedXSLTDocument;
-import com.helger.schematron.saxon.SchematronTransformerFactory;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
@@ -60,7 +63,7 @@ import com.helger.xml.transform.XMLTransformerFactory;
 
 /**
  * The XSLT preprocessor used to convert a Schematron XML document (SCH) into an XSLT document. This
- * implementation uses JAXP with Saxon to be used as the respective parser/compiler.
+ * implementation uses JAXP with the configured XSLT processor (see {@link ISchematronXsltProcessor}).
  *
  * @author Philip Helger
  */
@@ -89,9 +92,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
    */
   public static final String XSLT2_STEP3 = SCHEMATRON_DIRECTORY_XSLT2 + "compile-for-svrl.xsl";
 
-  private static Templates s_aStep1;
-  private static Templates s_aStep2;
-  private static Templates s_aStep3;
+  // The compiled conversion steps per XSLT processor ID
+  private static final ICommonsMap <String, Templates> STEP1_TEMPLATES = new CommonsConcurrentHashMap <> ();
+  private static final ICommonsMap <String, Templates> STEP2_TEMPLATES = new CommonsConcurrentHashMap <> ();
+  private static final ICommonsMap <String, Templates> STEP3_TEMPLATES = new CommonsConcurrentHashMap <> ();
 
   private final SchematronSchXslt_XSLT2Config m_aConfig;
   // The generated XSLT is kept serialised, because the DOM is much bigger and only needed for debugging
@@ -104,43 +108,62 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
    */
   public static void cacheXSLTTemplates ()
   {
-    final TransformerFactory aTF = SchematronTransformerFactory.getDefault ();
+    cacheXSLTTemplates (SchematronXsltProcessorRegistry.getDefaultProcessor ());
+  }
+
+  /**
+   * Ensure that all XSLT templates for converting Schematron to XSLT are cached for the provided
+   * XSLT processor. That may be called on application startup, otherwise it is done lazily on
+   * demand.
+   *
+   * @param aXsltProcessor
+   *        The XSLT processor to compile the templates with. May not be <code>null</code>.
+   * @since 11.0.0
+   */
+  public static void cacheXSLTTemplates (@NonNull final ISchematronXsltProcessor aXsltProcessor)
+  {
+    ValueEnforcer.notNull (aXsltProcessor, "XsltProcessor");
+    final String sXsltProcessorID = aXsltProcessor.getID ();
+    final TransformerFactory aTF = aXsltProcessor.getDefaultTransformerFactory ();
     final ClassLoader aCL = SchematronProviderXSLTFromSchXslt_XSLT2.class.getClassLoader ();
 
     // prepare all steps
-    if (s_aStep1 == null)
+    if (!STEP1_TEMPLATES.containsKey (sXsltProcessorID))
     {
       // Step 1
       SchematronDebug.getDebugLogger ().info ("Creating SchXslt step 1 template");
-      s_aStep1 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP1, aCL));
-      if (s_aStep1 == null)
+      final Templates aStep1 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP1, aCL));
+      if (aStep1 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP1 + "'");
+      STEP1_TEMPLATES.put (sXsltProcessorID, aStep1);
       SchematronDebug.getDebugLogger ().info ("Finished creating XSLT step 1 template");
 
       if (Thread.interrupted ())
         throw new SchematronInterruptedException ("after cached XSLT step 1");
     }
 
-    if (s_aStep2 == null)
+    if (!STEP2_TEMPLATES.containsKey (sXsltProcessorID))
     {
       // Step 2
       SchematronDebug.getDebugLogger ().info ("Creating SchXslt step 2 template");
-      s_aStep2 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP2, aCL));
-      if (s_aStep2 == null)
+      final Templates aStep2 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP2, aCL));
+      if (aStep2 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP2 + "'");
+      STEP2_TEMPLATES.put (sXsltProcessorID, aStep2);
       SchematronDebug.getDebugLogger ().info ("Finished creating XSLT step 2 template");
 
       if (Thread.interrupted ())
         throw new SchematronInterruptedException ("after cached XSLT step 2");
     }
 
-    if (s_aStep3 == null)
+    if (!STEP3_TEMPLATES.containsKey (sXsltProcessorID))
     {
       // Step 3
       SchematronDebug.getDebugLogger ().info ("Creating SchXslt step 3 template");
-      s_aStep3 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP3, aCL));
-      if (s_aStep3 == null)
+      final Templates aStep3 = XMLTransformerFactory.newTemplates (aTF, new ClassPathResource (XSLT2_STEP3, aCL));
+      if (aStep3 == null)
         throw new IllegalStateException ("Failed to compile '" + XSLT2_STEP3 + "'");
+      STEP3_TEMPLATES.put (sXsltProcessorID, aStep3);
       SchematronDebug.getDebugLogger ().info ("Finished creating XSLT step 3 template");
 
       if (Thread.interrupted ())
@@ -190,7 +213,10 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     if (Thread.interrupted ())
       throw new SchematronInterruptedException ("before XSLT starts");
 
-    cacheXSLTTemplates ();
+    // On the first call, initializes the templates
+    final ISchematronXsltProcessor aXsltProcessor = aConfig.getXsltProcessor ();
+    cacheXSLTTemplates (aXsltProcessor);
+    final String sXsltProcessorID = aXsltProcessor.getID ();
 
     final IReadableResource aSchematronResource = aConfig.getResource ();
 
@@ -200,7 +226,7 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     {
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult1 = new DOMResult (aResult1Doc);
-      final Transformer aTransformer1 = s_aStep1.newTransformer ();
+      final Transformer aTransformer1 = STEP1_TEMPLATES.get (sXsltProcessorID).newTransformer ();
       _applyConfigToTransformer (aConfig, false, aTransformer1);
       aSrc1 = TransformSourceFactory.create (aSchematronResource);
 
@@ -223,12 +249,13 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     {
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult2 = new DOMResult (aResult2Doc);
-      final Transformer aTransformer2 = s_aStep2.newTransformer ();
+      final Transformer aTransformer2 = STEP2_TEMPLATES.get (sXsltProcessorID).newTransformer ();
       _applyConfigToTransformer (aConfig, false, aTransformer2);
-      final DOMSource aSrc2 = TransformSourceFactory.create (aResult1Doc);
-      // SystemId is required for "base-uri(.)" to work
-      if (aSrc2.getSystemId () == null)
-        aSrc2.setSystemId (aSrc1.getSystemId ());
+      // SystemId is required for "base-uri(.)" to work. The document is internal, so the processor may convert it
+      // into its own tree model, which is much faster than navigating the DOM
+      final Source aInternalSrc2 = aXsltProcessor.createSourceForInternalDocument (aResult1Doc,
+                                                                                    aSrc1.getSystemId ());
+      final Source aSrc2 = aXsltProcessor.getEffectiveSource (aInternalSrc2, aTransformer2);
 
       SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 2 on " + aSchematronResource);
       aTransformer2.transform (aSrc2, aResult2);
@@ -265,12 +292,13 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
     {
       final StopWatch aSW = StopWatch.createdStarted ();
       final DOMResult aResult3 = new DOMResult (aResult3Doc);
-      final Transformer aTransformer3 = s_aStep3.newTransformer ();
+      final Transformer aTransformer3 = STEP3_TEMPLATES.get (sXsltProcessorID).newTransformer ();
       _applyConfigToTransformer (aConfig, true, aTransformer3);
-      final DOMSource aSrc3 = TransformSourceFactory.create (aResult2Doc);
-      // SystemId is required for "base-uri(.)" to work
-      if (aSrc3.getSystemId () == null)
-        aSrc3.setSystemId (aSrc1.getSystemId ());
+      // SystemId is required for "base-uri(.)" to work. The document is internal, so the processor may convert it
+      // into its own tree model, which is much faster than navigating the DOM
+      final Source aInternalSrc3 = aXsltProcessor.createSourceForInternalDocument (aResult2Doc,
+                                                                                    aSrc1.getSystemId ());
+      final Source aSrc3 = aXsltProcessor.getEffectiveSource (aInternalSrc3, aTransformer3);
 
       SchematronDebug.getDebugLogger ().info (() -> "Now applying XSLT step 3 on " + aSchematronResource);
       aTransformer3.transform (aSrc3, aResult3);
@@ -336,27 +364,33 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
       m_aSchematronXSLT = SerializedXSLTDocument.create (aSchematronXSLTDoc);
 
       // compile result of step 3
-      // When telemetry is enabled, the final stylesheet must be compiled with Saxon tracing
+      // When telemetry is enabled, the final stylesheet must be compiled with tracing
       // so that per-template events fire at execution time.
-      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? SchematronTransformerFactory.createTransformerFactory (true)
-                                                                   : SchematronTransformerFactory.getDefault ();
+      final ISchematronXsltProcessor aXsltProcessor = m_aConfig.getXsltProcessor ();
+      final TransformerFactory aTF = m_aConfig.isTracingEnabled () ? aXsltProcessor.createTransformerFactory (true)
+                                                                   : aXsltProcessor.getDefaultTransformerFactory ();
 
-      // Apply error listener + URI resolver to the final-compile factory
-      final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
-      aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
+      // The default factory is shared: configuring it and compiling must not interleave with other
+      // compilations that run in parallel
+      synchronized (aTF)
+      {
+        // Apply error listener + URI resolver to the final-compile factory
+        final ErrorListener aErrorListener = m_aConfig.getErrorListener ();
+        aTF.setErrorListener (aErrorListener != null ? aErrorListener : new LoggingTransformErrorListener (Locale.US));
 
-      final URIResolver aURIResolver = m_aConfig.getURIResolver ();
-      if (aURIResolver != null)
-        aTF.setURIResolver (aURIResolver);
+        final URIResolver aURIResolver = m_aConfig.getURIResolver ();
+        if (aURIResolver != null)
+          aTF.setURIResolver (aURIResolver);
 
-      // Hand the factory to the caller-supplied customizer last so it can register Saxon
-      // extension functions (or any other tweak) just before the validation stylesheet compiles.
-      final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
-      if (aTFCustomizer != null)
-        aTFCustomizer.accept (aTF);
+        // Hand the factory to the caller-supplied customizer last so it can register Saxon
+        // extension functions (or any other tweak) just before the validation stylesheet compiles.
+        final Consumer <TransformerFactory> aTFCustomizer = m_aConfig.getTransformerFactoryCustomizer ();
+        if (aTFCustomizer != null)
+          aTFCustomizer.accept (aTF);
 
-      m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
-                                                                       TransformSourceFactory.create (aSchematronXSLTDoc));
+        m_aSchematronXSLTTemplates = XMLTransformerFactory.newTemplates (aTF,
+                                                                         TransformSourceFactory.create (aSchematronXSLTDoc));
+      }
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Finished creating XSLT Template on " + aSchematronResource);
@@ -378,6 +412,12 @@ public class SchematronProviderXSLTFromSchXslt_XSLT2 implements ISchematronXSLTB
   public IReadableResource getSchematronResource ()
   {
     return m_aConfig.getResource ();
+  }
+
+  @NonNull
+  public ISchematronXsltProcessor getXsltProcessor ()
+  {
+    return m_aConfig.getXsltProcessor ();
   }
 
   public boolean isValidSchematron ()
