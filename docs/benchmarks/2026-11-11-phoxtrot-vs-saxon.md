@@ -160,3 +160,30 @@ JFR profile of the DOM validation with 20,000 items (37.6 ms on phoxtrot, 42.4 m
 The union of the ISO skeleton (S42) now costs phoxtrot 6.3 ms in the stand-alone measurement (before 9.1 ms, Saxon
 5.9 ms). The remaining hotspots (the namespace fixup pass over the result tree, the name index built for an empty
 check) are filed as phoxtrot suggestion S43.
+
+## Fourth measurement: abstract pattern expansion with a key (2026-11-16)
+
+Only `BenchmarkProcessorCompile`, same machine, JDK 21.0.13, phoxtrot 0.2.0, ph-schematron commit `e7fa49a7` plus the
+new `iso_abstract_expand.xsl`: the parameters of an abstract pattern are looked up once via `xsl:key` instead of with
+`//iso:pattern[@id=$caller]/iso:param[$n]` for every parameter of every attribute and text. The created XSLT is
+byte-identical to the one of the old stylesheet on both processors.
+
+Command:
+
+```
+java -jar ph-schematron-benchmarks/target/benchmarks.jar "BenchmarkProcessorCompile" -prof gc
+```
+
+| Pipeline | Saxon [ms] | phoxtrot [ms] | phoxtrot / Saxon | Saxon alloc [MB/op] | phoxtrot alloc [MB/op] |
+| -------- | ---------: | ------------: | ---------------: | ------------------: | ---------------------: |
+| ISO | 2.30 ± 0.15 | 3.18 ± 0.27 | 1.38 | 9.3 | 14.2 |
+| SchXslt 1 | 6.45 ± 1.12 | 7.84 ± 0.45 | 1.21 | 18.3 | 27.0 |
+| SchXslt 2 | 7.28 ± 1.29 | 7.30 ± 0.66 | 1.00 | 18.8 | 29.1 |
+
+* ISO conversion: Saxon 65 ms → 2.3 ms, phoxtrot 8 ms → 3.2 ms. The old measurements were dominated by the abstract
+  pattern expansion, which Saxon executed much slower than phoxtrot; Saxon is now the faster processor for the
+  conversion.
+* The SchXslt pipelines do not use `iso_abstract_expand.xsl`; their values are within the noise of the earlier runs.
+* The SimplerInvoicing and NLCIUS Schematrons of phive-rules (53 files, EN 16931 with abstract patterns of up to 777
+  parameters, cold JVM, one run each): Saxon 909 s → 9.9 s, phoxtrot 344 s → 19.2 s (the old values were measured
+  with four conversions running in parallel).
