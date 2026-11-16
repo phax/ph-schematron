@@ -205,6 +205,11 @@
         <artifactId>ph-schematron-validator</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger.schematron</groupId>
+        <artifactId>ph-schematron-engine-factory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- benchmarks and it don't need to be listed -->
     </dependencies>
   </dependencyManagement>
@@ -245,6 +250,7 @@
     <module>ph-schematron-streamability</module>
     <module>ph-schematron-pure-xpath</module>
     <module>ph-schematron-pure-xslt</module>
+    <module>ph-schematron-engine-factory</module>
     <module>ph-schematron-validator</module>
     <module>ph-schematron-maven-plugin</module>
     <module>ph-schematron-ant-task</module>

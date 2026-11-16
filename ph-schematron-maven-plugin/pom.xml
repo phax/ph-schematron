@@ -104,31 +104,7 @@
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-isosch</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-xslt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-schxslt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-schxslt2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-pure</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.schematron</groupId>
-      <artifactId>ph-schematron-pure-xslt</artifactId>
+      <artifactId>ph-schematron-engine-factory</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.schematron</groupId>
