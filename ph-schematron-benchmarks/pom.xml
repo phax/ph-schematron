@@ -28,8 +28,9 @@
   <packaging>jar</packaging>
   <name>ph-schematron-benchmarks</name>
   <description>Cross-engine benchmark drivers comparing the ph-schematron implementations</description>
-  <url>https://github.com/phax/ph-schematron/ph-schematron-benchmarks</url>
+  <url>https://github.com/phax/ph-schematron</url>
   <inceptionYear>2026</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>

@@ -28,8 +28,9 @@
   <packaging>jar</packaging>
   <name>ph-schematron-it</name>
   <description>Cross-engine integration tests and the runnable OpenTelemetry / Grafana telemetry demo</description>
-  <url>https://github.com/phax/ph-schematron/ph-schematron-it</url>
+  <url>https://github.com/phax/ph-schematron</url>
   <inceptionYear>2026</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>

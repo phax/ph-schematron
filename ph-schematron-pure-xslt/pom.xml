@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>ph-schematron-pure-xslt</name>
   <description>Java-only Schematron implementation with Saxon-native XSLT execution</description>
-  <url>https://github.com/phax/ph-schematron/ph-schematron-pure-xslt</url>
+  <url>https://github.com/phax/ph-schematron</url>
   <inceptionYear>2026</inceptionYear>
   
   <licenses>

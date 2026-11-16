@@ -27,7 +27,7 @@
   <artifactId>ph-schematron-ant-task</artifactId>
   <packaging>jar</packaging>
   <name>ph-schematron-ant-task</name>
-  <url>https://github.com/phax/ph-schematron/ph-schematron-ant-task</url>
+  <url>https://github.com/phax/ph-schematron</url>
   <inceptionYear>2017</inceptionYear>
   
   <licenses>
