@@ -51,6 +51,11 @@ THE SOFTWARE.
 
 <!--
 VERSION INFORMATION
+  2026-11-16 PH
+     * Macro expansion of abstract patterns no longer searches the parameters with "//" for every
+       parameter of every attribute and text - looked up once via a key and replaced by functions
+       (same result, a lot faster for abstract patterns with many parameters, like EN 16931)
+
   2013-09-19 RJ
      * Allow macro expansion in  @path attributes, eg. for   sch:name/@path
 
@@ -85,6 +90,8 @@ VERSION INFORMATION
     xmlns:nvdl="http://purl.oclc.org/dsdl/nvdl"  
     
     xmlns:iae="http://www.schematron.com/namespace/iae" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    exclude-result-prefixes="xs"
      
       >
 	
@@ -174,52 +181,39 @@ VERSION INFORMATION
 	</xslt:template>
 	
 	<!-- Templates for macro expansion of abstract patterns -->
+	<!-- [PH] Index of all patterns by ID, so that the parameters are not searched with "//" for every replacement -->
+	<xslt:key name="iae:pattern-by-id" match="iso:pattern" use="@id" />
+
+	<!-- [PH] Replace all occurrences of $substring in $original -->
+	<xslt:function name="iae:replace-substring" as="xs:string">
+		<xslt:param name="original" as="xs:string" />
+		<xslt:param name="substring" as="xs:string" />
+		<xslt:param name="replacement" as="xs:string" />
+		<xslt:sequence select="if (contains($original, $substring))
+		                       then concat(substring-before($original, $substring), $replacement, iae:replace-substring(substring-after($original, $substring), $substring, $replacement))
+		                       else $original" />
+	</xslt:function>
+
+	<!-- [PH] Replace the parameter at $index and then recurse to replace the subsequent parameters -->
+	<xslt:function name="iae:multi-macro-expand" as="xs:string">
+		<xslt:param name="text" as="xs:string" />
+		<!-- No "as" on purpose: the type check of the whole sequence on each recursion is quadratic in some processors -->
+		<xslt:param name="params" />
+		<xslt:param name="index" as="xs:integer" />
+		<xslt:sequence select="if ($index gt count($params))
+		                       then $text
+		                       else iae:multi-macro-expand(iae:replace-substring($text, concat('$', $params[$index]/@name), string($params[$index]/@value)), $params, $index + 1)" />
+	</xslt:function>
+
 	<!-- Sets up the initial conditions for the recursive call -->
+	<!-- [PH] Look up the parameters only once via the key; a text without "$" cannot contain a parameter -->
 	<xslt:template name="iae:macro-expand">
 		<xslt:param name="caller"/>
 		<xslt:param name="text" />
-		<xslt:call-template name="iae:multi-macro-expand">
-			<xslt:with-param name="caller" select="$caller"/>
-			<xslt:with-param name="text" select="$text"/>
-			<xslt:with-param name="paramNumber" select="1"/>
-		</xslt:call-template>
-		
-	</xslt:template>
-	
-	<!-- Template to replace the current parameter and then
-	   recurse to replace subsequent parameters. -->
-	    
-	<xslt:template name="iae:multi-macro-expand">
-		<xslt:param name="caller"/>
-		<xslt:param name="text" />
-		<xslt:param name="paramNumber" />
-
-    <!-- [PH] added -->
-    <!-- 
-    <xslt:comment>Macro expand [<xslt:value-of select="$caller"/>][<xslt:value-of select="$paramNumber"/>]</xslt:comment>
-     -->
-		
-		<xslt:choose>
-			<xslt:when test="//iso:pattern[@id=$caller]/iso:param[ $paramNumber]">
-        <!-- [PH] added -->
-        <!-- 
-        <xslt:comment>Replacing param <xslt:value-of select="//iso:pattern[@id=$caller]/iso:param[ $paramNumber ]"/></xslt:comment>
-         -->
-				<xslt:call-template name="iae:multi-macro-expand">
-					<xslt:with-param name="caller" select="$caller"/>	
-					<xslt:with-param name="paramNumber" select="$paramNumber + 1"/>		
-					<xslt:with-param name="text" >
-						<xslt:call-template name="iae:replace-substring">
-							<xslt:with-param name="original"    select="$text"/>
-							<xslt:with-param name="substring" 	select="concat('$', //iso:pattern[@id=$caller]/iso:param[ $paramNumber ]/@name)"/>
-							<xslt:with-param name="replacement" select="//iso:pattern[@id=$caller]/iso:param[ $paramNumber ]/@value"/>			
-						</xslt:call-template>
-					</xslt:with-param>						
-				</xslt:call-template>
-			</xslt:when>
-			<xslt:otherwise><xslt:value-of select="$text" /></xslt:otherwise>		
-		
-		</xslt:choose>
+		<xslt:variable name="sText" select="string($text)" />
+		<xslt:value-of select="if (contains($sText, '$'))
+		                       then iae:multi-macro-expand($sText, key('iae:pattern-by-id', string($caller))/iso:param, 1)
+		                       else $sText" />
 	</xslt:template>
 	
 	
@@ -281,35 +275,4 @@ VERSION INFORMATION
 		</xslt:copy>
 	</xslt:template>
 	
-	<!-- UTILITIES --> 
-	<!-- Simple version of replace-substring function -->
-	<xslt:template name="iae:replace-substring">
-		<xslt:param name="original" />    
-		<xslt:param name="substring" />   
-		<xslt:param name="replacement" select="''"/>
-		
-    <xsl:choose>
-      <xsl:when test="not($original)" /> 
-      <xsl:when test="not(string($substring))">
-        <xsl:value-of select="$original" />
-      </xsl:when> 
-      <xsl:when test="contains($original, $substring)">
-        <xsl:variable name="before" select="substring-before($original, $substring)" />
-        <xsl:variable name="after" select="substring-after($original, $substring)" />
-        
-        <xsl:value-of select="$before" />
-        <xsl:value-of select="$replacement" />
-        <!-- recursion -->
-        <xsl:call-template name="iae:replace-substring">
-          <xsl:with-param name="original" select="$after" />
-          <xsl:with-param name="substring" select="$substring" />
-          <xsl:with-param name="replacement" select="$replacement" /> 
-        </xsl:call-template>
-      </xsl:when>
-      <xsl:otherwise>
-      	<!-- no substitution -->
-      	<xsl:value-of select="$original" />
-      </xsl:otherwise>
-    </xsl:choose> 
-  </xslt:template>
 </xslt:stylesheet>

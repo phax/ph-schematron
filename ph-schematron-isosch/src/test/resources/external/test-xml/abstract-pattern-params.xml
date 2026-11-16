@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orders>
+  <order>
+    <price>150</price>
+    <qty>3</qty>
+  </order>
+  <order>
+    <price>10</price>
+    <qty>7</qty>
+  </order>
+</orders>
