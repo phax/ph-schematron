@@ -280,6 +280,6 @@ Next: step 3 (Dockerfile, `phelger/schematron`).
 
 Step 3 is implemented: `ph-schematron-cli/Dockerfile` as in 4.5, plus a `.dockerignore` that sends only the shaded
 JAR as build context. Verified locally (image built, `validate` on Saxon and phoxtrot, `--user` for non-root output
-files). The image is not published yet; publishing is a manual release step (command on the wiki page
-`Command-line-client.md`).
+files). The image is not published yet; publishing is a manual release step with `docker/build-all.sh` (like phoss-ap, but one
+multi-platform image instead of a separate `-arm64` image; described on the wiki page `Command-line-client.md`).
 

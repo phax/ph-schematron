@@ -527,5 +527,6 @@ a decision, and one item of S18; S20 without compilation), S21 to S25 from the v
   (s9api, `ResourceResolver`, trace listeners, `DocumentWrapper`/`NodeOverNodeInfo`, XQuery function libraries used by
   `XQueryAsXPathFunctionConverter`) is read before the switch. The phoxtrot speed and memory figures above were
   measured against 12.10 and are measured again against 13.1. If Saxonica still recommends 12 at the v11 release,
-  decide whether to release on 13.1 anyway.
+  decide whether to release on 13.1 anyway. Resolved 2026-11-16: Saxonica still calls 12 the most stable line, v11
+  is released on 13.1 nevertheless.
 - **ph-commons version:** phoxtrot 0.2.0 and ph-schematron both use ph-commons 12.7.1 (`ph-commons-bom`).
