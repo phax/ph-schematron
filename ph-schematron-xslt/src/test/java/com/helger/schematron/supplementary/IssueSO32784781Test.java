@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.sch.SchematronResourceSCH;
 
@@ -55,8 +54,7 @@ public final class IssueSO32784781Test
             </diagnostic>
           </diagnostics>
         </schema>""";
-    final ISchematronResource isr = new SchematronResourceSCH (new ReadableResourceString (sSCH,
-                                                                                           StandardCharsets.UTF_8));
+    final ISchematronResource isr = SchematronResourceSCH.builderFromString (sSCH, StandardCharsets.UTF_8).build ();
     assertTrue (isr.isValidSchematron ());
   }
 }

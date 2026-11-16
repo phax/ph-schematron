@@ -25,7 +25,6 @@ import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 
 import com.helger.io.resource.FileSystemResource;
-import com.helger.io.resource.inmemory.ReadableResourceString;
 import com.helger.schematron.SchematronDebug;
 import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
 import com.helger.schematron.exchange.PSReader;
@@ -50,8 +49,7 @@ public final class Issue048Test
     if (false)
       System.out.println (sSCH);
 
-    final SchematronResourceSCH aSCH = new SchematronResourceSCH (new ReadableResourceString (sSCH,
-                                                                                              StandardCharsets.UTF_8));
+    final SchematronResourceSCH aSCH = SchematronResourceSCH.builderFromString (sSCH, StandardCharsets.UTF_8).build ();
 
     // Perform validation
     final SchematronOutputType aSVRL = aSCH.applySchematronValidationToSVRL (new FileSystemResource (aXML));

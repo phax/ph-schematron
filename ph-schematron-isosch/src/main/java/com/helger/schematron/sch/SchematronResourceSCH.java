@@ -35,6 +35,7 @@ import org.xml.sax.EntityResolver;
 
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.misc.ChangeNextMajorRelease;
 import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.CommonsLinkedHashMap;
@@ -75,7 +76,11 @@ public class SchematronResourceSCH extends AbstractSchematronXSLTBasedResource <
    *
    * @param aSCHResource
    *        The Schematron resource. May not be <code>null</code>.
+   * @deprecated since 11.0.0 - use {@link #builder(IReadableResource)} instead. A resource created
+   *             with this constructor cannot be configured.
    */
+  @Deprecated (since = "11.0.0", forRemoval = true)
+  @ChangeNextMajorRelease ("Remove; resources are created with the builder only")
   public SchematronResourceSCH (@NonNull final IReadableResource aSCHResource)
   {
     super (aSCHResource);

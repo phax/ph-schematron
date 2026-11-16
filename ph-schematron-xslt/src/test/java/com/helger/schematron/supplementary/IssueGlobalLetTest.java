@@ -46,7 +46,7 @@ public final class IssueGlobalLetTest
   {
     final IReadableResource aSchematron = new FileSystemResource (schematron.getAbsoluteFile ());
     final IReadableResource anXMLSource = new FileSystemResource (xml.getAbsoluteFile ());
-    final AbstractSchematronResource pure = new SchematronResourceSCH (aSchematron);
+    final AbstractSchematronResource pure = SchematronResourceSCH.builder (aSchematron).build ();
     final SchematronOutputType aSVRL = pure.applySchematronValidationToSVRL (anXMLSource);
     assertNotNull (aSVRL);
     if (false)
