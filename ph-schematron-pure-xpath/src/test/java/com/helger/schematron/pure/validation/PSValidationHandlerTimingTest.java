@@ -39,15 +39,16 @@ import com.helger.xml.serialize.read.DOMReader;
  */
 public final class PSValidationHandlerTimingTest
 {
-  private static final String SCH = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                    "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                                    "  <iso:pattern>\n" +
-                                    "    <iso:rule context='/root'>\n" +
-                                    "      <iso:assert test='item'>at least one item expected</iso:assert>\n" +
-                                    "      <iso:assert test='count(item) ge 2'>at least two items expected</iso:assert>\n" +
-                                    "    </iso:rule>\n" +
-                                    "  </iso:pattern>\n" +
-                                    "</iso:schema>";
+  private static final String SCH = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+        <iso:pattern>
+          <iso:rule context='/root'>
+            <iso:assert test='item'>at least one item expected</iso:assert>
+            <iso:assert test='count(item) ge 2'>at least two items expected</iso:assert>
+          </iso:rule>
+        </iso:pattern>
+      </iso:schema>""";
 
   // Empty root - context matches one node, both asserts fail
   private static final String XML = "<?xml version='1.0' encoding='UTF-8'?><root/>";

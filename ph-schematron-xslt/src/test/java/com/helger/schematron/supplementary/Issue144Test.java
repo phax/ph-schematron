@@ -43,32 +43,34 @@ public final class Issue144Test
   @Test
   public void testBasic () throws Exception
   {
-    final String schematron = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                              "<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\n" +
-                              "  <sch:title>Schematron 1</sch:title>\n" +
-                              "  <sch:pattern>\n" +
-                              "    <sch:rule context=\"title\"> \n" +
-                              "      <sch:assert test=\"b\"> Bold must be there in <sch:name/> element</sch:assert> \n" +
-                              "    </sch:rule>\n" +
-                              "  </sch:pattern>\n" +
-                              "</sch:schema>";
+    final String schematron = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
+          <sch:title>Schematron 1</sch:title>
+          <sch:pattern>
+            <sch:rule context="title">\s
+              <sch:assert test="b"> Bold must be there in <sch:name/> element</sch:assert>\s
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
 
     final ISchematronResource aResSCH = SchematronResourceSCH.builderFromString (schematron, StandardCharsets.UTF_8)
                                                              .build ();
     final boolean ans = aResSCH.isValidSchematron ();
     assertTrue (ans);
 
-    final String xmlFile = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                           "<topic id=\"id168TG0I0RYF\">\n" +
-                           "  <title>Hi Legal done</title>\n" +
-                           "  <shortdesc>Content is provided for demonstration purposes only. <ph audience=\"Administrator\">Administrators and operators must read the manual before operating a new vehicle. </ph> <ph audience=\"EndUser\">Any user must read the manual before operating a new vehicle. </ph> <ph product=\"ProductA\">Your luxuriously appointed way to travel to the stars awaits you! </ph> <ph product=\"ProductB\">Your well appointed spaceship awaits you! </ph></shortdesc>\n" +
-                           "  <prolog>\n" +
-                           "  </prolog>\n" +
-                           "  <body>\n" +
-                           "    <p></p>\n" +
-                           "    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>\n" +
-                           "  </body>\n" +
-                           "</topic>";
+    final String xmlFile = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <topic id="id168TG0I0RYF">
+          <title>Hi Legal done</title>
+          <shortdesc>Content is provided for demonstration purposes only. <ph audience="Administrator">Administrators and operators must read the manual before operating a new vehicle. </ph> <ph audience="EndUser">Any user must read the manual before operating a new vehicle. </ph> <ph product="ProductA">Your luxuriously appointed way to travel to the stars awaits you! </ph> <ph product="ProductB">Your well appointed spaceship awaits you! </ph></shortdesc>
+          <prolog>
+          </prolog>
+          <body>
+            <p></p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+          </body>
+        </topic>""";
     final SchematronOutputType svrl = aResSCH.applySchematronValidationToSVRL (new StringStreamSource (xmlFile));
     assertNotNull (svrl);
 
@@ -82,18 +84,19 @@ public final class Issue144Test
   @Test
   public void test2 ()
   {
-    final String schematron = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                              "<sch:schema xmlns:sch=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\n" +
-                              "  <sch:title>Schematron 1</sch:title>\n" +
-                              "  <sch:pattern>\n" +
-                              "    <sch:rule context=\"shortdesc\">\n" +
-                              "        <sch:let name=\"characters\" value=\"string-length(.)\"/>\n" +
-                              "        <sch:assert test=\"$characters &lt; 10\"> \n" +
-                              "        You have characters. Short Description characters should be less than 10.       \n" +
-                              "        </sch:assert>  \n" +
-                              "    </sch:rule>\n" +
-                              "  </sch:pattern>\n" +
-                              "</sch:schema>";
+    final String schematron = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
+          <sch:title>Schematron 1</sch:title>
+          <sch:pattern>
+            <sch:rule context="shortdesc">
+                <sch:let name="characters" value="string-length(.)"/>
+                <sch:assert test="$characters &lt; 10">\s
+                You have characters. Short Description characters should be less than 10.      \s
+                </sch:assert> \s
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
 
     final ISchematronResource aResSCHCheck1 = SchematronResourceSCH.builderFromString (schematron,
                                                                                        StandardCharsets.UTF_8).build ();
@@ -101,17 +104,18 @@ public final class Issue144Test
     final boolean ans1 = aResSCHCheck1.isValidSchematron ();
     assertTrue (ans1);
 
-    final String xmlFile = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                           "<topic id=\"id168TG0I0RYF\">\n" +
-                           "  <title><b>Hi Legal done</b></title>\n" +
-                           "  <shortdesc>Content is provided for demonstration purposes only. <ph audience=\"Administrator\">Administrators and operators must read the manual before operating a new vehicle. </ph> <ph audience=\"EndUser\">Any user must read the manual before operating a new vehicle. </ph> <ph product=\"ProductA\">Your luxuriously appointed way to travel to the stars awaits you! </ph> <ph product=\"ProductB\">Your well appointed spaceship awaits you! </ph></shortdesc>\n" +
-                           "  <prolog>\n" +
-                           "  </prolog>\n" +
-                           "  <body>\n" +
-                           "    <p></p>\n" +
-                           "    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>\n" +
-                           "  </body>\n" +
-                           "</topic>";
+    final String xmlFile = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <topic id="id168TG0I0RYF">
+          <title><b>Hi Legal done</b></title>
+          <shortdesc>Content is provided for demonstration purposes only. <ph audience="Administrator">Administrators and operators must read the manual before operating a new vehicle. </ph> <ph audience="EndUser">Any user must read the manual before operating a new vehicle. </ph> <ph product="ProductA">Your luxuriously appointed way to travel to the stars awaits you! </ph> <ph product="ProductB">Your well appointed spaceship awaits you! </ph></shortdesc>
+          <prolog>
+          </prolog>
+          <body>
+            <p></p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+          </body>
+        </topic>""";
     final SchematronOutputType svrl;
     try
     {

@@ -125,16 +125,17 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testRichTextSpans () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='AAA'>\n" +
-                               "      <sch:assert test='BBB'><sch:name/> element is <sch:dir value='ltr'>missing</sch:dir>.</sch:assert>\n" +
-                               "      <sch:report test='BBB'><sch:name/> element is <sch:emph>present</sch:emph>.</sch:report>\n" +
-                               "      <sch:assert test='@name'><sch:name/> misses attribute <sch:span class='hl'>name</sch:span>.</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='AAA'>
+              <sch:assert test='BBB'><sch:name/> element is <sch:dir value='ltr'>missing</sch:dir>.</sch:assert>
+              <sch:report test='BBB'><sch:name/> element is <sch:emph>present</sch:emph>.</sch:report>
+              <sch:assert test='@name'><sch:name/> misses attribute <sch:span class='hl'>name</sch:span>.</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final String sXML = "<AAA><BBB/></AAA>";
     _runAndDump ("Rich text spans (emph/dir/span)", sSchematron, sXML);
   }
@@ -142,16 +143,17 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testRoleSeeIconFpi () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='chapter' role='structural' see='https://example.com/rule' icon='rule.png' fpi='rule-fpi'>\n" +
-                               "      <sch:assert test='title' role='ERROR' see='https://example.com/asserts/title' icon='title.png' fpi='title-fpi' flag='strict' id='a1'>\n" +
-                               "        Chapter should have a title.\n" +
-                               "      </sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='chapter' role='structural' see='https://example.com/rule' icon='rule.png' fpi='rule-fpi'>
+              <sch:assert test='title' role='ERROR' see='https://example.com/asserts/title' icon='title.png' fpi='title-fpi' flag='strict' id='a1'>
+                Chapter should have a title.
+              </sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final String sXML = "<chapter/>";
     _runAndDump ("role / see / icon / fpi attributes", sSchematron, sXML);
   }
@@ -159,18 +161,19 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testDiagnosticReferences () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='chapter'>\n" +
-                               "      <sch:assert test='title' diagnostics='d1 d2'>Chapter should have a title</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "  <sch:diagnostics>\n" +
-                               "    <sch:diagnostic id='d1'>Diagnostic 1 with <sch:emph>emphasis</sch:emph> and <sch:value-of select='@id'/></sch:diagnostic>\n" +
-                               "    <sch:diagnostic id='d2'>Diagnostic 2</sch:diagnostic>\n" +
-                               "  </sch:diagnostics>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='chapter'>
+              <sch:assert test='title' diagnostics='d1 d2'>Chapter should have a title</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+          <sch:diagnostics>
+            <sch:diagnostic id='d1'>Diagnostic 1 with <sch:emph>emphasis</sch:emph> and <sch:value-of select='@id'/></sch:diagnostic>
+            <sch:diagnostic id='d2'>Diagnostic 2</sch:diagnostic>
+          </sch:diagnostics>
+        </sch:schema>""";
     final String sXML = "<chapter id='c1'/>";
     _runAndDump ("Diagnostic references with rich content", sSchematron, sXML);
   }
@@ -178,18 +181,19 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testPropertyReferences () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='chapter'>\n" +
-                               "      <sch:assert test='title' properties='p1 p2'>Chapter should have a title</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "  <sch:properties>\n" +
-                               "    <sch:property id='p1' role='aux' scheme='myscheme'>Property 1 value: <sch:value-of select='@id'/></sch:property>\n" +
-                               "    <sch:property id='p2'>Property 2</sch:property>\n" +
-                               "  </sch:properties>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='chapter'>
+              <sch:assert test='title' properties='p1 p2'>Chapter should have a title</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+          <sch:properties>
+            <sch:property id='p1' role='aux' scheme='myscheme'>Property 1 value: <sch:value-of select='@id'/></sch:property>
+            <sch:property id='p2'>Property 2</sch:property>
+          </sch:properties>
+        </sch:schema>""";
     final String sXML = "<chapter id='c1'/>";
     _runAndDump ("Property references", sSchematron, sXML);
   }
@@ -197,21 +201,22 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testLetVariablesAndPhase () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:phase id='lenient'>\n" +
-                               "    <sch:active pattern='p1'/>\n" +
-                               "  </sch:phase>\n" +
-                               "  <sch:let name='globalLimit' value='3'/>\n" +
-                               "  <sch:pattern id='p1'>\n" +
-                               "    <sch:let name='patternLimit' value='2'/>\n" +
-                               "    <sch:rule context='item'>\n" +
-                               "      <sch:let name='localValue' value='@count'/>\n" +
-                               "      <sch:assert test='$localValue &lt;= $patternLimit'>Item count <sch:value-of select='$localValue'/> exceeds pattern limit <sch:value-of select='$patternLimit'/></sch:assert>\n" +
-                               "      <sch:assert test='$localValue &lt;= $globalLimit'>Item count exceeds global limit</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:phase id='lenient'>
+            <sch:active pattern='p1'/>
+          </sch:phase>
+          <sch:let name='globalLimit' value='3'/>
+          <sch:pattern id='p1'>
+            <sch:let name='patternLimit' value='2'/>
+            <sch:rule context='item'>
+              <sch:let name='localValue' value='@count'/>
+              <sch:assert test='$localValue &lt;= $patternLimit'>Item count <sch:value-of select='$localValue'/> exceeds pattern limit <sch:value-of select='$patternLimit'/></sch:assert>
+              <sch:assert test='$localValue &lt;= $globalLimit'>Item count exceeds global limit</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final String sXML = "<root><item count='5'/></root>";
     _runAndDump ("Let variables at schema/pattern/rule scope", sSchematron, sXML);
   }
@@ -221,16 +226,17 @@ public final class PureXsltVsSchXslt2ComparisonTest
   {
     // A strict equivalence check: both engines should agree on how many failed-asserts and
     // successful-reports fire on the same input, regardless of metadata differences.
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='book'>\n" +
-                               "      <sch:assert test='@isbn'>Book must have an ISBN</sch:assert>\n" +
-                               "      <sch:assert test='title'>Book must have a title</sch:assert>\n" +
-                               "      <sch:report test='@deprecated'>Book is deprecated</sch:report>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='book'>
+              <sch:assert test='@isbn'>Book must have an ISBN</sch:assert>
+              <sch:assert test='title'>Book must have a title</sch:assert>
+              <sch:report test='@deprecated'>Book is deprecated</sch:report>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final String sXML = "<library><book deprecated='true'><title>X</title></book><book><title>Y</title></book></library>";
 
     final ReadableResourceByteArray aSchRes = new ReadableResourceByteArray (sSchematron.getBytes (StandardCharsets.UTF_8));
@@ -263,22 +269,23 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testAbstractPatternWithParam () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern abstract='true' id='table'>\n" +
-                               "    <sch:rule context='$table'>\n" +
-                               "      <sch:assert test='$row'>The element <sch:name/> is a table; tables contain rows.</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "    <sch:rule context='$row'>\n" +
-                               "      <sch:assert test='$entry'>The element <sch:name/> is a row; rows contain entries.</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "  <sch:pattern is-a='table' id='html-table'>\n" +
-                               "    <sch:param name='table' value='table'/>\n" +
-                               "    <sch:param name='row' value='tr'/>\n" +
-                               "    <sch:param name='entry' value='td'/>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern abstract='true' id='table'>
+            <sch:rule context='$table'>
+              <sch:assert test='$row'>The element <sch:name/> is a table; tables contain rows.</sch:assert>
+            </sch:rule>
+            <sch:rule context='$row'>
+              <sch:assert test='$entry'>The element <sch:name/> is a row; rows contain entries.</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+          <sch:pattern is-a='table' id='html-table'>
+            <sch:param name='table' value='table'/>
+            <sch:param name='row' value='tr'/>
+            <sch:param name='entry' value='td'/>
+          </sch:pattern>
+        </sch:schema>""";
     // An html-style table whose row has no entries and whose root is malformed
     // (table contains a stray <div/> instead of <tr/>).
     final String sXML = "<doc><table><div/></table><table><tr/></table></doc>";
@@ -293,21 +300,22 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testAbstractRuleWithExtends () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule abstract='true' id='must-have-id'>\n" +
-                               "      <sch:assert test='@id'>Element <sch:name/> must have an @id</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "    <sch:rule context='chapter'>\n" +
-                               "      <sch:extends rule='must-have-id'/>\n" +
-                               "      <sch:assert test='title'>Chapter must have a title</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "    <sch:rule context='section'>\n" +
-                               "      <sch:extends rule='must-have-id'/>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule abstract='true' id='must-have-id'>
+              <sch:assert test='@id'>Element <sch:name/> must have an @id</sch:assert>
+            </sch:rule>
+            <sch:rule context='chapter'>
+              <sch:extends rule='must-have-id'/>
+              <sch:assert test='title'>Chapter must have a title</sch:assert>
+            </sch:rule>
+            <sch:rule context='section'>
+              <sch:extends rule='must-have-id'/>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     // chapter[1] is missing both @id and title (2 failures);
     // chapter[2] has @id and title (0 failures);
     // section[1] is missing @id (1 failure).
@@ -348,27 +356,28 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testDefaultPhaseResolution () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'\n" +
-                               "            defaultPhase='strict'>\n" +
-                               "  <sch:phase id='lenient'>\n" +
-                               "    <sch:active pattern='p-isbn'/>\n" +
-                               "  </sch:phase>\n" +
-                               "  <sch:phase id='strict'>\n" +
-                               "    <sch:active pattern='p-isbn'/>\n" +
-                               "    <sch:active pattern='p-title'/>\n" +
-                               "  </sch:phase>\n" +
-                               "  <sch:pattern id='p-isbn'>\n" +
-                               "    <sch:rule context='book'>\n" +
-                               "      <sch:assert test='@isbn'>Book must have an ISBN</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "  <sch:pattern id='p-title'>\n" +
-                               "    <sch:rule context='book'>\n" +
-                               "      <sch:assert test='title'>Book must have a title</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'
+                    defaultPhase='strict'>
+          <sch:phase id='lenient'>
+            <sch:active pattern='p-isbn'/>
+          </sch:phase>
+          <sch:phase id='strict'>
+            <sch:active pattern='p-isbn'/>
+            <sch:active pattern='p-title'/>
+          </sch:phase>
+          <sch:pattern id='p-isbn'>
+            <sch:rule context='book'>
+              <sch:assert test='@isbn'>Book must have an ISBN</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+          <sch:pattern id='p-title'>
+            <sch:rule context='book'>
+              <sch:assert test='title'>Book must have a title</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final String sXML = "<library><book/></library>";
     _runAndDumpCountsOnly ("Default-phase = strict (both patterns active)", sSchematron, sXML);
   }
@@ -383,17 +392,18 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testMultipleRuleContexts () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='book[@type=&quot;ebook&quot;]'>\n" +
-                               "      <sch:assert test='@url'>Ebooks must have a @url</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "    <sch:rule context='book'>\n" +
-                               "      <sch:assert test='@isbn'>Books must have an @isbn</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='book[@type=&quot;ebook&quot;]'>
+              <sch:assert test='@url'>Ebooks must have a @url</sch:assert>
+            </sch:rule>
+            <sch:rule context='book'>
+              <sch:assert test='@isbn'>Books must have an @isbn</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     // 1st book is an ebook with no @url -> fires the ebook rule (1 fail).
     // 2nd book is plain, no @isbn -> fires the generic book rule (1 fail).
     final String sXML = "<library><book type='ebook'/><book/></library>";
@@ -410,14 +420,15 @@ public final class PureXsltVsSchXslt2ComparisonTest
   @Test
   public void testXmlLangOnAssertText () throws Exception
   {
-    final String sSchematron = "<?xml version='1.0'?>\n" +
-                               "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                               "  <sch:pattern>\n" +
-                               "    <sch:rule context='chapter'>\n" +
-                               "      <sch:assert test='title' xml:lang='en' xml:space='preserve'>Chapter requires a title.</sch:assert>\n" +
-                               "    </sch:rule>\n" +
-                               "  </sch:pattern>\n" +
-                               "</sch:schema>";
+    final String sSchematron = """
+        <?xml version='1.0'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='chapter'>
+              <sch:assert test='title' xml:lang='en' xml:space='preserve'>Chapter requires a title.</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final String sXML = "<chapter/>";
     _runAndDumpCountsOnly ("xml:lang / xml:space on assert text", sSchematron, sXML);
   }

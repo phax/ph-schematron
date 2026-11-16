@@ -45,16 +45,17 @@ import com.helger.xml.serialize.read.DOMReader;
 public final class LetVariableLeakTest
 {
   /** Schematron with a global &lt;let&gt; that is evaluated up-front for every call. */
-  private static final String SCHEMA = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                       "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                                       "  <iso:let name='totalItems' value='count(/root/item)'/>\n" +
-                                       "  <iso:pattern>\n" +
-                                       "    <iso:rule context='/root'>\n" +
-                                       "      <iso:assert test='$totalItems &gt;= 0'>sanity</iso:assert>\n" +
-                                       "      <iso:report test='true()'>tripped: <iso:value-of select='$totalItems'/></iso:report>\n" +
-                                       "    </iso:rule>\n" +
-                                       "  </iso:pattern>\n" +
-                                       "</iso:schema>";
+  private static final String SCHEMA = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+        <iso:let name='totalItems' value='count(/root/item)'/>
+        <iso:pattern>
+          <iso:rule context='/root'>
+            <iso:assert test='$totalItems &gt;= 0'>sanity</iso:assert>
+            <iso:report test='true()'>tripped: <iso:value-of select='$totalItems'/></iso:report>
+          </iso:rule>
+        </iso:pattern>
+      </iso:schema>""";
 
   private static byte [] _createXmlItems (final int nItems)
   {

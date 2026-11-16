@@ -53,8 +53,8 @@ public final class Issue083Test
       if (true)
         LOGGER.info ("SVRL:\n" + sSVRL);
 
-      // XXX should be 1 according to #83
-      assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+      // The comment in the XML is found
+      assertEquals (1, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
     }
     finally
     {

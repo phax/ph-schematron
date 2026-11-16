@@ -61,15 +61,16 @@ public final class SchematronAllEnginesTelemetryTest
 
   // queryBinding=xslt2 so the SchXslt (XSLT2/3) engines emit SVRL; the tests use plain XPath only,
   // so the XPath-only pure engine handles them too.
-  private static final String SCH = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                    "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                                    "  <iso:pattern>\n" +
-                                    "    <iso:rule context='/root'>\n" +
-                                    "      <iso:assert test='item'>at least one item expected</iso:assert>\n" +
-                                    "      <iso:assert test='count(item) >= 2'>at least two items expected</iso:assert>\n" +
-                                    "    </iso:rule>\n" +
-                                    "  </iso:pattern>\n" +
-                                    "</iso:schema>";
+  private static final String SCH = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+        <iso:pattern>
+          <iso:rule context='/root'>
+            <iso:assert test='item'>at least one item expected</iso:assert>
+            <iso:assert test='count(item) >= 2'>at least two items expected</iso:assert>
+          </iso:rule>
+        </iso:pattern>
+      </iso:schema>""";
 
   // Empty root - both asserts fail
   private static final String XML_INVALID = "<?xml version='1.0' encoding='UTF-8'?><root/>";

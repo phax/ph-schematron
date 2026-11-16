@@ -41,14 +41,15 @@ public final class PSVoidVisitorWrapperTest
   @Test
   public void testBasic () throws Exception
   {
-    final String sSchema = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                           "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'>\n" +
-                           "  <sch:pattern>\n" +
-                           "    <sch:rule context='/root'>\n" +
-                           "      <sch:assert test='true()'>Text</sch:assert>\n" +
-                           "    </sch:rule>\n" +
-                           "  </sch:pattern>\n" +
-                           "</sch:schema>";
+    final String sSchema = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'>
+          <sch:pattern>
+            <sch:rule context='/root'>
+              <sch:assert test='true()'>Text</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final PSReader aReader = new PSReader (new ReadableResourceByteArray (sSchema.getBytes (StandardCharsets.UTF_8)));
     final PSSchema aSchema = aReader.readSchema ();
     assertNotNull (aSchema);

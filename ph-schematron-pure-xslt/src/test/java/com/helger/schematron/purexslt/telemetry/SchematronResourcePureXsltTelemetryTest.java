@@ -45,15 +45,16 @@ public final class SchematronResourcePureXsltTelemetryTest
   // time, so a single instance must be installed before the first test method runs
   private static final CapturingTelemetry TELEMETRY = new CapturingTelemetry ();
 
-  private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                           "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                                           "  <iso:pattern id='p1'>\n" +
-                                           "    <iso:rule context='/root'>\n" +
-                                           "      <iso:assert test='item'>at least one item expected</iso:assert>\n" +
-                                           "      <iso:assert test='count(item) ge 2'>at least two items expected</iso:assert>\n" +
-                                           "    </iso:rule>\n" +
-                                           "  </iso:pattern>\n" +
-                                           "</iso:schema>";
+  private static final String SCHEMATRON = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+        <iso:pattern id='p1'>
+          <iso:rule context='/root'>
+            <iso:assert test='item'>at least one item expected</iso:assert>
+            <iso:assert test='count(item) ge 2'>at least two items expected</iso:assert>
+          </iso:rule>
+        </iso:pattern>
+      </iso:schema>""";
 
   private static final String XML = "<?xml version='1.0' encoding='UTF-8'?><root/>";
 

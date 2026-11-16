@@ -51,22 +51,23 @@ public final class LimitsPhoxtrotVsSaxonTest
                                                                   new PhoxtrotXsltProcessor () };
 
   /** Like BenchmarkDomVsTinyTree in ph-schematron-benchmarks */
-  private static final String SCH_LARGE = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                                          "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
-                                          "  <iso:let name='total' value='count(/root/item)'/>\n" +
-                                          "  <iso:pattern>\n" +
-                                          "    <iso:rule context='/root'>\n" +
-                                          "      <iso:assert test='item'>at least one item expected</iso:assert>\n" +
-                                          "      <iso:assert test='$total &gt; 0'>total must be positive</iso:assert>\n" +
-                                          "    </iso:rule>\n" +
-                                          "    <iso:rule context='/root/item'>\n" +
-                                          "      <iso:assert test='@id'>item must have an id</iso:assert>\n" +
-                                          "      <iso:assert test='string-length(@id) &gt; 0'>id must be non-empty</iso:assert>\n" +
-                                          "      <iso:assert test='value'>item must have a value child</iso:assert>\n" +
-                                          "      <iso:assert test='number(value) &gt;= 0'>value must be a non-negative number</iso:assert>\n" +
-                                          "    </iso:rule>\n" +
-                                          "  </iso:pattern>\n" +
-                                          "</iso:schema>";
+  private static final String SCH_LARGE = """
+      <?xml version='1.0' encoding='UTF-8'?>
+      <iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>
+        <iso:let name='total' value='count(/root/item)'/>
+        <iso:pattern>
+          <iso:rule context='/root'>
+            <iso:assert test='item'>at least one item expected</iso:assert>
+            <iso:assert test='$total &gt; 0'>total must be positive</iso:assert>
+          </iso:rule>
+          <iso:rule context='/root/item'>
+            <iso:assert test='@id'>item must have an id</iso:assert>
+            <iso:assert test='string-length(@id) &gt; 0'>id must be non-empty</iso:assert>
+            <iso:assert test='value'>item must have a value child</iso:assert>
+            <iso:assert test='number(value) &gt;= 0'>value must be a non-negative number</iso:assert>
+          </iso:rule>
+        </iso:pattern>
+      </iso:schema>""";
 
   @NonNull
   private static AbstractSchematronXSLTBasedResource <?> _create (@NonNull final String sSCH,

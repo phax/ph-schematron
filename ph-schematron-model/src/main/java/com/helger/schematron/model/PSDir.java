@@ -268,19 +268,14 @@ public class PSDir implements IPSClonableElement <PSDir>, IPSOptionalElement, IP
     ret.setValue (m_eValue);
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof final IMicroElement x)
-        ret.addForeignElement (x.getClone ());
-      else
-        if (aContent instanceof final String x)
-          ret.addText (x);
-        else
-          if (aContent instanceof final PSName x)
-            ret.addName (x);
-          else
-            if (aContent instanceof final PSValueOf x)
-              ret.addValueOf (x);
-            else
-              throw new IllegalStateException ("Unexpected content element: " + aContent);
+      switch (aContent)
+      {
+        case final IMicroElement x -> ret.addForeignElement (x.getClone ());
+        case final String x -> ret.addText (x);
+        case final PSName x -> ret.addName (x);
+        case final PSValueOf x -> ret.addValueOf (x);
+        default -> throw new IllegalStateException ("Unexpected content element: " + aContent);
+      }
     }
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);

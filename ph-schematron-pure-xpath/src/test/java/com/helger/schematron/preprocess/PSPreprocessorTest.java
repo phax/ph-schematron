@@ -137,22 +137,24 @@ public final class PSPreprocessorTest
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Preprocessed:\n" + sXML);
 
-    assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
-                  "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:sqs=\"http://example.org/sqs\" xmlns:sqf=\"http://example.org/sqf\" queryBinding=\"xslt2\">\r\n" +
-                  "  <ns prefix=\"sqs\" uri=\"http://example.org/sqs\" />\r\n" +
-                  "  <ns prefix=\"sqf\" uri=\"http://example.org/sqf\" />\r\n" +
-                  "  <pattern name=\"Customer\">\r\n" +
-                  "    <rule context=\"/file/Customer\">\r\n" +
-                  "      <assert test=\"base-uri()\" role=\"fatal\">\n" +
-                  "        <sqs:issue id=\"xyz\">\n" +
-                  "          <sqs:element name=\"hudri\">bla</sqs:element>\n" +
-                  "        </sqs:issue>\n" +
-                  "        base-uri is '<value-of select=\"base-uri()\" />'\n" +
-                  "        <sqf:fix id=\"a12\" />\n" +
-                  "      </assert>\r\n" +
-                  "    </rule>\r\n" +
-                  "  </pattern>\r\n" +
-                  "</schema>\r\n",
+    assertEquals ("""
+        <?xml version="1.0" encoding="UTF-8"?>\r
+        <schema xmlns="http://purl.oclc.org/dsdl/schematron" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sqs="http://example.org/sqs" xmlns:sqf="http://example.org/sqf" queryBinding="xslt2">\r
+          <ns prefix="sqs" uri="http://example.org/sqs" />\r
+          <ns prefix="sqf" uri="http://example.org/sqf" />\r
+          <pattern name="Customer">\r
+            <rule context="/file/Customer">\r
+              <assert test="base-uri()" role="fatal">
+                <sqs:issue id="xyz">
+                  <sqs:element name="hudri">bla</sqs:element>
+                </sqs:issue>
+                base-uri is '<value-of select="base-uri()" />'
+                <sqf:fix id="a12" />
+              </assert>\r
+            </rule>\r
+          </pattern>\r
+        </schema>\r
+        """,
                   sXML);
   }
 
@@ -181,17 +183,19 @@ public final class PSPreprocessorTest
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Preprocessed:\n" + sXML);
 
-      assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
-                    "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
-                    "  <pattern name=\"Customer\">\r\n" +
-                    "    <rule context=\"/file/Customer\">\r\n" +
-                    "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab1</assert>\r\n" +
-                    "    </rule>\r\n" +
-                    "    <rule context=\"/file/Client\">\r\n" +
-                    "      <assert id=\"ab##0\" test=\"true\" role=\"fatal\">ab2</assert>\r\n" +
-                    "    </rule>\r\n" +
-                    "  </pattern>\r\n" +
-                    "</schema>\r\n",
+      assertEquals ("""
+          <?xml version="1.0" encoding="UTF-8"?>\r
+          <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">\r
+            <pattern name="Customer">\r
+              <rule context="/file/Customer">\r
+                <assert id="ab" test="true" role="fatal">ab1</assert>\r
+              </rule>\r
+              <rule context="/file/Client">\r
+                <assert id="ab##0" test="true" role="fatal">ab2</assert>\r
+              </rule>\r
+            </pattern>\r
+          </schema>\r
+          """,
                     sXML);
     }
     finally
@@ -220,17 +224,19 @@ public final class PSPreprocessorTest
     aPWS.setXMLWriterSettings (new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
                                                        .setNewLineMode (ENewLineMode.WINDOWS));
     final String sXML = new PSWriter (aPWS).getXMLString (aPreprocessedSchema);
-    assertEquals ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
-                  "<schema xmlns=\"http://purl.oclc.org/dsdl/schematron\" queryBinding=\"xslt2\">\r\n" +
-                  "  <pattern name=\"Customer\">\r\n" +
-                  "    <rule context=\"/file/Customer\">\r\n" +
-                  "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab1</assert>\r\n" +
-                  "    </rule>\r\n" +
-                  "    <rule context=\"/file/Client\">\r\n" +
-                  "      <assert id=\"ab\" test=\"true\" role=\"fatal\">ab2</assert>\r\n" +
-                  "    </rule>\r\n" +
-                  "  </pattern>\r\n" +
-                  "</schema>\r\n",
+    assertEquals ("""
+        <?xml version="1.0" encoding="UTF-8"?>\r
+        <schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">\r
+          <pattern name="Customer">\r
+            <rule context="/file/Customer">\r
+              <assert id="ab" test="true" role="fatal">ab1</assert>\r
+            </rule>\r
+            <rule context="/file/Client">\r
+              <assert id="ab" test="true" role="fatal">ab2</assert>\r
+            </rule>\r
+          </pattern>\r
+        </schema>\r
+        """,
                   sXML);
   }
 }

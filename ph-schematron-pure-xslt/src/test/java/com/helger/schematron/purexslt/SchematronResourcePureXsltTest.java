@@ -428,15 +428,16 @@ public final class SchematronResourcePureXsltTest
   @Test
   public void testGetSchematronValidityMatchesSVRL () throws Exception
   {
-    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                        "  <sch:pattern>\n" +
-                        "    <sch:rule context='item'>\n" +
-                        "      <sch:assert test='@id'>id missing</sch:assert>\n" +
-                        "      <sch:report test='@id = \"r\"'>report only</sch:report>\n" +
-                        "    </sch:rule>\n" +
-                        "  </sch:pattern>\n" +
-                        "</sch:schema>";
+    final String sSch = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:pattern>
+            <sch:rule context='item'>
+              <sch:assert test='@id'>id missing</sch:assert>
+              <sch:report test='@id = "r"'>report only</sch:report>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromString (sSch).build ();
     for (final String sXML : new String [] { "<root><item id='1'/></root>",
                                              "<root><item id='r'/></root>",
@@ -462,15 +463,16 @@ public final class SchematronResourcePureXsltTest
   {
     // A schema level variable is a global XSLT variable. For a DOM document with a base URI it is
     // evaluated on the same tree the rules are applied to, so node identity works
-    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
-                        "  <sch:let name='items' value='//item'/>\n" +
-                        "  <sch:pattern>\n" +
-                        "    <sch:rule context='item'>\n" +
-                        "      <sch:assert test='some $i in $items satisfies $i is current()'>not the same node</sch:assert>\n" +
-                        "    </sch:rule>\n" +
-                        "  </sch:pattern>\n" +
-                        "</sch:schema>";
+    final String sSch = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>
+          <sch:let name='items' value='//item'/>
+          <sch:pattern>
+            <sch:rule context='item'>
+              <sch:assert test='some $i in $items satisfies $i is current()'>not the same node</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final Document aDoc = DOMReader.readXMLDOM ("<root><item/><item/></root>");
     final SchematronOutputType aSVRL = SchematronResourcePureXslt.builderFromString (sSch)
                                                                  .build ()
@@ -482,19 +484,20 @@ public final class SchematronResourcePureXsltTest
   @Test
   public void testActivePatternRoleAndDocuments () throws Exception
   {
-    final String sSch = "<?xml version='1.0' encoding='UTF-8'?>\n" +
-                        "<sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'>\n" +
-                        "  <sch:pattern id='p1' role='{critical}'>\n" +
-                        "    <sch:rule context='item'>\n" +
-                        "      <sch:assert test='false()'>fails</sch:assert>\n" +
-                        "    </sch:rule>\n" +
-                        "  </sch:pattern>\n" +
-                        "  <sch:pattern id='p2'>\n" +
-                        "    <sch:rule context='item'>\n" +
-                        "      <sch:assert test='true()'>never</sch:assert>\n" +
-                        "    </sch:rule>\n" +
-                        "  </sch:pattern>\n" +
-                        "</sch:schema>";
+    final String sSch = """
+        <?xml version='1.0' encoding='UTF-8'?>
+        <sch:schema xmlns:sch='http://purl.oclc.org/dsdl/schematron'>
+          <sch:pattern id='p1' role='{critical}'>
+            <sch:rule context='item'>
+              <sch:assert test='false()'>fails</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+          <sch:pattern id='p2'>
+            <sch:rule context='item'>
+              <sch:assert test='true()'>never</sch:assert>
+            </sch:rule>
+          </sch:pattern>
+        </sch:schema>""";
     final Document aDoc = DOMReader.readXMLDOM ("<root><item/></root>");
     for (final EPureXsltVersion eVersion : EPureXsltVersion.values ())
     {

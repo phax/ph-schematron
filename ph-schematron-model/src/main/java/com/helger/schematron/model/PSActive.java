@@ -240,20 +240,18 @@ public class PSActive implements IPSClonableElement <PSActive>, IPSHasForeignEle
     ret.setPattern (m_sPattern);
     for (final Object aContent : m_aContent)
     {
-      if (aContent instanceof final String sContent)
-        ret.addText (sContent);
-      else
-        if (aContent instanceof final PSDir aDir)
-          ret.addDir (aDir.getClone ());
-        else
-          if (aContent instanceof final PSEmph aEmph)
-            ret.addEmph (aEmph.getClone ());
-          else
-            if (aContent instanceof final PSSpan aSpan)
-              ret.addSpan (aSpan.getClone ());
-            else
-              if (aContent instanceof final IMicroElement aElement)
-                ret.addForeignElement (aElement.getClone ());
+      switch (aContent)
+      {
+        case final String sContent -> ret.addText (sContent);
+        case final PSDir aDir -> ret.addDir (aDir.getClone ());
+        case final PSEmph aEmph -> ret.addEmph (aEmph.getClone ());
+        case final PSSpan aSpan -> ret.addSpan (aSpan.getClone ());
+        case final IMicroElement aElement -> ret.addForeignElement (aElement.getClone ());
+        default ->
+        {
+          // Ignore
+        }
+      }
     }
     if (hasForeignAttributes ())
       ret.addForeignAttributes (m_aForeignAttrs);
