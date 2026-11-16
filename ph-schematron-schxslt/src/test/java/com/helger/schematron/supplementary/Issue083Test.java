@@ -55,8 +55,8 @@ public final class Issue083Test
       if (true)
         LOGGER.info ("SVRL:\n" + sSVRL);
 
-      // XXX should be 1 according to #83
-      assertEquals (0, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
+      // Both comments in the XML are found - the licence header and the one in the element
+      assertEquals (2, SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSVRL).size ());
     }
     finally
     {
