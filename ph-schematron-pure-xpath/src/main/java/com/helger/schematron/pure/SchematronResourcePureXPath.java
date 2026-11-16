@@ -67,7 +67,6 @@ import com.helger.schematron.pure.bound.PSBoundSchemaCacheKey;
 import com.helger.schematron.pure.validation.IPSValidationHandler;
 import com.helger.schematron.pure.validation.telemetry.TelemetryValidationHandler;
 import com.helger.schematron.pure.xpath.IXPathConfig;
-import com.helger.schematron.pure.xpath.XPathConfig;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.saxon.SaxonTinyTreeHelper;
 import com.helger.schematron.svrl.SVRLMarshaller;
@@ -107,9 +106,9 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
 
   private static final Logger LOGGER = LoggerFactory.getLogger (SchematronResourcePureXPath.class);
 
-  private String m_sPhase;
-  private IPSErrorHandler m_aErrorHandler;
-  private IPSValidationHandler m_aCustomValidationHandler;
+  private final String m_sPhase;
+  private final IPSErrorHandler m_aErrorHandler;
+  private final IPSValidationHandler m_aCustomValidationHandler;
   private IXPathConfig m_aXPathConfig = XPathConfigBuilder.DEFAULT;
   private boolean m_bPerRuleExecutionTelemetry = false;
   private boolean m_bCopyDomToSaxonTree = DEFAULT_COPY_DOM_TO_SAXON_TREE;

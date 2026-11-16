@@ -62,24 +62,14 @@ public abstract class AbstractSchematronResource implements ISchematronResource
 
   private final IReadableResource m_aResource;
   private final String m_sResourceID;
-  private boolean m_bUseCache;
-  private boolean m_bLenient;
-  private EntityResolver m_aEntityResolver;
+  private final boolean m_bUseCache;
+  private final boolean m_bLenient;
+  private final EntityResolver m_aEntityResolver;
   // Runtime-only ph-telemetry toggles. Set by the engine builders; default off. Not part of the
   // compile-time config (they don't affect the produced stylesheet).
   private final boolean m_bUseTelemetry;
   // Per-failed-assertion / successful-report spans, derived post-hoc from the SVRL
   private final boolean m_bPerAssertionResultTelemetry;
-
-  protected AbstractSchematronResource (@NonNull final IReadableResource aResource)
-  {
-    this (aResource,
-          DEFAULT_USE_CACHE,
-          DEFAULT_LENIENT,
-          null,
-          DEFAULT_TELEMETRY,
-          DEFAULT_PER_ASSERTION_RESULT_TELEMETRY);
-  }
 
   /**
    * Constructor
@@ -143,20 +133,6 @@ public abstract class AbstractSchematronResource implements ISchematronResource
   public final EntityResolver getEntityResolver ()
   {
     return m_aEntityResolver;
-  }
-
-  /**
-   * Set the XML entity resolver to be used when reading the Schematron or the XML to be validated.
-   * This can only be set before the Schematron is bound. If it is already bound an exception is
-   * thrown to indicate the unnecessity of the call.
-   *
-   * @param aEntityResolver
-   *        The entity resolver to set. May be <code>null</code>.
-   * @since 4.2.3
-   */
-  protected final void internalSetEntityResolver (@Nullable final EntityResolver aEntityResolver)
-  {
-    m_aEntityResolver = aEntityResolver;
   }
 
   /**
