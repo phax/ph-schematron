@@ -1,0 +1,2 @@
+<!ENTITY greeting "Hello from the catalog">
+<!ELEMENT doc (#PCDATA)>

@@ -17,16 +17,7 @@
 package com.helger.maven.schematron;
 
 import java.io.File;
-import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
-import javax.xml.XMLConstants;
-import javax.xml.transform.ErrorListener;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,41 +31,22 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.sonatype.plexus.build.incremental.BuildContext;
-import org.w3c.dom.Document;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.misc.Since;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.annotation.style.VisibleForTesting;
-import com.helger.base.CGlobal;
-import com.helger.base.concurrent.ExecutorServiceHelper;
-import com.helger.base.concurrent.ThreadHelper;
 import com.helger.base.string.StringHelper;
-import com.helger.base.string.StringImplode;
-import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsHashMap;
-import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsMap;
-import com.helger.io.file.FileHelper;
 import com.helger.io.file.FilenameHelper;
-import com.helger.io.resource.FileSystemResource;
-import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.ESchematronEngine;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
-import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
-import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
+import com.helger.schematron.enginefactory.SchematronEngineFactory;
+import com.helger.schematron.enginefactory.SchematronEngineSettings;
+import com.helger.schematron.enginefactory.SchematronToolException;
+import com.helger.schematron.enginefactory.SchematronXsltCreator;
 import com.helger.schematron.sch.SchematronSCHConfig;
-import com.helger.schematron.schxslt.xslt2.SchematronProviderXSLTFromSchXslt_XSLT2;
-import com.helger.schematron.schxslt.xslt2.SchematronSchXslt_XSLT2Config;
-import com.helger.schematron.schxslt2.xslt.SchematronProviderXSLTFromSchXslt2;
-import com.helger.schematron.schxslt2.xslt.SchematronSchXslt2Config;
-import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
-import com.helger.schematron.purexslt.xslt.SchematronToXsltConverter;
-import com.helger.schematron.svrl.CSVRL;
-import com.helger.xml.XMLHelper;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
-import com.helger.xml.serialize.write.XMLWriter;
-import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * Converts one or more Schematron schema files into XSLT scripts.
@@ -349,32 +321,35 @@ public final class Schematron2XSLTMojo extends AbstractMojo
       throw new MojoExecutionException ("Failed to create the XSLT directory " + m_aXsltDirectory);
 
     final ESchematronEngine eEngine = ESchematronEngine.getFromIDOrNull (m_sSchematronEngine);
-    if (eEngine == null)
+    if (eEngine == null || !SchematronEngineFactory.isXsltCreating (eEngine))
       throw new MojoExecutionException ("The provided Schematron engine '" +
                                         m_sSchematronEngine +
                                         "' is not supported. Supported values are: " +
-                                        StringImplode.imploder ()
-                                                     .source (Arrays.stream (ESchematronEngine.values ())
-                                                                    .filter (ESchematronEngine::isXSLTBased)
-                                                                    .collect (Collectors.toList ()),
-                                                              e -> "'" + e.getID () + "'")
-                                                     .separator (", ")
-                                                     .build ());
+                                        SchematronEngineFactory.getEngineIDsAsString (SchematronEngineFactory::isXsltCreating));
 
     // The XSLT processor of the XSLT based engines
     final ISchematronXsltProcessor aXsltProcessor;
-    if (eEngine.isXsltProcessorSelectable ())
-      try
-      {
-        aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (m_sXsltProcessor);
+    try
+    {
+      aXsltProcessor = SchematronEngineFactory.getXsltProcessor (eEngine, m_sXsltProcessor);
+      if (aXsltProcessor != null)
         getLog ().debug ("Using the XSLT processor '" + aXsltProcessor.getID () + "'");
-      }
-      catch (final IllegalArgumentException | IllegalStateException ex)
-      {
-        throw new MojoExecutionException (ex.getMessage ());
-      }
-    else
-      aXsltProcessor = null;
+    }
+    catch (final IllegalArgumentException | IllegalStateException ex)
+    {
+      throw new MojoExecutionException (ex.getMessage ());
+    }
+
+    // No custom URI resolver (overrides the default of the config builder)
+    final SchematronEngineSettings aSettings = new SchematronEngineSettings ().setEngine (eEngine)
+                                                                              .setXsltProcessor (aXsltProcessor)
+                                                                              .setPhase (m_sPhaseName)
+                                                                              .setLanguageCode (m_sLanguageCode)
+                                                                              .setParameters (m_aCustomParameters)
+                                                                              .setForceCacheResult (m_bForceCacheResult);
+    final SchematronXsltCreator aCreator = new SchematronXsltCreator (aSettings,
+                                                                      new MavenLogHandler (getLog ())).setXsltHeader (m_sXSLTHeader)
+                                                                                                      .setShowProgress (m_bShowProgress);
 
     // for all Schematron files that match the pattern
     final DirectoryScanner aScanner = new DirectoryScanner ();
@@ -399,234 +374,32 @@ public final class Schematron2XSLTMojo extends AbstractMojo
                         aXSLTFile.getPath () +
                         "'");
 
-        // 2. The Schematron resource
-        final IReadableResource aSchematronResource = new FileSystemResource (aFile);
-
-        // 3. Check if the XSLT file already exists
+        // 2. Check if the XSLT file already exists
         if (aXSLTFile.exists () && !m_bOverwriteWithoutQuestion)
         {
-          // 3.1 Not overwriting the existing file
+          // Not overwriting the existing file
           getLog ().debug ("Skipping XSLT file '" + aXSLTFile.getPath () + "' because it already exists!");
+          continue;
         }
-        else
+
+        // 3. The main SCH to XSLT conversion
+        try
         {
-          // 3.2 Create the directory, if necessary
-          final File aXsltFileDirectory = aXSLTFile.getParentFile ();
-          if (aXsltFileDirectory != null && !aXsltFileDirectory.exists ())
+          buildContext.removeMessages (aFile);
+          // Custom error listener to log to the Mojo logger
+          aCreator.convertFile (aFile, aXSLTFile, new PluginErrorListener (buildContext, aFile));
+          buildContext.refresh (aXSLTFile.getParentFile ());
+        }
+        catch (final SchematronToolException ex)
+        {
+          new MavenLogHandler (getLog ()).error (ex.getMessage (), ex.getCause ());
+          if (m_bStopOnError)
           {
-            getLog ().debug ("Creating directory '" + aXsltFileDirectory.getPath () + "'");
-            if (!aXsltFileDirectory.mkdirs ())
-            {
-              final String sMessage = "Failed to convert '" +
-                                      aFile.getPath () +
-                                      "' because directory '" +
-                                      aXsltFileDirectory.getPath () +
-                                      "' could not be created";
-              getLog ().error (sMessage);
-              throw new MojoFailureException (sMessage);
-            }
+            if (ex.getCause () != null)
+              throw new MojoExecutionException (ex.getMessage (), ex.getCause ());
+            throw new MojoFailureException (ex.getMessage ());
           }
-
-          // 3.3 The main SCH to XSLT conversion
-          final Wrapper <MojoFailureException> fe = new Wrapper <> ();
-          final Wrapper <MojoExecutionException> ee = new Wrapper <> ();
-          final Runnable r = () -> {
-            try
-            {
-              buildContext.removeMessages (aFile);
-              // Custom error listener to log to the Mojo logger
-              final ErrorListener aMojoErrorListener = new PluginErrorListener (buildContext, aFile);
-
-              getLog ().debug ("Compiling Schematron instance " +
-                               aSchematronResource.toString () +
-                               " with engine " +
-                               eEngine);
-
-              final Document aXsltDoc = switch (eEngine)
-              {
-                case ISO_SCHEMATRON:
-                {
-                  // Custom error listener
-                  // No custom URI resolver (override the Config builder default)
-                  // Specified phase - default = null
-                  // Specified language code - default = null
-                  final SchematronSCHConfig aConfig = SchematronSCHConfig.builder (aSchematronResource)
-                                                                         .errorListener (aMojoErrorListener)
-                                                                         .xsltProcessor (aXsltProcessor)
-                                                                         .uriResolver (null)
-                                                                         .phase (m_sPhaseName)
-                                                                         .languageCode (m_sLanguageCode)
-                                                                         .parameters (m_aCustomParameters)
-                                                                         .forceCacheResult (m_bForceCacheResult)
-                                                                         .build ();
-                  yield SchematronProviderXSLTFromSCH.createSchematronXSLT (aConfig);
-                }
-                case SCHXSLT1:
-                {
-                  final Map <String, String> aEffectiveCustomParams = new CommonsHashMap <> (m_aCustomParameters);
-                  aEffectiveCustomParams.put ("schxslt.compile.metadata", "false");
-                  final SchematronSchXslt_XSLT2Config aSchXsltConfig = SchematronSchXslt_XSLT2Config.builder (aSchematronResource)
-                                                                                                    .errorListener (aMojoErrorListener)
-                                                                                                    .xsltProcessor (aXsltProcessor)
-                                                                                                    .uriResolver (null)
-                                                                                                    .phase (m_sPhaseName)
-                                                                                                    .languageCode (m_sLanguageCode)
-                                                                                                    .parameters (aEffectiveCustomParams)
-                                                                                                    .forceCacheResult (m_bForceCacheResult)
-                                                                                                    .build ();
-                  yield SchematronProviderXSLTFromSchXslt_XSLT2.createSchematronXSLT (aSchXsltConfig);
-                }
-                case SCHXSLT2:
-                {
-                  final SchematronSchXslt2Config aSchXslt2Config = SchematronSchXslt2Config.builder (aSchematronResource)
-                                                                                           .errorListener (aMojoErrorListener)
-                                                                                           .xsltProcessor (aXsltProcessor)
-                                                                                           .uriResolver (null)
-                                                                                           .phase (m_sPhaseName)
-                                                                                           .languageCode (m_sLanguageCode)
-                                                                                           .parameters (m_aCustomParameters)
-                                                                                           .forceCacheResult (m_bForceCacheResult)
-                                                                                           .build ();
-                  yield SchematronProviderXSLTFromSchXslt2.createSchematronXSLT (aSchXslt2Config);
-                }
-                case PURE_XSLT:
-                {
-                  // Java-side PSSchema -> XSLT 3.0 conversion (no external ISO stylesheet chain).
-                  // Language code and parameter map are ignored - they are SCH/SchXslt knobs that
-                  // don't apply to the Java generator. Phase selection IS honoured.
-                  yield SchematronToXsltConverter.fromResource (aSchematronResource)
-                                                 .setPhase (m_sPhaseName)
-                                                 .setXsltVersion (EPureXsltVersion.DEFAULT)
-                                                 .getAsDocument ();
-                }
-                default:
-                  throw new MojoExecutionException ("Unsupported Schematron Engine - must be XSLT based: " + eEngine);
-              };
-
-              if (aXsltDoc == null)
-              {
-                final String message = "Failed to convert '" +
-                                       aFile.getPath () +
-                                       "': the Schematron resource is invalid";
-                getLog ().error (message);
-                throw new MojoFailureException (message);
-              }
-
-              if (StringHelper.isNotEmpty (m_sXSLTHeader))
-              {
-                // Inject the header into the XSLT
-                aXsltDoc.insertBefore (aXsltDoc.createComment (m_sXSLTHeader), aXsltDoc.getDocumentElement ());
-              }
-
-              // Add all namespaces from XSLT document root
-              final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
-              final ICommonsMap <String, String> aMapFromXml = new CommonsLinkedHashMap <> ();
-              XMLHelper.forAllAttributes (aXsltDoc.getDocumentElement (), (sAttrName, sAttrValue) -> {
-                if (sAttrName.startsWith (sNSPrefix))
-                  aMapFromXml.put (sAttrName.substring (sNSPrefix.length ()), sAttrValue);
-              });
-
-              // Write the resulting XSLT file to disk
-              final MapBasedNamespaceContext aNSContext = new MapBasedNamespaceContext ();
-              if (!aMapFromXml.containsKey ("svrl"))
-                aNSContext.addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
-              for (final var e : aMapFromXml.entrySet ())
-                aNSContext.addMapping (e.getKey (), e.getValue ());
-
-              final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSContext)
-                                                                     .setPutNamespaceContextPrefixesInRoot (true);
-
-              final OutputStream aOS = FileHelper.getOutputStream (aXSLTFile);
-              if (aOS == null)
-                throw new IllegalStateException ("Failed to open output stream for file " +
-                                                 aXSLTFile.getAbsolutePath ());
-              XMLWriter.writeToStream (aXsltDoc, aOS, aXWS);
-
-              getLog ().debug ("Finished creating XSLT file '" + aXSLTFile.getPath () + "'");
-
-              buildContext.refresh (aXsltFileDirectory);
-            }
-            catch (final MojoFailureException up)
-            {
-              fe.set (up);
-            }
-            catch (final Exception ex)
-            {
-              final String sMessage = "Failed to convert '" +
-                                      aFile.getPath () +
-                                      "' to XSLT file '" +
-                                      aXSLTFile.getPath () +
-                                      "'";
-              getLog ().error (sMessage, ex);
-              ee.set (new MojoExecutionException (sMessage, ex));
-            }
-          };
-
-          if (m_bShowProgress)
-          {
-            // Run conversion in one thread and run another thread that logs the
-            // time
-            final ExecutorService aES = Executors.newSingleThreadExecutor ();
-            aES.submit (r);
-
-            final long nStartTime = System.currentTimeMillis ();
-            final AtomicBoolean aLoggedAnything = new AtomicBoolean (false);
-            final Thread t = new Thread (() -> {
-              long nLastSecs = 0;
-              while (!Thread.currentThread ().isInterrupted ())
-              {
-                if (ThreadHelper.sleep (500).isSuccess ())
-                {
-                  final long nDurationSecs = (System.currentTimeMillis () - nStartTime) /
-                                             CGlobal.MILLISECONDS_PER_SECOND;
-                  // Log only every x seconds
-                  if (nDurationSecs >= nLastSecs + 5)
-                  {
-                    getLog ().info ("Schematron conversion of '" +
-                                    aFile.getName () +
-                                    "' already takes " +
-                                    nDurationSecs +
-                                    " seconds - please wait...");
-                    nLastSecs = nDurationSecs;
-                    aLoggedAnything.set (true);
-                  }
-                }
-              }
-            });
-            t.setDaemon (true);
-            t.start ();
-            ExecutorServiceHelper.shutdownAndWaitUntilAllTasksAreFinished (aES);
-            t.interrupt ();
-            if (aLoggedAnything.get ())
-            {
-              // Log finalization of conversion if it took longer
-              final long nDurationSecs = (System.currentTimeMillis () - nStartTime) / CGlobal.MILLISECONDS_PER_SECOND;
-              getLog ().info ("Schematron conversion of '" +
-                              aFile.getName () +
-                              "' was finalized after " +
-                              nDurationSecs +
-                              " seconds");
-            }
-          }
-          else
-          {
-            // No progress version
-            r.run ();
-          }
-
-          // Did any exceptions occur?
-          if (fe.isSet ())
-          {
-            if (m_bStopOnError)
-              throw fe.get ();
-            getLog ().warn ("Received an error, but continuing anyway", fe.get ());
-          }
-          if (ee.isSet ())
-          {
-            if (m_bStopOnError)
-              throw ee.get ();
-            getLog ().warn ("Received an error, but continuing anyway", ee.get ());
-          }
+          getLog ().warn ("Received an error, but continuing anyway");
         }
       }
     }

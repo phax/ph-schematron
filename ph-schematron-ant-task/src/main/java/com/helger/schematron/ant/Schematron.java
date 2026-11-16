@@ -44,35 +44,19 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
-import com.helger.diagnostics.error.ErrorTextProvider;
 import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.level.EErrorLevel;
-import com.helger.diagnostics.error.level.IErrorLevel;
-import com.helger.diagnostics.error.list.IErrorList;
-import com.helger.io.file.FileOperations;
+import com.helger.schematron.CSchematron;
 import com.helger.schematron.ESchematronEngine;
-import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
-import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
-import com.helger.schematron.errorhandler.CollectingPSErrorHandler;
-import com.helger.schematron.pure.SchematronResourcePureXPath;
-import com.helger.schematron.purexslt.SchematronResourcePureXslt;
-import com.helger.schematron.sch.SchematronResourceSCH;
+import com.helger.schematron.enginefactory.SchematronEngineFactory;
+import com.helger.schematron.enginefactory.SchematronEngineResource;
+import com.helger.schematron.enginefactory.SchematronEngineSettings;
+import com.helger.schematron.enginefactory.SchematronFileValidationResult;
+import com.helger.schematron.enginefactory.SchematronValidationRunner;
 import com.helger.schematron.sch.SchematronSCHConfig;
-import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
-import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
-import com.helger.schematron.svrl.AbstractSVRLMessage;
-import com.helger.schematron.svrl.DefaultSVRLErrorLevelDeterminator;
-import com.helger.schematron.svrl.SVRLHelper;
-import com.helger.schematron.svrl.SVRLMarshaller;
-import com.helger.schematron.svrl.SVRLNamespaceContext;
-import com.helger.schematron.svrl.SVRLResourceError;
-import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.schematron.xslt.SchematronResourceXSLT;
 import com.helger.typeconvert.collection.IStringMap;
 import com.helger.typeconvert.collection.StringMap;
-import com.helger.xml.transform.CollectingTransformErrorListener;
-import com.helger.xml.transform.TransformSourceFactory;
 
 /**
  * ANT task to perform Schematron validation.
@@ -256,6 +240,31 @@ public class Schematron extends AbstractSchematronTask
    */
   private final ICommonsList <Schematron.Parameter> m_aParameters = new CommonsArrayList <> ();
 
+  /**
+   * <code>true</code> if an <code>xmlcatalog</code> element was added. Only then the XML files are
+   * read with the catalog: external DTDs and entities only from the catalog, one that is not in the
+   * catalog makes the file fail.
+   */
+  private boolean m_bXmlCatalogSet = false;
+
+  /**
+   * <code>true</code> to accept deprecated Schematron namespace URIs. Only used by the engine
+   * <code>pure-xpath</code>. Since v11.0.0.
+   */
+  private boolean m_bLenient = CSchematron.DEFAULT_ALLOW_DEPRECATED_NAMESPACES;
+
+  /**
+   * <code>true</code> to ignore all failed asserts and successful reports below level error: they
+   * are neither logged nor counted. Since v11.0.0.
+   */
+  private boolean m_bIgnoreWarnings = false;
+
+  /**
+   * <code>true</code> to stop at the first XML file that fails, <code>false</code> to validate all
+   * files and fail at the end. Since v11.0.0.
+   */
+  private boolean m_bFailFast = true;
+
   public Schematron ()
   {}
 
@@ -380,6 +389,7 @@ public class Schematron extends AbstractSchematronTask
   public void addConfiguredXMLCatalog (@NonNull final XMLCatalog aXmlCatalog)
   {
     m_aXmlCatalog.addConfiguredXMLCatalog (aXmlCatalog);
+    m_bXmlCatalogSet = true;
     _debug ("Added XMLCatalog " + aXmlCatalog);
   }
 
@@ -388,6 +398,43 @@ public class Schematron extends AbstractSchematronTask
     final Schematron.Parameter aParameter = new Schematron.Parameter ();
     m_aParameters.add (aParameter);
     return aParameter;
+  }
+
+  /**
+   * @param bLenient
+   *        <code>true</code> to accept deprecated Schematron namespace URIs (engine
+   *        <code>pure-xpath</code> only).
+   * @since 11.0.0
+   */
+  public void setLenient (final boolean bLenient)
+  {
+    m_bLenient = bLenient;
+    _debug (bLenient ? "Old deprecated namespace URIs are supported"
+                     : "Old deprecated namespace URIs are not supported");
+  }
+
+  /**
+   * @param bIgnoreWarnings
+   *        <code>true</code> to ignore all warnings and information.
+   * @since 11.0.0
+   */
+  public void setIgnoreWarnings (final boolean bIgnoreWarnings)
+  {
+    m_bIgnoreWarnings = bIgnoreWarnings;
+    _debug (bIgnoreWarnings ? "Warnings will be ignored and only errors will be displayed"
+                            : "Warning and errors will be displayed");
+  }
+
+  /**
+   * @param bFailFast
+   *        <code>true</code> to stop at the first failing XML file, <code>false</code> to fail
+   *        after all files were validated.
+   * @since 11.0.0
+   */
+  public void setFailFast (final boolean bFailFast)
+  {
+    m_bFailFast = bFailFast;
+    _debug (bFailFast ? "Failing at the first erroneous file" : "Failing after validating all files");
   }
 
   /**
@@ -429,7 +476,7 @@ public class Schematron extends AbstractSchematronTask
     return f != null ? f : NULL_FILE_PLACEHOLDER;
   }
 
-  private void _performValidation (@NonNull final ISchematronResource aSch,
+  private void _performValidation (@NonNull final SchematronValidationRunner aRunner,
                                    @NonNull final ICommonsList <ResourceCollection> aResCollections,
                                    @Nullable final File aSVRLDirectory,
                                    final boolean bExpectSuccess) throws BuildException
@@ -473,6 +520,7 @@ public class Schematron extends AbstractSchematronTask
         }
     }
 
+    final ICommonsList <String> aErrorMessages = new CommonsArrayList <> ();
     for (final DirectoryData aBaseDirData : aFiles.values ())
     {
       _debug ("Scanning directory " + aBaseDirData.getBaseDir () + " for XMLs to be Schematron validated");
@@ -495,157 +543,33 @@ public class Schematron extends AbstractSchematronTask
         for (final String sXMLFilename : aXMLFilenames)
         {
           final File aXMLFile = new File (aBaseDirData.getBaseDir (), sXMLFilename);
-
-          // Validate XML file
-          _info ("Validating XML file '" +
-                 aXMLFile.getPath () +
-                 "' against Schematron rules from '" +
-                 m_aSchematronFile.getName () +
-                 "' expecting " +
-                 (bExpectSuccess ? "success" : "failure"));
-          try
+          final SchematronFileValidationResult aResult = aRunner.validateFile (aXMLFile,
+                                                                               SchematronValidationRunner.getSVRLFile (aSVRLDirectory,
+                                                                                                                       sXMLFilename),
+                                                                               bExpectSuccess);
+          if (aResult.exception () != null)
+            _errorOrFail (aResult.expectationFailureMessage (), aResult.exception ());
+          else
           {
-            // This is performing the validation
-            final SchematronOutputType aSOT = aSch.applySchematronValidationToSVRL (TransformSourceFactory.create (aXMLFile));
-
-            if (aSOT != null)
+            if (aResult.expectationFailureMessage () != null)
             {
-              // Beautified SVRL :)
-              final SVRLMarshaller aMarshaller = new SVRLMarshaller ();
-              aMarshaller.setUseSchema (false);
-              aMarshaller.setFormattedOutput (true);
-              aMarshaller.setNamespaceContext (SVRLNamespaceContext.getInstance ());
-
-              // If aSOT == null a different error should be present
-              if (aSVRLDirectory != null)
-              {
-                // Save SVRL
-                final File aSVRLFile = new File (aSVRLDirectory, sXMLFilename + ".svrl");
-                if (FileOperations.createDirIfNotExisting (aSVRLFile.getParentFile ()).isFailure ())
-                  _error ("Failed to create parent directory of '" + aSVRLFile.getAbsolutePath () + "'!");
-
-                if (aMarshaller.write (aSOT, aSVRLFile).isSuccess ())
-                  _info ("Successfully saved SVRL file '" + aSVRLFile.getPath () + "'");
-                else
-                  _error ("Error saving SVRL file '" + aSVRLFile.getPath () + "'");
-              }
-
-              _debug ("Created SVRL:\n" + aMarshaller.getAsString (aSOT));
-            }
-
-            final ICommonsList <AbstractSVRLMessage> aMessages = SVRLHelper.getAllFailedAssertionsAndSuccessfulReports (aSOT);
-            final int nErrorMessages = aMessages.getCount (x -> x.getFlag ().isGT (EErrorLevel.WARN));
-            final int nWarningMessages = aMessages.getCount (x -> x.getFlag ().isEQ (EErrorLevel.WARN));
-            final int nInfoMessages = aMessages.getCount (x -> x.getFlag ().isLT (EErrorLevel.WARN));
-            final String sErrors = nErrorMessages + " Schematron error" + (nErrorMessages == 1 ? "" : "s");
-            final String sWarnings = nWarningMessages + " Schematron warning" + (nWarningMessages == 1 ? "" : "s");
-            // No plural - haha
-            final String sInfos = nInfoMessages + " Schematron information";
-
-            final boolean bExpectationFulfilled;
-            if (bExpectSuccess)
-            {
-              // No failed assertions expected
-              bExpectationFulfilled = nErrorMessages == 0;
-              if (bExpectationFulfilled)
-              {
-                // Success as expected
-                _info ("XML file '" +
-                       aXMLFile.getPath () +
-                       "' was validated against Schematron '" +
-                       aSch.getResource ().getPath () +
-                       "' and matches the rules" +
-                       (nWarningMessages > 0 ? " (" +
-                                               sWarnings +
-                                               (nWarningMessages == 1 ? " is" : " are") +
-                                               " contained)" : "") +
-                       (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
-                                          : ""));
-              }
+              if (m_bFailFast)
+                _errorOrFail (aResult.expectationFailureMessage ());
               else
-              {
-                _error (sErrors +
-                        (nWarningMessages > 0 ? " and " + sWarnings : "") +
-                        (nInfoMessages > 0 ? " and " + sInfos : "") +
-                        " for XML file '" +
-                        aXMLFile.getPath () +
-                        "'");
-              }
+                aErrorMessages.add (aResult.expectationFailureMessage ());
             }
-            else
-            {
-              // At least one failed assertions expected
-              bExpectationFulfilled = nErrorMessages > 0;
-              if (bExpectationFulfilled)
-              {
-                // Errors as expected
-                _info ("XML file '" +
-                       aXMLFile.getPath () +
-                       "' was validated against Schematron '" +
-                       aSch.getResource ().getPath () +
-                       "' - " +
-                       sErrors +
-                       (nWarningMessages > 0 ? " and " + sWarnings : "") +
-                       (nInfoMessages > 0 ? " and " + sInfos : "") +
-                       (nErrorMessages == 1 && (nWarningMessages + nInfoMessages) == 0 ? " was" : " were") +
-                       " found (as expected)");
-              }
-              else
-              {
-                _error ("No Schematron errors for erroneous XML file '" +
-                        aXMLFile.getPath () +
-                        "'" +
-                        (nWarningMessages > 0 ? " (" +
-                                                sWarnings +
-                                                (nWarningMessages == 1 ? " is" : " are") +
-                                                " contained)" : "") +
-                        (nInfoMessages > 0 ? " (" + sInfos + (nInfoMessages == 1 ? " is" : " are") + " contained)"
-                                           : ""));
-              }
-            }
-
-            // List details
-            for (final AbstractSVRLMessage aMessage : aMessages)
-            {
-              final SVRLResourceError aResError = aMessage.getAsResourceError (aXMLFile.getPath ());
-              final String sText = ErrorTextProvider.DEFAULT.getErrorText (aResError, Locale.US);
-
-              if (aMessage.getFlag ().isGE (EErrorLevel.ERROR))
-                _error (sText);
-              else
-                if (aMessage.getFlag ().isGE (EErrorLevel.WARN))
-                  _warn (sText);
-                else
-                  _info (sText);
-            }
-
-            if (!bExpectationFulfilled)
-              _errorOrFail ("The expectations were not fullfilled, therefore the overall result is negative");
-            if (nErrorMessages > 0 && m_bFailOnValidationError)
-              throw new BuildException ("Validation errors are present.");
-            if (nWarningMessages > 0 && m_bFailOnValidationWarn)
-              throw new BuildException ("Validation warnings are present.");
-            if (nInfoMessages > 0 && m_bFailOnValidationInfo)
-              throw new BuildException ("Validation information are present.");
-          }
-          catch (final BuildException up)
-          {
-            throw up;
-          }
-          catch (final Exception ex)
-          {
-            final String sMessage = "Exception validating XML '" +
-                                    aXMLFile.getPath () +
-                                    "' against Schematron rules from '" +
-                                    m_aSchematronFile.getName () +
-                                    "'. Technical details: " +
-                                    ex.getClass ().getSimpleName () +
-                                    " - " +
-                                    ex.getMessage ();
-            _errorOrFail (sMessage, ex);
+            // Independent of failOnError (#50)
+            if (aResult.levelFailureMessage () != null)
+              throw new BuildException (aResult.levelFailureMessage ());
           }
         }
       }
+    }
+
+    if (aErrorMessages.isNotEmpty ())
+    {
+      aErrorMessages.add (0, aErrorMessages.size () + " errors found:");
+      _errorOrFail (StringImplode.imploder ().source (aErrorMessages).separator ("\n  ").build ());
     }
   }
 
@@ -661,10 +585,7 @@ public class Schematron extends AbstractSchematronTask
       else
         if (m_eSchematronProcessingEngine == null)
           _errorOrFail ("An invalid Schematron processing instance is specified! Only one of the following values is allowed: " +
-                        StringImplode.imploder ()
-                                     .source (ESchematronEngine.values (), x -> "'" + x.getID () + "'")
-                                     .separator (", ")
-                                     .build ());
+                        SchematronEngineFactory.getEngineIDsAsString (x -> true));
         else
           if (m_aResCollections.isEmpty ())
             _errorOrFail ("No XML resources to be validated specified! Add e.g. a <fileset> element.");
@@ -676,11 +597,12 @@ public class Schematron extends AbstractSchematronTask
 
     // The XSLT processor of the XSLT based engines
     ISchematronXsltProcessor aXsltProcessor = null;
-    if (bCanRun && m_eSchematronProcessingEngine.isXsltProcessorSelectable ())
+    if (bCanRun)
       try
       {
-        aXsltProcessor = SchematronXsltProcessorRegistry.getProcessorOfIDOrDefault (m_sXsltProcessor);
-        _debug ("Using the XSLT processor '" + aXsltProcessor.getID () + "'");
+        aXsltProcessor = SchematronEngineFactory.getXsltProcessor (m_eSchematronProcessingEngine, m_sXsltProcessor);
+        if (aXsltProcessor != null)
+          _debug ("Using the XSLT processor '" + aXsltProcessor.getID () + "'");
       }
       catch (final IllegalArgumentException | IllegalStateException ex)
       {
@@ -690,186 +612,34 @@ public class Schematron extends AbstractSchematronTask
 
     if (bCanRun)
     {
-      // Set error level
-      if (m_aErrorRoles.isNotEmpty ())
-      {
-        // Set global default error level determinator
-        SVRLHelper.setErrorLevelDeterminator (new DefaultSVRLErrorLevelDeterminator ()
-        {
-          @Override
-          @NonNull
-          public IErrorLevel getErrorLevelFromString (@Nullable final String sFlag)
-          {
-            if (sFlag != null)
-            {
-              // Check custom error roles; #66
-              for (final Schematron.ErrorRole aCustomRole : m_aErrorRoles)
-                if (aCustomRole.equalsIgnoreCase (sFlag))
-                  return EErrorLevel.ERROR;
-            }
-
-            // Fall back to default
-            return super.getErrorLevelFromString (sFlag);
-          }
-        });
-      }
-
       // 1. Parse Schematron file
+      final IStringMap aParams = new StringMap ();
+      m_aParameters.forEach (x -> x.addToMap (aParams));
+      if (aParams.isNotEmpty ())
+        _info ("Using the following custom parameters: " + aParams);
+
+      final SchematronEngineSettings aSettings = new SchematronEngineSettings ().setEngine (m_eSchematronProcessingEngine)
+                                                                                .setXsltProcessor (aXsltProcessor)
+                                                                                .setPhase (m_sPhaseName)
+                                                                                .setLanguageCode (m_sLanguageCode)
+                                                                                .setParameters (aParams)
+                                                                                .setForceCacheResult (m_bForceCacheResult)
+                                                                                .setLenient (m_bLenient)
+                                                                                .setURIResolver (getURIResolver ())
+                                                                                .setEntityResolver (getEntityResolver ());
+      final SchematronEngineResource aSch = SchematronEngineFactory.createResource (m_aSchematronFile, aSettings);
+
       final Locale aDisplayLocale = Locale.US;
-      ISchematronResource aSch = null;
-      IErrorList aSCHErrors = null;
-
-      switch (m_eSchematronProcessingEngine)
-      {
-        case PURE_XPATH:
-        {
-          // Pure-Java XPath engine
-          final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-          final SchematronResourcePureXPath aRealSCH = SchematronResourcePureXPath.builderFromFile (m_aSchematronFile)
-                                                                                  .phase (m_sPhaseName)
-                                                                                  .errorHandler (aErrorHdl)
-                                                                                  .entityResolver (getEntityResolver ())
-                                                                                  .build ();
-          aRealSCH.validateCompletely ();
-
-          aSch = aRealSCH;
-          aSCHErrors = aErrorHdl.getAllErrors ();
-          break;
-        }
-        case PURE_XSLT:
-        {
-          // Pure-Java engine generating XSLT 3.0 and running via Saxon s9api
-          final CollectingPSErrorHandler aErrorHdl = new CollectingPSErrorHandler ();
-          final SchematronResourcePureXslt aRealSCH = SchematronResourcePureXslt.builderFromFile (m_aSchematronFile)
-                                                                                .phase (m_sPhaseName)
-                                                                                .errorHandler (aErrorHdl)
-                                                                                .build ();
-          aRealSCH.isValidSchematron ();
-
-          aSch = aRealSCH;
-          aSCHErrors = aErrorHdl.getAllErrors ();
-          break;
-        }
-        case ISO_SCHEMATRON:
-        {
-          // ISO Schematron - SCH file converted to XSLT through the ISO stylesheet chain
-          final IStringMap aParams = new StringMap ();
-          m_aParameters.forEach (x -> x.addToMap (aParams));
-          if (aParams.isNotEmpty ())
-            _info ("Using the following custom parameters: " + aParams);
-
-          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          final SchematronResourceSCH aRealSCH = SchematronResourceSCH.builderFromFile (m_aSchematronFile)
-                                                                      .phase (m_sPhaseName)
-                                                                      .languageCode (m_sLanguageCode)
-                                                                      .forceCacheResult (m_bForceCacheResult)
-                                                                      .errorListener (aErrorHdl)
-                                                                      .xsltProcessor (aXsltProcessor)
-                                                                      .uriResolver (getURIResolver ())
-                                                                      .entityResolver (getEntityResolver ())
-                                                                      .parameters (aParams)
-                                                                      .build ();
-          aRealSCH.isValidSchematron ();
-
-          aSch = aRealSCH;
-          aSCHErrors = aErrorHdl.getErrorList ();
-          break;
-        }
-        case SCHXSLT1:
-        {
-          // SchXslt v1 (XSLT 2)
-          final IStringMap aParams = new StringMap ();
-          m_aParameters.forEach (x -> x.addToMap (aParams));
-          if (aParams.isNotEmpty ())
-            _info ("Using the following custom parameters: " + aParams);
-
-          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          final SchematronResourceSchXslt_XSLT2 aRealSCH = SchematronResourceSchXslt_XSLT2.builderFromFile (m_aSchematronFile)
-                                                                                          .phase (m_sPhaseName)
-                                                                                          .languageCode (m_sLanguageCode)
-                                                                                          .forceCacheResult (m_bForceCacheResult)
-                                                                                          .errorListener (aErrorHdl)
-                                                                                          .xsltProcessor (aXsltProcessor)
-                                                                                          .uriResolver (getURIResolver ())
-                                                                                          .entityResolver (getEntityResolver ())
-                                                                                          .parameters (aParams)
-                                                                                          .build ();
-          aRealSCH.isValidSchematron ();
-
-          aSch = aRealSCH;
-          aSCHErrors = aErrorHdl.getErrorList ();
-          break;
-        }
-        case SCHXSLT2:
-        {
-          // SchXslt v2 (XSLT 3)
-          final IStringMap aParams = new StringMap ();
-          m_aParameters.forEach (x -> x.addToMap (aParams));
-          if (aParams.isNotEmpty ())
-            _info ("Using the following custom parameters: " + aParams);
-
-          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          final SchematronResourceSchXslt2 aRealSCH = SchematronResourceSchXslt2.builderFromFile (m_aSchematronFile)
-                                                                                .phase (m_sPhaseName)
-                                                                                .languageCode (m_sLanguageCode)
-                                                                                .forceCacheResult (m_bForceCacheResult)
-                                                                                .errorListener (aErrorHdl)
-                                                                                .xsltProcessor (aXsltProcessor)
-                                                                                .uriResolver (getURIResolver ())
-                                                                                .entityResolver (getEntityResolver ())
-                                                                                .parameters (aParams)
-                                                                                .build ();
-          aRealSCH.isValidSchematron ();
-
-          aSch = aRealSCH;
-          aSCHErrors = aErrorHdl.getErrorList ();
-          break;
-        }
-        case XSLT_PREBUILT:
-        {
-          // Apply a pre-built XSLT directly
-          final IStringMap aParams = new StringMap ();
-          m_aParameters.forEach (x -> x.addToMap (aParams));
-          if (aParams.isNotEmpty ())
-            _info ("Using the following custom parameters: " + aParams);
-
-          final CollectingTransformErrorListener aErrorHdl = new CollectingTransformErrorListener ();
-          // phase and language are ignored because this was decided when the
-          // XSLT was created
-          final SchematronResourceXSLT aRealSCH = SchematronResourceXSLT.builderFromFile (m_aSchematronFile)
-                                                                        .errorListener (aErrorHdl)
-                                                                        .xsltProcessor (aXsltProcessor)
-                                                                        .uriResolver (getURIResolver ())
-                                                                        .entityResolver (getEntityResolver ())
-                                                                        .parameters (aParams)
-                                                                        .build ();
-          aRealSCH.isValidSchematron ();
-
-          aSch = aRealSCH;
-          aSCHErrors = aErrorHdl.getErrorList ();
-          break;
-        }
-        default:
-          _errorOrFail ("No handler for processing engine '" + m_eSchematronProcessingEngine + "'");
-          break;
-      }
-
-      boolean bAnyParsingError = false;
-      if (aSCHErrors != null)
-        // Error validating the Schematrons!!
-        for (final IError aError : aSCHErrors)
-          if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
-          {
-            _error ("Error in Schematron: " + aError.getAsString (aDisplayLocale));
-            bAnyParsingError = true;
-          }
+      for (final IError aError : aSch.errors ())
+        if (aError.getErrorLevel ().isGE (EErrorLevel.ERROR))
+          _error ("Error in Schematron: " + aError.getAsString (aDisplayLocale));
+        else
+          if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
+            _warn ("Warning in Schematron: " + aError.getAsString (aDisplayLocale));
           else
-            if (aError.getErrorLevel ().isGE (EErrorLevel.WARN))
-              _warn ("Warning in Schematron: " + aError.getAsString (aDisplayLocale));
-            else
-              _info ("Information in Schematron: " + aError.getAsString (aDisplayLocale));
+            _info ("Information in Schematron: " + aError.getAsString (aDisplayLocale));
 
-      if (bAnyParsingError)
+      if (aSch.hasAnyError ())
         _errorOrFail ("The provided Schematron file contains errors. See log for details.");
       else
       {
@@ -877,7 +647,16 @@ public class Schematron extends AbstractSchematronTask
         _info ("Successfully parsed Schematron file '" + m_aSchematronFile.getPath () + "'");
 
         // Start validation
-        _performValidation (aSch, m_aResCollections, m_aSvrlDirectory, m_bExpectSuccess);
+        final ICommonsList <String> aErrorRoles = m_aErrorRoles.getAllMapped (Schematron.ErrorRole::getRole);
+        final SchematronValidationRunner aRunner = new SchematronValidationRunner (aSch.resource (),
+                                                                                   new AntLogHandler (this)).setIgnoreWarnings (m_bIgnoreWarnings)
+                                                                                                            .setErrorRoles (aErrorRoles)
+                                                                                                            .setFailOnValidationError (m_bFailOnValidationError)
+                                                                                                            .setFailOnValidationWarn (m_bFailOnValidationWarn)
+                                                                                                            .setFailOnValidationInfo (m_bFailOnValidationInfo)
+                                                                                                            .setEntityResolver (m_bXmlCatalogSet ? getEntityResolver ()
+                                                                                                                                                 : null);
+        _performValidation (aRunner, m_aResCollections, m_aSvrlDirectory, m_bExpectSuccess);
       }
     }
   }

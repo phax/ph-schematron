@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2014-2026 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project basedir=".">
+  <taskdef name="schematron" classname="com.helger.schematron.ant.Schematron" />
+  <taskdef name="schematron-convert" classname="com.helger.schematron.ant.SchematronConvert" />
+  <taskdef name="schematron-preprocess" classname="com.helger.schematron.ant.SchematronPreprocess" />
+
+  <!-- Warnings and information don't decide -->
+  <target name="validate-warnings">
+    <schematron schematronFile="levels.sch" expectSuccess="true">
+      <fileset dir=".">
+        <include name="valid.xml" />
+        <include name="warning-info.xml" />
+      </fileset>
+    </schematron>
+  </target>
+
+  <target name="validate-ignore-warnings">
+    <schematron schematronFile="levels.sch" expectSuccess="true" ignoreWarnings="true" failOnValidationWarn="true" failOnValidationInfo="true">
+      <fileset dir=".">
+        <include name="warning-info.xml" />
+      </fileset>
+    </schematron>
+  </target>
+
+  <target name="validate-collect">
+    <schematron schematronFile="levels.sch" expectSuccess="true" failFast="false">
+      <fileset dir=".">
+        <include name="error*.xml" />
+      </fileset>
+    </schematron>
+  </target>
+
+  <target name="validate-lenient">
+    <schematron schematronFile="levels.sch" schematronProcessingEngine="pure-xpath" expectSuccess="true" lenient="true">
+      <fileset dir=".">
+        <include name="valid.xml" />
+      </fileset>
+    </schematron>
+  </target>
+
+  <target name="convert">
+    <schematron-convert schematronDirectory="." schematronPattern="levels.sch" xsltDirectory="${outdir}" xsltHeader="Version 1.2.3" showProgress="false" />
+    <schematron schematronFile="${outdir}/levels.xslt" schematronProcessingEngine="xslt" expectSuccess="false">
+      <fileset dir=".">
+        <include name="error.xml" />
+      </fileset>
+    </schematron>
+  </target>
+
+  <target name="convert-invalid-engine">
+    <schematron-convert schematronDirectory="." schematronPattern="levels.sch" xsltDirectory="${outdir}" schematronEngine="pure-xpath" />
+  </target>
+
+  <target name="preprocess">
+    <schematron-preprocess srcFile="abstract.sch" dstFile="${outdir}/preprocessed.sch" schHeader="my header" />
+  </target>
+
+  <target name="preprocess-no-overwrite">
+    <schematron-preprocess srcFile="abstract.sch" dstFile="${outdir}/existing.sch" overwriteWithoutNotice="false" />
+  </target>
+</project>

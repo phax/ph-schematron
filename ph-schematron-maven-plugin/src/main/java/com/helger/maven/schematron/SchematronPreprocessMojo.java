@@ -32,24 +32,8 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.annotation.misc.Since;
 import com.helger.base.string.StringHelper;
-import com.helger.io.resource.FileSystemResource;
-import com.helger.schematron.CSchematron;
 import com.helger.schematron.SchematronException;
-import com.helger.schematron.pure.binding.IPSQueryBinding;
-import com.helger.schematron.pure.binding.PSQueryBindingRegistry;
-import com.helger.schematron.exchange.PSReader;
-import com.helger.schematron.model.PSNS;
-import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.preprocess.PSPreprocessor;
-import com.helger.schematron.preprocess.SchematronPreprocessException;
-import com.helger.schematron.svrl.CSVRL;
-import com.helger.xml.microdom.IMicroDocument;
-import com.helger.xml.microdom.MicroDocument;
-import com.helger.xml.microdom.serialize.MicroWriter;
-import com.helger.xml.namespace.MapBasedNamespaceContext;
-import com.helger.xml.serialize.write.EXMLSerializeIndent;
-import com.helger.xml.serialize.write.IXMLWriterSettings;
-import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.schematron.enginefactory.SchematronFilePreprocessor;
 
 /**
  * Applies Schematron preprocessing
@@ -91,33 +75,33 @@ public final class SchematronPreprocessMojo extends AbstractMojo
    * existing Schematron files are not overwritten.
    */
   @Parameter (name = "overwriteWithoutNotice", defaultValue = "true")
-  private boolean m_bOverwriteWithoutNotice;
+  private boolean m_bOverwriteWithoutNotice = SchematronFilePreprocessor.DEFAULT_OVERWRITE;
 
   /**
    * If this is set to <code>false</code> than <code>&lt;title&gt;</code> elements will be removed.
    */
   @Parameter (name = "keepTitles", defaultValue = "false")
-  private boolean m_bKeepTitles;
+  private boolean m_bKeepTitles = SchematronFilePreprocessor.DEFAULT_KEEP_TITLES;
 
   /**
    * If this is set to <code>false</code> than <code>&lt;diagnostics&gt;</code> elements will be
    * removed.
    */
   @Parameter (name = "keepDiagnostics", defaultValue = "false")
-  private boolean m_bKeepDiagnostics;
+  private boolean m_bKeepDiagnostics = SchematronFilePreprocessor.DEFAULT_KEEP_DIAGNOSTICS;
 
   /**
    * Should <code>&lt;report&gt;</code> elements be kept or should they be converted to
    * <code>&lt;assert&gt;</code> elements?
    */
   @Parameter (name = "keepReports", defaultValue = "false")
-  private boolean m_bKeepReports;
+  private boolean m_bKeepReports = SchematronFilePreprocessor.DEFAULT_KEEP_REPORTS;
 
   /**
    * Should <code>&lt;pattern&gt;</code> elements without a single rule be kept or deleted?
    */
   @Parameter (name = "keepEmptyPatterns", defaultValue = "false")
-  private boolean m_bKeepEmptyPatterns;
+  private boolean m_bKeepEmptyPatterns = SchematronFilePreprocessor.DEFAULT_KEEP_EMPTY_PATTERNS;
 
   /**
    * A constant header string that should be added to all preprocessed SCH files, e.g. as a version
@@ -205,65 +189,18 @@ public final class SchematronPreprocessMojo extends AbstractMojo
       throw new MojoExecutionException ("No Source file specified!");
     if (m_aSourceFile.exists () && !m_aSourceFile.isFile ())
       throw new MojoExecutionException ("The specified Source file " + m_aSourceFile + " is not a file!");
-
     if (m_aTargetFile == null)
       throw new MojoExecutionException ("No Target file specified!");
-    if (m_aTargetFile.exists ())
-    {
-      if (!m_bOverwriteWithoutNotice)
-      {
-        // 3.1 Not overwriting the existing file
-        getLog ().debug ("Skipping Target file '" + m_aTargetFile.getPath () + "' because it already exists!");
-      }
-      else
-      {
-        if (!m_aTargetFile.isFile ())
-          throw new MojoExecutionException ("The specified Target file " + m_aTargetFile + " is not a file!");
-      }
-    }
 
     try
     {
-      final PSSchema aSchema = new PSReader (new FileSystemResource (m_aSourceFile), null, null).readSchema ();
-      final IPSQueryBinding aQueryBinding = PSQueryBindingRegistry.getQueryBindingOfNameOrThrow (aSchema.getQueryBinding ());
-
-      final PSPreprocessor aPreprocessor = new PSPreprocessor (aQueryBinding).setKeepTitles (m_bKeepTitles)
-                                                                             .setKeepDiagnostics (m_bKeepDiagnostics)
-                                                                             .setKeepReports (m_bKeepReports)
-                                                                             .setKeepEmptyPatterns (m_bKeepEmptyPatterns);
-
-      // Pre-process
-      final PSSchema aPreprocessedSchema = aPreprocessor.getForcedPreprocessedSchema (aSchema);
-      if (aPreprocessedSchema == null)
-        throw new SchematronPreprocessException ("Failed to preprocess schema " +
-                                                 aSchema +
-                                                 " with query binding " +
-                                                 aQueryBinding);
-
-      // Convert to XML string
-      final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
-      aNSCtx.addDefaultNamespaceURI (CSchematron.NAMESPACE_SCHEMATRON);
-      aNSCtx.addMapping ("xsl", CSchematron.NAMESPACE_URI_XSL);
-      aNSCtx.addMapping ("svrl", CSVRL.SVRL_NAMESPACE_URI);
-
-      // Add all <ns> elements from schema as NS context
-      for (final PSNS aItem : aSchema.getAllNSs ())
-        aNSCtx.setMapping (aItem.getPrefix (), aItem.getUri ());
-
-      final IXMLWriterSettings aXWS = new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)
-                                                              .setNamespaceContext (aNSCtx);
-      final IMicroDocument aDoc = new MicroDocument ();
-      if (StringHelper.isNotEmpty (m_sSCHHeader))
-      {
-        // Add the optional header as a comment
-        aDoc.addComment (m_sSCHHeader);
-      }
-      aDoc.addChild (aPreprocessedSchema.getAsMicroElement ());
-
-      if (MicroWriter.writeToFile (aDoc, m_aTargetFile, aXWS).isSuccess ())
-        getLog ().info ("Successfully wrote preprocessed Schematron file '" + m_aTargetFile.getPath () + "'");
-      else
-        getLog ().error ("Error writing preprocessed Schematron file to '" + m_aTargetFile.getPath () + "'");
+      new SchematronFilePreprocessor (new MavenLogHandler (getLog ())).setKeepTitles (m_bKeepTitles)
+                                                                      .setKeepDiagnostics (m_bKeepDiagnostics)
+                                                                      .setKeepReports (m_bKeepReports)
+                                                                      .setKeepEmptyPatterns (m_bKeepEmptyPatterns)
+                                                                      .setSchHeader (m_sSCHHeader)
+                                                                      .setOverwrite (m_bOverwriteWithoutNotice)
+                                                                      .preprocessFile (m_aSourceFile, m_aTargetFile);
     }
     catch (final SchematronException ex)
     {

@@ -20,18 +20,12 @@ import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
-import com.helger.io.resource.FileSystemResource;
-import com.helger.schematron.pure.binding.xpath.PSXPathQueryBinding;
-import com.helger.schematron.exchange.PSReader;
-import com.helger.schematron.exchange.PSWriter;
-import com.helger.schematron.exchange.PSWriterSettings;
-import com.helger.schematron.exchange.SchematronReadException;
-import com.helger.schematron.model.PSSchema;
-import com.helger.schematron.preprocess.PSPreprocessor;
-import com.helger.schematron.preprocess.SchematronPreprocessException;
-import com.helger.xml.serialize.write.XMLWriterSettings;
+import com.helger.base.string.StringHelper;
+import com.helger.schematron.SchematronException;
+import com.helger.schematron.enginefactory.SchematronFilePreprocessor;
 
 /**
  * ANT task to perform Schematron preprocessing. It converts an existing schema to the minimal
@@ -58,22 +52,33 @@ public class SchematronPreprocess extends AbstractSchematronTask
   /**
    * <code>true</code> if &lt;title&gt;-elements should be kept.
    */
-  private boolean m_bKeepTitles = PSPreprocessor.DEFAULT_KEEP_TITLES;
+  private boolean m_bKeepTitles = SchematronFilePreprocessor.DEFAULT_KEEP_TITLES;
 
   /**
    * <code>true</code> if &lt;diagnostic&gt;-elements should be kept.
    */
-  private boolean m_bKeepDiagnostics = PSPreprocessor.DEFAULT_KEEP_DIAGNOSTICS;
+  private boolean m_bKeepDiagnostics = SchematronFilePreprocessor.DEFAULT_KEEP_DIAGNOSTICS;
 
   /**
    * Should &lt;report&gt;-elements be kept or should they be converted to &lt;assert&gt;-elements?
    */
-  private boolean m_bKeepReports = PSPreprocessor.DEFAULT_KEEP_REPORTS;
+  private boolean m_bKeepReports = SchematronFilePreprocessor.DEFAULT_KEEP_REPORTS;
 
   /**
    * Should &lt;pattern&gt;-elements without a single rule be kept or deleted?
    */
-  private boolean m_bKeepEmptyPatterns = PSPreprocessor.DEFAULT_KEEP_EMPTY_PATTERNS;
+  private boolean m_bKeepEmptyPatterns = SchematronFilePreprocessor.DEFAULT_KEEP_EMPTY_PATTERNS;
+
+  /**
+   * A constant header string that is added as an XML comment, e.g. as a version number. Since
+   * v11.0.0.
+   */
+  private String m_sSchHeader;
+
+  /**
+   * <code>false</code> to leave an existing destination file untouched. Since v11.0.0.
+   */
+  private boolean m_bOverwriteWithoutNotice = SchematronFilePreprocessor.DEFAULT_OVERWRITE;
 
   public SchematronPreprocess ()
   {}
@@ -119,6 +124,30 @@ public class SchematronPreprocess extends AbstractSchematronTask
                                : "Deleting <pattern>-elements without rules.");
   }
 
+  /**
+   * @param sSchHeader
+   *        A text that is added as an XML comment before the root element. May be
+   *        <code>null</code>.
+   * @since 11.0.0
+   */
+  public void setSchHeader (@Nullable final String sSchHeader)
+  {
+    m_sSchHeader = sSchHeader;
+    _debug (StringHelper.isNotEmpty (sSchHeader) ? "Using the SCH header '" + sSchHeader + "'"
+                                                 : "No SCH header is configured");
+  }
+
+  /**
+   * @param bOverwrite
+   *        <code>false</code> to leave an existing destination file untouched.
+   * @since 11.0.0
+   */
+  public void setOverwriteWithoutNotice (final boolean bOverwrite)
+  {
+    m_bOverwriteWithoutNotice = bOverwrite;
+    _debug (bOverwrite ? "Overwriting the destination file without notice" : "Ignoring an existing destination file");
+  }
+
   @Override
   public void execute () throws BuildException
   {
@@ -132,36 +161,22 @@ public class SchematronPreprocess extends AbstractSchematronTask
         if (m_aDstFile == null)
           _errorOrFail ("No destination Schematron file specified!");
         else
-          if (m_aDstFile.exists () && !m_aDstFile.isFile ())
-            _errorOrFail ("The specified destination Schematron file " + m_aDstFile + " is not a file!");
-          else
-            bCanRun = true;
+          bCanRun = true;
 
     if (bCanRun)
       try
       {
-        // Read source
-        final PSSchema aSchema = new PSReader (new FileSystemResource (m_aSrcFile)).readSchema ();
-
-        // Setup preprocessor
-        final PSPreprocessor aPreprocessor = new PSPreprocessor (PSXPathQueryBinding.getInstance ());
-        aPreprocessor.setKeepTitles (m_bKeepTitles);
-        aPreprocessor.setKeepDiagnostics (m_bKeepDiagnostics);
-        aPreprocessor.setKeepReports (m_bKeepReports);
-        aPreprocessor.setKeepEmptyPatterns (m_bKeepEmptyPatterns);
-        aPreprocessor.setKeepEmptySchema (true);
-
-        // Main pre-processing
-        final PSSchema aPreprocessedSchema = aPreprocessor.getAsPreprocessedSchema (aSchema);
-
-        // Write the result file
-        new PSWriter (new PSWriterSettings ().setXMLWriterSettings (new XMLWriterSettings ())).writeToFile (aPreprocessedSchema,
-                                                                                                            m_aDstFile);
-        _info ("Successfully pre-processed Schematron " + m_aSrcFile + " to " + m_aDstFile);
+        new SchematronFilePreprocessor (new AntLogHandler (this)).setKeepTitles (m_bKeepTitles)
+                                                                 .setKeepDiagnostics (m_bKeepDiagnostics)
+                                                                 .setKeepReports (m_bKeepReports)
+                                                                 .setKeepEmptyPatterns (m_bKeepEmptyPatterns)
+                                                                 .setSchHeader (m_sSchHeader)
+                                                                 .setOverwrite (m_bOverwriteWithoutNotice)
+                                                                 .preprocessFile (m_aSrcFile, m_aDstFile);
       }
-      catch (final SchematronReadException | SchematronPreprocessException ex)
+      catch (final SchematronException ex)
       {
-        _errorOrFail ("Error processing Schemtron " + m_aSrcFile.getAbsolutePath (), ex);
+        _errorOrFail ("Error processing Schematron " + m_aSrcFile.getAbsolutePath (), ex);
       }
   }
 }

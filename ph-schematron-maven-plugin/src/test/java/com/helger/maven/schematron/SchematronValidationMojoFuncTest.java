@@ -101,4 +101,89 @@ public final class SchematronValidationMojoFuncTest
 
     verify (project);
   }
+
+  @Test
+  public void testWarningsAndInfosDontFail () throws MojoExecutionException, MojoFailureException
+  {
+    expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
+    replay (project);
+
+    OUT.setSchematronFile (new File ("src/test/resources/levels/levels.sch"));
+    OUT.setSchematronProcessingEngine (ESchematronEngine.ISO_SCHEMATRON.getID ());
+    OUT.setXmlDirectory (new File ("src/test/resources/levels"));
+    OUT.setXmlIncludes (new String [] { "valid.xml", "warning-info.xml" });
+    OUT.setXmlErrorDirectory (new File ("src/test/resources/levels"));
+    OUT.setXmlErrorIncludes (new String [] { "error.xml" });
+    OUT.execute ();
+
+    verify (project);
+  }
+
+  @Test
+  public void testFailOnValidationWarn () throws MojoExecutionException
+  {
+    expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
+    replay (project);
+
+    OUT.setSchematronFile (new File ("src/test/resources/levels/levels.sch"));
+    OUT.setSchematronProcessingEngine (ESchematronEngine.PURE_XPATH.getID ());
+    OUT.setXmlDirectory (new File ("src/test/resources/levels"));
+    OUT.setXmlIncludes (new String [] { "warning-info.xml" });
+    OUT.setFailOnValidationWarn (true);
+    try
+    {
+      OUT.execute ();
+      fail ();
+    }
+    catch (final MojoFailureException ex)
+    {
+      // expected
+    }
+
+    verify (project);
+  }
+
+  @Test
+  public void testErrorRoles () throws MojoExecutionException
+  {
+    expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
+    replay (project);
+
+    OUT.setSchematronFile (new File ("src/test/resources/levels/levels.sch"));
+    OUT.setSchematronProcessingEngine (ESchematronEngine.PURE_XPATH.getID ());
+    OUT.setXmlDirectory (new File ("src/test/resources/levels"));
+    OUT.setXmlIncludes (new String [] { "warning-info.xml" });
+    OUT.setErrorRoles (new String [] { "warning" });
+    try
+    {
+      OUT.execute ();
+      fail ();
+    }
+    catch (final MojoFailureException ex)
+    {
+      // expected
+    }
+
+    verify (project);
+  }
+
+  @Test
+  public void testCatalogFiles () throws MojoExecutionException, MojoFailureException
+  {
+    expect (project.getBasedir ()).andReturn (new File (".")).anyTimes ();
+    replay (project);
+
+    OUT.setSchematronFile (new File ("src/test/resources/catalog/test.sch"));
+    OUT.setXmlDirectory (new File ("src/test/resources/catalog"));
+    OUT.setXmlIncludes (new String [] { "test.xml" });
+    OUT.setCatalogFiles (new File [] { new File ("src/test/resources/catalog/catalog.xml") });
+    for (final ESchematronEngine eEngine : new ESchematronEngine [] { ESchematronEngine.PURE_XPATH,
+                                                                      ESchematronEngine.ISO_SCHEMATRON })
+    {
+      OUT.setSchematronProcessingEngine (eEngine.getID ());
+      OUT.execute ();
+    }
+
+    verify (project);
+  }
 }
