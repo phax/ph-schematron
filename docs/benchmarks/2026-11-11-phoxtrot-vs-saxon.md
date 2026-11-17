@@ -165,8 +165,10 @@ check) are filed as phoxtrot suggestion S43.
 
 Only `BenchmarkProcessorCompile`, same machine, JDK 21.0.13, phoxtrot 0.2.0, ph-schematron commit `e7fa49a7` plus the
 new `iso_abstract_expand.xsl`: the parameters of an abstract pattern are looked up once via `xsl:key` instead of with
-`//iso:pattern[@id=$caller]/iso:param[$n]` for every parameter of every attribute and text. The created XSLT is
-byte-identical to the one of the old stylesheet on both processors.
+`//iso:pattern[@id=$caller]/iso:param[$n]` for every parameter of every attribute and text. The created XSLT of the 53
+phive-rules Schematrons below is byte-identical to the one of the old stylesheet on both processors. On Saxon only the
+generated IDs of patterns created from an abstract pattern without an `id` can differ (e.g. `schematron-svrl.sch`),
+because `generate-id()` depends on how many documents Saxon created before.
 
 Command:
 
