@@ -33,7 +33,7 @@ import com.helger.collection.commons.ICommonsSet;
  */
 public enum ESchematronEngine implements IHasID <String>
 {
-  /** Pure-Java XPath-only engine; same as {@link #PURE}. */
+  /** Pure-Java XPath-only engine; also available under the alias ID {@code pure}. */
   PURE_XPATH ("pure-xpath", new CommonsHashSet <> ("pure"), false, false),
 
   /**
