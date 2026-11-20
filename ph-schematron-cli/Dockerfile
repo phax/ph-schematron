@@ -31,4 +31,5 @@ COPY target/ph-schematron-cli-*-shaded.jar /opt/ph-schematron/ph-schematron-cli.
 # Mount the files to work on here, e.g. "-v $PWD:/data"
 WORKDIR /data
 
-ENTRYPOINT ["java", "-jar", "/opt/ph-schematron/ph-schematron-cli.jar"]
+# Disable the HotSpot Base64 intrinsic as mitigation for CVE-2026-114938 ("Java2Shell")
+ENTRYPOINT ["java", "-XX:-UseBASE64Intrinsics", "-jar", "/opt/ph-schematron/ph-schematron-cli.jar"]
