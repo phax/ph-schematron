@@ -1594,20 +1594,29 @@ which require a preprocess.
     </xsl:template>
     
     <xsl:template match="iso:property"  >
-                <xsl:call-template name="process-property">
+       <xsl:call-template name="process-property">
                 
 					<xsl:with-param name="id" select="@id"/>
 					
 					<xsl:with-param name="name"  select="@name"/>
 					<xsl:with-param name="value" select="@value" />
 					<xsl:with-param name="contents" select="*|text()" />
+					<!-- [ph] added all for svrl:property-reference -->
+					<xsl:with-param name="role" select="@role"/>
+					<xsl:with-param name="scheme" select="@scheme"/>
+					<!-- [ph] "Rich" properties, added all for svrl:property-reference -->
+					<xsl:with-param name="fpi" select="@fpi"/>
+					<xsl:with-param name="icon" select="@icon"/>
+					<xsl:with-param name="lang" select="@xml:lang"/>
+					<xsl:with-param name="see" select="@see" />
+					<xsl:with-param name="space" select="@xml:space" />
 				</xsl:call-template>   
             
         </xsl:template>
 
 	<!-- PROPERTIES  experimental extension -->
 	<xsl:template match="iso:properties" >
-		 <xsl:apply-templates mode="check-properties" select="property" /> 
+		<xsl:apply-templates mode="check-properties" select="property" /> 
 	</xsl:template>
 	
 	
@@ -2181,6 +2190,14 @@ which require a preprocess.
 		<xsl:param name="name"/>
 		<xsl:param name="value"/>
 		<xsl:param name="contents"/>
+		<!-- [ph] added all -->
+		<xsl:param name="role"/>
+		<xsl:param name="scheme"/>
+		<xsl:param name="fpi" />
+		<xsl:param name="icon" />
+		<xsl:param name="lang" />
+		<xsl:param name="see" />
+		<xsl:param name="space" />
 		  
 	</xsl:template>
 	

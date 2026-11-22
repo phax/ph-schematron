@@ -30,6 +30,9 @@
   
 
   History:
+    2026-11-22
+      * Emit the official svrl:property-reference (with svrl:text) for referenced properties instead
+        of the experimental, non-standard svrl:property (PH)
     2026-06-30
       * Made SVRL output conformant to the official SVRL (PH)
         - Moved svrl:text to the end of failed-assert and successful-report, after diagnostics and properties
@@ -723,27 +726,42 @@ THE SOFTWARE.
 
 
 <!-- Overrides skeleton EXPERIMENTAL -->
-<!-- The $contents is for static contents, the $value is for dynamic contents -->
+<!-- [ph] Emits the official svrl:property-reference of ISO/IEC 19757-3:2016 instead of the
+     non-standard svrl:property (with @id, @name, @value and the copied contents), which no SVRL
+     grammar allows. The context node is the sch:property, so its content is processed like the one
+     of a diagnostic. $name, $value and $contents are no longer used. -->
 <xsl:template name="process-property">
 	<xsl:param name="id"/>
 	<xsl:param name="name"/>
 	<xsl:param name="value"/>
 	<xsl:param name="contents"/>
-	
-	<svrl:property id="{$id}" >  
-		<xsl:if test="$name">
-			<xsl:attribute name="name"><xsl:value-of select="$name"/></xsl:attribute>
+	<xsl:param name="role"/>
+	<xsl:param name="scheme"/>
+	<!-- Rich parameters -->
+	<xsl:param name="fpi" />
+	<xsl:param name="icon" />
+	<xsl:param name="lang" />
+	<xsl:param name="see" />
+	<xsl:param name="space" />
+
+	<svrl:property-reference property="{$id}">
+		<xsl:if test="string($role)">
+			<xsl:attribute name="role"><xsl:value-of select="$role"/></xsl:attribute>
 		</xsl:if>
-		
-		<xsl:if test="$value">
-			<xsl:attribute name="value"><xsl:value-of select="$value"/></xsl:attribute>
+		<xsl:if test="string($scheme)">
+			<xsl:attribute name="scheme"><xsl:value-of select="$scheme"/></xsl:attribute>
 		</xsl:if>
-		
-		<xsl:if test="$contents">
-			<xsl:copy-of select="$contents"/>
-		</xsl:if> 
-		
-	</svrl:property>
+		<svrl:text>
+			<xsl:call-template name="richParms">
+				<xsl:with-param name="fpi" select="$fpi"/>
+				<xsl:with-param name="icon" select="$icon"/>
+				<xsl:with-param name="lang" select="$lang" />
+				<xsl:with-param name="see" select="$see" />
+				<xsl:with-param name="space" select="$space" />
+			</xsl:call-template>
+			<xsl:apply-templates mode="text"/>
+		</svrl:text>
+	</svrl:property-reference>
 </xsl:template>
 
 
