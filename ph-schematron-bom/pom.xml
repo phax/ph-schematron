@@ -27,7 +27,7 @@
   </parent>
   <groupId>com.helger.schematron</groupId>
   <artifactId>ph-schematron-bom</artifactId>
-  <version>11.0.1-SNAPSHOT</version>
+  <version>11.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ph-schematron-bom</name>
   <description>Bill of Materials for all ph-schematron artifacts</description>
