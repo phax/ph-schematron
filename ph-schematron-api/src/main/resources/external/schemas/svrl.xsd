@@ -59,10 +59,22 @@
           <xs:element ref="svrl:active-group"/>
         </xs:choice>
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
-          <xs:element ref="svrl:fired-rule"/>
+          <xs:choice>
+            <xs:element ref="svrl:fired-rule"/>
+            <!-- [ph] SchXslt extension: a rule that matched, but was not
+                 fired because a previous rule of the same pattern matched the
+                 same node -->
+            <xs:element ref="svrl:suppressed-rule"/>
+          </xs:choice>
           <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element ref="svrl:failed-assert"/>
             <xs:element ref="svrl:successful-report"/>
+            <!-- [ph] SchXslt2 extension: an assert that was not checked
+                 because its severity is below the severity threshold -->
+            <xs:element ref="svrl:skipped-assert"/>
+            <!-- [ph] SchXslt2 extension: a report that was not checked
+                 because its severity is below the severity threshold -->
+            <xs:element ref="svrl:skipped-report"/>
           </xs:choice>
         </xs:sequence>
       </xs:sequence>
@@ -72,6 +84,10 @@
     <xs:attribute name="phase" type="xs:string"/>
     <xs:attribute name="schemaVersion"/>
     <xs:attribute name="schemaFrontEdition"/>
+    <!-- [ph] SchXslt2 extension: copied from sch:schema/@schematronEdition -->
+    <xs:attribute name="schematronEdition"/>
+    <!-- [ph] SchXslt extension: copied from sch:schema/@xml:* -->
+    <xs:attributeGroup ref="svrl:attlist.xml"/>
   </xs:complexType>
   <xs:element name="schematron-output" type="svrl:SchematronOutputType" />
   
@@ -116,6 +132,33 @@
         </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="document" type="xs:anyURI"/>
+      <!-- [ph] SchXslt extension: copied from the rule -->
+      <xs:attributeGroup ref="svrl:attlist.rich"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- [ph] SchXslt extension, see content/svrl-schxslt.rnc of SchXslt2:
+       a rule that matched, but was not fired because a previous rule of the
+       same pattern matched the same node. Same attributes as fired-rule. -->
+  <xs:element name="suppressed-rule">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:NCName"/>
+      <xs:attribute name="name"/>
+      <xs:attribute name="context" use="required"/>
+      <xs:attribute name="visit-each"/>
+      <xs:attribute name="role" type="xs:string"/>
+      <xs:attribute name="flag">
+        <xs:simpleType>
+          <xs:restriction>
+            <xs:simpleType>
+              <xs:list itemType="xs:token"/>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="document" type="xs:anyURI"/>
+      <!-- [ph] SchXslt extension: copied from the rule -->
+      <xs:attributeGroup ref="svrl:attlist.rich"/>
     </xs:complexType>
   </xs:element>
   <!-- only references are reported, not the diagnostic -->
@@ -126,6 +169,8 @@
       </xs:sequence>
       <xs:attribute name="diagnostic" use="required" type="xs:NMTOKEN"/>
       <xs:attribute name="role"/>
+      <!-- [ph] SchXslt extension: copied from sch:diagnostic/@xml:* -->
+      <xs:attributeGroup ref="svrl:attlist.xml"/>
     </xs:complexType>
   </xs:element>
   <!-- only failed assertions are reported -->
@@ -146,6 +191,22 @@
       </xs:complexContent>
     </xs:complexType>
   </xs:element>
+  <!-- [ph] SchXslt2 extension, see content/svrl-schxslt.rnc of SchXslt2:
+       an assert that was not checked because its severity is below the
+       severity threshold. Empty. -->
+  <xs:element name="skipped-assert">
+    <xs:complexType>
+      <xs:attributeGroup ref="svrl:attlist.skipped-assert-and-report"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- [ph] SchXslt2 extension, see content/svrl-schxslt.rnc of SchXslt2:
+       a report that was not checked because its severity is below the
+       severity threshold. Empty. -->
+  <xs:element name="skipped-report">
+    <xs:complexType>
+      <xs:attributeGroup ref="svrl:attlist.skipped-assert-and-report"/>
+    </xs:complexType>
+  </xs:element>
   <!-- property-reference -->
   <xs:element name="property-reference">
     <xs:complexType>
@@ -155,6 +216,8 @@
       <xs:attribute name="property" use="required" type="xs:NMTOKEN"/>
       <xs:attribute name="role"/>
       <xs:attribute name="scheme"/>
+      <!-- [ph] SchXslt extension: copied from sch:property/@xml:* -->
+      <xs:attributeGroup ref="svrl:attlist.xml"/>
     </xs:complexType>
   </xs:element>
   <!-- errors raised by the implementation -->
@@ -179,6 +242,11 @@
           <xs:attribute name="see"/>
           <xs:attribute name="icon"/>
           <xs:attribute name="fpi"/>
+          <!-- [ph] SchXslt extension: copied from sch:p (id, class) and from
+               all attributes of sch:diagnostic (id, role) -->
+          <xs:attribute name="id"/>
+          <xs:attribute name="class"/>
+          <xs:attribute name="role"/>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -198,18 +266,26 @@
     <xs:complexType mixed="true">
       <xs:attribute name="class"/>
       <xs:attribute name="dir"/>
+      <!-- [ph] SchXslt extension: copied from sch:dir/@value -->
+      <xs:attribute name="value"/>
+      <!-- [ph] SchXslt extension: copied from sch:dir/@xml:* -->
+      <xs:attributeGroup ref="svrl:attlist.xml"/>
     </xs:complexType>
   </xs:element>
   <!-- emphasis -->
   <xs:element name="emph">
     <xs:complexType mixed="true">
       <xs:attribute name="class"/>
+      <!-- [ph] SchXslt extension: copied from sch:emph/@xml:* -->
+      <xs:attributeGroup ref="svrl:attlist.xml"/>
     </xs:complexType>
   </xs:element>
   <!-- arbitrary markup -->
   <xs:element name="span">
     <xs:complexType mixed="true">
       <xs:attribute name="class" use="required"/>
+      <!-- [ph] SchXslt extension: copied from sch:span/@xml:* -->
+      <xs:attributeGroup ref="svrl:attlist.xml"/>
     </xs:complexType>
   </xs:element>
   <!-- foreign -->
@@ -247,6 +323,43 @@
       </xs:simpleType>
     </xs:attribute>
     <xs:attribute name="severity" type="xs:string"/>
+    <xs:attributeGroup ref="svrl:attlist.schxslt-assert-and-report"/>
+    <!-- [ph] SchXslt extension: copied from the assert or report -->
+    <xs:attributeGroup ref="svrl:attlist.rich"/>
+  </xs:attributeGroup>
+  <!-- [ph] SchXslt2 extension, see content/svrl-schxslt.rnc of SchXslt2:
+       the IDs of the containing rule and pattern or group. SchXslt2 also adds
+       xml:lang (see attlist.rich) if the language of the assert or report
+       differs from the one of the schema. -->
+  <xs:attributeGroup name="attlist.schxslt-assert-and-report">
+    <xs:attribute name="ruleId" type="xs:NMTOKEN"/>
+    <xs:attribute name="patternId" type="xs:NMTOKEN"/>
+    <xs:attribute name="groupId" type="xs:NMTOKEN"/>
+  </xs:attributeGroup>
+  <!-- [ph] SchXslt extension: SchXslt copies all xml:* attributes of the
+       Schematron element (xml:lang, xml:space, but also e.g. xml:id or
+       xml:base) to the SVRL element. xml:lang and xml:space are declared to
+       get typed properties, the others are covered by the wildcard. -->
+  <xs:attributeGroup name="attlist.xml">
+    <xs:attribute ref="xml:lang"/>
+    <xs:attribute ref="xml:space"/>
+    <xs:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="skip"/>
+  </xs:attributeGroup>
+  <!-- [ph] SchXslt extension: SchXslt copies see, icon, fpi and all xml:*
+       attributes of rules, asserts and reports to the SVRL. Up to
+       ph-schematron 9.2.0 this group was part of the XML Schema. -->
+  <xs:attributeGroup name="attlist.rich">
+    <xs:attribute name="see"/>
+    <xs:attribute name="icon"/>
+    <xs:attribute name="fpi"/>
+    <xs:attributeGroup ref="svrl:attlist.xml"/>
+  </xs:attributeGroup>
+  <!-- [ph] SchXslt2 extension: attributes of skipped-assert and
+       skipped-report - the ones of failed-assert and successful-report plus
+       the severity threshold -->
+  <xs:attributeGroup name="attlist.skipped-assert-and-report">
+    <xs:attribute name="severityThreshold" type="xs:token" use="required"/>
+    <xs:attributeGroup ref="svrl:attlist.assert-and-report"/>
   </xs:attributeGroup>
   <!-- active patterns and rule-sets -->
   <xs:complexType name="active">
@@ -257,6 +370,8 @@
     <xs:attribute name="documents" type="xs:anyURI"/>
     <xs:attribute name="name"/>
     <xs:attribute name="role" type="xs:string"/>
+    <!-- [ph] SchXslt extension: copied from sch:pattern/@xml:* -->
+    <xs:attributeGroup ref="svrl:attlist.xml"/>
   </xs:complexType>
   <!-- assert and report message -->
   <xs:complexType name="assertion-message">

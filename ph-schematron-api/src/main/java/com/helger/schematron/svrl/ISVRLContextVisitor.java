@@ -25,7 +25,10 @@ import com.helger.schematron.svrl.jaxb.ActiveGroup;
 import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.FiredRule;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 
 /**
  * Visitor for the validation results of an SVRL document that receives the active pattern or group
@@ -121,6 +124,70 @@ public interface ISVRLContextVisitor
   default EContinue onSuccessfulReport (@Nullable final Active aActive,
                                         @Nullable final FiredRule aFiredRule,
                                         @NonNull final SuccessfulReport aSuccessfulReport)
+  {
+    return EContinue.CONTINUE;
+  }
+
+  /**
+   * Called for each <code>&lt;suppressed-rule&gt;</code> element (SchXslt extension): a rule that
+   * matched, but was not fired because a previous rule of the same pattern matched the same node.
+   *
+   * @param aActive
+   *        The active pattern or group the rule belongs to. May be <code>null</code> if the rule is
+   *        not preceded by an active pattern or group.
+   * @param aSuppressedRule
+   *        The suppressed rule. Never <code>null</code>.
+   * @return {@link EContinue#BREAK} to stop the walk.
+   * @since 11.1.0
+   */
+  @NonNull
+  default EContinue onSuppressedRule (@Nullable final Active aActive, @NonNull final SuppressedRule aSuppressedRule)
+  {
+    return EContinue.CONTINUE;
+  }
+
+  /**
+   * Called for each <code>&lt;skipped-assert&gt;</code> element (SchXslt2 extension): an assert that
+   * was not checked because its severity is below the severity threshold.
+   *
+   * @param aActive
+   *        The active pattern or group the assert belongs to. May be <code>null</code> if the assert
+   *        is not preceded by an active pattern or group.
+   * @param aFiredRule
+   *        The fired rule the assert belongs to. May be <code>null</code> if the assert is not
+   *        preceded by a fired rule of the same active pattern or group.
+   * @param aSkippedAssert
+   *        The skipped assert. Never <code>null</code>.
+   * @return {@link EContinue#BREAK} to stop the walk.
+   * @since 11.1.0
+   */
+  @NonNull
+  default EContinue onSkippedAssert (@Nullable final Active aActive,
+                                     @Nullable final FiredRule aFiredRule,
+                                     @NonNull final SkippedAssert aSkippedAssert)
+  {
+    return EContinue.CONTINUE;
+  }
+
+  /**
+   * Called for each <code>&lt;skipped-report&gt;</code> element (SchXslt2 extension): a report that
+   * was not checked because its severity is below the severity threshold.
+   *
+   * @param aActive
+   *        The active pattern or group the report belongs to. May be <code>null</code> if the report
+   *        is not preceded by an active pattern or group.
+   * @param aFiredRule
+   *        The fired rule the report belongs to. May be <code>null</code> if the report is not
+   *        preceded by a fired rule of the same active pattern or group.
+   * @param aSkippedReport
+   *        The skipped report. Never <code>null</code>.
+   * @return {@link EContinue#BREAK} to stop the walk.
+   * @since 11.1.0
+   */
+  @NonNull
+  default EContinue onSkippedReport (@Nullable final Active aActive,
+                                     @Nullable final FiredRule aFiredRule,
+                                     @NonNull final SkippedReport aSkippedReport)
   {
     return EContinue.CONTINUE;
   }

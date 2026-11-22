@@ -28,7 +28,10 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.schematron.svrl.jaxb.FiredRule;
 import com.helger.schematron.svrl.jaxb.RichText;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 import com.helger.schematron.svrl.jaxb.Text;
 
 /**
@@ -74,5 +77,48 @@ public final class SVRLVoidVisitorWrapperTest
     // The wrapper never stops the walk
     assertEquals (EContinue.CONTINUE, SVRLVisitor.visit (aSVRL, aWrapper));
     assertEquals (new CommonsArrayList <> ("FiredRule", "Report"), aEvents);
+  }
+
+  @Test
+  public void testSchXsltExtensions ()
+  {
+    final SchematronOutputType aSVRL = new SchematronOutputType ();
+    final SuppressedRule aSuppressedRule = new SuppressedRule ();
+    aSuppressedRule.setId ("r1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aSuppressedRule);
+    final SkippedAssert aSkippedAssert = new SkippedAssert ();
+    aSkippedAssert.setId ("sa1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aSkippedAssert);
+    final SkippedReport aSkippedReport = new SkippedReport ();
+    aSkippedReport.setId ("sr1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aSkippedReport);
+
+    final ICommonsList <String> aEvents = new CommonsArrayList <> ();
+    final ISVRLVoidVisitor aVoidVisitor = new ISVRLVoidVisitor ()
+    {
+      @Override
+      public void onSuppressedRule (@NonNull final SchematronOutputType aParent, @NonNull final SuppressedRule aRule)
+      {
+        aEvents.add ("SuppressedRule:" + aRule.getId ());
+      }
+
+      @Override
+      public void onSkippedAssert (@NonNull final SchematronOutputType aParent, @NonNull final SkippedAssert aAssert)
+      {
+        aEvents.add ("SkippedAssert:" + aAssert.getId ());
+      }
+
+      @Override
+      public void onSkippedReport (@NonNull final SchematronOutputType aParent, @NonNull final SkippedReport aReport)
+      {
+        aEvents.add ("SkippedReport:" + aReport.getId ());
+      }
+    };
+    assertEquals (EContinue.CONTINUE, SVRLVisitor.visit (aSVRL, new SVRLVoidVisitorWrapper (aVoidVisitor)));
+    assertEquals (new CommonsArrayList <> ("SuppressedRule:r1", "SkippedAssert:sa1", "SkippedReport:sr1"), aEvents);
+
+    // The default methods ignore the extensions
+    assertEquals (EContinue.CONTINUE, SVRLVisitor.visit (aSVRL, new SVRLVoidVisitorWrapper (new ISVRLVoidVisitor ()
+    {})));
   }
 }

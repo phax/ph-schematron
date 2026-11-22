@@ -33,7 +33,10 @@ import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.FiredRule;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 
 /**
  * Test class for class {@link SVRLContextVisitorWrapper}.
@@ -101,6 +104,31 @@ public final class SVRLContextVisitorWrapperTest
                      _getID (aFiredRule));
       return EContinue.CONTINUE;
     }
+
+    @Override
+    public EContinue onSuppressedRule (@Nullable final Active aActive, @NonNull final SuppressedRule aSuppressedRule)
+    {
+      m_aEvents.add ("SuppressedRule:" + aSuppressedRule.getId () + "@" + _getID (aActive));
+      return EContinue.CONTINUE;
+    }
+
+    @Override
+    public EContinue onSkippedAssert (@Nullable final Active aActive,
+                                      @Nullable final FiredRule aFiredRule,
+                                      @NonNull final SkippedAssert aSkippedAssert)
+    {
+      m_aEvents.add ("SkippedAssert:" + aSkippedAssert.getId () + "@" + _getID (aActive) + "/" + _getID (aFiredRule));
+      return EContinue.CONTINUE;
+    }
+
+    @Override
+    public EContinue onSkippedReport (@Nullable final Active aActive,
+                                      @Nullable final FiredRule aFiredRule,
+                                      @NonNull final SkippedReport aSkippedReport)
+    {
+      m_aEvents.add ("SkippedReport:" + aSkippedReport.getId () + "@" + _getID (aActive) + "/" + _getID (aFiredRule));
+      return EContinue.CONTINUE;
+    }
   }
 
   @NonNull
@@ -155,6 +183,40 @@ public final class SVRLContextVisitorWrapperTest
                                            "FailedAssert:fa2@grp1/null",
                                            "FiredRule:r2@grp1",
                                            "SuccessfulReport:sr1@grp1/r2"), aVisitor.m_aEvents);
+  }
+
+  @Test
+  public void testSchXsltExtensions ()
+  {
+    final SchematronOutputType aSVRL = new SchematronOutputType ();
+    final ActivePattern aActivePattern = new ActivePattern ();
+    aActivePattern.setId ("pat1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aActivePattern);
+    final FiredRule aRule1 = new FiredRule ();
+    aRule1.setId ("r1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aRule1);
+    final SkippedAssert aSA1 = new SkippedAssert ();
+    aSA1.setId ("sa1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aSA1);
+    final SkippedReport aSK1 = new SkippedReport ();
+    aSK1.setId ("sk1");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aSK1);
+    // A suppressed rule resets the fired rule
+    final SuppressedRule aRule2 = new SuppressedRule ();
+    aRule2.setId ("r2");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aRule2);
+    final SkippedAssert aSA2 = new SkippedAssert ();
+    aSA2.setId ("sa2");
+    aSVRL.getActivePatternOrActiveGroupAndFiredRule ().add (aSA2);
+
+    final RecordingVisitor aVisitor = new RecordingVisitor ();
+    assertEquals (EContinue.CONTINUE, SVRLVisitor.visit (aSVRL, aVisitor));
+    assertEquals (new CommonsArrayList <> ("ActivePattern:pat1",
+                                           "FiredRule:r1@pat1",
+                                           "SkippedAssert:sa1@pat1/r1",
+                                           "SkippedReport:sk1@pat1/r1",
+                                           "SuppressedRule:r2@pat1",
+                                           "SkippedAssert:sa2@pat1/null"), aVisitor.m_aEvents);
   }
 
   @Test

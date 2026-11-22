@@ -45,6 +45,9 @@ public abstract class AbstractSVRLMessage
   private final String m_sLocation;
   private final String m_sTest;
   private final String m_sRole;
+  private final String m_sRuleID;
+  private final String m_sPatternID;
+  private final String m_sGroupID;
   private final IErrorLevel m_aFlag;
 
   public AbstractSVRLMessage (@Nullable final List <DiagnosticReference> aDiagnosticReferences,
@@ -53,6 +56,9 @@ public abstract class AbstractSVRLMessage
                               @Nullable final String sLocation,
                               @Nullable final String sTest,
                               @Nullable final String sRole,
+                              @Nullable final String sRuleID,
+                              @Nullable final String sPatternID,
+                              @Nullable final String sGroupID,
                               @Nullable final IErrorLevel aFlag)
   {
     m_aDiagnosticReferences = new CommonsArrayList <> (aDiagnosticReferences);
@@ -61,6 +67,9 @@ public abstract class AbstractSVRLMessage
     m_sLocation = sLocation;
     m_sTest = sTest;
     m_sRole = sRole;
+    m_sRuleID = sRuleID;
+    m_sPatternID = sPatternID;
+    m_sGroupID = sGroupID;
     m_aFlag = aFlag;
   }
 
@@ -101,6 +110,39 @@ public abstract class AbstractSVRLMessage
     return m_sRole;
   }
 
+  /**
+   * @return The ID of the rule containing the assert or report. Only provided by SchXslt2 and only
+   *         if the rule has an ID. May be <code>null</code>.
+   * @since 11.1.0
+   */
+  @Nullable
+  public final String getRuleID ()
+  {
+    return m_sRuleID;
+  }
+
+  /**
+   * @return The ID of the pattern containing the assert or report. Only provided by SchXslt2 and
+   *         only if the pattern has an ID. May be <code>null</code>.
+   * @since 11.1.0
+   */
+  @Nullable
+  public final String getPatternID ()
+  {
+    return m_sPatternID;
+  }
+
+  /**
+   * @return The ID of the group containing the assert or report. Only provided by SchXslt2 and only
+   *         if the group has an ID. May be <code>null</code>.
+   * @since 11.1.0
+   */
+  @Nullable
+  public final String getGroupID ()
+  {
+    return m_sGroupID;
+  }
+
   @NonNull
   public final IErrorLevel getFlag ()
   {
@@ -127,6 +169,9 @@ public abstract class AbstractSVRLMessage
                                        .append ("Location", m_sLocation)
                                        .append ("Test", m_sTest)
                                        .appendIfNotNull ("Role", m_sRole)
+                                       .appendIfNotNull ("RuleID", m_sRuleID)
+                                       .appendIfNotNull ("PatternID", m_sPatternID)
+                                       .appendIfNotNull ("GroupID", m_sGroupID)
                                        .append ("Flag", m_aFlag)
                                        .getToString ();
   }

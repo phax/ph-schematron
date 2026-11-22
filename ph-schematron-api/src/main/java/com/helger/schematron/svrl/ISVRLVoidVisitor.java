@@ -31,8 +31,11 @@ import com.helger.schematron.svrl.jaxb.NsPrefixInAttributeValues;
 import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.RichText;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.Span;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 import com.helger.schematron.svrl.jaxb.Text;
 
 /**
@@ -243,6 +246,48 @@ public interface ISVRLVoidVisitor
    *        The fired rule. Never <code>null</code>.
    */
   default void onFiredRule (@NonNull final SchematronOutputType aParent, @NonNull final FiredRule aFiredRule)
+  {}
+
+  /**
+   * Called for each <code>&lt;suppressed-rule&gt;</code> element (SchXslt extension): a rule that
+   * matched, but was not fired because a previous rule of the same pattern matched the same node.
+   *
+   * @param aParent
+   *        The parent element. Never <code>null</code>.
+   * @param aSuppressedRule
+   *        The suppressed rule. Never <code>null</code>.
+   * @since 11.1.0
+   */
+  default void onSuppressedRule (@NonNull final SchematronOutputType aParent,
+                                 @NonNull final SuppressedRule aSuppressedRule)
+  {}
+
+  /**
+   * Called for each <code>&lt;skipped-assert&gt;</code> element (SchXslt2 extension): an assert that
+   * was not checked because its severity is below the severity threshold.
+   *
+   * @param aParent
+   *        The parent element. Never <code>null</code>.
+   * @param aSkippedAssert
+   *        The skipped assert. Never <code>null</code>.
+   * @since 11.1.0
+   */
+  default void onSkippedAssert (@NonNull final SchematronOutputType aParent,
+                                @NonNull final SkippedAssert aSkippedAssert)
+  {}
+
+  /**
+   * Called for each <code>&lt;skipped-report&gt;</code> element (SchXslt2 extension): a report that
+   * was not checked because its severity is below the severity threshold.
+   *
+   * @param aParent
+   *        The parent element. Never <code>null</code>.
+   * @param aSkippedReport
+   *        The skipped report. Never <code>null</code>.
+   * @since 11.1.0
+   */
+  default void onSkippedReport (@NonNull final SchematronOutputType aParent,
+                                @NonNull final SkippedReport aSkippedReport)
   {}
 
   /**

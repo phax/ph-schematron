@@ -35,8 +35,11 @@ import com.helger.schematron.svrl.jaxb.NsPrefixInAttributeValues;
 import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.RichText;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.Span;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 import com.helger.schematron.svrl.jaxb.Text;
 
 /**
@@ -238,6 +241,33 @@ public class SVRLVoidVisitorWrapper implements ISVRLVisitor
   public EContinue onFiredRule (@NonNull final SchematronOutputType aParent, @NonNull final FiredRule aFiredRule)
   {
     m_aVisitor.onFiredRule (aParent, aFiredRule);
+    return EContinue.CONTINUE;
+  }
+
+  @Override
+  @NonNull
+  public EContinue onSuppressedRule (@NonNull final SchematronOutputType aParent,
+                                     @NonNull final SuppressedRule aSuppressedRule)
+  {
+    m_aVisitor.onSuppressedRule (aParent, aSuppressedRule);
+    return EContinue.CONTINUE;
+  }
+
+  @Override
+  @NonNull
+  public EContinue onSkippedAssert (@NonNull final SchematronOutputType aParent,
+                                    @NonNull final SkippedAssert aSkippedAssert)
+  {
+    m_aVisitor.onSkippedAssert (aParent, aSkippedAssert);
+    return EContinue.CONTINUE;
+  }
+
+  @Override
+  @NonNull
+  public EContinue onSkippedReport (@NonNull final SchematronOutputType aParent,
+                                    @NonNull final SkippedReport aSkippedReport)
+  {
+    m_aVisitor.onSkippedReport (aParent, aSkippedReport);
     return EContinue.CONTINUE;
   }
 

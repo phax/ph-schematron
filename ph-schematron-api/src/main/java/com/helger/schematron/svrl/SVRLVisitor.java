@@ -36,8 +36,11 @@ import com.helger.schematron.svrl.jaxb.NsPrefixInAttributeValues;
 import com.helger.schematron.svrl.jaxb.PropertyReference;
 import com.helger.schematron.svrl.jaxb.RichText;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.Span;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 import com.helger.schematron.svrl.jaxb.Text;
 
 /**
@@ -175,6 +178,10 @@ public final class SVRLVisitor
       {
         return aVisitor.onFiredRule (aSchematronOutput, aFiredRule);
       }
+      case final SuppressedRule aSuppressedRule ->
+      {
+        return aVisitor.onSuppressedRule (aSchematronOutput, aSuppressedRule);
+      }
       case final FailedAssert aFailedAssert ->
       {
         if (aVisitor.onFailedAssertStart (aFailedAssert).isBreak ())
@@ -190,6 +197,14 @@ public final class SVRLVisitor
         if (_visitAssertionMessageChildren (aSuccessfulReport, aVisitor).isBreak ())
           return EContinue.BREAK;
         return aVisitor.onSuccessfulReportEnd (aSuccessfulReport);
+      }
+      case final SkippedAssert aSkippedAssert ->
+      {
+        return aVisitor.onSkippedAssert (aSchematronOutput, aSkippedAssert);
+      }
+      case final SkippedReport aSkippedReport ->
+      {
+        return aVisitor.onSkippedReport (aSchematronOutput, aSkippedReport);
       }
       default -> throw new IllegalStateException ("Unsupported SVRL object to visit: " + aObject);
     }

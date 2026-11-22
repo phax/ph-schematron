@@ -31,5 +31,13 @@
     <schemaBindings>
       <package name="com.helger.schematron.svrl.jaxb" />
     </schemaBindings>
+    <!-- Pin the name of the list property of SchematronOutputType. XJC
+         derives it from the first particles of the repeating sequence, so
+         adding the SchXslt extensions (suppressed-rule, skipped-assert,
+         skipped-report) or any other element there could otherwise rename
+         the public getter getActivePatternOrActiveGroupAndFiredRule (). -->
+    <bindings node="//xsd:complexType[@name='SchematronOutputType']/xsd:sequence/xsd:sequence">
+      <property name="activePatternOrActiveGroupAndFiredRule" />
+    </bindings>
   </bindings>
 </bindings>

@@ -29,7 +29,10 @@ import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
 import com.helger.schematron.svrl.jaxb.FiredRule;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
+import com.helger.schematron.svrl.jaxb.SkippedAssert;
+import com.helger.schematron.svrl.jaxb.SkippedReport;
 import com.helger.schematron.svrl.jaxb.SuccessfulReport;
+import com.helger.schematron.svrl.jaxb.SuppressedRule;
 
 /**
  * Wraps an {@link ISVRLContextVisitor} into an {@link ISVRLVisitor}. It keeps track of the current
@@ -133,6 +136,32 @@ public class SVRLContextVisitorWrapper implements ISVRLVisitor
   public EContinue onSuccessfulReportStart (@NonNull final SuccessfulReport aSuccessfulReport)
   {
     return m_aVisitor.onSuccessfulReport (m_aCurrentActive, m_aCurrentFiredRule, aSuccessfulReport);
+  }
+
+  @Override
+  @NonNull
+  public EContinue onSuppressedRule (@NonNull final SchematronOutputType aParent,
+                                     @NonNull final SuppressedRule aSuppressedRule)
+  {
+    // A suppressed rule has no asserts or reports of its own
+    m_aCurrentFiredRule = null;
+    return m_aVisitor.onSuppressedRule (m_aCurrentActive, aSuppressedRule);
+  }
+
+  @Override
+  @NonNull
+  public EContinue onSkippedAssert (@NonNull final SchematronOutputType aParent,
+                                    @NonNull final SkippedAssert aSkippedAssert)
+  {
+    return m_aVisitor.onSkippedAssert (m_aCurrentActive, m_aCurrentFiredRule, aSkippedAssert);
+  }
+
+  @Override
+  @NonNull
+  public EContinue onSkippedReport (@NonNull final SchematronOutputType aParent,
+                                    @NonNull final SkippedReport aSkippedReport)
+  {
+    return m_aVisitor.onSkippedReport (m_aCurrentActive, m_aCurrentFiredRule, aSkippedReport);
   }
 
   @Override
