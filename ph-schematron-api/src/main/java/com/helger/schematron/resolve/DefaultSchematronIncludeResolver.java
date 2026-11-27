@@ -37,6 +37,7 @@ import com.helger.io.resourceresolver.DefaultResourceResolver;
 @NotThreadSafe
 public class DefaultSchematronIncludeResolver implements ISchematronIncludeResolver
 {
+  private final IReadableResource m_aBaseResource;
   private final String m_sBaseHref;
   private ISchematronIncludeResolver m_aCustomIncludeResolver;
 
@@ -49,12 +50,25 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
 
   public DefaultSchematronIncludeResolver (@NonNull final IReadableResource aResource)
   {
-    this (_getBaseHref (aResource));
+    m_aBaseResource = aResource;
+    m_sBaseHref = _getBaseHref (aResource);
   }
 
   public DefaultSchematronIncludeResolver (@Nullable final String sBaseHref)
   {
+    m_aBaseResource = null;
     m_sBaseHref = sBaseHref;
+  }
+
+  /**
+   * @return The resource that contains the includes, as passed in the constructor. May be
+   *         <code>null</code> if the constructor with the base href was used.
+   * @since 10.3.4
+   */
+  @Nullable
+  public final IReadableResource getBaseResource ()
+  {
+    return m_aBaseResource;
   }
 
   @Nullable
@@ -73,7 +87,7 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
   {
     if (m_aCustomIncludeResolver != null)
     {
-      final IReadableResource ret = m_aCustomIncludeResolver.getResolvedSchematronResource (sHref);
+      final IReadableResource ret = m_aCustomIncludeResolver.getResolvedSchematronResource (sHref, m_aBaseResource);
       if (ret != null)
         return ret;
     }
@@ -83,7 +97,8 @@ public class DefaultSchematronIncludeResolver implements ISchematronIncludeResol
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("BaseHref", m_sBaseHref)
+    return new ToStringGenerator (this).appendIfNotNull ("BaseResource", m_aBaseResource)
+                                       .append ("BaseHref", m_sBaseHref)
                                        .appendIfNotNull ("CustomIncludeResolver", m_aCustomIncludeResolver)
                                        .getToString ();
   }
