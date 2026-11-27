@@ -552,8 +552,21 @@ worktree), same machine and run, JDK 25, 3 forks × 5 iterations, ms per validat
 - Side finding for the other XSLT engines: a DOM passed by the caller goes into the JAXP path as a plain
   `DOMSource`, so Saxon navigates the wrapped DOM. The same generated XSLT through `SchematronResourceXSLT` took
   10.2 ms for EN 16931 on Saxon, 10.2 ms without SVRL schema validation, and 2.1 ms with the DOM converted via
-  `createSourceForInternalDocument` (flat 5,000: 20.5, 15.1, 12.6 ms). The same conversion in
-  `AbstractSchematronXSLTBasedResource` for caller DOM documents would speed up ISO, SchXslt, SchXslt2 and `xslt`.
+  `createSourceForInternalDocument` (flat 5,000: 20.5, 15.1, 12.6 ms). Done 2026-11-28 (see below).
+
+### DOM documents of the caller as native trees (2026-11-28)
+
+- `SchematronXSLTValidator.createSourceForNode` hands a DOM `Document` to
+  `ISchematronXsltProcessor.createSourceForInternalDocument` (Saxon: `SaxonDOMSource`, a snapshot; phoxtrot: its own
+  tree, as for any `DOMSource`); any other node stays a `DOMSource`. Used by the `Node` overloads of
+  `SchematronXSLTValidator`, `AbstractSchematronXSLTBasedResource` (ISO, SchXslt, SchXslt2, `xslt`) and
+  `SchematronResourcePureXslt`. A `DOMSource` passed to the `Source` methods keeps the wrapped DOM (the opt-out of
+  #198 for extension functions that need the original nodes).
+- `SchematronResourcePureXPath` copies a DOM document into a Saxon tree whenever no custom validation handler is set
+  (no node is exposed then); with a custom handler `copyDomToSaxonTree` still decides.
+- Measured (Saxon, ms, 1 fork): `xslt` engine with the generated XSLT, EN 16931: 10.2 to 2.5; flat 5,000: 20.5 to
+  20.4 (the SVRL schema validation dominates there). Pure XPath, flat 5,000, SVRL from DOM: 5.59 ± 0.92 to
+  5.17 ± 0.53 (TinyTree input: 3.59), i.e. within the error.
 
 Still open: the SVRL comparison Saxon vs. phoxtrot for `pure-xslt` in `ph-schematron-it` (step 5), questions 2 and 4,
 a stream input benchmark, `Migrations.md` and `News-and-noteworthy.md` (step 6).

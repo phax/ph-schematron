@@ -97,8 +97,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 public class SchematronResourcePureXPath extends AbstractSchematronResource
 {
   /**
-   * By default a DOM document is validated directly, so that validation handlers receive the
-   * original DOM nodes.
+   * By default a DOM document is validated directly if a custom validation handler is set, so that
+   * it receives the original DOM nodes. Without a custom validation handler a DOM document is
+   * always copied into a Saxon tree (since 11.1.0), because no node is exposed.
    *
    * @since 11.0.0
    */
@@ -193,8 +194,9 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
 
   /**
    * @return <code>true</code> if a DOM document passed for validation is copied into a Saxon tree
-   *         first, <code>false</code> if the DOM is validated directly. Default is
-   *         {@link #DEFAULT_COPY_DOM_TO_SAXON_TREE}.
+   *         first also with a custom validation handler, <code>false</code> if the DOM is then
+   *         validated directly. Without a custom validation handler the DOM document is always
+   *         copied. Default is {@link #DEFAULT_COPY_DOM_TO_SAXON_TREE}.
    * @see Builder#copyDomToSaxonTree(boolean)
    * @since 11.0.0
    */
@@ -419,7 +421,8 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
    * @param sBaseURI
    *        The base URI of the node. May be <code>null</code>.
    * @return The node to be validated. Either the passed node or a DOM facade over a Saxon tree copy
-   *         of it, if {@link #isCopyDomToSaxonTree()} is enabled.
+   *         of it, if no custom validation handler is set or {@link #isCopyDomToSaxonTree()} is
+   *         enabled.
    * @throws SchematronException
    *         If the DOM cannot be copied
    */
@@ -427,7 +430,9 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
   private Node _getNodeToValidate (@NonNull final Node aXMLNode,
                                    @Nullable final String sBaseURI) throws SchematronException
   {
-    if (m_bCopyDomToSaxonTree && aXMLNode instanceof Document && !(aXMLNode instanceof NodeOverNodeInfo))
+    // Without a custom validation handler no node is exposed, so the copy is always possible
+    final boolean bCopy = m_bCopyDomToSaxonTree || m_aCustomValidationHandler == null;
+    if (bCopy && aXMLNode instanceof Document && !(aXMLNode instanceof NodeOverNodeInfo))
       try
       {
         return SaxonTinyTreeHelper.buildDocumentFacade (m_aXPathConfig.getProcessor (),
@@ -919,8 +924,10 @@ public class SchematronResourcePureXPath extends AbstractSchematronResource
      * disabled if a custom validation handler requires the original DOM nodes.
      *
      * @param b
-     *        <code>true</code> to copy a DOM document into a Saxon tree before validation,
-     *        <code>false</code> to validate the DOM directly. Default is
+     *        <code>true</code> to copy a DOM document into a Saxon tree before validation also
+     *        with a custom validation handler, <code>false</code> to validate the DOM directly
+     *        then. Without a custom validation handler the DOM document is always copied. Default
+     *        is
      *        {@link SchematronResourcePureXPath#DEFAULT_COPY_DOM_TO_SAXON_TREE}.
      * @return this for chaining
      * @since 11.0.0

@@ -28,7 +28,6 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 
 import org.jspecify.annotations.NonNull;
@@ -434,11 +433,9 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
    * processor once per validation, so the XSLT does not navigate the DOM.
    */
   @NonNull
-  private Source _createSource (@NonNull final Node aXMLNode, @Nullable final String sBaseURI)
+  private Source _createSource (@NonNull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
-    if (aXMLNode instanceof final Document aDoc)
-      return m_aXsltProcessor.createSourceForInternalDocument (aDoc, sBaseURI);
-    return new DOMSource (aXMLNode, sBaseURI);
+    return SchematronXSLTValidator.createSourceForNode (getOrCompileXSLTProvider (), aXMLNode, sBaseURI);
   }
 
   @NonNull

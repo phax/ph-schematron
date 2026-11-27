@@ -461,9 +461,9 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
   {
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
-    final DOMSource aSource = new DOMSource (aXMLNode);
-    aSource.setSystemId (sBaseURI);
-    return applySchematronValidation (aSource);
+    return applySchematronValidation (SchematronXSLTValidator.createSourceForNode (getXSLTProvider (),
+                                                                                  aXMLNode,
+                                                                                  sBaseURI));
   }
 
   @Nullable
@@ -473,10 +473,10 @@ public abstract class AbstractSchematronXSLTBasedResource <IMPLTYPE extends Abst
     ValueEnforcer.notNull (aXMLNode, "XMLNode");
 
     // Route through the Source overload so the single telemetry choke point covers both entry
-    // points
-    final DOMSource aSource = new DOMSource (aXMLNode);
-    aSource.setSystemId (sBaseURI);
-    return applySchematronValidationToSVRL (aSource);
+    // points. A DOM document may be converted into the tree model of the XSLT processor.
+    return applySchematronValidationToSVRL (SchematronXSLTValidator.createSourceForNode (getXSLTProvider (),
+                                                                                        aXMLNode,
+                                                                                        sBaseURI));
   }
 
   /**

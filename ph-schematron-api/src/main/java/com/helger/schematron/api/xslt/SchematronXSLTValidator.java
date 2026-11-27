@@ -315,6 +315,36 @@ public final class SchematronXSLTValidator
   {}
 
   /**
+   * Create the source for a DOM node to validate. A DOM document is handed to the XSLT processor of
+   * the provider via
+   * {@link com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor#createSourceForInternalDocument(Document, String)},
+   * so it may be converted into the tree model of the processor once per validation instead of
+   * navigating the DOM (on Saxon a snapshot of the document, see <code>SaxonDOMSource</code>). Any
+   * other node, or a provider that is <code>null</code>, gives a regular {@link DOMSource}. To keep
+   * the wrapped DOM (e.g. for extension functions that need the original DOM nodes), pass a
+   * {@link DOMSource} to the {@link Source} based methods instead.
+   *
+   * @param aProvider
+   *        The compiled provider. May be <code>null</code>.
+   * @param aXMLNode
+   *        The XML node to validate. May not be <code>null</code>.
+   * @param sBaseURI
+   *        Optional base URI used as the source system ID.
+   * @return The source to validate. Never <code>null</code>.
+   * @since 11.1.0
+   */
+  @NonNull
+  public static Source createSourceForNode (@Nullable final ISchematronXSLTBasedProvider aProvider,
+                                            @NonNull final Node aXMLNode,
+                                            @Nullable final String sBaseURI)
+  {
+    ValueEnforcer.notNull (aXMLNode, "XMLNode");
+    if (aProvider != null && aXMLNode instanceof final Document aDoc)
+      return aProvider.getXsltProcessor ().createSourceForInternalDocument (aDoc, sBaseURI);
+    return new DOMSource (aXMLNode, sBaseURI);
+  }
+
+  /**
    * Create the transformer of the provider and apply all settings to it.
    *
    * @return <code>null</code> if the provider is unusable.
@@ -452,8 +482,8 @@ public final class SchematronXSLTValidator
   }
 
   /**
-   * Convenience overload taking a DOM node and base URI. Wraps the node in a {@link DOMSource} with
-   * the supplied system ID and delegates to
+   * Convenience overload taking a DOM node and base URI. Creates the source with
+   * {@link #createSourceForNode(ISchematronXSLTBasedProvider, Node, String)} and delegates to
    * {@link #applyValidation(ISchematronXSLTBasedProvider, Source, ErrorListener, URIResolver, Map)}.
    *
    * @param aProvider
@@ -519,10 +549,12 @@ public final class SchematronXSLTValidator
                                           @Nullable final Map <String, ?> aParameters,
                                           @Nullable final ISchematronTemplateTelemetry aTelemetry) throws TransformerException
   {
-    ValueEnforcer.notNull (aXMLNode, "XMLNode");
-    final DOMSource aSource = new DOMSource (aXMLNode);
-    aSource.setSystemId (sBaseURI);
-    return applyValidation (aProvider, aSource, aErrorListener, aURIResolver, aParameters, aTelemetry);
+    return applyValidation (aProvider,
+                            createSourceForNode (aProvider, aXMLNode, sBaseURI),
+                            aErrorListener,
+                            aURIResolver,
+                            aParameters,
+                            aTelemetry);
   }
 
   @Nullable
@@ -690,9 +722,12 @@ public final class SchematronXSLTValidator
                                                   final boolean bValidateSVRL,
                                                   @Nullable final ISchematronTemplateTelemetry aTelemetry) throws TransformerException
   {
-    ValueEnforcer.notNull (aXMLNode, "XMLNode");
-    final DOMSource aSource = new DOMSource (aXMLNode);
-    aSource.setSystemId (sBaseURI);
-    return applyToSVRL (aProvider, aSource, aErrorListener, aURIResolver, aParameters, bValidateSVRL, aTelemetry);
+    return applyToSVRL (aProvider,
+                        createSourceForNode (aProvider, aXMLNode, sBaseURI),
+                        aErrorListener,
+                        aURIResolver,
+                        aParameters,
+                        bValidateSVRL,
+                        aTelemetry);
   }
 }

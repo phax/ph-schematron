@@ -94,9 +94,10 @@ public interface ISchematronXsltProcessor extends IHasID <String>
   }
 
   /**
-   * Create the {@link Source} for a DOM document that was created internally (e.g. parsed from an
-   * input stream) and is never exposed to the caller. The processor may therefore convert it into
-   * its own tree model before the validation.
+   * Create the {@link Source} for a DOM document whose node identity is not needed by the
+   * validation: a document created internally (e.g. parsed from an input stream) and, since 11.1.0,
+   * a document passed to the <code>Node</code> based validation methods. The processor may
+   * therefore convert it into its own tree model before the validation.
    *
    * @param aDoc
    *        The internally created document. May not be <code>null</code>.

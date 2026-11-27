@@ -35,6 +35,11 @@ import com.helger.base.enforce.ValueEnforcer;
  * system ID while building the tree. Use a regular {@link DOMSource} when the stylesheet or
  * extension functions require the original DOM nodes or wrapped-DOM behavior.
  * <p>
+ * Since 11.1.0 the <code>Node</code> based validation methods (e.g.
+ * <code>applySchematronValidationToSVRL (Node, String)</code>) use this source for a DOM document,
+ * so the snapshot is the default there. A regular {@link DOMSource} passed to the
+ * <code>Source</code> based methods still keeps the wrapped DOM.
+ * <p>
  * Conversion uses the running transformer's configuration, so the source can be reused across
  * validators with different Saxon configurations. No converted tree is cached. With a custom
  * non-Saxon transformer, or a node other than a document, this behaves like a regular
