@@ -568,8 +568,15 @@ worktree), same machine and run, JDK 25, 3 forks × 5 iterations, ms per validat
   20.4 (the SVRL schema validation dominates there). Pure XPath, flat 5,000, SVRL from DOM: 5.59 ± 0.92 to
   5.17 ± 0.53 (TinyTree input: 3.59), i.e. within the error.
 
-Still open: the SVRL comparison Saxon vs. phoxtrot for `pure-xslt` in `ph-schematron-it` (step 5), questions 2 and 4,
-a stream input benchmark, `Migrations.md` and `News-and-noteworthy.md` (step 6).
+SVRL comparison (step 5, done 2026-11-28): `SVRLPhoxtrotVsSaxonComparisonTest` has the pipeline `pure-xslt`
+(`ComparedPipeline.PURE_XSLT`; `ComparedPipeline` now creates an `ISchematronResource`). All 77 valid test Schematrons
+(the BIICORE files included, the Java generator is not slow on them) against all test XML files: 539 pairs, 0
+differences, none failed on both; the dynamic error (`FORG0001`) and the invalid Schematron files (5 of 8 invalid)
+are the same on both processors. The canonical SVRL contains all attributes, so the `location` of Saxon
+(`phsch:fn-path`) and of phoxtrot (`fn:path`) is identical: question 2 needs no more phoxtrot functions for the
+correctness, only for speed (if `fn:path` on phoxtrot ever is slower than the Saxon extension).
+
+Still open: question 4, a stream input benchmark, `Migrations.md` and `News-and-noteworthy.md` (step 6).
 
 ## Tests
 
