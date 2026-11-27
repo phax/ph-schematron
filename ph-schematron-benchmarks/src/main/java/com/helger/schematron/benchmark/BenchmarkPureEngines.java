@@ -37,10 +37,12 @@ import org.w3c.dom.Document;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.pure.xpath.XPathConfigBuilder;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.saxon.SaxonTinyTreeHelper;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.xml.serialize.read.DOMReader;
 
@@ -65,6 +67,9 @@ import net.sf.saxon.s9api.XdmAtomicValue;
 @Fork (1)
 public class BenchmarkPureEngines
 {
+  /** The XSLT processor of the pure XSLT engine */
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+
   private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
                                            "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron' queryBinding='xslt2'>\n" +
                                            "  <iso:let name='total' value='count(/root/item)'/>\n" +
@@ -117,7 +122,7 @@ public class BenchmarkPureEngines
                                                                                      .build ())
                                               .build ();
     m_aPureXPath.getOrCreateBoundSchema ();
-    m_aPureXslt = SchematronResourcePureXslt.builderFromString (SCHEMATRON).build ();
+    m_aPureXslt = SchematronResourcePureXslt.builderFromString (SCHEMATRON).xsltProcessor (SAXON).build ();
 
     m_aValidDom = DOMReader.readXMLDOM (_createXml (true));
     final byte [] aInvalid = _createXml (false);

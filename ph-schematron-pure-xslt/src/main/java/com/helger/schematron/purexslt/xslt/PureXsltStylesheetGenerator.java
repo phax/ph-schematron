@@ -55,7 +55,6 @@ import com.helger.schematron.model.PSRule;
 import com.helger.schematron.model.PSSchema;
 import com.helger.schematron.model.PSSpan;
 import com.helger.schematron.model.PSValueOf;
-import com.helger.schematron.saxon.SaxonLocationFunctions;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLFactory;
 import com.helger.xml.microdom.IMicroCDATA;
@@ -873,7 +872,7 @@ public final class PureXsltStylesheetGenerator
 
   /**
    * Like {@link #PATH_FUNC_SELECT}, but the positions are determined by the
-   * {@link SaxonLocationFunctions} extension functions instead of counting the preceding
+   * {@link CSchematronLocationFunctions} extension functions instead of counting the preceding
    * siblings again for every node.
    */
   private static final String PATH_FUNC_SELECT_NATIVE = "concat(" +
@@ -926,7 +925,7 @@ public final class PureXsltStylesheetGenerator
    * @param eVersion
    *        The target XSLT version. May not be <code>null</code>.
    * @param bNativeLocation
-   *        <code>true</code> to use the {@link SaxonLocationFunctions} extension functions.
+   *        <code>true</code> to use the {@link CSchematronLocationFunctions} extension functions.
    * @return The attribute value template for the SVRL {@code location} attribute: {@code fn:path()}
    *         (or {@code phsch:fn-path()} if native) for XSLT&nbsp;3.0, the generated
    *         {@code phsch:path} function for XSLT&nbsp;2.x, or
@@ -1064,9 +1063,9 @@ public final class PureXsltStylesheetGenerator
    *        attribute. May not be <code>null</code>.
    * @param bNativeLocation
    *        <code>true</code> to compute the SVRL {@code location} attribute with the
-   *        {@link SaxonLocationFunctions} extension functions, which take linear time. Such a
-   *        stylesheet only runs on a Saxon {@link net.sf.saxon.s9api.Processor} the functions were
-   *        registered on (see {@link SaxonLocationFunctions#registerIfMissing}). Use
+   *        {@link CSchematronLocationFunctions} extension functions, which take linear time. Such a
+   *        stylesheet only runs on an XSLT processor that has all of them (see
+   *        {@link com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor#isAllLocationFunctionsAvailable()}). Use
    *        <code>false</code> for a portable stylesheet.
    * @return An in-memory XSLT stylesheet document. Never <code>null</code>.
    * @since 11.0.0

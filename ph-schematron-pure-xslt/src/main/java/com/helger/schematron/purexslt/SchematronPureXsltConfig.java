@@ -21,9 +21,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Locale;
 import java.util.Objects;
 
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
 
@@ -38,6 +42,7 @@ import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.Immutable;
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.base.builder.IBuilder;
+import com.helger.base.concurrent.SimpleLock;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.base.tostring.ToStringGenerator;
@@ -51,6 +56,10 @@ import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.cache.ISchematronCompilation;
 import com.helger.schematron.api.cache.ISchematronCompilationCacheKey;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.TransformerFactoryLocks;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
@@ -60,30 +69,22 @@ import com.helger.schematron.preprocess.PSPreprocessor;
 import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
-import com.helger.schematron.saxon.SaxonLocationFunctions;
-import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-
-import net.sf.saxon.lib.ErrorReporterToListener;
-import net.sf.saxon.lib.ResourceResolverWrappingURIResolver;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XsltCompiler;
-import net.sf.saxon.s9api.XsltExecutable;
+import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
  * Immutable configuration for compiling a Schematron <code>.sch</code> file through the pure-Java
- * Saxon-native pipeline. Cache-key dimensions are
- * <code>(resourceID, phase, xsltVersion, tracing)</code> - deliberately without the identity of the
- * {@link Processor}, so that the cache is actually shared. A custom URI resolver, error listener or
- * {@link Processor} bypasses caching unless {@link Builder#forceCacheResult(boolean)} is true.
+ * XSLT pipeline: the XSLT is generated in Java and compiled by the selected XSLT processor.
+ * Cache-key dimensions are <code>(resourceID, phase, xsltVersion, tracing, xsltProcessorID)</code>.
+ * A custom URI resolver or error listener bypasses caching unless
+ * {@link Builder#forceCacheResult(boolean)} is true.
  *
  * @author Philip Helger
  * @since 10.0.0
  */
 @Immutable
-public final class SchematronPureXsltConfig implements ISchematronCompilation <XsltExecutable>
+public final class SchematronPureXsltConfig implements ISchematronCompilation <ISchematronXSLTBasedProvider>
 {
   /** Default for {@link Builder#forceCacheResult(boolean)}. */
   public static final boolean DEFAULT_FORCE_CACHE_RESULT = false;
@@ -93,7 +94,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   private final IReadableResource m_aResource;
   private final String m_sPhase;
   private final EPureXsltVersion m_eXsltVersion;
-  private final Processor m_aProcessor;
+  private final ISchematronXsltProcessor m_aXsltProcessor;
   private final IPSErrorHandler m_aErrorHandler;
   private final EntityResolver m_aEntityResolver;
   private final URIResolver m_aURIResolver;
@@ -107,14 +108,19 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     m_aResource = aBuilder.m_aResource;
     m_sPhase = aBuilder.m_sPhase;
     m_eXsltVersion = aBuilder.m_eXsltVersion;
-    m_aProcessor = aBuilder.m_aProcessor;
+    m_aXsltProcessor = aBuilder.m_aXsltProcessor != null ? aBuilder.m_aXsltProcessor
+                                                         : SchematronXsltProcessorRegistry.getDefaultProcessor ();
     m_aErrorHandler = aBuilder.m_aErrorHandler;
     m_aEntityResolver = aBuilder.m_aEntityResolver;
     m_aURIResolver = aBuilder.m_aURIResolver;
     m_aErrorListener = aBuilder.m_aErrorListener;
     m_aTelemetry = aBuilder.m_aTelemetry;
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
-    m_aCacheKey = new CacheKey (m_aResource.getResourceID (), m_sPhase, m_eXsltVersion.getID (), isTracingEnabled ());
+    m_aCacheKey = new CacheKey (m_aResource.getResourceID (),
+                                m_sPhase,
+                                m_eXsltVersion.getID (),
+                                isTracingEnabled (),
+                                m_aXsltProcessor.getID ());
   }
 
   @Override
@@ -145,13 +151,14 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   }
 
   /**
-   * @return The Saxon {@link Processor} used to compile and execute the XSLT. Never
-   *         <code>null</code>. Its identity participates in the cache key.
+   * @return The XSLT processor that compiles and runs the XSLT. Never <code>null</code>.
+   *         Participates in the cache key by its ID.
+   * @since 11.1.0
    */
   @NonNull
-  public Processor getProcessor ()
+  public ISchematronXsltProcessor getXsltProcessor ()
   {
-    return m_aProcessor;
+    return m_aXsltProcessor;
   }
 
   /**
@@ -195,7 +202,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   /**
    * @return The per-template telemetry callback configured for the XSLT transformation, or
    *         <code>null</code> if telemetry is disabled. When non-<code>null</code>, the stylesheet
-   *         is compiled with Saxon's {@code COMPILE_WITH_TRACING} feature and the trace-enabled
+   *         is compiled with tracing (on Saxon {@code COMPILE_WITH_TRACING}) and the trace-enabled
    *         provider is cached under a separate key (see {@link #getCacheKey()}).
    */
   @Nullable
@@ -206,7 +213,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
 
   /**
    * @return <code>true</code> if {@link #getTelemetry()} is non-<code>null</code>, i.e. the
-   *         stylesheet should be compiled with Saxon tracing enabled.
+   *         stylesheet should be compiled with tracing enabled.
    */
   public boolean isTracingEnabled ()
   {
@@ -232,53 +239,81 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   @Override
   public boolean canCacheResult ()
   {
-    /*
-     * A custom Processor counts as a custom hook, because the cache key does not contain the
-     * identity of the Processor - a cached XsltExecutable was compiled by the shared default
-     * Processor and would silently ignore e.g. the extension functions of a custom one.
-     */
-    final boolean bHaveCustomHooks = m_aURIResolver != null ||
-                                     m_aErrorListener != null ||
-                                     m_aProcessor != SchematronProcessorFactory.getDefault ();
+    final boolean bHaveCustomHooks = m_aURIResolver != null || m_aErrorListener != null;
     return !bHaveCustomHooks || m_bForceCacheResult;
   }
 
+  /**
+   * Generate the XSLT from the Schematron and compile it with the XSLT processor of this config.
+   * The SVRL <code>location</code> is computed with the linear location functions if the processor
+   * has all of them (see {@link ISchematronXsltProcessor#isAllLocationFunctionsAvailable()}),
+   * otherwise in a portable way.
+   *
+   * @return The provider with the compiled XSLT. Never <code>null</code>.
+   * @throws SchematronException
+   *         If the Schematron cannot be read or the XSLT does not compile
+   */
   @Override
   @NonNull
-  public XsltExecutable compile () throws SchematronException
+  public ISchematronXSLTBasedProvider compile () throws SchematronException
   {
+    final PSReader aReader = new PSReader (m_aResource, m_aErrorHandler, m_aEntityResolver);
+    aReader.setPreserveLetBodyElements (true);
+    final PSSchema aRaw = aReader.readSchema ();
+    if (aRaw == null)
+      throw new SchematronReadException (m_aResource, "Failed to read Schematron from " + m_aResource);
+
+    // Preprocess schema (resolve includes etc.)
+    final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
+    final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
+
+    final Document aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema,
+                                                                    m_sPhase,
+                                                                    m_eXsltVersion,
+                                                                    m_aXsltProcessor.isAllLocationFunctionsAvailable ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Generated XSLT for pure XSLT validation:\n" +
+                    XMLWriter.getNodeAsString (aXsltDoc,
+                                               new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
+    return new SchematronProviderXSLTFromPureXslt (m_aXsltProcessor, aXsltDoc, compileXslt (aXsltDoc));
+  }
+
+  /**
+   * Compile a generated XSLT with the XSLT processor, the error listener and the URI resolver of
+   * this config, with tracing if telemetry is enabled.
+   *
+   * @param aXsltDoc
+   *        The XSLT to compile. May not be <code>null</code>.
+   * @return The compiled XSLT. Never <code>null</code>.
+   * @throws SchematronException
+   *         If the XSLT does not compile
+   */
+  @NonNull
+  Templates compileXslt (@NonNull final Document aXsltDoc) throws SchematronException
+  {
+    final TransformerFactory aTF = isTracingEnabled () ? m_aXsltProcessor.createTransformerFactory (true)
+                                                       : m_aXsltProcessor.getDefaultTransformerFactory ();
+    // The default factory is shared: configuring it and compiling must not interleave with other
+    // compilations that run in parallel
+    final SimpleLock aTFLock = TransformerFactoryLocks.getLock (aTF);
+    aTFLock.lock ();
     try
     {
-      final PSReader aReader = new PSReader (m_aResource, m_aErrorHandler, m_aEntityResolver);
-      aReader.setPreserveLetBodyElements (true);
-      final PSSchema aRaw = aReader.readSchema ();
-      if (aRaw == null)
-        throw new SchematronReadException (m_aResource, "Failed to read Schematron from " + m_aResource);
-
-      // Preprocess schema (resolve includes etc.)
-      final PSPreprocessor aPreprocessor = PSPreprocessor.createPreprocessorWithoutInformationLoss (PureXsltQueryBindingTransform.getInstance ());
-      final PSSchema aSchema = aPreprocessor.getAsPreprocessedSchema (aRaw);
-
-      // Generate, with the linear location functions, as the stylesheet is only compiled here
-      final Document aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion, true);
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" +
-                      XMLWriter.getNodeAsString (aXsltDoc,
-                                                 new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
-
-      SaxonLocationFunctions.registerIfMissing (m_aProcessor);
-      final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
+      aTF.setErrorListener (m_aErrorListener != null ? m_aErrorListener : new LoggingTransformErrorListener (Locale.US));
       if (m_aURIResolver != null)
-        aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
-      if (m_aErrorListener != null)
-        aCompiler.setErrorReporter (new ErrorReporterToListener (m_aErrorListener));
-      if (isTracingEnabled ())
-        aCompiler.setCompileWithTracing (true);
-      return aCompiler.compile (new DOMSource (aXsltDoc));
+        aTF.setURIResolver (m_aURIResolver);
+      return aTF.newTemplates (new DOMSource (aXsltDoc));
     }
-    catch (final SaxonApiException ex)
+    catch (final TransformerConfigurationException ex)
     {
-      throw new SchematronException ("Saxon rejected the generated XSLT", ex);
+      throw new SchematronException ("The XSLT processor '" +
+                                     m_aXsltProcessor.getID () +
+                                     "' rejected the generated XSLT",
+                                     ex);
+    }
+    finally
+    {
+      aTFLock.unlock ();
     }
   }
 
@@ -291,7 +326,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
   {
     return new Builder (m_aResource).phase (m_sPhase)
                                     .xsltVersion (m_eXsltVersion)
-                                    .processor (m_aProcessor)
+                                    .xsltProcessor (m_aXsltProcessor)
                                     .errorHandler (m_aErrorHandler)
                                     .entityResolver (m_aEntityResolver)
                                     .uriResolver (m_aURIResolver)
@@ -306,7 +341,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     return new ToStringGenerator (this).append ("Resource", m_aResource)
                                        .appendIfNotNull ("Phase", m_sPhase)
                                        .append ("XsltVersion", m_eXsltVersion)
-                                       .append ("Processor", m_aProcessor)
+                                       .append ("XsltProcessor", m_aXsltProcessor)
                                        .append ("ErrorHandler", m_aErrorHandler)
                                        .appendIfNotNull ("EntityResolver", m_aEntityResolver)
                                        .appendIfNotNull ("URIResolver", m_aURIResolver)
@@ -459,18 +494,21 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     private final String m_sPhase;
     private final String m_sVersion;
     private final boolean m_bTracingEnabled;
+    private final String m_sXsltProcessorID;
     private final int m_nHashCode;
 
     private CacheKey (@NonNull final String sResourceID,
                       @Nullable final String sPhase,
                       @NonNull final String sVersion,
-                      final boolean bTracingEnabled)
+                      final boolean bTracingEnabled,
+                      @NonNull final String sXsltProcessorID)
     {
       m_sResourceID = sResourceID;
       m_sPhase = sPhase;
       m_sVersion = sVersion;
       m_bTracingEnabled = bTracingEnabled;
-      m_nHashCode = Objects.hash (sResourceID, sPhase, sVersion, Boolean.valueOf (bTracingEnabled));
+      m_sXsltProcessorID = sXsltProcessorID;
+      m_nHashCode = Objects.hash (sResourceID, sPhase, sVersion, Boolean.valueOf (bTracingEnabled), sXsltProcessorID);
     }
 
     @Override
@@ -483,7 +521,8 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
       return m_bTracingEnabled == aRhs.m_bTracingEnabled &&
              m_sResourceID.equals (aRhs.m_sResourceID) &&
              Objects.equals (m_sPhase, aRhs.m_sPhase) &&
-             m_sVersion.equals (aRhs.m_sVersion);
+             m_sVersion.equals (aRhs.m_sVersion) &&
+             m_sXsltProcessorID.equals (aRhs.m_sXsltProcessorID);
     }
 
     @Override
@@ -502,6 +541,8 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
              ":" +
              m_sVersion +
              (m_bTracingEnabled ? ":trace" : "") +
+             ":" +
+             m_sXsltProcessorID +
              "]";
     }
   }
@@ -514,7 +555,7 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     private final IReadableResource m_aResource;
     private String m_sPhase;
     private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
-    private Processor m_aProcessor = SchematronProcessorFactory.getDefault ();
+    private ISchematronXsltProcessor m_aXsltProcessor;
     private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
     private EntityResolver m_aEntityResolver;
     private URIResolver m_aURIResolver;
@@ -558,17 +599,18 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
     }
 
     /**
-     * Set the Saxon {@link Processor} used to compile and execute the XSLT.
+     * Set the XSLT processor that compiles and runs the XSLT.
      *
      * @param a
-     *        The Saxon processor. May not be <code>null</code>.
+     *        The XSLT processor, or <code>null</code> for the only one on the class path (see
+     *        {@link SchematronXsltProcessorRegistry#getDefaultProcessor()}).
      * @return this for chaining
+     * @since 11.1.0
      */
     @NonNull
-    public Builder processor (@NonNull final Processor a)
+    public Builder xsltProcessor (@Nullable final ISchematronXsltProcessor a)
     {
-      ValueEnforcer.notNull (a, "Processor");
-      m_aProcessor = a;
+      m_aXsltProcessor = a;
       return this;
     }
 
@@ -633,9 +675,10 @@ public final class SchematronPureXsltConfig implements ISchematronCompilation <X
 
     /**
      * Set the per-template telemetry callback. When non-<code>null</code>, the stylesheet is
-     * compiled with Saxon's {@code COMPILE_WITH_TRACING} feature (separate cache entry) and a
-     * {@link com.helger.schematron.api.telemetry.SchematronTraceListener} is attached to each
-     * transform so that the callback receives one
+     * compiled with tracing (on Saxon {@code COMPILE_WITH_TRACING}; separate cache entry) and the
+     * telemetry is installed on each transform via
+     * {@link ISchematronXsltProcessor#installTemplateTelemetry(javax.xml.transform.Transformer, ISchematronTemplateTelemetry)}
+     * so that the callback receives one
      * {@link ISchematronTemplateTelemetry#onTemplateEnter(com.helger.schematron.api.telemetry.SchematronTemplateInfo)}
      * /
      * {@link ISchematronTemplateTelemetry#onTemplateLeave(com.helger.schematron.api.telemetry.SchematronTemplateInfo, long)}

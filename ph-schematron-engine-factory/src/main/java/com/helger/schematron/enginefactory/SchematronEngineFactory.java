@@ -159,6 +159,7 @@ public final class SchematronEngineFactory
         final SchematronResourcePureXslt aRes = SchematronResourcePureXslt.builderFromFile (aSchematronFile)
                                                                           .phase (aSettings.getPhase ())
                                                                           .errorHandler (aErrorHdl)
+                                                                          .xsltProcessor (aSettings.getXsltProcessor ())
                                                                           .build ();
         aRes.isValidSchematron ();
         yield new SchematronEngineResource (aRes, aErrorHdl.getAllErrors ());

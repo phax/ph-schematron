@@ -164,8 +164,8 @@ public final class Schematron2XSLTMojo extends AbstractMojo
   private String m_sSchematronEngine = ESchematronEngine.ISO_SCHEMATRON.getID ();
 
   /**
-   * The XSLT processor for the engines <code>iso-schematron</code>, <code>schxslt</code> and
-   * <code>schxslt2</code>: <code>saxon</code> (contained in the plugin) or <code>phoxtrot</code>
+   * The XSLT processor for the engines <code>pure-xslt</code>, <code>iso-schematron</code>,
+   * <code>schxslt</code> and <code>schxslt2</code>: <code>saxon</code> (contained in the plugin) or <code>phoxtrot</code>
    * (requires <code>ph-schematron-phoxtrot</code> as plugin dependency). If not set, the only XSLT
    * processor on the class path is used; with both on the class path it must be set.
    */

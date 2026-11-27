@@ -133,4 +133,16 @@ public interface ISchematronXsltProcessor extends IHasID <String>
    *        The telemetry callback. May not be <code>null</code>.
    */
   void installTemplateTelemetry (@NonNull Transformer aTransformer, @NonNull ISchematronTemplateTelemetry aTelemetry);
+
+  /**
+   * @return <code>true</code> if all extension functions of
+   *         {@link com.helger.schematron.api.xslt.CSchematronLocationFunctions} are available to the
+   *         stylesheets compiled by the factories of this processor, so that the pure XSLT engine
+   *         can compute the SVRL <code>location</code> with them. <code>false</code> by default.
+   * @since 11.1.0
+   */
+  default boolean isAllLocationFunctionsAvailable ()
+  {
+    return false;
+  }
 }

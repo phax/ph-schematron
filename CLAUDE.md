@@ -24,7 +24,7 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 9. `ph-schematron-model` — the Schematron object model (`PSSchema`, reader, writer, preprocessor).
 10. `ph-schematron-streamability` — streamability report of a Schematron (`SchematronStreamabilityAnalyzer`: motionless, burst or non-local per rule), on `phoxtrot-xpath` only (burst mode of `XPathStreamabilityAnalyzer`); no engine, no XSLT processor.
 11. `ph-schematron-pure-xpath` (artifact `ph-schematron-pure`) — pure-Java engine (no XSLT; XPath-only Schematron, Saxon XPath).
-12. `ph-schematron-pure-xslt` — pure-Java SCH → XSLT generator, run on Saxon s9api.
+12. `ph-schematron-pure-xslt` — pure-Java SCH → XSLT generator; the generated XSLT is compiled and run through JAXP on the selected XSLT processor (`SchematronProviderXSLTFromPureXslt`, `SchematronXSLTValidator`), with the linear location functions only where `ISchematronXsltProcessor.isAllLocationFunctionsAvailable ()` (Saxon). Since 11.1.0; before on Saxon s9api only.
 13. `ph-schematron-engine-factory` — the logic shared by the Maven plugin, the Ant tasks and the command line client: `SchematronEngineFactory` (resource / XSLT of every `ESchematronEngine` from `SchematronEngineSettings`), `SchematronValidationRunner`, `SchematronXsltCreator`, `SchematronFilePreprocessor`, `SchematronCatalogHelper`; logging goes to a ph-commons `ILogHandler` (each tool adapts its own log; `SchematronToolLogHelper` logs by `IErrorLevel`). No XSLT processor dependency of its own (the pure engines bring Saxon), so its tests select the processor explicitly. Only error and fatal error decide whether a file is valid; a new option belongs here first, then into Maven and Ant (keep them aligned).
 14. `ph-schematron-validator` — XML Schema and RELAX NG validation of Schematron files (Jing/Trang); no Schematron engine.
 15. `ph-schematron-cli` — command line client (picocli; `SchematronCli` with the commands `validate`, `convert`, `preprocess`, `streamability`, `check`) on top of `ph-schematron-engine-factory`. Shaded JAR `ph-schematron-cli-<version>-shaded.jar` (same name locally in `target/` and deployed) with both XSLT processors; Saxon unless `--xslt-processor` is given. Exit codes 0 ok, 1 expectation not met, 2 usage, 3 invalid Schematron / technical error. Tests run it in-process via `CliRunner`. `Dockerfile` (Temurin 25 JRE, `WORKDIR /data`) copies the shaded JAR from `target/`; image `phelger/schematron`, built and pushed manually with `docker/build-all.sh` (set `version` first; `docker buildx`, amd64 + arm64 in one image), no CI.
@@ -35,7 +35,7 @@ Multi-module Maven build. Order matters (later modules depend on earlier ones), 
 
 Version 11 (on `master`) separates the pipeline (`ESchematronEngine`) from the XSLT processor (Saxon or phoxtrot);
 the plan with all decisions is `docs/PLAN-phoxtrot-engine.md`. The JAXP pipeline modules (`isosch`, `xslt`, `schxslt`,
-`schxslt2`) have no processor dependency. Their tests run twice (two surefire executions): once with only
+`schxslt2`, and since 11.1.0 `pure-xslt`) have no processor dependency. Their tests run twice (two surefire executions): once with only
 `ph-schematron-saxon`, once with only `ph-schematron-phoxtrot` on the class path (`classpathDependencyExcludes`);
 reports of the second run are in `target/surefire-reports-phoxtrot`. With exactly one processor on the class path it
 is used automatically, otherwise it must be set via `xsltProcessor (...)`. Saxon is the reference: every difference

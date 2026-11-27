@@ -50,7 +50,7 @@ ph-schematron 11.0.0 separates two things that are one today: the **pipeline** (
 | D9 | Threading on phoxtrot | **`THREAD_POOL`** by default, with an option to change it |
 | D10 | Processor dependency of the pipeline modules | **None**: users add a processor module explicitly (breaking, documented in `Migrations.md`) |
 | D11 | Processor selection | Explicit setting wins. Without one: the only processor on the class path. **Two processors and none set: error**; none: error naming both modules. The same rule selects the XPath binding of the pure engine |
-| D12 | `pure-xslt` | **Unchanged** (decided 2026-11-10): name, s9api and the direct dependency on `ph-schematron-saxon` stay. Running it on phoxtrot is postponed; phoxtrot may first need an API for custom loading. The generator is already Saxon-free, which keeps the option open |
+| D12 | `pure-xslt` | **Unchanged** (decided 2026-11-10): name, s9api and the direct dependency on `ph-schematron-saxon` stay. Running it on phoxtrot is postponed; phoxtrot may first need an API for custom loading. The generator is already Saxon-free, which keeps the option open. Reopened as a proposal on 2026-11-27, see "`pure-xslt` on phoxtrot (D12 reopened)" |
 | D13 | `pure-xpath` | **Split** (decided 2026-11-10) into the processor-free core `ph-schematron-pure` and the binding `ph-schematron-pure-xpath-saxon`; a new binding `ph-schematron-pure-xpath-phoxtrot` on the native phoxtrot-xpath API is **part of v11** |
 | D14 | Saxon version for v11 | **Saxon-HE 13.1** (decided 2026-11-11; Maven Central, 15 October 2026), from 12.10. 13.1 class files are Java 17, and all 54 Saxon classes imported by ph-schematron exist in it. Saxonica's Java download page still called Saxon 12 "the most stable and reliable release" on 2026-11-11; to be checked again before the v11 release |
 
@@ -433,6 +433,130 @@ Goal: tell upfront, per rule, whether a Schematron can be validated while stream
   - Filed as phoxtrot S45 and fixed there (`17a53fb`): navigating from an external node variable is free-ranging;
     a pattern whose predicates read only the subtree is burst; the document element counts as an ancestor
     (`/ex:Document/@x` is motionless).
+
+## `pure-xslt` on phoxtrot (D12 reopened)
+
+Status: proposal (2026-11-27). Decided 2026-11-27: option A, in 11.x (the module is rarely used, so the breaking
+changes go into a minor version with a `Migrations.md` entry). Option A is tried on the branch `pure-xslt-jaxp`
+and benchmarked before it is merged. Starting point: issue #205 (11.1.0) made the
+conversion of every XSLT creating engine available in memory (`SchematronXsltCreator.createXsltDocument` /
+`createXsltString`); for `pure-xslt` the XSLT processor is not selectable there, nor for validation.
+
+### Two separate questions
+
+| Step | Today | Needs a processor? |
+|---|---|---|
+| Conversion SCH → XSLT (`SchematronToXsltConverter`, `PureXsltStylesheetGenerator`) | pure Java, builds a DOM; no Saxon import | **No.** The converter calls `generate (schema, phase, version)` with `bNativeLocation = false`, so the output uses `fn:path` (XSLT 3.0) or the portable `phsch:path` helper and runs on any XSLT 3.0 processor. The engine factory test (`SchematronXsltCreatorTest.testCreateXsltInMemory`) compiles it on both processors |
+| Validation (`SchematronResourcePureXslt`, `SchematronPureXsltConfig`, `SchematronPureXsltCache`) | s9api | **Yes**, this is what D12 postponed |
+
+So for the conversion step nothing is to be done but documenting that its XSLT is processor neutral. The rest of
+this section is about validation.
+
+### Facts (checked 2026-11-27)
+
+ph-schematron side, s9api use of the validation path:
+
+| Area | s9api today | Counterpart via `ISchematronXsltProcessor` |
+|---|---|---|
+| Compile | `XsltCompiler` → `XsltExecutable` on the `Processor` of the config (default `SchematronProcessorFactory.getDefault ()`), `SaxonLocationFunctions.registerIfMissing (Processor)` | `createTransformerFactory (...)` → `Templates`; phoxtrot accepts a `DOMSource` stylesheet, so the generated `Document` needs no serialisation |
+| Cache | `SchematronPureXsltCache` of `XsltExecutable` | a cache of `Templates` (thread-safe on both processors) |
+| Input | `SaxonTinyTreeHelper.buildDocumentFacade` (DOM facade over a TinyTree), `XdmNode` from `Controller.makeSourceTree` for a DOM node | `createSourceForInternalDocument` / `getEffectiveSource`; phoxtrot has `XdmSource`, `XdmParser` and the read-only DOM view `XdmDomView` |
+| Output | `SAXDestination`: the SVRL goes into the JAXB `UnmarshallerHandler` without a DOM, and `getSchematronValidity` uses `FailedAssertDetector` on the same events | JAXP `SAXResult`; phoxtrot builds the whole principal result tree first and then emits it (`PhoxtrotTransformer._transformToSax`), Saxon pushes the events as they are produced |
+| SVRL `location` | Saxon extension functions `phsch:fn-path`, `phsch:index-by-name`, `phsch:index-by-ns-name` (`SaxonLocationFunctions`, per `Configuration`) | ph-schematron-phoxtrot registers only `index-by-ns-name` (`PhoxtrotLocationFunctions`, global `XsltExtensionRegistry`); phoxtrot's own `fn:path` is linear since S48 |
+| Resource access | `SaxonSecureResourceResolver` (relative and local schemes allowed, remote schemes blocked) | JAXP path as in D5 (`DefaultTransformURIResolver`, secure processing); phoxtrot reads nothing the `URIResolver` does not resolve unless `ACCESS_EXTERNAL_STYLESHEET` allows it |
+| Telemetry | Saxon trace listener | `installTemplateTelemetry` (phoxtrot `IXsltTraceListener`), as for the JAXP pipelines |
+| Public API | `SchematronPureXsltConfig.getProcessor ()`, `Builder.processor (Processor)`, `SchematronResourcePureXslt.getProcessor ()`, `Builder.processor (Processor)`, `ISchematronCompilation <XsltExecutable>` | to be replaced by `xsltProcessor (ISchematronXsltProcessor)` as on the other pipelines |
+| Engine flag | `PURE_XSLT` is created with "XSLT processor selectable" `false` | `true`; Maven, Ant and the command line client then pass `--xslt-processor` through `SchematronEngineFactory` without own changes |
+| Dependency | `ph-schematron-saxon` and Saxon-HE directly | none, the user adds a processor module (as D10) |
+
+The remark "phoxtrot may first need an API for custom loading" of D12 is met by now: phoxtrot compiles from a
+`DOMSource` and validates from an `XdmSource`. What is still missing on the phoxtrot side is filed as phoxtrot
+suggestion S56 (streaming `SAXResult`, a function library per factory); neither blocks a first version.
+
+### Options
+
+| # | Option | Effect |
+|---|---|---|
+| A | `pure-xslt` becomes one more JAXP pipeline: the Java generator is its SCH → XSLT step, the rest is `AbstractSchematronXSLTBasedResource` and `SchematronXSLTValidator` | one code path for both processors, the same tests as ISO and SchXslt; loses the s9api tuning (TinyTree facade, JAXB straight from the SAX events) on Saxon as well, to be measured with `ph-schematron-benchmarks` |
+| B | keep the s9api path for Saxon and add a JAXP path for phoxtrot behind the same resource class | no change for Saxon users; two code paths in one module, and the module keeps the Saxon dependency (or needs a split like D13) |
+| C | leave D12 as it is | `pure-xslt` stays Saxon only; the converted XSLT can still be run on phoxtrot via the `xslt` engine |
+
+Proposal: A, if the benchmark of A on Saxon is not clearly slower than today; otherwise B with a split into a
+processor-free core and a Saxon binding. Decided 2026-11-27: A.
+
+### Open questions
+
+1. Breaking changes (the s9api `Processor` in the public API, the removed Saxon dependency): only in a major version
+   (v12), or in 11.x with the old methods deprecated and the Saxon dependency kept? Decided 2026-11-27: 11.x.
+2. SVRL `location` on phoxtrot: register `fn-path` and `index-by-name` in `ph-schematron-phoxtrot` as well, so that
+   the generated stylesheet is identical on both processors, or generate the portable variant for phoxtrot? The
+   SVRL must be identical to Saxon either way; with the portable variant the `fn:path` output of both processors has
+   to be compared first.
+3. Resource access: is the D5 policy (JAXP path) acceptable for `pure-xslt` on Saxon as well (option A), given that
+   it differs from `SaxonSecureResourceResolver`? `SchematronSecureProcessingTest` would have to cover `pure-xslt`.
+4. Should `EPureXsltVersion` become selectable through `SchematronEngineSettings` at the same time (today always
+   `DEFAULT`, XSLT 3.0)?
+
+### Steps (for option A)
+
+1. Benchmark: `pure-xslt` on Saxon today against the same generated XSLT run through `SchematronResourceXSLT`
+   (size and failure-heavy documents), to decide between A and B.
+2. Resource and config on `ISchematronXsltProcessor`; cache of `Templates`; old s9api methods deprecated or removed
+   (question 1); `Migrations.md` entry.
+3. Location functions on phoxtrot (question 2).
+4. `ESchematronEngine.PURE_XSLT` processor selectable; `SchematronEngineFactory`, Maven, Ant, command line client and
+   their tests.
+5. Tests twice (Saxon and phoxtrot, two surefire executions as for the JAXP pipelines); the SVRL comparison tests in
+   `ph-schematron-it` extended by `pure-xslt`; every difference goes to phoxtrot `SUGGESTIONS.md`.
+6. Wiki: engine × processor table, `XSLT-processors.md`, `News-and-noteworthy.md`.
+
+### Results of the try on `pure-xslt-jaxp` (2026-11-28)
+
+Implemented (steps 2, 4, 5 without the SVRL comparison tests, not merged):
+
+- `SchematronPureXsltConfig` compiles to an `ISchematronXSLTBasedProvider` (new `SchematronProviderXSLTFromPureXslt`,
+  `Templates` from the factory of the processor); `xsltProcessor (ISchematronXsltProcessor)` replaces
+  `processor (Processor)`; the processor ID is part of the cache key, so a custom processor no longer bypasses the
+  cache. `SchematronResourcePureXslt` validates through `SchematronXSLTValidator.applyToSVRL` (SAX into JAXB, no SVRL
+  schema validation as before), `getSchematronValidity` keeps the `FailedAssertDetector` on a `SAXResult`.
+  `getOrCompileXslt ()` is now `getOrCompileXSLTProvider ()`; `getProcessor ()` is now `getXsltProcessor ()`.
+- A DOM document is passed through `createSourceForInternalDocument`, so Saxon builds its tree once (as
+  `makeSourceTree` did) and phoxtrot converts it. The TinyTree facade for stream input (`SaxonTinyTreeHelper`) is
+  gone: a stream is parsed into a DOM first (not measured).
+- Location functions (question 2, interim): `ISchematronXsltProcessor.isAllLocationFunctionsAvailable ()` (default
+  `false`, Saxon `true`); phoxtrot gets the portable variant (`fn:path`, linear since phoxtrot S48).
+- Resource access (question 3): without a custom resolver the validation uses a `DefaultTransformURIResolver` relative
+  to the Schematron, as the other XSLT engines (D5); without it phoxtrot could not read a local `document()`
+  (`SchematronRemoteAccessTest.testLocalAccessIsNotBlocked`). Compile time sets only a custom resolver, because
+  Saxon's `TransformerFactory.setURIResolver (null)` throws and the default factory is shared.
+- `ph-schematron-pure-xslt` has no processor dependency any more; its tests run twice (Saxon, phoxtrot).
+  `PureXsltStylesheetGeneratorTest` uses s9api and runs on Saxon only. `PURE_XSLT` is processor selectable, so
+  Maven, Ant and the command line client pass `xsltProcessor` on; with both processors on the class path it must be
+  set, as for the other engines (also for the conversion, which does not use it).
+- All tests of `api`, `saxon`, `pure-xslt`, `engine-factory`, `cli`, `maven-plugin`, `ant-task` and `it` pass, `it`
+  with `pure-xslt` on both processors.
+
+Benchmark `BenchmarkPureXsltJaxp` against the s9api version of `master` (`BenchmarkPureXsltOld`, built in a separate
+worktree), same machine and run, JDK 25, 3 forks × 5 iterations, ms per validation of a DOM document:
+
+| Scenario | SVRL: s9api (old) | SVRL: A on Saxon | SVRL: A on phoxtrot | Validity: s9api (old) | Validity: A on Saxon | Validity: A on phoxtrot |
+|---|---|---|---|---|---|---|
+| flat, 1,000 items | 2.60 ± 0.16 | 2.84 ± 0.10 | 5.53 ± 2.44 | 1.56 ± 0.04 | 1.75 ± 0.07 | 1.68 ± 0.05 |
+| flat, 5,000 items | 14.07 ± 2.36 | 14.47 ± 0.91 | 19.04 ± 6.06 | 9.94 ± 0.90 | 8.61 ± 0.36 | 8.60 ± 0.44 |
+| EN 16931 UBL, TC 434 example 1 | 2.15 ± 0.11 | 2.20 ± 0.12 | 1.14 ± 0.05 | 3.38 ± 0.91 | 2.05 ± 0.15 | 0.99 ± 0.04 |
+
+- On Saxon A is as fast as the s9api path within the error, except about 10 % on the small flat document. The
+  criterion of the proposal (not clearly slower) is met.
+- On phoxtrot the EN 16931 validation takes half the time of Saxon. The flat SVRL numbers on phoxtrot vary a lot
+  between forks (an earlier single fork run: 2.55 and 12.79 ms); the cause is not investigated.
+- Side finding for the other XSLT engines: a DOM passed by the caller goes into the JAXP path as a plain
+  `DOMSource`, so Saxon navigates the wrapped DOM. The same generated XSLT through `SchematronResourceXSLT` took
+  10.2 ms for EN 16931 on Saxon, 10.2 ms without SVRL schema validation, and 2.1 ms with the DOM converted via
+  `createSourceForInternalDocument` (flat 5,000: 20.5, 15.1, 12.6 ms). The same conversion in
+  `AbstractSchematronXSLTBasedResource` for caller DOM documents would speed up ISO, SchXslt, SchXslt2 and `xslt`.
+
+Still open: the SVRL comparison Saxon vs. phoxtrot for `pure-xslt` in `ph-schematron-it` (step 5), questions 2 and 4,
+a stream input benchmark, `Migrations.md` and `News-and-noteworthy.md` (step 6).
 
 ## Tests
 

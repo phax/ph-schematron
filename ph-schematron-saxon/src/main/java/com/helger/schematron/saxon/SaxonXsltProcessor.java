@@ -104,6 +104,13 @@ public final class SaxonXsltProcessor implements ISchematronXsltProcessorSpi
   }
 
   @Override
+  public boolean isAllLocationFunctionsAvailable ()
+  {
+    // Registered by SchematronTransformerFactory
+    return true;
+  }
+
+  @Override
   public String toString ()
   {
     return new ToStringGenerator (this).append ("ID", ID).getToString ();

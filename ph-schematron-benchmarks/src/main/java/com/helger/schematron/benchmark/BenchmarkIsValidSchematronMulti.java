@@ -37,6 +37,7 @@ import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
@@ -58,6 +59,9 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkIsValidSchematronMulti
 {
+  /** The XSLT processor of the pure XSLT engine */
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+
   /** The XSLT processor of the XSLT based engines */
   @Param ({ "saxon", "phoxtrot" })
   public String xsltProcessor;
@@ -115,7 +119,7 @@ public class BenchmarkIsValidSchematronMulti
   @Benchmark
   public void pureXslt (final Blackhole bh) throws Exception
   {
-    final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (VALID_SCHEMATRON).build ();
+    final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (VALID_SCHEMATRON).xsltProcessor (SAXON).build ();
     bh.consume (r.isValidSchematron ());
   }
 }

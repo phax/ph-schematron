@@ -21,18 +21,17 @@ import org.jspecify.annotations.NonNull;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.schematron.api.cache.AbstractSchematronCache;
-
-import net.sf.saxon.s9api.XsltExecutable;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
 
 /**
- * Cache for compiled {@link XsltExecutable} instances produced from
+ * Cache for the compiled XSLT providers produced from
  * {@link SchematronPureXsltConfig}.
  *
  * @author Philip Helger
  * @since 10.0.0
  */
 @ThreadSafe
-public final class SchematronPureXsltCache extends AbstractSchematronCache <SchematronPureXsltConfig, XsltExecutable>
+public final class SchematronPureXsltCache extends AbstractSchematronCache <SchematronPureXsltConfig, ISchematronXSLTBasedProvider>
 {
   /** Default name of the shared cache. */
   public static final String DEFAULT_NAME = "schematron-pure-xslt";

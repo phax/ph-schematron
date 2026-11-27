@@ -31,15 +31,9 @@ import org.w3c.dom.Document;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.schematron.api.telemetry.ISchematronTemplateTelemetry;
 import com.helger.schematron.api.telemetry.SchematronTemplateInfo;
-import com.helger.schematron.api.telemetry.SchematronTraceListener;
-import com.helger.schematron.svrl.SVRLMarshaller;
+import com.helger.schematron.api.xslt.SchematronXSLTValidator;
 import com.helger.schematron.svrl.jaxb.SchematronOutputType;
-import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.read.DOMReader;
-
-import net.sf.saxon.s9api.DOMDestination;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XsltExecutable;
 
 /**
  * Test class for {@link ISchematronTemplateTelemetry} integration with the pure-Java Saxon-native
@@ -87,14 +81,13 @@ public final class SchematronPureXsltTelemetryTest
   private static SchematronOutputType _runValidation (final SchematronPureXsltConfig aConfig,
                                                       final Document aXMLDoc) throws Exception
   {
-    final XsltExecutable aExecutable = aConfig.compile ();
-    final Document aResultDoc = XMLFactory.newDocument ();
-    final DOMDestination aDestination = new DOMDestination (aResultDoc);
-    final var aTransformer = aExecutable.load30 ();
-    if (aConfig.getTelemetry () != null)
-      aTransformer.setTraceListener (new SchematronTraceListener (aConfig.getTelemetry ()));
-    aTransformer.applyTemplates (new DOMSource (aXMLDoc), aDestination);
-    return new SVRLMarshaller ().setUseSchema (false).read (aResultDoc);
+    return SchematronXSLTValidator.applyToSVRL (aConfig.compile (),
+                                                new DOMSource (aXMLDoc),
+                                                null,
+                                                null,
+                                                null,
+                                                false,
+                                                aConfig.getTelemetry ());
   }
 
   @Test
@@ -102,7 +95,6 @@ public final class SchematronPureXsltTelemetryTest
   {
     final CountingTelemetry aTelemetry = new CountingTelemetry ();
     final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (VALID_SCHEMATRON)
-                                                                     .processor (new Processor (false))
                                                                      .telemetry (aTelemetry)
                                                                      .build ();
 
@@ -124,7 +116,6 @@ public final class SchematronPureXsltTelemetryTest
   public void testNoTelemetryProducesNoEvents () throws Exception
   {
     final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (VALID_SCHEMATRON)
-                                                                     .processor (new Processor (false))
                                                                      .build ();
 
     final Document aXMLDoc = DOMReader.readXMLDOM (VALID_XMLINSTANCE);
