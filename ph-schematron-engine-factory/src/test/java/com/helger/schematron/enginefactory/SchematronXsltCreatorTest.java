@@ -16,7 +16,9 @@
  */
 package com.helger.schematron.enginefactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -25,13 +27,17 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.diagnostics.log.ErrorListLogHandler;
 import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.inmemory.ReadableResourceByteArray;
 import com.helger.schematron.ESchematronEngine;
+import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.saxon.SaxonXsltProcessor;
 
 /**
@@ -46,11 +52,17 @@ public final class SchematronXsltCreatorTest
   @Rule
   public final TemporaryFolder m_aTempFolder = new TemporaryFolder ();
 
-  private static SchematronEngineSettings _createSettings (final ESchematronEngine eEngine)
+  private static SchematronEngineSettings _createSettings (final ESchematronEngine eEngine,
+                                                           final String sXsltProcessorID)
   {
     return new SchematronEngineSettings ().setEngine (eEngine)
                                           .setXsltProcessor (SchematronEngineFactory.getXsltProcessor (eEngine,
-                                                                                                       SaxonXsltProcessor.ID));
+                                                                                                       sXsltProcessorID));
+  }
+
+  private static SchematronEngineSettings _createSettings (final ESchematronEngine eEngine)
+  {
+    return _createSettings (eEngine, SaxonXsltProcessor.ID);
   }
 
   @Test
@@ -102,5 +114,61 @@ public final class SchematronXsltCreatorTest
     final String sXslt = SchematronXsltCreator.getXsltDocumentAsString (aXslt, "Version 1.2.3");
     assertTrue (sXslt.contains ("<!--Version 1.2.3-->"));
     assertTrue (sXslt.contains ("xmlns:svrl="));
+  }
+
+  @Test
+  public void testCreateXsltInMemory () throws Exception
+  {
+    final byte [] aSchBytes = SimpleFileIO.getAllFileBytes (SCH);
+    for (final String sXsltProcessorID : new String [] { SaxonXsltProcessor.ID, PhoxtrotXsltProcessor.ID })
+      for (final ESchematronEngine eEngine : ESchematronEngine.values ())
+        if (SchematronEngineFactory.isXsltCreating (eEngine))
+          for (final boolean bShowProgress : new boolean [] { false, true })
+          {
+            final String sMsg = eEngine.getID () + "/" + sXsltProcessorID + "/" + bShowProgress;
+            final SchematronXsltCreator aCreator = new SchematronXsltCreator (_createSettings (eEngine,
+                                                                                               sXsltProcessorID),
+                                                                              new ErrorListLogHandler (new ErrorList ())).setXsltHeader ("Version 1.2.3")
+                                                                                                                         .setShowProgress (bShowProgress);
+
+            final Document aXsltDoc = aCreator.createXsltDocument (new ReadableResourceByteArray (aSchBytes), null);
+            assertNotNull (sMsg, aXsltDoc);
+            // The header is directly before the root element
+            final Node aHeader = aXsltDoc.getDocumentElement ().getPreviousSibling ();
+            assertTrue (sMsg, aHeader instanceof Comment);
+            assertEquals (sMsg, "Version 1.2.3", aHeader.getNodeValue ());
+
+            final String sXslt = aCreator.createXsltString (new ReadableResourceByteArray (aSchBytes), null);
+            assertTrue (sMsg, sXslt.contains ("<!--Version 1.2.3-->"));
+            assertTrue (sMsg, sXslt.contains ("xmlns:svrl="));
+
+            // The created XSLT can be used for validation with the same XSLT processor
+            final File aXslt = new File (m_aTempFolder.getRoot (),
+                                         eEngine.getID () + "-" + sXsltProcessorID + "-" + bShowProgress + ".xslt");
+            SimpleFileIO.writeFile (aXslt, sXslt, StandardCharsets.UTF_8);
+            assertFalse (sMsg,
+                         SchematronEngineFactory.createResource (aXslt,
+                                                                 _createSettings (ESchematronEngine.XSLT_PREBUILT,
+                                                                                  sXsltProcessorID))
+                                                .hasAnyError ());
+          }
+  }
+
+  @Test
+  public void testCreateXsltInMemoryError () throws Exception
+  {
+    for (final boolean bShowProgress : new boolean [] { false, true })
+      try
+      {
+        new SchematronXsltCreator (_createSettings (ESchematronEngine.XSLT_PREBUILT),
+                                   new ErrorListLogHandler (new ErrorList ())).setShowProgress (bShowProgress)
+                                                               .createXsltString (new ReadableResourceByteArray (SimpleFileIO.getAllFileBytes (SCH)),
+                                                                                  null);
+        throw new IllegalStateException ("Expected an exception");
+      }
+      catch (final SchematronToolException ex)
+      {
+        assertTrue (ex.getMessage ().contains ("cannot create an XSLT"));
+      }
   }
 }

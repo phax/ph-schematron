@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import org.jspecify.annotations.NonNull;
-import org.w3c.dom.Document;
 
 import com.helger.base.log.ILogHandler;
 import com.helger.base.string.StringHelper;
@@ -155,16 +154,12 @@ public final class ConvertCommand implements Callable <Integer>
     final CollectingTransformErrorListener aErrorListener = new CollectingTransformErrorListener ();
     try
     {
-      final Document aXsltDoc = SchematronEngineFactory.createXsltDocument (new FileSystemResource (aFile),
-                                                                            aSettings,
-                                                                            aErrorListener);
+      final String sXslt = new SchematronXsltCreator (aSettings, aLog).setXsltHeader (m_sXsltHeader)
+                                                                      .setShowProgress (m_bShowProgress)
+                                                                      .createXsltString (new FileSystemResource (aFile),
+                                                                                         aErrorListener);
       _logErrors (aLog, aErrorListener);
-      if (aXsltDoc == null)
-      {
-        aLog.error ("Failed to convert '" + aFile.getPath () + "': the Schematron is invalid");
-        return Integer.valueOf (SchematronCli.EXIT_ERROR);
-      }
-      m_aSpec.commandLine ().getOut ().print (SchematronXsltCreator.getXsltDocumentAsString (aXsltDoc, m_sXsltHeader));
+      m_aSpec.commandLine ().getOut ().print (sXslt);
       m_aSpec.commandLine ().getOut ().flush ();
       return Integer.valueOf (SchematronCli.EXIT_OK);
     }

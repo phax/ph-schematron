@@ -42,6 +42,7 @@ import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.io.file.FileHelper;
 import com.helger.io.resource.FileSystemResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.xml.XMLHelper;
 import com.helger.xml.namespace.MapBasedNamespaceContext;
@@ -51,7 +52,10 @@ import com.helger.xml.serialize.write.XMLWriterSettings;
 
 /**
  * Converts Schematron files to XSLT files, as done by the Maven goal <code>convert</code>, the Ant
- * task <code>schematron-convert</code> and the command line client.
+ * task <code>schematron-convert</code> and the command line client. A Schematron can also be
+ * converted in memory, independent of the engine, with
+ * {@link #createXsltDocument(IReadableResource, ErrorListener)} and
+ * {@link #createXsltString(IReadableResource, ErrorListener)}.
  *
  * @author Philip Helger
  * @since 11.0.0
@@ -110,15 +114,18 @@ public class SchematronXsltCreator
     return this;
   }
 
+  private static void _addXsltHeader (@NonNull final Document aXsltDoc, @NonNull final String sXsltHeader)
+  {
+    // Inject the header into the XSLT
+    aXsltDoc.insertBefore (aXsltDoc.createComment (sXsltHeader), aXsltDoc.getDocumentElement ());
+  }
+
   @NonNull
   private static IXMLWriterSettings _prepareForWriting (@NonNull final Document aXsltDoc,
                                                         @Nullable final String sXsltHeader)
   {
     if (StringHelper.isNotEmpty (sXsltHeader))
-    {
-      // Inject the header into the XSLT
-      aXsltDoc.insertBefore (aXsltDoc.createComment (sXsltHeader), aXsltDoc.getDocumentElement ());
-    }
+      _addXsltHeader (aXsltDoc, sXsltHeader);
 
     // Add all namespaces from XSLT document root
     final String sNSPrefix = XMLConstants.XMLNS_ATTRIBUTE + ":";
@@ -184,21 +191,17 @@ public class SchematronXsltCreator
     return ret;
   }
 
-  private void _convert (@NonNull final File aSchematronFile,
-                         @NonNull final File aXsltFile,
-                         @Nullable final ErrorListener aErrorListener) throws SchematronToolException
+  @NonNull
+  private Document _createXsltDocument (@NonNull final IReadableResource aSchematronRes,
+                                        @NonNull final String sDisplayName,
+                                        @Nullable final ErrorListener aErrorListener) throws SchematronToolException
   {
-    m_aLogger.debug ("Compiling Schematron file '" +
-                     aSchematronFile.getPath () +
-                     "' with engine " +
-                     m_aSettings.getEngine ().getID ());
+    m_aLogger.debug ("Compiling Schematron '" + sDisplayName + "' with engine " + m_aSettings.getEngine ().getID ());
 
     final Document aXsltDoc;
     try
     {
-      aXsltDoc = SchematronEngineFactory.createXsltDocument (new FileSystemResource (aSchematronFile),
-                                                             m_aSettings,
-                                                             aErrorListener);
+      aXsltDoc = SchematronEngineFactory.createXsltDocument (aSchematronRes, m_aSettings, aErrorListener);
     }
     catch (final SchematronToolException ex)
     {
@@ -206,33 +209,31 @@ public class SchematronXsltCreator
     }
     catch (final Exception ex)
     {
-      throw new SchematronToolException ("Failed to convert '" +
-                                         aSchematronFile.getPath () +
-                                         "' to XSLT file '" +
-                                         aXsltFile.getPath () +
-                                         "'",
-                                         ex);
+      throw new SchematronToolException ("Failed to convert '" + sDisplayName + "' to XSLT", ex);
     }
     if (aXsltDoc == null)
       throw new SchematronToolException ("Failed to convert '" +
-                                         aSchematronFile.getPath () +
+                                         sDisplayName +
                                          "': the Schematron resource is invalid");
 
-    writeXsltDocument (aXsltDoc, m_sXsltHeader, aXsltFile);
-    m_aLogger.debug ("Finished creating XSLT file '" + aXsltFile.getPath () + "'");
+    if (StringHelper.isNotEmpty (m_sXsltHeader))
+      _addXsltHeader (aXsltDoc, m_sXsltHeader);
+    return aXsltDoc;
   }
 
-  private void _convertWithProgress (@NonNull final File aSchematronFile,
-                                     @NonNull final File aXsltFile,
-                                     @Nullable final ErrorListener aErrorListener) throws SchematronToolException
+  @NonNull
+  private Document _createXsltDocumentWithProgress (@NonNull final IReadableResource aSchematronRes,
+                                                    @NonNull final String sDisplayName,
+                                                    @Nullable final ErrorListener aErrorListener) throws SchematronToolException
   {
     // Run conversion in one thread and run another thread that logs the time
+    final Wrapper <Document> aResult = new Wrapper <> ();
     final Wrapper <SchematronToolException> aException = new Wrapper <> ();
     final ExecutorService aES = Executors.newSingleThreadExecutor ();
     aES.submit ( () -> {
       try
       {
-        _convert (aSchematronFile, aXsltFile, aErrorListener);
+        aResult.set (_createXsltDocument (aSchematronRes, sDisplayName, aErrorListener));
       }
       catch (final SchematronToolException ex)
       {
@@ -241,12 +242,7 @@ public class SchematronXsltCreator
       catch (final RuntimeException ex)
       {
         // Would otherwise be swallowed by the executor
-        aException.set (new SchematronToolException ("Failed to convert '" +
-                                                     aSchematronFile.getPath () +
-                                                     "' to XSLT file '" +
-                                                     aXsltFile.getPath () +
-                                                     "'",
-                                                     ex));
+        aException.set (new SchematronToolException ("Failed to convert '" + sDisplayName + "' to XSLT", ex));
       }
     });
 
@@ -263,7 +259,7 @@ public class SchematronXsltCreator
           if (nDurationSecs >= nLastSecs + PROGRESS_INTERVAL_SECONDS)
           {
             m_aLogger.info ("Schematron conversion of '" +
-                            aSchematronFile.getName () +
+                            sDisplayName +
                             "' already takes " +
                             nDurationSecs +
                             " seconds - please wait...");
@@ -281,7 +277,7 @@ public class SchematronXsltCreator
     {
       // Log finalization of conversion if it took longer
       m_aLogger.info ("Schematron conversion of '" +
-                      aSchematronFile.getName () +
+                      sDisplayName +
                       "' was finalized after " +
                       aSW.getMillis () / CGlobal.MILLISECONDS_PER_SECOND +
                       " seconds");
@@ -289,6 +285,65 @@ public class SchematronXsltCreator
 
     if (aException.isSet ())
       throw aException.get ();
+    return aResult.get ();
+  }
+
+  @NonNull
+  private Document _createXsltDocumentMaybeProgress (@NonNull final IReadableResource aSchematronRes,
+                                                     @NonNull final String sDisplayName,
+                                                     @Nullable final ErrorListener aErrorListener) throws SchematronToolException
+  {
+    if (m_bShowProgress)
+      return _createXsltDocumentWithProgress (aSchematronRes, sDisplayName, aErrorListener);
+    return _createXsltDocument (aSchematronRes, sDisplayName, aErrorListener);
+  }
+
+  /**
+   * Convert a Schematron to an XSLT document in memory, with the engine of the settings. This works
+   * the same for all engines where
+   * {@link SchematronEngineFactory#isXsltCreating(com.helger.schematron.ESchematronEngine)} is
+   * <code>true</code>, and is the code path that {@link #convertFile(File, File, ErrorListener)}
+   * uses. The XSLT header (if set) is added as an XML comment before the root element. For a
+   * Schematron that is only available as a byte array or an input stream use a
+   * {@link com.helger.io.resource.inmemory.ReadableResourceByteArray}.
+   *
+   * @param aSchematronRes
+   *        The Schematron to convert. May not be <code>null</code>.
+   * @param aErrorListener
+   *        The error listener of the XSLT pipeline. May be <code>null</code>.
+   * @return The created XSLT document. Never <code>null</code>.
+   * @throws SchematronToolException
+   *         If the Schematron is invalid or the conversion fails
+   * @since 11.1.0
+   */
+  @NonNull
+  public Document createXsltDocument (@NonNull final IReadableResource aSchematronRes,
+                                      @Nullable final ErrorListener aErrorListener) throws SchematronToolException
+  {
+    ValueEnforcer.notNull (aSchematronRes, "SchematronRes");
+
+    return _createXsltDocumentMaybeProgress (aSchematronRes, aSchematronRes.getResourceID (), aErrorListener);
+  }
+
+  /**
+   * Convert a Schematron to an XSLT in memory and serialise it, the same way
+   * {@link #convertFile(File, File, ErrorListener)} writes it.
+   *
+   * @param aSchematronRes
+   *        The Schematron to convert. May not be <code>null</code>.
+   * @param aErrorListener
+   *        The error listener of the XSLT pipeline. May be <code>null</code>.
+   * @return The created XSLT as a string. Never <code>null</code>.
+   * @throws SchematronToolException
+   *         If the Schematron is invalid, the conversion fails or serialising fails
+   * @see #createXsltDocument(IReadableResource, ErrorListener)
+   * @since 11.1.0
+   */
+  @NonNull
+  public String createXsltString (@NonNull final IReadableResource aSchematronRes,
+                                  @Nullable final ErrorListener aErrorListener) throws SchematronToolException
+  {
+    return getXsltDocumentAsString (createXsltDocument (aSchematronRes, aErrorListener), null);
   }
 
   /**
@@ -323,9 +378,10 @@ public class SchematronXsltCreator
                                            "' could not be created");
     }
 
-    if (m_bShowProgress)
-      _convertWithProgress (aSchematronFile, aXsltFile, aErrorListener);
-    else
-      _convert (aSchematronFile, aXsltFile, aErrorListener);
+    final Document aXsltDoc = _createXsltDocumentMaybeProgress (new FileSystemResource (aSchematronFile),
+                                                                aSchematronFile.getPath (),
+                                                                aErrorListener);
+    writeXsltDocument (aXsltDoc, null, aXsltFile);
+    m_aLogger.debug ("Finished creating XSLT file '" + aXsltFile.getPath () + "'");
   }
 }
