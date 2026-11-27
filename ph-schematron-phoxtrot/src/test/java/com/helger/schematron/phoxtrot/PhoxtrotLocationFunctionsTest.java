@@ -116,9 +116,8 @@ public final class PhoxtrotLocationFunctionsTest
     // Registering again does nothing
     PhoxtrotLocationFunctions.registerIfMissing ();
 
-    // phoxtrot S49: use-when does not see the registered function yet, so the fallback is taken. Once
-    // fixed, this is "3 3" (the third item without namespace and the third item in namespace urn:a)
-    assertEquals ("missing", _transform (PhoxtrotTransformerFactories.getDefault (), USE_WHEN_XSLT));
-    assertEquals ("missing", _transform (PhoxtrotTransformerFactories.createTransformerFactory (), USE_WHEN_XSLT));
+    // The third item without namespace and the third item in namespace urn:a
+    assertEquals ("3 3", _transform (PhoxtrotTransformerFactories.getDefault (), USE_WHEN_XSLT));
+    assertEquals ("3 3", _transform (PhoxtrotTransformerFactories.createTransformerFactory (), USE_WHEN_XSLT));
   }
 }
