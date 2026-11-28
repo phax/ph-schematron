@@ -22,12 +22,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.sax.SAXResult;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -45,7 +46,6 @@ import com.helger.base.CGlobal;
 import com.helger.base.builder.IBuilder;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.functional.IThrowingSupplier;
-import com.helger.base.io.iface.IHasInputStream;
 import com.helger.base.state.EValidity;
 import com.helger.base.timing.StopWatch;
 import com.helger.io.resource.ClassPathResource;
@@ -58,6 +58,11 @@ import com.helger.schematron.AbstractSchematronResource;
 import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.telemetry.CSchematronTelemetry;
 import com.helger.schematron.api.telemetry.SvrlTelemetryEmitter;
+import com.helger.schematron.api.xslt.ISchematronXSLTBasedProvider;
+import com.helger.schematron.api.xslt.SchematronXSLTBaseURL;
+import com.helger.schematron.api.xslt.SchematronXSLTValidator;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.IPSErrorHandler;
 import com.helger.schematron.errorhandler.LoggingPSErrorHandler;
 import com.helger.schematron.exchange.PSReader;
@@ -68,9 +73,6 @@ import com.helger.schematron.purexslt.binding.PureXsltQueryBindingTransform;
 import com.helger.schematron.purexslt.telemetry.PureXsltTelemetry;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 import com.helger.schematron.purexslt.xslt.PureXsltStylesheetGenerator;
-import com.helger.schematron.saxon.SaxonLocationFunctions;
-import com.helger.schematron.saxon.SaxonTinyTreeHelper;
-import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.CSVRL;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.FailedAssert;
@@ -78,37 +80,19 @@ import com.helger.schematron.svrl.jaxb.SchematronOutputType;
 import com.helger.telemetry.ETelemetrySpanKind;
 import com.helger.telemetry.ITelemetrySpan;
 import com.helger.telemetry.Telemetry;
-import com.helger.xml.XMLFactory;
 import com.helger.xml.serialize.write.EXMLSerializeIndent;
 import com.helger.xml.serialize.write.XMLWriter;
 import com.helger.xml.serialize.write.XMLWriterSettings;
-import com.helger.xml.transform.TransformSourceFactory;
-
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.UnmarshallerHandler;
-
-import net.sf.saxon.Controller;
-import net.sf.saxon.dom.NodeOverNodeInfo;
-import net.sf.saxon.lib.ErrorReporterToListener;
-import net.sf.saxon.lib.ResourceResolverWrappingURIResolver;
-import net.sf.saxon.s9api.DOMDestination;
-import net.sf.saxon.s9api.Destination;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SAXDestination;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.Xslt30Transformer;
-import net.sf.saxon.s9api.XsltCompiler;
-import net.sf.saxon.s9api.XsltExecutable;
-import net.sf.saxon.trans.XPathException;
+import com.helger.xml.transform.DefaultTransformURIResolver;
+import com.helger.xml.transform.LoggingTransformErrorListener;
 
 /**
- * A Schematron resource that runs a pure-Java pipeline on top of Saxon s9api. Unlike
- * {@code SchematronResourcePureXPath}, this class is intended to support Schematron schemas that contain
- * XSLT extensions (such as {@code <xsl:function>} or {@code <xsl:include>}) by compiling and
- * executing the schema through Saxon's XSLT engine natively - without going through the external
- * ISO Schematron XSLT preprocessing chain that {@code SchematronResourceSCH} uses.
+ * A Schematron resource that generates an XSLT from the Schematron in Java and runs it on the
+ * selected XSLT processor (Saxon or phoxtrot). Unlike {@code SchematronResourcePureXPath}, this
+ * class is intended to support Schematron schemas that contain XSLT extensions (such as
+ * {@code <xsl:function>} or {@code <xsl:include>}) by compiling and executing the schema as XSLT -
+ * without going through the external ISO Schematron XSLT preprocessing chain that
+ * {@code SchematronResourceSCH} uses.
  * <p>
  * <b>Supported scope:</b> {@code <sch:ns>}, {@code <sch:pattern>}, {@code <sch:rule>},
  * {@code <sch:assert>}, {@code <sch:report>}, {@code <sch:value-of>}, {@code <sch:name>},
@@ -117,7 +101,7 @@ import net.sf.saxon.trans.XPathException;
  * {@code <sch:extends>} on rules and {@code <sch:include>} (the last three expanded by
  * {@link PSPreprocessor} before XSLT generation). XSLT extensions ({@code <xsl:function>},
  * {@code <xsl:include>}, {@code <xsl:key>}, ...) declared at schema level are passed through to the
- * generated stylesheet so Saxon compiles them as-is. Rich text spans ({@code <sch:emph>} /
+ * generated stylesheet so the XSLT processor compiles them as-is. Rich text spans ({@code <sch:emph>} /
  * {@code <sch:dir>} / {@code <sch:span>}) and {@code <sch:property>} references are not yet
  * handled.
  *
@@ -127,24 +111,6 @@ import net.sf.saxon.trans.XPathException;
 @NotThreadSafe
 public class SchematronResourcePureXslt extends AbstractSchematronResource
 {
-  /**
-   * Thrown out of the JAXB unmarshalling callback if the transformation that feeds it fails, so that
-   * the original exception can be rethrown unchanged.
-   */
-  private static final class TransformationFailedException extends RuntimeException
-  {
-    private TransformationFailedException (@NonNull final SaxonApiException aCause)
-    {
-      super (aCause);
-    }
-
-    @NonNull
-    private SaxonApiException getSaxonApiException ()
-    {
-      return (SaxonApiException) getCause ();
-    }
-  }
-
   /**
    * A SAX handler that only checks whether the SVRL output contains a <code>failed-assert</code>
    * element directly below the root element - the elements that end up as {@link FailedAssert}
@@ -179,14 +145,16 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
   private final String m_sPhase;
   private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
-  private Processor m_aProcessor;
+  private final ISchematronXsltProcessor m_aXsltProcessor;
   private final URIResolver m_aURIResolver;
+  // The URI resolver used for the validation: the custom one or one relative to the Schematron
+  private final URIResolver m_aEffectiveURIResolver;
   private final ErrorListener m_aErrorListener;
   private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
   private boolean m_bForceCacheResult = DEFAULT_FORCE_CACHE_RESULT;
   // Status vars
   private PSSchema m_aSchema;
-  private XsltExecutable m_aCompiledXslt;
+  private ISchematronXSLTBasedProvider m_aXSLTProvider;
 
   /**
    * Builder-based constructor. Applies all configurable state from the supplied {@link Builder} to
@@ -205,8 +173,11 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
            aBuilder.m_bPerAssertionResultTelemetry);
     m_sPhase = aBuilder.m_sPhase;
     m_aErrorHandler = aBuilder.m_aErrorHandler;
-    m_aProcessor = aBuilder.m_aProcessor;
+    m_aXsltProcessor = aBuilder.m_aXsltProcessor != null ? aBuilder.m_aXsltProcessor
+                                                         : SchematronXsltProcessorRegistry.getDefaultProcessor ();
     m_aURIResolver = aBuilder.m_aURIResolver;
+    m_aEffectiveURIResolver = m_aURIResolver != null ? m_aURIResolver
+                                                     : new DefaultTransformURIResolver ().setDefaultBase (SchematronXSLTBaseURL.findBaseURL (aBuilder.m_aResource));
     m_aErrorListener = aBuilder.m_aErrorListener;
     m_eXsltVersion = aBuilder.m_eXsltVersion;
     m_bForceCacheResult = aBuilder.m_bForceCacheResult;
@@ -243,7 +214,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     if (m_aSchema == null)
     {
       final PSReader aReader = new PSReader (getResource (), m_aErrorHandler, getEntityResolver ());
-      // Saxon-native engine understands XSLT sequence constructors in <sch:let> bodies
+      // The XSLT based engine understands XSLT sequence constructors in <sch:let> bodies
       aReader.setPreserveLetBodyElements (true);
       m_aSchema = aReader.readSchema ();
       if (m_aSchema == null)
@@ -253,19 +224,20 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * @return The Saxon {@link Processor} used to compile and run the generated XSLT. Never
-   *         <code>null</code>.
+   * @return The XSLT processor that compiles and runs the generated XSLT. Never <code>null</code>.
+   * @since 11.1.0
    */
   @NonNull
-  public final Processor getProcessor ()
+  public final ISchematronXsltProcessor getXsltProcessor ()
   {
-    return m_aProcessor;
+    return m_aXsltProcessor;
   }
 
   /**
-   * @return The {@link URIResolver} used by Saxon for {@code xsl:include} / {@code xsl:import}
+   * @return The custom {@link URIResolver} used for {@code xsl:include} / {@code xsl:import}
    *         resolution at compile time and {@code document()} / {@code doc()} resolution at run
-   *         time. May be <code>null</code>, in which case Saxon's default resolver is used.
+   *         time. May be <code>null</code>, in which case URIs are resolved relative to the
+   *         Schematron, as by the other XSLT based engines.
    */
   @Nullable
   public final URIResolver getURIResolver ()
@@ -274,8 +246,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * @return The JAXP {@link ErrorListener} used by Saxon during stylesheet compilation. May be
-   *         <code>null</code>, in which case Saxon's default reporter is used.
+   * @return The JAXP {@link ErrorListener} used during stylesheet compilation and transformation.
+   *         May be <code>null</code>, in which case the errors are logged.
    */
   @Nullable
   public final ErrorListener getErrorListener ()
@@ -316,7 +288,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   {
     try
     {
-      return getOrCompileXslt () != null;
+      return getOrCompileXSLTProvider () != null;
     }
     catch (final Exception ex)
     {
@@ -335,7 +307,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     return SchematronPureXsltConfig.builder (getResource ())
                                    .phase (m_sPhase)
                                    .xsltVersion (m_eXsltVersion)
-                                   .processor (m_aProcessor)
+                                   .xsltProcessor (m_aXsltProcessor)
                                    .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
                                                                           : new LoggingPSErrorHandler ())
                                    .entityResolver (getEntityResolver ())
@@ -346,8 +318,8 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * Run {@code aBody} optionally wrapped in a telemetry span. When {@link #m_bTelemetry} is off the
-   * body runs directly with no span overhead.
+   * Run {@code aBody} optionally wrapped in a telemetry span. When {@link #isTelemetry()} is off
+   * the body runs directly with no span overhead.
    */
   @Nullable
   private <T> T _phase (@NonNull final String sSpanName,
@@ -380,51 +352,49 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
   }
 
   /**
-   * Lazily generate the XSLT stylesheet from the parsed schema and compile it via Saxon.
+   * Lazily generate the XSLT stylesheet from the parsed schema and compile it with the XSLT
+   * processor.
    *
-   * @return The compiled XSLT executable. Never <code>null</code>.
+   * @return The XSLT provider with the compiled XSLT. Never <code>null</code>.
    * @throws Exception
    *         on read or compile failure.
+   * @since 11.1.0
    */
   @NonNull
-  protected final XsltExecutable getOrCompileXslt () throws Exception
+  protected final ISchematronXSLTBasedProvider getOrCompileXSLTProvider () throws Exception
   {
-    if (m_aCompiledXslt != null)
-      return m_aCompiledXslt;
+    if (m_aXSLTProvider != null)
+      return m_aXSLTProvider;
 
     // Cache participation:
     // isUseCache() (inherited) controls the shared module-level cache as a whole;
     // m_bForceCacheResult overrides the safety bypass when custom hooks are installed.
-    // Custom URI/Error hooks and a custom Processor bypass the cache unless
-    // setForceCacheResult(true)
-    // was called, because the cache key encodes (resource, phase, version, tracing) only and all of
-    // them can change what Saxon compiles.
-    final boolean bHaveCustomHooks = m_aURIResolver != null ||
-                                     m_aErrorListener != null ||
-                                     m_aProcessor != SchematronProcessorFactory.getDefault ();
+    // Custom URI/Error hooks bypass the cache unless setForceCacheResult(true) was called, because
+    // the cache key does not contain them and they can change what is compiled.
+    final boolean bHaveCustomHooks = m_aURIResolver != null || m_aErrorListener != null;
     final boolean bCacheable = isUseCache () && (!bHaveCustomHooks || m_bForceCacheResult);
 
+    final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (getResource ())
+                                                                     .phase (m_sPhase)
+                                                                     .xsltVersion (m_eXsltVersion)
+                                                                     .xsltProcessor (m_aXsltProcessor)
+                                                                     .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
+                                                                                                            : new LoggingPSErrorHandler ())
+                                                                     .entityResolver (getEntityResolver ())
+                                                                     .uriResolver (m_aURIResolver)
+                                                                     .errorListener (m_aErrorListener)
+                                                                     .forceCacheResult (true)
+                                                                     .build ();
     if (bCacheable)
     {
       // One-shot compile through the cache. Phase spans (parse / preprocess / generate / compile)
       // intentionally do not fire here: on a cache hit no work happens; on a cache miss the spans
       // would only paint a misleading picture compared to the cached fast path. The
       // schematron.validate.duration histogram still reflects the wall-clock cost.
-      final SchematronPureXsltConfig aConfig = SchematronPureXsltConfig.builder (getResource ())
-                                                                       .phase (m_sPhase)
-                                                                       .xsltVersion (m_eXsltVersion)
-                                                                       .processor (m_aProcessor)
-                                                                       .errorHandler (m_aErrorHandler != null ? m_aErrorHandler
-                                                                                                              : new LoggingPSErrorHandler ())
-                                                                       .entityResolver (getEntityResolver ())
-                                                                       .uriResolver (m_aURIResolver)
-                                                                       .errorListener (m_aErrorListener)
-                                                                       .forceCacheResult (true)
-                                                                       .build ();
-      m_aCompiledXslt = SchematronPureXsltCache.shared ().getOrCompile (aConfig);
-      if (m_aCompiledXslt == null)
+      m_aXSLTProvider = SchematronPureXsltCache.shared ().getOrCompile (aConfig);
+      if (m_aXSLTProvider == null)
         throw new SchematronException ("Failed to compile pure-XSLT for " + getResource ());
-      return m_aCompiledXslt;
+      return m_aXSLTProvider;
     }
 
     // Inline path - bypasses the cache, exposes each pipeline phase to telemetry.
@@ -435,196 +405,70 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
                                      () -> aPreprocessor.getAsPreprocessedSchema (aRaw));
 
     final Document aXsltDoc;
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_GENERATE))
     {
-      try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_GENERATE))
-      {
-        // With the linear location functions, as the stylesheet is only compiled here
-        aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema, m_sPhase, m_eXsltVersion, true);
-      }
+      // With the linear location functions if the processor has them
+      aXsltDoc = PureXsltStylesheetGenerator.generate (aSchema,
+                                                       m_sPhase,
+                                                       m_eXsltVersion,
+                                                       m_aXsltProcessor.isAllLocationFunctionsAvailable ());
     }
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Generated XSLT for Saxon-native validation:\n" +
+      LOGGER.debug ("Generated XSLT for pure XSLT validation:\n" +
                     XMLWriter.getNodeAsString (aXsltDoc,
                                                new XMLWriterSettings ().setUseExistingNamespaceDeclarations (true)));
 
     try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_COMPILE))
     {
-      SaxonLocationFunctions.registerIfMissing (m_aProcessor);
-      final XsltCompiler aCompiler = m_aProcessor.newXsltCompiler ();
-      if (m_aURIResolver != null)
-        aCompiler.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
-      if (m_aErrorListener != null)
-        aCompiler.setErrorReporter (new ErrorReporterToListener (m_aErrorListener));
-      m_aCompiledXslt = aCompiler.compile (new DOMSource (aXsltDoc));
+      m_aXSLTProvider = new SchematronProviderXSLTFromPureXslt (m_aXsltProcessor,
+                                                                aXsltDoc,
+                                                                aConfig.compileXslt (aXsltDoc));
     }
-    return m_aCompiledXslt;
+    return m_aXSLTProvider;
   }
 
   /**
-   * Read the XML through Saxon's {@link net.sf.saxon.s9api.DocumentBuilder} and present it as a DOM
-   * facade over the resulting TinyTree. The validation then runs on that tree directly, instead of
-   * building a DOM that Saxon copies into its own tree again.
-   * <p>
-   * The TinyTree fast path is skipped when a custom XML entity resolver is configured - in that case
-   * the default DOM parsing path (which honours the resolver) is used instead.
-   * </p>
+   * Create the source to validate. A DOM document is converted into the tree model of the XSLT
+   * processor once per validation, so the XSLT does not navigate the DOM.
    */
-  @Override
-  @Nullable
-  protected NodeAndBaseURI getAsNode (@NonNull final IHasInputStream aXMLResource) throws Exception
+  @NonNull
+  private Source _createSource (@NonNull final Node aXMLNode, @Nullable final String sBaseURI) throws Exception
   {
-    if (getEntityResolver () != null)
-    {
-      // Defer to the DOM-based default so the entity resolver is honoured
-      return super.getAsNode (aXMLResource);
-    }
-
-    final StreamSource aStreamSrc = TransformSourceFactory.create (aXMLResource);
-    InputStream aIS = null;
-    try
-    {
-      aIS = aStreamSrc.getInputStream ();
-    }
-    catch (final IllegalStateException ex)
-    {
-      // Happens e.g. for non-existing resources - fall through
-    }
-    if (aIS == null)
-    {
-      LOGGER.warn ("XML resource " + aXMLResource + " does not exist!");
-      return null;
-    }
-
-    final String sBaseURI = aStreamSrc.getSystemId ();
-    final Document aDoc = SaxonTinyTreeHelper.buildDocumentFacade (m_aProcessor, new StreamSource (aIS, sBaseURI));
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Read XML resource " + aXMLResource + " into Saxon TinyTree");
-    return new NodeAndBaseURI (aDoc, sBaseURI);
-  }
-
-  /**
-   * Read a {@link Source} through Saxon's {@link net.sf.saxon.s9api.DocumentBuilder} and present it
-   * as a DOM facade over the resulting TinyTree. The TinyTree fast path is skipped when a custom XML
-   * entity resolver is configured.
-   */
-  @Override
-  @Nullable
-  protected Node getAsNode (@NonNull final Source aXMLSource) throws Exception
-  {
-    if (getEntityResolver () != null)
-    {
-      // Defer to the DOM-based default so the entity resolver is honoured
-      return super.getAsNode (aXMLSource);
-    }
-    return SaxonTinyTreeHelper.buildDocumentFacade (m_aProcessor, aXMLSource);
-  }
-
-  /**
-   * Run the compiled XSLT on the provided node.
-   *
-   * @param aExecutable
-   *        The compiled XSLT. May not be <code>null</code>.
-   * @param aXMLNode
-   *        The node to be validated. May not be <code>null</code>.
-   * @param sBaseURI
-   *        The base URI of the node. May be <code>null</code>.
-   * @param aDestination
-   *        The destination of the SVRL output. May not be <code>null</code>.
-   * @throws SaxonApiException
-   *         If the transformation fails
-   */
-  private void _transform (@NonNull final XsltExecutable aExecutable,
-                           @NonNull final Node aXMLNode,
-                           @Nullable final String sBaseURI,
-                           @NonNull final Destination aDestination) throws SaxonApiException
-  {
-    try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_EXECUTE))
-    {
-      final Xslt30Transformer aTransformer = aExecutable.load30 ();
-      if (m_aURIResolver != null)
-        aTransformer.setResourceResolver (new ResourceResolverWrappingURIResolver (m_aURIResolver));
-      if (m_aErrorListener != null)
-        aTransformer.setErrorListener (m_aErrorListener);
-      if (aXMLNode instanceof final NodeOverNodeInfo aSaxonFacade &&
-          aSaxonFacade.getUnderlyingNodeInfo ().getConfiguration () == aExecutable.getProcessor ()
-                                                                                .getUnderlyingConfiguration ())
-      {
-        // Native Saxon tree created by getAsNode - use it directly instead of copying it
-        final XdmNode aXdmNode = new XdmNode (aSaxonFacade.getUnderlyingNodeInfo ());
-        aTransformer.setGlobalContextItem (aXdmNode);
-        aTransformer.applyTemplates (aXdmNode, aDestination);
-      }
-      else
-        if (sBaseURI != null && aXMLNode instanceof Document)
-        {
-          // Copy the DOM document into a Saxon tree once, exactly the way applyTemplates does it for a
-          // DOMSource (incl. whitespace stripping and registration under the base URI), and use that
-          // tree as the global context item as well. That avoids the additional wrapping of the DOM
-          // for the global variables, and both see the same nodes.
-          final Controller aController = aTransformer.getUnderlyingController ();
-          final XdmNode aXdmNode;
-          try
-          {
-            aXdmNode = new XdmNode (aController.makeSourceTree (new DOMSource (aXMLNode, sBaseURI),
-                                                                aController.getSchemaValidationMode ()));
-          }
-          catch (final XPathException ex)
-          {
-            throw new SaxonApiException (ex);
-          }
-          // The tree was already stripped while building it
-          aTransformer.setGlobalContextItem (aXdmNode, true);
-          aTransformer.applyTemplates (aXdmNode, aDestination);
-        }
-        else
-        {
-          if (sBaseURI != null)
-            aTransformer.setGlobalContextItem (m_aProcessor.newDocumentBuilder ().wrap (aXMLNode));
-          aTransformer.applyTemplates (new DOMSource (aXMLNode, sBaseURI), aDestination);
-        }
-    }
+    return SchematronXSLTValidator.createSourceForNode (getOrCompileXSLTProvider (), aXMLNode, sBaseURI);
   }
 
   @NonNull
   private SchematronOutputType _doValidate (@NonNull final Node aXMLNode,
                                             @Nullable final String sBaseURI) throws Exception
   {
-    final XsltExecutable aExecutable = getOrCompileXslt ();
+    final ISchematronXSLTBasedProvider aProvider = getOrCompileXSLTProvider ();
 
     // Feed the SVRL output directly into JAXB, without building an intermediate DOM
     final SchematronOutputType aSVRL;
-    try
+    try (final ITelemetrySpan aSpan = _maybeStartSpan (CSchematronTelemetry.SPAN_EXECUTE))
     {
-      aSVRL = new SVRLMarshaller ().setUseSchema (false).read ( (aUnmarshaller, aClass) -> {
-        final UnmarshallerHandler aHandler = aUnmarshaller.getUnmarshallerHandler ();
-        try
-        {
-          _transform (aExecutable, aXMLNode, sBaseURI, new SAXDestination (aHandler));
-        }
-        catch (final SaxonApiException ex)
-        {
-          throw new TransformationFailedException (ex);
-        }
-        if (aHandler.getResult () instanceof final JAXBElement <?> aElement &&
-            aElement.getValue () instanceof final SchematronOutputType aSOT)
-          return new JAXBElement <> (aElement.getName (), aClass, aSOT);
-        throw new JAXBException ("The SVRL output has an unexpected root element");
-      });
+      aSVRL = SchematronXSLTValidator.applyToSVRL (aProvider,
+                                                   _createSource (aXMLNode, sBaseURI),
+                                                   m_aErrorListener,
+                                                   m_aEffectiveURIResolver,
+                                                   null,
+                                                   false,
+                                                   null);
     }
-    catch (final TransformationFailedException ex)
-    {
-      throw ex.getSaxonApiException ();
-    }
-
     if (aSVRL == null)
     {
       // Error case only: run again into a DOM, to show what was created
-      final Document aResultDoc = XMLFactory.newDocument ();
-      _transform (aExecutable, aXMLNode, sBaseURI, new DOMDestination (aResultDoc));
-      throw new IllegalStateException ("Saxon transformation did not produce a parseable SVRL document:\n" +
-                                       XMLWriter.getNodeAsString (aResultDoc,
-                                                                  new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN)));
+      final Document aResultDoc = SchematronXSLTValidator.applyValidation (aProvider,
+                                                                           _createSource (aXMLNode, sBaseURI),
+                                                                           m_aErrorListener,
+                                                                           m_aEffectiveURIResolver,
+                                                                           null,
+                                                                           null);
+      throw new IllegalStateException ("The XSLT transformation did not produce a parseable SVRL document:\n" +
+                                       (aResultDoc == null ? "null"
+                                                           : XMLWriter.getNodeAsString (aResultDoc,
+                                                                                        new XMLWriterSettings ().setIndent (EXMLSerializeIndent.INDENT_AND_ALIGN))));
     }
     return aSVRL;
   }
@@ -638,8 +482,15 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     {
       // Only look for a failed assert while the SVRL output is created, without building the SVRL
       // object. With telemetry, the complete SVRL is needed to emit the metrics.
+      final ISchematronXSLTBasedProvider aProvider = getOrCompileXSLTProvider ();
+      final Transformer aTransformer = aProvider.getXSLTTransformer ();
+      aTransformer.setErrorListener (m_aErrorListener != null ? m_aErrorListener
+                                                              : new LoggingTransformErrorListener (Locale.US));
+      aTransformer.setURIResolver (m_aEffectiveURIResolver);
+      final Source aSource = aProvider.getXsltProcessor ()
+                                      .getEffectiveSource (_createSource (aXMLNode, sBaseURI), aTransformer);
       final FailedAssertDetector aDetector = new FailedAssertDetector ();
-      _transform (getOrCompileXslt (), aXMLNode, sBaseURI, new SAXDestination (aDetector));
+      aTransformer.transform (aSource, new SAXResult (aDetector));
       return EValidity.valueOf (!aDetector.m_bFailedAssert);
     }
 
@@ -912,7 +763,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
     private boolean m_bEntityResolverSet;
     private String m_sPhase;
     private IPSErrorHandler m_aErrorHandler = new LoggingPSErrorHandler ();
-    private Processor m_aProcessor = SchematronProcessorFactory.getDefault ();
+    private ISchematronXsltProcessor m_aXsltProcessor;
     private URIResolver m_aURIResolver;
     private ErrorListener m_aErrorListener;
     private EPureXsltVersion m_eXsltVersion = EPureXsltVersion.DEFAULT;
@@ -993,14 +844,16 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
 
     /**
      * @param a
-     *        The Saxon {@link Processor}. May not be <code>null</code>.
+     *        The XSLT processor that compiles and runs the generated XSLT, or <code>null</code> for
+     *        the only one on the class path (see
+     *        {@link SchematronXsltProcessorRegistry#getDefaultProcessor()}).
      * @return this for chaining
+     * @since 11.1.0
      */
     @NonNull
-    public Builder processor (@NonNull final Processor a)
+    public Builder xsltProcessor (@Nullable final ISchematronXsltProcessor a)
     {
-      ValueEnforcer.notNull (a, "Processor");
-      m_aProcessor = a;
+      m_aXsltProcessor = a;
       return this;
     }
 
@@ -1142,7 +995,7 @@ public class SchematronResourcePureXslt extends AbstractSchematronResource
       useCache (false);
       final SchematronResourcePureXslt ret = build ();
       // Keep the result so that the first validation does not compile again
-      ret.m_aCompiledXslt = ret.toConfig ().compile ();
+      ret.m_aXSLTProvider = ret.toConfig ().compile ();
       return ret;
     }
   }

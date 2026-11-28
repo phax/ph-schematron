@@ -163,8 +163,8 @@ public class Schematron extends AbstractSchematronTask
   private ESchematronEngine m_eSchematronProcessingEngine = ESchematronEngine.ISO_SCHEMATRON;
 
   /**
-   * The XSLT processor for the engines <code>iso-schematron</code>, <code>schxslt</code>,
-   * <code>schxslt2</code> and <code>xslt</code>: <code>saxon</code> or <code>phoxtrot</code>. If not
+   * The XSLT processor for the engines <code>pure-xslt</code>, <code>iso-schematron</code>,
+   * <code>schxslt</code>, <code>schxslt2</code> and <code>xslt</code>: <code>saxon</code> or <code>phoxtrot</code>. If not
    * set, the only XSLT processor on the class path is used; with both on the class path it must be
    * set.
    */

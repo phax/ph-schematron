@@ -41,6 +41,7 @@ import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.pure.SchematronResourcePureXPath;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.schxslt.xslt2.SchematronResourceSchXslt_XSLT2;
 import com.helger.schematron.schxslt2.xslt.SchematronResourceSchXslt2;
@@ -63,6 +64,9 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkIsValidSchematron
 {
+  /** The XSLT processor of the pure XSLT engine */
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+
   /** The XSLT processor of the XSLT based engines */
   @Param ({ "saxon", "phoxtrot" })
   public String xsltProcessor;
@@ -145,7 +149,7 @@ public class BenchmarkIsValidSchematron
   {
     for (final IReadableResource aRes : m_aSchemas)
     {
-      final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (aRes)
+      final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (aRes).xsltProcessor (SAXON)
                                                                      .errorHandler (new DoNothingPSErrorHandler ())
                                                                      .build ();
       bh.consume (r.isValidSchematron ());

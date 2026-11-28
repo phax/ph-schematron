@@ -121,7 +121,8 @@ public final class SchematronRemoteAccessTest
   {
     final ICommonsList <IEngineBuilder> ret = new CommonsArrayList <> ();
     ret.add (r -> SchematronResourcePureXPath.builder (r).useCache (false).build ());
-    ret.add (r -> SchematronResourcePureXslt.builder (r).useCache (false).build ());
+    ret.add (r -> SchematronResourcePureXslt.builder (r).xsltProcessor (SAXON).useCache (false).build ());
+    ret.add (r -> SchematronResourcePureXslt.builder (r).xsltProcessor (PHOXTROT).useCache (false).build ());
     ret.add (r -> SchematronResourceSCH.builder (r).xsltProcessor (SAXON).useCache (false).build ());
     ret.add (r -> SchematronResourceSCH.builder (r).xsltProcessor (PHOXTROT).useCache (false).build ());
     ret.add (r -> SchematronResourceSchXslt_XSLT2.builder (r).xsltProcessor (SAXON).useCache (false).build ());

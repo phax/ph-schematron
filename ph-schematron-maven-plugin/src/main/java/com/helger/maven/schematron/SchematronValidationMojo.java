@@ -91,7 +91,7 @@ public final class SchematronValidationMojo extends AbstractMojo
    * <li><code>pure-xpath</code> (alias: <code>pure</code>) - pure-Java XPath-only engine
    * ({@code SchematronResourcePureXPath}). Reads the SCH directly; honours {@code phaseName}.</li>
    * <li><code>pure-xslt</code> (alias: <code>pure-saxon</code>) - pure-Java engine that generates
-   * an XSLT 3.0 stylesheet in Java and runs it through Saxon s9api
+   * an XSLT 3.0 stylesheet in Java and runs it on the selected XSLT processor
    * ({@code SchematronResourcePureXslt}). Honours {@code phaseName}. {@code languageCode} and
    * {@code parameters} are ignored.</li>
    * <li><code>iso-schematron</code> (aliases: <code>schematron</code>, <code>sch</code>,
@@ -229,8 +229,8 @@ public final class SchematronValidationMojo extends AbstractMojo
   private boolean m_bIgnoreWarnings = false;
 
   /**
-   * The XSLT processor for the engines <code>iso-schematron</code>, <code>schxslt</code>,
-   * <code>schxslt2</code> and <code>xslt</code>: <code>saxon</code> (contained in the plugin) or
+   * The XSLT processor for the engines <code>pure-xslt</code>, <code>iso-schematron</code>,
+   * <code>schxslt</code>, <code>schxslt2</code> and <code>xslt</code>: <code>saxon</code> (contained in the plugin) or
    * <code>phoxtrot</code> (requires <code>ph-schematron-phoxtrot</code> as plugin dependency). If not
    * set, the only XSLT processor on the class path is used; with both on the class path it must be
    * set.

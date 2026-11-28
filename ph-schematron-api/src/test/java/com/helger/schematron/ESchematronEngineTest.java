@@ -50,7 +50,7 @@ public final class ESchematronEngineTest
   public void testXsltProcessorSelectable ()
   {
     assertFalse (ESchematronEngine.PURE_XPATH.isXsltProcessorSelectable ());
-    assertFalse (ESchematronEngine.PURE_XSLT.isXsltProcessorSelectable ());
+    assertTrue (ESchematronEngine.PURE_XSLT.isXsltProcessorSelectable ());
     assertTrue (ESchematronEngine.ISO_SCHEMATRON.isXsltProcessorSelectable ());
     assertTrue (ESchematronEngine.SCHXSLT1.isXsltProcessorSelectable ());
     assertTrue (ESchematronEngine.SCHXSLT2.isXsltProcessorSelectable ());

@@ -42,7 +42,7 @@ import com.helger.io.file.FilenameHelper;
 import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
-import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
+import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.saxon.SaxonXsltProcessor;
@@ -79,6 +79,7 @@ public final class SVRLPhoxtrotVsSaxonComparisonTest
     return new CommonsArrayList <> (new Object [] { ComparedPipeline.ISO },
                                     new Object [] { ComparedPipeline.SCHXSLT1 },
                                     new Object [] { ComparedPipeline.SCHXSLT2 },
+                                    new Object [] { ComparedPipeline.PURE_XSLT },
                                     new Object [] { ComparedPipeline.XSLT_PREBUILT });
   }
 
@@ -109,7 +110,7 @@ public final class SVRLPhoxtrotVsSaxonComparisonTest
    * @return The canonical SVRL, or the error code and message as a text.
    */
   @NonNull
-  private static String _validate (@NonNull final AbstractSchematronXSLTBasedResource <?> aSCH,
+  private static String _validate (@NonNull final ISchematronResource aSCH,
                                    @NonNull final IReadableResource aXML)
   {
     try
@@ -144,8 +145,8 @@ public final class SVRLPhoxtrotVsSaxonComparisonTest
           m_aPipeline.getKnownPhoxtrotFailures ().contains (sSCHPath))
         continue;
 
-      final AbstractSchematronXSLTBasedResource <?> aSaxonSCH = m_aPipeline.createResource (aSCHRes, aSaxon);
-      final AbstractSchematronXSLTBasedResource <?> aPhoxtrotSCH = m_aPipeline.createResource (aSCHRes, aPhoxtrot);
+      final ISchematronResource aSaxonSCH = m_aPipeline.createResource (aSCHRes, aSaxon);
+      final ISchematronResource aPhoxtrotSCH = m_aPipeline.createResource (aSCHRes, aPhoxtrot);
       final ICommonsSet <String> aIsA = SVRLComparisonHelper.getAllIsA (aSCHRes);
       for (final IReadableResource aXMLRes : aXMLs)
       {
@@ -201,7 +202,7 @@ public final class SVRLPhoxtrotVsSaxonComparisonTest
     final ISchematronXsltProcessor [] aProcessors = { new SaxonXsltProcessor (), new PhoxtrotXsltProcessor () };
     for (int i = 0; i < aProcessors.length; ++i)
     {
-      final AbstractSchematronXSLTBasedResource <?> aSCH = m_aPipeline.createResource (new ReadableResourceString ("test.sch",
+      final ISchematronResource aSCH = m_aPipeline.createResource (new ReadableResourceString ("test.sch",
                                                                                                                   sSCH,
                                                                                                                   StandardCharsets.UTF_8),
                                                                                       aProcessors[i]);

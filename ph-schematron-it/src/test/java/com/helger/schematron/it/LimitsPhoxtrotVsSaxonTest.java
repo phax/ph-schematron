@@ -32,8 +32,8 @@ import com.helger.base.timing.StopWatch;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.IReadableResource;
 import com.helger.io.resource.inmemory.ReadableResourceString;
+import com.helger.schematron.ISchematronResource;
 import com.helger.schematron.SchematronInterruptedException;
-import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.phoxtrot.PhoxtrotXsltProcessor;
 import com.helger.schematron.saxon.SaxonXsltProcessor;
@@ -70,7 +70,7 @@ public final class LimitsPhoxtrotVsSaxonTest
       </iso:schema>""";
 
   @NonNull
-  private static AbstractSchematronXSLTBasedResource <?> _create (@NonNull final String sSCH,
+  private static ISchematronResource _create (@NonNull final String sSCH,
                                                                   @NonNull final ISchematronXsltProcessor aProcessor)
   {
     return ComparedPipeline.ISO.createResource (new ReadableResourceString ("test.sch", sSCH, StandardCharsets.UTF_8),
@@ -161,7 +161,7 @@ public final class LimitsPhoxtrotVsSaxonTest
   {
     for (final ISchematronXsltProcessor aProcessor : PROCESSORS)
     {
-      final AbstractSchematronXSLTBasedResource <?> aSCH = _create (SCH_LARGE, aProcessor);
+      final ISchematronResource aSCH = _create (SCH_LARGE, aProcessor);
       Thread.currentThread ().interrupt ();
       try
       {

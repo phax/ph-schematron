@@ -54,7 +54,7 @@ public final class SchematronResourcePureXsltSweepTest
       try
       {
         // Both lazy reading and XSLT generation/compilation are exercised by isValidSchematron
-        // (which forces the read) followed by getOrCompileXslt via a dummy validation call
+        // (which forces the read) followed by getOrCompileXSLTProvider via a dummy validation call
         // setup. We deliberately don't run a transform - it requires an instance XML and isn't
         // what this sweep is testing.
         if (!aSch.isValidSchematron ())
@@ -62,7 +62,7 @@ public final class SchematronResourcePureXsltSweepTest
           aFailures.append ("\n  - ").append (aRes.getPath ()).append (" :: isValidSchematron returned false");
           continue;
         }
-        aSch.getOrCompileXslt ();
+        aSch.getOrCompileXSLTProvider ();
         nOk++;
       }
       catch (final Throwable t)

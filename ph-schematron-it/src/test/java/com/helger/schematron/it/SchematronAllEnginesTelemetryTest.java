@@ -113,7 +113,16 @@ public final class SchematronAllEnginesTelemetryTest
                                                          .perAssertionResultTelemetry (true)
                                                          .build ()));
     ret.add (new Engine ("pure-xslt",
+                         "pure-xslt (saxon)",
                          r -> SchematronResourcePureXslt.builder (r)
+                                                        .xsltProcessor (SAXON)
+                                                        .telemetry (true)
+                                                        .perAssertionResultTelemetry (true)
+                                                        .build ()));
+    ret.add (new Engine ("pure-xslt",
+                         "pure-xslt (phoxtrot)",
+                         r -> SchematronResourcePureXslt.builder (r)
+                                                        .xsltProcessor (PHOXTROT)
                                                         .telemetry (true)
                                                         .perAssertionResultTelemetry (true)
                                                         .build ()));

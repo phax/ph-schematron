@@ -29,8 +29,11 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.io.resource.IReadableResource;
-import com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource;
+import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.SchematronException;
 import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
+import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.purexslt.xslt.SchematronToXsltConverter;
 import com.helger.schematron.sch.SchematronProviderXSLTFromSCH;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.sch.SchematronSCHConfig;
@@ -45,7 +48,8 @@ import com.helger.schematron.xslt.SchematronResourceXSLT;
 
 /**
  * An XSLT based pipeline that is compared between Saxon and phoxtrot, with the files that are
- * known to behave differently.
+ * known to behave differently. The pure XSLT engine is one too (since 11.1.0), although it is not
+ * an {@link com.helger.schematron.api.xslt.AbstractSchematronXSLTBasedResource}.
  *
  * @author Philip Helger
  */
@@ -63,8 +67,7 @@ final class ComparedPipeline
   interface IResourceCreator
   {
     @NonNull
-    AbstractSchematronXSLTBasedResource <?> create (@NonNull IReadableResource aRes,
-                                                    @NonNull ISchematronXsltProcessor aProcessor);
+    ISchematronResource create (@NonNull IReadableResource aRes, @NonNull ISchematronXsltProcessor aProcessor);
   }
 
   /**
@@ -117,6 +120,31 @@ final class ComparedPipeline
                                                                  BIICORE_SLOW,
                                                                  new CommonsHashSet <> (),
                                                                  new CommonsHashSet <> ());
+
+  /**
+   * The XSLT does not depend on the processor (but on Saxon it uses the native location functions),
+   * so only the SVRL is compared.
+   */
+  static final ComparedPipeline PURE_XSLT = new ComparedPipeline ("pure-xslt",
+                                                                  SchematronTestHelper.getAllValidSchematronFiles (),
+                                                                  (r, p) -> {
+                                                                    try
+                                                                    {
+                                                                      return SchematronToXsltConverter.fromResource (r)
+                                                                                                      .getAsDocument ();
+                                                                    }
+                                                                    catch (final SchematronException ex)
+                                                                    {
+                                                                      throw new TransformerException (ex);
+                                                                    }
+                                                                  },
+                                                                  (r, p) -> SchematronResourcePureXslt.builder (r)
+                                                                                                      .xsltProcessor (p)
+                                                                                                      .useCache (false)
+                                                                                                      .build (),
+                                                                  new CommonsHashSet <> (),
+                                                                  new CommonsHashSet <> (),
+                                                                  new CommonsHashSet <> ());
 
   static final ComparedPipeline XSLT_PREBUILT = new ComparedPipeline ("xslt",
                                                                       new CommonsArrayList <> (new ClassPathResource ("external/test-xslt/valid01.xslt")),
@@ -180,8 +208,8 @@ final class ComparedPipeline
   }
 
   @NonNull
-  AbstractSchematronXSLTBasedResource <?> createResource (@NonNull final IReadableResource aRes,
-                                                          @NonNull final ISchematronXsltProcessor aProcessor)
+  ISchematronResource createResource (@NonNull final IReadableResource aRes,
+                                      @NonNull final ISchematronXsltProcessor aProcessor)
   {
     return m_aResourceCreator.create (aRes, aProcessor);
   }

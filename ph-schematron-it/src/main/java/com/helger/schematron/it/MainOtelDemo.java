@@ -178,8 +178,15 @@ public final class MainOtelDemo
                                                    .perAssertionResultTelemetry (true)
                                                    .perRuleExecutionTelemetry (true)
                                                    .build ());
-    aBuilders.put (ESchematronEngine.PURE_XSLT.getID (),
+    aBuilders.put (ESchematronEngine.PURE_XSLT.getID () + " (saxon)",
                    r -> SchematronResourcePureXslt.builder (r)
+                                                  .xsltProcessor (SAXON)
+                                                  .telemetry (true)
+                                                  .perAssertionResultTelemetry (true)
+                                                  .build ());
+    aBuilders.put (ESchematronEngine.PURE_XSLT.getID () + " (phoxtrot)",
+                   r -> SchematronResourcePureXslt.builder (r)
+                                                  .xsltProcessor (PHOXTROT)
                                                   .telemetry (true)
                                                   .perAssertionResultTelemetry (true)
                                                   .build ());

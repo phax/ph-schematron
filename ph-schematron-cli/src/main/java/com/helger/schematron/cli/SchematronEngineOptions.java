@@ -49,7 +49,7 @@ final class SchematronEngineOptions
   /** The ID of the XSLT processor. <code>null</code> for Saxon. */
   @Option (names = { "-x", "--xslt-processor" },
            paramLabel = "ID",
-           description = "The XSLT processor of the engines iso-schematron, schxslt, schxslt2 and xslt: saxon or phoxtrot. Default: saxon.")
+           description = "The XSLT processor of the engines pure-xslt, iso-schematron, schxslt, schxslt2 and xslt: saxon or phoxtrot. Default: saxon.")
   String m_sXsltProcessor;
 
   /** The phase to use. <code>null</code> for the default phase of the Schematron. */

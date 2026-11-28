@@ -34,9 +34,11 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.helger.annotation.concurrent.NotThreadSafe;
 import com.helger.io.resource.inmemory.ReadableResourceByteArray;
+import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 
 /**
  * Compares the three XSLT language versions that {@link SchematronResourcePureXslt} can emit on the
@@ -67,6 +69,9 @@ import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
 @Fork (1)
 public class BenchmarkPureXsltVersion
 {
+  /** The XSLT processor of the pure XSLT engine */
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+
   private static final String SCHEMATRON = "<?xml version='1.0' encoding='UTF-8'?>\n" +
                                            "<iso:schema xmlns:iso='http://purl.oclc.org/dsdl/schematron'>\n" +
                                            "  <iso:let name='total' value='count(/root/item)'/>\n" +
@@ -101,7 +106,7 @@ public class BenchmarkPureXsltVersion
 
   private static SchematronResourcePureXslt _build (final EPureXsltVersion eVersion)
   {
-    return SchematronResourcePureXslt.builderFromString (SCHEMATRON)
+    return SchematronResourcePureXslt.builderFromString (SCHEMATRON).xsltProcessor (SAXON)
                                      .xsltVersion (eVersion)
                                      .errorHandler (new DoNothingPSErrorHandler ())
                                      .build ();

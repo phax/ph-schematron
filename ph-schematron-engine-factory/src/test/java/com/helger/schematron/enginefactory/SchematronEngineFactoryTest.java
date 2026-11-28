@@ -79,7 +79,9 @@ public final class SchematronEngineFactoryTest
   public void testGetXsltProcessor ()
   {
     assertNull (SchematronEngineFactory.getXsltProcessor (ESchematronEngine.PURE_XPATH, SaxonXsltProcessor.ID));
-    assertNull (SchematronEngineFactory.getXsltProcessor (ESchematronEngine.PURE_XSLT, PhoxtrotXsltProcessor.ID));
+    assertEquals (PhoxtrotXsltProcessor.ID,
+                  SchematronEngineFactory.getXsltProcessor (ESchematronEngine.PURE_XSLT, PhoxtrotXsltProcessor.ID)
+                                         .getID ());
     assertEquals (SaxonXsltProcessor.ID,
                   SchematronEngineFactory.getXsltProcessor (ESchematronEngine.ISO_SCHEMATRON, SaxonXsltProcessor.ID)
                                          .getID ());

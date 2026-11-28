@@ -38,6 +38,7 @@ import com.helger.schematron.api.xslt.processor.ISchematronXsltProcessor;
 import com.helger.schematron.api.xslt.processor.SchematronXsltProcessorRegistry;
 import com.helger.schematron.errorhandler.DoNothingPSErrorHandler;
 import com.helger.schematron.purexslt.SchematronResourcePureXslt;
+import com.helger.schematron.saxon.SaxonXsltProcessor;
 import com.helger.schematron.sch.SchematronResourceSCH;
 import com.helger.schematron.testfiles.SchematronTestHelper;
 import com.helger.xml.transform.DoNothingTransformErrorListener;
@@ -72,6 +73,9 @@ import com.helger.xml.transform.DoNothingTransformErrorListener;
 @Fork (1)
 public class BenchmarkXsltVsSaxon
 {
+  /** The XSLT processor of the pure XSLT engine */
+  private static final ISchematronXsltProcessor SAXON = new SaxonXsltProcessor ();
+
   /** The XSLT processor of the XSLT based engines */
   @Param ({ "saxon", "phoxtrot" })
   public String xsltProcessor;
@@ -98,7 +102,7 @@ public class BenchmarkXsltVsSaxon
     // Force one validation to materialize the cached XSLT before the timed loop starts
     m_aWarmSch.getSchematronValidity (XMLINSTANCE);
 
-    m_aWarmSaxon = SchematronResourcePureXslt.builder (SCHEMATRON)
+    m_aWarmSaxon = SchematronResourcePureXslt.builder (SCHEMATRON).xsltProcessor (SAXON)
                                              .errorHandler (new DoNothingPSErrorHandler ())
                                              .build ();
     m_aWarmSaxon.getSchematronValidity (XMLINSTANCE);
@@ -119,7 +123,7 @@ public class BenchmarkXsltVsSaxon
   @Benchmark
   public void coldSaxon (final Blackhole bh) throws Exception
   {
-    final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (SCHEMATRON)
+    final SchematronResourcePureXslt r = SchematronResourcePureXslt.builder (SCHEMATRON).xsltProcessor (SAXON)
                                                                    .errorHandler (new DoNothingPSErrorHandler ())
                                                                    .build ();
     bh.consume (r.getSchematronValidity (XMLINSTANCE));

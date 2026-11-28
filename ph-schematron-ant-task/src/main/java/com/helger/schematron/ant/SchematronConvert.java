@@ -122,8 +122,8 @@ public class SchematronConvert extends AbstractSchematronTask
   private String m_sSchematronEngine = ESchematronEngine.ISO_SCHEMATRON.getID ();
 
   /**
-   * The XSLT processor of the engines <code>iso-schematron</code>, <code>schxslt</code> and
-   * <code>schxslt2</code>.
+   * The XSLT processor of the engines <code>pure-xslt</code>, <code>iso-schematron</code>,
+   * <code>schxslt</code> and <code>schxslt2</code>.
    */
   private String m_sXsltProcessor;
 

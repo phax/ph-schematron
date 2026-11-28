@@ -78,7 +78,12 @@ public final class SchematronAllEnginesSVRLExtensionsTest
   {
     final ICommonsList <Engine> ret = new CommonsArrayList <> ();
     ret.add (new Engine ("pure-xpath", false, SchematronResourcePureXPath.builder (aSCH).build ()));
-    ret.add (new Engine ("pure-xslt", false, SchematronResourcePureXslt.builder (aSCH).build ()));
+    ret.add (new Engine ("pure-xslt (saxon)",
+                         false,
+                         SchematronResourcePureXslt.builder (aSCH).xsltProcessor (SAXON).build ()));
+    ret.add (new Engine ("pure-xslt (phoxtrot)",
+                         false,
+                         SchematronResourcePureXslt.builder (aSCH).xsltProcessor (PHOXTROT).build ()));
     ret.add (new Engine ("iso-schematron (saxon)",
                          false,
                          SchematronResourceSCH.builder (aSCH).xsltProcessor (SAXON).build ()));

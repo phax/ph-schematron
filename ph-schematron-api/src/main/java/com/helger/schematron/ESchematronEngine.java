@@ -38,10 +38,10 @@ public enum ESchematronEngine implements IHasID <String>
 
   /**
    * Pure-Java engine that generates an XSLT 3.0 stylesheet in Java (no external ISO Schematron
-   * stylesheet chain) and runs it through Saxon s9api. Suitable both as a validation engine and as
-   * a {@code SCH -> XSLT} converter.
+   * stylesheet chain) and runs it on the selected XSLT processor (since 11.1.0; before on Saxon
+   * only). Suitable both as a validation engine and as a {@code SCH -> XSLT} converter.
    */
-  PURE_XSLT ("pure-xslt", new CommonsHashSet <> ("pure-saxon"), true, false),
+  PURE_XSLT ("pure-xslt", new CommonsHashSet <> ("pure-saxon"), true, true),
 
   /**
    * ISO Schematron: SCH-to-XSLT preprocessing through the canonical ISO Schematron XSL stylesheet

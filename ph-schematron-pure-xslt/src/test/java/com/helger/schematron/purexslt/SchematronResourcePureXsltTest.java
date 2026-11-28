@@ -24,22 +24,17 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-import javax.xml.transform.stream.StreamSource;
-
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.state.EValidity;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.resource.FileSystemResource;
 import com.helger.schematron.purexslt.xslt.EPureXsltVersion;
-import com.helger.schematron.saxon.SaxonTinyTreeHelper;
-import com.helger.schematron.saxon.SchematronProcessorFactory;
 import com.helger.schematron.svrl.SVRLMarshaller;
 import com.helger.schematron.svrl.jaxb.ActivePattern;
 import com.helger.schematron.svrl.jaxb.DiagnosticReference;
@@ -444,17 +439,14 @@ public final class SchematronResourcePureXsltTest
                                              "<root><item id='1'/><item/></root>",
                                              "<root/>" })
     {
-      final byte [] aBytes = sXML.getBytes (StandardCharsets.UTF_8);
-      final Document aFacade = SaxonTinyTreeHelper.buildDocumentFacade (SchematronProcessorFactory.getDefault (),
-                                                                        new StreamSource (new NonBlockingByteArrayInputStream (aBytes)));
-      for (final Document aDoc : new Document [] { DOMReader.readXMLDOM (aBytes), aFacade })
-        for (final String sBaseURI : new String [] { null, "urn:test" })
-        {
-          final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (aDoc, sBaseURI);
-          assertNotNull (aSVRL);
-          final EValidity eExpected = _countFailedAsserts (aSVRL) == 0 ? EValidity.VALID : EValidity.INVALID;
-          assertEquals (sXML, eExpected, aRes.getSchematronValidity (aDoc, sBaseURI));
-        }
+      final Document aDoc = DOMReader.readXMLDOM (sXML.getBytes (StandardCharsets.UTF_8));
+      for (final String sBaseURI : new String [] { null, "urn:test" })
+      {
+        final SchematronOutputType aSVRL = aRes.applySchematronValidationToSVRL (aDoc, sBaseURI);
+        assertNotNull (aSVRL);
+        final EValidity eExpected = _countFailedAsserts (aSVRL) == 0 ? EValidity.VALID : EValidity.INVALID;
+        assertEquals (sXML, eExpected, aRes.getSchematronValidity (aDoc, sBaseURI));
+      }
     }
   }
 

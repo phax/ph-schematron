@@ -94,9 +94,10 @@ public interface ISchematronXsltProcessor extends IHasID <String>
   }
 
   /**
-   * Create the {@link Source} for a DOM document that was created internally (e.g. parsed from an
-   * input stream) and is never exposed to the caller. The processor may therefore convert it into
-   * its own tree model before the validation.
+   * Create the {@link Source} for a DOM document whose node identity is not needed by the
+   * validation: a document created internally (e.g. parsed from an input stream) and, since 11.1.0,
+   * a document passed to the <code>Node</code> based validation methods. The processor may
+   * therefore convert it into its own tree model before the validation.
    *
    * @param aDoc
    *        The internally created document. May not be <code>null</code>.
@@ -133,4 +134,16 @@ public interface ISchematronXsltProcessor extends IHasID <String>
    *        The telemetry callback. May not be <code>null</code>.
    */
   void installTemplateTelemetry (@NonNull Transformer aTransformer, @NonNull ISchematronTemplateTelemetry aTelemetry);
+
+  /**
+   * @return <code>true</code> if all extension functions of
+   *         {@link com.helger.schematron.api.xslt.CSchematronLocationFunctions} are available to the
+   *         stylesheets compiled by the factories of this processor, so that the pure XSLT engine
+   *         can compute the SVRL <code>location</code> with them. <code>false</code> by default.
+   * @since 11.1.0
+   */
+  default boolean isAllLocationFunctionsAvailable ()
+  {
+    return false;
+  }
 }
