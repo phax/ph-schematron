@@ -45,7 +45,7 @@
     <connection>scm:git:https://github.com/phax/ph-schematron.git</connection>
     <developerConnection>scm:git:https://github.com/phax/ph-schematron.git</developerConnection>
     <url>https://github.com/phax/ph-schematron</url>
-    <tag>HEAD</tag>
+    <tag>v10</tag>
   </scm>
   
   <distributionManagement>
