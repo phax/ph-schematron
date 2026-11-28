@@ -81,7 +81,7 @@
     <ant.version>1.10.18</ant.version>
     <schxslt1.version>1.10.1</schxslt1.version>
     <schxslt2.version>1.11.4</schxslt2.version>
-    <phoxtrot.version>0.5.0-SNAPSHOT</phoxtrot.version>
+    <phoxtrot.version>0.5.0</phoxtrot.version>
     <picocli.version>4.7.7</picocli.version>
   </properties>
   
